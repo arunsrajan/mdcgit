@@ -1,0 +1,289 @@
+{
+  "kind": "Pod",
+  "apiVersion": "v1",
+  "metadata": {
+    "name": "namenode",
+    "labels": {
+      "name": "namenode"
+    }
+  },
+  "spec": {
+    "limits": {
+      "max": {
+        "memory": "12Gi",
+        "cpu": "3"
+      },
+      "min": {
+        "memory": "5Gi",
+        "cpu": "1"
+      },
+      "type": "Container"
+    },
+    "containers": [
+      {
+        "name": "zookeeper-centos-7",
+        "image": "mesoscloud/zookeeper:3.4.8-centos-7",
+        "ports": [
+          {
+            "containerPort": 2181
+          }
+        ],
+        "resources": {
+          "requests": {
+            "cpu": "0.25",
+            "memory": "1Gi"
+          },
+          "limits": {
+            "cpu": "0.25",
+            "memory": "1Gi"
+          }
+        }
+      },
+      {
+        "name": "hadoop-namenode",
+        "image": "bde2020/hadoop-namenode",
+        "env": [
+          {
+            "name": "CORE_CONF_fs_defaultFS",
+            "value": "hdfs://namenode:9000"
+          },
+          {
+            "name": "HDFS_CONF_dfs_namenode_datanode_registration_ip__hostname__check",
+            "value": "false"
+          },
+          {
+            "name": "CLUSTER_NAME",
+            "value": "hadooptest"
+          }
+        ],
+        "ports": [
+          {
+            "containerPort": 9000
+          },
+          {
+            "containerPort": 9870
+          }
+        ],
+        "resources": {
+          "requests": {
+            "cpu": "0.25",
+            "memory": "2Gi"
+          },
+          "limits": {
+            "cpu": "0.25",
+            "memory": "2Gi"
+          }
+        },
+        "volumeMounts": [
+          {
+            "name": "sftp",
+            "mountPath": "/mnt/sftp"
+          }
+        ]
+      },
+      {
+        "name": "hadoop-datanode",
+        "image": "bde2020/hadoop-datanode",
+        "env": [
+          {
+            "name": "CORE_CONF_fs_defaultFS",
+            "value": "hdfs://namenode:9000"
+          },
+          {
+            "name": "HDFS_CONF_dfs_namenode_datanode_registration_ip__hostname__check",
+            "value": "false"
+          },
+          {
+            "name": "CLUSTER_NAME",
+            "value": "hadooptest"
+          }
+        ],
+        "resources": {
+          "requests": {
+            "cpu": "0.25",
+            "memory": "2Gi"
+          },
+          "limits": {
+            "cpu": "0.25",
+            "memory": "2Gi"
+          }
+        }
+      },
+      {
+        "name": "mesos-master",
+        "image": "arunsrajan/mesos-master",
+        "env": [
+          {
+            "name": "MESOS_PORT",
+            "value": "5050"
+          },
+          {
+            "name": "MESOS_ZK",
+            "value": "zk://namenode:2181/mesos"
+          },
+          {
+            "name": "MESOS_QUORUM",
+            "value": "1"
+          },
+          {
+            "name": "MESOS_REGISTRY",
+            "value": "in_memory"
+          },
+          {
+            "name": "MESOS_LOG_DIR",
+            "value": "/var/log/mesos"
+          },
+          {
+            "name": "MESOS_WORK_DIR",
+            "value": "/var/lib/mesos"
+          },
+          {
+            "name": "MESOS_HOSTNAME",
+            "valueFrom": {
+              "fieldRef": {
+                "fieldPath": "status.podIP"
+              }
+            }
+          },
+          {
+            "name": "MESOS_IP",
+            "valueFrom": {
+              "fieldRef": {
+                "fieldPath": "status.podIP"
+              }
+            }
+          },
+          {
+            "name": "MESOS_NATIVE_JAVA_LIBRARY",
+            "value": "/usr/lib64/libmesos.so"
+          },{
+            "name": "DEBUGPORT",
+            "value": "*:4005"
+          },
+          {
+            "name": "PORT",
+            "value": "22222"
+          },
+          {
+            "name": "MEMCONFIGLOW",
+            "value": "-Xms2G"
+          },
+          {
+            "name": "MEMCONFIGHIGH",
+            "value": "-Xmx2G"
+          },
+          {
+            "name": "GCCCONFIG",
+            "value": "-XX:+UseG1GC"
+          },
+          {
+            "name": "ZKHOSTPORT",
+            "value": "namenode:2181"
+          },
+          {
+            "name": "ISJGROUPS",
+            "value": "false"
+          },
+          {
+            "name": "ISYARN",
+            "value": "false"
+          },
+          {
+            "name": "ISMESOS",
+            "value": "true"
+          },
+          {
+            "name": "MESOSMASTER",
+            "value": "namenode:5050"
+          },
+          {
+            "name": "HOST",
+            "valueFrom": {
+              "fieldRef": {
+                "fieldPath": "status.podIP"
+              }
+            }
+          }
+        ],
+        "ports": [
+          {
+            "containerPort": 5050
+          },
+          {
+            "containerPort": 22222
+          }
+        ],
+        "resources": {
+          "requests": {
+            "cpu": "0.5",
+            "memory": "1Gi"
+          },
+          "limits": {
+            "cpu": "0.5",
+            "memory": "5Gi"
+          }
+        }
+      },
+      {
+        "name": "mesos-slave",
+        "image": "arunsrajan/mesos-slave",
+        "command": [
+          "mesos-slave"
+        ],
+        "args": [
+          "--launcher=posix"
+        ],
+        "env": [
+          {
+            "name": "MESOS_MASTER",
+            "value": "zk://namenode:2181/mesos"
+          },
+          {
+            "name": "MESOS_PORT",
+            "value": "5051"
+          },
+          {
+            "name": "MESOS_LOG_DIR",
+            "value": "/var/log/mesos"
+          },
+          {
+            "name": "MESOS_LOGGING_LEVEL",
+            "value": "INFO"
+          },
+          {
+            "name": "MESOS_WORK_DIR",
+            "value": "/var/lib/mesos"
+          },
+          {
+            "name": "MESOS_NATIVE_JAVA_LIBRARY",
+            "value": "/usr/lib64/libmesos.so"
+          }
+        ],
+        "ports": [
+          {
+            "containerPort": 5051
+          }
+        ],
+        "resources": {
+          "requests": {
+            "cpu": "0.5",
+            "memory": "1Gi"
+          },
+          "limits": {
+            "cpu": "0.5",
+            "memory": "3Gi"
+          }
+        }
+      }
+    ],
+    "volumes": [
+      {
+        "name": "sftp",
+        "hostPath": {
+          "path": "//mnt/mdc",
+          "type": "Directory"
+        }
+      }
+    ]
+  }
+}

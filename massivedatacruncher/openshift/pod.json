@@ -1,0 +1,176 @@
+{
+	"kind": "Pod",
+	"apiVersion": "v1",
+	"metadata": {
+		"name": "namenode",
+		"labels": {
+			"name": "namenode"
+		}
+	},
+	"spec": {
+		"limits":{
+			"max":{
+				"memory": "8Gi"
+			},
+			"min":{
+				"memory": "5Gi"
+			},
+			"type": "Container"
+		},
+		"containers": [
+			{
+				"name": "taskschedulerstream",
+				"image": "arunsrajan/taskschedulerstream",
+				"env": [
+					{
+						"name": "PORT",
+						"value": "22222"
+					},
+					{
+						"name": "MEMCONFIGLOW",
+						"value": "-Xms2G"
+					},
+					{
+						"name": "MEMCONFIGHIGH",
+						"value": "-Xmx2G"
+					},
+					{
+						"name": "GCCCONFIG",
+						"value": "-XX:+UseZGC"
+					},
+			          {
+			            "name": "ZKHOSTPORT",
+			            "value": "namenode:2181"
+			          },
+			          {
+			            "name": "HOST",
+			            "valueFrom": {
+			              "fieldRef": {
+			                "fieldPath": "status.podIP"
+			              }
+			            }
+			          }
+				],
+				"ports": [
+					{
+						"containerPort": 22222
+					}
+				],
+				"resources":{
+					"requests":{
+						"cpu":"0.5",
+						"memory":"1Gi"
+					},
+					"limits":{
+						"cpu":"0.5",
+						"memory":"3Gi"
+					}
+				}
+			},
+			{
+				"name": "zookeeper-centos-7",
+				"image": "mesoscloud/zookeeper:3.4.8-centos-7",
+				"ports": [
+					{
+						"containerPort": 2181
+					}
+				],
+				"resources":{
+					"requests":{
+						"cpu":"0.5",
+						"memory":"1Gi"
+					},
+					"limits":{
+						"cpu":"0.5",
+						"memory":"1Gi"
+					}
+				}
+			},
+			{
+				"name": "hadoop-docker",
+				"image": "sequenceiq/hadoop-docker:2.7.1",
+				"securityContext":{
+					"privileged": true
+				},
+				"ports": [
+					{
+						"containerPort": 9000
+					}
+				],
+				"resources":{
+					"requests":{
+						"cpu":"0.5",
+						"memory":"1Gi"
+					},
+					"limits":{
+						"cpu":"0.5",
+						"memory":"4Gi"
+					}
+				},
+				"volumeMounts": [
+				  {
+					"name": "sftp",
+					"mountPath": "/mnt/sftp"
+				  }
+				]	
+			},
+			{
+            "name": "taskexecutorstream1",
+            "image": "arunsrajan/taskexecutorstream",
+            "env": [
+              {
+                "name": "PORT",
+                "value": "10101"
+              },
+              {
+                "name": "HOST",
+                "valueFrom": {
+                  "fieldRef": {
+                    "fieldPath": "status.podIP"
+                  }
+                }
+              },
+              {
+                "name": "MEMCONFIGLOW",
+                "value": "-Xms2G"
+              },
+              {
+                "name": "MEMCONFIGHIGH",
+                "value": "-Xms2G"
+              },
+              {
+                "name": "GCCCONFIG",
+                "value": "-XX:+UseZGC"
+              },
+              {
+                "name": "ZKHOSTPORT",
+                "value": "namenode:2181"
+              }
+            ],
+            "ports": [
+              {
+                "containerPort": 10101
+              }
+            ],
+            "resources": {
+              "requests": {
+                "cpu": "0.5",
+                "memory": "1Gi"
+              },
+              "limits": {
+                "cpu": "0.5",
+                "memory": "3Gi"
+              }
+            }
+          }
+		],
+		"volumes": [
+		{
+		  "name": "sftp",
+		  "persistentVolumeClaim":{
+			"claimName": "datasetclaim"
+			}
+		}
+	  ]
+	}
+}

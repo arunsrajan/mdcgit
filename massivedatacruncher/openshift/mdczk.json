@@ -1,0 +1,29 @@
+{
+	"kind": "Service",
+	"apiVersion": "v1",
+	"metadata": {
+		"name": "mdczk",
+		"labels": {
+			"name": "mdczk"
+		}
+	},
+	"spec": {
+		"ports": [
+			{
+				"protocol": "TCP",
+				"port": 2181,
+				"targetPort": 2181,
+				"nodePort": 32087
+			}
+		],
+		"selector": {
+			"name": "namenode"
+		},
+		"type": "NodePort",
+		"sessionAffinity": "None",
+		"externalTrafficPolicy": "Cluster"
+	},
+	"status": {
+		"loadBalancer": {}
+	}
+}

@@ -1,0 +1,42 @@
+import com.github.mdc.common.*;
+import com.github.mdc.stream.*;
+import org.jooq.lambda.tuple.*;
+import java.util.*;
+import java.util.concurrent.*;
+import com.esotericsoftware.kryo.io.Output;
+import org.apache.log4j.Logger;
+
+String hdfsfilepath = "hdfs://127.0.0.1:9000";
+String airlinesample = "/airlines";
+PipelineConfig pc = new PipelineConfig();
+Utils.loadLog4JSystemProperties("mdcshell.properties");
+pc.setBlocksize("64");
+pc.setNumberofcontainers("1");
+pc.setLocal("true")
+pc.setJgroups("false")
+pc.setMesos("false")
+pc.setYarn("false")
+pc.setOutput(new Output(System.out));
+pc.setLocal("false");
+pc.setIsblocksuserdefined("false");
+pc.setMode(MDCConstants.MODE_DEFAULT);
+Logger log = Logger.getLogger(MassiveDataPipelineIgnite.class);
+Resources resources = new Resources();
+resources.setNumberofprocessors(1);
+resources.setFreememory(1024l);
+ConcurrentMap<String,Resources> mapres = new ConcurrentHashMap<>();
+mapres.put("127.0.0.1_22222",resources);
+MDCNodesResources.put(mapres);
+MDCProperties.get().setProperty(MDCConstants.TASKEXECUTOR_HDFSNN,"hdfs://127.0.0.1:9000");
+MassiveDataPipelineIgnite<String> datastream = MassiveDataPipelineIgnite.newStreamHDFS(hdfsfilepath, airlinesample, pc);
+MapTupleIgnite<String, Integer> mti = datastream.map(dat -> dat.split(",")).filter(dat -> dat != null && !dat[14].equals("ArrDelay") && !dat[14].equals("NA")).mapTuple(dat->new Tuple2<String,Integer>(dat[8],Integer.parseInt(dat[14]))).cache(false);
+MapTupleIgnite<String, Integer> tupresult = mti.reduceByKey((a,b)->a+b).coalesce(1, (a,b)->a+b).cache(true);
+log.info(tupresult.job.results);
+MapTupleIgnite<String, Integer> tupresult1 = mti.reduceByKey((a,b)->a-b).coalesce(1, (a,b)->a-b).cache(true);
+log.info(tupresult1.job.results);
+MapTupleIgnite<Tuple2<String,Integer>, Tuple2<String,Integer>> joinresult = (MapTupleIgnite) tupresult.join(tupresult1, (tup1,tup2)->tup1.v1.equals(tup2.v1)).cache(true);
+log.info(joinresult.job.results);
+MapTupleIgnite<Tuple2<String,Integer>, Tuple2<String,Integer>> joinresult1 = (MapTupleIgnite) tupresult1.join(tupresult2, (tup1,tup2)->tup1.v1.equals(tup2.v1)).cache(true);
+log.info(joinresult1.job.results);
+MapTupleIgnite<String, Integer> tupresult3 = mti.reduceByKey((a,b)->b+a+a).coalesce(1, (a,b)->a+b+1).cache(true);
+log.info(tupresult3.job.results);

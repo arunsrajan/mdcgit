@@ -1,0 +1,31 @@
+import com.github.mdc.common.*;
+import com.github.mdc.stream.*;
+import org.jooq.lambda.tuple.*;
+import java.util.*;
+import java.util.concurrent.*;
+import com.esotericsoftware.kryo.io.Output;
+
+PipelineConfig pc = new PipelineConfig();
+Utils.loadLog4JSystemProperties("mdcshell.properties");
+pc.setBlocksize("64");
+pc.setNumberofcontainers("1");
+pc.setMaxmem("1024");
+pc.setMinmem("1024");
+pc.setLocal("true")
+pc.setJgroups("false")
+pc.setMesos("false")
+pc.setYarn("false")
+pc.setOutput(new Output(System.out));
+pc.setIsblocksuserdefined("true");
+pc.setBlocksize("64");
+pc.setMode(MDCConstants.MODE_NORMAL);
+Resources resources = new Resources();
+resources.setNumberofprocessors(3);
+resources.setFreememory(5368709120l);
+ConcurrentMap<String,Resources> mapres = new ConcurrentHashMap<>();
+mapres.put("192.168.49.102_12121",resources);
+MDCNodesResources.put(mapres);
+MDCProperties.get().setProperty(MDCConstants.TASKEXECUTOR_HDFSNN,"hdfs://127.0.0.1:9000");
+MassiveDataPipeline<String> mdp = MassiveDataPipeline.newStreamHDFS("hdfs://127.0.0.1:9000","/carriers",pc);
+List<List<Tuple2>> mapCarriers = (List<List<Tuple2>>) mdp.map(linetosplit -> linetosplit.split(",")).mapTuple(line -> new Tuple2(line[0].substring(1, line[0].length() - 1),line[1].substring(1, line[1].length() - 1))).collect(true,null);
+mapCarriers.stream().forEach(System.out::println)

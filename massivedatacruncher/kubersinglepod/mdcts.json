@@ -1,0 +1,30 @@
+{
+	"kind": "Service",
+	"apiVersion": "v1",
+	"metadata": {
+		"name": "mdcts",
+		"namespace": "default",
+		"labels": {
+			"name": "mdcts"
+		}
+	},
+	"spec": {
+		"ports": [
+			{
+				"protocol": "TCP",
+				"port": 11111,
+				"targetPort": 11111,
+				"nodePort": 31542
+			}
+		],
+		"selector": {
+			"name": "namenode"
+		},
+		"type": "NodePort",
+		"sessionAffinity": "None",
+		"externalTrafficPolicy": "Cluster"
+	},
+	"status": {
+		"loadBalancer": {}
+	}
+}

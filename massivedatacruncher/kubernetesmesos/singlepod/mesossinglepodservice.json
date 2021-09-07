@@ -1,0 +1,66 @@
+{
+	"kind": "Service",
+	"apiVersion": "v1",
+	"metadata": {
+		"name": "mesos",
+		"labels": {
+			"name": "mesos"
+		}
+	},
+	"spec": {
+		"ports": [
+			{
+				"name": "hadoopnamenodeweb",
+				"protocol": "TCP",
+				"port": 9870,
+				"targetPort": 9870
+			},
+			{
+				"name": "hadoopnamenode",
+				"protocol": "TCP",
+				"port": 9000,
+				"targetPort": 9000
+			},
+			{
+				"name": "mesosmaster",
+				"protocol": "TCP",
+				"port": 5050,
+				"targetPort": 5050
+			},
+			{
+				"name": "mesosslave",
+				"protocol": "TCP",
+				"port": 5051,
+				"targetPort": 5051
+			},
+			{
+				"name": "zookeeper",
+				"protocol": "TCP",
+				"port": 2181,
+				"targetPort": 2181
+			},
+			{
+				"name": "mdctaskschedulerstream",
+				"protocol": "TCP",
+				"port": 22222,
+				"targetPort": 22222
+			},
+			{
+				"name": "mdctaskschedulerstreamdebug",
+				"protocol": "TCP",
+				"port": 4005,
+				"targetPort": 4005
+			}
+		],
+		"selector": {
+			"name": "namenode"
+		},
+		"type": "NodePort",
+		"sessionAffinity": "None",
+		"externalTrafficPolicy": "Cluster"
+	},
+	"status": {
+		"loadBalancer": {
+		}
+	}
+}

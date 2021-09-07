@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:yarn="http://www.springframework.org/schema/yarn"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/yarn jar:file:../modules/pipeline.jar!/xsd/spring-yarn-2.0.xsd
+		http://www.springframework.org/schema/beans jar:file:../modules/pipeline.jar!/xsd/spring-beans-4.2.xsd
+		http://www.springframework.org/schema/context jar:file:../modules/pipeline.jar!/xsd/spring-context-4.2.xsd
+		http://www.springframework.org/schema/util jar:file:../modules/pipeline.jar!/xsd/spring-util-4.2.xsd">
+
+	<context:property-placeholder
+		location="file:../yarn/mdchadoop.properties"
+		system-properties-mode="OVERRIDE" />
+
+	<yarn:configuration>
+		fs.defaultFS=${hd.fs}
+		yarn.resourcemanager.address=${hd.rm}
+		fs.hdfs.impl=org.apache.hadoop.hdfs.DistributedFileSystem
+	</yarn:configuration>
+
+	<yarn:localresources>
+		<yarn:copy src="file:../lib/*.jar" dest="/libmdc/" />
+		<yarn:copy src="file:../modules/*.jar" dest="/libmdc/" />
+		<yarn:copy src="file:../appjar/*.jar" dest="/libmdc/" />
+		<yarn:hdfs path="/libmdc/*" />
+	</yarn:localresources>
+
+	<yarn:environment>
+		<yarn:classpath use-yarn-app-classpath="true"
+			delimiter=",">
+			./*
+		</yarn:classpath>
+	</yarn:environment>
+
+	<util:properties id="applicationArguments">
+		<prop key="container-count">${containercount}</prop>
+		<prop key="job-count">${jobcount}</prop>
+		<prop key="appmaster.hdfsnn">${hd.fs}</prop>
+		<prop key="container-memory">${containermemory}</prop>
+	</util:properties>
+
+	<yarn:client app-name="MassiveDataCruncher">
+		<yarn:master-runner
+			command="java --enable-preview"
+    		context-file="appmaster-context.xml"
+    		bean-name="yarnAppmaster"
+			arguments="applicationArguments" />
+	</yarn:client>
+
+</beans>

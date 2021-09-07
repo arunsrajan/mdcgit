@@ -1,0 +1,550 @@
+{
+  "kind": "Service",
+  "apiVersion": "v1",
+  "metadata": {
+    "name": "zookeeper-1",
+    "labels": {
+      "name": "zookeeper-1"
+    }
+  },
+  "spec": {
+    "ports": [
+      {
+        "name": "client",
+        "port": 2182,
+        "targetPort": 2182
+      },
+      {
+        "name": "followers",
+        "port": 4888,
+        "targetPort": 4888
+      },
+      {
+        "name": "election",
+        "port": 5888,
+        "targetPort": 5888
+      }
+    ],
+    "selector": {
+      "server-id": "1"
+    },
+    "type": "NodePort",
+    "sessionAffinity": "None",
+    "externalTrafficPolicy": "Cluster"
+  },
+  "status": {
+    "loadBalancer": {}
+  }
+}
+{
+  "kind": "Service",
+  "apiVersion": "v1",
+  "metadata": {
+    "name": "zookeeper-2",
+    "labels": {
+      "name": "zookeeper-2"
+    }
+  },
+  "spec": {
+    "ports": [
+      {
+        "name": "client",
+        "port": 2183,
+        "targetPort": 2183
+      },
+      {
+        "name": "followers",
+        "port": 6888,
+        "targetPort": 6888
+      },
+      {
+        "name": "election",
+        "port": 7888,
+        "targetPort": 7888
+      }
+    ],
+    "selector": {
+      "server-id": "2"
+    },
+    "type": "NodePort",
+    "sessionAffinity": "None",
+    "externalTrafficPolicy": "Cluster"
+  },
+  "status": {
+    "loadBalancer": {}
+  }
+}
+{
+  "kind": "Service",
+  "apiVersion": "v1",
+  "metadata": {
+    "name": "zookeeper-3",
+    "labels": {
+      "name": "zookeeper-3"
+    }
+  },
+  "spec": {
+    "ports": [
+      {
+        "name": "client",
+        "port": 2184,
+        "targetPort": 2184
+      },
+      {
+        "name": "followers",
+        "port": 8888,
+        "targetPort": 8888
+      },
+      {
+        "name": "election",
+        "port": 9888,
+        "targetPort": 9888
+      }
+    ],
+    "selector": {
+      "server-id": "3"
+    },
+    "type": "NodePort",
+    "sessionAffinity": "None",
+    "externalTrafficPolicy": "Cluster"
+  },
+  "status": {
+    "loadBalancer": {}
+  }
+}
+{
+  "kind": "Pod",
+  "apiVersion": "v1",
+  "metadata": {
+    "name": "zookeeper-1",
+    "labels": {
+      "name": "zookeeper-1",
+      "server-id": "1"
+    }
+  },
+  "spec": {
+    "containers": [
+      {
+        "name": "server",
+        "image": "registry-1.docker.io/arunsrajan/zookeeper:3.4.8",
+        "env": [
+          {
+            "name": "SERVER_ID",
+            "value": "1"
+          },
+          {
+            "name": "MAX_SERVERS",
+            "value": "3"
+          }
+        ],
+        "ports": [
+          {
+            "containerPort": 2182
+          },
+          {
+            "containerPort": 4888
+          },
+          {
+            "containerPort": 5888
+          }
+        ]
+      }
+    ]
+  }
+}
+{
+  "kind": "Pod",
+  "apiVersion": "v1",
+  "metadata": {
+    "name": "zookeeper-2",
+    "labels": {
+      "name": "zookeeper-2",
+      "server-id": "2"
+    }
+  },
+  "spec": {
+    "containers": [
+      {
+        "name": "server",
+        "image": "registry-1.docker.io/arunsrajan/zookeeper:3.4.8",
+        "env": [
+          {
+            "name": "SERVER_ID",
+            "value": "2"
+          },
+          {
+            "name": "MAX_SERVERS",
+            "value": "3"
+          }
+        ],
+        "ports": [
+          {
+            "containerPort": 2183
+          },
+          {
+            "containerPort": 6888
+          },
+          {
+            "containerPort": 7888
+          }
+        ]
+      }
+    ]
+  }
+}
+{
+  "kind": "Pod",
+  "apiVersion": "v1",
+  "metadata": {
+    "name": "zookeeper-3",
+    "labels": {
+      "name": "zookeeper-3",
+      "server-id": "3"
+    }
+  },
+  "spec": {
+    "containers": [
+      {
+        "name": "server",
+        "image": "registry-1.docker.io/arunsrajan/zookeeper:3.4.8",
+        "env": [
+          {
+            "name": "SERVER_ID",
+            "value": "3"
+          },
+          {
+            "name": "MAX_SERVERS",
+            "value": "3"
+          }
+        ],
+        "ports": [
+          {
+            "containerPort": 2184
+          },
+          {
+            "containerPort": 8888
+          },
+          {
+            "containerPort": 9888
+          }
+        ]
+      }
+    ]
+  }
+}
+{
+  "kind": "Service",
+  "apiVersion": "v1",
+  "metadata": {
+    "name": "mdcts",
+    "labels": {
+      "name": "mdcts"
+    }
+  },
+  "spec": {
+    "ports": [
+      {
+        "protocol": "TCP",
+        "port": 11111,
+        "targetPort": 11111
+      }
+    ],
+    "selector": {
+      "name": "mdctaskscheduler"
+    },
+    "type": "NodePort",
+    "sessionAffinity": "None",
+    "externalTrafficPolicy": "Cluster"
+  },
+  "status": {
+    "loadBalancer": {}
+  }
+}
+{
+  "kind": "Pod",
+  "apiVersion": "v1",
+  "metadata": {
+    "name": "mdctaskscheduler",
+    "labels": {
+      "name": "mdctaskscheduler"
+    }
+  },
+  "spec": {
+    "limits": {
+      "max": {
+        "memory": "3Gi"
+      },
+      "min": {
+        "memory": "1Gi"
+      },
+      "type": "Container"
+    },
+    "containers": [
+      {
+        "name": "mdctaskscheduler",
+        "image": "docker.io/arunsrajan/mdctaskscheduler",
+        "env": [
+          {
+            "name": "PORT",
+            "value": "11111"
+          },
+          {
+            "name": "MEMCONFIGLOW",
+            "value": "-Xms2G"
+          },
+          {
+            "name": "MEMCONFIGHIGH",
+            "value": "-Xmx2G"
+          },
+          {
+            "name": "GCCCONFIG",
+            "value": "-XX:+UseZGC"
+          },
+          {
+            "name": "ZKHOSTPORT",
+            "value": "zookeeper-1:2182,zookeeper-2:2183,zookeeper-3:2184"
+          },
+          {
+            "name": "HOST",
+            "valueFrom": {
+              "fieldRef": {
+                "fieldPath": "status.podIP"
+              }
+            }
+          }
+        ],
+        "ports": [
+          {
+            "containerPort": 11111
+          }
+        ],
+        "resources": {
+          "requests": {
+            "cpu": "0.5",
+            "memory": "1Gi"
+          },
+          "limits": {
+            "cpu": "1",
+            "memory": "3Gi"
+          }
+        }
+      }
+    ]
+  }
+}
+{
+  "kind": "Pod",
+  "apiVersion": "v1",
+  "metadata": {
+    "name": "mdccontainer",
+    "labels": {
+      "name": "mdccontainer"
+    }
+  },
+  "spec": {
+    "limits": {
+      "max": {
+        "memory": "8Gi"
+      },
+      "min": {
+        "memory": "1Gi"
+      },
+      "type": "Container"
+    },
+    "containers": [
+      {
+        "name": "mdccontainer",
+        "image": "docker.io/arunsrajan/mdccontainer",
+        "env": [
+          {
+            "name": "PORT",
+            "value": "10101"
+          },
+          {
+            "name": "NODEPORT",
+            "value": "12121"
+          },
+          {
+            "name": "MEMCONFIGLOW",
+            "value": "-Xms2G"
+          },
+          {
+            "name": "MEMCONFIGHIGH",
+            "value": "-Xms2G"
+          },
+          {
+            "name": "GCCCONFIG",
+            "value": "-XX:+UseZGC"
+          },
+          {
+            "name": "ZKHOSTPORT",
+            "value": "zookeeper-1:2182,zookeeper-2:2183,zookeeper-3:2184"
+          },
+          {
+            "name": "HOST",
+            "valueFrom": {
+              "fieldRef": {
+                "fieldPath": "status.podIP"
+              }
+            }
+          }
+        ],
+        "ports": [
+          {
+            "containerPort": 10101
+          },
+          {
+            "containerPort": 12121
+          }
+        ],
+        "resources": {
+          "requests": {
+            "cpu": "0.5",
+            "memory": "1Gi"
+          },
+          "limits": {
+            "cpu": "2",
+            "memory": "8Gi"
+          }
+        }
+      }
+    ]
+  }
+}
+{
+	"kind": "Service",
+	"apiVersion": "v1",
+	"metadata": {
+		"name": "namenode",
+		"labels": {
+			"name": "namenode"
+		}
+	},
+	"spec": {
+		"ports": [
+			{
+				"name": "webport",
+				"protocol": "TCP",
+				"port": 9870,
+				"targetPort": 9870
+			},
+			{
+				"name": "port",
+				"protocol": "TCP",
+				"port": 9000,
+				"targetPort": 9000
+			}
+		],
+		"selector": {
+			"name": "namenode"
+		},
+		"type": "NodePort",
+		"sessionAffinity": "None",
+		"externalTrafficPolicy": "Cluster"
+	},
+	"status": {
+		"loadBalancer": {}
+	}
+}
+{
+  "kind": "Pod",
+  "apiVersion": "v1",
+  "metadata": {
+    "name": "namenode",
+    "labels": {
+      "name": "namenode"
+    }
+  },
+  "spec": {
+    "limits": {
+      "max": {
+        "memory": "1Gi"
+      },
+      "min": {
+        "memory": "1Gi"
+      },
+      "type": "Container"
+    },
+    "containers": [
+      {
+        "name": "hadoop-namenode",
+        "image": "bde2020/hadoop-namenode",
+        "env": [
+          {
+            "name": "CORE_CONF_fs_defaultFS",
+            "value": "hdfs://namenode:9000"
+          },
+          {
+            "name": "HDFS_CONF_dfs_namenode_datanode_registration_ip__hostname__check",
+            "value": "false"
+          },
+          {
+            "name": "CLUSTER_NAME",
+            "value": "hadooptest"
+          }
+        ],
+        "ports": [
+          {
+            "containerPort": 9000
+          },
+          {
+            "containerPort": 9870
+          }
+        ],
+        "resources": {
+          "requests": {
+            "cpu": "0.5",
+            "memory": "1Gi"
+          },
+          "limits": {
+            "cpu": "1",
+            "memory": "1Gi"
+          }
+        },
+        "volumeMounts": [
+          {
+            "name": "sftp",
+            "mountPath": "/mnt/sftp"
+          }
+        ]
+      },
+      {
+        "name": "hadoop-datanode",
+        "image": "bde2020/hadoop-datanode",
+        "env": [
+          {
+            "name": "CORE_CONF_fs_defaultFS",
+            "value": "hdfs://namenode:9000"
+          },
+          {
+            "name": "HDFS_CONF_dfs_namenode_datanode_registration_ip__hostname__check",
+            "value": "false"
+          },
+          {
+            "name": "CLUSTER_NAME",
+            "value": "hadooptest"
+          }
+        ],
+        "resources": {
+          "requests": {
+            "cpu": "0.5",
+            "memory": "1Gi"
+          },
+          "limits": {
+            "cpu": "1",
+            "memory": "1Gi"
+          }
+        }
+      }
+    ],
+    "volumes": [
+      {
+        "name": "sftp",
+        "hostPath": {
+          "path": "//mnt/mdc",
+          "type": "Directory"
+        }
+      }
+    ]
+  }
+}

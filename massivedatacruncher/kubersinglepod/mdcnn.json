@@ -1,0 +1,28 @@
+{
+	"kind": "Service",
+	"apiVersion": "v1",
+	"metadata": {
+		"name": "mdcnn",
+		"labels": {
+			"name": "mdcnn"
+		}
+	},
+	"spec": {
+		"ports": [
+			{
+				"protocol": "TCP",
+				"port": 9870,
+				"targetPort": 9870
+			}
+		],
+		"selector": {
+			"name": "namenode"
+		},
+		"type": "NodePort",
+		"sessionAffinity": "None",
+		"externalTrafficPolicy": "Cluster"
+	},
+	"status": {
+		"loadBalancer": {}
+	}
+}
