@@ -131,7 +131,8 @@ public class MDCConstants {
 	
 	//Node Properties
 	public static final String NODE_PORT = "node.port";
-	
+	public static final String CONTAINER_ALLOC = "container.alloc";
+	public static final String CONTAINER_ALLOC_DEFAULT = "COMBINE";
 	
 	public static final String ZOOKEEPER_HOSTPORT = "zookeeper.hostport";
 	public static final String ZOOKEEPER_RETRYDELAY = "zookeeper.retrydelay";

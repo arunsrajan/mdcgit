@@ -404,7 +404,7 @@ public sealed class MassiveDataPipeline<I1> extends AbstractPipeline permits Csv
 	 * @return MassiveDataPipeline object.
 	 * @throws MassiveDataPipelineException
 	 */
-	public MassiveDataPipeline<I1> rightOuterjoin(MassiveDataPipeline<? extends I1> mappair,RightOuterJoinPredicate<? super I1, ? super I1> conditionrightouterjoin) throws MassiveDataPipelineException {
+	public <I2> MassiveDataPipeline<Tuple2<I1,I2>> rightOuterjoin(MassiveDataPipeline<? extends I2> mappair,RightOuterJoinPredicate<? super I1, ? super I2> conditionrightouterjoin) throws MassiveDataPipelineException {
 		if(Objects.isNull(mappair)) {
 			throw new MassiveDataPipelineException(MassiveDataPipelineConstants.RIGHTOUTERJOIN);
 		}
@@ -418,6 +418,9 @@ public sealed class MassiveDataPipeline<I1> extends AbstractPipeline permits Csv
 		mdp.parents.add(mappair);
 		root.mdsroots.add(this.root);
 		root.mdsroots.add(mappair.root);
+		if(!Objects.isNull(mappair.root.mdsroots)) {
+			this.root.mdsroots.addAll(mappair.root.mdsroots);
+		}
 		return mdp;
 	}
 	
@@ -428,20 +431,24 @@ public sealed class MassiveDataPipeline<I1> extends AbstractPipeline permits Csv
 	 * @return MassiveDataPipeline object.
 	 * @throws MassiveDataPipelineException
 	 */
-	public MassiveDataPipeline<I1> leftOuterjoin(MassiveDataPipeline<I1> mappair,LeftOuterJoinPredicate<I1, I1> conditionleftouterjoin) throws MassiveDataPipelineException {
-		if(Objects.isNull(mappair)) {
+	public <I2> MassiveDataPipeline<Tuple2<I1,I2>> leftOuterjoin(MassiveDataPipeline<I2> mappair,
+			LeftOuterJoinPredicate<I1, I2> conditionleftouterjoin) throws MassiveDataPipelineException {
+		if (Objects.isNull(mappair)) {
 			throw new MassiveDataPipelineException(MassiveDataPipelineConstants.LEFTOUTERJOIN);
 		}
-		if(Objects.isNull(conditionleftouterjoin)) {
+		if (Objects.isNull(conditionleftouterjoin)) {
 			throw new MassiveDataPipelineException(MassiveDataPipelineConstants.LEFTOUTERJOINCONDITION);
 		}
-		var mdp = new MassiveDataPipeline<>(root, conditionleftouterjoin);
+		MassiveDataPipeline<Tuple2<I1, I2>> mdp = new MassiveDataPipeline(root, conditionleftouterjoin);
 		this.childs.add(mdp);
 		mdp.parents.add(this);
 		mappair.childs.add(mdp);
 		mdp.parents.add(mappair);
 		root.mdsroots.add(this.root);
 		root.mdsroots.add(mappair.root);
+		if (!Objects.isNull(mappair.root.mdsroots)) {
+			this.root.mdsroots.addAll(mappair.root.mdsroots);
+		}
 		return mdp;
 	}
 	
@@ -452,20 +459,23 @@ public sealed class MassiveDataPipeline<I1> extends AbstractPipeline permits Csv
 	 * @return MassiveDataPipeline object.
 	 * @throws MassiveDataPipelineException
 	 */
-	public MassiveDataPipeline<I1> join(MassiveDataPipeline<I1> mappair,JoinPredicate<I1,I1> innerjoin) throws MassiveDataPipelineException {
+	public <I2> MassiveDataPipeline<Tuple2<I1,I2>> join(MassiveDataPipeline<I2> mappair,JoinPredicate<I1,I2> innerjoin) throws MassiveDataPipelineException {
 		if(Objects.isNull(mappair)) {
 			throw new MassiveDataPipelineException(MassiveDataPipelineConstants.INNERJOIN);
 		}
 		if(Objects.isNull(innerjoin)) {
 			throw new MassiveDataPipelineException(MassiveDataPipelineConstants.INNERJOINCONDITION);
 		}
-		var mdp = new MassiveDataPipeline<>(root, innerjoin);
+		MassiveDataPipeline<Tuple2<I1, I2>> mdp = new MassiveDataPipeline(root, innerjoin);
 		this.childs.add(mdp);
 		mdp.parents.add(this);
 		mappair.childs.add(mdp);
 		mdp.parents.add(mappair);
 		root.mdsroots.add(this.root);
 		root.mdsroots.add(mappair.root);
+		if(!Objects.isNull(mappair.root.mdsroots)) {
+			this.root.mdsroots.addAll(mappair.root.mdsroots);
+		}
 		return mdp;
 	}
 	

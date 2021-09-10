@@ -248,7 +248,7 @@ public class MassiveDataPipelineFunctionsTest extends MassiveDataPipelineBaseTes
 		MassiveDataPipeline<String> mdpleft = new MassiveDataPipeline<String>();
 		MassiveDataPipeline<String> mdpright = new MassiveDataPipeline<String>();
 		RightOuterJoinPredicate<String, String> roj = (datleft, datright) -> datleft.equals(datright);
-		MassiveDataPipeline<String> mdpchild = mdpleft.rightOuterjoin(mdpright, roj);
+		MassiveDataPipeline<Tuple2<String, String>> mdpchild = mdpleft.rightOuterjoin(mdpright, roj);
 		assertTrue(mdpchild.parents.get(0) == mdpleft);
 		assertTrue(mdpleft.childs.get(0) == mdpchild);
 		assertTrue(mdpchild.parents.get(1) == mdpright);
@@ -262,7 +262,7 @@ public class MassiveDataPipelineFunctionsTest extends MassiveDataPipelineBaseTes
 		MassiveDataPipeline<String> mdpleft = new MassiveDataPipeline<String>();
 		MassiveDataPipeline<String> mdpright = new MassiveDataPipeline<String>();
 		RightOuterJoinPredicate<String, String> roj = (datleft, datright) -> datleft.equals(datright);
-		MassiveDataPipeline<String> mdpchild = mdpleft.rightOuterjoin(mdpright, roj);
+		MassiveDataPipeline<Tuple2<String, String>> mdpchild = mdpleft.rightOuterjoin(mdpright, roj);
 		mdpleft.graph.addVertex(mdpleft);
 		mdpleft.formDAGAbstractFunction(mdpleft, mdpleft.childs);
 		assertEquals(2, mdpleft.graph.vertexSet().size());
@@ -289,7 +289,7 @@ public class MassiveDataPipelineFunctionsTest extends MassiveDataPipelineBaseTes
 		MassiveDataPipeline<String> mdpleft = new MassiveDataPipeline<String>();
 		MassiveDataPipeline<String> mdpright = new MassiveDataPipeline<String>();
 		LeftOuterJoinPredicate<String, String> loj = (datleft, datright) -> datleft.equals(datright);
-		MassiveDataPipeline<String> mdpchild = mdpleft.leftOuterjoin(mdpright, loj);
+		MassiveDataPipeline<Tuple2<String, String>> mdpchild = mdpleft.leftOuterjoin(mdpright, loj);
 		assertTrue(mdpchild.parents.get(0) == mdpleft);
 		assertTrue(mdpleft.childs.get(0) == mdpchild);
 		assertTrue(mdpchild.parents.get(1) == mdpright);
@@ -303,7 +303,7 @@ public class MassiveDataPipelineFunctionsTest extends MassiveDataPipelineBaseTes
 		MassiveDataPipeline<String> mdpleft = new MassiveDataPipeline<String>();
 		MassiveDataPipeline<String> mdpright = new MassiveDataPipeline<String>();
 		LeftOuterJoinPredicate<String, String> loj = (datleft, datright) -> datleft.equals(datright);
-		MassiveDataPipeline<String> mdpchild = mdpleft.leftOuterjoin(mdpright, loj);
+		MassiveDataPipeline<Tuple2<String, String>> mdpchild = mdpleft.leftOuterjoin(mdpright, loj);
 		mdpleft.graph.addVertex(mdpleft);
 		mdpleft.formDAGAbstractFunction(mdpleft, mdpleft.childs);
 		assertEquals(2, mdpleft.graph.vertexSet().size());

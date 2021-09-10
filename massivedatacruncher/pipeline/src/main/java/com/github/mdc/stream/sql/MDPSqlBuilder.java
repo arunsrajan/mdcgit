@@ -1,11 +1,11 @@
 package com.github.mdc.stream.sql;
 
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Serializable;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -49,8 +49,6 @@ import org.apache.calcite.sql.SqlOperator;
 import org.apache.calcite.sql.type.SqlTypeName;
 import org.apache.calcite.tools.RuleSet;
 import org.apache.calcite.tools.RuleSets;
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import org.jooq.lambda.tuple.Tuple;
 import org.jooq.lambda.tuple.Tuple2;
@@ -175,22 +173,13 @@ public class MDPSqlBuilder {
 		}
 	}
 	
-	public MapFunction<CSVRecord, CSVRecord> tableScanColumns(String[] columns) {
-		return (Serializable & MapFunction<CSVRecord, CSVRecord>) (CSVRecord csvrecord) -> {
-			try {
-				List<String> values = new ArrayList<>();
-				for (String column : columns) {
-					values.add(csvrecord.get(column));
-				}
-				CSVRecord recordmutated = CSVParser
-						.parse(values.stream().collect(Collectors.joining(",")),
-								CSVFormat.DEFAULT.withHeader(columns))
-						.getRecords().get(0);
-				return recordmutated;
-			} catch (IOException e) {
-
+	public MapFunction<CSVRecord, Map> tableScanRequiredColumns(String[] columns) {
+		return (Serializable & MapFunction<CSVRecord, Map>) (CSVRecord csvrecord) -> {
+			Map values = new LinkedHashMap<>();
+			for (String column : columns) {
+				values.put(column,csvrecord.get(column));
 			}
-			return null;
+			return values;
 		};
 
 	}
@@ -230,11 +219,10 @@ public class MDPSqlBuilder {
 				globalcolumnindex++;
 				tablespecindex++;
 			}
-			stack.push(mdp.map(tableScanColumns(tscolumnsreq.toArray(new String[tscolumnsreq.size()]))));
+			stack.push(mdp.map(tableScanRequiredColumns(tscolumnsreq.toArray(new String[tscolumnsreq.size()]))));
 			globaltableindextablesmap.put(rtimpl.getQualifiedName().get(1), tableindextablesmap);
 		} else if (node instanceof EnumerableHashJoin ehj) {
-			MassiveDataPipeline<CSVRecord> mdp2 = (MassiveDataPipeline) stack.pop();
-			MassiveDataPipeline<CSVRecord> mdp1 = (MassiveDataPipeline) stack.pop();
+
 			EnumerableTableScan etsleft = null, etsright = null;
 			EnumerableHashJoin ehjlef = null, ehjrig = null;
 			Object left = ehj.getLeft();
@@ -262,23 +250,33 @@ public class MDPSqlBuilder {
 				etsright = ets;
 			}
 			HashJoinRexVisitor hjrv = null;
+			MassiveDataPipeline<Map> mdp2 = (MassiveDataPipeline) stack.pop();
+			MassiveDataPipeline<Map> mdp1 = (MassiveDataPipeline) stack.pop();
 			if (!Objects.isNull(ehjlef) && !Objects.isNull(ehjrig)) {
 				hjrv = new HashJoinRexVisitor(stack, ehjlef, ehjrig, ehj.getJoinType().name().toLowerCase());
-			} else if (Objects.isNull(ehjlef) && !Objects.isNull(ehjrig)) {
+			} else if (!Objects.isNull(etsleft) && !Objects.isNull(ehjrig)) {
 				hjrv = new HashJoinRexVisitor(stack, etsleft, ehjrig, ehj.getJoinType().name().toLowerCase());
-			} else if (!Objects.isNull(ehjlef) && Objects.isNull(ehjrig)) {
+			} else if (!Objects.isNull(ehjlef) && !Objects.isNull(etsright)) {
 				hjrv = new HashJoinRexVisitor(stack, ehjlef, etsright, ehj.getJoinType().name().toLowerCase());
 			} else {
 				hjrv = new HashJoinRexVisitor(stack, etsleft, etsright, ehj.getJoinType().name().toLowerCase());
 			}
 			ehj.getCondition().accept(hjrv);
+			var joinmergefunction = new MapFunction<Tuple2<Map,Map>,Map>() {
+
+				@Override
+				public Map apply(Tuple2<Map, Map> val) {
+					val.v1.putAll(val.v2);
+					return val.v1;
+				}};
 			if (ehj.getJoinType().name().equalsIgnoreCase("inner")) {
-				stack.push(mdp1.join(mdp2, (JoinPredicate<CSVRecord, CSVRecord>) stack.pop()));
+				stack.push(mdp1.join(mdp2, (JoinPredicate<Map, Map>) stack.pop()).map(joinmergefunction));
 			} else if (ehj.getJoinType().name().equalsIgnoreCase("left")) {
-				stack.push(mdp1.leftOuterjoin(mdp2, (LeftOuterJoinPredicate<CSVRecord, CSVRecord>) stack.pop()));
+				stack.push(mdp1.leftOuterjoin(mdp2, (LeftOuterJoinPredicate<Map, Map>) stack.pop()).map(joinmergefunction));
 			} else if (ehj.getJoinType().name().equalsIgnoreCase("right")) {
-				stack.push(mdp1.rightOuterjoin(mdp2, (RightOuterJoinPredicate<CSVRecord, CSVRecord>) stack.pop()));
+				stack.push(mdp1.rightOuterjoin(mdp2, (RightOuterJoinPredicate<Map, Map>) stack.pop()).map(joinmergefunction));
 			}
+
 			isjoin = true;
 		} else if (node instanceof EnumerableProject ep) {
 			Object mdpmp = stack.pop();			
@@ -287,13 +285,13 @@ public class MDPSqlBuilder {
 					List<OperandSqlFunction> columns = enuaggcolumnmap.get(ep.getInputs().get(0));
 					List<OperandSqlFunction> reposcolumns = repositionColumns(columns,ep.getProjects());
 					OperandSqlFunction[] columnarray = reposcolumns.toArray(new OperandSqlFunction[reposcolumns.size()]);
-					stack.push(mdp.map(CSVRecordToProjection(columnarray)));
+					stack.push(mdp.map(tuple2ToProjection(columnarray)));
 					enuprojcolumnmap.put(ep, reposcolumns);
 				}
 				else {
 					List<OperandSqlFunction> columns = convertIndexToColumns(ep.getProjects());
 					OperandSqlFunction[] columnarray = columns.toArray(new OperandSqlFunction[columns.size()]);
-					stack.push(mdp.map(CSVRecordToProjection(columnarray)));
+					stack.push(mdp.map(tuple2ToProjection(columnarray)));
 					enuprojcolumnmap.put(ep, columns);
 				}
 			}else if(mdpmp instanceof MapPair mp) {
@@ -301,7 +299,7 @@ public class MDPSqlBuilder {
 					List<OperandSqlFunction> columns = enuaggcolumnmap.get(ea);
 					List<OperandSqlFunction> reposcolumns = repositionColumns(columns,ep.getProjects());
 					List<String> finalcolumns= reposcolumns.stream().map(osf->osf.column).collect(Collectors.toList());
-					stack.push(mp.map(tableScanColumns(finalcolumns.toArray(new String[finalcolumns.size()]))));
+					stack.push(mp.map(tableScanRequiredColumns(finalcolumns.toArray(new String[finalcolumns.size()]))));
 				}
 			}
 		} else if (node instanceof EnumerableFilter ef) {
@@ -312,7 +310,7 @@ public class MDPSqlBuilder {
 		} else if (node instanceof EnumerableAggregate ea) {
 			Object agginput =  ea.getInput();
 			List<AggregateCall> aggcalls = ea.getAggCallList();
-			MassiveDataPipeline<CSVRecord> mdp = (MassiveDataPipeline) stack.pop();
+			MassiveDataPipeline<Map> mdp = (MassiveDataPipeline) stack.pop();
 			if(agginput instanceof EnumerableProject ep) {
 				List<Integer> agggroup = new ArrayList<>(ea.getGroupSet().asList());
 				List<OperandSqlFunction> osfs = getAggregateColumns(enuprojcolumnmap.get(ep),agggroup);
@@ -321,26 +319,26 @@ public class MDPSqlBuilder {
 					for(AggregateCall aggcall:aggcalls) {
 						String aggfunc = aggcall.getAggregation().getName();
 						if(aggfunc.equals("SUM")) {
-							MapToPairFunction<CSVRecord, Tuple2<CSVRecordMutable, Long>> mappair = !agggroup.isEmpty()?aggregateCallSum(enuprojcolumnmap.get(ep),agggroup,
+							MapToPairFunction<Map, Tuple2<Map, Long>> mappair = !agggroup.isEmpty()?aggregateCallSum(enuprojcolumnmap.get(ep),agggroup,
 									aggcall):null;
-							MapPair<CSVRecordMutable,Long> mpcrml = !Objects.isNull(mappair)?mdp.mapToPair(mappair):null;
-							OperandSqlFunction osf = new OperandSqlFunction("sum("+enuprojcolumnmap.get(ep).get(aggcall.getArgList().get(0)).column+")","String");
+							MapPair<Map,Long> mpcrml = !Objects.isNull(mappair)?mdp.mapToPair(mappair):null;
+							OperandSqlFunction osf = new OperandSqlFunction("sum("+enuprojcolumnmap.get(ep).get(aggcall.getArgList().get(0)).column+")","Long");
 							osfs.add(osf);
 							if(!Objects.isNull(mpcrml)) {
 								stack.push(mpcrml.reduceByKey((Serializable & ReduceByKeyFunction<Long>)(a, b) -> 
 								a + b)
 								.coalesce(1, (Serializable & CoalesceFunction<Long>) (a, b) -> 
-								a + b).map(convertToCSVRecord(enuprojcolumnmap.get(ep),agggroup,"sum("+enuprojcolumnmap.get(ep).get(aggcall.getArgList().get(0)).column+")")));
+								a + b).map(convertToMap(enuprojcolumnmap.get(ep),agggroup,"sum("+enuprojcolumnmap.get(ep).get(aggcall.getArgList().get(0)).column+")")));
 							}else {
 								String column = enuprojcolumnmap.get(ep).get(aggcall.getArgList().get(0)).column;
-								stack.push(mdp.map((Serializable&MapFunction<CSVRecord,Long>)csvrecord->Long.valueOf(csvrecord.get(column))).reduce((a,b)->a+b));
+								stack.push(mdp.map((Serializable&MapFunction<Map,Long>)map->Long.valueOf((String)map.get(column))).reduce((a,b)->a+b));
 							}
 						}else if(aggfunc.equals("COUNT")) {
-							MapToPairFunction<CSVRecord, Tuple2<CSVRecordMutable, Long>> mappair = aggregateCallCount(enuprojcolumnmap.get(ep),agggroup);
-							MapPair<CSVRecordMutable,Long> mpcrml = !Objects.isNull(mappair)?mdp.mapToPair(mappair):null;
-							OperandSqlFunction osf = new OperandSqlFunction("count()","String");
+							MapToPairFunction<Map, Tuple2<Map, Long>> mappair = aggregateCallCount(enuprojcolumnmap.get(ep),agggroup);
+							MapPair<Map,Long> mpcrml = !Objects.isNull(mappair)?mdp.mapToPair(mappair):null;
+							OperandSqlFunction osf = new OperandSqlFunction("count()","Long");
 							osfs.add(osf);
-							stack.push(mpcrml.countByKey().coalesce(1, (a,b)->a+b).map(convertToCSVRecord(enuprojcolumnmap.get(ep),agggroup,"count()")));
+							stack.push(mpcrml.countByKey().coalesce(1, (a,b)->a+b).map(convertToMap(enuprojcolumnmap.get(ep),agggroup,"count()")));
 						}
 					}					
 				}else {
@@ -351,20 +349,20 @@ public class MDPSqlBuilder {
 						aggfuncs.add(aggfunc);
 						aggfunaggcallmap.put(aggfunc, aggcall);
 						if(aggfunc.equals("SUM")) {
-							OperandSqlFunction osf = new OperandSqlFunction("sum("+enuprojcolumnmap.get(ep).get(aggcall.getArgList().get(0)).column+")","String");
+							OperandSqlFunction osf = new OperandSqlFunction("sum("+enuprojcolumnmap.get(ep).get(aggcall.getArgList().get(0)).column+")","Long");
 							osfs.add(osf);
 						}else if(aggfuncs.contains("COUNT")) {
-							OperandSqlFunction osf = new OperandSqlFunction("count()","String");
+							OperandSqlFunction osf = new OperandSqlFunction("count()","Long");
 							osfs.add(osf);
 						}
 					}
 					if(aggfuncs.contains("COUNT")&&aggfuncs.contains("SUM")){
-						MapToPairFunction<CSVRecord, Tuple2<CSVRecordMutable, Long>> mappair = !agggroup.isEmpty()?aggregateCallSum(enuprojcolumnmap.get(ep),agggroup,
+						MapToPairFunction<Map, Tuple2<Map, Long>> mappair = !agggroup.isEmpty()?aggregateCallSum(enuprojcolumnmap.get(ep),agggroup,
 								aggfunaggcallmap.get("SUM")):null;
-						MapPair<CSVRecordMutable,Long> mpcrml = !Objects.isNull(mappair)?mdp.mapToPair(mappair):null;
+						MapPair<Map,Long> mpcrml = !Objects.isNull(mappair)?mdp.mapToPair(mappair):null;
 						stack.push(mpcrml.mapValues(mv->new Tuple2<Long,Long>(mv,1l))
 								.reduceByValues((tuple1,tuple2)->new Tuple2<Long,Long>(tuple1.v1+tuple2.v1,tuple1.v2+tuple2.v2))
-								.coalesce(1, (tuple1,tuple2)->new Tuple2<Long,Long>(tuple1.v1+tuple2.v1,tuple1.v2+tuple2.v2)).map(convertTuple2ToCSVRecord(osfs)));
+								.coalesce(1, (tuple1,tuple2)->new Tuple2<Long,Long>(tuple1.v1+tuple2.v1,tuple1.v2+tuple2.v2)).map(convertTuple2ToMap(osfs)));
 					}
 				}
 			}else if(agginput instanceof EnumerableFilter ef) {
@@ -376,14 +374,14 @@ public class MDPSqlBuilder {
 				List<OperandSqlFunction> columns = agggroup.stream().map(key->globalindexcolumnsmap.get("$"+key)).map(column->new OperandSqlFunction(column,"String")).collect(Collectors.toList());
 				for(AggregateCall aggcall:aggcalls) {
 					String aggfunc = aggcall.getAggregation().getName();
-					MapToPairFunction<CSVRecord, Tuple2<CSVRecordMutable, Long>> mappair = !agggroup.isEmpty()?aggregateCallCount(columns,indexagggroupreform):null;
-					MapPair<CSVRecordMutable,Long> mpcrml = !Objects.isNull(mappair)?mdp.mapToPair(mappair):null;
+					MapToPairFunction<Map, Tuple2<Map, Long>> mappair = !agggroup.isEmpty()?aggregateCallCount(columns,indexagggroupreform):null;
+					MapPair<Map,Long> mpcrml = !Objects.isNull(mappair)?mdp.mapToPair(mappair):null;
 					if(aggfunc.equals("COUNT") && Objects.isNull(mpcrml)) {
-						OperandSqlFunction osf = new OperandSqlFunction("count()","String");
+						OperandSqlFunction osf = new OperandSqlFunction("count()","Long");
 						stack.push(mdp.map(csvrec->1l).reduce((a,b)->a+b));
 					}else if(aggfunc.equals("COUNT") && !Objects.isNull(mpcrml)) {
-						OperandSqlFunction osf = new OperandSqlFunction("count()","String");
-						stack.push(mpcrml.countByKey().coalesce(1, (a,b)->a+b).map(convertToCSVRecord(columns,indexagggroupreform,"count()")));
+						OperandSqlFunction osf = new OperandSqlFunction("count()","Long");
+						stack.push(mpcrml.countByKey().coalesce(1, (a,b)->a+b).map(convertToMap(columns,indexagggroupreform,"count()")));
 					}
 				}
 			}else if(agginput instanceof EnumerableHashJoin ehj) {
@@ -399,11 +397,11 @@ public class MDPSqlBuilder {
 				}
 				for(AggregateCall aggcall:aggcalls) {
 					String aggfunc = aggcall.getAggregation().getName();
-					MapToPairFunction<CSVRecord, Tuple2<CSVRecordMutable, Long>> mappair = aggregateCallCount(osfs,indexes);
-					MapPair<CSVRecordMutable,Long> mpcrml = mdp.mapToPair(mappair);
+					MapToPairFunction<Map, Tuple2<Map, Long>> mappair = aggregateCallCount(osfs,indexes);
+					MapPair<Map,Long> mpcrml = mdp.mapToPair(mappair);
 					if(aggfunc.equals("COUNT")) {
-						OperandSqlFunction osf = new OperandSqlFunction("count()","String");
-						stack.push(mpcrml.countByKey().coalesce(1, (a,b)->a+b).map(convertToCSVRecord(osfs,indexes,"count()")));
+						OperandSqlFunction osf = new OperandSqlFunction("count()","Long");
+						stack.push(mpcrml.countByKey().coalesce(1, (a,b)->a+b).map(convertToMap(osfs,indexes,"count()")));
 					}
 				}
 			}
@@ -420,94 +418,53 @@ public class MDPSqlBuilder {
 			if (rexnode instanceof RexCall rc) {
 				String columnindex = ((RexInputRef) rc.getOperands().get(0)).getName();
 				OperandSqlFunction osf =
-						columns.get(Integer.valueOf(columnindex.substring(1)));
+						columns.get(Integer.valueOf((String)columnindex.substring(1)));
 				return osf;
 			}
 			String columnindex = (((RexInputRef) rexnode).getName());
 			OperandSqlFunction osf = 
-					columns.get(Integer.valueOf(columnindex.substring(1)));
+					columns.get(Integer.valueOf((String)columnindex.substring(1)));
 			return osf;
 		}).collect(Collectors.toList());
 		return reposcolumns;
 	}
 	
-	public MapFunction<Tuple2<CSVRecordMutable, Tuple2<Long,Long>>, CSVRecord> convertTuple2ToCSVRecord(List<OperandSqlFunction> osfs) {
-		return (Serializable &  MapFunction<Tuple2<CSVRecordMutable, Tuple2<Long,Long>>, CSVRecord>)(Tuple2<CSVRecordMutable, Tuple2<Long,Long>> rec)->{
-			try {
-				CSVRecordMutable crm = rec.v1;
-				Tuple2<Long,Long> sumcount = rec.v2;
-				List<String> r1keys = Arrays.asList(crm.keys);
-				List<String> values = new ArrayList<>();
-				List<String> keys = new ArrayList<>();
-				for(OperandSqlFunction osf:osfs) {
-					keys.add(osf.column);
-					if(r1keys.contains(osf.column)) {
-						values.add(crm.get(osf.column).toString());
+	@SuppressWarnings("unchecked")
+	public MapFunction<Tuple2<Map, Tuple2<Long,Long>>, Map> convertTuple2ToMap(List<OperandSqlFunction> osfs) {
+		return (Serializable &  MapFunction<Tuple2<Map, Tuple2<Long,Long>>, Map>)(Tuple2<Map, Tuple2<Long,Long>> rec)->{
+			Map inputmap = rec.v1;
+			Map outputmap = new LinkedHashMap<>();
+			for(OperandSqlFunction osf:osfs) {
+					if(osf.column.startsWith("sum")) {
+						outputmap.put(osf.column, rec.v2.v1.longValue());
+					}else if(osf.column.startsWith("count")){
+						outputmap.put(osf.column, rec.v2.v2.longValue());
+					}else {
+						outputmap.put(osf.column, inputmap.get(osf.column));
 					}
-					else {
-						if(osf.column.startsWith("sum")) {
-							values.add(sumcount.v1.toString());
-						}else if(osf.column.startsWith("count")){
-							values.add(sumcount.v2.toString());
-						}
-					}
-				}
-				
-				CSVRecord recordmutated = CSVParser.parse(values.stream().collect(Collectors.joining(","))
-						,
-						CSVFormat.DEFAULT
-								.withHeader(keys.toArray(new String[keys.size()]))).getRecords().get(0);										
-				return recordmutated;
-			} catch (IOException e) {
-									
-			};
-			return null;
+			}
+			return outputmap;
 		};
 	}
 	
-	public MapFunction<Tuple2<CSVRecordMutable, Long>, CSVRecord> convertToCSVRecord(List<OperandSqlFunction> osf, List<Integer> agggroup, String extracolumn) {
-		return (Serializable &  MapFunction<Tuple2<CSVRecordMutable, Long>, CSVRecord>)(Tuple2<CSVRecordMutable, Long> rec)->{
-			try {
-				CSVRecordMutable crm = rec.v1;
-				List<String> keys = new ArrayList<String>();
-				for(Integer index:agggroup) {
-					keys.add(osf.get(index).column);
-				}
-				keys.add(extracolumn);
-				List<String> values = new ArrayList<>();
-				for(Integer index:agggroup) {
-					values.add(crm.values[index].toString());
-				}
-				values.add(Long.toString(rec.v2));
-				
-				CSVRecord recordmutated = CSVParser.parse(values.stream().collect(Collectors.joining(","))
-						,
-						CSVFormat.DEFAULT
-								.withHeader(keys.toArray(new String[keys.size()]))).getRecords().get(0);										
-				return recordmutated;
-			} catch (IOException e) {
-									
-			};
-			return null;
+	public MapFunction<Tuple2<Map, Long>, Map> convertToMap(List<OperandSqlFunction> osf, List<Integer> agggroup, String extracolumn) {
+		return (Serializable &  MapFunction<Tuple2<Map, Long>, Map>)(Tuple2<Map, Long> rec)->{
+			Map inputmap = rec.v1;
+			inputmap.put(extracolumn,rec.v2);
+			return inputmap;
 		};
 	}
 	
 	
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public MapToPairFunction<CSVRecord, Tuple2<CSVRecordMutable, Long>> aggregateCallSum(List<OperandSqlFunction> columns,List<Integer> agggroup, AggregateCall aggcall) {
-		List<String> keys  = new ArrayList<>();
-		for(Integer index:agggroup) {
-			keys.add(columns.get(index).column);
-		}
-		Integer aggindex = aggcall.getArgList().get(0);
-		MapToPairFunction<CSVRecord, Tuple2<CSVRecordMutable, Long>> pairfunc = (Serializable & MapToPairFunction<CSVRecord, Tuple2<CSVRecordMutable, Long>>) (csvrecord) -> {
+	public MapToPairFunction<Map, Tuple2<Map, Long>> aggregateCallSum(List<OperandSqlFunction> columns,List<Integer> agggroup, AggregateCall aggcall) {
+		MapToPairFunction<Map, Tuple2<Map, Long>> pairfunc = (Serializable & MapToPairFunction<Map, Tuple2<Map, Long>>) (map) -> {
 			try {
-				List<Object> values  = new ArrayList<>();
 				for(Integer index:agggroup) {
-					values.add(cast(csvrecord.get(columns.get(index).column),columns.get(index).sqltype));
+					map.put(columns.get(index).column,cast(map.get(columns.get(index).column),columns.get(index).sqltype));
 				}
-				CSVRecordMutable recordmutated = new CSVRecordMutable(keys.toArray(new String[keys.size()]),values.toArray()); 
-				return new Tuple2(recordmutated, Long.valueOf(csvrecord.get(aggindex)));
+				Integer aggindex = aggcall.getArgList().get(0);
+				return new Tuple2(map, Long.valueOf((String) map.get(columns.get(aggindex).column)));
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
@@ -516,82 +473,19 @@ public class MDPSqlBuilder {
 		return pairfunc;
 	}
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public MapToPairFunction<CSVRecord, Tuple2<CSVRecordMutable, Long>> aggregateCallCount(List<OperandSqlFunction> columns,List<Integer> agggroup) {
-		List<String> keys  = new ArrayList<>();
-		for(Integer index:agggroup) {
-			keys.add(columns.get(index).column);
-		}
-		MapToPairFunction<CSVRecord, Tuple2<CSVRecordMutable, Long>> pairfunc = (Serializable & MapToPairFunction<CSVRecord, Tuple2<CSVRecordMutable, Long>>) (csvrecord) -> {
+	public MapToPairFunction<Map, Tuple2<Map, Long>> aggregateCallCount(List<OperandSqlFunction> columns,List<Integer> agggroup) {
+		MapToPairFunction<Map, Tuple2<Map, Long>> pairfunc = (Serializable & MapToPairFunction<Map, Tuple2<Map, Long>>) (map) -> {
 			try {
-				List<Object> values  = new ArrayList<>();
 				for(Integer index:agggroup) {
-					values.add(cast(csvrecord.get(columns.get(index).column),columns.get(index).sqltype));
+					map.put(columns.get(index).column,cast(map.get(columns.get(index).column),columns.get(index).sqltype));
 				}
-				CSVRecordMutable recordmutated = new CSVRecordMutable(keys.toArray(new String[keys.size()]),values.toArray()); 
-				return new Tuple2(recordmutated, 0l);
+				return new Tuple2(map, 0l);
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
 			return null;
 		};
 		return pairfunc;
-	}
-	public static class CSVRecordMutable{
-		Object[] values;
-		String[] keys;
-		Map<String,Object> keyvalupair = new ConcurrentHashMap<>();
-		public CSVRecordMutable(String[] keys,Object[] values) {
-			this.keys = keys;
-			this.values = values;
-			for(int index=0;index<keys.length;index++) {
-				keyvalupair.put(keys[index], values[index]);
-			}
-		}
-		
-		public Object get(String key) {
-			return keyvalupair.get(key);
-		}
-		
-		public List<String> keys(){
-			return Arrays.asList(keys);
-		}
-		
-		public List<Object> values(){
-			return Arrays.asList(values);
-		}
-
-		@Override
-		public int hashCode() {
-			final int prime = 31;
-			int result = 1;
-			result = prime * result + ((keyvalupair == null) ? 0 : keyvalupair.hashCode());
-			return result;
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj)
-				return true;
-			if (obj == null)
-				return false;
-			if (getClass() != obj.getClass())
-				return false;
-			CSVRecordMutable other = (CSVRecordMutable) obj;
-			if (keyvalupair == null) {
-				if (other.keyvalupair != null)
-					return false;
-			} else if (!keyvalupair.equals(other.keyvalupair))
-				return false;
-			return true;
-		}
-
-		@Override
-		public String toString() {
-			return "CSVRecordMutable [keyvalupair=" + keyvalupair + "]";
-		}
-		
-		
-		
 	}
 	
 	
@@ -641,198 +535,195 @@ public class MDPSqlBuilder {
 		return columns;
 	}
 
-	public MapToPairFunction<CSVRecord, CSVRecord> CSVRecordToProjection(OperandSqlFunction[] columns) {
-		return (Serializable & MapToPairFunction<CSVRecord, CSVRecord>) (CSVRecord csvrecord) -> {
-			try {
-				List<String> values = new ArrayList<>();
-				List<String> keys = new ArrayList<>();
+	@SuppressWarnings("unchecked")
+	public MapFunction<Object, Map> tuple2ToProjection(OperandSqlFunction[] columns) {
+		return (Serializable & MapFunction<Object, Map>) (Object object) -> {
+			Map result = new LinkedHashMap<>();
+			if (object instanceof Tuple2 tuple) {
 				for (OperandSqlFunction osf : columns) {
-					values.add(csvrecord.get(osf.column));
-					keys.add(osf.column);
+					result.put(osf.column, ((Map) tuple.v1).get(osf.column) == null ? ((Map) tuple.v2).get(osf.column)
+							: ((Map) tuple.v1).get(osf.column));
 				}
-				CSVRecord recordmutated = CSVParser
-						.parse(values.stream().collect(Collectors.joining(",")),
-								CSVFormat.DEFAULT.withHeader(keys.toArray(new String[keys.size()])))
-						.getRecords().get(0);
-				return recordmutated;
-			} catch (IOException e) {
-
+			}else if(object instanceof Map map) {
+				for (OperandSqlFunction osf : columns) {
+					result.put(osf.column, map.get(osf.column));
+				}
 			}
-			return null;
+			return result;
 		};
 
 	}
 
-	public MapToPairFunction<CSVRecord, Tuple> CSVRecordToTuple(OperandSqlFunction[] columns) {
+	public MapToPairFunction<Map, Tuple> mapToTuple(OperandSqlFunction[] columns) {
 		if (columns.length == 1) {
-			return (Serializable & MapToPairFunction<CSVRecord, Tuple>) (CSVRecord csvrecord) -> Tuple.tuple(cast(csvrecord.get(columns[0].column), columns[0].sqltype));
+			return (Serializable & MapToPairFunction<Map, Tuple>) (Map map) -> Tuple.tuple(cast(map.get(columns[0].column), columns[0].sqltype));
 		} else if (columns.length == 2) {
-			return (Serializable & MapToPairFunction<CSVRecord, Tuple>) (CSVRecord csvrecord) -> Tuple.tuple(cast(csvrecord.get(columns[0].column), columns[0].sqltype),
-					cast(csvrecord.get(columns[1].column), columns[1].sqltype));
+			return (Serializable & MapToPairFunction<Map, Tuple>) (Map map) -> Tuple.tuple(cast(map.get(columns[0].column), columns[0].sqltype),
+					cast(map.get(columns[1].column), columns[1].sqltype));
 		} else if (columns.length == 3) {
-			return (Serializable & MapToPairFunction<CSVRecord, Tuple>) (CSVRecord csvrecord) -> Tuple.tuple(cast(csvrecord.get(columns[0].column), columns[0].sqltype),
-					cast(csvrecord.get(columns[1].column), columns[1].sqltype),
-					cast(csvrecord.get(columns[2].column), columns[2].sqltype));
+			return (Serializable & MapToPairFunction<Map, Tuple>) (Map map) -> Tuple.tuple(cast(map.get(columns[0].column), columns[0].sqltype),
+					cast(map.get(columns[1].column), columns[1].sqltype),
+					cast(map.get(columns[2].column), columns[2].sqltype));
 		} else if (columns.length == 4) {
-			return (Serializable & MapToPairFunction<CSVRecord, Tuple>) (CSVRecord csvrecord) -> Tuple.tuple(cast(csvrecord.get(columns[0].column), columns[0].sqltype),
-					cast(csvrecord.get(columns[1].column), columns[1].sqltype),
-					cast(csvrecord.get(columns[2].column), columns[2].sqltype),
-					cast(csvrecord.get(columns[3].column), columns[3].sqltype));
+			return (Serializable & MapToPairFunction<Map, Tuple>) (Map map) -> Tuple.tuple(cast(map.get(columns[0].column), columns[0].sqltype),
+					cast(map.get(columns[1].column), columns[1].sqltype),
+					cast(map.get(columns[2].column), columns[2].sqltype),
+					cast(map.get(columns[3].column), columns[3].sqltype));
 		} else if (columns.length == 5) {
-			return (Serializable & MapToPairFunction<CSVRecord, Tuple>) (CSVRecord csvrecord) -> Tuple.tuple(cast(csvrecord.get(columns[0].column), columns[0].sqltype),
-					cast(csvrecord.get(columns[1].column), columns[1].sqltype),
-					cast(csvrecord.get(columns[2].column), columns[2].sqltype),
-					cast(csvrecord.get(columns[3].column), columns[3].sqltype),
-					cast(csvrecord.get(columns[4].column), columns[4].sqltype));
+			return (Serializable & MapToPairFunction<Map, Tuple>) (Map map) -> Tuple.tuple(cast(map.get(columns[0].column), columns[0].sqltype),
+					cast(map.get(columns[1].column), columns[1].sqltype),
+					cast(map.get(columns[2].column), columns[2].sqltype),
+					cast(map.get(columns[3].column), columns[3].sqltype),
+					cast(map.get(columns[4].column), columns[4].sqltype));
 		} else if (columns.length == 6) {
-			return (Serializable & MapToPairFunction<CSVRecord, Tuple>) (CSVRecord csvrecord) -> Tuple.tuple(cast(csvrecord.get(columns[0].column), columns[0].sqltype),
-					cast(csvrecord.get(columns[1].column), columns[1].sqltype),
-					cast(csvrecord.get(columns[2].column), columns[2].sqltype),
-					cast(csvrecord.get(columns[3].column), columns[3].sqltype),
-					cast(csvrecord.get(columns[4].column), columns[4].sqltype),
-					cast(csvrecord.get(columns[5].column), columns[5].sqltype));
+			return (Serializable & MapToPairFunction<Map, Tuple>) (Map map) -> Tuple.tuple(cast(map.get(columns[0].column), columns[0].sqltype),
+					cast(map.get(columns[1].column), columns[1].sqltype),
+					cast(map.get(columns[2].column), columns[2].sqltype),
+					cast(map.get(columns[3].column), columns[3].sqltype),
+					cast(map.get(columns[4].column), columns[4].sqltype),
+					cast(map.get(columns[5].column), columns[5].sqltype));
 		} else if (columns.length == 7) {
-			return (Serializable & MapToPairFunction<CSVRecord, Tuple>) (CSVRecord csvrecord) -> Tuple.tuple(cast(csvrecord.get(columns[0].column), columns[0].sqltype),
-					cast(csvrecord.get(columns[1].column), columns[1].sqltype),
-					cast(csvrecord.get(columns[2].column), columns[2].sqltype),
-					cast(csvrecord.get(columns[3].column), columns[3].sqltype),
-					cast(csvrecord.get(columns[4].column), columns[4].sqltype),
-					cast(csvrecord.get(columns[5].column), columns[5].sqltype),
-					cast(csvrecord.get(columns[6].column), columns[6].sqltype));
+			return (Serializable & MapToPairFunction<Map, Tuple>) (Map map) -> Tuple.tuple(cast(map.get(columns[0].column), columns[0].sqltype),
+					cast(map.get(columns[1].column), columns[1].sqltype),
+					cast(map.get(columns[2].column), columns[2].sqltype),
+					cast(map.get(columns[3].column), columns[3].sqltype),
+					cast(map.get(columns[4].column), columns[4].sqltype),
+					cast(map.get(columns[5].column), columns[5].sqltype),
+					cast(map.get(columns[6].column), columns[6].sqltype));
 		} else if (columns.length == 8) {
-			return (Serializable & MapToPairFunction<CSVRecord, Tuple>) (CSVRecord csvrecord) -> Tuple.tuple(cast(csvrecord.get(columns[0].column), columns[0].sqltype),
-					cast(csvrecord.get(columns[1].column), columns[1].sqltype),
-					cast(csvrecord.get(columns[2].column), columns[2].sqltype),
-					cast(csvrecord.get(columns[3].column), columns[3].sqltype),
-					cast(csvrecord.get(columns[4].column), columns[4].sqltype),
-					cast(csvrecord.get(columns[5].column), columns[5].sqltype),
-					cast(csvrecord.get(columns[6].column), columns[6].sqltype),
-					cast(csvrecord.get(columns[7].column), columns[7].sqltype));
+			return (Serializable & MapToPairFunction<Map, Tuple>) (Map map) -> Tuple.tuple(cast(map.get(columns[0].column), columns[0].sqltype),
+					cast(map.get(columns[1].column), columns[1].sqltype),
+					cast(map.get(columns[2].column), columns[2].sqltype),
+					cast(map.get(columns[3].column), columns[3].sqltype),
+					cast(map.get(columns[4].column), columns[4].sqltype),
+					cast(map.get(columns[5].column), columns[5].sqltype),
+					cast(map.get(columns[6].column), columns[6].sqltype),
+					cast(map.get(columns[7].column), columns[7].sqltype));
 		} else if (columns.length == 9) {
-			return (Serializable & MapToPairFunction<CSVRecord, Tuple>) (CSVRecord csvrecord) -> Tuple.tuple(cast(csvrecord.get(columns[0].column), columns[0].sqltype),
-					cast(csvrecord.get(columns[1].column), columns[1].sqltype),
-					cast(csvrecord.get(columns[2].column), columns[2].sqltype),
-					cast(csvrecord.get(columns[3].column), columns[3].sqltype),
-					cast(csvrecord.get(columns[4].column), columns[4].sqltype),
-					cast(csvrecord.get(columns[5].column), columns[5].sqltype),
-					cast(csvrecord.get(columns[6].column), columns[6].sqltype),
-					cast(csvrecord.get(columns[7].column), columns[7].sqltype),
-					cast(csvrecord.get(columns[8].column), columns[8].sqltype));
+			return (Serializable & MapToPairFunction<Map, Tuple>) (Map map) -> Tuple.tuple(cast(map.get(columns[0].column), columns[0].sqltype),
+					cast(map.get(columns[1].column), columns[1].sqltype),
+					cast(map.get(columns[2].column), columns[2].sqltype),
+					cast(map.get(columns[3].column), columns[3].sqltype),
+					cast(map.get(columns[4].column), columns[4].sqltype),
+					cast(map.get(columns[5].column), columns[5].sqltype),
+					cast(map.get(columns[6].column), columns[6].sqltype),
+					cast(map.get(columns[7].column), columns[7].sqltype),
+					cast(map.get(columns[8].column), columns[8].sqltype));
 		} else if (columns.length == 10) {
-			return (Serializable & MapToPairFunction<CSVRecord, Tuple>) (CSVRecord csvrecord) -> Tuple.tuple(cast(csvrecord.get(columns[0].column), columns[0].sqltype),
-					cast(csvrecord.get(columns[1].column), columns[1].sqltype),
-					cast(csvrecord.get(columns[2].column), columns[2].sqltype),
-					cast(csvrecord.get(columns[3].column), columns[3].sqltype),
-					cast(csvrecord.get(columns[4].column), columns[4].sqltype),
-					cast(csvrecord.get(columns[5].column), columns[5].sqltype),
-					cast(csvrecord.get(columns[6].column), columns[6].sqltype),
-					cast(csvrecord.get(columns[7].column), columns[7].sqltype),
-					cast(csvrecord.get(columns[8].column), columns[8].sqltype),
-					cast(csvrecord.get(columns[9].column), columns[9].sqltype));
+			return (Serializable & MapToPairFunction<Map, Tuple>) (Map map) -> Tuple.tuple(cast(map.get(columns[0].column), columns[0].sqltype),
+					cast(map.get(columns[1].column), columns[1].sqltype),
+					cast(map.get(columns[2].column), columns[2].sqltype),
+					cast(map.get(columns[3].column), columns[3].sqltype),
+					cast(map.get(columns[4].column), columns[4].sqltype),
+					cast(map.get(columns[5].column), columns[5].sqltype),
+					cast(map.get(columns[6].column), columns[6].sqltype),
+					cast(map.get(columns[7].column), columns[7].sqltype),
+					cast(map.get(columns[8].column), columns[8].sqltype),
+					cast(map.get(columns[9].column), columns[9].sqltype));
 		} else if (columns.length == 11) {
-			return (Serializable & MapToPairFunction<CSVRecord, Tuple>) (CSVRecord csvrecord) -> Tuple.tuple(cast(csvrecord.get(columns[0].column), columns[0].sqltype),
-					cast(csvrecord.get(columns[1].column), columns[1].sqltype),
-					cast(csvrecord.get(columns[2].column), columns[2].sqltype),
-					cast(csvrecord.get(columns[3].column), columns[3].sqltype),
-					cast(csvrecord.get(columns[4].column), columns[4].sqltype),
-					cast(csvrecord.get(columns[5].column), columns[5].sqltype),
-					cast(csvrecord.get(columns[6].column), columns[6].sqltype),
-					cast(csvrecord.get(columns[7].column), columns[7].sqltype),
-					cast(csvrecord.get(columns[8].column), columns[8].sqltype),
-					cast(csvrecord.get(columns[9].column), columns[9].sqltype),
-					cast(csvrecord.get(columns[10].column), columns[10].sqltype));
+			return (Serializable & MapToPairFunction<Map, Tuple>) (Map map) -> Tuple.tuple(cast(map.get(columns[0].column), columns[0].sqltype),
+					cast(map.get(columns[1].column), columns[1].sqltype),
+					cast(map.get(columns[2].column), columns[2].sqltype),
+					cast(map.get(columns[3].column), columns[3].sqltype),
+					cast(map.get(columns[4].column), columns[4].sqltype),
+					cast(map.get(columns[5].column), columns[5].sqltype),
+					cast(map.get(columns[6].column), columns[6].sqltype),
+					cast(map.get(columns[7].column), columns[7].sqltype),
+					cast(map.get(columns[8].column), columns[8].sqltype),
+					cast(map.get(columns[9].column), columns[9].sqltype),
+					cast(map.get(columns[10].column), columns[10].sqltype));
 		} else if (columns.length == 12) {
-			return (Serializable & MapToPairFunction<CSVRecord, Tuple>) (CSVRecord csvrecord) -> Tuple.tuple(cast(csvrecord.get(columns[0].column), columns[0].sqltype),
-					cast(csvrecord.get(columns[1].column), columns[1].sqltype),
-					cast(csvrecord.get(columns[2].column), columns[2].sqltype),
-					cast(csvrecord.get(columns[3].column), columns[3].sqltype),
-					cast(csvrecord.get(columns[4].column), columns[4].sqltype),
-					cast(csvrecord.get(columns[5].column), columns[5].sqltype),
-					cast(csvrecord.get(columns[6].column), columns[6].sqltype),
-					cast(csvrecord.get(columns[7].column), columns[7].sqltype),
-					cast(csvrecord.get(columns[8].column), columns[8].sqltype),
-					cast(csvrecord.get(columns[9].column), columns[9].sqltype),
-					cast(csvrecord.get(columns[10].column), columns[10].sqltype),
-					cast(csvrecord.get(columns[11].column), columns[11].sqltype));
+			return (Serializable & MapToPairFunction<Map, Tuple>) (Map map) -> Tuple.tuple(cast(map.get(columns[0].column), columns[0].sqltype),
+					cast(map.get(columns[1].column), columns[1].sqltype),
+					cast(map.get(columns[2].column), columns[2].sqltype),
+					cast(map.get(columns[3].column), columns[3].sqltype),
+					cast(map.get(columns[4].column), columns[4].sqltype),
+					cast(map.get(columns[5].column), columns[5].sqltype),
+					cast(map.get(columns[6].column), columns[6].sqltype),
+					cast(map.get(columns[7].column), columns[7].sqltype),
+					cast(map.get(columns[8].column), columns[8].sqltype),
+					cast(map.get(columns[9].column), columns[9].sqltype),
+					cast(map.get(columns[10].column), columns[10].sqltype),
+					cast(map.get(columns[11].column), columns[11].sqltype));
 		} else if (columns.length == 13) {
-			return (Serializable & MapToPairFunction<CSVRecord, Tuple>) (CSVRecord csvrecord) -> Tuple.tuple(cast(csvrecord.get(columns[0].column), columns[0].sqltype),
-					cast(csvrecord.get(columns[1].column), columns[1].sqltype),
-					cast(csvrecord.get(columns[2].column), columns[2].sqltype),
-					cast(csvrecord.get(columns[3].column), columns[3].sqltype),
-					cast(csvrecord.get(columns[4].column), columns[4].sqltype),
-					cast(csvrecord.get(columns[5].column), columns[5].sqltype),
-					cast(csvrecord.get(columns[6].column), columns[6].sqltype),
-					cast(csvrecord.get(columns[7].column), columns[7].sqltype),
-					cast(csvrecord.get(columns[8].column), columns[8].sqltype),
-					cast(csvrecord.get(columns[9].column), columns[9].sqltype),
-					cast(csvrecord.get(columns[10].column), columns[10].sqltype),
-					cast(csvrecord.get(columns[11].column), columns[11].sqltype),
-					cast(csvrecord.get(columns[12].column), columns[12].sqltype));
+			return (Serializable & MapToPairFunction<Map, Tuple>) (Map map) -> Tuple.tuple(cast(map.get(columns[0].column), columns[0].sqltype),
+					cast(map.get(columns[1].column), columns[1].sqltype),
+					cast(map.get(columns[2].column), columns[2].sqltype),
+					cast(map.get(columns[3].column), columns[3].sqltype),
+					cast(map.get(columns[4].column), columns[4].sqltype),
+					cast(map.get(columns[5].column), columns[5].sqltype),
+					cast(map.get(columns[6].column), columns[6].sqltype),
+					cast(map.get(columns[7].column), columns[7].sqltype),
+					cast(map.get(columns[8].column), columns[8].sqltype),
+					cast(map.get(columns[9].column), columns[9].sqltype),
+					cast(map.get(columns[10].column), columns[10].sqltype),
+					cast(map.get(columns[11].column), columns[11].sqltype),
+					cast(map.get(columns[12].column), columns[12].sqltype));
 		} else if (columns.length == 14) {
-			return (Serializable & MapToPairFunction<CSVRecord, Tuple>) (CSVRecord csvrecord) -> Tuple.tuple(cast(csvrecord.get(columns[0].column), columns[0].sqltype),
-					cast(csvrecord.get(columns[1].column), columns[1].sqltype),
-					cast(csvrecord.get(columns[2].column), columns[2].sqltype),
-					cast(csvrecord.get(columns[3].column), columns[3].sqltype),
-					cast(csvrecord.get(columns[4].column), columns[4].sqltype),
-					cast(csvrecord.get(columns[5].column), columns[5].sqltype),
-					cast(csvrecord.get(columns[6].column), columns[6].sqltype),
-					cast(csvrecord.get(columns[7].column), columns[7].sqltype),
-					cast(csvrecord.get(columns[8].column), columns[8].sqltype),
-					cast(csvrecord.get(columns[9].column), columns[9].sqltype),
-					cast(csvrecord.get(columns[10].column), columns[10].sqltype),
-					cast(csvrecord.get(columns[11].column), columns[11].sqltype),
-					cast(csvrecord.get(columns[12].column), columns[12].sqltype),
-					cast(csvrecord.get(columns[13].column), columns[13].sqltype));
+			return (Serializable & MapToPairFunction<Map, Tuple>) (Map map) -> Tuple.tuple(cast(map.get(columns[0].column), columns[0].sqltype),
+					cast(map.get(columns[1].column), columns[1].sqltype),
+					cast(map.get(columns[2].column), columns[2].sqltype),
+					cast(map.get(columns[3].column), columns[3].sqltype),
+					cast(map.get(columns[4].column), columns[4].sqltype),
+					cast(map.get(columns[5].column), columns[5].sqltype),
+					cast(map.get(columns[6].column), columns[6].sqltype),
+					cast(map.get(columns[7].column), columns[7].sqltype),
+					cast(map.get(columns[8].column), columns[8].sqltype),
+					cast(map.get(columns[9].column), columns[9].sqltype),
+					cast(map.get(columns[10].column), columns[10].sqltype),
+					cast(map.get(columns[11].column), columns[11].sqltype),
+					cast(map.get(columns[12].column), columns[12].sqltype),
+					cast(map.get(columns[13].column), columns[13].sqltype));
 		} else if (columns.length == 15) {
-			return (Serializable & MapToPairFunction<CSVRecord, Tuple>) (CSVRecord csvrecord) -> Tuple.tuple(cast(csvrecord.get(columns[0].column), columns[0].sqltype),
-					cast(csvrecord.get(columns[1].column), columns[1].sqltype),
-					cast(csvrecord.get(columns[2].column), columns[2].sqltype),
-					cast(csvrecord.get(columns[3].column), columns[3].sqltype),
-					cast(csvrecord.get(columns[4].column), columns[4].sqltype),
-					cast(csvrecord.get(columns[5].column), columns[5].sqltype),
-					cast(csvrecord.get(columns[6].column), columns[6].sqltype),
-					cast(csvrecord.get(columns[7].column), columns[7].sqltype),
-					cast(csvrecord.get(columns[8].column), columns[8].sqltype),
-					cast(csvrecord.get(columns[9].column), columns[9].sqltype),
-					cast(csvrecord.get(columns[10].column), columns[10].sqltype),
-					cast(csvrecord.get(columns[11].column), columns[11].sqltype),
-					cast(csvrecord.get(columns[12].column), columns[12].sqltype),
-					cast(csvrecord.get(columns[13].column), columns[13].sqltype),
-					cast(csvrecord.get(columns[14].column), columns[14].sqltype));
+			return (Serializable & MapToPairFunction<Map, Tuple>) (Map map) -> Tuple.tuple(cast(map.get(columns[0].column), columns[0].sqltype),
+					cast(map.get(columns[1].column), columns[1].sqltype),
+					cast(map.get(columns[2].column), columns[2].sqltype),
+					cast(map.get(columns[3].column), columns[3].sqltype),
+					cast(map.get(columns[4].column), columns[4].sqltype),
+					cast(map.get(columns[5].column), columns[5].sqltype),
+					cast(map.get(columns[6].column), columns[6].sqltype),
+					cast(map.get(columns[7].column), columns[7].sqltype),
+					cast(map.get(columns[8].column), columns[8].sqltype),
+					cast(map.get(columns[9].column), columns[9].sqltype),
+					cast(map.get(columns[10].column), columns[10].sqltype),
+					cast(map.get(columns[11].column), columns[11].sqltype),
+					cast(map.get(columns[12].column), columns[12].sqltype),
+					cast(map.get(columns[13].column), columns[13].sqltype),
+					cast(map.get(columns[14].column), columns[14].sqltype));
 		} else if (columns.length == 16) {
-			return (Serializable & MapToPairFunction<CSVRecord, Tuple>) (CSVRecord csvrecord) -> Tuple.tuple(cast(csvrecord.get(columns[0].column), columns[0].sqltype),
-					cast(csvrecord.get(columns[1].column), columns[1].sqltype),
-					cast(csvrecord.get(columns[2].column), columns[2].sqltype),
-					cast(csvrecord.get(columns[3].column), columns[3].sqltype),
-					cast(csvrecord.get(columns[4].column), columns[4].sqltype),
-					cast(csvrecord.get(columns[5].column), columns[5].sqltype),
-					cast(csvrecord.get(columns[6].column), columns[6].sqltype),
-					cast(csvrecord.get(columns[7].column), columns[7].sqltype),
-					cast(csvrecord.get(columns[8].column), columns[8].sqltype),
-					cast(csvrecord.get(columns[9].column), columns[9].sqltype),
-					cast(csvrecord.get(columns[10].column), columns[10].sqltype),
-					cast(csvrecord.get(columns[11].column), columns[11].sqltype),
-					cast(csvrecord.get(columns[12].column), columns[12].sqltype),
-					cast(csvrecord.get(columns[13].column), columns[13].sqltype),
-					cast(csvrecord.get(columns[14].column), columns[14].sqltype),
-					cast(csvrecord.get(columns[15].column), columns[15].sqltype));
+			return (Serializable & MapToPairFunction<Map, Tuple>) (Map map) -> Tuple.tuple(cast(map.get(columns[0].column), columns[0].sqltype),
+					cast(map.get(columns[1].column), columns[1].sqltype),
+					cast(map.get(columns[2].column), columns[2].sqltype),
+					cast(map.get(columns[3].column), columns[3].sqltype),
+					cast(map.get(columns[4].column), columns[4].sqltype),
+					cast(map.get(columns[5].column), columns[5].sqltype),
+					cast(map.get(columns[6].column), columns[6].sqltype),
+					cast(map.get(columns[7].column), columns[7].sqltype),
+					cast(map.get(columns[8].column), columns[8].sqltype),
+					cast(map.get(columns[9].column), columns[9].sqltype),
+					cast(map.get(columns[10].column), columns[10].sqltype),
+					cast(map.get(columns[11].column), columns[11].sqltype),
+					cast(map.get(columns[12].column), columns[12].sqltype),
+					cast(map.get(columns[13].column), columns[13].sqltype),
+					cast(map.get(columns[14].column), columns[14].sqltype),
+					cast(map.get(columns[15].column), columns[15].sqltype));
 		} else if (columns.length > 16) {
-			return (Serializable & MapToPairFunction<CSVRecord, Tuple>) (CSVRecord csvrecord) -> Tuple.tuple(cast(csvrecord.get(columns[0].column), columns[0].sqltype),
-					cast(csvrecord.get(columns[1].column), columns[1].sqltype),
-					cast(csvrecord.get(columns[2].column), columns[2].sqltype),
-					cast(csvrecord.get(columns[3].column), columns[3].sqltype),
-					cast(csvrecord.get(columns[4].column), columns[4].sqltype),
-					cast(csvrecord.get(columns[5].column), columns[5].sqltype),
-					cast(csvrecord.get(columns[6].column), columns[6].sqltype),
-					cast(csvrecord.get(columns[7].column), columns[7].sqltype),
-					cast(csvrecord.get(columns[8].column), columns[8].sqltype),
-					cast(csvrecord.get(columns[9].column), columns[9].sqltype),
-					cast(csvrecord.get(columns[10].column), columns[10].sqltype),
-					cast(csvrecord.get(columns[11].column), columns[11].sqltype),
-					cast(csvrecord.get(columns[12].column), columns[12].sqltype),
-					cast(csvrecord.get(columns[13].column), columns[13].sqltype),
-					cast(csvrecord.get(columns[14].column), columns[14].sqltype),
-					cast(csvrecord.get(columns[15].column), columns[15].sqltype));
+			return (Serializable & MapToPairFunction<Map, Tuple>) (Map map) -> Tuple.tuple(cast(map.get(columns[0].column), columns[0].sqltype),
+					cast(map.get(columns[1].column), columns[1].sqltype),
+					cast(map.get(columns[2].column), columns[2].sqltype),
+					cast(map.get(columns[3].column), columns[3].sqltype),
+					cast(map.get(columns[4].column), columns[4].sqltype),
+					cast(map.get(columns[5].column), columns[5].sqltype),
+					cast(map.get(columns[6].column), columns[6].sqltype),
+					cast(map.get(columns[7].column), columns[7].sqltype),
+					cast(map.get(columns[8].column), columns[8].sqltype),
+					cast(map.get(columns[9].column), columns[9].sqltype),
+					cast(map.get(columns[10].column), columns[10].sqltype),
+					cast(map.get(columns[11].column), columns[11].sqltype),
+					cast(map.get(columns[12].column), columns[12].sqltype),
+					cast(map.get(columns[13].column), columns[13].sqltype),
+					cast(map.get(columns[14].column), columns[14].sqltype),
+					cast(map.get(columns[15].column), columns[15].sqltype));
 		}
 		return null;
 	}
@@ -840,7 +731,7 @@ public class MDPSqlBuilder {
 	public Object cast(Object value, String sqloperatortype) {
 		if (!Objects.isNull(sqloperatortype) && sqloperatortype.toLowerCase().startsWith("integer")
 				|| sqloperatortype.toLowerCase().startsWith("decimal")) {
-			return Long.valueOf((String) value);
+			return Long.valueOf((String)(String) value);
 		}
 		return value;
 	}
@@ -848,7 +739,7 @@ public class MDPSqlBuilder {
 	@SuppressWarnings("rawtypes")
 	class FilteredRexVisitor implements RexVisitor {
 		Stack stack;
-		MassiveDataPipeline<CSVRecord> mdp;
+		MassiveDataPipeline<Map> mdp;
 		EnumerableTableScan ets, etsleft, etsright;
 		EnumerableHashJoin ehjleft, ehjright;
 		RelOptTableImpl rtimpl = null;
@@ -925,29 +816,29 @@ public class MDPSqlBuilder {
 					if (left instanceof RexCall rinref && right instanceof RexLiteral rl) {
 						String column = indexcolumn.get(((RexInputRef) rinref.getOperands().get(0)).getName());
 						Object value = rl.getValue2();
-						PredicateSerializable<CSVRecord> pred = val -> cast(val.get(column),
+						PredicateSerializable<Map> pred = val -> cast(val.get(column),
 								rinref.getType().getSqlTypeName().getName()).equals(value);
 						stack.push(pred);
 					} else if (left instanceof RexLiteral rl && right instanceof RexCall rinref) {
 						String column = indexcolumn.get(((RexInputRef) rinref.getOperands().get(0)).getName());
 						Object value = rl.getValue2();
-						PredicateSerializable<CSVRecord> pred = val -> cast(val.get(column),
+						PredicateSerializable<Map> pred = val -> cast(val.get(column),
 								rinref.getType().getSqlTypeName().getName()).equals(value);
 						stack.push(pred);
 					} else if (left instanceof RexInputRef rinref && right instanceof RexLiteral rl) {
 						String column = indexcolumn.get(rinref.getName());
 						Object value = rl.getValue2();
-						PredicateSerializable<CSVRecord> pred = val -> val.get(column).equals(value);
+						PredicateSerializable<Map> pred = val -> val.get(column).equals(value);
 						stack.push(pred);
 					} else if (left instanceof RexLiteral rl && right instanceof RexInputRef rinref) {
 						String column = indexcolumn.get(rinref.getName());
 						Object value = rl.getValue2();
-						PredicateSerializable<CSVRecord> pred = val -> val.get(column).equals(value);
+						PredicateSerializable<Map> pred = val -> val.get(column).equals(value);
 						stack.push(pred);
 					} else if (left instanceof RexInputRef rinrefleft && right instanceof RexInputRef rinrefright) {
 						String column1 = globalindexcolumnsmap.get(rinrefleft.getName());
 						String column2 = globalindexcolumnsmap.get(rinrefright.getName());
-						PredicateSerializable<CSVRecord> pred = (val1) -> {
+						PredicateSerializable<Map> pred = (val1) -> {
 							return val1.get(column1).equals(val1.get(column2));
 						};
 						stack.push(pred);
@@ -956,29 +847,29 @@ public class MDPSqlBuilder {
 					if (left instanceof RexCall rinref && right instanceof RexLiteral rl) {
 						String column = indexcolumn.get(((RexInputRef) rinref.getOperands().get(0)).getName());
 						Object value = rl.getValue2();
-						PredicateSerializable<CSVRecord> pred = val -> !cast(val.get(column),
+						PredicateSerializable<Map> pred = val -> !cast(val.get(column),
 								rinref.getType().getSqlTypeName().getName()).equals(value);
 						stack.push(pred);
 					} else if (left instanceof RexLiteral rl && right instanceof RexCall rinref) {
 						String column = indexcolumn.get(((RexInputRef) rinref.getOperands().get(0)).getName());
 						Object value = rl.getValue2();
-						PredicateSerializable<CSVRecord> pred = val -> !cast(val.get(column),
+						PredicateSerializable<Map> pred = val -> !cast(val.get(column),
 								rinref.getType().getSqlTypeName().getName()).equals(value);
 						stack.push(pred);
 					} else if (left instanceof RexInputRef rinref && right instanceof RexLiteral rl) {
 						String column = indexcolumn.get(rinref.getName());
 						Object value = rl.getValue2();
-						PredicateSerializable<CSVRecord> pred = (Serializable & PredicateSerializable<CSVRecord>) val -> !val.get(column).equals(value);
+						PredicateSerializable<Map> pred = (Serializable & PredicateSerializable<Map>) val -> !val.get(column).equals(value);
 						stack.push(pred);
 					} else if (left instanceof RexLiteral rl && right instanceof RexInputRef rinref) {
 						String column = indexcolumn.get(rinref.getName());
 						Object value = rl.getValue2();
-						PredicateSerializable<CSVRecord> pred = val -> !val.get(column).equals(value);
+						PredicateSerializable<Map> pred = val -> !val.get(column).equals(value);
 						stack.push(pred);
 					} else if (left instanceof RexInputRef rinrefleft && right instanceof RexInputRef rinrefright) {
 						String column1 = globalindexcolumnsmap.get(rinrefleft.getName());
 						String column2 = globalindexcolumnsmap.get(rinrefright.getName());
-						PredicateSerializable<CSVRecord> pred = (val1) -> {
+						PredicateSerializable<Map> pred = (val1) -> {
 							return !val1.get(column1).equals(val1.get(column2));
 						};
 						stack.push(pred);
@@ -987,13 +878,13 @@ public class MDPSqlBuilder {
 					if (left instanceof RexCall rinref && right instanceof RexLiteral rl) {
 						String column = indexcolumn.get(((RexInputRef) rinref.getOperands().get(0)).getName());
 						Long value = (Long) rl.getValue2();
-						PredicateSerializable<CSVRecord> pred = val -> ((Long) cast(val.get(column),
+						PredicateSerializable<Map> pred = val -> ((Long) cast(val.get(column),
 								rinref.getType().getSqlTypeName().getName())).compareTo(value) > 0;
 						stack.push(pred);
 					} else if (left instanceof RexLiteral rl && right instanceof RexCall rinref) {
 						String column = indexcolumn.get(((RexInputRef) rinref.getOperands().get(0)).getName());
 						Long value = (Long) rl.getValue2();
-						PredicateSerializable<CSVRecord> pred = val -> value.compareTo(
+						PredicateSerializable<Map> pred = val -> value.compareTo(
 								((Long) cast(val.get(column), rinref.getType().getSqlTypeName().getName()))) > 0;
 						stack.push(pred);
 					}
@@ -1001,13 +892,13 @@ public class MDPSqlBuilder {
 					if (left instanceof RexCall rinref && right instanceof RexLiteral rl) {
 						String column = indexcolumn.get(((RexInputRef) rinref.getOperands().get(0)).getName());
 						Long value = (Long) rl.getValue2();
-						PredicateSerializable<CSVRecord> pred = val -> ((Long) cast(val.get(column),
+						PredicateSerializable<Map> pred = val -> ((Long) cast(val.get(column),
 								rinref.getType().getSqlTypeName().getName())).compareTo(value) < 0;
 						stack.push(pred);
 					} else if (left instanceof RexLiteral rl && right instanceof RexCall rinref) {
 						String column = indexcolumn.get(((RexInputRef) rinref.getOperands().get(0)).getName());
 						Long value = (Long) rl.getValue2();
-						PredicateSerializable<CSVRecord> pred = val -> value.compareTo(
+						PredicateSerializable<Map> pred = val -> value.compareTo(
 								((Long) cast(val.get(column), rinref.getType().getSqlTypeName().getName()))) < 0;
 						stack.push(pred);
 					}
@@ -1015,13 +906,13 @@ public class MDPSqlBuilder {
 					if (left instanceof RexCall rinref && right instanceof RexLiteral rl) {
 						String column = indexcolumn.get(((RexInputRef) rinref.getOperands().get(0)).getName());
 						Long value = (Long) rl.getValue2();
-						PredicateSerializable<CSVRecord> pred = val -> ((Long) cast(val.get(column),
+						PredicateSerializable<Map> pred = val -> ((Long) cast(val.get(column),
 								rinref.getType().getSqlTypeName().getName())).compareTo(value) >= 0;
 						stack.push(pred);
 					} else if (left instanceof RexLiteral rl && right instanceof RexCall rinref) {
 						String column = indexcolumn.get(((RexInputRef) rinref.getOperands().get(0)).getName());
 						Long value = (Long) rl.getValue2();
-						PredicateSerializable<CSVRecord> pred = val -> value.compareTo(
+						PredicateSerializable<Map> pred = val -> value.compareTo(
 								((Long) cast(val.get(column), rinref.getType().getSqlTypeName().getName()))) >= 0;
 						stack.push(pred);
 					}
@@ -1029,23 +920,23 @@ public class MDPSqlBuilder {
 					if (left instanceof RexCall rinref && right instanceof RexLiteral rl) {
 						String column = indexcolumn.get(((RexInputRef) rinref.getOperands().get(0)).getName());
 						Long value = (Long) rl.getValue2();
-						PredicateSerializable<CSVRecord> pred = val -> ((Long) cast(val.get(column),
+						PredicateSerializable<Map> pred = val -> ((Long) cast(val.get(column),
 								rinref.getType().getSqlTypeName().getName())).compareTo(value) <= 0;
 						stack.push(pred);
 					} else if (left instanceof RexLiteral rl && right instanceof RexCall rinref) {
 						String column = indexcolumn.get(((RexInputRef) rinref.getOperands().get(0)).getName());
 						Long value = (Long) rl.getValue2();
-						PredicateSerializable<CSVRecord> pred = val -> value.compareTo(
+						PredicateSerializable<Map> pred = val -> value.compareTo(
 								((Long) cast(val.get(column), rinref.getType().getSqlTypeName().getName()))) <= 0;
 						stack.push(pred);
 					}
 				} else if (operator.getName().equalsIgnoreCase("and")) {
-					PredicateSerializable<CSVRecord> pred2 = (PredicateSerializable<CSVRecord>) stack.pop();
-					PredicateSerializable<CSVRecord> pred1 = (PredicateSerializable<CSVRecord>) stack.pop();
+					PredicateSerializable<Map> pred2 = (PredicateSerializable<Map>) stack.pop();
+					PredicateSerializable<Map> pred1 = (PredicateSerializable<Map>) stack.pop();
 					stack.push(pred1.and(pred2));
 				} else if (operator.getName().equalsIgnoreCase("or")) {
-					PredicateSerializable<CSVRecord> pred2 = (PredicateSerializable<CSVRecord>) stack.pop();
-					PredicateSerializable<CSVRecord> pred1 = (PredicateSerializable<CSVRecord>) stack.pop();
+					PredicateSerializable<Map> pred2 = (PredicateSerializable<Map>) stack.pop();
+					PredicateSerializable<Map> pred1 = (PredicateSerializable<Map>) stack.pop();
 					stack.push(pred1.or(pred2));
 				}
 			} catch (Exception ex) {
@@ -1264,22 +1155,22 @@ public class MDPSqlBuilder {
 						String column = globalindexcolumnsmap.get(rinref.getName());
 						Object value = rl.getValue2();
 						String table = globalindextablesmap.get(rinref.getName());
-						BiPredicateSerializable<CSVRecord, CSVRecord> pred;
+						BiPredicateSerializable<Map, Map> pred;
 						if (jointype.equals("inner")) {
-							pred = (Serializable & JoinPredicate<CSVRecord, CSVRecord>) (val1, val2) -> {
-								CSVRecord val = table.equals(etsleft.getTable().getQualifiedName().get(1)) ? val1
+							pred = (Serializable & JoinPredicate<Map, Map>) (val1, val2) -> {
+								Map val = table.equals(etsleft.getTable().getQualifiedName().get(1)) ? val1
 										: val2;
 								return val.get(column).equals(value);
 							};
 						} else if (jointype.equals("left")) {
-							pred = (Serializable & LeftOuterJoinPredicate<CSVRecord, CSVRecord>) (val1, val2) -> {
-								CSVRecord val = table.equals(etsleft.getTable().getQualifiedName().get(1)) ? val1
+							pred = (Serializable & LeftOuterJoinPredicate<Map, Map>) (val1, val2) -> {
+								Map val = table.equals(etsleft.getTable().getQualifiedName().get(1)) ? val1
 										: val2;
 								return val.get(column).equals(value);
 							};
 						} else {
-							pred = (Serializable & RightOuterJoinPredicate<CSVRecord, CSVRecord>) (val1, val2) -> {
-								CSVRecord val = table.equals(etsleft.getTable().getQualifiedName().get(1)) ? val1
+							pred = (Serializable & RightOuterJoinPredicate<Map, Map>) (val1, val2) -> {
+								Map val = table.equals(etsleft.getTable().getQualifiedName().get(1)) ? val1
 										: val2;
 								return val.get(column).equals(value);
 							};
@@ -1289,22 +1180,22 @@ public class MDPSqlBuilder {
 						String column = globalindexcolumnsmap.get(rinref.getName());
 						Object value = rl.getValue2();
 						String table = globalindextablesmap.get(rinref.getName());
-						BiPredicateSerializable<CSVRecord, CSVRecord> pred;
+						BiPredicateSerializable<Map, Map> pred;
 						if (jointype.equals("inner")) {
-							pred = (Serializable & JoinPredicate<CSVRecord, CSVRecord>) (val1, val2) -> {
-								CSVRecord val = table.equals(etsright.getTable().getQualifiedName().get(1)) ? val2
+							pred = (Serializable & JoinPredicate<Map, Map>) (val1, val2) -> {
+								Map val = table.equals(etsright.getTable().getQualifiedName().get(1)) ? val2
 										: val1;
 								return val.get(column).equals(value);
 							};
 						} else if (jointype.equals("left")) {
-							pred = (Serializable & LeftOuterJoinPredicate<CSVRecord, CSVRecord>) (val1, val2) -> {
-								CSVRecord val = table.equals(etsright.getTable().getQualifiedName().get(1)) ? val2
+							pred = (Serializable & LeftOuterJoinPredicate<Map, Map>) (val1, val2) -> {
+								Map val = table.equals(etsright.getTable().getQualifiedName().get(1)) ? val2
 										: val1;
 								return val.get(column).equals(value);
 							};
 						} else {
-							pred = (Serializable & RightOuterJoinPredicate<CSVRecord, CSVRecord>) (val1, val2) -> {
-								CSVRecord val = table.equals(etsright.getTable().getQualifiedName().get(1)) ? val2
+							pred = (Serializable & RightOuterJoinPredicate<Map, Map>) (val1, val2) -> {
+								Map val = table.equals(etsright.getTable().getQualifiedName().get(1)) ? val2
 										: val1;
 								return val.get(column).equals(value);
 							};
@@ -1319,23 +1210,23 @@ public class MDPSqlBuilder {
 								: hashjoinglobalindextablesmap.get(ehjleft).get(rinrefleft.getName());
 						String righttable = !Objects.isNull(etsright) ? etsright.getTable().getQualifiedName().get(1)
 								: hashjoinglobalindextablesmap.get(ehjright).get(rinrefright.getName());
-						BiPredicateSerializable<CSVRecord, CSVRecord> pred;
+						BiPredicateSerializable<Map, Map> pred;
 						if (jointype.equals("inner")) {
-							pred = (Serializable & JoinPredicate<CSVRecord, CSVRecord>) (val1, val2) -> {
-								CSVRecord leftval = tableleft.equals(lefttable) ? val1 : val2;
-								CSVRecord rightval = tableright.equals(righttable) ? val2 : val1;
+							pred = (Serializable & JoinPredicate<Map, Map>) (val1, val2) -> {
+								Map leftval = tableleft.equals(lefttable) ? val1 : val2;
+								Map rightval = tableright.equals(righttable) ? val2 : val1;
 								return leftval.get(column1).equals(rightval.get(column2));
 							};
 						} else if (jointype.equals("left")) {
-							pred = (Serializable & LeftOuterJoinPredicate<CSVRecord, CSVRecord>) (val1, val2) -> {
-								CSVRecord leftval = tableleft.equals(lefttable) ? val1 : val2;
-								CSVRecord rightval = tableright.equals(righttable) ? val2 : val1;
+							pred = (Serializable & LeftOuterJoinPredicate<Map, Map>) (val1, val2) -> {
+								Map leftval = tableleft.equals(lefttable) ? val1 : val2;
+								Map rightval = tableright.equals(righttable) ? val2 : val1;
 								return leftval.get(column1).equals(rightval.get(column2));
 							};
 						} else {
-							pred = (Serializable & RightOuterJoinPredicate<CSVRecord, CSVRecord>) (val1, val2) -> {
-								CSVRecord leftval = tableleft.equals(lefttable) ? val1 : val2;
-								CSVRecord rightval = tableright.equals(righttable) ? val2 : val1;
+							pred = (Serializable & RightOuterJoinPredicate<Map, Map>) (val1, val2) -> {
+								Map leftval = tableleft.equals(lefttable) ? val1 : val2;
+								Map rightval = tableright.equals(righttable) ? val2 : val1;
 								return leftval.get(column1).equals(rightval.get(column2));
 							};
 						}
@@ -1343,37 +1234,273 @@ public class MDPSqlBuilder {
 					}
 				} else if (operator.getName().equalsIgnoreCase("and")) {
 					if (jointype.equals("inner")) {
-						JoinPredicate<CSVRecord, CSVRecord> pred2 = (JoinPredicate<CSVRecord, CSVRecord>) stack.pop();
-						JoinPredicate<CSVRecord, CSVRecord> pred1 = (JoinPredicate<CSVRecord, CSVRecord>) stack.pop();
+						JoinPredicate<Map, Map> pred2 = (JoinPredicate<Map, Map>) stack.pop();
+						JoinPredicate<Map, Map> pred1 = (JoinPredicate<Map, Map>) stack.pop();
 						stack.push(pred1.and(pred2));
 					} else if (jointype.equals("left")) {
-						LeftOuterJoinPredicate<CSVRecord, CSVRecord> pred2 = (LeftOuterJoinPredicate<CSVRecord, CSVRecord>) stack
+						LeftOuterJoinPredicate<Map, Map> pred2 = (LeftOuterJoinPredicate<Map, Map>) stack
 								.pop();
-						LeftOuterJoinPredicate<CSVRecord, CSVRecord> pred1 = (LeftOuterJoinPredicate<CSVRecord, CSVRecord>) stack
+						LeftOuterJoinPredicate<Map, Map> pred1 = (LeftOuterJoinPredicate<Map, Map>) stack
 								.pop();
 						stack.push(pred1.and(pred2));
 					} else {
-						RightOuterJoinPredicate<CSVRecord, CSVRecord> pred2 = (RightOuterJoinPredicate<CSVRecord, CSVRecord>) stack
+						RightOuterJoinPredicate<Map, Map> pred2 = (RightOuterJoinPredicate<Map, Map>) stack
 								.pop();
-						RightOuterJoinPredicate<CSVRecord, CSVRecord> pred1 = (RightOuterJoinPredicate<CSVRecord, CSVRecord>) stack
+						RightOuterJoinPredicate<Map, Map> pred1 = (RightOuterJoinPredicate<Map, Map>) stack
 								.pop();
 						stack.push(pred1.and(pred2));
 					}
 				} else if (operator.getName().equalsIgnoreCase("or")) {
 					if (jointype.equals("inner")) {
-						JoinPredicate<CSVRecord, CSVRecord> pred2 = (JoinPredicate<CSVRecord, CSVRecord>) stack.pop();
-						JoinPredicate<CSVRecord, CSVRecord> pred1 = (JoinPredicate<CSVRecord, CSVRecord>) stack.pop();
+						JoinPredicate<Map, Map> pred2 = (JoinPredicate<Map, Map>) stack.pop();
+						JoinPredicate<Map, Map> pred1 = (JoinPredicate<Map, Map>) stack.pop();
 						stack.push(pred1.or(pred2));
 					} else if (jointype.equals("left")) {
-						LeftOuterJoinPredicate<CSVRecord, CSVRecord> pred2 = (LeftOuterJoinPredicate<CSVRecord, CSVRecord>) stack
+						LeftOuterJoinPredicate<Map, Map> pred2 = (LeftOuterJoinPredicate<Map, Map>) stack
 								.pop();
-						LeftOuterJoinPredicate<CSVRecord, CSVRecord> pred1 = (LeftOuterJoinPredicate<CSVRecord, CSVRecord>) stack
+						LeftOuterJoinPredicate<Map, Map> pred1 = (LeftOuterJoinPredicate<Map, Map>) stack
 								.pop();
 						stack.push(pred1.or(pred2));
 					} else {
-						RightOuterJoinPredicate<CSVRecord, CSVRecord> pred2 = (RightOuterJoinPredicate<CSVRecord, CSVRecord>) stack
+						RightOuterJoinPredicate<Map, Map> pred2 = (RightOuterJoinPredicate<Map, Map>) stack
 								.pop();
-						RightOuterJoinPredicate<CSVRecord, CSVRecord> pred1 = (RightOuterJoinPredicate<CSVRecord, CSVRecord>) stack
+						RightOuterJoinPredicate<Map, Map> pred1 = (RightOuterJoinPredicate<Map, Map>) stack
+								.pop();
+						stack.push(pred1.or(pred2));
+					}
+				}
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+			return null;
+		}
+
+	}
+	
+	@SuppressWarnings("rawtypes")
+	class HashMultipleJoinRexVisitor extends FilteredRexVisitor {
+		private String jointype;
+
+		public HashMultipleJoinRexVisitor(Stack stack, MassiveDataPipeline mdp, EnumerableTableScan ets) {
+			super(stack, mdp, ets);
+		}
+
+		public HashMultipleJoinRexVisitor(Stack stack, EnumerableTableScan etsleft, EnumerableTableScan etsright,
+				String jointype) {
+			super(stack, etsleft, etsright);
+			this.jointype = jointype;
+		}
+
+		public HashMultipleJoinRexVisitor(Stack stack, EnumerableHashJoin ehjleft, EnumerableTableScan etsright,
+				String jointype) {
+			super(stack, ehjleft, etsright);
+			this.jointype = jointype;
+		}
+
+		public HashMultipleJoinRexVisitor(Stack stack, EnumerableTableScan etsleft, EnumerableHashJoin ehjright,
+				String jointype) {
+			super(stack, etsleft, ehjright);
+			this.jointype = jointype;
+		}
+
+		public HashMultipleJoinRexVisitor(Stack stack, EnumerableHashJoin ehjleft, EnumerableHashJoin ehjright,
+				String jointype) {
+			super(stack, ehjleft, ehjright);
+			this.jointype = jointype;
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public Object visitCall(RexCall call) {
+			try {
+				SqlOperator operator = call.getOperator();
+				List<RexNode> operands = call.getOperands();
+				Object left = operands.get(0);
+				Object right = operands.get(1);
+				if (left instanceof RexCall lrc) {
+					visitCall(lrc);
+				}
+				if (right instanceof RexCall rrc) {
+					visitCall(rrc);
+				}
+				if (operator.getName().equals("=")) {
+					if (left instanceof RexInputRef rinref && right instanceof RexLiteral rl) {
+						String column = globalindexcolumnsmap.get(rinref.getName());
+						Object value = rl.getValue2();
+						String table = globalindextablesmap.get(rinref.getName());
+						BiPredicateSerializable<Map, Tuple2<Map,Object>> pred;
+						if (jointype.equals("inner")) {
+							pred = (Serializable & JoinPredicate<Map, Tuple2<Map,Object>>) (val1, val2) -> {
+								Object val = table.equals(etsleft.getTable().getQualifiedName().get(1)) ? val1
+										: val2;
+								if(val instanceof Map map) {
+									return map.get(column).equals(value);
+								}else if(val instanceof Tuple2 tup2) {
+									return ((Map)tup2.v1).get(column).equals(value);
+								}
+								return false;
+							};
+						} else if (jointype.equals("left")) {
+							pred = (Serializable & LeftOuterJoinPredicate<Map, Tuple2<Map,Object>>) (val1, val2) -> {
+								Object val = table.equals(etsleft.getTable().getQualifiedName().get(1)) ? val1
+										: val2;
+								if(val instanceof Map map) {
+									return map.get(column).equals(value);
+								}else if(val instanceof Tuple2 tup2) {
+									return ((Map)tup2.v1).get(column).equals(value);
+								}
+								return false;
+							};
+						} else {
+							pred = (Serializable & RightOuterJoinPredicate<Map, Tuple2<Map,Object>>) (val1, val2) -> {
+								Object val = table.equals(etsleft.getTable().getQualifiedName().get(1)) ? val1
+										: val2;
+								if(val instanceof Map map) {
+									return map.get(column).equals(value);
+								}else if(val instanceof Tuple2 tup2) {
+									return ((Map)tup2.v1).get(column).equals(value);
+								}
+								return false;
+							};
+						}
+						stack.push(pred);
+					} else if (left instanceof RexLiteral rl && right instanceof RexInputRef rinref) {
+						String column = globalindexcolumnsmap.get(rinref.getName());
+						Object value = rl.getValue2();
+						String table = globalindextablesmap.get(rinref.getName());
+						BiPredicateSerializable<Map, Tuple2<Map,Object>> pred;
+						if (jointype.equals("inner")) {
+							pred = (Serializable & JoinPredicate<Map, Tuple2<Map,Object>>) (val1, val2) -> {
+								Object val = table.equals(etsright.getTable().getQualifiedName().get(1)) ? val2
+										: val1;
+								if(val instanceof Map map) {
+									return map.get(column).equals(value);
+								}else if(val instanceof Tuple2 tup2) {
+									return ((Map)tup2.v1).get(column).equals(value);
+								}
+								return false;
+							};
+						} else if (jointype.equals("left")) {
+							pred = (Serializable & LeftOuterJoinPredicate<Map, Tuple2<Map,Object>>) (val1, val2) -> {
+								Object val = table.equals(etsright.getTable().getQualifiedName().get(1)) ? val2
+										: val1;
+								if(val instanceof Map map) {
+									return map.get(column).equals(value);
+								}else if(val instanceof Tuple2 tup2) {
+									return ((Map)tup2.v1).get(column).equals(value);
+								}
+								return false;
+							};
+						} else {
+							pred = (Serializable & RightOuterJoinPredicate<Map, Tuple2<Map,Object>>) (val1, val2) -> {
+								Object val = table.equals(etsright.getTable().getQualifiedName().get(1)) ? val2
+										: val1;
+								if(val instanceof Map map) {
+									return map.get(column).equals(value);
+								}else if(val instanceof Tuple2 tup2) {
+									return ((Map)tup2.v1).get(column).equals(value);
+								}
+								return false;
+							};
+						}
+						stack.push(pred);
+					} else if (left instanceof RexInputRef rinrefleft && right instanceof RexInputRef rinrefright) {
+						String column1 = globalindexcolumnsmap.get(rinrefleft.getName());
+						String column2 = globalindexcolumnsmap.get(rinrefright.getName());
+						String tableleft = globalindextablesmap.get(rinrefleft.getName());
+						String tableright = globalindextablesmap.get(rinrefright.getName());
+						String lefttable = !Objects.isNull(etsleft) ? etsleft.getTable().getQualifiedName().get(1)
+								: hashjoinglobalindextablesmap.get(ehjleft).get(rinrefleft.getName());
+						String righttable = !Objects.isNull(etsright) ? etsright.getTable().getQualifiedName().get(1)
+								: hashjoinglobalindextablesmap.get(ehjright).get(rinrefright.getName());
+						BiPredicateSerializable<Map, Tuple2<Map,Object>> pred;
+						if (jointype.equals("inner")) {
+							pred = (Serializable & JoinPredicate<Map, Tuple2<Map,Object>>) (val1, val2) -> {
+								Object leftval = tableleft.equals(lefttable) ? val1 : val2;
+								Object rightval = tableright.equals(righttable) ? val2 : val1;
+								Object value1 = null,value2 = null;
+								if(leftval instanceof Map map) {
+									value1 = map.get(column1);
+								}else if(leftval instanceof Tuple2 tupl2){
+									value1 = ((Map)tupl2.v1).get(column1);
+								}
+								if(rightval instanceof Map map) {
+									value2 = map.get(column2);
+								}else if(leftval instanceof Tuple2 tupl2){
+									value2 = ((Map)tupl2.v1).get(column2);
+								}
+								return value1.equals(value2);
+							};
+						} else if (jointype.equals("left")) {
+							pred = (Serializable & LeftOuterJoinPredicate<Map, Tuple2<Map,Object>>) (val1, val2) -> {
+								Object leftval = tableleft.equals(lefttable) ? val1 : val2;
+								Object rightval = tableright.equals(righttable) ? val2 : val1;
+								Object value1 = null,value2 = null;
+								if(leftval instanceof Map map) {
+									value1 = map.get(column1);
+								}else if(leftval instanceof Tuple2 tupl2){
+									value1 = ((Map)tupl2.v1).get(column1);
+								}
+								if(rightval instanceof Map map) {
+									value2 = map.get(column2);
+								}else if(leftval instanceof Tuple2 tupl2){
+									value2 = ((Map)tupl2.v1).get(column2);
+								}
+								return value1.equals(value2);
+							};
+						} else {
+							pred = (Serializable & RightOuterJoinPredicate<Map, Tuple2<Map,Object>>) (val1, val2) -> {
+								Object leftval = tableleft.equals(lefttable) ? val1 : val2;
+								Object rightval = tableright.equals(righttable) ? val2 : val1;
+								Object value1 = null,value2 = null;
+								if(leftval instanceof Map map) {
+									value1 = map.get(column1);
+								}else if(leftval instanceof Tuple2 tupl2){
+									value1 = ((Map)tupl2.v1).get(column1);
+								}
+								if(rightval instanceof Map map) {
+									value2 = map.get(column2);
+								}else if(leftval instanceof Tuple2 tupl2){
+									value2 = ((Map)tupl2.v1).get(column2);
+								}
+								return value1.equals(value2);
+							};
+						}
+						stack.push(pred);
+					}
+				} else if (operator.getName().equalsIgnoreCase("and")) {
+					if (jointype.equals("inner")) {
+						JoinPredicate<Map, Tuple2<Map,Object>> pred2 = (JoinPredicate<Map, Tuple2<Map,Object>>) stack.pop();
+						JoinPredicate<Map, Tuple2<Map,Object>> pred1 = (JoinPredicate<Map, Tuple2<Map,Object>>) stack.pop();
+						stack.push(pred1.and(pred2));
+					} else if (jointype.equals("left")) {
+						LeftOuterJoinPredicate<Map, Tuple2<Map,Object>> pred2 = (LeftOuterJoinPredicate<Map, Tuple2<Map,Object>>) stack
+								.pop();
+						LeftOuterJoinPredicate<Map, Tuple2<Map,Object>> pred1 = (LeftOuterJoinPredicate<Map, Tuple2<Map,Object>>) stack
+								.pop();
+						stack.push(pred1.and(pred2));
+					} else {
+						RightOuterJoinPredicate<Map, Tuple2<Map,Object>> pred2 = (RightOuterJoinPredicate<Map, Tuple2<Map,Object>>) stack
+								.pop();
+						RightOuterJoinPredicate<Map, Tuple2<Map,Object>> pred1 = (RightOuterJoinPredicate<Map, Tuple2<Map,Object>>) stack
+								.pop();
+						stack.push(pred1.and(pred2));
+					}
+				} else if (operator.getName().equalsIgnoreCase("or")) {
+					if (jointype.equals("inner")) {
+						JoinPredicate<Map, Tuple2<Map,Object>> pred2 = (JoinPredicate<Map, Tuple2<Map,Object>>) stack.pop();
+						JoinPredicate<Map, Tuple2<Map,Object>> pred1 = (JoinPredicate<Map, Tuple2<Map,Object>>) stack.pop();
+						stack.push(pred1.or(pred2));
+					} else if (jointype.equals("left")) {
+						LeftOuterJoinPredicate<Map, Tuple2<Map,Object>> pred2 = (LeftOuterJoinPredicate<Map, Tuple2<Map,Object>>) stack
+								.pop();
+						LeftOuterJoinPredicate<Map, Tuple2<Map,Object>> pred1 = (LeftOuterJoinPredicate<Map, Tuple2<Map,Object>>) stack
+								.pop();
+						stack.push(pred1.or(pred2));
+					} else {
+						RightOuterJoinPredicate<Map, Tuple2<Map,Object>> pred2 = (RightOuterJoinPredicate<Map, Tuple2<Map,Object>>) stack
+								.pop();
+						RightOuterJoinPredicate<Map, Tuple2<Map,Object>> pred1 = (RightOuterJoinPredicate<Map, Tuple2<Map,Object>>) stack
 								.pop();
 						stack.push(pred1.or(pred2));
 					}

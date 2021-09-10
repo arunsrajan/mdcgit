@@ -76,7 +76,11 @@ public class MassiveDataPipelineSqlBiggerFilesTest extends MassiveDataPipelineBa
 	@SuppressWarnings({ "unchecked" })
 	@Test
 	public void testMDPSqlBuilderCountArrivalDelayBiggerFiles() throws Exception {
-		pipelineconfig.setLocal("true");
+		pipelineconfig.setLocal("false");
+		pipelineconfig.setBatchsize("5");
+		pipelineconfig.setBlocksize("128");
+		pipelineconfig.setIsblocksuserdefined("true");
+		pipelineconfig.setStorage(STORAGE.INMEMORY_DISK);
 		log.info("In testMDPSqlBuilderCountArrivalDelayBiggerFiles() method Entry");
 		String statement = "SELECT count(ArrDelay) "
 				+ "FROM airline where ArrDelay<>'ArrDelay' and ArrDelay<>'NA'";
@@ -91,7 +95,7 @@ public class MassiveDataPipelineSqlBiggerFilesTest extends MassiveDataPipelineBa
 				sum += rec.longValue();
 			}
 		}
-		assertEquals(11378019, sum);
+		assertEquals(120947440l, sum);
 		log.info("In testMDPSqlBuilderCountArrivalDelayBiggerFiles() method Exit");
 	}
 	

@@ -5,8 +5,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.List;
+import java.util.Map;
 
-import org.apache.commons.csv.CSVRecord;
 import org.apache.log4j.Logger;
 import org.junit.Test;
 
@@ -31,11 +31,11 @@ public class MassiveDataPipelineSqlTest extends MassiveDataPipelineBaseTestClass
 		MDPSql mdpsql = MDPSqlBuilder.newBuilder().add(airlinesamplesql, "airline", airlineheader, airsqltype)
 				.add(carriers, "carriers", carrierheader, carriersqltype).setHdfs(hdfsfilepath)
 				.setPipelineConfig(pipelineconfig).setSql(statement).build();
-		List<List<CSVRecord>> records = (List<List<CSVRecord>>) mdpsql.collect(true, null);
-		for (List<CSVRecord> recs : records) {
-			for (CSVRecord rec : recs) {
-				assertEquals("8", rec.get(2));
-				assertEquals("12", rec.get(3));
+		List<List<Map<String,Object>>> records = (List<List<Map<String,Object>>>) mdpsql.collect(true, null);
+		for (List<Map<String,Object>> recs : records) {
+			for (Map<String,Object> rec : recs) {
+				assertEquals("8", rec.get("DayofMonth"));
+				assertEquals("12", rec.get("MonthOfYear"));
 				log.info(rec);
 			}
 		}
@@ -52,12 +52,12 @@ public class MassiveDataPipelineSqlTest extends MassiveDataPipelineBaseTestClass
 		MDPSql mdpsql = MDPSqlBuilder.newBuilder().add(airlinesamplesql, "airline", airlineheader, airsqltype)
 				.add(carriers, "carriers", carrierheader, carriersqltype).setHdfs(hdfsfilepath)
 				.setPipelineConfig(new PipelineConfig()).setSql(statement).build();
-		List<List<CSVRecord>> records = (List<List<CSVRecord>>) mdpsql.collect(true, null);
-		for (List<CSVRecord> recs : records) {
-			for (CSVRecord rec : recs) {
+		List<List<Map<String,Object>>> records = (List<List<Map<String,Object>>>) mdpsql.collect(true, null);
+		for (List<Map<String,Object>> recs : records) {
+			for (Map<String,Object> rec : recs) {
 				log.info(rec);
-				assertTrue(Long.valueOf((String) rec.get(2)) > 8);
-				assertTrue(Long.valueOf((String) rec.get(3)) > 6);
+				assertTrue(Long.valueOf((String)(String) rec.get("DayofMonth")) > 8);
+				assertTrue(Long.valueOf((String)(String) rec.get("MonthOfYear")) > 6);
 			}
 		}
 		log.info("In testFilterMDPSqlBuilderAirlinesLiteralGreaterThan() method Exit");
@@ -72,12 +72,12 @@ public class MassiveDataPipelineSqlTest extends MassiveDataPipelineBaseTestClass
 		MDPSql mdpsql = MDPSqlBuilder.newBuilder().add(airlinesamplesql, "airline", airlineheader, airsqltype)
 				.add(carriers, "carriers", carrierheader, carriersqltype).setHdfs(hdfsfilepath)
 				.setPipelineConfig(new PipelineConfig()).setSql(statement).build();
-		List<List<CSVRecord>> records = (List<List<CSVRecord>>) mdpsql.collect(true, null);
-		for (List<CSVRecord> recs : records) {
-			for (CSVRecord rec : recs) {
+		List<List<Map<String,Object>>> records = (List<List<Map<String,Object>>>) mdpsql.collect(true, null);
+		for (List<Map<String,Object>> recs : records) {
+			for (Map<String,Object> rec : recs) {
 				log.info(rec);
-				assertTrue(Long.valueOf((String) rec.get(2)) < 8);
-				assertTrue(Long.valueOf((String) rec.get(3)) < 6);
+				assertTrue(Long.valueOf((String)(String) rec.get("DayofMonth")) < 8);
+				assertTrue(Long.valueOf((String)(String) rec.get("MonthOfYear")) < 6);
 			}
 		}
 		log.info("In testFilterMDPSqlBuilderAirlinesLiteralLessThan() method Exit");
@@ -92,12 +92,12 @@ public class MassiveDataPipelineSqlTest extends MassiveDataPipelineBaseTestClass
 		MDPSql mdpsql = MDPSqlBuilder.newBuilder().add(airlinesamplesql, "airline", airlineheader, airsqltype)
 				.add(carriers, "carriers", carrierheader, carriersqltype).setHdfs(hdfsfilepath)
 				.setPipelineConfig(new PipelineConfig()).setSql(statement).build();
-		List<List<CSVRecord>> records = (List<List<CSVRecord>>) mdpsql.collect(true, null);
-		for (List<CSVRecord> recs : records) {
-			for (CSVRecord rec : recs) {
+		List<List<Map<String,Object>>> records = (List<List<Map<String,Object>>>) mdpsql.collect(true, null);
+		for (List<Map<String,Object>> recs : records) {
+			for (Map<String,Object> rec : recs) {
 				log.info(rec);
-				assertTrue(Long.valueOf((String) rec.get(2)) >= 8);
-				assertTrue(Long.valueOf((String) rec.get(3)) >= 6);
+				assertTrue(Long.valueOf((String)(String) rec.get("DayofMonth")) >= 8);
+				assertTrue(Long.valueOf((String)(String) rec.get("MonthOfYear")) >= 6);
 			}
 		}
 		log.info("In testFilterMDPSqlBuilderAirlinesLiteralGreaterThanEquals() method Exit");
@@ -112,12 +112,12 @@ public class MassiveDataPipelineSqlTest extends MassiveDataPipelineBaseTestClass
 		MDPSql mdpsql = MDPSqlBuilder.newBuilder().add(airlinesamplesql, "airline", airlineheader, airsqltype)
 				.add(carriers, "carriers", carrierheader, carriersqltype).setHdfs(hdfsfilepath)
 				.setPipelineConfig(new PipelineConfig()).setSql(statement).build();
-		List<List<CSVRecord>> records = (List<List<CSVRecord>>) mdpsql.collect(true, null);
-		for (List<CSVRecord> recs : records) {
-			for (CSVRecord rec : recs) {
+		List<List<Map<String,Object>>> records = (List<List<Map<String,Object>>>) mdpsql.collect(true, null);
+		for (List<Map<String,Object>> recs : records) {
+			for (Map<String,Object> rec : recs) {
 				log.info(rec);
-				assertTrue(Long.valueOf((String) rec.get(2)) <= 8);
-				assertTrue(Long.valueOf((String) rec.get(3)) <= 6);
+				assertTrue(Long.valueOf((String)(String) rec.get("DayofMonth")) <= 8);
+				assertTrue(Long.valueOf((String)(String) rec.get("MonthOfYear")) <= 6);
 			}
 		}
 		log.info("In testFilterMDPSqlBuilderAirlinesLiteralLessThanEquals() method Exit");
@@ -132,11 +132,11 @@ public class MassiveDataPipelineSqlTest extends MassiveDataPipelineBaseTestClass
 		MDPSql mdpsql = MDPSqlBuilder.newBuilder().add(airlinesamplesql, "airline", airlineheader, airsqltype)
 				.add(carriers, "carriers", carrierheader, carriersqltype).setHdfs(hdfsfilepath)
 				.setPipelineConfig(new PipelineConfig()).setSql(statement).build();
-		List<List<CSVRecord>> records = (List<List<CSVRecord>>) mdpsql.collect(true, null);
-		for (List<CSVRecord> recs : records) {
-			for (CSVRecord rec : recs) {
+		List<List<Map<String,Object>>> records = (List<List<Map<String,Object>>>) mdpsql.collect(true, null);
+		for (List<Map<String,Object>> recs : records) {
+			for (Map<String,Object> rec : recs) {
 				log.info(rec);
-				assertTrue(Long.valueOf((String) rec.get(2)) >= 8 || Long.valueOf((String) rec.get(3)) >= 6);
+				assertTrue(Long.valueOf((String)(String) rec.get("DayofMonth")) >= 8 || Long.valueOf((String) rec.get("MonthOfYear")) >= 6);
 			}
 		}
 		log.info("In testFilterMDPSqlBuilderAirlinesLiteralGreaterThanEqualsOr() method Exit");
@@ -151,11 +151,11 @@ public class MassiveDataPipelineSqlTest extends MassiveDataPipelineBaseTestClass
 		MDPSql mdpsql = MDPSqlBuilder.newBuilder().add(airlinesamplesql, "airline", airlineheader, airsqltype)
 				.add(carriers, "carriers", carrierheader, carriersqltype).setHdfs(hdfsfilepath)
 				.setPipelineConfig(new PipelineConfig()).setSql(statement).build();
-		List<List<CSVRecord>> records = (List<List<CSVRecord>>) mdpsql.collect(true, null);
-		for (List<CSVRecord> recs : records) {
-			for (CSVRecord rec : recs) {
+		List<List<Map<String,Object>>> records = (List<List<Map<String,Object>>>) mdpsql.collect(true, null);
+		for (List<Map<String,Object>> recs : records) {
+			for (Map<String,Object> rec : recs) {
 				log.info(rec);
-				assertTrue(Long.valueOf((String) rec.get(2)) <= 8 || Long.valueOf((String) rec.get(3)) <= 6);
+				assertTrue(Long.valueOf((String)(String) rec.get("DayofMonth")) <= 8 || Long.valueOf((String)(String) rec.get("MonthOfYear")) <= 6);
 			}
 		}
 		log.info("In testFilterMDPSqlBuilderAirlinesLiteralLessThanEqualsOr() method Exit");
@@ -170,11 +170,11 @@ public class MassiveDataPipelineSqlTest extends MassiveDataPipelineBaseTestClass
 		MDPSql mdpsql = MDPSqlBuilder.newBuilder().add(airlinesamplesql, "airline", airlineheader, airsqltype)
 				.add(carriers, "carriers", carrierheader, carriersqltype).setHdfs(hdfsfilepath)
 				.setPipelineConfig(new PipelineConfig()).setSql(statement).build();
-		List<List<CSVRecord>> records = (List<List<CSVRecord>>) mdpsql.collect(true, null);
-		for (List<CSVRecord> recs : records) {
-			for (CSVRecord rec : recs) {
-				assertEquals("8", rec.get(2));
-				assertEquals("12", rec.get(3));
+		List<List<Map<String,Object>>> records = (List<List<Map<String,Object>>>) mdpsql.collect(true, null);
+		for (List<Map<String,Object>> recs : records) {
+			for (Map<String,Object> rec : recs) {
+				assertEquals("8", rec.get("DayofMonth"));
+				assertEquals("12", rec.get("MonthOfYear"));
 				log.info(rec);
 			}
 		}
@@ -190,10 +190,10 @@ public class MassiveDataPipelineSqlTest extends MassiveDataPipelineBaseTestClass
 		MDPSql mdpsql = MDPSqlBuilder.newBuilder().add(airlinesamplesql, "airline", airlineheader, airsqltype)
 				.add(carriers, "carriers", carrierheader, carriersqltype).setHdfs(hdfsfilepath)
 				.setPipelineConfig(new PipelineConfig()).setSql(statement).build();
-		List<List<CSVRecord>> records = (List<List<org.apache.commons.csv.CSVRecord>>) mdpsql.collect(true, null);
-		for (List<CSVRecord> recs : records) {
-			for (CSVRecord rec : recs) {
-				assertTrue(rec.get(2).equals(rec.get(3)));
+		List<List<Map<String,Object>>> records = (List<List<Map<String,Object>>>) mdpsql.collect(true, null);
+		for (List<Map<String,Object>> recs : records) {
+			for (Map<String,Object> rec : recs) {
+				assertTrue(rec.get("DayofMonth").equals(rec.get("MonthOfYear")));
 				log.info(rec);
 			}
 		}
@@ -210,12 +210,12 @@ public class MassiveDataPipelineSqlTest extends MassiveDataPipelineBaseTestClass
 		MDPSql mdpsql = MDPSqlBuilder.newBuilder().add(airlinesamplesql, "airline", airlineheader, airsqltype)
 				.add(carriers, "carriers", carrierheader, carriersqltype).setHdfs(hdfsfilepath)
 				.setPipelineConfig(new PipelineConfig()).setSql(statement).build();
-		List<List<CSVRecord>> records = (List<List<CSVRecord>>) mdpsql.collect(true, null);
-		for (List<CSVRecord> recs : records) {
-			for (CSVRecord rec : recs) {
+		List<List<Map<String,Object>>> records = (List<List<Map<String,Object>>>) mdpsql.collect(true, null);
+		for (List<Map<String,Object>> recs : records) {
+			for (Map<String,Object> rec : recs) {
 				log.info(rec);
-				assertEquals("8", rec.get(2));
-				assertEquals("12", rec.get(3));
+				assertEquals("8", rec.get("DayofMonth"));
+				assertEquals("12", rec.get("MonthOfYear"));
 			}
 		}
 		log.info("In testMDPSqlBuilderAirlinesCarriersJoin() method Exit");
@@ -232,11 +232,11 @@ public class MassiveDataPipelineSqlTest extends MassiveDataPipelineBaseTestClass
 				.add(carriers, "carriers", carrierheader, carriersqltype).setHdfs(hdfsfilepath)
 				.setPipelineConfig(new PipelineConfig()).setSql(statement).build();
 		long totalrecords = 0;
-		List<List<CSVRecord>> records = (List<List<CSVRecord>>) mdpsql.collect(true, null);
-		for (List<CSVRecord> recs : records) {
-			for (CSVRecord rec : recs) {
+		List<List<Map<String,Object>>> records = (List<List<Map<String,Object>>>) mdpsql.collect(true, null);
+		for (List<Map<String,Object>> recs : records) {
+			for (Map<String,Object> rec : recs) {
 				log.info(rec);
-				totalrecords+=Long.valueOf(rec.get("count()"));
+				totalrecords+=(Long)rec.get("count()");
 			}
 		}
 		assertEquals(132,totalrecords);
@@ -254,10 +254,10 @@ public class MassiveDataPipelineSqlTest extends MassiveDataPipelineBaseTestClass
 				.add(carriers, "carriers", carrierheader, carriersqltype).setHdfs(hdfsfilepath)
 				.setPipelineConfig(new PipelineConfig()).setSql(statement).build();
 		long totalrecords = 0;
-		List<List<CSVRecord>> records = (List<List<CSVRecord>>) mdpsql.collect(true, null);
-		for (List<CSVRecord> recs : records) {
+		List<List<Map<String,Object>>> records = (List<List<Map<String,Object>>>) mdpsql.collect(true, null);
+		for (List<Map<String,Object>> recs : records) {
 			totalrecords+=recs.size();
-			for (CSVRecord rec : recs) {
+			for (Map<String,Object> rec : recs) {
 				log.info(rec);
 			}
 		}
@@ -276,9 +276,9 @@ public class MassiveDataPipelineSqlTest extends MassiveDataPipelineBaseTestClass
 		MDPSql mdpsql = MDPSqlBuilder.newBuilder().add(airlinesamplesql, "airline", airlineheader, airsqltype)
 				.add(carriers, "carriers", carrierheader, carriersqltype).setHdfs(hdfsfilepath)
 				.setPipelineConfig(new PipelineConfig()).setSql(statement).build();
-		List<List<CSVRecord>> records = (List<List<CSVRecord>>) mdpsql.collect(true, null);
-		for (List<CSVRecord> recs : records) {
-			for (CSVRecord rec : recs) {
+		List<List<Map<String,Object>>> records = (List<List<Map<String,Object>>>) mdpsql.collect(true, null);
+		for (List<Map<String,Object>> recs : records) {
+			for (Map<String,Object> rec : recs) {
 				log.info(rec);
 			}
 		}
@@ -297,13 +297,13 @@ public class MassiveDataPipelineSqlTest extends MassiveDataPipelineBaseTestClass
 				.add(carriers, "carriers", carrierheader, carriersqltype)
 				.add(airportssample, "airports", airportsheader, airportstype).setHdfs(hdfsfilepath)
 				.setPipelineConfig(new PipelineConfig()).setSql(statement).build();
-		List<List<CSVRecord>> records = (List<List<CSVRecord>>) mdpsql.collect(true, null);
-		for (List<CSVRecord> recs : records) {
-			for (CSVRecord rec : recs) {
+		List<List<Map<String,Object>>> records = (List<List<Map<String,Object>>>) mdpsql.collect(true, null);
+		for (List<Map<String,Object>> recs : records) {
+			for (Map<String,Object> rec : recs) {
 				log.info(rec);
-				assertEquals("8", rec.get(2));
-				assertEquals("12", rec.get(3));
-				assertNotNull(rec.get(6));
+				assertEquals("8", rec.get("DayofMonth"));
+				assertEquals("12", rec.get("MonthOfYear"));
+				assertNotNull(rec.get("airport"));
 			}
 		}
 		log.info("In testMDPSqlBuilderAirlinesCarrierAirpJoin() method Exit");
@@ -319,13 +319,13 @@ public class MassiveDataPipelineSqlTest extends MassiveDataPipelineBaseTestClass
 		MDPSql mdpsql = MDPSqlBuilder.newBuilder().add(airlinesamplesql, "airline", airlineheader, airsqltype)
 				.add(carriers, "carriers", carrierheader, carriersqltype).setHdfs(hdfsfilepath)
 				.setPipelineConfig(new PipelineConfig()).setSql(statement).build();
-		List<List<CSVRecord>> records = (List<List<CSVRecord>>) mdpsql.collect(true, null);
-		for (List<CSVRecord> recs : records) {
-			for (CSVRecord rec : recs) {
+		List<List<Map<String,Object>>> records = (List<List<Map<String,Object>>>) mdpsql.collect(true, null);
+		for (List<Map<String,Object>> recs : records) {
+			for (Map<String,Object> rec : recs) {
 				log.info(rec);
-				assertEquals("8", rec.get(2));
-				assertEquals("8", rec.get(3));
-				assertEquals("AQ", rec.get(4));
+				assertEquals("8", rec.get("DayofMonth"));
+				assertEquals("8", rec.get("MonthOfYear"));
+				assertEquals("AQ", rec.get("Code"));
 			}
 		}
 		log.info("In testMDPSqlBuilderAirlinesCarrierJoinCarrierSpecific() method Exit");
@@ -341,13 +341,13 @@ public class MassiveDataPipelineSqlTest extends MassiveDataPipelineBaseTestClass
 		MDPSql mdpsql = MDPSqlBuilder.newBuilder().add(airlinesamplesql, "airline", airlineheader, airsqltype)
 				.add(carriers, "carriers", carrierheader, carriersqltype).setHdfs(hdfsfilepath)
 				.setPipelineConfig(new PipelineConfig()).setSql(statement).build();
-		List<List<CSVRecord>> records = (List<List<CSVRecord>>) mdpsql.collect(true, null);
-		for (List<CSVRecord> recs : records) {
-			for (CSVRecord rec : recs) {
+		List<List<Map<String,Object>>> records = (List<List<Map<String,Object>>>) mdpsql.collect(true, null);
+		for (List<Map<String,Object>> recs : records) {
+			for (Map<String,Object> rec : recs) {
 				log.info(rec);
-				assertEquals("8", rec.get(2));
-				assertEquals("8", rec.get(3));
-				assertNotNull(rec.get(4));
+				assertEquals("8", rec.get("DayofMonth"));
+				assertEquals("8", rec.get("MonthOfYear"));
+				assertNotNull(rec.get("Code"));
 			}
 		}
 		log.info("In testMDPSqlBuilderAirlinesCarriersJoinOr() method Exit");
@@ -362,11 +362,11 @@ public class MassiveDataPipelineSqlTest extends MassiveDataPipelineBaseTestClass
 		MDPSql mdpsql = MDPSqlBuilder.newBuilder().add(airlinesamplesql, "airline", airlineheader, airsqltype)
 				.add(carriers, "carriers", carrierheader, carriersqltype).setHdfs(hdfsfilepath)
 				.setPipelineConfig(new PipelineConfig()).setSql(statement).build();
-		List<List<CSVRecord>> records = (List<List<CSVRecord>>) mdpsql.collect(true, null);
-		for (List<CSVRecord> recs : records) {
-			for (CSVRecord rec : recs) {
+		List<List<Map<String,Object>>> records = (List<List<Map<String,Object>>>) mdpsql.collect(true, null);
+		for (List<Map<String,Object>> recs : records) {
+			for (Map<String,Object> rec : recs) {
 				log.info(rec);
-				assertEquals("8", rec.get(2));
+				assertEquals("8", rec.get("DayofMonth"));
 			}
 		}
 		log.info("In testJoinMDPSqlBuilderAirlinesCarrierLeftJoin() method Exit");
@@ -380,13 +380,13 @@ public class MassiveDataPipelineSqlTest extends MassiveDataPipelineBaseTestClass
 		MDPSql mdpsql = MDPSqlBuilder.newBuilder().add(airlinesamplesql, "airline", airlineheader, airsqltype)
 				.add(carriers, "carriers", carrierheader, carriersqltype).setHdfs(hdfsfilepath)
 				.setPipelineConfig(new PipelineConfig()).setSql(statement).build();
-		List<List<CSVRecord>> records = (List<List<CSVRecord>>) mdpsql.collect(true, null);
-		for (List<CSVRecord> recs : records) {
-			for (CSVRecord rec : recs) {
+		List<List<Map<String,Object>>> records = (List<List<Map<String,Object>>>) mdpsql.collect(true, null);
+		for (List<Map<String,Object>> recs : records) {
+			for (Map<String,Object> rec : recs) {
 				log.info(rec);
-				assertTrue(rec instanceof CSVRecord);
-				assertNotNull(rec.get(0));
-				assertNotNull(rec.get(1));
+				assertTrue(rec instanceof Map);
+				assertNotNull(rec.get("Code"));
+				assertNotNull(rec.get("Description"));
 			}
 		}
 		log.info("In testMDPSqlBuilderCarriersAllColumns() method Exit");
@@ -400,11 +400,11 @@ public class MassiveDataPipelineSqlTest extends MassiveDataPipelineBaseTestClass
 		MDPSql mdpsql = MDPSqlBuilder.newBuilder().add(airlinesamplesql, "airline", airlineheader, airsqltype)
 				.add(carriers, "carriers", carrierheader, carriersqltype).setHdfs(hdfsfilepath)
 				.setPipelineConfig(new PipelineConfig()).setSql(statement).build();
-		List<List<CSVRecord>> records = (List<List<CSVRecord>>) mdpsql.collect(true, null);
-		for (List<CSVRecord> recs : records) {
-			for (CSVRecord rec : recs) {
+		List<List<Map<String,Object>>> records = (List<List<Map<String,Object>>>) mdpsql.collect(true, null);
+		for (List<Map<String,Object>> recs : records) {
+			for (Map<String,Object> rec : recs) {
 				log.info(rec);
-				assertTrue(rec instanceof CSVRecord);
+				assertTrue(rec instanceof Map);
 			}
 		}
 		log.info("In testMDPSqlBuilderAirlinesAllColumns() method Exit");
@@ -419,12 +419,12 @@ public class MassiveDataPipelineSqlTest extends MassiveDataPipelineBaseTestClass
 		MDPSql mdpsql = MDPSqlBuilder.newBuilder().add(airlinesamplesql, "airline", airlineheader, airsqltype)
 				.add(carriers, "carriers", carrierheader, carriersqltype).setHdfs(hdfsfilepath)
 				.setPipelineConfig(new PipelineConfig()).setSql(statement).build();
-		List<List<CSVRecord>> records = (List<List<CSVRecord>>) mdpsql.collect(true, null);
+		List<List<Map<String,Object>>> records = (List<List<Map<String,Object>>>) mdpsql.collect(true, null);
 		long sum = 0;
-		for (List<CSVRecord> recs : records) {
-			for (CSVRecord rec : recs) {
+		for (List<Map<String,Object>> recs : records) {
+			for (Map<String,Object> rec : recs) {
 				log.info(rec);
-				sum += Long.valueOf(rec.get(2));
+				sum += (Long)rec.get("sum(ArrDelay)");
 			}
 		}
 		assertEquals(-63278, sum);
@@ -440,15 +440,15 @@ public class MassiveDataPipelineSqlTest extends MassiveDataPipelineBaseTestClass
 		MDPSql mdpsql = MDPSqlBuilder.newBuilder().add(airlinesamplesql, "airline", airlineheader, airsqltype)
 				.add(carriers, "carriers", carrierheader, carriersqltype).setHdfs(hdfsfilepath)
 				.setPipelineConfig(new PipelineConfig()).setSql(statement).build();
-		List<List<CSVRecord>> records = (List<List<CSVRecord>>) mdpsql.collect(true, null);
+		List<List<Map<String,Object>>> records = (List<List<Map<String,Object>>>) mdpsql.collect(true, null);
 		long sum = 0;
-		for (List<CSVRecord> recs : records) {
-			for (CSVRecord rec : recs) {
+		for (List<Map<String,Object>> recs : records) {
+			for (Map<String,Object> rec : recs) {
 				log.info(rec.get("UniqueCarrier"));
 				log.info(rec.get("AirlineYear"));
 				log.info(rec.get("sum(ArrDelay)"));
 				log.info(rec.get("count()"));
-				sum += Long.valueOf(rec.get("sum(ArrDelay)"));
+				sum += (Long)rec.get("sum(ArrDelay)");
 			}
 		}
 		assertEquals(-63278, sum);
@@ -465,15 +465,15 @@ public class MassiveDataPipelineSqlTest extends MassiveDataPipelineBaseTestClass
 		MDPSql mdpsql = MDPSqlBuilder.newBuilder().add(airlinesamplesql, "airline", airlineheader, airsqltype)
 				.add(carriers, "carriers", carrierheader, carriersqltype).setHdfs(hdfsfilepath)
 				.setPipelineConfig(new PipelineConfig()).setSql(statement).build();
-		List<List<CSVRecord>> records = (List<List<CSVRecord>>) mdpsql.collect(true, null);
+		List<List<Map<String,Object>>> records = (List<List<Map<String,Object>>>) mdpsql.collect(true, null);
 		long sum = 0;
-		for (List<CSVRecord> recs : records) {
-			for (CSVRecord rec : recs) {
+		for (List<Map<String,Object>> recs : records) {
+			for (Map<String,Object> rec : recs) {
 				log.info(rec.get("UniqueCarrier"));
 				log.info(rec.get("AirlineYear"));
 				log.info(rec.get("sum(ArrDelay)"));
 				log.info(rec.get("count()"));
-				sum += Long.valueOf(rec.get("sum(ArrDelay)"));
+				sum += (Long)rec.get("sum(ArrDelay)");
 			}
 		}
 		assertEquals(-63278, sum);
@@ -489,12 +489,12 @@ public class MassiveDataPipelineSqlTest extends MassiveDataPipelineBaseTestClass
 		MDPSql mdpsql = MDPSqlBuilder.newBuilder().add(airlinesamplesql, "airline", airlineheader, airsqltype)
 				.add(carriers, "carriers", carrierheader, carriersqltype).setHdfs(hdfsfilepath)
 				.setPipelineConfig(new PipelineConfig()).setSql(statement).build();
-		List<List<CSVRecord>> records = (List<List<CSVRecord>>) mdpsql.collect(true, null);
+		List<List<Map<String,Object>>> records = (List<List<Map<String,Object>>>) mdpsql.collect(true, null);
 		long sum = 0;
-		for (List<CSVRecord> recs : records) {
-			for (CSVRecord rec : recs) {
+		for (List<Map<String,Object>> recs : records) {
+			for (Map<String,Object> rec : recs) {
 				log.info(rec);
-				sum += Long.valueOf(rec.get(0));
+				sum += (Long)rec.get("sum(ArrDelay)");
 			}
 		}
 		assertEquals(-63278, sum);
@@ -509,12 +509,12 @@ public class MassiveDataPipelineSqlTest extends MassiveDataPipelineBaseTestClass
 		MDPSql mdpsql = MDPSqlBuilder.newBuilder().add(airlinesamplesql, "airline", airlineheader, airsqltype)
 				.add(carriers, "carriers", carrierheader, carriersqltype).setHdfs(hdfsfilepath)
 				.setPipelineConfig(new PipelineConfig()).setSql(statement).build();
-		List<List<CSVRecord>> records = (List<List<CSVRecord>>) mdpsql.collect(true, null);
+		List<List<Map<String,Object>>> records = (List<List<Map<String,Object>>>) mdpsql.collect(true, null);
 		long sum = 0;
-		for (List<CSVRecord> recs : records) {
-			for (CSVRecord rec : recs) {
+		for (List<Map<String,Object>> recs : records) {
+			for (Map<String,Object> rec : recs) {
 				log.info(rec);
-				sum += Long.valueOf(rec.get(0));
+				sum += (Long)rec.get("sum(ArrDelay)");
 			}
 		}
 		assertEquals(-63278, sum);
@@ -530,12 +530,12 @@ public class MassiveDataPipelineSqlTest extends MassiveDataPipelineBaseTestClass
 		MDPSql mdpsql = MDPSqlBuilder.newBuilder().add(airlinesamplesql, "airline", airlineheader, airsqltype)
 				.add(carriers, "carriers", carrierheader, carriersqltype).setHdfs(hdfsfilepath)
 				.setPipelineConfig(new PipelineConfig()).setSql(statement).build();
-		List<List<CSVRecord>> records = (List<List<CSVRecord>>) mdpsql.collect(true, null);
+		List<List<Map<String,Object>>> records = (List<List<Map<String,Object>>>) mdpsql.collect(true, null);
 		long sum = 0;
-		for (List<CSVRecord> recs : records) {
-			for (CSVRecord rec : recs) {
+		for (List<Map<String,Object>> recs : records) {
+			for (Map<String,Object> rec : recs) {
 				log.info(rec);
-				sum += Long.valueOf(rec.get(1));
+				sum += (Long)rec.get("sum(ArrDelay)");
 			}
 		}
 		assertEquals(-63278, sum);
@@ -551,12 +551,12 @@ public class MassiveDataPipelineSqlTest extends MassiveDataPipelineBaseTestClass
 		MDPSql mdpsql = MDPSqlBuilder.newBuilder().add(airlinesamplesql, "airline", airlineheader, airsqltype)
 				.add(carriers, "carriers", carrierheader, carriersqltype).setHdfs(hdfsfilepath)
 				.setPipelineConfig(new PipelineConfig()).setSql(statement).build();
-		List<List<CSVRecord>> records = (List<List<CSVRecord>>) mdpsql.collect(true, null);
+		List<List<Map<String,Object>>> records = (List<List<Map<String,Object>>>) mdpsql.collect(true, null);
 		long sum = 0;
-		for (List<CSVRecord> recs : records) {
-			for (CSVRecord rec : recs) {
+		for (List<Map<String,Object>> recs : records) {
+			for (Map<String,Object> rec : recs) {
 				log.info(rec);
-				sum += Long.valueOf(rec.get(2));
+				sum += (Long)rec.get("sum(ArrDelay)");
 			}
 		}
 		assertEquals(-63278, sum);
@@ -573,13 +573,13 @@ public class MassiveDataPipelineSqlTest extends MassiveDataPipelineBaseTestClass
 		MDPSql mdpsql = MDPSqlBuilder.newBuilder().add(airlinesamplesql, "airline", airlineheader, airsqltype)
 				.add(carriers, "carriers", carrierheader, carriersqltype).setHdfs(hdfsfilepath)
 				.setPipelineConfig(pipelineconfig).setSql(statement).build();
-		List<List<CSVRecord>> records = (List<List<CSVRecord>>) mdpsql.collect(true, null);
+		List<List<Map<String,Object>>> records = (List<List<Map<String,Object>>>) mdpsql.collect(true, null);
 		long sumarrdelay = 0, reccount=0;
-		for (List<CSVRecord> recs : records) {
-			for (CSVRecord rec : recs) {
+		for (List<Map<String,Object>> recs : records) {
+			for (Map<String,Object> rec : recs) {
 				log.info(rec);
-				sumarrdelay += Long.valueOf(rec.get(1));
-				reccount += Long.valueOf(rec.get(2));
+				sumarrdelay += (Long)rec.get("sum(ArrDelay)");
+				reccount += (Long)rec.get("count()");
 			}
 		}
 		assertEquals(-63278, sumarrdelay);
@@ -600,13 +600,13 @@ public class MassiveDataPipelineSqlTest extends MassiveDataPipelineBaseTestClass
 		MDPSql mdpsql = MDPSqlBuilder.newBuilder().add(airlinesamplesql, "airline", airlineheader, airsqltype)
 				.add(carriers, "carriers", carrierheader, carriersqltype).setHdfs(hdfsfilepath)
 				.setPipelineConfig(pipelineconfig).setSql(statement).build();
-		List<List<CSVRecord>> records = (List<List<CSVRecord>>) mdpsql.collect(true, null);
+		List<List<Map<String,Object>>> records = (List<List<Map<String,Object>>>) mdpsql.collect(true, null);
 		long sumarrdelay = 0, reccount=0;
-		for (List<CSVRecord> recs : records) {
-			for (CSVRecord rec : recs) {
+		for (List<Map<String,Object>> recs : records) {
+			for (Map<String,Object> rec : recs) {
 				log.info(rec);
-				sumarrdelay += Long.valueOf(rec.get(1));
-				reccount += Long.valueOf(rec.get(2));
+				sumarrdelay += (Long)rec.get("sum(ArrDelay)");
+				reccount += (Long)rec.get("count()");
 			}
 		}
 		assertEquals(-63278, sumarrdelay);
@@ -625,12 +625,12 @@ public class MassiveDataPipelineSqlTest extends MassiveDataPipelineBaseTestClass
 		MDPSql mdpsql = MDPSqlBuilder.newBuilder().add(airlinesamplesql, "airline", airlineheader, airsqltype)
 				.add(carriers, "carriers", carrierheader, carriersqltype).setHdfs(hdfsfilepath)
 				.setPipelineConfig(new PipelineConfig()).setSql(statement).build();
-		List<List<CSVRecord>> records = (List<List<CSVRecord>>) mdpsql.collect(true, null);
+		List<List<Map<String,Object>>> records = (List<List<Map<String,Object>>>) mdpsql.collect(true, null);
 		long sum = 0;
-		for (List<CSVRecord> recs : records) {
-			for (CSVRecord rec : recs) {
+		for (List<Map<String,Object>> recs : records) {
+			for (Map<String,Object> rec : recs) {
 				log.info(rec);
-				sum += Long.valueOf(rec.get(1));
+				sum += (Long)rec.get("sum(DepDelay)");
 			}
 		}
 		assertEquals(20168, sum);
@@ -646,12 +646,12 @@ public class MassiveDataPipelineSqlTest extends MassiveDataPipelineBaseTestClass
 		MDPSql mdpsql = MDPSqlBuilder.newBuilder().add(airlinesamplesql, "airline", airlineheader, airsqltype)
 				.add(carriers, "carriers", carrierheader, carriersqltype).setHdfs(hdfsfilepath)
 				.setPipelineConfig(new PipelineConfig()).setSql(statement).build();
-		List<List<CSVRecord>> records = (List<List<CSVRecord>>) mdpsql.collect(true, null);
+		List<List<Map<String,Object>>> records = (List<List<Map<String,Object>>>) mdpsql.collect(true, null);
 		long sum = 0;
-		for (List<CSVRecord> recs : records) {
-			for (CSVRecord rec : recs) {
+		for (List<Map<String,Object>> recs : records) {
+			for (Map<String,Object> rec : recs) {
 				log.info(rec);
-				sum += Long.valueOf(rec.get(2));
+				sum += (Long)rec.get("sum(DepDelay)");
 			}
 		}
 		assertEquals(20168, sum);
@@ -669,12 +669,12 @@ public class MassiveDataPipelineSqlTest extends MassiveDataPipelineBaseTestClass
 		MDPSql mdpsql = MDPSqlBuilder.newBuilder().add(airlinesamplesql, "airline", airlineheader, airsqltype)
 				.add(carriers, "carriers", carrierheader, carriersqltype).setHdfs(hdfsfilepath)
 				.setPipelineConfig(pipelineconfig).setSql(statement).build();
-		List<List<CSVRecord>> records = (List<List<CSVRecord>>) mdpsql.collect(true, null);
+		List<List<Map<String,Object>>> records = (List<List<Map<String,Object>>>) mdpsql.collect(true, null);
 		long sum = 0;
-		for (List<CSVRecord> recs : records) {
-			for (CSVRecord rec : recs) {
+		for (List<Map<String,Object>> recs : records) {
+			for (Map<String,Object> rec : recs) {
 				log.info(rec);
-				sum += Long.valueOf(rec.get(1));
+				sum += (Long)rec.get("sum(DepDelay)");
 			}
 		}
 		assertEquals(20168, sum);
@@ -691,12 +691,12 @@ public class MassiveDataPipelineSqlTest extends MassiveDataPipelineBaseTestClass
 		MDPSql mdpsql = MDPSqlBuilder.newBuilder().add(airlinesamplesql, "airline", airlineheader, airsqltype)
 				.add(carriers, "carriers", carrierheader, carriersqltype).setHdfs(hdfsfilepath)
 				.setPipelineConfig(pipelineconfig).setSql(statement).build();
-		List<List<CSVRecord>> records = (List<List<CSVRecord>>) mdpsql.collect(true, null);
+		List<List<Map<String,Object>>> records = (List<List<Map<String,Object>>>) mdpsql.collect(true, null);
 		long sum = 0;
-		for (List<CSVRecord> recs : records) {
-			for (CSVRecord rec : recs) {
+		for (List<Map<String,Object>> recs : records) {
+			for (Map<String,Object> rec : recs) {
 				log.info(rec);
-				sum += Long.valueOf(rec.get(1));
+				sum += (Long)rec.get("sum(ArrDelay)");
 			}
 		}
 		assertEquals(-63278, sum);
@@ -738,12 +738,12 @@ public class MassiveDataPipelineSqlTest extends MassiveDataPipelineBaseTestClass
 		MDPSql mdpsql = MDPSqlBuilder.newBuilder().add(airlinesamplesql, "airline", airlineheader, airsqltype)
 				.add(carriers, "carriers", carrierheader, carriersqltype).setHdfs(hdfsfilepath)
 				.setPipelineConfig(pipelineconfig).setSql(statement).build();
-		List<List<CSVRecord>> records = (List<List<CSVRecord>>) mdpsql.collect(true, null);
+		List<List<Map<String,Object>>> records = (List<List<Map<String,Object>>>) mdpsql.collect(true, null);
 		long sum = 0;
-		for (List<CSVRecord> recs : records) {
-			for (CSVRecord rec : recs) {
+		for (List<Map<String,Object>> recs : records) {
+			for (Map<String,Object> rec : recs) {
 				log.info(rec);
-				sum += Long.valueOf(rec.get("sum(ArrDelay)"));
+				sum += (Long)rec.get("sum(ArrDelay)");
 			}
 		}
 		assertEquals(-63278, sum);
@@ -761,12 +761,12 @@ public class MassiveDataPipelineSqlTest extends MassiveDataPipelineBaseTestClass
 		MDPSql mdpsql = MDPSqlBuilder.newBuilder().add(airlinesamplesql, "airline", airlineheader, airsqltype)
 				.setHdfs(hdfsfilepath)
 				.setPipelineConfig(pipelineconfig).setSql(statement).build();
-		List<List<CSVRecord>> records = (List<List<CSVRecord>>) mdpsql.collect(true, null);
+		List<List<Map<String,Object>>> records = (List<List<Map<String,Object>>>) mdpsql.collect(true, null);
 		long sum = 0;
-		for (List<CSVRecord> recs : records) {
-			for (CSVRecord rec : recs) {
+		for (List<Map<String,Object>> recs : records) {
+			for (Map<String,Object> rec : recs) {
 				log.info(rec);
-				sum += Long.valueOf(rec.get("count()"));
+				sum += (Long)rec.get("count()");
 			}
 		}
 		assertEquals(45957, sum);

@@ -54,7 +54,6 @@ import com.github.mdc.common.LaunchContainers;
 import com.github.mdc.common.LoadJar;
 import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.MDCNodesResources;
-import com.github.mdc.common.MDCProperties;
 import com.github.mdc.common.MassiveDataPipelineConstants;
 import com.github.mdc.common.PipelineConfig;
 import com.github.mdc.common.Resources;
@@ -628,71 +627,86 @@ public class FileBlocksPartitionerHDFS {
 			throws MassiveDataPipelineException {
 		var cpu = resources.getNumberofprocessors() - 2;
 		var cr = new ArrayList<ContainerResources>();
-		var actualmemory = (resources.getFreememory()-500*MDCConstants.MB);
-		if (actualmemory < (128 * MDCConstants.MB)) {
-			throw new MassiveDataPipelineException(MassiveDataPipelineConstants.MEMORYALLOCATIONERROR);
-		}
-		if (totalmem < (512 * MDCConstants.MB) && totalmem > (0) && cpu >= 1) {
-			if (actualmemory >= totalmem) {
-				var res = new ContainerResources();
-				res.setCpu(1);
-				res.setMinmemory(1024);
-				res.setMaxmemory(1024);
-				res.setGctype(gctype);
-				cr.add(res);
-				return cr;
-			} else {
-				throw new MassiveDataPipelineException(MassiveDataPipelineConstants.INSUFFMEMORYALLOCATIONERROR);
-			}
-		}
-		if (cpu == 0)
-			return cr;
-		var maxmemory = actualmemory / cpu;
-		var maxmemmb = maxmemory / MDCConstants.MB;
-		if (totalmem < maxmemory && cpu >= 1) {
+		if(pipelineconfig.getContaineralloc().equals(MDCConstants.CONTAINER_ALLOC_DEFAULT)) {
 			var res = new ContainerResources();
-			res.setCpu(1);
-			res.setMinmemory(totalmem / MDCConstants.MB);
-			res.setMaxmemory(totalmem / MDCConstants.MB);
+			var actualmemory = (resources.getFreememory()-256*MDCConstants.MB);
+			if (actualmemory < (128 * MDCConstants.MB)) {
+				throw new MassiveDataPipelineException(MassiveDataPipelineConstants.MEMORYALLOCATIONERROR);
+			}
+			res.setCpu(cpu);
+			var meminmb = actualmemory/MDCConstants.MB;
+			res.setMinmemory(meminmb);
+			res.setMaxmemory(meminmb);
 			res.setGctype(gctype);
 			cr.add(res);
 			return cr;
-		}
-
-		while (true) {
-			cpu--;
-			totalmem -= maxmemory;
-			if (cpu >= 0 && totalmem >= 0) {
-				var res = new ContainerResources();
-				res.setCpu(1);
-				res.setMinmemory(maxmemmb);
-				res.setMaxmemory(maxmemmb);
-				res.setGctype(gctype);
-				cr.add(res);
-			} else {
-				cpu++;
-				totalmem += maxmemory;
-				break;
+		}else {
+			var actualmemory = (resources.getFreememory()-256*MDCConstants.MB);
+			if (actualmemory < (128 * MDCConstants.MB)) {
+				throw new MassiveDataPipelineException(MassiveDataPipelineConstants.MEMORYALLOCATIONERROR);
 			}
-		}
-		if (cpu >= 1) {
 			if (totalmem < (512 * MDCConstants.MB) && totalmem > (0) && cpu >= 1) {
-				var res = new ContainerResources();
-				res.setCpu(1);
-				res.setMinmemory(1024);
-				res.setMaxmemory(1024);
-				res.setGctype(gctype);
-				cr.add(res);
-
-			}else {
+				if (actualmemory >= totalmem) {
+					var res = new ContainerResources();
+					res.setCpu(1);
+					res.setMinmemory(1024);
+					res.setMaxmemory(1024);
+					res.setGctype(gctype);
+					cr.add(res);
+					return cr;
+				} else {
+					throw new MassiveDataPipelineException(MassiveDataPipelineConstants.INSUFFMEMORYALLOCATIONERROR);
+				}
+			}
+			if (cpu == 0)
+				return cr;
+			var maxmemory = actualmemory / cpu;
+			var maxmemmb = maxmemory / MDCConstants.MB;
+			if (totalmem < maxmemory && cpu >= 1) {
 				var res = new ContainerResources();
 				res.setCpu(1);
 				res.setMinmemory(totalmem / MDCConstants.MB);
 				res.setMaxmemory(totalmem / MDCConstants.MB);
 				res.setGctype(gctype);
 				cr.add(res);
+				return cr;
 			}
+	
+			while (true) {
+				cpu--;
+				totalmem -= maxmemory;
+				if (cpu >= 0 && totalmem >= 0) {
+					var res = new ContainerResources();
+					res.setCpu(1);
+					res.setMinmemory(maxmemmb);
+					res.setMaxmemory(maxmemmb);
+					res.setGctype(gctype);
+					cr.add(res);
+				} else {
+					cpu++;
+					totalmem += maxmemory;
+					break;
+				}
+			}
+			if (cpu >= 1) {
+				if (totalmem < (512 * MDCConstants.MB) && totalmem > (0) && cpu >= 1) {
+					var res = new ContainerResources();
+					res.setCpu(1);
+					res.setMinmemory(1024);
+					res.setMaxmemory(1024);
+					res.setGctype(gctype);
+					cr.add(res);
+	
+				}else {
+					var res = new ContainerResources();
+					res.setCpu(1);
+					res.setMinmemory(totalmem / MDCConstants.MB);
+					res.setMaxmemory(totalmem / MDCConstants.MB);
+					res.setGctype(gctype);
+					cr.add(res);
+				}
+			}
+			return cr;
 		}
-		return cr;
 	}
 }

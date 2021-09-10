@@ -75,7 +75,7 @@ public class MassiveDataCruncherTestSuite extends MassiveDataPipelineBase {
 			pipelineconfig.setNumberofcontainers("1");
 			pipelineconfig.setMode(MDCConstants.MODE_NORMAL);
 			pipelineconfig.setBatchsize("1");
-			System.setProperty("HADOOP_HOME", "E:\\DEVELOPMENT\\hadoop\\hadoop-3.2.1");
+			System.setProperty("HADOOP_HOME", "C:\\DEVELOPMENT\\hadoop\\hadoop-3.3.1");
 			ByteBufferPoolDirect.init(3);
 			pipelineconfig.setBlocksize("20");
 			testingserver = new TestingServer(zookeeperport);

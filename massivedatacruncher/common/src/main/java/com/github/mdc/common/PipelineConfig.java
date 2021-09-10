@@ -36,6 +36,7 @@ public class PipelineConfig implements Cloneable{
 	private String executioncount;
 	private String tsshaenabled;
 	private STORAGE storage;
+	private String containeralloc;
 	public void setKryoOutput(Output output) {
 		this.output = output;
 	}
@@ -217,6 +218,14 @@ public class PipelineConfig implements Cloneable{
 	}
 	public void setStorage(STORAGE storage) {
 		this.storage = storage;
+	}
+	
+	public String getContaineralloc() {
+		return Objects.isNull(containeralloc)
+				?MDCProperties.get().getProperty(MDCConstants.CONTAINER_ALLOC, MDCConstants.CONTAINER_ALLOC_DEFAULT):containeralloc;
+	}
+	public void setContaineralloc(String containeralloc) {
+		this.containeralloc = containeralloc;
 	}
 	@Override
 	public PipelineConfig clone() throws CloneNotSupportedException {
