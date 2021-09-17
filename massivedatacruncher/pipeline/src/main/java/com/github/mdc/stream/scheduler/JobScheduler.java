@@ -423,7 +423,7 @@ public class JobScheduler {
 			}
 			return finalstageoutput;
 		} catch (Exception ex) {
-			log.info(MassiveDataPipelineConstants.JOBSCHEDULERERROR, ex);
+			log.error(MassiveDataPipelineConstants.JOBSCHEDULERERROR, ex);
 			throw new MassiveDataPipelineException(MassiveDataPipelineConstants.JOBSCHEDULERERROR, ex);
 		} finally {
 			if (!Objects.isNull(job.igcache)) {
@@ -693,34 +693,34 @@ public class JobScheduler {
 			es = newExecutor(batchsize);
 			List<ExecutionResult<MassiveDataStreamTaskSchedulerThread, Boolean>> erroredresult = null;			
 
-			var temdstdtmap = new ConcurrentHashMap<String, List<MassiveDataStreamTaskSchedulerThread>>();
-
-			var configexec = new DexecutorConfig<MassiveDataStreamTaskSchedulerThread, Boolean>(es,
-					new DAGScheduler(graph.vertexSet().size()));
-			var dexecutor = new DefaultDexecutor<MassiveDataStreamTaskSchedulerThread, Boolean>(configexec);
-
-			var vertices = graph.vertexSet();
-			List<MassiveDataStreamTaskSchedulerThread> mdststs = null;
-			for (var mdstst : vertices) {
-				var predecessors = Graphs.predecessorListOf(graph, mdstst);
-				if (predecessors.size() > 0) {
-					for (var pred : predecessors) {
-						dexecutor.addDependency(pred, mdstst);
-						log.info(pred + "->" + mdstst);
-					}
-				} else {
-					dexecutor.addIndependent(mdstst);
-					mdststs = temdstdtmap.get(mdstst.getHostPort());
-					if (Objects.isNull(mdststs)) {
-						mdststs = new ArrayList<>();
-						temdstdtmap.put(mdstst.getHostPort(), mdststs);
-					}
-					mdststs.add(mdstst);
-				
-				}
-			}			
+			var temdstdtmap = new ConcurrentHashMap<String, List<MassiveDataStreamTaskSchedulerThread>>();			
 
 			while (!completed && numexecute < executioncount) {
+				temdstdtmap.clear();;
+				var configexec = new DexecutorConfig<MassiveDataStreamTaskSchedulerThread, Boolean>(es,
+						new DAGScheduler(graph.vertexSet().size()));
+				var dexecutor = new DefaultDexecutor<MassiveDataStreamTaskSchedulerThread, Boolean>(configexec);
+
+				var vertices = graph.vertexSet();
+				List<MassiveDataStreamTaskSchedulerThread> mdststs = null;
+				for (var mdstst : vertices) {
+					var predecessors = Graphs.predecessorListOf(graph, mdstst);
+					if (predecessors.size() > 0) {
+						for (var pred : predecessors) {
+							dexecutor.addDependency(pred, mdstst);
+							log.info(pred + "->" + mdstst);
+						}
+					} else {
+						dexecutor.addIndependent(mdstst);
+						mdststs = temdstdtmap.get(mdstst.getHostPort());
+						if (Objects.isNull(mdststs)) {
+							mdststs = new ArrayList<>();
+							temdstdtmap.put(mdstst.getHostPort(), mdststs);
+						}
+						mdststs.add(mdstst);
+					
+					}
+				}
 				var config = new DexecutorConfig<DefaultDexecutor<MassiveDataStreamTaskSchedulerThread, Boolean>, List<ExecutionResult<MassiveDataStreamTaskSchedulerThread, Boolean>>>(
 						newExecutor(temdstdtmap.keySet().size()), new DAGSchedulerInitialStage());
 				var initialstageexecutor = new DefaultDexecutor<DefaultDexecutor<MassiveDataStreamTaskSchedulerThread, Boolean>, List<ExecutionResult<MassiveDataStreamTaskSchedulerThread, Boolean>>>(
@@ -761,10 +761,14 @@ public class JobScheduler {
 			}
 			Utils.writeKryoOutput(kryo, pipelineconfig.getOutput(), "Number of Executions: " + numexecute);
 			if (!completed) {
+				StringBuilder sb = new StringBuilder();
 				erroredresult.forEach(exec -> {
-					Utils.writeKryoOutput(kryo, pipelineconfig.getOutput(), MDCConstants.NEWLINE);
-					Utils.writeKryoOutput(kryo, pipelineconfig.getOutput(), exec.getId().getTask().stagefailuremessage);
+					sb.append(MDCConstants.NEWLINE);
+					sb.append(exec.getId().getTask().stagefailuremessage);
 				});
+				if(!sb.isEmpty()) {
+					throw new MassiveDataPipelineException(MassiveDataPipelineConstants.ERROREDTASKS.replace("%s", ""+executioncount)+sb.toString());
+				}
 			}
 		} catch (Exception ex) {
 			log.error(MassiveDataPipelineConstants.JOBSCHEDULEPARALLELEXECUTIONERROR, ex);

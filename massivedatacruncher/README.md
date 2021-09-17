@@ -240,6 +240,14 @@ docker run --name yarntss -v /dataset:/mnt/sftp/dataset --ip 172.18.0.90 -p 2222
 Running Data Pipeline examples
 ------------------------------
 
+To run examples download the dataset from the url
+
+https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/HG7NV7
+
+and create the /airline1989 folder in hadoop and upload the file after decompressing the file 1989.csv.bz2 to 1989.csv
+
+Also download the carriers file (carriers.csv) from the above url create /carriers folder in hadoop and upload the file carriers.csv
+
 Stream Reduce
 ------------
 tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.examples.tests.StreamReduceIgnite  hdfs://127.0.0.1:9000 /airline1989 /carriers /reduceout
@@ -249,6 +257,8 @@ tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.examples.t
 tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.examples.tests.StreamReduceNormalInMemory hdfs://127.0.0.1:9000 /airline1989 /carriers /reduceout
 
 tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.examples.tests.StreamReduceNormalInMemoryDisk hdfs://127.0.0.1:9000 /airline1989 /carriers /reduceout
+
+tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.examples.tests.StreamReduceNormalInMemoryDiskDAGCycleException hdfs://127.0.0.1:9000 /airline1989 /carriers /reduceout
 
 tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.examples.tests.StreamReduceNormalDisk hdfs://127.0.0.1:9000 /airline1989 /carriers /reduceout
 

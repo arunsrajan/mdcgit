@@ -1,8 +1,11 @@
 package com.github.mdc.stream.scheduler;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.PrintWriter;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -14,6 +17,7 @@ import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.MDCMapReducePhaseClassLoader;
 import com.github.mdc.common.MDCProperties;
 import com.github.mdc.common.PipelineConfig;
+import com.github.mdc.common.Task;
 import com.github.mdc.common.Utils;
 import com.github.mdc.stream.Pipeline;
 
@@ -69,16 +73,23 @@ public class MassiveDataStreamTaskScheduler implements Runnable{
 			pipelineconfig.setJar(mrjar);
 			pipelineconfig.setKryoOutput(new Output(tss.getOutputStream()));
 			var pipeline = (Pipeline) main.newInstance();
+			pipelineconfig.setJobname(main.getSimpleName());
 			pipeline.runPipeline(args, pipelineconfig);
 			message = "Successfully Completed executing the Job from main class "+mainclass;
+			Utils.writeKryoOutput(kryo, new Output(tss.getOutputStream()), message);
 		}
 		catch(Throwable ex) {
 			log.error("Job execution Error, See cause below \n",ex);
-			message = "Unable to Execute the tasks, See Logs for further cause, Message is: "+ExceptionUtils.getMessage(ex); 
+			try (var baos = new ByteArrayOutputStream();) {
+				var failuremessage = new PrintWriter(baos, true, StandardCharsets.UTF_8);
+				ex.printStackTrace(failuremessage);
+				Utils.writeKryoOutput(kryo, new Output(tss.getOutputStream()), new String(baos.toByteArray()));
+			} catch (Exception e) {
+				log.error("Message Send Failed for Task Failed: ", e);
+			}
 		}
 		finally {
 			try {
-				Utils.writeKryoOutput(kryo, new Output(tss.getOutputStream()), message);
 				Utils.writeKryoOutput(kryo, new Output(tss.getOutputStream()), "quit");
 				tss.close();
 			} catch (Exception ex) {

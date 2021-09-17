@@ -874,6 +874,7 @@ public sealed class MassiveDataPipeline<I1> extends AbstractPipeline permits Csv
 			jobCreated.jm.jobid = jobCreated.id;
 			PipelineConfig pipelineconfig = ((MassiveDataPipeline)root).pipelineconfig;
 			jobCreated.jm.mode = Boolean.parseBoolean(pipelineconfig.getYarn())?MDCConstants.YARN:Boolean.parseBoolean(pipelineconfig.getMesos())?MDCConstants.MESOS:Boolean.parseBoolean(pipelineconfig.getJgroups())?MDCConstants.JGROUPS:Boolean.parseBoolean(pipelineconfig.getLocal())?MDCConstants.LOCAL:MDCConstants.EXECMODE_DEFAULT;
+			jobCreated.jm.jobname = pipelineconfig.getJobname();
 			MDCJobMetrics.put(jobCreated.jm);
 		}
 		

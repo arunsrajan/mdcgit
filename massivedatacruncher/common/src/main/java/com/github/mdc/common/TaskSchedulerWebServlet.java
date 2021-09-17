@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -94,25 +95,31 @@ public class TaskSchedulerWebServlet extends HttpServlet {
 						"""
 						<table style=\"color:#000000;border-collapse:collapse;width:800px;height:30px\" align=\"center\" border=\"1.0\">
 				<thead>
-				<th>Job Id</th>
-				<th>Files Used</th>
-				<th>Job Mode</th>
-				<th>Total Files Size (MB)</th>
-				<th>Total Files Blocks</th>
-				<th>Stages</th>
-				<th>Containers Allocated</th>
+				<th>Job<Br/>Id</th>
+				<th>Job<Br/>Name</th>
+				<th>Files<Br/>Used</th>
+				<th>Job<Br/>Mode</th>
+				<th>Total<Br/>Files<Br/>Size (MB)</th>
+				<th>Total<Br/>Files<Br/>Blocks</th>
+				<th>Container<Br/>Resources</th>
+				<th>Containers<Br/>Allocated</th>
 				<th>Nodes</th>
-				<th>Job Start Time</th>
-				<th>Job Completion Time</th>
-				<th>Total Time Taken (Sec)</th>
+				<th>Job<Br/>Start<Br/>Time</th>
+				<th>Job<Br/>Completion<Br/>Time</th>
+				<th>Total<Br/>Time<Br/>Taken (Sec)</th>
 				</thead>
 				<tbody>""");
 				var jms = MDCJobMetrics.get();
-				for (var jid : jms.keySet()) {
-					var jm = jms.get(jid);
+				var jobmetrics = jms.keySet().stream().map(key->jms.get(key)).sorted((jm1,jm2)->{
+					return (int) (jm2.jobstarttime-jm1.jobstarttime);
+				}).collect(Collectors.toList());
+				for (var jm : jobmetrics) {
 					builder.append("<tr bgcolor=\"" + getColor(i++) + "\">");
 					builder.append("<td>");
 					builder.append(jm.jobid);
+					builder.append("</td>");
+					builder.append("<td>");
+					builder.append(Objects.isNull(jm.jobname)?MDCConstants.EMPTY:jm.jobname);
 					builder.append("</td>");
 					builder.append("<td>");
 					builder.append(toHtml(jm.files));
@@ -127,7 +134,7 @@ public class TaskSchedulerWebServlet extends HttpServlet {
 					builder.append(jm.totalblocks);
 					builder.append("</td>");
 					builder.append("<td>");
-					builder.append(toHtml(jm.stages));
+					builder.append(jm.containerresources);
 					builder.append("</td>");
 					builder.append("<td>");
 					builder.append(toHtml(jm.containersallocated));
@@ -159,7 +166,7 @@ public class TaskSchedulerWebServlet extends HttpServlet {
 	public String getColor(int i) {
 		{
 			if (i % 2 == 0) {
-				return "#45aaaa";
+				return "#6E5CDB";
 			} else {
 				return "#ddddddd";
 			}

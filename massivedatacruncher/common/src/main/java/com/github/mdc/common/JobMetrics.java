@@ -11,6 +11,7 @@ public class JobMetrics {
 	public String mode;
 	public double totalfilesize;
 	public List<String> stages;
+	public List<String> containerresources;
 	public Map<String,Double> containersallocated;
 	public Set<String> nodes;
 	public long totalblocks;

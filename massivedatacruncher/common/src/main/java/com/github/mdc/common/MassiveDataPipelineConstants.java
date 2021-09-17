@@ -78,4 +78,7 @@ public class MassiveDataPipelineConstants {
 	public static final String MEMORYALLOCATIONERROR = "Memory allocation error Minimum Required Memory is 128 MB";
 	public static final String INSUFFMEMORYALLOCATIONERROR = "Insufficient memory, required memory is greater than the available memory";
 	public static final String INSUFFNODESERROR = "Insufficient computing nodes";
+	public static final String RESOURCESDOWNRESUBMIT = "Resources (TaskExecutor) %s down while manipulating blocks, Please Resubmit";
+	public static final String INSUFFNODESFORDATANODEERROR = "Insufficient computing nodes for datanode %s,available computing nodes are %d";
+	public static final String ERROREDTASKS = "Task execution exceeded the limit %s, See the Errored tasks, please find below for cause: ";
 }

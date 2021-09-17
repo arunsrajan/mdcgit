@@ -356,7 +356,7 @@ public class FileBlocksPartitionerHDFS {
 		}
 	}
 	
-	protected void getContainersBalanced(List<BlocksLocation> bls) {
+	protected void getContainersBalanced(List<BlocksLocation> bls) throws MassiveDataPipelineException {
 		log.debug("Entered FileBlocksPartitionerHDFS.getContainersBalanced");
 		var hostcontainermap = containers.stream()
 				.collect(Collectors.groupingBy(key->key.split(MDCConstants.UNDERSCORE)[0],
@@ -366,6 +366,9 @@ public class FileBlocksPartitionerHDFS {
 		List<String> hostportcontainer;
 		for (var b : bls) {
 			hostportcontainer = hostcontainermap.get(b.block[0].hp.split(MDCConstants.COLON)[0]);
+			if(Objects.isNull(hostportcontainer)) {
+				throw new MassiveDataPipelineException(MassiveDataPipelineConstants.INSUFFNODESFORDATANODEERROR.replace("%s", b.block[0].hp).replace("%d", hostcontainermap.toString()));
+			}
 			var container = hostportcontainer.stream().sorted((xref1, xref2) -> {
 						return containerallocatecount.get(xref1).compareTo(containerallocatecount.get(xref2));
 					}).findFirst().get();
@@ -500,6 +503,9 @@ public class FileBlocksPartitionerHDFS {
 				long totalallocatedremaining = nodestotalblockmem.get(host) - totalallocated.get();
 				List<ContainerResources> contres = null;
 				if(totalallocatedremaining > 0) {
+					if(Objects.isNull(resources.get(te))) {
+						throw new MassiveDataPipelineException(MassiveDataPipelineConstants.RESOURCESDOWNRESUBMIT.replace("%s", te));
+					}
 					contres=getNumberOfContainersAuto(pipelineconfig.getGctype(),nodestotalblockmem.get(host),
 							resources.get(te));
 				}
@@ -562,6 +568,19 @@ public class FileBlocksPartitionerHDFS {
 			}
 			job.containers = containers;
 			job.nodes = nodeschoosen;
+			job.jm.containerresources = job.lcs.stream().flatMap(lc -> {
+				var crs = lc.getCla().getCr();
+				return crs.stream().map(cr -> {
+					var node = lc.getNodehostport().split(MDCConstants.UNDERSCORE)[0];
+					var cpu = cr.getCpu();
+					var maxmemory = cr.getMaxmemory();
+					var port = cr.getPort();
+					return MDCConstants.BR + node + MDCConstants.UNDERSCORE + port + MDCConstants.COLON + MDCConstants.BR + MDCConstants.CPUS
+							+ MDCConstants.EQUAL + cpu + MDCConstants.BR + MDCConstants.MEM + MDCConstants.EQUAL
+							+ maxmemory;
+
+				}).collect(Collectors.toList()).stream();
+			}).collect(Collectors.toList());
 			log.debug("Total Containers Allocated:"	+ totalcontainersallocated);
 		} catch (Exception ex) {
 			log.error(MassiveDataPipelineConstants.TASKEXECUTORSALLOCATIONERROR, ex);

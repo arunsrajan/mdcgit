@@ -395,4 +395,7 @@ public class MDCConstants {
 	
 	public static final String DFSOUTPUTFILEREPLICATION = "dfs.replication";
 	public static final String DFSOUTPUTFILEREPLICATION_DEFAULT = "1";
+	
+	public static final String BR = "<BR/>";
+	
 }

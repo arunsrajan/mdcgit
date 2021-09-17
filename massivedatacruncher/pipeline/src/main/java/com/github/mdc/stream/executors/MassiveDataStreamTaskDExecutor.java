@@ -915,12 +915,11 @@ public sealed class MassiveDataStreamTaskDExecutor implements
 			completed = true;
 			hbtss.setTimetakenseconds(timetakenseconds);
 			hbtss.pingOnce(task.stageid, task.taskid, task.hostport, Task.TaskStatus.COMPLETED, timetakenseconds, null);
-		} catch (Exception ex) {
+		} catch (Throwable ex) {
 			log.error("Failed Stage: " + stagePartition, ex);
 			completed = true;
 			log.error("Failed Stage: " + task.stageid, ex);
-			try {
-				var baos = new ByteArrayOutputStream();
+			try (var baos = new ByteArrayOutputStream();) {
 				var failuremessage = new PrintWriter(baos, true, StandardCharsets.UTF_8);
 				ex.printStackTrace(failuremessage);
 				hbtss.pingOnce(task.stageid, task.taskid, task.hostport, Task.TaskStatus.FAILED, 0.0,
