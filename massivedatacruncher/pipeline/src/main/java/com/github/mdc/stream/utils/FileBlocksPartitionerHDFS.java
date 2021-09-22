@@ -54,6 +54,7 @@ import com.github.mdc.common.LaunchContainers;
 import com.github.mdc.common.LoadJar;
 import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.MDCNodesResources;
+import com.github.mdc.common.MDCNodesResourcesSnapshot;
 import com.github.mdc.common.MassiveDataPipelineConstants;
 import com.github.mdc.common.PipelineConfig;
 import com.github.mdc.common.Resources;
@@ -399,7 +400,7 @@ public class FileBlocksPartitionerHDFS {
 			return dnxrefs.get(key).stream();
 		}).collect(Collectors.toMap(xref -> xref, xref -> 0l));
 		if (issa) {
-			resources = MDCNodesResources.get();
+			resources = MDCNodesResourcesSnapshot.get();
 			var computingnodes = resources.keySet().stream().map(node -> node.split(MDCConstants.UNDERSCORE)[0])
 					.collect(Collectors.toList());
 			for (var b : bls) {
@@ -591,7 +592,7 @@ public class FileBlocksPartitionerHDFS {
 	}
 
 	protected void getNodesResourcesSortedAuto(List<BlocksLocation> bls,Map<String,Long> nodestotalblockmem) {
-		resources = MDCNodesResources.get();
+		resources = MDCNodesResourcesSnapshot.get();
 		
 		var nodeswithhostonly = bls.stream().flatMap(bl -> {
 			var block1 = bl.block[0];
@@ -658,6 +659,8 @@ public class FileBlocksPartitionerHDFS {
 			res.setMaxmemory(meminmb);
 			res.setGctype(gctype);
 			cr.add(res);
+			resources.setFreememory(0l);
+			resources.setNumberofprocessors(0);
 			return cr;
 		}else {
 			var actualmemory = (resources.getFreememory()-256*MDCConstants.MB);
@@ -672,6 +675,8 @@ public class FileBlocksPartitionerHDFS {
 					res.setMaxmemory(1024);
 					res.setGctype(gctype);
 					cr.add(res);
+					resources.setFreememory(actualmemory - totalmem);
+					resources.setNumberofprocessors(cpu-1);
 					return cr;
 				} else {
 					throw new MassiveDataPipelineException(MassiveDataPipelineConstants.INSUFFMEMORYALLOCATIONERROR);
@@ -688,6 +693,8 @@ public class FileBlocksPartitionerHDFS {
 				res.setMaxmemory(totalmem / MDCConstants.MB);
 				res.setGctype(gctype);
 				cr.add(res);
+				resources.setFreememory(maxmemory - totalmem);
+				resources.setNumberofprocessors(cpu-1);
 				return cr;
 			}
 	
@@ -704,25 +711,9 @@ public class FileBlocksPartitionerHDFS {
 				} else {
 					cpu++;
 					totalmem += maxmemory;
+					resources.setFreememory(maxmemory * cpu);
+					resources.setNumberofprocessors(cpu);
 					break;
-				}
-			}
-			if (cpu >= 1) {
-				if (totalmem < (512 * MDCConstants.MB) && totalmem > (0) && cpu >= 1) {
-					var res = new ContainerResources();
-					res.setCpu(1);
-					res.setMinmemory(1024);
-					res.setMaxmemory(1024);
-					res.setGctype(gctype);
-					cr.add(res);
-	
-				}else {
-					var res = new ContainerResources();
-					res.setCpu(1);
-					res.setMinmemory(totalmem / MDCConstants.MB);
-					res.setMaxmemory(totalmem / MDCConstants.MB);
-					res.setGctype(gctype);
-					cr.add(res);
 				}
 			}
 			return cr;

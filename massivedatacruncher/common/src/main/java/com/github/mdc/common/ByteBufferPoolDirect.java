@@ -2,16 +2,16 @@ package com.github.mdc.common;
 
 import java.util.Objects;
 
-import com.github.pbbl.heap.ByteBufferPool;
+import com.github.pbbl.direct.DirectByteBufferPool;
 
 public class ByteBufferPoolDirect {
-	private static ByteBufferPool pool = null;
+	private static DirectByteBufferPool pool = null;
 	public static void init(int maxpoolsize) {
 		if(Objects.isNull(pool)) {
-			ByteBufferPoolDirect.pool=new ByteBufferPool();
+			ByteBufferPoolDirect.pool=new DirectByteBufferPool();
 		}
 	}
-	public static ByteBufferPool get() {
+	public static DirectByteBufferPool get() {
 		return ByteBufferPoolDirect.pool;
 	}
 }

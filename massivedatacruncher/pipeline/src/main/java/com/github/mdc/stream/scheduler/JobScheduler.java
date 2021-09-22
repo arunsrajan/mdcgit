@@ -66,6 +66,7 @@ import com.github.dexecutor.core.task.ExecutionResult;
 import com.github.dexecutor.core.task.TaskProvider;
 import com.github.mdc.common.BlocksLocation;
 import com.github.mdc.common.CloseStagesGraphExecutor;
+import com.github.mdc.common.ContainerResources;
 import com.github.mdc.common.DAGEdge;
 import com.github.mdc.common.DestroyContainer;
 import com.github.mdc.common.DestroyContainers;
@@ -80,6 +81,7 @@ import com.github.mdc.common.JobStage;
 import com.github.mdc.common.LoadJar;
 import com.github.mdc.common.MDCCache;
 import com.github.mdc.common.MDCConstants;
+import com.github.mdc.common.MDCNodesResourcesSnapshot;
 import com.github.mdc.common.MDCProperties;
 import com.github.mdc.common.MassiveDataPipelineConstants;
 import com.github.mdc.common.NetworkUtil;
@@ -413,9 +415,11 @@ public class JobScheduler {
 			job.jm.jobcompletiontime = System.currentTimeMillis();
 			Utils.writeKryoOutput(kryo, pipelineconfig.getOutput(),
 					"Completed Job in " + ((job.jm.jobcompletiontime - job.jm.jobstarttime) / 1000.0) + " seconds");
+			log.info("Completed Job in " + ((job.jm.jobcompletiontime - job.jm.jobstarttime) / 1000.0) + " seconds");
 			job.jm.totaltimetaken = (job.jm.jobcompletiontime - job.jm.jobstarttime) / 1000.0;
 			Utils.writeKryoOutput(kryo, pipelineconfig.getOutput(),
-					"Job Metrics " + new ObjectMapper().writeValueAsString(job.jm));			
+					"Job Metrics " + new ObjectMapper().writeValueAsString(job.jm));
+			log.info("Job Metrics " + new ObjectMapper().writeValueAsString(job.jm));
 			if (Boolean.TRUE.equals(islocal)) {
 				var srresultstore = new SoftReference<ConcurrentMap<String, OutputStream>>(resultstream);
 				srresultstore.clear();
@@ -558,6 +562,12 @@ public class JobScheduler {
 							Set<String> containers = GlobalContainerAllocDealloc.getNodecontainers().get(node);
 							containers.remove(container);
 							Utils.writeObject(node, dc);
+							ContainerResources cr = chpcres.get(container);
+							long freememory = MDCNodesResourcesSnapshot.get().get(node).getFreememory();
+							long cpu = MDCNodesResourcesSnapshot.get().get(node).getNumberofprocessors();
+							MDCNodesResourcesSnapshot.get().get(node).setFreememory(freememory + cr.getMaxmemory()*MDCConstants.MB);
+							MDCNodesResourcesSnapshot.get().get(node).setNumberofprocessors((int) (cpu + cr.getCpu()));
+							
 						} else {
 							deallocateall = false;
 						}
@@ -569,6 +579,10 @@ public class JobScheduler {
 					dc.setContainerid(job.containerid);
 					log.debug("Destroying Containers with id:" + job.containerid + " for the hosts: " + nodes);
 					for (var node : nodes) {
+						long freememory = MDCNodesResourcesSnapshot.get().get(node).getFreememory();
+						MDCNodesResourcesSnapshot.get().get(node).setFreememory(freememory + 256 * MDCConstants.MB);
+						int cpu = MDCNodesResourcesSnapshot.get().get(node).getNumberofprocessors();
+						MDCNodesResourcesSnapshot.get().get(node).setNumberofprocessors((int) (cpu + 2));
 						Utils.writeObject(node, dc);
 					}
 				}

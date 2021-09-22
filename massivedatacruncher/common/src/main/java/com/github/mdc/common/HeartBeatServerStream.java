@@ -149,6 +149,7 @@ public sealed class HeartBeatServerStream implements HeartBeatServerMBean,HeartB
 				}
 				if(resources.getNodeport()!=null) {
 					hpresmap.put(resources.getNodeport(), resources);
+					MDCNodesResourcesSnapshot.get().putIfAbsent(resources.getNodeport(), resources);
 				}
 				log.debug("Exiting Receiver.receive");
 			} catch (Exception e) {
@@ -162,6 +163,7 @@ public sealed class HeartBeatServerStream implements HeartBeatServerMBean,HeartB
 		}
 		else {
 			MDCNodesResources.put(hpresmap);
+			MDCNodesResourcesSnapshot.put(hpresmap);
 			channel.connect(MDCConstants.TSS +MDCConstants.HYPHEN+MDCProperties.get().getProperty(MDCConstants.CLUSTERNAME));
 		}
 		log.debug("Exiting HeartBeatServerStream.start");
