@@ -562,16 +562,14 @@ public class JobScheduler {
 							Set<String> containers = GlobalContainerAllocDealloc.getNodecontainers().get(node);
 							containers.remove(container);
 							Utils.writeObject(node, dc);
-							ContainerResources cr = chpcres.get(container);
+							ContainerResources cr = chpcres.remove(container);
 							long freememory = MDCNodesResourcesSnapshot.get().get(node).getFreememory();
 							long cpu = MDCNodesResourcesSnapshot.get().get(node).getNumberofprocessors();
 							MDCNodesResourcesSnapshot.get().get(node).setFreememory(freememory + cr.getMaxmemory()*MDCConstants.MB);
 							MDCNodesResourcesSnapshot.get().get(node).setNumberofprocessors((int) (cpu + cr.getCpu()));
-							
 						} else {
 							deallocateall = false;
 						}
-						chpcres.remove(container);
 					}
 				}
 				if (deallocateall) {

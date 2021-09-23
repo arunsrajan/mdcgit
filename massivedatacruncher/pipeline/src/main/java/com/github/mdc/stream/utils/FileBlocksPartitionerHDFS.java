@@ -288,16 +288,16 @@ public class FileBlocksPartitionerHDFS {
 	protected void destroyContainers() throws MassiveDataPipelineException {
 		try {
 			GlobalContainerAllocDealloc.getGlobalcontainerallocdeallocsem().acquire();
-			if(!Objects.isNull(job.nodes)) {
+			if (!Objects.isNull(job.nodes)) {
 				var nodes = job.nodes;
 				var contcontainerids = GlobalContainerAllocDealloc.getContainercontainerids();
 				var chpcres = GlobalContainerAllocDealloc.getHportcrs();
 				var deallocateall = true;
-				if(!Objects.isNull(job.containers)) {
-					for(String container:job.containers){
+				if (!Objects.isNull(job.containers)) {
+					for (String container : job.containers) {
 						var cids = contcontainerids.get(container);
 						cids.remove(job.containerid);
-						if(cids.isEmpty()) {
+						if (cids.isEmpty()) {
 							contcontainerids.remove(container);
 							var dc = new DestroyContainer();
 							dc.setContainerid(job.containerid);
@@ -306,17 +306,25 @@ public class FileBlocksPartitionerHDFS {
 							Set<String> containers = GlobalContainerAllocDealloc.getNodecontainers().get(node);
 							containers.remove(container);
 							Utils.writeObject(node, dc);
-						}else {
+							ContainerResources cr = chpcres.remove(container);
+							long freememory = MDCNodesResourcesSnapshot.get().get(node).getFreememory();
+							long cpu = MDCNodesResourcesSnapshot.get().get(node).getNumberofprocessors();
+							MDCNodesResourcesSnapshot.get().get(node).setFreememory(freememory + cr.getMaxmemory()*MDCConstants.MB);
+							MDCNodesResourcesSnapshot.get().get(node).setNumberofprocessors((int) (cpu + cr.getCpu()));
+						} else {
 							deallocateall = false;
 						}
-						chpcres.remove(container);
 					}
 				}
-				if(deallocateall) {
+				if (deallocateall) {
 					var dc = new DestroyContainers();
 					dc.setContainerid(job.containerid);
-					log.debug("Destroying Containers with id:"+job.containerid+" for the hosts: "+nodes);
+					log.debug("Destroying Containers with id:" + job.containerid + " for the hosts: " + nodes);
 					for (var node : nodes) {
+						long freememory = MDCNodesResourcesSnapshot.get().get(node).getFreememory();
+						MDCNodesResourcesSnapshot.get().get(node).setFreememory(freememory + 256 * MDCConstants.MB);
+						int cpu = MDCNodesResourcesSnapshot.get().get(node).getNumberofprocessors();
+						MDCNodesResourcesSnapshot.get().get(node).setNumberofprocessors((int) (cpu + 2));
 						Utils.writeObject(node, dc);
 					}
 				}
@@ -503,7 +511,7 @@ public class FileBlocksPartitionerHDFS {
 				var cr = getTotalMemoryContainersReuseAllocationAuto(te, nodestotalblockmem.get(host),totalallocated);
 				long totalallocatedremaining = nodestotalblockmem.get(host) - totalallocated.get();
 				List<ContainerResources> contres = null;
-				if(totalallocatedremaining > 0) {
+				if(totalallocatedremaining > 0 && cr.isEmpty()) {
 					if(Objects.isNull(resources.get(te))) {
 						throw new MassiveDataPipelineException(MassiveDataPipelineConstants.RESOURCESDOWNRESUBMIT.replace("%s", te));
 					}
