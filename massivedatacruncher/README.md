@@ -334,6 +334,8 @@ tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.examples.t
 
 tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.examples.tests.StreamAggSumCountArrDelayInMemoryDisk hdfs://127.0.0.1:9000 /airline1989 /reduceout 1024 1
 
+tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.examples.tests.StreamAggSumCountArrDelayCoalesceInMemoryDisk hdfs://127.0.0.1:9000 /airline1989 /reduceout 1024 1
+
 tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.examples.tests.StreamAggSumCountArrDelayJGroups hdfs://127.0.0.1:9000 /airline1989 /reduceout 1024 1
 
 tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.examples.tests.StreamAggSumCountArrDelayLocal hdfs://127.0.0.1:9000 /airline1989 /reduceout 1024 1
@@ -350,7 +352,7 @@ tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.examples.t
 Running MR Job examples
 ------------------------
 
-tasksubmitter.cmd -jar ../modules/examples.jar -args "com.github.mdc.mr.examples.join.MrJobArrivalDelayNormal /airline1989 /carriers /mapreduceout 64"
+tasksubmitter.cmd -jar ../modules/examples.jar -args "com.github.mdc.mr.examples.join.MrJobArrivalDelayNormal /airline1989 /carriers /mapreduceout 128 10"
 
 
 tasksubmitter.cmd -jar ../modules/examples.jar -args "com.github.mdc.mr.examples.join.MrJobArrivalDelayYARN /airline1989 /carriers /mapreduceout 3 1024" 

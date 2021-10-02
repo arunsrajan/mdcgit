@@ -206,7 +206,7 @@ public class MassiveDataTaskExecutorDeamon implements MassiveDataTaskExecutorDea
 									.parseInt(MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULER_PINGDELAY));
 							var host = NetworkUtil
 									.getNetworkAddress(MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_HOST));
-							log.debug("Starting Hearbeat for container id: " + containerid);
+							log.info("Starting Hearbeat for container id: " + containerid);
 							hbss.init(0, teport, host, 0, pingdelay, containerid);
 							hbss.ping();
 							containeridhbss.put(containerid, hbss);

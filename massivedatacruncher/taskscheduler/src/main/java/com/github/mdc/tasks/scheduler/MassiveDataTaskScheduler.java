@@ -48,7 +48,7 @@ public class MassiveDataTaskScheduler implements Runnable {
 			} else {
 				args = Arrays.copyOfRange(args, 1, args.length);
 			}
-			var jc = JobConfigrationBuilder.newBuilder().build();
+			var jc = JobConfigurationBuilder.newBuilder().build();
 			jc.setMrjar(mrjar);
 			var tssos = tss.getOutputStream();
 			var output = new Output(tssos);

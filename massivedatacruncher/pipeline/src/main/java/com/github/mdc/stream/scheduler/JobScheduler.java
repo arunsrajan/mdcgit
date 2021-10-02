@@ -78,6 +78,7 @@ import com.github.mdc.common.HeartBeatTaskSchedulerStream;
 import com.github.mdc.common.Job;
 import com.github.mdc.common.JobApp;
 import com.github.mdc.common.JobStage;
+import com.github.mdc.common.KryoPool;
 import com.github.mdc.common.LoadJar;
 import com.github.mdc.common.MDCCache;
 import com.github.mdc.common.MDCConstants;
@@ -418,8 +419,8 @@ public class JobScheduler {
 			log.info("Completed Job in " + ((job.jm.jobcompletiontime - job.jm.jobstarttime) / 1000.0) + " seconds");
 			job.jm.totaltimetaken = (job.jm.jobcompletiontime - job.jm.jobstarttime) / 1000.0;
 			Utils.writeKryoOutput(kryo, pipelineconfig.getOutput(),
-					"Job Metrics " + new ObjectMapper().writeValueAsString(job.jm));
-			log.info("Job Metrics " + new ObjectMapper().writeValueAsString(job.jm));
+					"Job Metrics " + job.jm);
+			log.info("Job Metrics " + job.jm);
 			if (Boolean.TRUE.equals(islocal)) {
 				var srresultstore = new SoftReference<ConcurrentMap<String, OutputStream>>(resultstream);
 				srresultstore.clear();
@@ -1077,7 +1078,7 @@ public class JobScheduler {
 	 * @author arun The task provider for the standlone mode stage execution.
 	 */
 	private class DAGScheduler implements TaskProvider<MassiveDataStreamTaskSchedulerThread, Boolean> {
-		
+		Logger log = Logger.getLogger(DAGScheduler.class);
 		double totaltasks;
 		double counttaskscomp=0;
 		double counttasksfailed=0;
@@ -1129,7 +1130,14 @@ public class JobScheduler {
 								printresult.acquire();
 								counttaskscomp++;
 								double percentagecompleted = Math.floor((counttaskscomp / totaltasks) * 100.0);
+								Object[] input=mdststlocal.getTask().input;
+								Utils.writeKryoOutput(kryo, pipelineconfig.getOutput(), "Task Completed ("+(Objects.isNull(input)?task:input[0])+") "
+										+ task.timetakenseconds + " seconds\n");
+								log.info("Task Completed ("+(Objects.isNull(input)?task:input[0])+") "
+										+ task.timetakenseconds + " seconds\n");
 								Utils.writeKryoOutput(kryo, pipelineconfig.getOutput(), "\nPercentage Completed TE("+mdststlocal.getHostPort()+") "
+										+ percentagecompleted + "% \n");
+								log.info("\nPercentage Completed TE("+mdststlocal.getHostPort()+") "
 										+ percentagecompleted + "% \n");
 								job.jm.containersallocated.put(mdststlocal.getHostPort(),percentagecompleted);								
 								printresult.release();
@@ -1147,6 +1155,8 @@ public class JobScheduler {
 								printresult.acquire();
 								counttasksfailed++;
 								Utils.writeKryoOutput(kryo, pipelineconfig.getOutput(), "\nPercentage Failed TE("+mdststlocal.getHostPort()+") "
+										+ Math.floor((counttasksfailed / totaltasks) * 100.0) + "% \n");
+								log.info("\nPercentage Failed TE("+mdststlocal.getHostPort()+") "
 										+ Math.floor((counttasksfailed / totaltasks) * 100.0) + "% \n");
 								printresult.release();
 								cdl.countDown();
@@ -1534,12 +1544,13 @@ public class JobScheduler {
 		var hdfsfilepath = MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULERSTREAM_HDFSNN);
 		log.debug("HDFS Path TO Retrieve Final Task Output: " + hdfsfilepath);
 		var configuration = new Configuration();
+		var kryofinal = KryoPool.getKryoPool().obtain();
 		try (var hdfs = FileSystem.newInstance(new URI(hdfsfilepath), configuration);) {
 			// Get the final stages of graph with no successors.
 			var mdstts = getFinalPhasesWithNoSuccessors(graph, mdststs);
 			log.debug("Final Stages: " + mdstts);
 			Utils.writeKryoOutput(kryo, pipelineconfig.getOutput(), "Final Stages: " + mdstts);
-			var kryofinal = Utils.getKryoNonDeflateSerializer();
+			
 			if (Boolean.TRUE.equals(isignite)) {
 				int partition = 0;
 				for (var mdstt : mdstts) {
@@ -1604,7 +1615,9 @@ public class JobScheduler {
 			log.error(MassiveDataPipelineConstants.JOBSCHEDULERFINALSTAGERESULTSERROR, ex);
 			throw new MassiveDataPipelineException(MassiveDataPipelineConstants.JOBSCHEDULERFINALSTAGERESULTSERROR, ex);
 		} finally {
-
+			if(!Objects.isNull(kryofinal)) {
+				 KryoPool.getKryoPool().free(kryofinal);
+			}
 		}
 
 	}
@@ -1712,7 +1725,11 @@ public class JobScheduler {
 					+ (task.jobid + MDCConstants.HYPHEN + task.stageid + MDCConstants.HYPHEN + task.taskid
 							+ MDCConstants.DATAFILEEXTN));			
 			try (var input = new Input(new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path)))));) {
-				var obj = kryo.readClassAndObject(input);				
+				
+				var obj = new ArrayList<>(); 
+				while(input.available()>0)	{
+					obj.add(kryo.readClassAndObject(input));				
+				}
 				if (job.trigger == Job.TRIGGER.SAVERESULTSTOFILE) {
 					writeOutputToFile(partition,obj);
 				}

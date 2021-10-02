@@ -12,7 +12,7 @@ import com.github.mdc.mr.examples.common.MassiveDataMRJobBase;
 import com.github.mdc.mr.examples.join.AirlineArrDelayDataMapper;
 import com.github.mdc.mr.examples.join.AirlineDepDelayDataMapper;
 import com.github.mdc.mr.examples.join.CarriersDataMapper;
-import com.github.mdc.tasks.scheduler.JobConfigrationBuilder;
+import com.github.mdc.tasks.scheduler.JobConfigurationBuilder;
 import com.github.mdc.tasks.scheduler.JobConfiguration;
 import com.github.mdc.tasks.scheduler.MdcJob;
 import com.github.mdc.tasks.scheduler.MdcJobBuilder;
@@ -24,7 +24,7 @@ public class MrJobArrivalDelayTest extends MassiveDataMRJobBase{
 	static Logger log = Logger.getLogger(MrJobArrivalDelayTest.class);
 	@Test
 	public void airlinesCarrierJoinUserDefined128() {
-		JobConfiguration jc = JobConfigrationBuilder.newBuilder().setBlocksize("128").
+		JobConfiguration jc = JobConfigurationBuilder.newBuilder().setBlocksize("128").
 		setBatchsize("1").
 		setNumberofcontainers("1").
 		setMinmem(heapsize).
@@ -49,7 +49,7 @@ public class MrJobArrivalDelayTest extends MassiveDataMRJobBase{
 	
 	@Test
 	public void airlinesCarrierJoinUserDefined64() {
-		JobConfiguration jc = JobConfigrationBuilder.newBuilder().setBlocksize("64").
+		JobConfiguration jc = JobConfigurationBuilder.newBuilder().setBlocksize("64").
 		setBatchsize("1").
 		setNumberofcontainers("1").
 		setMinmem(heapsize).
@@ -76,7 +76,7 @@ public class MrJobArrivalDelayTest extends MassiveDataMRJobBase{
 	@Test
 	public void airlinesCarrierJoinTest2() {
 
-		JobConfiguration jc = JobConfigrationBuilder.newBuilder().setBlocksize("64").
+		JobConfiguration jc = JobConfigurationBuilder.newBuilder().setBlocksize("64").
 		setBatchsize("1").
 		setNumberofcontainers("1").
 		setMinmem(heapsize).
@@ -102,7 +102,7 @@ public class MrJobArrivalDelayTest extends MassiveDataMRJobBase{
 	@Test
 	public void airlinesCarrierJoinTest3() {
 
-		JobConfiguration jc = JobConfigrationBuilder.newBuilder().setBlocksize("64").
+		JobConfiguration jc = JobConfigurationBuilder.newBuilder().setBlocksize("64").
 		setBatchsize("2").
 		setNumberofcontainers("1").
 		setMinmem(heapsize).

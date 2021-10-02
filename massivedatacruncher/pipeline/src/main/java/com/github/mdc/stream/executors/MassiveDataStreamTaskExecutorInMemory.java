@@ -85,7 +85,7 @@ public sealed class MassiveDataStreamTaskExecutorInMemory extends MassiveDataStr
 		log.debug("Entered MassiveDataStreamTaskExecutorInMemory.createIntermediateDataToFS");
 		try {
 			var path = getIntermediateDataFSFilePath(task);
-			var baos = new ByteArrayOutputStream(32*MDCConstants.MB);
+			var baos = new ByteArrayOutputStream();
 			resultstream.put(path, baos);
 			log.debug("Exiting MassiveDataStreamTaskExecutorInMemory.createIntermediateDataToFS");
 			return baos;

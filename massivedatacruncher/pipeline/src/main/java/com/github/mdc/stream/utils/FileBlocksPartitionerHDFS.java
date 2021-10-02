@@ -80,26 +80,6 @@ public class FileBlocksPartitionerHDFS {
 	ConcurrentMap<String, Resources> resources;
 	CountDownLatch cdl;
 	List<String> containerswithhostport;
-	/**
-	 * Check whether the block data is already available in cache
-	 * 
-	 * @param blockslocation
-	 * @return
-	 * @throws Exception
-	 */
-	protected String getContainerCacheAvailability(BlocksLocation blockslocation) throws Exception {
-		var cacheavailable = new CacheAvailability();
-		cacheavailable.bl = blockslocation;
-		cacheavailable.response = false;
-		cacheavailable.available = false;
-		for (var te : containers) {
-			cacheavailableresponse = (CacheAvailability) Utils.getResultObjectByInput(te, cacheavailable);
-			if (cacheavailableresponse != null && cacheavailableresponse.available && cacheavailableresponse.response) {
-				return te;
-			}
-		}
-		return null;
-	}
 
 	Boolean ismesos, isyarn, islocal, isjgroups, isblocksuserdefined, isignite;
 	List<Integer> ports;
@@ -223,7 +203,7 @@ public class FileBlocksPartitionerHDFS {
 				sendDataToIgniteServer(totalblockslocation,((MassiveDataPipelineIgnite)mdsroots.iterator().next()).getHdfspath());
 			}else if(isjgroups||!islocal&&!isyarn&&!ismesos){
 				getDnXref(totalblockslocation, true);
-				getTaskExecutorsAuto(totalblockslocation);
+				getTaskExecutors(totalblockslocation);
 				getContainersBalanced(totalblockslocation);
 				job.jm.nodes = nodeschoosen;
 				job.jm.containersallocated = containers.stream().collect(Collectors.toMap(key->key, value->0d));
@@ -466,7 +446,7 @@ public class FileBlocksPartitionerHDFS {
 		log.debug("Exiting FileBlocksPartitionerHDFS.getDnXref");
 	}
 	
-	public List<ContainerResources> getTotalMemoryContainersReuseAllocationAuto(String nodehp, long totalmemorytoalloc, AtomicLong totalallocated) {
+	public List<ContainerResources> getTotalMemoryContainersReuseAllocation(String nodehp, long totalmemorytoalloc, AtomicLong totalallocated) {
 		var containers = GlobalContainerAllocDealloc.getNodecontainers().get(nodehp);
 		var cres = new ArrayList<ContainerResources>();
 		if(!Objects.isNull(containers)) {
@@ -486,36 +466,36 @@ public class FileBlocksPartitionerHDFS {
 		return cres;
 	}
 	
-	protected void getTaskExecutorsAuto(List<BlocksLocation> bls) throws MassiveDataPipelineException {
+	protected void getTaskExecutors(List<BlocksLocation> bls) throws MassiveDataPipelineException {
 		try {
 			GlobalContainerAllocDealloc.getGlobalcontainerallocdeallocsem().acquire();
 			var containerid = MDCConstants.CONTAINER+MDCConstants.HYPHEN+Utils.getUniqueID();
+			job.containerid = containerid;
 			containers = new ArrayList<>();
 			nodeschoosen = new HashSet<>();
 			var loadjar = new LoadJar();
 			loadjar.mrjar = pipelineconfig.getJar();
 			var totalcontainersallocated = 0;
 			var nodestotalblockmem = new ConcurrentHashMap<String,Long>();
-			getNodesResourcesSortedAuto(bls,nodestotalblockmem);
+			getNodesResourcesSorted(bls,nodestotalblockmem);
 			job.lcs = new ArrayList<>();
 			for (var te : nodessorted) {
 				var host = te.split("_")[0];
 				var lc = new LaunchContainers();
-				job.containerid = containerid;
 				lc.setNodehostport(te);
 				lc.setContainerid(containerid);
 				lc.setJobid(job.id);
 				lc.setMode(isignite?LaunchContainers.MODE.IGNITE:LaunchContainers.MODE.NORMAL);
 				var cla = new ContainerLaunchAttributes();
 				AtomicLong totalallocated =  new AtomicLong();
-				var cr = getTotalMemoryContainersReuseAllocationAuto(te, nodestotalblockmem.get(host),totalallocated);
+				var cr = getTotalMemoryContainersReuseAllocation(te, nodestotalblockmem.get(host),totalallocated);
 				long totalallocatedremaining = nodestotalblockmem.get(host) - totalallocated.get();
 				List<ContainerResources> contres = null;
 				if(totalallocatedremaining > 0 && cr.isEmpty()) {
 					if(Objects.isNull(resources.get(te))) {
 						throw new MassiveDataPipelineException(MassiveDataPipelineConstants.RESOURCESDOWNRESUBMIT.replace("%s", te));
 					}
-					contres=getNumberOfContainersAuto(pipelineconfig.getGctype(),nodestotalblockmem.get(host),
+					contres=getNumberOfContainers(pipelineconfig.getGctype(),nodestotalblockmem.get(host),
 							resources.get(te));
 				}
 				job.lcs.add(lc);
@@ -599,7 +579,7 @@ public class FileBlocksPartitionerHDFS {
 		}
 	}
 
-	protected void getNodesResourcesSortedAuto(List<BlocksLocation> bls,Map<String,Long> nodestotalblockmem) {
+	protected void getNodesResourcesSorted(List<BlocksLocation> bls,Map<String,Long> nodestotalblockmem) {
 		resources = MDCNodesResourcesSnapshot.get();
 		
 		var nodeswithhostonly = bls.stream().flatMap(bl -> {
@@ -651,7 +631,7 @@ public class FileBlocksPartitionerHDFS {
 				.collect(Collectors.toList());
 	}
 
-	protected List<ContainerResources> getNumberOfContainersAuto(String gctype, long totalmem, Resources resources)
+	protected List<ContainerResources> getNumberOfContainers(String gctype, long totalmem, Resources resources)
 			throws MassiveDataPipelineException {
 		var cpu = resources.getNumberofprocessors() - 2;
 		var cr = new ArrayList<ContainerResources>();

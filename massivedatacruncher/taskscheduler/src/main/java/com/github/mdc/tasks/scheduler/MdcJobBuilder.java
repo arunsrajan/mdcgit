@@ -54,7 +54,7 @@ public class MdcJobBuilder {
 	@SuppressWarnings("rawtypes")
 	public Callable<List<DataCruncherContext>> build() {
 		if (jobconf == null) {
-			jobconf = JobConfigrationBuilder.newBuilder().build();
+			jobconf = JobConfigurationBuilder.newBuilder().build();
 		}
 		if(jobconf.getExecmode().equals(MDCConstants.EXECMODE_IGNITE)) {
 			return new MdcJobIgnite(jobname, jobconf, mappers, combiners, reducers, outputfolder);

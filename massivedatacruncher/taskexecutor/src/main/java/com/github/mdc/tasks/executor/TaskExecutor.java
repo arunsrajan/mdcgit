@@ -211,8 +211,7 @@ public class TaskExecutor implements Runnable {
 					buf.put(data);
 					buf.flip();
 					log.info("Buffer Allocated: "+buf);
-					try(SnappyInputStream sis = new SnappyInputStream(new ByteBufferInputStream(buf));
-							Input input = new Input(sis)){
+					try(SnappyInputStream sis = new SnappyInputStream(new ByteBufferInputStream(buf));){
 						Utils.writeResultToHDFS(rdwt.hdfsurl,rdwt.filepath,sis);
 						rdwt.status = RemoteDataWriterTask.ResultWriteStatus.SUCCESS;
 					}					

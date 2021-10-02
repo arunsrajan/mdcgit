@@ -123,6 +123,7 @@ public sealed class HeartBeatServerStream implements HeartBeatServerMBean,HeartB
 							nodes = leftmembers.stream().map(address->address.toString()).
 									filter(addresss->!addresss.equals(schedulerHostPort)).collect(Collectors.toList());
 							MDCNodesResources.get().keySet().retainAll(nodes);
+							MDCNodesResourcesSnapshot.get().keySet().retainAll(nodes);
 						}
 					}
 				}
@@ -163,7 +164,6 @@ public sealed class HeartBeatServerStream implements HeartBeatServerMBean,HeartB
 		}
 		else {
 			MDCNodesResources.put(hpresmap);
-			MDCNodesResourcesSnapshot.put(hpresmap);
 			channel.connect(MDCConstants.TSS +MDCConstants.HYPHEN+MDCProperties.get().getProperty(MDCConstants.CLUSTERNAME));
 		}
 		log.debug("Exiting HeartBeatServerStream.start");
@@ -263,30 +263,31 @@ public sealed class HeartBeatServerStream implements HeartBeatServerMBean,HeartB
 		}
 		else {
 			channel.connect(MDCConstants.TSS +MDCConstants.HYPHEN+MDCProperties.get().getProperty(MDCConstants.CLUSTERNAME));
-		}
-		var runtime = Runtime.getRuntime();
-		var resources = new Resources();
-		pingtimer = new Timer();
+			var runtime = Runtime.getRuntime();
+			var resources = new Resources();
+			pingtimer = new Timer();
 
-		// Timer tasks scheduler to send updates frequently.
-		pingtimer.schedule(new TimerTask() {
+			// Timer tasks scheduler to send updates frequently.
+			pingtimer.schedule(new TimerTask() {
 
-			@Override
-			public void run() {
-				resources.nodeport = networkaddress + MDCConstants.UNDERSCORE + serverport;
-				resources.totalmemory = runtime.totalMemory();
-				resources.freememory = getTotalAvailablePhysicalMemory();
-				resources.numberofprocessors = runtime.availableProcessors();
-				resources.totaldisksize = totaldiskspace();
-				resources.usabledisksize = usablediskspace();
-				resources.physicalmemorysize = getPhysicalMemory();
-				try {
-					channel.send(new ObjectMessage(null, resources));
-				} catch (Exception ex) {
-					log.debug("Heartbeat ping error, See Cause below: \n", ex);
+				@Override
+				public void run() {
+					resources.nodeport = networkaddress + MDCConstants.UNDERSCORE + serverport;
+					resources.totalmemory = runtime.totalMemory();
+					resources.freememory = getTotalAvailablePhysicalMemory();
+					resources.numberofprocessors = runtime.availableProcessors();
+					resources.totaldisksize = totaldiskspace();
+					resources.usabledisksize = usablediskspace();
+					resources.physicalmemorysize = getPhysicalMemory();
+					try {
+						channel.send(new ObjectMessage(null, resources));
+					} catch (Exception ex) {
+						log.debug("Heartbeat ping error, See Cause below: \n", ex);
+					}
 				}
-			}
-		}, pingdelay, pingdelay);
+			}, pingdelay, pingdelay);
+		}
+		
 		log.debug("Exiting HeartBeatServerStream.ping");
 	}
 	
@@ -395,6 +396,7 @@ public sealed class HeartBeatServerStream implements HeartBeatServerMBean,HeartB
 				if (object instanceof Resources resources) {
 					if ((prevresources != null && prevresources == resources) || prevresources == null) {
 						hpresmap.remove(key);
+						MDCNodesResourcesSnapshot.get().remove(key);
 					}
 					prevresources = resources;
 				}

@@ -3,7 +3,7 @@ package com.github.mdc.tasks.scheduler;
 import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.MDCProperties;
 
-public class JobConfigrationBuilder {
+public class JobConfigurationBuilder {
 	String hdfsurl;
 	String tstempdir;
 	String tshost;
@@ -29,7 +29,8 @@ public class JobConfigrationBuilder {
 	String ignitebackup;
 	String yarnrm;
 	String yarnscheduler;
-	private JobConfigrationBuilder() {
+	String containeralloc;
+	private JobConfigurationBuilder() {
 		hdfsurl = MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULER_HDFSNN);
 		tstempdir = MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULER_TMP_DIR);
 		tshost = MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULER_HOST);
@@ -56,78 +57,79 @@ public class JobConfigrationBuilder {
 		ignitebackup = MDCProperties.get().getProperty(MDCConstants.IGNITEBACKUP, MDCConstants.IGNITEBACKUP_DEFAULT);
 		yarnrm = MDCProperties.get().getProperty(MDCConstants.YARNRM, MDCConstants.YARNRM_DEFAULT);;
 		yarnscheduler = MDCProperties.get().getProperty(MDCConstants.YARNSCHEDULER, MDCConstants.YARNSCHEDULER_DEFAULT);;;
+		containeralloc = MDCProperties.get().getProperty(MDCConstants.CONTAINER_ALLOC, MDCConstants.CONTAINER_ALLOC_DEFAULT);
 	}
 
-	public static JobConfigrationBuilder newBuilder() {
-		return new JobConfigrationBuilder();
+	public static JobConfigurationBuilder newBuilder() {
+		return new JobConfigurationBuilder();
 	}
 
-	public JobConfigrationBuilder setHdfsurl(String hdfsurl) {
+	public JobConfigurationBuilder setHdfsurl(String hdfsurl) {
 		this.hdfsurl = hdfsurl;
 		return this;
 	}
 
-	public JobConfigrationBuilder setTstempdir(String tstempdir) {
+	public JobConfigurationBuilder setTstempdir(String tstempdir) {
 		this.tstempdir = tstempdir;
 		return this;
 	}
 
-	public JobConfigrationBuilder setTshost(String tshost) {
+	public JobConfigurationBuilder setTshost(String tshost) {
 		this.tshost = tshost;
 		return this;
 	}
 
-	public JobConfigrationBuilder setTsport(String tsport) {
+	public JobConfigurationBuilder setTsport(String tsport) {
 		this.tsport = tsport;
 		return this;
 	}
 
-	public JobConfigrationBuilder setZkport(String zkport) {
+	public JobConfigurationBuilder setZkport(String zkport) {
 		this.zkport = zkport;
 		return this;
 	}
 
-	public JobConfigrationBuilder setZkretrydelay(String zkretrydelay) {
+	public JobConfigurationBuilder setZkretrydelay(String zkretrydelay) {
 		this.zkretrydelay = zkretrydelay;
 		return this;
 	}
 
-	public JobConfigrationBuilder setTspingdelay(String tspingdelay) {
+	public JobConfigurationBuilder setTspingdelay(String tspingdelay) {
 		this.tspingdelay = tspingdelay;
 		return this;
 	}
 
-	public JobConfigrationBuilder setTsrescheduledelay(String tsrescheduledelay) {
+	public JobConfigurationBuilder setTsrescheduledelay(String tsrescheduledelay) {
 		this.tsrescheduledelay = tsrescheduledelay;
 		return this;
 	}
 
-	public JobConfigrationBuilder setTsinitialdelay(String tsinitialdelay) {
+	public JobConfigurationBuilder setTsinitialdelay(String tsinitialdelay) {
 		this.tsinitialdelay = tsinitialdelay;
 		return this;
 	}
 
-	public JobConfigrationBuilder setTepingdelay(String tepingdelay) {
+	public JobConfigurationBuilder setTepingdelay(String tepingdelay) {
 		this.tepingdelay = tepingdelay;
 		return this;
 	}
 
-	public JobConfigrationBuilder setHdfs(Boolean hdfs) {
+	public JobConfigurationBuilder setHdfs(Boolean hdfs) {
 		this.hdfs = hdfs;
 		return this;
 	}
 
-	public JobConfigrationBuilder setBlocksize(String blocksize) {
+	public JobConfigurationBuilder setBlocksize(String blocksize) {
 		this.blocksize = blocksize;
 		return this;
 	}
 
-	public JobConfigrationBuilder setBatchsize(String batchsize) {
+	public JobConfigurationBuilder setBatchsize(String batchsize) {
 		this.batchsize = batchsize;
 		return this;
 	}
 
-	public JobConfigrationBuilder setNumofreducers(String numofreducers) {
+	public JobConfigurationBuilder setNumofreducers(String numofreducers) {
 		this.numofreducers = numofreducers;
 		return this;
 	}
@@ -136,7 +138,7 @@ public class JobConfigrationBuilder {
 		return new JobConfiguration(hdfsurl, tstempdir, tshost, tsport, zkport, zkretrydelay, tspingdelay,
 				tsrescheduledelay, tsinitialdelay, tepingdelay, hdfs, blocksize, batchsize, numofreducers, minmem,
 				maxmem, gctype, numberofcontainers, isblocksuserdefined, execmode, taskexeccount, 
-				ignitemulticastgroup, ignitebackup, yarnrm, yarnscheduler);
+				ignitemulticastgroup, ignitebackup, yarnrm, yarnscheduler, containeralloc);
 		
 	}
 
@@ -144,7 +146,7 @@ public class JobConfigrationBuilder {
 		return minmem;
 	}
 
-	public JobConfigrationBuilder setMinmem(String minmem) {
+	public JobConfigurationBuilder setMinmem(String minmem) {
 		this.minmem = minmem;
 		return this;
 	}
@@ -153,7 +155,7 @@ public class JobConfigrationBuilder {
 		return maxmem;
 	}
 
-	public JobConfigrationBuilder setMaxmem(String maxmem) {
+	public JobConfigurationBuilder setMaxmem(String maxmem) {
 		this.maxmem = maxmem;
 		return this;
 	}
@@ -162,7 +164,7 @@ public class JobConfigrationBuilder {
 		return gctype;
 	}
 
-	public JobConfigrationBuilder setGctype(String gctype) {
+	public JobConfigurationBuilder setGctype(String gctype) {
 		this.gctype = gctype;
 		return this;
 	}
@@ -173,12 +175,12 @@ public class JobConfigrationBuilder {
 
 	
 	
-	public JobConfigrationBuilder setIsblocksuserdefined(String isblocksuserdefined) {
+	public JobConfigurationBuilder setIsblocksuserdefined(String isblocksuserdefined) {
 		this.isblocksuserdefined = isblocksuserdefined;
 		return this;
 	}
 
-	public JobConfigrationBuilder setNumberofcontainers(String numberofcontainers) {
+	public JobConfigurationBuilder setNumberofcontainers(String numberofcontainers) {
 		this.numberofcontainers = numberofcontainers;
 		return this;
 	}
@@ -187,33 +189,38 @@ public class JobConfigrationBuilder {
 		return execmode;
 	}
 
-	public JobConfigrationBuilder setExecmode(String execmode) {
+	public JobConfigurationBuilder setExecmode(String execmode) {
 		this.execmode = execmode;
 		return this;
 	}
 
-	public JobConfigrationBuilder setTaskexeccount(String taskexeccount) {
+	public JobConfigurationBuilder setTaskexeccount(String taskexeccount) {
 		this.taskexeccount = taskexeccount;
 		return this;
 	}
 
-	public JobConfigrationBuilder setIgnitemulticastgroup(String ignitemulticastgroup) {
+	public JobConfigurationBuilder setIgnitemulticastgroup(String ignitemulticastgroup) {
 		this.ignitemulticastgroup = ignitemulticastgroup;
 		return this;
 	}
 
-	public JobConfigrationBuilder setIgnitebackup(String ignitebackup) {
+	public JobConfigurationBuilder setIgnitebackup(String ignitebackup) {
 		this.ignitebackup = ignitebackup;
 		return this;
 	}
 
-	public JobConfigrationBuilder setYarnrm(String yarnrm) {
+	public JobConfigurationBuilder setYarnrm(String yarnrm) {
 		this.yarnrm = yarnrm;
 		return this;
 	}
 
-	public JobConfigrationBuilder setYarnscheduler(String yarnscheduler) {
+	public JobConfigurationBuilder setYarnscheduler(String yarnscheduler) {
 		this.yarnscheduler = yarnscheduler;
+		return this;
+	}
+
+	public JobConfigurationBuilder setContaineralloc(String containeralloc) {
+		this.containeralloc = containeralloc;
 		return this;
 	}
 	

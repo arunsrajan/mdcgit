@@ -141,8 +141,8 @@ public class StreamUtils {
 	}
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private static Stream map(MapValuesFunction mapvaluesfunction, Stream stream) {
-		return stream.map(tuple2->Tuple.tuple(((Tuple2)tuple2).v1,mapvaluesfunction.apply(((Tuple2)tuple2).v2)));
+	private static Stream map(MapValuesFunction mapvaluesfunction, Stream<Tuple2> stream) {
+		return stream.map(tuple2->Tuple.tuple(tuple2.v1,mapvaluesfunction.apply(tuple2.v2)));
 	}
 	
 	

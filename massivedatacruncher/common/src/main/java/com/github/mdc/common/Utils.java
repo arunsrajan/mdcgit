@@ -249,7 +249,10 @@ public class Utils {
 		kryo.register(ClosureSerializer.Closure.class, new ClosureSerializer());
 		kryo.register(Vector.class);
 		kryo.register(ArrayList.class);
-		kryo.register(Tuple2.class);
+		CompatibleFieldSerializerConfig configtuple2 = new CompatibleFieldSerializerConfig();
+		configtuple2.setFieldsCanBeNull(true);
+		CompatibleFieldSerializer<Tuple2> cfs = new CompatibleFieldSerializer<Tuple2>(kryo,Tuple2.class,configtuple2);
+		kryo.register(Tuple2.class, cfs);
 		kryo.register(LinkedHashSet.class);
 		kryo.register(Tuple2Serializable.class);
 		CompatibleFieldSerializerConfig config = new CompatibleFieldSerializerConfig();
@@ -940,26 +943,24 @@ public class Utils {
 		return memusage>=percentage;
 	}
 	
-	public static void writeResultToHDFS(String hdfsurl,String filepath, InputStream is) throws Exception {
-
+	public static void writeResultToHDFS(String hdfsurl, String filepath, InputStream is) throws Exception {
 		try (var hdfs = FileSystem.get(new URI(hdfsurl), new Configuration());
-				var fsdos = hdfs.create(
-						new Path(hdfsurl + filepath), Short.parseShort(MDCProperties.get()
-						.getProperty(MDCConstants.DFSOUTPUTFILEREPLICATION
-								,MDCConstants.DFSOUTPUTFILEREPLICATION_DEFAULT)
-						));
+				var fsdos = hdfs.create(new Path(hdfsurl + filepath),
+						Short.parseShort(MDCProperties.get().getProperty(MDCConstants.DFSOUTPUTFILEREPLICATION,
+								MDCConstants.DFSOUTPUTFILEREPLICATION_DEFAULT)));
 				BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(fsdos));
 				Input input = new Input(is)) {
 			Kryo kryo = getKryoNonDeflateSerializer();
-			Object result = kryo.readClassAndObject(input);
-			if(result instanceof List res) {
-				for (var value : res) {
-					bw.write(value.toString());
-					bw.write(MDCConstants.NEWLINE);
+			while (input.available() > 0) {
+				Object result = kryo.readClassAndObject(input);
+				if (result instanceof List res) {
+					for (var value : res) {
+						bw.write(value.toString());
+						bw.write(MDCConstants.NEWLINE);
+					}
+				} else {
+					bw.write(result.toString());
 				}
-			}
-			else {
-				bw.write(result.toString());
 			}
 			bw.flush();
 			fsdos.hflush();
@@ -967,6 +968,6 @@ public class Utils {
 			log.error(MassiveDataPipelineConstants.FILEIOERROR, ioe);
 			throw new Exception(MassiveDataPipelineConstants.FILEIOERROR, ioe);
 		}
-	
+
 	}
 }

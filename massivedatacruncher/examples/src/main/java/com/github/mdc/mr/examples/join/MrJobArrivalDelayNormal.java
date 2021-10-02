@@ -11,7 +11,7 @@ public class MrJobArrivalDelayNormal implements com.github.mdc.tasks.scheduler.M
 	static Logger log = Logger.getLogger(MrJobArrivalDelayNormal.class);
 	@Override
 	public void runMRJob(String[] args, JobConfiguration jobconfiguration) {
-		jobconfiguration.setBatchsize("1");
+		jobconfiguration.setBatchsize(args[4]);
 		jobconfiguration.setNumofreducers("1");
 		jobconfiguration.setGctype(MDCConstants.ZGC);
 		jobconfiguration.setExecmode(MDCConstants.EXECMODE_DEFAULT);

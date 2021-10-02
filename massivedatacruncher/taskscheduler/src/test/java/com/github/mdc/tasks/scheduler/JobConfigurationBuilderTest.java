@@ -5,14 +5,14 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 import com.github.mdc.common.MDCConstants;
-import com.github.mdc.tasks.scheduler.JobConfigrationBuilder;
+import com.github.mdc.tasks.scheduler.JobConfigurationBuilder;
 import com.github.mdc.tasks.scheduler.JobConfiguration;
 
 public class JobConfigurationBuilderTest extends TaskSchedulerCommon{
 
 	@Test
 	public void testJobConfigurationBuilder() {
-		JobConfiguration jc = JobConfigrationBuilder.newBuilder().build();
+		JobConfiguration jc = JobConfigurationBuilder.newBuilder().build();
 		assertEquals("2",jc.getBatchsize());
 		assertEquals("67108864",jc.getBlocksize());
 		assertEquals(MDCConstants.GCCONFIG_DEFAULT,jc.getGctype());

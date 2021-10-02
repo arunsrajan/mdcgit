@@ -110,6 +110,7 @@ public class MdcJob implements Callable<List<DataCruncherContext>> {
 	int executorindex = 0;
 	ExecutorService es;
 	HeartBeatServer hbs;
+	JobMetrics jm = new JobMetrics();
 	public MdcJob(String jobname, JobConfiguration jobconf, List<MapperInput> mappers,
 			List<Class<?>> combiners, List<Class<?>> reducers, String outputfolder) {
 		this.jobname = jobname;
@@ -147,12 +148,12 @@ public class MdcJob implements Callable<List<DataCruncherContext>> {
 		}
 		log.debug("Exiting MdcJob.getContainersBalanced");
 	}
-	public void getTaskExecutorsAuto(List<BlocksLocation> bls, String appid, String containerid) throws MassiveDataPipelineException {
+	public void getTaskExecutors(List<BlocksLocation> bls, String appid, String containerid) throws MassiveDataPipelineException {
 		try {
 			containers = new ArrayList<>();			
 			var totalcontainersallocated = 0;
 			var nodestotalblockmem = new ConcurrentHashMap<String,Long>();
-			getNodesResourcesSortedAuto(bls,nodestotalblockmem);
+			getNodesResourcesSorted(bls,nodestotalblockmem);
 			var resources = MDCNodesResources.get();
 			for (var te : nodessorted) {
 				var host = te.split("_")[0];
@@ -162,7 +163,7 @@ public class MdcJob implements Callable<List<DataCruncherContext>> {
 				lc.setAppid(appid);
 				var cla = new ContainerLaunchAttributes();
 				var cr = 
-						getNumberOfContainersAuto(jobconf.getGctype(),nodestotalblockmem.get(host),
+						getNumberOfContainers(jobconf.getGctype(),nodestotalblockmem.get(host),
 								resources.get(te));
 				if (cr.isEmpty())
 					continue;
@@ -181,6 +182,19 @@ public class MdcJob implements Callable<List<DataCruncherContext>> {
 				}
 				totalcontainersallocated += cr.size();
 			}
+			jm.containerresources = lcs.stream().flatMap(lc -> {
+				var crs = lc.getCla().getCr();
+				return crs.stream().map(cr -> {
+					var node = lc.getNodehostport().split(MDCConstants.UNDERSCORE)[0];
+					var cpu = cr.getCpu();
+					var maxmemory = cr.getMaxmemory();
+					var port = cr.getPort();
+					return MDCConstants.BR + node + MDCConstants.UNDERSCORE + port + MDCConstants.COLON + MDCConstants.BR + MDCConstants.CPUS
+							+ MDCConstants.EQUAL + cpu + MDCConstants.BR + MDCConstants.MEM + MDCConstants.EQUAL
+							+ maxmemory;
+
+				}).collect(Collectors.toList()).stream();
+			}).collect(Collectors.toList());
 			log.debug("Total Containers Allocated:"	+ totalcontainersallocated);
 		} catch (Exception ex) {
 			log.error(MassiveDataPipelineConstants.TASKEXECUTORSALLOCATIONERROR, ex);
@@ -265,7 +279,7 @@ public class MdcJob implements Callable<List<DataCruncherContext>> {
 		}
 		log.debug("Exiting MdcJob.getDnXref");
 	}
-	void getNodesResourcesSortedAuto(List<BlocksLocation> bls,Map<String,Long> nodestotalblockmem) {
+	void getNodesResourcesSorted(List<BlocksLocation> bls,Map<String,Long> nodestotalblockmem) {
 		resources = MDCNodesResources.get();
 		
 		var nodeswithhostonly = bls.stream().flatMap(bl -> {
@@ -317,76 +331,81 @@ public class MdcJob implements Callable<List<DataCruncherContext>> {
 				.collect(Collectors.toList());
 	}
 
-	public List<ContainerResources> getNumberOfContainersAuto(String gctype, long totalmem, Resources resources) throws MapReduceException {
-		var cpu = resources.getNumberofprocessors() - 1;
+	protected List<ContainerResources> getNumberOfContainers(String gctype, long totalmem, Resources resources)
+			throws MassiveDataPipelineException {
+		var cpu = resources.getNumberofprocessors() - 2;
 		var cr = new ArrayList<ContainerResources>();
-		var actualmemory = (resources.getFreememory()) - 128 * MDCConstants.MB * cpu * Integer.parseInt(MDCProperties
-				.get().getProperty(MDCConstants.BYTEBUFFERPOOL_MAX, MDCConstants.BYTEBUFFERPOOL_MAX_DEFAULT));
-		if (actualmemory < (128 * MDCConstants.MB)) {
-			throw new MapReduceException(MapReduceException.MEMORYALLOCATIONERROR);
-		}
-		if (totalmem < (512 * MDCConstants.MB) && totalmem > (0) && cpu >= 1) {
-			if (actualmemory >= totalmem) {
-				var res = new ContainerResources();
-				res.setCpu(1);
-				res.setMinmemory(512);
-				res.setMaxmemory(512);
-				res.setGctype(gctype);
-				cr.add(res);
-				return cr;
-			} else {
-				throw new MapReduceException(MapReduceException.INSUFFMEMORYALLOCATIONERROR);
-			}
-		}
-		if (cpu == 0)
-			return cr;
-		var maxmemory = actualmemory / cpu;
-		var maxmemmb = maxmemory / MDCConstants.MB;
-		if (totalmem < maxmemory && cpu >= 1) {
+		if(jobconf.getContaineralloc().equals(MDCConstants.CONTAINER_ALLOC_DEFAULT)) {
 			var res = new ContainerResources();
-			res.setCpu(1);
-			res.setMinmemory(totalmem / MDCConstants.MB);
-			res.setMaxmemory(totalmem / MDCConstants.MB);
+			var actualmemory = (resources.getFreememory()-256*MDCConstants.MB);
+			if (actualmemory < (128 * MDCConstants.MB)) {
+				throw new MassiveDataPipelineException(MassiveDataPipelineConstants.MEMORYALLOCATIONERROR);
+			}
+			res.setCpu(cpu);
+			var meminmb = actualmemory/MDCConstants.MB;
+			res.setMinmemory(meminmb);
+			res.setMaxmemory(meminmb);
 			res.setGctype(gctype);
 			cr.add(res);
+			resources.setFreememory(0l);
+			resources.setNumberofprocessors(0);
 			return cr;
-		}
-
-		while (true) {
-			cpu--;
-			totalmem -= maxmemory;
-			if (cpu >= 0 && totalmem >= 0) {
-				var res = new ContainerResources();
-				res.setCpu(1);
-				res.setMinmemory(maxmemmb);
-				res.setMaxmemory(maxmemmb);
-				res.setGctype(gctype);
-				cr.add(res);
-			} else {
-				cpu++;
-				totalmem += maxmemory;
-				break;
+		}else {
+			var actualmemory = (resources.getFreememory()-256*MDCConstants.MB);
+			if (actualmemory < (128 * MDCConstants.MB)) {
+				throw new MassiveDataPipelineException(MassiveDataPipelineConstants.MEMORYALLOCATIONERROR);
 			}
-		}
-		if (cpu >= 1) {
 			if (totalmem < (512 * MDCConstants.MB) && totalmem > (0) && cpu >= 1) {
-				var res = new ContainerResources();
-				res.setCpu(1);
-				res.setMinmemory(512);
-				res.setMaxmemory(512);
-				res.setGctype(gctype);
-				cr.add(res);
-
-			}else {
+				if (actualmemory >= totalmem) {
+					var res = new ContainerResources();
+					res.setCpu(1);
+					res.setMinmemory(1024);
+					res.setMaxmemory(1024);
+					res.setGctype(gctype);
+					cr.add(res);
+					resources.setFreememory(actualmemory - totalmem);
+					resources.setNumberofprocessors(cpu-1);
+					return cr;
+				} else {
+					throw new MassiveDataPipelineException(MassiveDataPipelineConstants.INSUFFMEMORYALLOCATIONERROR);
+				}
+			}
+			if (cpu == 0)
+				return cr;
+			var maxmemory = actualmemory / cpu;
+			var maxmemmb = maxmemory / MDCConstants.MB;
+			if (totalmem < maxmemory && cpu >= 1) {
 				var res = new ContainerResources();
 				res.setCpu(1);
 				res.setMinmemory(totalmem / MDCConstants.MB);
 				res.setMaxmemory(totalmem / MDCConstants.MB);
 				res.setGctype(gctype);
 				cr.add(res);
+				resources.setFreememory(maxmemory - totalmem);
+				resources.setNumberofprocessors(cpu-1);
+				return cr;
 			}
+	
+			while (true) {
+				cpu--;
+				totalmem -= maxmemory;
+				if (cpu >= 0 && totalmem >= 0) {
+					var res = new ContainerResources();
+					res.setCpu(1);
+					res.setMinmemory(maxmemmb);
+					res.setMaxmemory(maxmemmb);
+					res.setGctype(gctype);
+					cr.add(res);
+				} else {
+					cpu++;
+					totalmem += maxmemory;
+					resources.setFreememory(maxmemory * cpu);
+					resources.setNumberofprocessors(cpu);
+					break;
+				}
+			}
+			return cr;
 		}
-		return cr;
 	}
 	int containercount = 0;
 	
@@ -444,7 +463,7 @@ public class MdcJob implements Callable<List<DataCruncherContext>> {
 					20000, 50000, new RetryForever(
 							Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.ZOOKEEPER_RETRYDELAY))));
 			cf.start();
-			var jm = new JobMetrics();
+			
 			jm.jobstarttime = System.currentTimeMillis();
 			var isblocksuserdefined = Boolean.parseBoolean(jobconf.getIsblocksuserdefined());
 			var applicationid = MDCConstants.MDCAPPLICATION + MDCConstants.HYPHEN + Utils.getUniqueID();
@@ -503,7 +522,7 @@ public class MdcJob implements Callable<List<DataCruncherContext>> {
 			}
 
 			getDnXref(allfilebls, true);
-			getTaskExecutorsAuto(allfilebls, applicationid, containerid);
+			getTaskExecutors(allfilebls, applicationid, containerid);
 			getContainersBalanced(allfilebls);
 			getContainers(containerid, applicationid);
 			containerscount = containers.size();
