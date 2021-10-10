@@ -32,7 +32,7 @@ set GCCONFIG=-XX:+UseG1GC -XX:+CMSClassUnloadingEnabled -Dsun.rmi.dgc.client.gcI
 
 IF EXIST %MDC_JAVA_HOME%\bin\java.exe (
 
-"%MDC_JAVA_HOME%\bin\java" --enable-preview %DEBUGCONFIG% %CLASSPATH% %MEMCONFIG% %GCCCONFIG% -Djava.net.preferIPv4Stack=true com.github.mdc.tasks.scheduler.MassiveDataTaskSchedulerDaemon
+"%MDC_JAVA_HOME%\bin\java" --enable-preview %DEBUGCONFIG% %CLASSPATH% %MEMCONFIG% %GCCCONFIG% -Djava.net.preferIPv4Stack=true com.github.mdc.tasks.scheduler.TaskSchedulerRunner
 
 ) ELSE (
  @echo on

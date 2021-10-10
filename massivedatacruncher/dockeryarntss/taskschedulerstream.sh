@@ -7,7 +7,7 @@ export JMXCONFIG="-Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.
 export ZOOKEEPERADMINCONFIG="-Dzookeeper.admin.serverPort=$ZOOADMINPORT"
 export CLASSPATH="-cp '.:../lib/*:../modules/*'"
 export DEBUGCONFIG="-Xdebug -Xrunjdwp:server=y,transport=dt_socket,address=$DEBUGPORT,suspend=n -Dorg.singam.debug.port=$DEBUGPORT"
-export CLASSNAME=com.github.mdc.stream.scheduler.MassiveDataStreamTaskSchedulerDaemon
+export CLASSNAME=com.github.mdc.stream.scheduler.StreamPipelineTaskSchedulerRunner
 mesos-master &
 cd /opt/mdc/bin
 echo java -classpath ".:/opt/mdc/lib/*:/opt/mdc/modules/*" "-Dzookeeper.hostport=$ZKHOSTPORT" "-Dtaskschedulerstream.host=$HOST" "-Dtaskschedulerstream.port=$PORT" $MEMCONFIGLOW $MEMCONFIGHIGH $GCCCONFIG -Djava.net.preferIPv4Stack=true $CLASSNAME

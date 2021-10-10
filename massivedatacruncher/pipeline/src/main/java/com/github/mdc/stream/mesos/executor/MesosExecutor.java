@@ -22,7 +22,7 @@ import com.github.mdc.common.JobStage;
 import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.MDCMapReducePhaseClassLoader;
 import com.github.mdc.common.Utils;
-import com.github.mdc.stream.executors.MassiveDataStreamTaskExecutorMesos;
+import com.github.mdc.stream.executors.StreamPipelineTaskExecutorMesos;
 
 /**
  * 
@@ -96,7 +96,7 @@ public class MesosExecutor implements Executor {
 				var job = (JobStage) kryo.readClassAndObject(jobstagestream);
 				jobstagestream.close();
 				//Initialize the mesos task executor.
-				var mdstem = new MassiveDataStreamTaskExecutorMesos(job,driver,task.getTaskId());
+				var mdstem = new StreamPipelineTaskExecutorMesos(job,driver,task.getTaskId());
 				//Execute the tasks via run method.
 				mdstem.call();
 				log.debug(task.getTaskId()+" - Completed");

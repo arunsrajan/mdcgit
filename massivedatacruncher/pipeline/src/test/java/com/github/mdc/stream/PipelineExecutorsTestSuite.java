@@ -24,27 +24,27 @@ import com.github.mdc.common.MDCCache;
 import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.MDCProperties;
 import com.github.mdc.common.Utils;
-import com.github.mdc.stream.executors.MassiveDataStreamTaskDExecutorTest;
-import com.github.mdc.stream.executors.MassiveDataStreamTaskExecutorInMemoryDiskTest;
-import com.github.mdc.stream.executors.MassiveDataStreamTaskExecutorInMemoryTest;
-import com.github.mdc.stream.executors.MassiveDataStreamTaskExecutorYarnTest;
-import com.github.mdc.stream.executors.MassiveDataStreamTaskIgniteTest;
-import com.github.mdc.stream.executors.MassiveDataStreamTaskJGroupsExecutorTest;
+import com.github.mdc.stream.executors.StreamPipelineTaskExecutorTest;
+import com.github.mdc.stream.executors.StreamPipelineTaskExecutorInMemoryDiskTest;
+import com.github.mdc.stream.executors.StreamPipelineTaskExecutorInMemoryTest;
+import com.github.mdc.stream.executors.StreamPipelineTaskExecutorYarnTest;
+import com.github.mdc.stream.executors.StreamPipelineTaskExecutorIgniteTest;
+import com.github.mdc.stream.executors.StreamPipelineTaskExecutorJGroupsTest;
 import com.github.mdc.stream.utils.PipelineConfigValidatorTest;
 import com.github.sakserv.minicluster.impl.HdfsLocalCluster;
 
 @RunWith(Suite.class)
 @SuiteClasses({ 
-	MassiveDataStreamTaskExecutorInMemoryDiskTest.class,
-	MassiveDataPipelineTest.class,
-	MassiveDataStreamTaskDExecutorTest.class,
-	MassiveDataStreamTaskExecutorInMemoryTest.class,
-	MassiveDataStreamTaskJGroupsExecutorTest.class,	
+	StreamPipelineTaskExecutorInMemoryDiskTest.class,
+	StreamPipelineTest.class,
+	StreamPipelineTaskExecutorTest.class,
+	StreamPipelineTaskExecutorInMemoryTest.class,
+	StreamPipelineTaskExecutorJGroupsTest.class,	
 	PipelineConfigValidatorTest.class,	
-	MassiveDataStreamTaskExecutorYarnTest.class,
+	StreamPipelineTaskExecutorYarnTest.class,
 	FileBlocksPartitionerTest.class,
-	MassiveDataStreamTaskIgniteTest.class})
-public class PipelineExecutorsTestSuite extends MDCPipelineTestsCommon{
+	StreamPipelineTaskExecutorIgniteTest.class})
+public class PipelineExecutorsTestSuite extends StreamPipelineTestCommon{
 	@BeforeClass
 	public static void setUp() throws Throwable {
 		System.setProperty("HADOOP_HOME", "E:\\DEVELOPMENT\\hadoop\\hadoop-3.2.1");
@@ -75,7 +75,7 @@ public class PipelineExecutorsTestSuite extends MDCPipelineTestsCommon{
 		Utils.loadLog4JSystemPropertiesClassPath("mdctest.properties");
 	}
 	public static void uploadfile(FileSystem hdfs, String dir, String filename) throws Throwable {
-		InputStream is = MDCPipelineTestsCommon.class.getResourceAsStream(filename);
+		InputStream is = StreamPipelineTestCommon.class.getResourceAsStream(filename);
 		String jobpath = dir;
 		String filepath = jobpath + filename;
 		Path jobpathurl = new Path(jobpath);

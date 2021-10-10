@@ -10,8 +10,8 @@ import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.PipelineConfig;
 import com.github.mdc.common.MDCConstants.STORAGE;
 import com.github.mdc.stream.Pipeline;
-import com.github.mdc.stream.sql.MDPSql;
-import com.github.mdc.stream.sql.MDPSqlBuilder;
+import com.github.mdc.stream.sql.StreamPipelineSql;
+import com.github.mdc.stream.sql.StreamPipelineSqlBuilder;
 
 public class SqlSumSAInMemoryDisk implements Serializable, Pipeline {
 	private static final long serialVersionUID = -7001849661976107123L;
@@ -48,7 +48,7 @@ public class SqlSumSAInMemoryDisk implements Serializable, Pipeline {
 		log.info("SqlSumSAInMemory.testSql Before---------------------------------------");
 		String statement = "SELECT sum(ArrDelay) "
 				+ "FROM airline where ArrDelay<>'ArrDelay' and ArrDelay<>'NA'";
-		MDPSql mdpsql = MDPSqlBuilder.newBuilder().add(args[1], "airline", airlineheader, airsqltype)
+		StreamPipelineSql mdpsql = StreamPipelineSqlBuilder.newBuilder().add(args[1], "airline", airlineheader, airsqltype)
 				.add(args[2], "carriers", carrierheader, carriersqltype).setHdfs(args[0])
 				.setPipelineConfig(pipelineconfig).setSql(statement).build();
 		List<List<Long>> records = (List<List<Long>>) mdpsql.collect(true, null);

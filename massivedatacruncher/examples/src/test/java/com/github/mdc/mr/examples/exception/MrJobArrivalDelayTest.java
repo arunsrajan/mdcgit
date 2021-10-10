@@ -11,9 +11,9 @@ import com.github.mdc.common.MDCConstants;
 import com.github.mdc.mr.examples.common.MassiveDataMRJobBaseException;
 import com.github.mdc.tasks.scheduler.JobConfigurationBuilder;
 import com.github.mdc.tasks.scheduler.JobConfiguration;
-import com.github.mdc.tasks.scheduler.MdcJob;
-import com.github.mdc.tasks.scheduler.MdcJobBuilder;
-import com.github.mdc.tasks.scheduler.MdcJobYarn;
+import com.github.mdc.tasks.scheduler.MapReduceApplicatiion;
+import com.github.mdc.tasks.scheduler.MapReduceApplicationBuilder;
+import com.github.mdc.tasks.scheduler.MapReduceApplicationYarn;
 
 public class MrJobArrivalDelayTest extends MassiveDataMRJobBaseException{
 	static String heapsize = "1024";
@@ -29,7 +29,7 @@ public class MrJobArrivalDelayTest extends MassiveDataMRJobBaseException{
 		setGctype(MDCConstants.ZGC)
 		.setIsblocksuserdefined("false").build();
 		jc.setOutput(new Output(System.out));
-		MdcJob mdcjob = (MdcJob) MdcJobBuilder.newBuilder()
+		MapReduceApplicatiion mdcjob = (MapReduceApplicatiion) MapReduceApplicationBuilder.newBuilder()
 				.addMapper(CarriersDataMapper.class, "/carriers")
 				.addMapper(AirlineArrDelayDataMapper.class, "/1987")
 				.addMapper(AirlineDepDelayDataMapper.class, "/1987")			
@@ -55,7 +55,7 @@ public class MrJobArrivalDelayTest extends MassiveDataMRJobBaseException{
 		.setIsblocksuserdefined("false")
 		.setExecmode(MDCConstants.EXECMODE_YARN).build();
 		jc.setOutput(new Output(System.out));
-		MdcJobYarn mdcjob = (MdcJobYarn) MdcJobBuilder.newBuilder()
+		MapReduceApplicationYarn mdcjob = (MapReduceApplicationYarn) MapReduceApplicationBuilder.newBuilder()
 				.addMapper(CarriersDataMapper.class, "/carriers")
 				.addMapper(AirlineArrDelayDataMapper.class, "/1987")				
 				.addCombiner(CarriersDataMapper.class)

@@ -41,7 +41,7 @@
 		</yarn:classpath>
 	</yarn:environment>
 	<yarn:master
-		appmaster-class="com.github.mdc.tasks.scheduler.yarn.MRYarnAppmaster">
+		appmaster-class="com.github.mdc.tasks.scheduler.yarn.MapReduceYarnAppmaster">
 		<yarn:container-allocator virtualcores="1"
 			memory="512" priority="0" />
 		<yarn:container-runner  command="java --enable-preview"
@@ -88,7 +88,7 @@
 	<int:channel id="serverChannel" />
 
 	<yarn-int:amservice
-		service-impl="com.github.mdc.tasks.scheduler.yarn.MRYarnAppmasterService" 
+		service-impl="com.github.mdc.tasks.scheduler.yarn.MapReduceYarnAppmasterService" 
 		channel="serverChannel"
   		socket-support="socketSupport"/>
 

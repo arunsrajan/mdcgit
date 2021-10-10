@@ -39,12 +39,12 @@ import com.github.mdc.common.MDCNodesResources;
 import com.github.mdc.common.PipelineConfig;
 import com.github.mdc.common.Resources;
 import com.github.mdc.common.Utils;
-import com.github.mdc.stream.MassiveDataPipelineBase;
+import com.github.mdc.stream.StreamPipelineBase;
 import com.github.mdc.stream.utils.FileBlocksPartitionerHDFS;
-import com.github.mdc.tasks.executor.Container;
+import com.github.mdc.tasks.executor.NodeRunner;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class FileBlocksPartitionerHDFSMultipleNodesTest extends MassiveDataPipelineBase{
+public class FileBlocksPartitionerHDFSMultipleNodesTest extends StreamPipelineBase{
 	private static final int NOOFNODES = 5;
 	static int teport = 12121;
 	static ExecutorService es,escontainer;
@@ -93,7 +93,7 @@ public class FileBlocksPartitionerHDFSMultipleNodesTest extends MassiveDataPipel
 				semaphore.release();				
 				while(true) {
 					try(Socket sock = ssl.accept();) {
-						var container = new Container(sock, portinc, MDCConstants.PROPLOADERCONFIGFOLDER,
+						var container = new NodeRunner(sock, portinc, MDCConstants.PROPLOADERCONFIGFOLDER,
 								containerprocesses, hdfs, containeridthreads,containeridports);
 						Future<Boolean> containerallocated = escontainer.submit(container);
 						log.info("Containers Allocated: "+containerallocated.get()+" Next Port Allocation:"+portinc.get());

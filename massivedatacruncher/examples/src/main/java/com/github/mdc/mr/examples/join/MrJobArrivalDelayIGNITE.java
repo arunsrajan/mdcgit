@@ -5,10 +5,10 @@ import org.apache.log4j.Logger;
 
 import com.github.mdc.common.MDCConstants;
 import com.github.mdc.tasks.scheduler.JobConfiguration;
-import com.github.mdc.tasks.scheduler.MdcJobBuilder;
-import com.github.mdc.tasks.scheduler.MdcJobIgnite;
+import com.github.mdc.tasks.scheduler.MapReduceApplicationBuilder;
+import com.github.mdc.tasks.scheduler.MapReduceApplicationIgnite;
 
-public class MrJobArrivalDelayIGNITE implements com.github.mdc.tasks.scheduler.MRJob{
+public class MrJobArrivalDelayIGNITE implements com.github.mdc.tasks.scheduler.Application{
 	static Logger log = Logger.getLogger(MrJobArrivalDelayIGNITE.class);
 	@Override
 	public void runMRJob(String[] args, JobConfiguration jobconfiguration) {
@@ -17,7 +17,7 @@ public class MrJobArrivalDelayIGNITE implements com.github.mdc.tasks.scheduler.M
 		jobconfiguration.setGctype(MDCConstants.ZGC);
 		jobconfiguration.setIsblocksuserdefined("false");
 		jobconfiguration.setExecmode(MDCConstants.EXECMODE_IGNITE);
-		var mdcjob = (MdcJobIgnite) MdcJobBuilder.newBuilder()
+		var mdcjob = (MapReduceApplicationIgnite) MapReduceApplicationBuilder.newBuilder()
 				.addMapper(CarriersDataMapper.class, args[1])
 				.addMapper(AirlineArrDelayDataMapper.class,args[0])
 				.addMapper(AirlineDepDelayDataMapper.class, args[0])

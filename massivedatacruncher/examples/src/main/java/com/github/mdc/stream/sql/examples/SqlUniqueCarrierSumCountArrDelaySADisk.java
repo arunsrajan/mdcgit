@@ -11,8 +11,8 @@ import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.PipelineConfig;
 import com.github.mdc.common.MDCConstants.STORAGE;
 import com.github.mdc.stream.Pipeline;
-import com.github.mdc.stream.sql.MDPSql;
-import com.github.mdc.stream.sql.MDPSqlBuilder;
+import com.github.mdc.stream.sql.StreamPipelineSql;
+import com.github.mdc.stream.sql.StreamPipelineSqlBuilder;
 
 public class SqlUniqueCarrierSumCountArrDelaySADisk implements Serializable, Pipeline {
 	private static final long serialVersionUID = -7001849661976107123L;
@@ -49,7 +49,7 @@ public class SqlUniqueCarrierSumCountArrDelaySADisk implements Serializable, Pip
 		log.info("SqlUniqueCarrierSumCountArrDelaySADisk.testSql Before---------------------------------------");
 		String statement = "SELECT UniqueCarrier,sum(ArrDelay),count(ArrDelay) "
 				+ "FROM airline where ArrDelay<>'NA' and ArrDelay<>'ArrDelay' group by UniqueCarrier";
-		MDPSql mdpsql = MDPSqlBuilder.newBuilder().add(args[1], "airline", airlineheader, airsqltype)
+		StreamPipelineSql mdpsql = StreamPipelineSqlBuilder.newBuilder().add(args[1], "airline", airlineheader, airsqltype)
 				.setHdfs(args[0])
 				.setPipelineConfig(pipelineconfig).setSql(statement).build();
 		List<List<CSVRecord>> records = (List<List<CSVRecord>>) mdpsql.collect(true, null);

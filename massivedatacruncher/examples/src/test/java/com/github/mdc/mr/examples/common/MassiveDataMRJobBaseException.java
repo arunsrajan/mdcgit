@@ -34,7 +34,7 @@ import com.github.mdc.common.MDCExecutorThreadFactory;
 import com.github.mdc.common.MDCProperties;
 import com.github.mdc.common.NetworkUtil;
 import com.github.mdc.common.Utils;
-import com.github.mdc.tasks.executor.Container;
+import com.github.mdc.tasks.executor.NodeRunner;
 import com.github.sakserv.minicluster.impl.HdfsLocalCluster;
 
 public class MassiveDataMRJobBaseException {
@@ -146,7 +146,7 @@ public class MassiveDataMRJobBaseException {
 							while (true) {
 								Socket client = server.accept();
 								Future<Boolean> containerallocated = es.submit(
-										new Container(client, portinc, MDCConstants.TEPROPLOADCLASSPATHCONFIGEXCEPTION,
+										new NodeRunner(client, portinc, MDCConstants.TEPROPLOADCLASSPATHCONFIGEXCEPTION,
 												containerprocesses, hdfste, containeridthreads, containeridports));
 								log.info("Containers Allocated: "+containerallocated.get()+" Next Port Allocation:"+portinc.get());
 							}

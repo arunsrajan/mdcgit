@@ -17,5 +17,5 @@ DEBUGCONFIG="-Xdebug -Xrunjdwp:server=y,transport=dt_socket,address=${DEBUGPORT}
 MEMCONFIG="-Xms2G -Xmx2G"
 GCCONFIG="-XX:+UseG1GC"
 IPV4="-Djava.net.preferIPv4Stack=true"
-CLASSNAME=com.github.mdc.stream.submitter.MassiveDataStreamTaskSubmitter
+CLASSNAME=com.github.mdc.stream.submitter.StreamPipelineJobSubmitter
 java --enable-preview -cp "${CLASSPATHMDC}" ${MEMCONFIG} ${GCCCONFIG} ${IPV4} ${CLASSNAME} $@

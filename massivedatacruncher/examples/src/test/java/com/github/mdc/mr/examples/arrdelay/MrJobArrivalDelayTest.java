@@ -14,10 +14,10 @@ import com.github.mdc.mr.examples.join.AirlineDepDelayDataMapper;
 import com.github.mdc.mr.examples.join.CarriersDataMapper;
 import com.github.mdc.tasks.scheduler.JobConfigurationBuilder;
 import com.github.mdc.tasks.scheduler.JobConfiguration;
-import com.github.mdc.tasks.scheduler.MdcJob;
-import com.github.mdc.tasks.scheduler.MdcJobBuilder;
-import com.github.mdc.tasks.scheduler.MdcJobIgnite;
-import com.github.mdc.tasks.scheduler.MdcJobYarn;
+import com.github.mdc.tasks.scheduler.MapReduceApplicatiion;
+import com.github.mdc.tasks.scheduler.MapReduceApplicationBuilder;
+import com.github.mdc.tasks.scheduler.MapReduceApplicationIgnite;
+import com.github.mdc.tasks.scheduler.MapReduceApplicationYarn;
 
 public class MrJobArrivalDelayTest extends MassiveDataMRJobBase{
 	static String heapsize = "2048";
@@ -33,7 +33,7 @@ public class MrJobArrivalDelayTest extends MassiveDataMRJobBase{
 		setGctype(MDCConstants.ZGC)
 		.setIsblocksuserdefined("true").build();
 		jc.setOutput(new Output(System.out));
-		MdcJob mdcjob = (MdcJob) MdcJobBuilder.newBuilder()
+		MapReduceApplicatiion mdcjob = (MapReduceApplicatiion) MapReduceApplicationBuilder.newBuilder()
 				.addMapper(CarriersDataMapper.class, "/carriers")
 				.addMapper(AirlineArrDelayDataMapper.class, "/airline1989")
 				.addMapper(AirlineDepDelayDataMapper.class, "/airline1989")			
@@ -58,7 +58,7 @@ public class MrJobArrivalDelayTest extends MassiveDataMRJobBase{
 		setGctype(MDCConstants.ZGC)
 		.setIsblocksuserdefined("true").build();
 		jc.setOutput(new Output(System.out));
-		MdcJob mdcjob = (MdcJob) MdcJobBuilder.newBuilder()
+		MapReduceApplicatiion mdcjob = (MapReduceApplicatiion) MapReduceApplicationBuilder.newBuilder()
 				.addMapper(CarriersDataMapper.class, "/carriers")
 				.addMapper(AirlineArrDelayDataMapper.class, "/airline1989")
 				.addMapper(AirlineDepDelayDataMapper.class, "/airline1989")			
@@ -86,7 +86,7 @@ public class MrJobArrivalDelayTest extends MassiveDataMRJobBase{
 		.setIsblocksuserdefined("false")
 		.setExecmode(MDCConstants.EXECMODE_YARN).build();
 		jc.setOutput(new Output(System.out));
-		MdcJobYarn mdcjob = (MdcJobYarn) MdcJobBuilder.newBuilder()
+		MapReduceApplicationYarn mdcjob = (MapReduceApplicationYarn) MapReduceApplicationBuilder.newBuilder()
 				.addMapper(CarriersDataMapper.class, "/carriers")
 				.addMapper(AirlineArrDelayDataMapper.class, "/airline1989")
 				.addMapper(AirlineDepDelayDataMapper.class, "/airline1989")
@@ -112,7 +112,7 @@ public class MrJobArrivalDelayTest extends MassiveDataMRJobBase{
 		.setIsblocksuserdefined("true")
 		.setExecmode(MDCConstants.EXECMODE_IGNITE).build();
 		jc.setOutput(new Output(System.out));
-		MdcJobIgnite mdcjob = (MdcJobIgnite) MdcJobBuilder.newBuilder()
+		MapReduceApplicationIgnite mdcjob = (MapReduceApplicationIgnite) MapReduceApplicationBuilder.newBuilder()
 				.addMapper(CarriersDataMapper.class, "/carriers")
 				.addMapper(AirlineArrDelayDataMapper.class, "/airlines")
 				.addMapper(AirlineDepDelayDataMapper.class, "/airlines")

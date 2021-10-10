@@ -7,7 +7,7 @@ import org.apache.log4j.Logger;
 
 import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.PipelineConfig;
-import com.github.mdc.stream.MassiveDataPipeline;
+import com.github.mdc.stream.StreamPipeline;
 import com.github.mdc.stream.Pipeline;
 
 public class StreamFilterFilterCollectArrDelayInMemoryDisk implements Serializable, Pipeline {
@@ -33,7 +33,7 @@ public class StreamFilterFilterCollectArrDelayInMemoryDisk implements Serializab
 	@SuppressWarnings({"serial" })
 	public void testMapValuesReduceByValues(String[] args, PipelineConfig pipelineconfig) throws Exception {
 		log.info("testMapValuesReduceByValues Before---------------------------------------");
-		MassiveDataPipeline<String> datastream = MassiveDataPipeline.newStreamHDFS(args[0], args[1], pipelineconfig);
+		StreamPipeline<String> datastream = StreamPipeline.newStreamHDFS(args[0], args[1], pipelineconfig);
 		datastream
 		.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {

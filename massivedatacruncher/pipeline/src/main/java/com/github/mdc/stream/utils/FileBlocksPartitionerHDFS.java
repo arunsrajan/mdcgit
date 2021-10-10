@@ -61,9 +61,9 @@ import com.github.mdc.common.Resources;
 import com.github.mdc.common.Stage;
 import com.github.mdc.common.Utils;
 import com.github.mdc.stream.AbstractPipeline;
-import com.github.mdc.stream.MassiveDataPipeline;
-import com.github.mdc.stream.MassiveDataPipelineException;
-import com.github.mdc.stream.MassiveDataPipelineIgnite;
+import com.github.mdc.stream.StreamPipeline;
+import com.github.mdc.stream.PipelineException;
+import com.github.mdc.stream.IgnitePipeline;
 
 public class FileBlocksPartitionerHDFS {
 	private static Logger log = Logger.getLogger(FileBlocksPartitionerHDFS.class);
@@ -107,7 +107,7 @@ public class FileBlocksPartitionerHDFS {
 	 * @return
 	 * @throws Exception
 	 */
-	protected List<BlocksLocation> getHDFSParitions() throws MassiveDataPipelineException {
+	protected List<BlocksLocation> getHDFSParitions() throws PipelineException {
 		var numpartition = this.supplier.getAsInt();
 		totallength = 0;
 		try {
@@ -117,7 +117,7 @@ public class FileBlocksPartitionerHDFS {
 			return getBlocks(true,blocksize);
 		} catch (Exception ex) {
 			log.error(MassiveDataPipelineConstants.FILEIOERROR, ex);
-			throw new MassiveDataPipelineException(MassiveDataPipelineConstants.FILEIOERROR, ex);
+			throw new PipelineException(MassiveDataPipelineConstants.FILEIOERROR, ex);
 		}
 	}
 
@@ -128,7 +128,7 @@ public class FileBlocksPartitionerHDFS {
 	 * Get File Blocks for job
 	 * 
 	 * @param job
-	 * @throws MassiveDataPipelineException
+	 * @throws PipelineException
 	 * @throws URISyntaxException
 	 * @throws IOException
 	 * @throws Exception
@@ -136,7 +136,7 @@ public class FileBlocksPartitionerHDFS {
 	@SuppressWarnings({ "rawtypes" })
 	public void getJobStageBlocks(Job job, IntSupplier supplier, String protocol, Set<Stage> rootstages,
 			Collection<AbstractPipeline> mdsroots, int blocksize, PipelineConfig pc)
-			throws MassiveDataPipelineException, IOException, URISyntaxException {
+			throws PipelineException, IOException, URISyntaxException {
 		try {
 			log.debug("Partitioning of Blocks started...");
 			this.job = job;
@@ -161,10 +161,10 @@ public class FileBlocksPartitionerHDFS {
 			job.jm.totalfilesize = 0;
 			for (var rootstage : rootstages) {
 				var obj = roots.next();
-				if(obj instanceof MassiveDataPipeline mdp) {
+				if(obj instanceof StreamPipeline mdp) {
 					hdfspath = mdp.getHdfspath();
 					folder = mdp.getFolder();
-				} else if(obj instanceof MassiveDataPipelineIgnite mdp) {
+				} else if(obj instanceof IgnitePipeline mdp) {
 					hdfspath = mdp.getHdfspath();
 					folder = mdp.getFolder();
 				}
@@ -187,7 +187,7 @@ public class FileBlocksPartitionerHDFS {
 							}
 						}
 						if (blocks == null) {
-							throw new MassiveDataPipelineException(MDCConstants.DATABLOCK_EXCEPTION);
+							throw new PipelineException(MDCConstants.DATABLOCK_EXCEPTION);
 						}
 						stageoutputmap.put(rootstage, blocks);
 						noofpartition += blocks.size();
@@ -200,7 +200,7 @@ public class FileBlocksPartitionerHDFS {
 			job.jm.totalblocks = totalblockslocation.size();
 			if(isignite) {
 				getDnXref(totalblockslocation, false);
-				sendDataToIgniteServer(totalblockslocation,((MassiveDataPipelineIgnite)mdsroots.iterator().next()).getHdfspath());
+				sendDataToIgniteServer(totalblockslocation,((IgnitePipeline)mdsroots.iterator().next()).getHdfspath());
 			}else if(isjgroups||!islocal&&!isyarn&&!ismesos){
 				getDnXref(totalblockslocation, true);
 				getTaskExecutors(totalblockslocation);
@@ -221,7 +221,7 @@ public class FileBlocksPartitionerHDFS {
 		} catch (Exception ex) {
 			destroyContainers();
 			log.error(MassiveDataPipelineConstants.FILEBLOCKSPARTITIONINGERROR, ex);
-			throw new MassiveDataPipelineException(MassiveDataPipelineConstants.FILEBLOCKSPARTITIONINGERROR, ex);
+			throw new PipelineException(MassiveDataPipelineConstants.FILEBLOCKSPARTITIONINGERROR, ex);
 		}
 	}
 
@@ -265,7 +265,7 @@ public class FileBlocksPartitionerHDFS {
 		job.jm.containersallocated = computeservers.hostNames().stream().collect(Collectors.toMap(key->key, value->0d));
 	}
 	
-	protected void destroyContainers() throws MassiveDataPipelineException {
+	protected void destroyContainers() throws PipelineException {
 		try {
 			GlobalContainerAllocDealloc.getGlobalcontainerallocdeallocsem().acquire();
 			if (!Objects.isNull(job.nodes)) {
@@ -312,24 +312,24 @@ public class FileBlocksPartitionerHDFS {
 		}
 		catch (Exception ex) {
 			log.error(MassiveDataPipelineConstants.DESTROYCONTAINERERROR, ex);
-			throw new MassiveDataPipelineException(MassiveDataPipelineConstants.DESTROYCONTAINERERROR, ex);
+			throw new PipelineException(MassiveDataPipelineConstants.DESTROYCONTAINERERROR, ex);
 		}finally {
 			GlobalContainerAllocDealloc.getGlobalcontainerallocdeallocsem().release();
 		}
 	}
 	
-	protected List<Path> getFilePaths(String hdfspth,String folder) throws MassiveDataPipelineException {
+	protected List<Path> getFilePaths(String hdfspth,String folder) throws PipelineException {
 		try {
 			var fileStatus = hdfs.listStatus(new Path(hdfspth + folder));
 			var paths = FileUtil.stat2Paths(fileStatus);
 			return Arrays.asList(paths);
 		} catch (Exception ex) {
 			log.error(MassiveDataPipelineConstants.FILEPATHERROR, ex);
-			throw new MassiveDataPipelineException(MassiveDataPipelineConstants.FILEPATHERROR, ex);
+			throw new PipelineException(MassiveDataPipelineConstants.FILEPATHERROR, ex);
 		}
 	}
 	
-	protected List<BlocksLocation> getBlocks(boolean isblocksuserdefined,long blocksize) throws MassiveDataPipelineException {
+	protected List<BlocksLocation> getBlocks(boolean isblocksuserdefined,long blocksize) throws PipelineException {
 		try {
 			List<BlocksLocation> bls = null;
 					
@@ -341,11 +341,11 @@ public class FileBlocksPartitionerHDFS {
 			return bls;
 		} catch (Exception ex) {
 			log.error(MassiveDataPipelineConstants.FILEBLOCKSERROR, ex);
-			throw new MassiveDataPipelineException(MassiveDataPipelineConstants.FILEBLOCKSERROR, ex);
+			throw new PipelineException(MassiveDataPipelineConstants.FILEBLOCKSERROR, ex);
 		}
 	}
 	
-	protected void getContainersBalanced(List<BlocksLocation> bls) throws MassiveDataPipelineException {
+	protected void getContainersBalanced(List<BlocksLocation> bls) throws PipelineException {
 		log.debug("Entered FileBlocksPartitionerHDFS.getContainersBalanced");
 		var hostcontainermap = containers.stream()
 				.collect(Collectors.groupingBy(key->key.split(MDCConstants.UNDERSCORE)[0],
@@ -356,7 +356,7 @@ public class FileBlocksPartitionerHDFS {
 		for (var b : bls) {
 			hostportcontainer = hostcontainermap.get(b.block[0].hp.split(MDCConstants.COLON)[0]);
 			if(Objects.isNull(hostportcontainer)) {
-				throw new MassiveDataPipelineException(MassiveDataPipelineConstants.INSUFFNODESFORDATANODEERROR.replace("%s", b.block[0].hp).replace("%d", hostcontainermap.toString()));
+				throw new PipelineException(MassiveDataPipelineConstants.INSUFFNODESFORDATANODEERROR.replace("%s", b.block[0].hp).replace("%d", hostcontainermap.toString()));
 			}
 			var container = hostportcontainer.stream().sorted((xref1, xref2) -> {
 						return containerallocatecount.get(xref1).compareTo(containerallocatecount.get(xref2));
@@ -367,7 +367,7 @@ public class FileBlocksPartitionerHDFS {
 		log.debug("Exiting FileBlocksPartitionerHDFS.getContainersBalanced");
 	}
 
-	public void getDnXref(List<BlocksLocation> bls, boolean issa) throws MassiveDataPipelineException {
+	public void getDnXref(List<BlocksLocation> bls, boolean issa) throws PipelineException {
 		log.debug("Entered FileBlocksPartitionerHDFS.getDnXref");
 		var dnxrefs = bls.stream().parallel().flatMap(bl -> {
 			var xrefs = new LinkedHashSet<String>();
@@ -398,7 +398,7 @@ public class FileBlocksPartitionerHDFS {
 							return dnxrefallocatecount.get(xref1).compareTo(dnxrefallocatecount.get(xref2));
 						}).findFirst();
 				if (xrefselected.isEmpty()) {
-					throw new MassiveDataPipelineException(
+					throw new PipelineException(
 							MassiveDataPipelineConstants.INSUFFNODESERROR + " Available computing nodes are "
 									+ computingnodes + " Available Data Nodes are " + b.block[0].dnxref.keySet());
 				}
@@ -415,7 +415,7 @@ public class FileBlocksPartitionerHDFS {
 						xrefselected = b.block[1].dnxref.keySet().stream()
 								.flatMap(xrefhost -> b.block[1].dnxref.get(xrefhost).stream()).findFirst();
 						if (xrefselected.isEmpty()) {
-							throw new MassiveDataPipelineException(MassiveDataPipelineConstants.INSUFFNODESERROR
+							throw new PipelineException(MassiveDataPipelineConstants.INSUFFNODESERROR
 									+ " Available computing nodes are " + computingnodes + " Available Data Nodes are "
 									+ b.block[1].dnxref.keySet());
 						}
@@ -466,7 +466,7 @@ public class FileBlocksPartitionerHDFS {
 		return cres;
 	}
 	
-	protected void getTaskExecutors(List<BlocksLocation> bls) throws MassiveDataPipelineException {
+	protected void getTaskExecutors(List<BlocksLocation> bls) throws PipelineException {
 		try {
 			GlobalContainerAllocDealloc.getGlobalcontainerallocdeallocsem().acquire();
 			var containerid = MDCConstants.CONTAINER+MDCConstants.HYPHEN+Utils.getUniqueID();
@@ -493,7 +493,7 @@ public class FileBlocksPartitionerHDFS {
 				List<ContainerResources> contres = null;
 				if(totalallocatedremaining > 0 && cr.isEmpty()) {
 					if(Objects.isNull(resources.get(te))) {
-						throw new MassiveDataPipelineException(MassiveDataPipelineConstants.RESOURCESDOWNRESUBMIT.replace("%s", te));
+						throw new PipelineException(MassiveDataPipelineConstants.RESOURCESDOWNRESUBMIT.replace("%s", te));
 					}
 					contres=getNumberOfContainers(pipelineconfig.getGctype(),nodestotalblockmem.get(host),
 							resources.get(te));
@@ -573,7 +573,7 @@ public class FileBlocksPartitionerHDFS {
 			log.debug("Total Containers Allocated:"	+ totalcontainersallocated);
 		} catch (Exception ex) {
 			log.error(MassiveDataPipelineConstants.TASKEXECUTORSALLOCATIONERROR, ex);
-			throw new MassiveDataPipelineException(MassiveDataPipelineConstants.TASKEXECUTORSALLOCATIONERROR, ex);
+			throw new PipelineException(MassiveDataPipelineConstants.TASKEXECUTORSALLOCATIONERROR, ex);
 		}finally {
 			GlobalContainerAllocDealloc.getGlobalcontainerallocdeallocsem().release();
 		}
@@ -632,14 +632,14 @@ public class FileBlocksPartitionerHDFS {
 	}
 
 	protected List<ContainerResources> getNumberOfContainers(String gctype, long totalmem, Resources resources)
-			throws MassiveDataPipelineException {
+			throws PipelineException {
 		var cpu = resources.getNumberofprocessors() - 2;
 		var cr = new ArrayList<ContainerResources>();
 		if(pipelineconfig.getContaineralloc().equals(MDCConstants.CONTAINER_ALLOC_DEFAULT)) {
 			var res = new ContainerResources();
 			var actualmemory = (resources.getFreememory()-256*MDCConstants.MB);
 			if (actualmemory < (128 * MDCConstants.MB)) {
-				throw new MassiveDataPipelineException(MassiveDataPipelineConstants.MEMORYALLOCATIONERROR);
+				throw new PipelineException(MassiveDataPipelineConstants.MEMORYALLOCATIONERROR);
 			}
 			res.setCpu(cpu);
 			var meminmb = actualmemory/MDCConstants.MB;
@@ -655,7 +655,7 @@ public class FileBlocksPartitionerHDFS {
 		}else {
 			var actualmemory = (resources.getFreememory()-256*MDCConstants.MB);
 			if (actualmemory < (128 * MDCConstants.MB)) {
-				throw new MassiveDataPipelineException(MassiveDataPipelineConstants.MEMORYALLOCATIONERROR);
+				throw new PipelineException(MassiveDataPipelineConstants.MEMORYALLOCATIONERROR);
 			}
 			if (totalmem < (512 * MDCConstants.MB) && totalmem > (0) && cpu >= 1) {
 				if (actualmemory >= totalmem) {
@@ -669,7 +669,7 @@ public class FileBlocksPartitionerHDFS {
 					resources.setNumberofprocessors(cpu-1);
 					return cr;
 				} else {
-					throw new MassiveDataPipelineException(MassiveDataPipelineConstants.INSUFFMEMORYALLOCATIONERROR);
+					throw new PipelineException(MassiveDataPipelineConstants.INSUFFMEMORYALLOCATIONERROR);
 				}
 			}
 			if (cpu == 0)

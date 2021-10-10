@@ -37,7 +37,7 @@
 		</yarn:classpath>
 	</yarn:environment>
 	<yarn:master
-		appmaster-class="com.github.mdc.stream.yarn.appmaster.YarnAppmasterMDC">
+		appmaster-class="com.github.mdc.stream.yarn.appmaster.StreamPipelineYarnAppmaster">
 		<yarn:container-allocator virtualcores="1"
 			memory="512" priority="0" />
 		<yarn:container-runner command="java --enable-preview"
@@ -62,6 +62,6 @@
 		</bean>
 	</yarn-int:converter>
 	<yarn-int:amservice
-		service-impl="com.github.mdc.stream.yarn.appmaster.YarnAppmasterServiceMDC" />
+		service-impl="com.github.mdc.stream.yarn.appmaster.StreamPipelineYarnAppmasterService" />
 
 </beans>

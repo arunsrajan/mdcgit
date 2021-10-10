@@ -35,7 +35,7 @@ import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.MDCProperties;
 import com.github.mdc.common.NetworkUtil;
 import com.github.mdc.common.Utils;
-import com.github.mdc.tasks.executor.Container;
+import com.github.mdc.tasks.executor.NodeRunner;
 import com.github.sakserv.minicluster.impl.HdfsLocalCluster;
 
 public class MassiveDataMRJobBase {
@@ -146,7 +146,7 @@ public class MassiveDataMRJobBase {
 							while (true) {
 								Socket client = server.accept();
 								es.submit(
-										new Container(client, portinc, MDCConstants.TEPROPLOADCLASSPATHCONFIG,
+										new NodeRunner(client, portinc, MDCConstants.TEPROPLOADCLASSPATHCONFIG,
 												containerprocesses, hdfs, containeridthreads, containeridports));
 							}
 						} catch (Exception ioe) {

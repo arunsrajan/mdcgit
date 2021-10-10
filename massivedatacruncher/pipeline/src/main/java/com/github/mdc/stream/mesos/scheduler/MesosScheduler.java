@@ -34,7 +34,7 @@ import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.MesosThirdPartyLibraryDistributor;
 import com.github.mdc.common.Task;
 import com.github.mdc.common.Utils;
-import com.github.mdc.stream.scheduler.MassiveDataStreamTaskSchedulerThread;
+import com.github.mdc.stream.scheduler.StreamPipelineTaskSubmitter;
 import com.google.protobuf.ByteString;
 /**
  * 
@@ -43,20 +43,20 @@ import com.google.protobuf.ByteString;
  */
 public class MesosScheduler implements Scheduler {
 	private static Logger log = Logger.getLogger(MesosScheduler.class);
-	private List<MassiveDataStreamTaskSchedulerThread> mdststs;
-	private SimpleDirectedGraph<MassiveDataStreamTaskSchedulerThread, DAGEdge> graph;
+	private List<StreamPipelineTaskSubmitter> mdststs;
+	private SimpleDirectedGraph<StreamPipelineTaskSubmitter, DAGEdge> graph;
 	private int taskIdCounter = 0;
 	 
     private Protos.Credential credential=null;
     private ExecutorInfo executorinfo;
 	private int finishedTasks=0;
 	private MesosThirdPartyLibraryDistributor mtpld;
-	private Map<String,MassiveDataStreamTaskSchedulerThread> jobstagemdsthread;
+	private Map<String,StreamPipelineTaskSubmitter> jobstagemdsthread;
 	int port;
 	byte[] mrjar;
-	private MesosScheduler(List<MassiveDataStreamTaskSchedulerThread> mdststs,
-			SimpleDirectedGraph<MassiveDataStreamTaskSchedulerThread, DAGEdge> graph,
-			Map<String,MassiveDataStreamTaskSchedulerThread> jobstagemdsthread,
+	private MesosScheduler(List<StreamPipelineTaskSubmitter> mdststs,
+			SimpleDirectedGraph<StreamPipelineTaskSubmitter, DAGEdge> graph,
+			Map<String,StreamPipelineTaskSubmitter> jobstagemdsthread,
 			byte[] mrjar){
 		this.mdststs = mdststs;
 		this.graph = graph;
@@ -379,9 +379,9 @@ public class MesosScheduler implements Scheduler {
      * @throws UnknownHostException 
      * @throws Throwable
      */
-    public static void runFramework(List<MassiveDataStreamTaskSchedulerThread> mdststs,
-			SimpleDirectedGraph<MassiveDataStreamTaskSchedulerThread, DAGEdge> graph,String mesosMaster,
-			Map<String,MassiveDataStreamTaskSchedulerThread> jobstagemdsthread,
+    public static void runFramework(List<StreamPipelineTaskSubmitter> mdststs,
+			SimpleDirectedGraph<StreamPipelineTaskSubmitter, DAGEdge> graph,String mesosMaster,
+			Map<String,StreamPipelineTaskSubmitter> jobstagemdsthread,
 			byte[] mrjar) throws UnknownHostException {
     	var scheduler = new MesosScheduler(mdststs,graph,jobstagemdsthread,mrjar);
     	scheduler.setExecutorinfo(scheduler.getExecutorInfos());

@@ -9,7 +9,7 @@ import org.jooq.lambda.tuple.Tuple2;
 
 import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.PipelineConfig;
-import com.github.mdc.stream.MassiveDataPipelineIgnite;
+import com.github.mdc.stream.IgnitePipeline;
 import com.github.mdc.stream.Pipeline;
 
 public class StreamReduceIgnite implements Serializable, Pipeline {
@@ -29,7 +29,7 @@ public class StreamReduceIgnite implements Serializable, Pipeline {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void testReduce(String[] args, PipelineConfig pipelineconfig) throws Exception {
 		log.info("StreamReduceIgnite.testReduce Before---------------------------------------");
-		var datastream = MassiveDataPipelineIgnite.newStreamHDFS(args[0], args[1],
+		var datastream = IgnitePipeline.newStreamHDFS(args[0], args[1],
 				pipelineconfig);
 		var mappair1 = datastream.map(dat -> dat.split(","))
 				.filter(dat -> !dat[14].equals("ArrDelay") && !dat[14].equals("NA"))
@@ -38,7 +38,7 @@ public class StreamReduceIgnite implements Serializable, Pipeline {
 		var airlinesamples = mappair1.reduceByKey((dat1, dat2) -> dat1 + dat2).coalesce(1,
 				(dat1, dat2) -> dat1 + dat2);
 
-		var datastream1 = MassiveDataPipelineIgnite.newStreamHDFS(args[0], args[2],
+		var datastream1 = IgnitePipeline.newStreamHDFS(args[0], args[2],
 				pipelineconfig);
 
 		var carriers = datastream1.map(linetosplit -> linetosplit.split(","))

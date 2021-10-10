@@ -104,12 +104,12 @@ public sealed class MapPair<I1,I2> extends AbstractPipeline permits MapValues{
 	 * @param <I4>
 	 * @param mvf
 	 * @return MapPair object.
-	 * @throws MassiveDataPipelineException
+	 * @throws PipelineException
 	 */
 	@SuppressWarnings({ "unchecked" })
-	public <I3,I4> MapValues<I1,Tuple2<I3,I4>> mapValues(MapValuesFunction<? super I2, ? extends Tuple2<I3,I4>> mvf) throws MassiveDataPipelineException {
+	public <I3,I4> MapValues<I1,Tuple2<I3,I4>> mapValues(MapValuesFunction<? super I2, ? extends Tuple2<I3,I4>> mvf) throws PipelineException {
 		if(Objects.isNull(mvf)) {
-			throw new MassiveDataPipelineException(MassiveDataPipelineConstants.MAPVALUESNULL);
+			throw new PipelineException(MassiveDataPipelineConstants.MAPVALUESNULL);
 		}
 		var mapvalues = new MapValues(root, mvf);
 		this.childs.add(mapvalues);
@@ -137,14 +137,14 @@ public sealed class MapPair<I1,I2> extends AbstractPipeline permits MapValues{
 	 * @param <T>
 	 * @param map
 	 * @return MapPair object.
-	 * @throws MassiveDataPipelineException
+	 * @throws PipelineException
 	 */
 	@SuppressWarnings({ "unchecked" })
-	public <T> MassiveDataPipeline<T> map(MapFunction<? super Tuple2<I1,I2> ,? extends T> map) throws MassiveDataPipelineException  {
+	public <T> StreamPipeline<T> map(MapFunction<? super Tuple2<I1,I2> ,? extends T> map) throws PipelineException  {
 		if(Objects.isNull(map)) {
-			throw new MassiveDataPipelineException(MassiveDataPipelineConstants.MAPFUNCTIONNULL);
+			throw new PipelineException(MassiveDataPipelineConstants.MAPFUNCTIONNULL);
 		}
-		var mapobj = new MassiveDataPipeline(root,map);
+		var mapobj = new StreamPipeline(root,map);
 		this.childs.add(mapobj);
 		mapobj.parents.add(this);
 		return mapobj;
@@ -202,15 +202,15 @@ public sealed class MapPair<I1,I2> extends AbstractPipeline permits MapValues{
 	 * @param mapright
 	 * @param conditioninnerjoin
 	 * @return MapPair object.
-	 * @throws MassiveDataPipelineException
+	 * @throws PipelineException
 	 */
 	@SuppressWarnings({ "unchecked" })
-	public <T> MapPair<T,T> join(AbstractPipeline mapright,JoinPredicate<Tuple2<I1,I2>,Tuple2<I1,I2>> conditioninnerjoin) throws MassiveDataPipelineException  {
+	public <T> MapPair<T,T> join(AbstractPipeline mapright,JoinPredicate<Tuple2<I1,I2>,Tuple2<I1,I2>> conditioninnerjoin) throws PipelineException  {
 		if(Objects.isNull(mapright)) {
-			throw new MassiveDataPipelineException(MassiveDataPipelineConstants.INNERJOIN);
+			throw new PipelineException(MassiveDataPipelineConstants.INNERJOIN);
 		}
 		if(Objects.isNull(conditioninnerjoin)) {
-			throw new MassiveDataPipelineException(MassiveDataPipelineConstants.INNERJOINCONDITION);
+			throw new PipelineException(MassiveDataPipelineConstants.INNERJOINCONDITION);
 		}
 		var mp = new MapPair(root, conditioninnerjoin);
 		this.childs.add(mp);
@@ -263,12 +263,12 @@ public sealed class MapPair<I1,I2> extends AbstractPipeline permits MapValues{
 	 * MapPair accepts the Predicate for filter.
 	 * @param predicate
 	 * @return MapPair object
-	 * @throws MassiveDataPipelineException
+	 * @throws PipelineException
 	 */
 	@SuppressWarnings({ "unchecked" })
-	public MapPair<I1,I1> filter(PredicateSerializable<? super Tuple2> predicate) throws MassiveDataPipelineException  {
+	public MapPair<I1,I1> filter(PredicateSerializable<? super Tuple2> predicate) throws PipelineException  {
 		if(Objects.isNull(predicate)) {
-			throw new MassiveDataPipelineException(MassiveDataPipelineConstants.PREDICATENULL);
+			throw new PipelineException(MassiveDataPipelineConstants.PREDICATENULL);
 		}
 		var filter = new MapPair(root,predicate);
 		this.childs.add(filter);
@@ -293,12 +293,12 @@ public sealed class MapPair<I1,I2> extends AbstractPipeline permits MapValues{
 	 * MapPair accepts the union mappair object.
 	 * @param union
 	 * @return MapPair object.
-	 * @throws MassiveDataPipelineException
+	 * @throws PipelineException
 	 */
 	@SuppressWarnings({ "unchecked" })
-	public MapPair<I1,I1> union(MapPair union) throws MassiveDataPipelineException  {
+	public MapPair<I1,I1> union(MapPair union) throws PipelineException  {
 		if(Objects.isNull(union)) {
-			throw new MassiveDataPipelineException(MassiveDataPipelineConstants.UNIONNULL);
+			throw new PipelineException(MassiveDataPipelineConstants.UNIONNULL);
 		}
 		var unionfunction = new UnionFunction();
 		var unionchild =new  MapPair(root,unionfunction);
@@ -327,12 +327,12 @@ public sealed class MapPair<I1,I2> extends AbstractPipeline permits MapValues{
 	 * MapPair accept the intersection mappair object.
 	 * @param intersection
 	 * @return MapPair object.
-	 * @throws MassiveDataPipelineException
+	 * @throws PipelineException
 	 */
 	@SuppressWarnings({ "unchecked" })
-	public MapPair<I1,I1> intersection(MapPair intersection) throws MassiveDataPipelineException  {
+	public MapPair<I1,I1> intersection(MapPair intersection) throws PipelineException  {
 		if(Objects.isNull(intersection)) {
-			throw new MassiveDataPipelineException(MassiveDataPipelineConstants.INTERSECTIONNULL);
+			throw new PipelineException(MassiveDataPipelineConstants.INTERSECTIONNULL);
 		}
 		var intersectionfunction = new IntersectionFunction();
 		var intersectionchild =new  MapPair(root,intersectionfunction);
@@ -350,12 +350,12 @@ public sealed class MapPair<I1,I2> extends AbstractPipeline permits MapValues{
 	 * @param <I4>
 	 * @param pf
 	 * @return MapPair object.
-	 * @throws MassiveDataPipelineException
+	 * @throws PipelineException
 	 */
 	@SuppressWarnings({ "unchecked" })
-	public <I3,I4> MapPair<I3,I4> mapToPair(MapToPairFunction<? super Tuple2<I1,I2>, Tuple2<I3,I4>> pf) throws MassiveDataPipelineException  {
+	public <I3,I4> MapPair<I3,I4> mapToPair(MapToPairFunction<? super Tuple2<I1,I2>, Tuple2<I3,I4>> pf) throws PipelineException  {
 		if(Objects.isNull(pf)) {
-			throw new MassiveDataPipelineException(MassiveDataPipelineConstants.MAPPAIRNULL);
+			throw new PipelineException(MassiveDataPipelineConstants.MAPPAIRNULL);
 		}
 		var mappair = new MapPair(root, pf);
 		this.childs.add(mappair);
@@ -380,12 +380,12 @@ public sealed class MapPair<I1,I2> extends AbstractPipeline permits MapValues{
 	 * MapPair accepts the sample. 
 	 * @param numsample
 	 * @return MapPair object.
-	 * @throws MassiveDataPipelineException
+	 * @throws PipelineException
 	 */
 	@SuppressWarnings({ "unchecked" })
-	public MapPair<I1,I2> sample(Integer numsample) throws MassiveDataPipelineException  {
+	public MapPair<I1,I2> sample(Integer numsample) throws PipelineException  {
 		if(Objects.isNull(numsample)) {
-			throw new MassiveDataPipelineException(MassiveDataPipelineConstants.SAMPLENULL);
+			throw new PipelineException(MassiveDataPipelineConstants.SAMPLENULL);
 		}
 		var sampleintegersupplier = new SampleSupplierInteger(numsample);
 		var samplesupplier = new MapPair(root,sampleintegersupplier);
@@ -399,15 +399,15 @@ public sealed class MapPair<I1,I2> extends AbstractPipeline permits MapValues{
 	 * @param mappair
 	 * @param conditionrightouterjoin
 	 * @return MapPair object.
-	 * @throws MassiveDataPipelineException
+	 * @throws PipelineException
 	 */
 	@SuppressWarnings({ "unchecked" })
-	public MapPair<I1,I2> rightOuterjoin(AbstractPipeline mappair,RightOuterJoinPredicate<Tuple2<I1,I2>,Tuple2<I1,I2>> conditionrightouterjoin) throws MassiveDataPipelineException  {
+	public MapPair<I1,I2> rightOuterjoin(AbstractPipeline mappair,RightOuterJoinPredicate<Tuple2<I1,I2>,Tuple2<I1,I2>> conditionrightouterjoin) throws PipelineException  {
 		if(Objects.isNull(mappair)) {
-			throw new MassiveDataPipelineException(MassiveDataPipelineConstants.RIGHTOUTERJOIN);
+			throw new PipelineException(MassiveDataPipelineConstants.RIGHTOUTERJOIN);
 		}
 		if(Objects.isNull(conditionrightouterjoin)) {
-			throw new MassiveDataPipelineException(MassiveDataPipelineConstants.RIGHTOUTERJOINCONDITION);
+			throw new PipelineException(MassiveDataPipelineConstants.RIGHTOUTERJOINCONDITION);
 		}
 		var mdp = new MapPair(root, conditionrightouterjoin);
 		this.childs.add(mdp);
@@ -423,15 +423,15 @@ public sealed class MapPair<I1,I2> extends AbstractPipeline permits MapValues{
 	 * @param mappair
 	 * @param conditionleftouterjoin
 	 * @return MapPair object.
-	 * @throws MassiveDataPipelineException
+	 * @throws PipelineException
 	 */
 	@SuppressWarnings({ "unchecked" })
-	public MapPair<I1,I2> leftOuterjoin(AbstractPipeline mappair,LeftOuterJoinPredicate<Tuple2<I1,I2>,Tuple2<I1,I2>> conditionleftouterjoin) throws MassiveDataPipelineException  {
+	public MapPair<I1,I2> leftOuterjoin(AbstractPipeline mappair,LeftOuterJoinPredicate<Tuple2<I1,I2>,Tuple2<I1,I2>> conditionleftouterjoin) throws PipelineException  {
 		if(Objects.isNull(mappair)) {
-			throw new MassiveDataPipelineException(MassiveDataPipelineConstants.LEFTOUTERJOIN);
+			throw new PipelineException(MassiveDataPipelineConstants.LEFTOUTERJOIN);
 		}
 		if(Objects.isNull(conditionleftouterjoin)) {
-			throw new MassiveDataPipelineException(MassiveDataPipelineConstants.LEFTOUTERJOINCONDITION);
+			throw new PipelineException(MassiveDataPipelineConstants.LEFTOUTERJOINCONDITION);
 		}
 		var mdp = new MapPair(root, conditionleftouterjoin);
 		this.childs.add(mdp);
@@ -460,12 +460,12 @@ public sealed class MapPair<I1,I2> extends AbstractPipeline permits MapValues{
 	 * @param <T>
 	 * @param fmf
 	 * @return MapPair object.
-	 * @throws MassiveDataPipelineException
+	 * @throws PipelineException
 	 */
 	@SuppressWarnings({ "unchecked" })
-	public <T> MapPair<T,T> flatMap(FlatMapFunction<? super Tuple2<I1,I2>, ? extends T> fmf) throws MassiveDataPipelineException  {
+	public <T> MapPair<T,T> flatMap(FlatMapFunction<? super Tuple2<I1,I2>, ? extends T> fmf) throws PipelineException  {
 		if(Objects.isNull(fmf)) {
-			throw new MassiveDataPipelineException(MassiveDataPipelineConstants.FLATMAPNULL);
+			throw new PipelineException(MassiveDataPipelineConstants.FLATMAPNULL);
 		}
 		var mdp = new MapPair(root, fmf);
 		this.childs.add(mdp);
@@ -479,12 +479,12 @@ public sealed class MapPair<I1,I2> extends AbstractPipeline permits MapValues{
 	 * @param <I4>
 	 * @param pfmf
 	 * @return MapPair object.
-	 * @throws MassiveDataPipelineException
+	 * @throws PipelineException
 	 */
 	@SuppressWarnings({ "unchecked" })
-	public <I3,I4> MapPair<I3,I4> flatMapToTuple(TupleFlatMapFunction<? super I1, ? extends Tuple2<I3,I4>> pfmf) throws MassiveDataPipelineException  {
+	public <I3,I4> MapPair<I3,I4> flatMapToTuple(TupleFlatMapFunction<? super I1, ? extends Tuple2<I3,I4>> pfmf) throws PipelineException  {
 		if(Objects.isNull(pfmf)) {
-			throw new MassiveDataPipelineException(MassiveDataPipelineConstants.FLATMAPPAIRNULL);
+			throw new PipelineException(MassiveDataPipelineConstants.FLATMAPPAIRNULL);
 		}
 		var mdp = new MapPair(root, pfmf);
 		this.childs.add(mdp);
@@ -509,12 +509,12 @@ public sealed class MapPair<I1,I2> extends AbstractPipeline permits MapValues{
 	 * MapPair accepts the LongTupleFlatMap function.
 	 * @param lfmf
 	 * @return MapPair object.
-	 * @throws MassiveDataPipelineException
+	 * @throws PipelineException
 	 */
 	@SuppressWarnings({ "unchecked" })
-	public MapPair<Long,Long> flatMapToLong(LongTupleFlatMapFunction<Tuple2<I1,I2>> lfmf) throws MassiveDataPipelineException  {
+	public MapPair<Long,Long> flatMapToLong(LongTupleFlatMapFunction<Tuple2<I1,I2>> lfmf) throws PipelineException  {
 		if(Objects.isNull(lfmf)) {
-			throw new MassiveDataPipelineException(MassiveDataPipelineConstants.LONGFLATMAPNULL);
+			throw new PipelineException(MassiveDataPipelineConstants.LONGFLATMAPNULL);
 		}
 		var mdp = new MapPair(root, lfmf);
 		this.childs.add(mdp);
@@ -539,12 +539,12 @@ public sealed class MapPair<I1,I2> extends AbstractPipeline permits MapValues{
 	 * MapPair accepts the DoubleTupleFlatMap function.
 	 * @param dfmf
 	 * @return MapPair object.
-	 * @throws MassiveDataPipelineException
+	 * @throws PipelineException
 	 */
 	@SuppressWarnings({ "unchecked" })
-	public MapPair<Double,Double> flatMapToDouble(DoubleTupleFlatMapFunction<Tuple2<I1,I2>> dfmf) throws MassiveDataPipelineException  {
+	public MapPair<Double,Double> flatMapToDouble(DoubleTupleFlatMapFunction<Tuple2<I1,I2>> dfmf) throws PipelineException  {
 		if(Objects.isNull(dfmf)) {
-			throw new MassiveDataPipelineException(MassiveDataPipelineConstants.DOUBLEFLATMAPNULL);
+			throw new PipelineException(MassiveDataPipelineConstants.DOUBLEFLATMAPNULL);
 		}
 		var mdp = new MapPair(root, dfmf);
 		this.childs.add(mdp);
@@ -556,12 +556,12 @@ public sealed class MapPair<I1,I2> extends AbstractPipeline permits MapValues{
 	 * MapPair accepts the peek function.
 	 * @param consumer
 	 * @return MapPair object.
-	 * @throws MassiveDataPipelineException
+	 * @throws PipelineException
 	 */
 	@SuppressWarnings({ "unchecked" })
-	public MapPair<I1,I1> peek(PeekConsumer consumer) throws MassiveDataPipelineException {
+	public MapPair<I1,I1> peek(PeekConsumer consumer) throws PipelineException {
 		if(Objects.isNull(consumer)) {
-			throw new MassiveDataPipelineException(MassiveDataPipelineConstants.PEEKNULL);
+			throw new PipelineException(MassiveDataPipelineConstants.PEEKNULL);
 		}
 		var map = new MapPair(root,consumer);
 		map.parents.add(this);
@@ -620,12 +620,12 @@ public sealed class MapPair<I1,I2> extends AbstractPipeline permits MapValues{
 	 * MapPair accepts the sort function.
 	 * @param sortedcomparator
 	 * @return MapPair object
-	 * @throws MassiveDataPipelineException
+	 * @throws PipelineException
 	 */
 	@SuppressWarnings({ "unchecked" })
-	public MapPair<I1,I2> sorted(SortedComparator<? super Tuple2> sortedcomparator) throws MassiveDataPipelineException{
+	public MapPair<I1,I2> sorted(SortedComparator<? super Tuple2> sortedcomparator) throws PipelineException{
 		if(Objects.isNull(sortedcomparator)) {
-			throw new MassiveDataPipelineException(MassiveDataPipelineConstants.SORTEDNULL);
+			throw new PipelineException(MassiveDataPipelineConstants.SORTEDNULL);
 		}
 		var map = new MapPair(root,sortedcomparator);
 		map.parents.add(this);
@@ -666,12 +666,12 @@ public sealed class MapPair<I1,I2> extends AbstractPipeline permits MapValues{
 	 * @param partition
 	 * @param cf
 	 * @return MapPair object.
-	 * @throws MassiveDataPipelineException
+	 * @throws PipelineException
 	 */
 	@SuppressWarnings({ "unchecked" })
-	public MapPair<I1,I2> coalesce(int partition,CoalesceFunction<I2> cf) throws MassiveDataPipelineException  {
+	public MapPair<I1,I2> coalesce(int partition,CoalesceFunction<I2> cf) throws PipelineException  {
 		if(Objects.isNull(cf)) {
-			throw new MassiveDataPipelineException(MassiveDataPipelineConstants.COALESCENULL);
+			throw new PipelineException(MassiveDataPipelineConstants.COALESCENULL);
 		}
 		var mappaircoalesce = new MapPair(root, new Coalesce(partition, cf));
 		this.childs.add(mappaircoalesce);
@@ -683,12 +683,12 @@ public sealed class MapPair<I1,I2> extends AbstractPipeline permits MapValues{
 	 * MapPair accepts the reducefunction.
 	 * @param rf
 	 * @return MapPair object.
-	 * @throws MassiveDataPipelineException
+	 * @throws PipelineException
 	 */
 	@SuppressWarnings({ "unchecked" })
-	public MapPair<I1,I2> reduceByKey(ReduceByKeyFunction<I2> rf) throws MassiveDataPipelineException  {
+	public MapPair<I1,I2> reduceByKey(ReduceByKeyFunction<I2> rf) throws PipelineException  {
 		if(Objects.isNull(rf)) {
-			throw new MassiveDataPipelineException(MassiveDataPipelineConstants.REDUCENULL);
+			throw new PipelineException(MassiveDataPipelineConstants.REDUCENULL);
 		}
 		var mappair = new MapPair(root, rf);
 		this.childs.add(mappair);
@@ -717,15 +717,15 @@ public sealed class MapPair<I1,I2> extends AbstractPipeline permits MapValues{
 	 * @param partition
 	 * @param cf
 	 * @return MapPair object.
-	 * @throws MassiveDataPipelineException
+	 * @throws PipelineException
 	 */
 	@SuppressWarnings({ "unchecked" })
-	public MapPair<I1,I2> foldLeft(Object value,ReduceByKeyFunction<I2> rf,int partition,CoalesceFunction<I2> cf) throws MassiveDataPipelineException  {
+	public MapPair<I1,I2> foldLeft(Object value,ReduceByKeyFunction<I2> rf,int partition,CoalesceFunction<I2> cf) throws PipelineException  {
 		if(Objects.isNull(rf)) {
-			throw new MassiveDataPipelineException(MassiveDataPipelineConstants.FOLDLEFTREDUCENULL);
+			throw new PipelineException(MassiveDataPipelineConstants.FOLDLEFTREDUCENULL);
 		}
 		if(Objects.isNull(cf)) {
-			throw new MassiveDataPipelineException(MassiveDataPipelineConstants.FOLDLEFTCOALESCENULL);
+			throw new PipelineException(MassiveDataPipelineConstants.FOLDLEFTCOALESCENULL);
 		}
 		var mappair = new MapPair(root, new FoldByKey(value, rf, true));
 		this.childs.add(mappair);
@@ -746,14 +746,14 @@ public sealed class MapPair<I1,I2> extends AbstractPipeline permits MapValues{
 	 * @param partition
 	 * @param cf
 	 * @return MapPair object.
-	 * @throws MassiveDataPipelineException
+	 * @throws PipelineException
 	 */
-	public MapPair<I1,I2> foldRight(Object value,ReduceByKeyFunction<I2> rf,int partition,CoalesceFunction<I2> cf) throws MassiveDataPipelineException  {
+	public MapPair<I1,I2> foldRight(Object value,ReduceByKeyFunction<I2> rf,int partition,CoalesceFunction<I2> cf) throws PipelineException  {
 		if(Objects.isNull(rf)) {
-			throw new MassiveDataPipelineException(MassiveDataPipelineConstants.FOLDRIGHTREDUCENULL);
+			throw new PipelineException(MassiveDataPipelineConstants.FOLDRIGHTREDUCENULL);
 		}
 		if(Objects.isNull(cf)) {
-			throw new MassiveDataPipelineException(MassiveDataPipelineConstants.FOLDRIGHTCOALESCENULL);
+			throw new PipelineException(MassiveDataPipelineConstants.FOLDRIGHTCOALESCENULL);
 		}
 		var mappair = new MapPair(root, new FoldByKey(value, rf, false));
 		this.childs.add(mappair);
@@ -894,12 +894,12 @@ public sealed class MapPair<I1,I2> extends AbstractPipeline permits MapValues{
 	 * @param toexecute
 	 * @param supplier
 	 * @return list
-	 * @throws MassiveDataPipelineException
+	 * @throws PipelineException
 	 */
 	@SuppressWarnings("unchecked")
-	public List collect(boolean toexecute,IntSupplier supplier) throws MassiveDataPipelineException {
+	public List collect(boolean toexecute,IntSupplier supplier) throws PipelineException {
 		try {
-			var mdscollect = (MassiveDataPipeline) root;
+			var mdscollect = (StreamPipeline) root;
 			mdscollect.finaltasks.clear();
 			mdscollect.finaltasks.add(task);
 			root.mdsroots.add(root);
@@ -907,7 +907,7 @@ public sealed class MapPair<I1,I2> extends AbstractPipeline permits MapValues{
 		}
 		catch(Exception ex) {
 			log.error(MassiveDataPipelineConstants.PIPELINECOLLECTERROR, ex);
-			throw new MassiveDataPipelineException(MassiveDataPipelineConstants.PIPELINECOLLECTERROR,ex);
+			throw new PipelineException(MassiveDataPipelineConstants.PIPELINECOLLECTERROR,ex);
 		}
 	}
 	
@@ -915,15 +915,15 @@ public sealed class MapPair<I1,I2> extends AbstractPipeline permits MapValues{
 	 * This function executes the count tasks.
 	 * @param supplier
 	 * @return object
-	 * @throws MassiveDataPipelineException
+	 * @throws PipelineException
 	 */
 	@SuppressWarnings("unchecked")
-	public Object count(IntSupplier supplier) throws MassiveDataPipelineException {
+	public Object count(IntSupplier supplier) throws PipelineException {
 		try {
-			var mdp = new MassiveDataPipeline(root, new CalculateCount());
+			var mdp = new StreamPipeline(root, new CalculateCount());
 			mdp.parents.add(this);
 			this.childs.add(mdp);
-			var mdscollect = (MassiveDataPipeline) root;
+			var mdscollect = (StreamPipeline) root;
 			mdscollect.finaltasks.clear();
 			mdscollect.finaltasks.add(mdp.task);
 			mdscollect.mdsroots.add(root);
@@ -946,7 +946,7 @@ public sealed class MapPair<I1,I2> extends AbstractPipeline permits MapValues{
 		}
 		catch(Exception ex) {
 			log.error(MassiveDataPipelineConstants.PIPELINECOUNTERROR, ex);
-			throw new MassiveDataPipelineException(MassiveDataPipelineConstants.PIPELINECOUNTERROR,ex);
+			throw new PipelineException(MassiveDataPipelineConstants.PIPELINECOUNTERROR,ex);
 		}
 	}
 	
@@ -954,19 +954,19 @@ public sealed class MapPair<I1,I2> extends AbstractPipeline permits MapValues{
 	 * This method saves the result to the hdfs. 
 	 * @param uri
 	 * @param path
-	 * @throws MassiveDataPipelineException
+	 * @throws PipelineException
 	 */
 	@SuppressWarnings("unchecked")
-	public void saveAsTextFile(URI uri, String path) throws MassiveDataPipelineException {
+	public void saveAsTextFile(URI uri, String path) throws PipelineException {
 		try {
-			var mdscollect = (MassiveDataPipeline) root;
+			var mdscollect = (StreamPipeline) root;
 			mdscollect.finaltasks.clear();
 			mdscollect.finaltasks.add(task);
 			root.mdsroots.add(root);
 			mdscollect.saveAsTextFile(uri, path);
 		} catch (Exception e) {
 			log.error(MassiveDataPipelineConstants.FILEIOERROR, e);
-			throw new MassiveDataPipelineException(MassiveDataPipelineConstants.FILEIOERROR,e);
+			throw new PipelineException(MassiveDataPipelineConstants.FILEIOERROR,e);
 		}
 	}
 	
@@ -974,19 +974,19 @@ public sealed class MapPair<I1,I2> extends AbstractPipeline permits MapValues{
 	 * This function executes the forEach tasks.
 	 * @param consumer
 	 * @param supplier
-	 * @throws MassiveDataPipelineException
+	 * @throws PipelineException
 	 */
 	@SuppressWarnings("unchecked")
-	public void forEach(Consumer<List<Tuple2>> consumer,IntSupplier supplier) throws MassiveDataPipelineException {
+	public void forEach(Consumer<List<Tuple2>> consumer,IntSupplier supplier) throws PipelineException {
 		try {
-			var mdscollect = (MassiveDataPipeline) root;
+			var mdscollect = (StreamPipeline) root;
 			mdscollect.finaltasks.clear();
 			mdscollect.finaltasks.add(task);
 			root.mdsroots.add(root);
 			mdscollect.forEach(consumer,supplier);
 		} catch (Exception e) {
 			log.error(MassiveDataPipelineConstants.PIPELINEFOREACHERROR, e);
-			throw new MassiveDataPipelineException(MassiveDataPipelineConstants.PIPELINEFOREACHERROR,e);
+			throw new PipelineException(MassiveDataPipelineConstants.PIPELINEFOREACHERROR,e);
 		}
 	}
 

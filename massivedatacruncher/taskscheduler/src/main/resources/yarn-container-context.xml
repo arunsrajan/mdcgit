@@ -43,7 +43,7 @@
 		host="${SHDP_AMSERVICE_HOST}" port="${SHDP_AMSERVICE_PORT}" />
 
 	<bean id="yarnContainer"
-		class="com.github.mdc.tasks.scheduler.yarn.MRYarnContainer">
+		class="com.github.mdc.tasks.scheduler.yarn.MapReduceYarnContainer">
 		<property name="integrationServiceClient"
 			ref="yarnAmserviceClient" />
 		<property name="containerprops">

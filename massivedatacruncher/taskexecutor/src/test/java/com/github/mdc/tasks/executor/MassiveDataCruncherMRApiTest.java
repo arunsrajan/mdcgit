@@ -24,17 +24,17 @@ import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.ReducerValues;
 import com.github.mdc.common.RemoteDataFetcher;
 import com.github.mdc.common.Utils;
-import com.github.mdc.stream.MassiveDataPipelineBase;
-import com.github.mdc.tasks.executor.CrunchCombiner;
-import com.github.mdc.tasks.executor.CrunchMapper;
-import com.github.mdc.tasks.executor.CrunchReducer;
-import com.github.mdc.tasks.executor.MassiveDataCruncherCombiner;
-import com.github.mdc.tasks.executor.MassiveDataCruncherMapper;
-import com.github.mdc.tasks.executor.MassiveDataCruncherReducer;
-import com.github.mdc.tasks.executor.MassiveDataTaskExecutorMapperCombiner;
-import com.github.mdc.tasks.executor.MassiveDataTaskExecutorReducer;
+import com.github.mdc.stream.StreamPipelineBase;
+import com.github.mdc.tasks.executor.Combiner;
+import com.github.mdc.tasks.executor.Mapper;
+import com.github.mdc.tasks.executor.Reducer;
+import com.github.mdc.tasks.executor.CombinerExecutor;
+import com.github.mdc.tasks.executor.MapperExecutor;
+import com.github.mdc.tasks.executor.ReducerExecutor;
+import com.github.mdc.tasks.executor.TaskExecutorMapperCombiner;
+import com.github.mdc.tasks.executor.TaskExecutorReducer;
 
-public class MassiveDataCruncherMRApiTest extends MassiveDataPipelineBase{
+public class MassiveDataCruncherMRApiTest extends StreamPipelineBase{
 	@BeforeClass
 	public static void setServerUp() throws Exception {
 		Utils.loadLog4JSystemPropertiesClassPath("mdctest.properties");
@@ -42,7 +42,7 @@ public class MassiveDataCruncherMRApiTest extends MassiveDataPipelineBase{
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Test
 	public void testMassiveDataCruncherCombiner() throws Exception {
-		CrunchCombiner<String,Integer,Context> cc=(val,values,context)->{
+		Combiner<String,Integer,Context> cc=(val,values,context)->{
 			int sum = 0;
 			for(Integer value:values) {
 				sum+=value;
@@ -54,7 +54,7 @@ public class MassiveDataCruncherMRApiTest extends MassiveDataPipelineBase{
 		ctx.put("PS", -12100);
 		ctx.put("SW", -100);
 		ctx.put("SW", -1200);
-		MassiveDataCruncherCombiner mdcc = new MassiveDataCruncherCombiner(ctx,cc);
+		CombinerExecutor mdcc = new CombinerExecutor(ctx,cc);
 		Context<String,Integer> result = mdcc.call();
 		assertEquals(-12000,(int)(result.get("PS").iterator().next()));
 		assertEquals(-1300,(int)result.get("SW").iterator().next());
@@ -63,7 +63,7 @@ public class MassiveDataCruncherMRApiTest extends MassiveDataPipelineBase{
 	@SuppressWarnings({ "rawtypes", "unchecked", "resource" })
 	@Test
 	public void testMassiveDataCruncherMapper() throws Exception {
-		CrunchMapper<Long, String, Context> cm = (val, line, context) -> {
+		Mapper<Long, String, Context> cm = (val, line, context) -> {
 			String[] contents = line.split(",");
 			if (contents[0] != null && !contents[0].equals("Year")) {
 				if (contents != null && contents.length > 14 && contents[14] != null && !contents[14].equals("NA")) {
@@ -77,7 +77,7 @@ public class MassiveDataCruncherMRApiTest extends MassiveDataPipelineBase{
 		lzos.write(is.readAllBytes());
 		lzos.flush();
 		SnappyInputStream lzis = new SnappyInputStream(new ByteArrayInputStream(baos.toByteArray()));
-		MassiveDataCruncherMapper mdcm = new MassiveDataCruncherMapper(null, lzis, Arrays.asList(cm));
+		MapperExecutor mdcm = new MapperExecutor(null, lzis, Arrays.asList(cm));
 		Context<String, Integer> result = mdcm.call();
 		assertEquals(45957l, (int) (result.get("AQ").size()));
 	}
@@ -86,7 +86,7 @@ public class MassiveDataCruncherMRApiTest extends MassiveDataPipelineBase{
 	@SuppressWarnings({ "rawtypes", "unchecked", "resource" })
 	@Test
 	public void testMassiveDataCruncherReducer() throws Exception {
-		CrunchReducer<String,Integer,Context> cr=(val,values,context)->{
+		Reducer<String,Integer,Context> cr=(val,values,context)->{
 			int sum = 0;
 			for(Integer value:values) {
 				sum+=value;
@@ -98,7 +98,7 @@ public class MassiveDataCruncherMRApiTest extends MassiveDataPipelineBase{
 		dcc.put("PS", -12100);
 		dcc.put("SW", -100);
 		dcc.put("SW", -1200);
-		MassiveDataCruncherReducer mdcc = new MassiveDataCruncherReducer(dcc,cr, null);
+		ReducerExecutor mdcc = new ReducerExecutor(dcc,cr, null);
 		Context<String,Integer> result = mdcc.call();
 		assertEquals(-12000,(int)(result.get("PS").iterator().next()));
 		assertEquals(-1300,(int)result.get("SW").iterator().next());
@@ -135,8 +135,8 @@ public class MassiveDataCruncherMRApiTest extends MassiveDataPipelineBase{
 				1000,"",
 				app,"");
 		hbtsreceiver.start();
-		MassiveDataTaskExecutorMapperCombiner mdtemc = new
-				MassiveDataTaskExecutorMapperCombiner(bls,lzis,app,task,es,Thread.currentThread().getContextClassLoader(),12121,hbts);
+		TaskExecutorMapperCombiner mdtemc = new
+				TaskExecutorMapperCombiner(bls,lzis,app,task,es,Thread.currentThread().getContextClassLoader(),12121,hbts);
 		mdtemc.run();
 		Context ctx = (Context) RemoteDataFetcher.readIntermediatePhaseOutputFromDFS(app,(app+task + MDCConstants.DATAFILEEXTN), false);
 		hbtsreceiver.stop();
@@ -176,15 +176,15 @@ public class MassiveDataCruncherMRApiTest extends MassiveDataPipelineBase{
 				1000,"",
 				app,"");
 		hbtsreceiver.start();
-		MassiveDataTaskExecutorMapperCombiner mdtemc = new
-				MassiveDataTaskExecutorMapperCombiner(bls,lzis,app,task,es,Thread.currentThread().getContextClassLoader(),12121,hbts);
+		TaskExecutorMapperCombiner mdtemc = new
+				TaskExecutorMapperCombiner(bls,lzis,app,task,es,Thread.currentThread().getContextClassLoader(),12121,hbts);
 		mdtemc.run();
 		ReducerValues reducervalues = new ReducerValues();
 		reducervalues.tuples = Arrays.asList(new Tuple2<>("AQ",Arrays.asList(app+task)));
 		reducervalues.appid = app;
 		reducervalues.reducerclass = AirlineDataMapper.class.getName();
 		task = MDCConstants.TASK+"-1";
-		MassiveDataTaskExecutorReducer reducerexec = new MassiveDataTaskExecutorReducer(reducervalues,app,task,es,Thread.currentThread().getContextClassLoader(),12121,hbts);
+		TaskExecutorReducer reducerexec = new TaskExecutorReducer(reducervalues,app,task,es,Thread.currentThread().getContextClassLoader(),12121,hbts);
 		reducerexec.run();
 		Context ctx = (Context) RemoteDataFetcher.readIntermediatePhaseOutputFromDFS(app,(app+task + MDCConstants.DATAFILEEXTN), false);
 		hbtsreceiver.stop();

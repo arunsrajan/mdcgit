@@ -9,7 +9,7 @@ import org.jooq.lambda.tuple.Tuple2;
 
 import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.PipelineConfig;
-import com.github.mdc.stream.MassiveDataPipelineIgnite;
+import com.github.mdc.stream.IgnitePipeline;
 import com.github.mdc.stream.Pipeline;
 
 public class StreamAggSumCountArrDelayIgnite implements Serializable, Pipeline {
@@ -32,7 +32,7 @@ public class StreamAggSumCountArrDelayIgnite implements Serializable, Pipeline {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void testMapValuesReduceByValues(String[] args, PipelineConfig pipelineconfig) throws Exception {
 		log.info("testMapValuesReduceByValues Before---------------------------------------");
-		MassiveDataPipelineIgnite<String> datastream = MassiveDataPipelineIgnite.newStreamHDFS(args[0], args[1], pipelineconfig);
+		IgnitePipeline<String> datastream = IgnitePipeline.newStreamHDFS(args[0], args[1], pipelineconfig);
 		datastream.map(dat -> dat.split(","))
 		.filter(dat -> dat != null && !dat[14].equals("ArrDelay") && !dat[14].equals("NA"))
 		.mapToPair(dat -> (Tuple2<String, Long>) Tuple.tuple(dat[8], Long.parseLong(dat[14])))

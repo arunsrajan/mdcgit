@@ -47,10 +47,10 @@ import com.github.mdc.common.TasksGraphExecutor;
 import com.github.mdc.common.Utils;
 import com.github.mdc.common.ApplicationTask.TaskStatus;
 import com.github.mdc.common.MDCConstants.STORAGE;
-import com.github.mdc.stream.executors.MassiveDataStreamJGroupsTaskExecutor;
-import com.github.mdc.stream.executors.MassiveDataStreamTaskDExecutor;
-import com.github.mdc.stream.executors.MassiveDataStreamTaskExecutorInMemory;
-import com.github.mdc.stream.executors.MassiveDataStreamTaskExecutorInMemoryDisk;
+import com.github.mdc.stream.executors.StreamPipelineTaskExecutorJGroups;
+import com.github.mdc.stream.executors.StreamPipelineTaskExecutor;
+import com.github.mdc.stream.executors.StreamPipelineTaskExecutorInMemory;
+import com.github.mdc.stream.executors.StreamPipelineTaskExecutorInMemoryDisk;
 
 public class TaskExecutor implements Runnable {
 	private static Logger log = Logger.getLogger(TaskExecutor.class);
@@ -109,12 +109,12 @@ public class TaskExecutor implements Runnable {
 				log.info("Received Job Stage: " + deserobj);
 				var taskexecutor = jobstageexecutormap.get(task.jobid + task.stageid + task.taskid);
 				var hbtss = hbtssjobid.get(task.jobid);
-				var mdste = (MassiveDataStreamTaskDExecutor) taskexecutor;
+				var mdste = (StreamPipelineTaskExecutor) taskexecutor;
 				if (taskexecutor == null || mdste.isCompleted() && task.taskstatus == Task.TaskStatus.FAILED) {
 					var key = task.jobid + task.stageid;
-					mdste = task.storage == STORAGE.INMEMORY_DISK?new MassiveDataStreamTaskExecutorInMemoryDisk(jobidstageidjobstagemap.get(key), resultstream,
-							inmemorycache, hbtss):task.storage == STORAGE.INMEMORY?new MassiveDataStreamTaskExecutorInMemory(jobidstageidjobstagemap.get(key),
-									resultstream, inmemorycache):new MassiveDataStreamTaskDExecutor(jobidstageidjobstagemap.get(key),inmemorycache);
+					mdste = task.storage == STORAGE.INMEMORY_DISK?new StreamPipelineTaskExecutorInMemoryDisk(jobidstageidjobstagemap.get(key), resultstream,
+							inmemorycache, hbtss):task.storage == STORAGE.INMEMORY?new StreamPipelineTaskExecutorInMemory(jobidstageidjobstagemap.get(key),
+									resultstream, inmemorycache):new StreamPipelineTaskExecutor(jobidstageidjobstagemap.get(key),inmemorycache);
 					mdste.setTask(task);
 					mdste.setHbtss(hbtss);
 					mdste.setExecutor(es);
@@ -136,9 +136,9 @@ public class TaskExecutor implements Runnable {
 				}
 			} else if (deserobj instanceof TasksGraphExecutor stagesgraph) {
 				var taskexecutor = jobstageexecutormap.get(stagesgraph.getTasks().get(0).jobid);
-				var mdste = (MassiveDataStreamJGroupsTaskExecutor) taskexecutor;
+				var mdste = (StreamPipelineTaskExecutorJGroups) taskexecutor;
 				if (taskexecutor == null) {
-					mdste = new MassiveDataStreamJGroupsTaskExecutor(jobidstageidjobstagemap, stagesgraph.getTasks(),
+					mdste = new StreamPipelineTaskExecutorJGroups(jobidstageidjobstagemap, stagesgraph.getTasks(),
 							port, inmemorycache);
 					mdste.setExecutor(es);
 					var key = stagesgraph.getTasks().get(0).jobid;
@@ -147,7 +147,7 @@ public class TaskExecutor implements Runnable {
 				}
 			} else if (deserobj instanceof CloseStagesGraphExecutor closestagesgraph) {
 				var taskexecutor = jobstageexecutormap.get(closestagesgraph.getJobid());
-				var mdste = (MassiveDataStreamJGroupsTaskExecutor) taskexecutor;
+				var mdste = (StreamPipelineTaskExecutorJGroups) taskexecutor;
 				if (taskexecutor != null) {
 					mdste.channel.close();
 					jobstageexecutormap.remove(closestagesgraph.getJobid());
@@ -177,11 +177,11 @@ public class TaskExecutor implements Runnable {
 			} else if (deserobj instanceof RemoteDataFetch rdf) {
 				log.info("Entering RemoteDataFetch: " + deserobj);
 				var taskexecutor = jobstageexecutormap.get(rdf.jobid + rdf.stageid + rdf.taskid);
-				var mdstde = (MassiveDataStreamTaskDExecutor) taskexecutor;
+				var mdstde = (StreamPipelineTaskExecutor) taskexecutor;
 				if (taskexecutor != null) {
 					Task task  = mdstde.getTask();
 					if(task.storage == MDCConstants.STORAGE.INMEMORY) {
-						var os = ((MassiveDataStreamTaskExecutorInMemory)mdstde).getIntermediateInputStreamRDF(rdf);
+						var os = ((StreamPipelineTaskExecutorInMemory)mdstde).getIntermediateInputStreamRDF(rdf);
 						if (!Objects.isNull(os)) {
 							rdf.data = ((ByteArrayOutputStream)os).toByteArray();
 						}
@@ -214,7 +214,7 @@ public class TaskExecutor implements Runnable {
 					var apptaskid = applicationid + taskid;
 					var taskexecutor = apptaskexecutormap.get(apptaskid);
 					if (object instanceof BlocksLocation blockslocation) {
-						var mdtemc = (MassiveDataTaskExecutorMapperCombiner) taskexecutor;
+						var mdtemc = (TaskExecutorMapperCombiner) taskexecutor;
 						if (taskexecutor == null || mdtemc.getHbts().taskstatus == TaskStatus.FAILED) {
 							if (taskexecutor != null) {
 								mdtemc.getHbts().stop();
@@ -227,7 +227,7 @@ public class TaskExecutor implements Runnable {
 							log.debug("Application Submitted:" + applicationid + "-" + taskid);
 							var taskpool = Executors.newWorkStealingPool();
 							var hbts = hbtsappid.get(applicationid);
-							mdtemc = new MassiveDataTaskExecutorMapperCombiner(blockslocation,
+							mdtemc = new TaskExecutorMapperCombiner(blockslocation,
 									CacheUtils.getBlockData(blockslocation, hdfs), applicationid, taskid, taskpool, cl,
 									port, hbts);
 							hdfs.close();
@@ -235,7 +235,7 @@ public class TaskExecutor implements Runnable {
 							taskpool.execute(mdtemc);
 						}
 					} else if (object instanceof ReducerValues rv) {
-						var mdter = (MassiveDataTaskExecutorReducer) taskexecutor;
+						var mdter = (TaskExecutorReducer) taskexecutor;
 						if (taskexecutor == null || mdter.getHbts().taskstatus == TaskStatus.FAILED) {
 							if (taskexecutor != null) {
 								mdter.getHbts().stop();
@@ -244,7 +244,7 @@ public class TaskExecutor implements Runnable {
 							}
 							var taskpool = Executors.newWorkStealingPool();
 							var hbts = hbtsappid.get(applicationid);
-							mdter = new MassiveDataTaskExecutorReducer(rv, applicationid, taskid, taskpool, cl, port,
+							mdter = new TaskExecutorReducer(rv, applicationid, taskid, taskpool, cl, port,
 									hbts);
 							apptaskexecutormap.put(apptaskid, mdter);
 							log.debug("Reducer submission:" + apptaskid);
@@ -252,7 +252,7 @@ public class TaskExecutor implements Runnable {
 						}
 					} else if (object instanceof RetrieveData) {
 						Context ctx = null;
-						if (taskexecutor instanceof MassiveDataTaskExecutorReducer mdter) {
+						if (taskexecutor instanceof TaskExecutorReducer mdter) {
 							mdter.getHbts().stop();
 							mdter.getHbts().destroy();
 							log.debug("Obtaining reducer Context: " + apptaskid);
@@ -271,7 +271,7 @@ public class TaskExecutor implements Runnable {
 						rk.response = true;
 						Utils.writeObjectByStream(s.getOutputStream(), rk);
 						s.close();
-						if (taskexecutor instanceof MassiveDataTaskExecutorMapperCombiner mdtemc) {
+						if (taskexecutor instanceof TaskExecutorMapperCombiner mdtemc) {
 							mdtemc.getHbts().stop();
 							mdtemc.getHbts().destroy();
 							log.debug("destroying MapperCombiner HeartBeat: " + apptaskid);

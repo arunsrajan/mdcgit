@@ -8,14 +8,14 @@ import java.util.List;
 import org.junit.Test;
 
 import com.github.mdc.common.DataCruncherContext;
-import com.github.mdc.tasks.scheduler.MdcJob;
-import com.github.mdc.tasks.scheduler.MdcJobBuilder;
+import com.github.mdc.tasks.scheduler.MapReduceApplicatiion;
+import com.github.mdc.tasks.scheduler.MapReduceApplicationBuilder;
 
 public class MdcJobBuilderTest extends MassiveDataMRJobBase{
 
 	@Test
 	public void testMdcJobBuilder() {
-		MdcJob mdcjob = (MdcJob) MdcJobBuilder.newBuilder()
+		MapReduceApplicatiion mdcjob = (MapReduceApplicatiion) MapReduceApplicationBuilder.newBuilder()
 				.addMapper(AirlineDataMapper.class, "/carriers")
 				.addMapper(AirlineDataMapper.class, "/airlines")				
 				.addCombiner(AirlineDataMapper.class)
@@ -34,7 +34,7 @@ public class MdcJobBuilderTest extends MassiveDataMRJobBase{
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Test
 	public void testMdcJobCall() {
-		MdcJob mdcjob = (MdcJob) MdcJobBuilder.newBuilder()
+		MapReduceApplicatiion mdcjob = (MapReduceApplicatiion) MapReduceApplicationBuilder.newBuilder()
 				.addMapper(AirlineDataMapper.class, "/airlinesample")				
 				.addCombiner(AirlineDataMapper.class)
 				.addReducer(AirlineDataMapper.class)

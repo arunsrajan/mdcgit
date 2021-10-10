@@ -30,15 +30,15 @@ import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.PipelineConfig;
 import com.github.mdc.common.Stage;
 import com.github.mdc.stream.AbstractPipeline;
-import com.github.mdc.stream.MassiveDataPipelineException;
-import com.github.mdc.stream.MassiveDataPipelineIgnite;
+import com.github.mdc.stream.PipelineException;
+import com.github.mdc.stream.IgnitePipeline;
 
 public class FileBlocksPartitioner {
 	
 	PipelineConfig pc;  
 	Job job;
 	@SuppressWarnings("rawtypes")
-	public void getJobStageBlocks(Job job, PipelineConfig pipelineconfig, String folder,Collection<AbstractPipeline> mdsroots, Set<Stage> rootstages) throws MassiveDataPipelineException {
+	public void getJobStageBlocks(Job job, PipelineConfig pipelineconfig, String folder,Collection<AbstractPipeline> mdsroots, Set<Stage> rootstages) throws PipelineException {
 		pc = pipelineconfig;
 		this.job = job;
 		var roots = mdsroots.iterator();
@@ -68,7 +68,7 @@ public class FileBlocksPartitioner {
 		job.stageoutputmap = new ConcurrentHashMap<>();
 		for (var rootstage : rootstages) {
 			var obj = roots.next();
-			if (obj instanceof MassiveDataPipelineIgnite mdp) {
+			if (obj instanceof IgnitePipeline mdp) {
 				folder = mdp.getFolder();
 			}
 
@@ -85,7 +85,7 @@ public class FileBlocksPartitioner {
 	}
 	
 	protected void partitionFiles(IgniteCache<Object, byte[]> cache, String filepath, int id,
-			List<BlocksLocation> bls) throws MassiveDataPipelineException {
+			List<BlocksLocation> bls) throws PipelineException {
 		try (var raf = new RandomAccessFile(filepath, "r");) {
 			var sourceSize = raf.length();
 			var fileblocksizemb = Integer.parseInt(pc.getBlocksize());
@@ -130,7 +130,7 @@ public class FileBlocksPartitioner {
 			}
 		}
 		catch(Exception e) {
-			throw new MassiveDataPipelineException(MDCConstants.FILEBLOCKSPARTITIONINGERROR,e);
+			throw new PipelineException(MDCConstants.FILEBLOCKSPARTITIONINGERROR,e);
 		}
 	}
 

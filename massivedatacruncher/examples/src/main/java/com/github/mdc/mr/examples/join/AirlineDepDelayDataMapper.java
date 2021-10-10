@@ -4,9 +4,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.github.mdc.common.Context;
-import com.github.mdc.tasks.executor.CrunchMapper;
+import com.github.mdc.tasks.executor.Mapper;
 
-public class AirlineDepDelayDataMapper implements CrunchMapper<Long, String, Context<String, Map>> {
+public class AirlineDepDelayDataMapper implements Mapper<Long, String, Context<String, Map>> {
 
 	@Override
 	public void map(Long chunkid, String line, Context<String, Map> ctx) {
