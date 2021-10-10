@@ -48,7 +48,7 @@
 			ref="yarnAmserviceClient" />
 		<property name="containerprops">
 			<map>
-				<entry key="taskexecutor.hdfsnn" value="${hd.fs}" />
+				<entry key="hdfs.namenode.url" value="${hd.fs}" />
 			</map>
 		</property>
 	</bean>

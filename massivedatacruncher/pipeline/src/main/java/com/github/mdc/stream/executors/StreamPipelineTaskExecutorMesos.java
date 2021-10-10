@@ -40,7 +40,7 @@ public final class StreamPipelineTaskExecutorMesos extends StreamPipelineTaskExe
 		
 		log.debug("Entered MassiveDataStreamTaskExecutorMesos.run");
 		var configuration = new Configuration();;
-		var hdfsfilepath = MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_HDFSNN);
+		var hdfsfilepath = MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL);
 		try(var hdfs = FileSystem.newInstance(new URI(hdfsfilepath), configuration);) {
 			
 			

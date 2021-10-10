@@ -89,15 +89,15 @@ public class MapReduceYarnContainer extends AbstractIntegrationYarnContainer {
 					var input = new Input(new ByteArrayInputStream(job));
 					var object = kryo.readClassAndObject(input);
 					if(object instanceof MapperCombiner mc) {
-						System.setProperty(MDCConstants.TASKEXECUTOR_HDFSNN,
-								containerprops.get(MDCConstants.TASKEXECUTOR_HDFSNN));
+						System.setProperty(MDCConstants.HDFSNAMENODEURL,
+								containerprops.get(MDCConstants.HDFSNAMENODEURL));
 						var cm = new ArrayList<Mapper>();
 						var cc = new ArrayList<Combiner>();
 						var prop = new Properties();
 						prop.putAll(containerprops);
 						MDCProperties.put(prop);
 						try (var hdfs = FileSystem.newInstance(
-								new URI(MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_HDFSNN)),
+								new URI(MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL)),
 								new Configuration());) {
 							Class<?> clz = null;
 							if (mc.mapperclasses != null) {

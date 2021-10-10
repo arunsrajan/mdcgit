@@ -94,11 +94,11 @@ public class StreamPipelineYarnContainer extends AbstractIntegrationYarnContaine
 					var input = new Input(new ByteArrayInputStream(job));
 					var object = kryo.readClassAndObject(input);
 					task = (Task)object;
-					System.setProperty(MDCConstants.TASKEXECUTOR_HDFSNN, containerprops.get(MDCConstants.TASKEXECUTOR_HDFSNN));
+					System.setProperty(MDCConstants.HDFSNAMENODEURL, containerprops.get(MDCConstants.HDFSNAMENODEURL));
 					var prop = new Properties();
 					prop.putAll(containerprops);
 					MDCProperties.put(prop);
-					var yarnexecutor = new StreamPipelineTaskExecutorYarn( containerprops.get(MDCConstants.TASKEXECUTOR_HDFSNN),jsidjsmap.get(task.jobid + task.stageid));
+					var yarnexecutor = new StreamPipelineTaskExecutorYarn( containerprops.get(MDCConstants.HDFSNAMENODEURL),jsidjsmap.get(task.jobid + task.stageid));
 					yarnexecutor.setTask(task);
 					yarnexecutor.setExecutor(executor);
 					yarnexecutor.call();

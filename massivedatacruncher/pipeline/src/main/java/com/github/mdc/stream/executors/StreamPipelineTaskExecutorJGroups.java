@@ -53,7 +53,7 @@ public final class StreamPipelineTaskExecutorJGroups extends StreamPipelineTaskE
 		var stagepartidstatusconcmapreq = new ConcurrentHashMap<>(
 				stagepartidstatusmap);
 		var stagepartidstatusconcmapresp = new ConcurrentHashMap<String, WhoIsResponse.STATUS>();
-		var hdfsfilepath = MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_HDFSNN);
+		var hdfsfilepath = MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL);
 		try(var hdfs = FileSystem.newInstance(new URI(hdfsfilepath), new Configuration());) {
 			this.hdfs = hdfs;
 			channel = Utils.getChannelTaskExecutor(jobstage.jobid,

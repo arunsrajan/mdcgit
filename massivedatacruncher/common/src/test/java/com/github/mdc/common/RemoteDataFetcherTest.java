@@ -48,13 +48,8 @@ public class RemoteDataFetcherTest {
 			hdfsLocalCluster.start();
 		}
 		
-		Properties prop = new Properties();
-		prop.put(MDCConstants.TASKEXECUTOR_HDFSNN, "hdfs://localhost:9000");
-		prop.put(MDCConstants.TASKSCHEDULERSTREAM_HDFSNN, "hdfs://localhost:9000");
-		System.setProperty(MDCConstants.TASKSCHEDULERSTREAM_HDFSNN, "hdfs://localhost:9000");
-		System.setProperty(MDCConstants.APPMASTER_HDFSNN, "hdfs://localhost:9000");
-		MDCProperties.put(prop);
-		
+		Utils.loadLog4JSystemPropertiesClassPath(MDCConstants.MDC_TEST_PROPERTIES);
+		System.setProperty(MDCConstants.HDFSNAMENODEURL, MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL));
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -131,15 +126,15 @@ public class RemoteDataFetcherTest {
 			String filename = "TestFile1.dat";
 			String job = MDCConstants.JOB+MDCConstants.HYPHEN+System.currentTimeMillis();
 			Configuration configuration = new Configuration();
-			configuration.set(MDCConstants.HDFS_DEFAULTFS, MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_HDFSNN));
+			configuration.set(MDCConstants.HDFS_DEFAULTFS, MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL));
 			configuration.set(MDCConstants.HDFS_IMPL, org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
 			configuration.set(MDCConstants.HDFS_FILE_IMPL, org.apache.hadoop.fs.LocalFileSystem.class.getName());
-			String jobpath = MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_HDFSNN) + MDCConstants.BACKWARD_SLASH
+			String jobpath = MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL) + MDCConstants.BACKWARD_SLASH
 					+ FileSystemSupport.MDS + MDCConstants.BACKWARD_SLASH + job;
 			String filepath = jobpath + MDCConstants.BACKWARD_SLASH + filename;
 			// Create folders if not already created.
 			Path filepathurl = new Path(filepath);
-			FileSystem hdfs = FileSystem.newInstance(new URI(MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_HDFSNN)),
+			FileSystem hdfs = FileSystem.newInstance(new URI(MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL)),
 					configuration);
 			String testdata = "TestData";
 			DataCruncherContext<String, String> ctx = new DataCruncherContext<>();
@@ -162,11 +157,11 @@ public class RemoteDataFetcherTest {
 			String filename = "TestFile1.dat";
 			String job = MDCConstants.JOB+MDCConstants.HYPHEN+System.currentTimeMillis();
 			Configuration configuration = new Configuration();
-			configuration.set(MDCConstants.HDFS_DEFAULTFS, MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_HDFSNN));
+			configuration.set(MDCConstants.HDFS_DEFAULTFS, MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL));
 			configuration.set(MDCConstants.HDFS_IMPL, org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
 			configuration.set(MDCConstants.HDFS_FILE_IMPL, org.apache.hadoop.fs.LocalFileSystem.class.getName());
-			MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_HDFSNN);
-			FileSystem hdfs = FileSystem.newInstance(new URI(MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_HDFSNN)),
+			MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL);
+			FileSystem hdfs = FileSystem.newInstance(new URI(MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL)),
 					configuration);
 			String testdata = "TestData";
 			DataCruncherContext ctx = new DataCruncherContext();
@@ -214,14 +209,14 @@ public class RemoteDataFetcherTest {
 			String filename = "TestFile3.dat";
 			String dir = MDCConstants.JOB+MDCConstants.HYPHEN+System.currentTimeMillis();
 			Configuration configuration = new Configuration();
-			configuration.set(MDCConstants.HDFS_DEFAULTFS, MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_HDFSNN));
+			configuration.set(MDCConstants.HDFS_DEFAULTFS, MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL));
 			configuration.set(MDCConstants.HDFS_IMPL, org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
 			configuration.set(MDCConstants.HDFS_FILE_IMPL, org.apache.hadoop.fs.LocalFileSystem.class.getName());
-			String jobpath = MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_HDFSNN) + MDCConstants.BACKWARD_SLASH
+			String jobpath = MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL) + MDCConstants.BACKWARD_SLASH
 					+ FileSystemSupport.MDS + MDCConstants.BACKWARD_SLASH + dir;
 			String filepath = jobpath + MDCConstants.BACKWARD_SLASH + filename;
 			Path filepathurl = new Path(filepath);
-			FileSystem hdfs = FileSystem.newInstance(new URI(MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_HDFSNN)),
+			FileSystem hdfs = FileSystem.newInstance(new URI(MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL)),
 					configuration);
 			JobStage js = new JobStage();
 			RemoteDataFetcher.createFile(hdfs, filepathurl, js);
@@ -235,10 +230,10 @@ public class RemoteDataFetcherTest {
 			String filename = "TestFile1.dat";
 			String dir = MDCConstants.JOB+MDCConstants.HYPHEN+System.currentTimeMillis();
 			Configuration configuration = new Configuration();
-			configuration.set(MDCConstants.HDFS_DEFAULTFS, MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_HDFSNN));
+			configuration.set(MDCConstants.HDFS_DEFAULTFS, MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL));
 			configuration.set(MDCConstants.HDFS_IMPL, org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
 			configuration.set(MDCConstants.HDFS_FILE_IMPL, org.apache.hadoop.fs.LocalFileSystem.class.getName());
-			String jobpath = MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_HDFSNN) + MDCConstants.BACKWARD_SLASH
+			String jobpath = MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL) + MDCConstants.BACKWARD_SLASH
 					+ FileSystemSupport.MDS + MDCConstants.BACKWARD_SLASH + dir;
 			String filepath = jobpath + MDCConstants.BACKWARD_SLASH + filename;
 			Path filepathurl = new Path(filepath);
@@ -257,15 +252,15 @@ public class RemoteDataFetcherTest {
 		String dir = MDCConstants.JOB + MDCConstants.HYPHEN + System.currentTimeMillis();
 		Configuration configuration = new Configuration();
 		configuration.set(MDCConstants.HDFS_DEFAULTFS,
-				MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_HDFSNN));
+				MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL));
 		configuration.set(MDCConstants.HDFS_IMPL, org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
 		configuration.set(MDCConstants.HDFS_FILE_IMPL, org.apache.hadoop.fs.LocalFileSystem.class.getName());
-		String jobpath = MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_HDFSNN) + MDCConstants.BACKWARD_SLASH
+		String jobpath = MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL) + MDCConstants.BACKWARD_SLASH
 				+ FileSystemSupport.MDS + MDCConstants.BACKWARD_SLASH + dir;
 		String filepath = jobpath + MDCConstants.BACKWARD_SLASH + filename;
 		Path filepathurl = new Path(filepath);
 		FileSystem hdfs = FileSystem
-				.newInstance(new URI(MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_HDFSNN)), configuration);
+				.newInstance(new URI(MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL)), configuration);
 		JobStage js = new JobStage();
 		RemoteDataFetcher.createFile(hdfs, filepathurl, js);
 		assertTrue(hdfs.exists(filepathurl));
@@ -280,14 +275,14 @@ public class RemoteDataFetcherTest {
 			String filename = "TestFiledelete2.dat";
 			String dir = MDCConstants.JOB+MDCConstants.HYPHEN+System.currentTimeMillis();
 			Configuration configuration = new Configuration();
-			configuration.set(MDCConstants.HDFS_DEFAULTFS, MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_HDFSNN));
+			configuration.set(MDCConstants.HDFS_DEFAULTFS, MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL));
 			configuration.set(MDCConstants.HDFS_IMPL, org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
 			configuration.set(MDCConstants.HDFS_FILE_IMPL, org.apache.hadoop.fs.LocalFileSystem.class.getName());
-			String jobpath = MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_HDFSNN) + MDCConstants.BACKWARD_SLASH
+			String jobpath = MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL) + MDCConstants.BACKWARD_SLASH
 					+ FileSystemSupport.MDS + MDCConstants.BACKWARD_SLASH + dir;
 			String filepath = jobpath + MDCConstants.BACKWARD_SLASH + filename;
 			Path filepathurl = new Path(filepath);
-			FileSystem hdfs = FileSystem.newInstance(new URI(MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_HDFSNN)),
+			FileSystem hdfs = FileSystem.newInstance(new URI(MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL)),
 					configuration);
 			JobStage js = new JobStage();
 			RemoteDataFetcher.createFile(hdfs, filepathurl, js);

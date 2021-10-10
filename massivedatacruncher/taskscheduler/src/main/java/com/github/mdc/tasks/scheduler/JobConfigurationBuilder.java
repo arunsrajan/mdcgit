@@ -32,7 +32,7 @@ public class JobConfigurationBuilder {
 	String containeralloc;
 	String heappercentage;
 	private JobConfigurationBuilder() {
-		hdfsurl = MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULER_HDFSNN);
+		hdfsurl = MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL);
 		tstempdir = MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULER_TMP_DIR);
 		tshost = MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULER_HOST);
 		tsport = MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULER_PORT);

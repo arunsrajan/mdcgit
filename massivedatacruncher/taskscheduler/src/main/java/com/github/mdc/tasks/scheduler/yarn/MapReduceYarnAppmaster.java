@@ -94,12 +94,12 @@ public class MapReduceYarnAppmaster extends StaticEventingAppmaster implements C
 			log.info("Environment: "+getEnvironment());
 			var yarninputfolder = MDCConstants.YARNINPUTFOLDER+MDCConstants.BACKWARD_SLASH+getEnvironment().get(MDCConstants.YARNMDCJOBID);
 			log.info("Yarn Input Folder: "+yarninputfolder);
-			log.info("AppMaster HDFS: "+getConfiguration().get(MDCConstants.APPMASTER_HDFSNN));
+			log.info("AppMaster HDFS: "+getConfiguration().get(MDCConstants.HDFSNAMENODEURL));
 			var containerallocator = (DefaultContainerAllocator) getAllocator();
 			log.info("Parameters: "+getParameters() );
 			log.info("Container-Memory: "+getParameters().getProperty("container-memory", "1024"));
 			containerallocator.setMemory(Integer.parseInt(getParameters().getProperty("container-memory", "1024")));
-			System.setProperty(MDCConstants.APPMASTER_HDFSNN, getConfiguration().get(MDCConstants.APPMASTER_HDFSNN));
+			System.setProperty(MDCConstants.HDFSNAMENODEURL, getConfiguration().get(MDCConstants.HDFSNAMENODEURL));
 			//Thread containing the job stage information.
 			mapclzchunkfile = (Map<String, Set<String>>) RemoteDataFetcher.readYarnAppmasterServiceDataFromDFS( yarninputfolder,
 					MDCConstants.MASSIVEDATA_YARNINPUT_MAPPER);
@@ -165,7 +165,7 @@ public class MapReduceYarnAppmaster extends StaticEventingAppmaster implements C
 		}
 		log.info(rs);
 		var prop = new Properties();
-		prop.put(MDCConstants.TASKEXECUTOR_HDFSNN, getConfiguration().get(MDCConstants.TASKEXECUTOR_HDFSNN));
+		prop.put(MDCConstants.HDFSNAMENODEURL, getConfiguration().get(MDCConstants.HDFSNAMENODEURL));
 		MDCProperties.put(prop);
 		super.submitApplication();
 	}
@@ -307,9 +307,9 @@ public class MapReduceYarnAppmaster extends StaticEventingAppmaster implements C
 					}
 					var filename = MDCConstants.MAPRED + MDCConstants.HYPHEN + System.currentTimeMillis();
 					log.info("Writing Results to file: " + filename);
-					try (var hdfs = FileSystem.get(new URI(MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_HDFSNN)),
+					try (var hdfs = FileSystem.get(new URI(MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL)),
 							new Configuration());var fsdos = hdfs.create(new Path(
-							MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_HDFSNN) + MDCConstants.BACKWARD_SLASH
+							MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL) + MDCConstants.BACKWARD_SLASH
 									+ jobconf.getOutputfolder() + MDCConstants.BACKWARD_SLASH + filename));) {
 						fsdos.write(sb.toString().getBytes());
 					} catch (Exception ex) {

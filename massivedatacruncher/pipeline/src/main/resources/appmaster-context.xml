@@ -22,7 +22,7 @@
 		fs.defaultFS=${hd.fs}
 		yarn.resourcemanager.address=${hd.rm}
 		yarn.resourcemanager.scheduler.address=${hd.scheduler}
-		appmaster.hdfsnn=${hd.fs}
+		hdfs.namenode.url=${hd.fs}
 		taskexecutor.hdfsnn=${hd.fs}
 	</yarn:configuration>
 

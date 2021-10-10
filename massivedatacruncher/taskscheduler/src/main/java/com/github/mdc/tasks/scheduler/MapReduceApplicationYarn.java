@@ -144,7 +144,7 @@ public class MapReduceApplicationYarn implements Callable<List<DataCruncherConte
 			jm.jobstarttime = System.currentTimeMillis();
 			jm.jobid = applicationid;
 			MDCJobMetrics.put(jm);
-			hdfs = FileSystem.get(new URI(MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULER_HDFSNN)),
+			hdfs = FileSystem.get(new URI(MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL)),
 					configuration);
 			var kryo = Utils.getKryoNonDeflateSerializer();
 			var combiner = new HashSet<String>();
@@ -169,7 +169,7 @@ public class MapReduceApplicationYarn implements Callable<List<DataCruncherConte
 			boolean isblocksuserdefined = Boolean.parseBoolean(jobconf.getIsblocksuserdefined());
 			for (var hdfsdir : hdfsdirpaths) {
 				var fileStatus = hdfs.listStatus(
-						new Path(MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULER_HDFSNN) + hdfsdir));
+						new Path(MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL) + hdfsdir));
 				var paths = FileUtil.stat2Paths(fileStatus);
 				blockpath.addAll(Arrays.asList(paths));
 				bls = new ArrayList<>();

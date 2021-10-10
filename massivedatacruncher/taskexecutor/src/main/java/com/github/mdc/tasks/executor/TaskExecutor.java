@@ -222,7 +222,7 @@ public class TaskExecutor implements Runnable {
 								apptaskexecutormap.remove(apptaskid);
 							}
 							var hdfs = FileSystem.newInstance(
-									new URI(MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_HDFSNN)),
+									new URI(MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL)),
 									configuration);
 							log.debug("Application Submitted:" + applicationid + "-" + taskid);
 							var taskpool = Executors.newWorkStealingPool();

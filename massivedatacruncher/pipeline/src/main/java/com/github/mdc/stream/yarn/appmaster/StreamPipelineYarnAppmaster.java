@@ -87,12 +87,12 @@ public class StreamPipelineYarnAppmaster extends StaticEventingAppmaster impleme
 			var yarninputfolder = MDCConstants.YARNINPUTFOLDER + MDCConstants.BACKWARD_SLASH
 					+ getEnvironment().get(MDCConstants.YARNMDCJOBID);
 			log.debug("Yarn Input Folder: " + yarninputfolder);
-			log.debug("AppMaster HDFS: " + getConfiguration().get(MDCConstants.APPMASTER_HDFSNN));
+			log.debug("AppMaster HDFS: " + getConfiguration().get(MDCConstants.HDFSNAMENODEURL));
 			var containerallocator = (DefaultContainerAllocator) getAllocator();
 			log.debug("Parameters: " + getParameters());
 			log.debug("Container-Memory: " + getParameters().getProperty("container-memory", "1024"));
 			containerallocator.setMemory(Integer.parseInt(getParameters().getProperty("container-memory", "1024")));
-			System.setProperty(MDCConstants.APPMASTER_HDFSNN, getConfiguration().get(MDCConstants.APPMASTER_HDFSNN));
+			System.setProperty(MDCConstants.HDFSNAMENODEURL, getConfiguration().get(MDCConstants.HDFSNAMENODEURL));
 			// Thread containing the job stage information.
 			mdststs = (List<StreamPipelineTaskSubmitter>) RemoteDataFetcher
 					.readYarnAppmasterServiceDataFromDFS(yarninputfolder, MDCConstants.MASSIVEDATA_YARNINPUT_DATAFILE);

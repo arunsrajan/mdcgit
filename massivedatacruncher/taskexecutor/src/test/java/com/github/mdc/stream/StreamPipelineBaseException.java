@@ -142,7 +142,7 @@ public class StreamPipelineBaseException {
 				CountDownLatch cdlport = new CountDownLatch(1);
 				ConcurrentMap<String, Map<String,Process>> containerprocesses = new ConcurrentHashMap<>();
 				ConcurrentMap<String, Map<String,List<Thread>>> containeridthreads = new ConcurrentHashMap<>();
-				hdfste = FileSystem.get(new URI(MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULER_HDFSNN)),
+				hdfste = FileSystem.get(new URI(MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL)),
 						configuration);
 				AtomicInteger portinc = new AtomicInteger(port);
 				var containeridports = new ConcurrentHashMap<String, List<Integer>>();

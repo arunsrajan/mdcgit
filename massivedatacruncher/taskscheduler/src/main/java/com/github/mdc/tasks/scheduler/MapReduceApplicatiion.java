@@ -482,7 +482,7 @@ public class MapReduceApplicatiion implements Callable<List<DataCruncherContext>
 			numreducers = Integer.parseInt(jobconf.getNumofreducers());
 			var configuration = new Configuration();
 			blocksize = Integer.parseInt(jobconf.getBlocksize());
-			hdfs = FileSystem.get(new URI(MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULER_HDFSNN)),
+			hdfs = FileSystem.get(new URI(MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL)),
 					configuration);
 
 			var combiner = new HashSet<String>();
@@ -507,7 +507,7 @@ public class MapReduceApplicatiion implements Callable<List<DataCruncherContext>
 			var allfiles = new ArrayList<String>();
 			for (var hdfsdir : hdfsdirpath) {
 				var fileStatus = hdfs.listStatus(
-						new Path(MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULER_HDFSNN) + hdfsdir));
+						new Path(MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL) + hdfsdir));
 				var paths = FileUtil.stat2Paths(fileStatus);
 				blockpath.addAll(Arrays.asList(paths));
 				bls = new ArrayList<>();
@@ -775,7 +775,7 @@ public class MapReduceApplicatiion implements Callable<List<DataCruncherContext>
 				var filename = MDCConstants.MAPRED + MDCConstants.HYPHEN + System.currentTimeMillis();
 				log.debug("Writing Results to file: " + filename);
 				try (var fsdos = hdfs.create(new Path(
-						MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULER_HDFSNN) + MDCConstants.BACKWARD_SLASH
+						MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL) + MDCConstants.BACKWARD_SLASH
 								+ this.outputfolder + MDCConstants.BACKWARD_SLASH + filename));) {
 					fsdos.write(sb.toString().getBytes());
 				} catch (Exception ex) {

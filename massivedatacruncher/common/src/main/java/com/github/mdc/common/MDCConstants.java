@@ -49,7 +49,6 @@ public class MDCConstants {
 	public static final String TASKSCHEDULER = "taskscheduler";
 	public static final String TASKSCHEDULER_HOSTPORT = "taskscheduler.hostport";
 	public static final String METAFILEEXTN = ".meta";
-	public static final String MRJARPATH = "mrjarpath";
 	public static final String MDCAPPLICATION = "App";
 	public static final String BLOCK = "Block";
 	public static final String TASK = "Task";
@@ -96,7 +95,6 @@ public class MDCConstants {
 	public static final String TASKSCHEDULER_BLOCKSIZE = "taskscheduler.blocksize";
 	public static final String TASKSCHEDULER_BATCHSIZE = "taskscheduler.batchsize";
 	public static final String TASKSCHEDULER_NUMREDUCERS = "taskscheduler.numreducers";
-	public static final String TASKSCHEDULER_HDFSNN = "taskscheduler.hdfsnn";
 	public static final String TASKSCHEDULER_TMP_DIR = "taskscheduler.temp.dir";
 	public static final String TASKSCHEDULERSTREAM_INITIALDELAY = "taskschedulerstream.initialdelay";
 	public static final String TASKSCHEDULERSTREAM_INITIALDELAY_DEFAULT = "1000";
@@ -121,12 +119,9 @@ public class MDCConstants {
 	public static final String TASKSCHEDULERSTREAM_BLOCKSIZE_DEFAULT = "64";
 	public static final String TASKSCHEDULERSTREAM_HA_ENABLED = "taskschedulerstream.ha.enabled";
 	public static final String TASKSCHEDULERSTREAM_HA_ENABLED_DEFAULT = "false";
-	public static final String TASKEXECUTOR_HDFSNN = "taskexecutor.hdfsnn";
 	public static final String TASKEXECUTOR_PINGDELAY = "taskexecutor.pingdelay";
 	public static final String TASKEXECUTOR_PORT = "taskexecutor.port";
 	public static final String TASKEXECUTOR_HOST = "taskexecutor.host";
-	public static final String TASKSCHEDULERSTREAM_HDFSNN = "taskschedulerstream.hdfsnn";
-	public static final String APPMASTER_HDFSNN = "appmaster.hdfsnn";;
 	public static final String NUMOFTASKSTATUSCOMPLETEDORFAILED = "jgroups.numtaskstatuscompleted";;
 	
 	//Node Properties
@@ -292,12 +287,6 @@ public class MDCConstants {
 	public static final String GRAPHFILEPEPLANNAME = "graph.peplan.file";
 	public static final String GRAPHTASKFILENAME = "graph.task.file";
 	
-	//Task Buffers and timeout
-	public static final String TASKBUFFERSIZE = "task.socketbuffersize";
-	public static final String TASKOBJECTSIZE = "task.objectbuffersize";
-	public static final String TASKSOCKETTIMEOUT = "task.sockettimeout";
-	
-	
 	//Cache Properties
 	public static final String CACHESIZEGB = "cache.size";
 	public static final String CACHEEXPIRY = "cache.expiry";
@@ -395,6 +384,8 @@ public class MDCConstants {
 	
 	public static final String DFSOUTPUTFILEREPLICATION = "dfs.replication";
 	public static final String DFSOUTPUTFILEREPLICATION_DEFAULT = "1";
+	public static final String HDFSNAMENODEURL = "hdfs.namenode.url";
+	
 	
 	public static final String BR = "<BR/>";
 	

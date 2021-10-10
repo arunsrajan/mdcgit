@@ -114,7 +114,7 @@ public class MassiveDataMRJobBaseException {
 				hdfsLocalCluster.start();
 			}
 			Configuration configuration = new Configuration();
-			hdfs = FileSystem.get(new URI(MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULER_HDFSNN)),
+			hdfs = FileSystem.get(new URI(MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL)),
 					configuration);
 			log.info("HDFS FileSystem Object: "+hdfs);
 			if (numberofnodes > 0) {
@@ -125,7 +125,7 @@ public class MassiveDataMRJobBaseException {
 				ExecutorService es = Executors.newFixedThreadPool(100);
 				CountDownLatch cdl = new CountDownLatch(numberofnodes);
 				CountDownLatch cdlport = new CountDownLatch(1);
-				hdfste = FileSystem.get(new URI(MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULER_HDFSNN)),
+				hdfste = FileSystem.get(new URI(MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL)),
 						configuration);
 				AtomicInteger portinc = new AtomicInteger(port);
 				var containeridports = new ConcurrentHashMap<String, List<Integer>>();

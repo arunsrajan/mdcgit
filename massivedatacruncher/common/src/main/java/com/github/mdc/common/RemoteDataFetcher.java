@@ -37,16 +37,16 @@ public class RemoteDataFetcher {
 			String jobid, String filename) throws RemoteDataFetcherException {
 		log.debug("Entered RemoteDataFetcher.writerIntermediatePhaseOutputToDFS");
 		var configuration = new Configuration();
-		configuration.set(MDCConstants.HDFS_DEFAULTFS, MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_HDFSNN));
+		configuration.set(MDCConstants.HDFS_DEFAULTFS, MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL));
 		configuration.set(MDCConstants.HDFS_IMPL, org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
 		configuration.set(MDCConstants.HDFS_FILE_IMPL, org.apache.hadoop.fs.LocalFileSystem.class.getName());
-		var jobpath = MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_HDFSNN) + MDCConstants.BACKWARD_SLASH
+		var jobpath = MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL) + MDCConstants.BACKWARD_SLASH
 				+ FileSystemSupport.MDS + MDCConstants.BACKWARD_SLASH + jobid;
 		var filepath = jobpath + MDCConstants.BACKWARD_SLASH + filename;
 		var jobpathurl = new Path(jobpath);
 		// Create folders if not already created.
 		var filepathurl = new Path(filepath);
-		try (var hdfs = FileSystem.newInstance(new URI(MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_HDFSNN)),
+		try (var hdfs = FileSystem.newInstance(new URI(MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL)),
 				configuration);) {
 			if (!hdfs.exists(jobpathurl)) {
 				hdfs.mkdirs(jobpathurl);
@@ -134,15 +134,15 @@ public class RemoteDataFetcher {
 			String dirtowrite,String filename) throws RemoteDataFetcherException {
 		log.debug("Entered RemoteDataFetcher.writerYarnAppmasterServiceDataToDFS");
 		var configuration = new Configuration();
-		configuration.set(MDCConstants.HDFS_DEFAULTFS, MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULERSTREAM_HDFSNN));
+		configuration.set(MDCConstants.HDFS_DEFAULTFS, MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL));
 		configuration.set(MDCConstants.HDFS_IMPL, org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
 		configuration.set(MDCConstants.HDFS_FILE_IMPL, org.apache.hadoop.fs.LocalFileSystem.class.getName());
 		
-		var jobpath = MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULERSTREAM_HDFSNN)+MDCConstants.BACKWARD_SLASH+FileSystemSupport.MDS+MDCConstants.BACKWARD_SLASH+dirtowrite;
+		var jobpath = MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL)+MDCConstants.BACKWARD_SLASH+FileSystemSupport.MDS+MDCConstants.BACKWARD_SLASH+dirtowrite;
 		var filepath = jobpath+MDCConstants.BACKWARD_SLASH+filename;
 		var jobpathurl = new Path(jobpath);
 		var filepathurl = new Path(filepath);
-		try (var hdfs = FileSystem.newInstance(new URI(MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULERSTREAM_HDFSNN)), configuration);) {
+		try (var hdfs = FileSystem.newInstance(new URI(MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL)), configuration);) {
 			if (!hdfs.exists(jobpathurl)) {
 				hdfs.mkdirs(jobpathurl);
 			}
@@ -167,10 +167,10 @@ public class RemoteDataFetcher {
 			String dirtoread, String filename) throws RemoteDataFetcherException {
 		log.debug("Entered RemoteDataFetcher.readYarnAppmasterServiceDataFromDFS");
 		var configuration = new Configuration();
-		var path = System.getProperty(MDCConstants.APPMASTER_HDFSNN) + MDCConstants.BACKWARD_SLASH
+		var path = System.getProperty(MDCConstants.HDFSNAMENODEURL) + MDCConstants.BACKWARD_SLASH
 				+ FileSystemSupport.MDS + MDCConstants.BACKWARD_SLASH + dirtoread + MDCConstants.BACKWARD_SLASH
 				+ filename;
-		try (var hdfs = FileSystem.newInstance(new URI(System.getProperty(MDCConstants.APPMASTER_HDFSNN)),
+		try (var hdfs = FileSystem.newInstance(new URI(System.getProperty(MDCConstants.HDFSNAMENODEURL)),
 				configuration);
 				var fs = (DistributedFileSystem) hdfs;
 				var dis = fs.getClient().open(new Path(path).toUri().getPath());
@@ -197,9 +197,9 @@ public class RemoteDataFetcher {
 			String jobid, String filename,boolean keys) throws RemoteDataFetcherException {
 		log.debug("Entered RemoteDataFetcher.readIntermediatePhaseOutputFromDFS");
 		var configuration = new Configuration();
-		var path = MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_HDFSNN) + MDCConstants.BACKWARD_SLASH + FileSystemSupport.MDS
+		var path = MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL) + MDCConstants.BACKWARD_SLASH + FileSystemSupport.MDS
 				+ MDCConstants.BACKWARD_SLASH + jobid + MDCConstants.BACKWARD_SLASH + filename;
-		try (var hdfs = FileSystem.newInstance(new URI(MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_HDFSNN)),
+		try (var hdfs = FileSystem.newInstance(new URI(MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL)),
 				configuration);
 				var fs = (DistributedFileSystem) hdfs;
 				var dis = fs.getClient().open(new Path(path).toUri().getPath());
@@ -248,7 +248,7 @@ public class RemoteDataFetcher {
 			String jobid) throws RemoteDataFetcherException {
 		log.debug("Entered RemoteDataFetcher.deleteIntermediatePhaseOutputFromDFS");
 		var configuration = new Configuration();
-		try (var hdfs = FileSystem.newInstance(new URI(MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULERSTREAM_HDFSNN)), configuration)){			
+		try (var hdfs = FileSystem.newInstance(new URI(MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL)), configuration)){			
 			hdfs.delete(new Path(MDCConstants.BACKWARD_SLASH+FileSystemSupport.MDS+MDCConstants.BACKWARD_SLASH+jobid), true);
 		}
 		catch (Exception ioe) {

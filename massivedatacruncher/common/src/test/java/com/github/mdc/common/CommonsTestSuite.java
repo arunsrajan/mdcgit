@@ -8,6 +8,6 @@ import org.junit.runners.Suite.SuiteClasses;
 @SuiteClasses({ HeartBeatServerStreamTest.class, HeartBeatServerTest.class, HeartBeatTaskSchedulerStreamTest.class,
 		HeartBeatTaskSchedulerTest.class, ResourcesTest.class, ServerUtilsTest.class, ZkChunkPropTest.class, HeartBeatObservableTest.class,
 		RemoteDataFetcherTest.class, DataCruncherContextTest.class})
-public class MDCCommonTestSuite {
+public class CommonsTestSuite {
 
 }

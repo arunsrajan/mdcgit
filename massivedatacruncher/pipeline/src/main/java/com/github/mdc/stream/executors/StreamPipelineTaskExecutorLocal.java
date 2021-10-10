@@ -132,7 +132,7 @@ public final class StreamPipelineTaskExecutorLocal extends StreamPipelineTaskExe
 	public StreamPipelineTaskExecutorLocal call() {
 		log.debug("Entered MassiveDataStreamTaskExecutorInMemory.call");
 		var stageTasks = getStagesTask();
-		var hdfsfilepath = MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_HDFSNN);
+		var hdfsfilepath = MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL);
 		var configuration = new Configuration();
 		try(var hdfs = FileSystem.newInstance(new URI(hdfsfilepath), configuration);) {
 			log.debug("Submitted Stage " + stageTasks);
