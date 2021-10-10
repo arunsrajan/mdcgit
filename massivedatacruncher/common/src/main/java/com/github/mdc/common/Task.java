@@ -31,10 +31,10 @@ public class Task implements Serializable,Cloneable{
 	private String taskname;
 	public STORAGE storage;
 	public List<Task> taskspredecessor;
-	
-	
-	
-	
+	public boolean finalphase = false;
+	public String hdfsurl;
+	public String filepath;
+	public boolean saveresulttohdfs = false;
 	@Override
 	public int hashCode() {
 		final int prime = 31;

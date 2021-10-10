@@ -27,13 +27,13 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
 import com.esotericsoftware.kryo.io.Output;
+import com.github.mdc.common.ByteBufferPool;
 import com.github.mdc.common.ByteBufferPoolDirect;
 import com.github.mdc.common.HeartBeatServerStream;
 import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.MDCProperties;
 import com.github.mdc.common.NetworkUtil;
 import com.github.mdc.common.Utils;
-import com.github.mdc.stream.MassiveDataPipelineTest;
 import com.github.mdc.tasks.executor.Container;
 import com.github.mdc.tasks.executor.MassiveDataCruncherMRApiTest;
 import com.github.sakserv.minicluster.impl.HdfsLocalCluster;
@@ -76,7 +76,8 @@ public class MassiveDataCruncherTestSuite extends MassiveDataPipelineBase {
 			pipelineconfig.setMode(MDCConstants.MODE_NORMAL);
 			pipelineconfig.setBatchsize("1");
 			System.setProperty("HADOOP_HOME", "C:\\DEVELOPMENT\\hadoop\\hadoop-3.3.1");
-			ByteBufferPoolDirect.init(3);
+			ByteBufferPoolDirect.init();
+			ByteBufferPool.init(Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.BYTEBUFFERPOOL_MAX, MDCConstants.BYTEBUFFERPOOL_MAX_DEFAULT)));
 			pipelineconfig.setBlocksize("20");
 			testingserver = new TestingServer(zookeeperport);
 			testingserver.start();
@@ -124,10 +125,13 @@ public class MassiveDataCruncherTestSuite extends MassiveDataPipelineBase {
 							cdlport.countDown();
 							cdl.countDown();
 							while (true) {
-								Socket client = server.accept();
-								Future<Boolean> containerallocated = threadpool.submit(
-										new Container(client, portinc, MDCConstants.TEPROPLOADCLASSPATHCONFIG,
-												containerprocesses, hdfste, containeridthreads, containeridports));
+								try(Socket sock = server.accept();) {
+									var container = new Container(sock, portinc, MDCConstants.TEPROPLOADCLASSPATHCONFIG,
+											containerprocesses, hdfs, containeridthreads,containeridports);
+									Future<Boolean> containerallocated = threadpool.submit(container);
+									log.info("Containers Allocated: "+containerallocated.get()+" Next Port Allocation:"+portinc.get());
+								} catch (Exception e) {
+								}
 							}
 						} catch (Exception ioe) {
 						}
@@ -149,6 +153,7 @@ public class MassiveDataCruncherTestSuite extends MassiveDataPipelineBase {
 	
 				hdfsLocalCluster.start();
 			}
+			uploadfile(hdfs, airlinesamplecsv, airlinesamplecsv + csvfileextn);
 			uploadfile(hdfs, airportssample, airportssample + csvfileextn);
 			uploadfile(hdfs, airlinesample, airlinesample + csvfileextn);
 			uploadfile(hdfs, airlinesamplesql, airlinesamplesql + csvfileextn);

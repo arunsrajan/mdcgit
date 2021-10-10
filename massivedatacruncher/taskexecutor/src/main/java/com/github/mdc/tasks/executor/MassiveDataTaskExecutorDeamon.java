@@ -15,6 +15,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
@@ -23,7 +24,7 @@ import org.apache.curator.retry.RetryForever;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.log4j.Logger;
 
-import com.github.mdc.common.ByteArrayOutputStreamPool;
+import com.github.mdc.common.ByteBufferPool;
 import com.github.mdc.common.ByteBufferPoolDirect;
 import com.github.mdc.common.CacheUtils;
 import com.github.mdc.common.HeartBeatServerStream;
@@ -58,19 +59,19 @@ public class MassiveDataTaskExecutorDeamon implements MassiveDataTaskExecutorDea
 	Queue<Object> taskqueue = new LinkedBlockingQueue<Object>();
 	CuratorFramework cf;
 	ServerSocket server;
-
+	static ExecutorService es;
 	public static void main(String[] args) throws Exception {
-		if (args == null || args.length != 1) {
+		if (args == null || args.length != 2) {
 			log.debug("Args" + args);
 			if (args != null) {
-				log.debug("Args Not of Length 1!=" + args.length);
+				log.debug("Args Not of Length 2!=" + args.length);
 				for (var arg : args) {
 					log.debug(arg);
 				}
 			}
 			System.exit(1);
 		}
-		if (args.length == 1) {
+		if (args.length == 2) {
 			log.debug("Args = ");
 			for (var arg : args) {
 				log.debug(arg);
@@ -84,9 +85,13 @@ public class MassiveDataTaskExecutorDeamon implements MassiveDataTaskExecutorDea
 		} else if (args[0].equals(MDCConstants.TEPROPLOADCLASSPATHCONFIGEXCEPTION)) {
 			Utils.loadLog4JSystemPropertiesClassPath(MDCConstants.MDC_TEST_EXCEPTION_PROPERTIES);
 		}
-		ByteBufferPoolDirect.init(Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.BYTEBUFFERPOOL_MAX, MDCConstants.BYTEBUFFERPOOL_MAX_DEFAULT)));
-		ByteArrayOutputStreamPool.init(Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.BYTEBUFFERPOOL_MAX, MDCConstants.BYTEBUFFERPOOL_MAX_DEFAULT)));
+		ByteBufferPoolDirect.init();
+		log.info("Direct Memory Allocated: "+args[1]);
+		int directmemory = Integer.valueOf(args[1])/(128);
+		log.info("Number Of 128 MB directmemory: "+directmemory);
+		ByteBufferPool.init(directmemory);
 		CacheUtils.initCache();
+		es = Executors.newWorkStealingPool(Runtime.getRuntime().availableProcessors());
 		var mdted = new MassiveDataTaskExecutorDeamon();
 		mdted.init();
 		mdted.start();
@@ -141,9 +146,9 @@ public class MassiveDataTaskExecutorDeamon implements MassiveDataTaskExecutorDea
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public void start() throws Exception {
-		var threadpool = Executors.newCachedThreadPool();
-		var launchtaskpool = Executors.newCachedThreadPool();
-		var taskpool = Executors.newCachedThreadPool();
+		var threadpool = Executors.newSingleThreadScheduledExecutor();
+		var launchtaskpool = Executors.newSingleThreadScheduledExecutor();
+		var taskpool = Executors.newSingleThreadScheduledExecutor();
 		var port = Integer.parseInt(System.getProperty(MDCConstants.TASKEXECUTOR_PORT));
 		log.info("TaskExecutor Port: "+port);
 		var su = new ServerUtils();
@@ -213,7 +218,7 @@ public class MassiveDataTaskExecutorDeamon implements MassiveDataTaskExecutorDea
 						}
 						semaphore.release();
 					} else if(!Objects.isNull(deserobj)) {
-						launchtaskpool.execute(new TaskExecutor(socket, cl, port, taskpool, configuration,
+						launchtaskpool.execute(new TaskExecutor(socket, cl, port, es, configuration,
 								apptaskexecutormap, jobstageexecutormap, resultstream, inmemorycache, deserobj,
 								hbtsappid, hbtssjobid, containeridhbss,
 								jobidstageidexecutormap,
@@ -286,6 +291,10 @@ public class MassiveDataTaskExecutorDeamon implements MassiveDataTaskExecutorDea
 		});
 		if (cf != null) {
 			cf.close();
+		}
+		if(es!=null) {
+			es.shutdownNow();
+			es.awaitTermination(1, TimeUnit.SECONDS);
 		}
 	}
 	static class ExecutorsFutureTask{

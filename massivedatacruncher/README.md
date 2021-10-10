@@ -250,47 +250,47 @@ Also download the carriers file (carriers.csv) from the above url create /carrie
 
 Stream Reduce
 ------------
-tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.examples.tests.StreamReduceIgnite  hdfs://127.0.0.1:9000 /airline1989 /carriers /reduceout
+tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.examples.tests.StreamReduceIgnite  hdfs://127.0.0.1:9000 /airline1989 /carriers /examplesmdc
 
-tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.examples.tests.StreamReduceJGroups  hdfs://127.0.0.1:9000 /airline1989 /carriers /reduceout
+tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.examples.tests.StreamReduceJGroups  hdfs://127.0.0.1:9000 /airline1989 /carriers /examplesmdc
 
-tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.examples.tests.StreamReduceNormalInMemory hdfs://127.0.0.1:9000 /airline1989 /carriers /reduceout
+tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.examples.tests.StreamReduceNormalInMemory hdfs://127.0.0.1:9000 /airline1989 /carriers /examplesmdc
 
-tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.examples.tests.StreamReduceNormalInMemoryDisk hdfs://127.0.0.1:9000 /airline1989 /carriers /reduceout
+tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.examples.tests.StreamReduceNormalInMemoryDisk hdfs://127.0.0.1:9000 /airline1989 /carriers /examplesmdc
 
-tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.examples.tests.StreamReduceNormalInMemoryDiskDAGCycleException hdfs://127.0.0.1:9000 /airline1989 /carriers /reduceout
+tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.examples.tests.StreamReduceNormalInMemoryDiskDAGCycleException hdfs://127.0.0.1:9000 /airline1989 /carriers /examplesmdc
 
-tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.examples.tests.StreamReduceNormalDisk hdfs://127.0.0.1:9000 /airline1989 /carriers /reduceout
+tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.examples.tests.StreamReduceNormalDisk hdfs://127.0.0.1:9000 /airline1989 /carriers /examplesmdc
 
 
-tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.examples.tests.StreamReduceYARN hdfs://127.0.0.1:9000 /airline1989 /carriers /reduceout
+tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.examples.tests.StreamReduceYARN hdfs://127.0.0.1:9000 /airline1989 /carriers /examplesmdc
 
 Stream Reduce LOJ
 -----------------
 
-tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.examples.tests.StreamReduceLeftOuterJoinIgnite  hdfs://127.0.0.1:9000 /airline1989 /carriers /reduceout
+tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.examples.tests.StreamReduceLeftOuterJoinIgnite  hdfs://127.0.0.1:9000 /airline1989 /carriers /examplesmdc
 
-tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.examples.tests.StreamReduceLeftOuterJoinJGroups  hdfs://127.0.0.1:9000 /airline1989 /carriers /reduceout
+tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.examples.tests.StreamReduceLeftOuterJoinJGroups  hdfs://127.0.0.1:9000 /airline1989 /carriers /examplesmdc
 
-tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.examples.tests.StreamReduceLeftOuterJoinNormal hdfs://127.0.0.1:9000 /airline1989 /carriers /reduceout
+tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.examples.tests.StreamReduceLeftOuterJoinNormal hdfs://127.0.0.1:9000 /airline1989 /carriers /examplesmdc
 
-tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.examples.tests.StreamReduceLeftOuterJoinYARN hdfs://127.0.0.1:9000 /airline1989 /carriers /reduceout
+tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.examples.tests.StreamReduceLeftOuterJoinYARN hdfs://127.0.0.1:9000 /airline1989 /carriers /examplesmdc
 
-tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.examples.tests.StreamReduceLeftOuterJoinInMemoryDisk hdfs://127.0.0.1:9000 /airline1989 /carriers /reduceout 1024 1 32
+tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.examples.tests.StreamReduceLeftOuterJoinInMemoryDisk hdfs://127.0.0.1:9000 /airline1989 /carriers /examplesmdc 1024 1 32
 
 Stream Reduce ROJ
 -----------------
 
-tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.examples.tests.StreamReduceRightOuterJoinIgnite  hdfs://127.0.0.1:9000 /airline1989 /carriers /reduceout
+tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.examples.tests.StreamReduceRightOuterJoinIgnite  hdfs://127.0.0.1:9000 /airline1989 /carriers /examplesmdc
 
-tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.examples.tests.StreamReduceRightOuterJoinJGroups  hdfs://127.0.0.1:9000 /airline1989 /carriers /reduceout
+tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.examples.tests.StreamReduceRightOuterJoinJGroups  hdfs://127.0.0.1:9000 /airline1989 /carriers /examplesmdc
 
 
-tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.examples.tests.StreamReduceRightOuterJoinNormal hdfs://127.0.0.1:9000 /airline1989 /carriers /reduceout
+tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.examples.tests.StreamReduceRightOuterJoinNormal hdfs://127.0.0.1:9000 /airline1989 /carriers /examplesmdc
 
-tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.examples.tests.StreamReduceRightOuterJoinYARN hdfs://127.0.0.1:9000 /airline1989 /carriers /reduceout
+tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.examples.tests.StreamReduceRightOuterJoinYARN hdfs://127.0.0.1:9000 /airline1989 /carriers /examplesmdc
 
-tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.examples.tests.StreamReduceRightOuterJoinInMemoryDisk hdfs://127.0.0.1:9000 /airline1989 /carriers /reduceout 1024 1 32
+tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.examples.tests.StreamReduceRightOuterJoinInMemoryDisk hdfs://127.0.0.1:9000 /airline1989 /carriers /examplesmdc 1024 1 32
 
 Stream Reduce SQL
 -----------------
@@ -326,40 +326,40 @@ tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.sql.exampl
 Stream Reduce Aggregate
 -----------------------
 
-tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.examples.tests.StreamAggSumCountArrDelayDisk hdfs://127.0.0.1:9000 /airline1989 /reduceout 1024 1
+tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.examples.tests.StreamAggSumCountArrDelayDisk hdfs://127.0.0.1:9000 /airline1989 /examplesmdc 1024 1
 
-tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.examples.tests.StreamAggSumCountArrDelayIgnite hdfs://127.0.0.1:9000 /airline1989 /reduceout 1024 1
+tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.examples.tests.StreamAggSumCountArrDelayIgnite hdfs://127.0.0.1:9000 /airline1989 /examplesmdc 1024 1
 
-tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.examples.tests.StreamAggSumCountArrDelayInMemory hdfs://127.0.0.1:9000 /airline1989 /reduceout 1024 1
+tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.examples.tests.StreamAggSumCountArrDelayInMemory hdfs://127.0.0.1:9000 /airline1989 /examplesmdc 1024 1
 
-tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.examples.tests.StreamAggSumCountArrDelayInMemoryDisk hdfs://127.0.0.1:9000 /airline1989 /reduceout 1024 1
+tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.examples.tests.StreamAggSumCountArrDelayInMemoryDisk hdfs://127.0.0.1:9000 /airline1989 /examplesmdc 1024 1
 
-tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.examples.tests.StreamAggSumCountArrDelayCoalesceInMemoryDisk hdfs://127.0.0.1:9000 /airline1989 /reduceout 1024 1
+tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.examples.tests.StreamAggSumCountArrDelayCoalesceInMemoryDisk hdfs://127.0.0.1:9000 /airline1989 /examplesmdc 1024 1
 
-tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.examples.tests.StreamAggSumCountArrDelayJGroups hdfs://127.0.0.1:9000 /airline1989 /reduceout 1024 1
+tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.examples.tests.StreamAggSumCountArrDelayJGroups hdfs://127.0.0.1:9000 /airline1989 /examplesmdc 1024 1
 
-tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.examples.tests.StreamAggSumCountArrDelayLocal hdfs://127.0.0.1:9000 /airline1989 /reduceout 1024 1
+tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.examples.tests.StreamAggSumCountArrDelayLocal hdfs://127.0.0.1:9000 /airline1989 /examplesmdc 1024 1
 
-tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.examples.tests.StreamAggSumCountArrDelayYARN hdfs://127.0.0.1:9000 /airline1989 /reduceout 1024 1
+tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.examples.tests.StreamAggSumCountArrDelayYARN hdfs://127.0.0.1:9000 /airline1989 /examplesmdc 1024 1
 
 
 Filter Operation Streaming
 ------------------------
 
-tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.examples.tests.StreamFilterFilterCollectArrDelayInMemoryDisk hdfs://127.0.0.1:9000 /airline1989 /reduceout 1024 1 32
+tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.examples.tests.StreamFilterFilterCollectArrDelayInMemoryDisk hdfs://127.0.0.1:9000 /airline1989 /examplesmdc 1024 1 32
 
 
 Running MR Job examples
 ------------------------
 
-tasksubmitter.cmd -jar ../modules/examples.jar -args "com.github.mdc.mr.examples.join.MrJobArrivalDelayNormal /airline1989 /carriers /mapreduceout 128 10"
+tasksubmitter.cmd -jar ../modules/examples.jar -args "com.github.mdc.mr.examples.join.MrJobArrivalDelayNormal /airline1989 /carriers /examplesmdc 128 10"
 
 
-tasksubmitter.cmd -jar ../modules/examples.jar -args "com.github.mdc.mr.examples.join.MrJobArrivalDelayYARN /airline1989 /carriers /mapreduceout 3 1024" 
+tasksubmitter.cmd -jar ../modules/examples.jar -args "com.github.mdc.mr.examples.join.MrJobArrivalDelayYARN /airline1989 /carriers /examplesmdc 3 1024" 
 
-tasksubmitter.cmd -jar ../modules/examples.jar -args "com.github.mdc.mr.examples.join.MrJobArrivalDelayIGNITE /airline1989 /carriers /mapreduceout"
+tasksubmitter.cmd -jar ../modules/examples.jar -args "com.github.mdc.mr.examples.join.MrJobArrivalDelayIGNITE /airline1989 /carriers /examplesmdc"
 
 
 Running Job In Linux
 
-./tasksubmitter.sh -jar ../modules/examples.jar -args  'com.github.mdc.mr.examples.join.MrJobArrivalDelayNormal /airline1989 /carriers /mapreduceout 64'
+./tasksubmitter.sh -jar ../modules/examples.jar -args  'com.github.mdc.mr.examples.join.MrJobArrivalDelayNormal /airline1989 /carriers /examplesmdc 64'

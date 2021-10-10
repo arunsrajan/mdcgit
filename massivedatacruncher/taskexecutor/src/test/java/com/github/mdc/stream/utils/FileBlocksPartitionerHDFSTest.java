@@ -214,7 +214,7 @@ public class FileBlocksPartitionerHDFSTest extends MassiveDataPipelineBase{
 		MDCNodesResources.put(noderesourcesmap);
 		Map<String,Long> nodestotalblockmem = new ConcurrentHashMap<>();
 		fbp.getDnXref(bls, false);
-		fbp.getNodesResourcesSortedAuto(bls,nodestotalblockmem);
+		fbp.getNodesResourcesSorted(bls,nodestotalblockmem);
 		assertEquals(2,fbp.nodessorted.size());
 		assertEquals("127.0.0.1_20001",fbp.nodessorted.get(0));
 		assertEquals("127.0.0.1_20000",fbp.nodessorted.get(1));
@@ -233,7 +233,7 @@ public class FileBlocksPartitionerHDFSTest extends MassiveDataPipelineBase{
 		Resources resources = new Resources();
 		resources.setFreememory(12*1024*1024*1024l);
 		resources.setNumberofprocessors(4);
-		List<ContainerResources> crs = fbp.getNumberOfContainersAuto(MDCConstants.GCCONFIG_DEFAULT,20,resources);
+		List<ContainerResources> crs = fbp.getNumberOfContainers(MDCConstants.GCCONFIG_DEFAULT,20,resources);
 		assertEquals(1, crs.size());
 		assertEquals(128, crs.get(0).getMaxmemory());
 		assertEquals(128, crs.get(0).getMinmemory());
@@ -263,7 +263,7 @@ public class FileBlocksPartitionerHDFSTest extends MassiveDataPipelineBase{
 		fbp.job = new Job();
 		fbp.isignite = false;
 		fbp.getDnXref(bls, false);
-		fbp.getTaskExecutorsAuto(bls);
+		fbp.getTaskExecutors(bls);
 		assertEquals(1,fbp.job.containers.size());
 		assertEquals(1,fbp.job.nodes.size());
 		fbp.destroyContainers();
@@ -293,7 +293,7 @@ public class FileBlocksPartitionerHDFSTest extends MassiveDataPipelineBase{
 		fbp.hdfs = hdfs;
 		List<BlocksLocation> bls = fbp.getBlocks(fbp.isblocksuserdefined,128);
 		fbp.getDnXref(bls, false);
-		fbp.getTaskExecutorsAuto(bls);
+		fbp.getTaskExecutors(bls);
 		assertEquals(0,fbp.job.containers.size());
 		assertEquals(0,fbp.job.nodes.size());
 		fbp.destroyContainers();
@@ -324,7 +324,7 @@ public class FileBlocksPartitionerHDFSTest extends MassiveDataPipelineBase{
 			fbp.filepaths = Arrays.asList(paths);
 			List<BlocksLocation> bls = fbp.getBlocks(fbp.isblocksuserdefined, 128);
 			fbp.getDnXref(bls, false);
-			fbp.getTaskExecutorsAuto(bls);			
+			fbp.getTaskExecutors(bls);			
 		} catch (Exception ex) {
 			assertEquals(MassiveDataPipelineConstants.MEMORYALLOCATIONERROR, ex.getCause().getMessage());
 			assertNull(fbp.job.containers);
@@ -359,7 +359,7 @@ public class FileBlocksPartitionerHDFSTest extends MassiveDataPipelineBase{
 			fbp.filepaths = Arrays.asList(paths);
 			List<BlocksLocation> bls = fbp.getBlocks(fbp.isblocksuserdefined, 128);
 			fbp.getDnXref(bls, false);
-			fbp.getTaskExecutorsAuto(bls);			
+			fbp.getTaskExecutors(bls);			
 		} catch (Exception ex) {
 			assertEquals(MassiveDataPipelineConstants.INSUFFMEMORYALLOCATIONERROR, ex.getCause().getMessage());
 			assertNull(fbp.job.containers);
@@ -393,7 +393,7 @@ public class FileBlocksPartitionerHDFSTest extends MassiveDataPipelineBase{
 		fbp.filepaths = Arrays.asList(paths);
 		List<BlocksLocation> bls = fbp.getBlocks(fbp.isblocksuserdefined,128*MDCConstants.MB);
 		fbp.getDnXref(bls, false);
-		fbp.getTaskExecutorsAuto(bls);
+		fbp.getTaskExecutors(bls);
 		assertEquals(1,fbp.job.containers.size());
 		assertEquals("127.0.0.1_12122",fbp.job.containers.get(0));
 		assertEquals("127.0.0.1_20000",fbp.job.nodes.iterator().next());

@@ -30,6 +30,7 @@ import org.springframework.yarn.am.container.AbstractLauncher;
 
 import com.github.mdc.common.ApplicationTask;
 import com.github.mdc.common.BlocksLocation;
+import com.github.mdc.common.ByteBufferPool;
 import com.github.mdc.common.ByteBufferPoolDirect;
 import com.github.mdc.common.Context;
 import com.github.mdc.common.DataCruncherContext;
@@ -88,7 +89,8 @@ public class MRYarnAppmaster extends StaticEventingAppmaster implements Containe
 	@Override
 	public void submitApplication() {
 		try {
-			ByteBufferPoolDirect.init(3);
+			ByteBufferPoolDirect.init();
+			ByteBufferPool.init(3);
 			log.info("Environment: "+getEnvironment());
 			var yarninputfolder = MDCConstants.YARNINPUTFOLDER+MDCConstants.BACKWARD_SLASH+getEnvironment().get(MDCConstants.YARNMDCJOBID);
 			log.info("Yarn Input Folder: "+yarninputfolder);

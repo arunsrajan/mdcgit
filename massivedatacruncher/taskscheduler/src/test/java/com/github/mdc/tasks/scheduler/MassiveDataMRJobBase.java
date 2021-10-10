@@ -27,10 +27,11 @@ import org.apache.log4j.PropertyConfigurator;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 
+import com.github.mdc.common.ByteBufferPool;
+import com.github.mdc.common.ByteBufferPoolDirect;
 import com.github.mdc.common.CacheUtils;
 import com.github.mdc.common.HeartBeatServer;
 import com.github.mdc.common.MDCConstants;
-import com.github.mdc.common.MDCExecutorThreadFactory;
 import com.github.mdc.common.MDCProperties;
 import com.github.mdc.common.NetworkUtil;
 import com.github.mdc.common.Utils;
@@ -85,9 +86,11 @@ public class MassiveDataMRJobBase {
 	public static void setServerUp() throws Exception {
 		try (InputStream istream = MassiveDataMRJobBase.class.getResourceAsStream("/log4j.properties");) {
 			System.setProperty("HIBCFG", "../config/mdchibernate.cfg.xml");
-			System.setProperty("HADOOP_HOME", "E:\\DEVELOPMENT\\hadoop\\hadoop-3.2.1");
+			System.setProperty("HADOOP_HOME", "C:\\DEVELOPMENT\\hadoop\\hadoop-3.3.1");
 			PropertyConfigurator.configure(istream);
 			Utils.loadLog4JSystemPropertiesClassPath("mdctest.properties");
+			ByteBufferPoolDirect.init();
+			ByteBufferPool.init(4);
 			CacheUtils.initCache();
 			testingserver = new TestingServer(zookeeperport);
 			testingserver.start();

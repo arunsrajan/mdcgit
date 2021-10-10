@@ -14,7 +14,9 @@ import org.jgrapht.graph.SimpleDirectedGraph;
 import org.jgrapht.traverse.TopologicalOrderIterator;
 import org.jooq.lambda.tuple.Tuple;
 import org.jooq.lambda.tuple.Tuple2;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
+import org.junit.runners.MethodSorters;
 
 import com.esotericsoftware.kryo.io.Output;
 import com.github.mdc.common.DAGEdge;
@@ -27,189 +29,58 @@ import com.github.mdc.common.MDCProperties;
 import com.github.mdc.common.PipelineConfig;
 import com.github.mdc.common.Stage;
 import com.github.mdc.common.Task;
-import com.github.mdc.stream.MapPair;
-import com.github.mdc.stream.MassiveDataPipeline;
 import com.github.mdc.stream.scheduler.JobScheduler;
 import com.github.mdc.stream.scheduler.MassiveDataStreamTaskSchedulerThread;
 
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class JobSchedulerTest extends MassiveDataPipelineBaseTestClassCommon {
 	
-	
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Test
-	public void testScheduleJobLocal() throws Exception {
+	public void testGeneratePhysicalExecutionPlanIntersection() throws Exception {
 
 		PipelineConfig pc = new PipelineConfig();
 		pc.setMode(MDCConstants.MODE_NORMAL);
 		pc.setOutput(new Output(System.out));
+		pc.setLocal("true");
 		MassiveDataPipeline<String> mdp = MassiveDataPipeline.newStreamHDFS(hdfsfilepath, airlinesample, pc);
-		MassiveDataPipeline<String[]> mdparr = mdp.map((val) -> val.split(MDCConstants.COMMA));
-		mdparr.finaltasks.add(mdparr.task);
-		mdparr.mdsroots.add(mdp);
 
-		Job job = mdparr.createJob();
+		MassiveDataPipeline<String> mdp1 = MassiveDataPipeline.newStreamHDFS(hdfsfilepath, airlinesample, pc);
+
+		MassiveDataPipeline<String> intersection = mdp.filter((val) -> true).intersection(mdp1.filter((val) -> true));
+
+		((MassiveDataPipeline) intersection.root).finaltasks.add(intersection.task);
+		((MassiveDataPipeline) intersection.root).mdsroots.add(mdp);
+		Job job = ((MassiveDataPipeline) intersection.root).createJob();
 		JobScheduler js = new JobScheduler();
 		job.pipelineconfig = pc;
-		js.isignite = Objects.isNull(pc.getMode()) ? false
-				: pc.getMode().equals(MDCConstants.MODE_DEFAULT) ? true : false;
-		List<List> result = (List<List>) js.schedule(job);
-		assertEquals(1, result.size());
-		assertEquals(46361, result.get(0).size());
-	}
-
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	@Test
-	public void testScheduleJobJGroups() throws Exception {
-
-		PipelineConfig pc = new PipelineConfig();
-		pc.setMode(MDCConstants.MODE_NORMAL);
-		pc.setOutput(new Output(System.out));
-		pc.setLocal("false");
-		pc.setJgroups("true");
-		MassiveDataPipeline<String> mdp = MassiveDataPipeline.newStreamHDFS(hdfsfilepath, airlinesample, pc);
-		MassiveDataPipeline<String[]> mdparr = mdp.map((val) -> val.split(MDCConstants.COMMA));
-		mdparr.finaltasks.add(mdparr.task);
-		mdparr.mdsroots.add(mdp);
-		Job job = mdparr.createJob();
-		JobScheduler js = new JobScheduler();
-		job.pipelineconfig = pc;
-		js.isignite = Objects.isNull(pc.getMode()) ? false
-				: pc.getMode().equals(MDCConstants.MODE_DEFAULT) ? true : false;
-		List<List> result = (List<List>) js.schedule(job);
-		assertEquals(1, result.size());
-		assertEquals(46361, result.get(0).size());
-	}
-
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	@Test
-	public void testScheduleJobStandalone1() throws Exception {
-
-		PipelineConfig pc = new PipelineConfig();
-		pc.setMode(MDCConstants.MODE_NORMAL);
-		pc.setOutput(new Output(System.out));
-		pc.setLocal("false");
-		pc.setJgroups("false");
-		MassiveDataPipeline<String> mdp = MassiveDataPipeline.newStreamHDFS(hdfsfilepath, airlinesample, pc);
-		MassiveDataPipeline<String[]> mdparr = mdp.map((val) -> val.split(MDCConstants.COMMA));
-		mdparr.finaltasks.add(mdparr.task);
-		mdparr.mdsroots.add(mdp);
-		Job job = mdparr.createJob();
-		JobScheduler js = new JobScheduler();
-		job.pipelineconfig = pc;
-		js.isignite = Objects.isNull(pc.getMode()) ? false
-				: pc.getMode().equals(MDCConstants.MODE_DEFAULT) ? true : false;
-		List<List> result = (List<List>) js.schedule(job);
-		assertEquals(1, result.size());
-		assertEquals(46361, result.get(0).size());
-	}
-
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public void testScheduleJobStandalone2() throws Exception {
-		PipelineConfig pc = new PipelineConfig();
-		pc.setMode(MDCConstants.MODE_NORMAL);
-		pc.setOutput(new Output(System.out));
-		pc.setLocal("false");
-		pc.setJgroups("false");
-		MassiveDataPipeline<String> mdp = MassiveDataPipeline.newStreamHDFS(hdfsfilepath, airlinesample, pc);
-		MassiveDataPipeline<String[]> mdparr = mdp.map((val) -> val.split(MDCConstants.COMMA));
-		mdparr.finaltasks.add(mdparr.task);
-		mdparr.mdsroots.add(mdp);
-		Job job = mdparr.createJob();
-		JobScheduler js = new JobScheduler();
-		job.pipelineconfig = pc;
-		js.isignite = Objects.isNull(pc.getMode()) ? false
-				: pc.getMode().equals(MDCConstants.MODE_DEFAULT) ? true : false;
-		List<List> result = (List<List>) js.schedule(job);
-		assertEquals(1, result.size());
-		assertEquals(46361, result.get(0).size());
-	}
-
-	@SuppressWarnings("resource")
-	@Test
-	public void testGetContainersHostPort() throws Exception {
-
-		PipelineConfig pc = new PipelineConfig();
-		pc.setMode(MDCConstants.MODE_NORMAL);
-		pc.setOutput(new Output(System.out));
-		pc.setLocal("false");
-		pc.setJgroups("false");
-		MassiveDataPipeline<String> mdp = MassiveDataPipeline.newStreamHDFS(hdfsfilepath, airlinesample, pc);
-		MassiveDataPipeline<String[]> mdparr = mdp.map((val) -> val.split(MDCConstants.COMMA));
-		mdparr.finaltasks.add(mdparr.task);
-		mdparr.mdsroots.add(mdp);
-
-		Job job = mdparr.createJob();
-		JobScheduler js = new JobScheduler();
-		js.pipelineconfig = pc;
 		js.isignite = Objects.isNull(pc.getMode()) ? false
 				: pc.getMode().equals(MDCConstants.MODE_DEFAULT) ? true : false;
 		js.job = job;
 		js.pipelineconfig = pc;
-		HeartBeatServerStream hbss = new HeartBeatServerStream();
-		js.hbss = hbss;
-		js.getContainersHostPort();
-		assertEquals(job.containers.size(), js.taskexecutors.size());
-		assertTrue(job.containers.containsAll(js.taskexecutors));
-		js.destroyContainers();
+		js.semaphore = new Semaphore(1);
+		js.resultstream = new ConcurrentHashMap<>();
+		List<Stage> uniquestagestoprocess = new ArrayList<>(job.topostages);
+		int stagenumber = 0;
+		SimpleDirectedGraph<MassiveDataStreamTaskSchedulerThread, DAGEdge> graph = new SimpleDirectedGraph<>(
+				DAGEdge.class);
+		SimpleDirectedGraph<Task, DAGEdge> taskgraph = new SimpleDirectedGraph<>(DAGEdge.class);
+		// Generate Physical execution plan for each stages.
+		for (Stage stage : uniquestagestoprocess) {
+			Stage nextstage = stagenumber + 1 < uniquestagestoprocess.size()
+					? uniquestagestoprocess.get(stagenumber + 1)
+					: null;
+			stage.number = stagenumber;
+			js.generatePhysicalExecutionPlan(stage, nextstage, job.stageoutputmap, job.id, graph, taskgraph);
+			stagenumber++;
+		}
+		assertEquals(3, graph.vertexSet().size());
+		assertEquals(2, graph.edgeSet().size());
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Test
-	public void testParallelExecutionPhaseDExecutorLocalMode() throws Exception {
-
-		PipelineConfig pc = new PipelineConfig();
-		pc.setMode(MDCConstants.MODE_NORMAL);
-		pc.setOutput(new Output(System.out));
-		pc.setLocal("true");
-		pc.setBatchsize("1");
-		MassiveDataPipeline<String> mdp = MassiveDataPipeline.newStreamHDFS(hdfsfilepath, airlinesample, pc);
-		MassiveDataPipeline<String[]> mdparr = mdp.map((val) -> val.split(MDCConstants.COMMA));
-		mdparr.finaltasks.add(mdparr.task);
-		mdparr.mdsroots.add(mdp);
-
-		Job job = mdparr.createJob();
-		JobScheduler js = new JobScheduler();
-		js.batchsize = Integer.parseInt(pc.getBatchsize()); 
-		js.pipelineconfig = pc;
-		js.isignite = Objects.isNull(pc.getMode()) ? false
-				: pc.getMode().equals(MDCConstants.MODE_DEFAULT) ? true : false;
-		js.job = job;
-		js.pipelineconfig = pc;
-		js.semaphore = new Semaphore(1);
-		js.resultstream = new ConcurrentHashMap<>();
-		List<Stage> uniquestagestoprocess = new ArrayList<>(job.topostages);
-		int stagenumber = 0;
-		SimpleDirectedGraph<MassiveDataStreamTaskSchedulerThread, DAGEdge> graph = new SimpleDirectedGraph<>(
-				DAGEdge.class);
-		SimpleDirectedGraph<Task, DAGEdge> taskgraph = new SimpleDirectedGraph<>(DAGEdge.class);
-		// Generate Physical execution plan for each stages.
-		for (Stage stage : uniquestagestoprocess) {
-			JobStage jobstage = new JobStage();
-			jobstage.jobid = job.id;
-			jobstage.stageid = stage.id;
-			jobstage.stage = stage;
-			js.jsidjsmap.put(job.id + stage.id, jobstage);
-			Stage nextstage = stagenumber + 1 < uniquestagestoprocess.size()
-					? uniquestagestoprocess.get(stagenumber + 1)
-					: null;
-			stage.number = stagenumber;
-			js.generatePhysicalExecutionPlan(stage, nextstage, job.stageoutputmap, job.id, graph, taskgraph);
-			stagenumber++;
-		}
-		Iterator<MassiveDataStreamTaskSchedulerThread> topostages = new TopologicalOrderIterator(graph);
-		List<MassiveDataStreamTaskSchedulerThread> mdststs = new ArrayList<>();
-		// Sequential ordering of topological ordering is obtained to
-		// process for parallelization.
-		while (topostages.hasNext())
-			mdststs.add(topostages.next());
-		js.parallelExecutionPhaseDExecutorLocalMode(graph, js.new TaskProviderLocalMode(graph.vertexSet().size()));
-		List<List> result = js.getLastStageOutput(graph, mdststs, false, false, true, false, js.resultstream);
-		assertEquals(46361, result.get(0).size());
-	}
-
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	@Test
-	public void testParallelExecutionPhaseDExecutorLocalModeMultiplePartition() throws Exception {
+	public void testGeneratePhysicalExecutionPlanIntersectionPartitioned() throws Exception {
 
 		PipelineConfig pc = new PipelineConfig();
 		pc.setMode(MDCConstants.MODE_NORMAL);
@@ -218,127 +89,12 @@ public class JobSchedulerTest extends MassiveDataPipelineBaseTestClassCommon {
 		pc.setIsblocksuserdefined("true");
 		pc.setBlocksize("1");
 		MassiveDataPipeline<String> mdp = MassiveDataPipeline.newStreamHDFS(hdfsfilepath, airlinesample, pc);
-		MassiveDataPipeline<String[]> mdparr = mdp.map((val) -> val.split(MDCConstants.COMMA));
-		mdparr.finaltasks.add(mdparr.task);
-		mdparr.mdsroots.add(mdp);
+		MassiveDataPipeline<String> mdp1 = MassiveDataPipeline.newStreamHDFS(hdfsfilepath, airlinesample, pc);
+		MassiveDataPipeline<String> intersection = mdp.filter((val) -> true).intersection(mdp1.filter((val) -> true));
 
-		Job job = mdparr.createJob();
-		JobScheduler js = new JobScheduler();
-		js.batchsize = Integer.parseInt(pc.getBatchsize()); 
-		js.pipelineconfig = pc;
-		js.isignite = Objects.isNull(pc.getMode()) ? false
-				: pc.getMode().equals(MDCConstants.MODE_DEFAULT) ? true : false;
-		js.job = job;
-		js.pipelineconfig = pc;
-		js.semaphore = new Semaphore(1);
-		js.resultstream = new ConcurrentHashMap<>();
-		List<Stage> uniquestagestoprocess = new ArrayList<>(job.topostages);
-		int stagenumber = 0;
-		SimpleDirectedGraph<MassiveDataStreamTaskSchedulerThread, DAGEdge> graph = new SimpleDirectedGraph<>(
-				DAGEdge.class);
-		SimpleDirectedGraph<Task, DAGEdge> taskgraph = new SimpleDirectedGraph<>(DAGEdge.class);
-		// Generate Physical execution plan for each stages.
-		for (Stage stage : uniquestagestoprocess) {
-			JobStage jobstage = new JobStage();
-			jobstage.jobid = job.id;
-			jobstage.stageid = stage.id;
-			jobstage.stage = stage;
-			js.jsidjsmap.put(job.id + stage.id, jobstage);
-			Stage nextstage = stagenumber + 1 < uniquestagestoprocess.size()
-					? uniquestagestoprocess.get(stagenumber + 1)
-					: null;
-			stage.number = stagenumber;
-			js.generatePhysicalExecutionPlan(stage, nextstage, job.stageoutputmap, job.id, graph, taskgraph);
-			stagenumber++;
-		}
-		Iterator<MassiveDataStreamTaskSchedulerThread> topostages = new TopologicalOrderIterator(graph);
-		List<MassiveDataStreamTaskSchedulerThread> mdststs = new ArrayList<>();
-		// Sequential ordering of topological ordering is obtained to
-		// process for parallelization.
-		while (topostages.hasNext())
-			mdststs.add(topostages.next());
-		js.parallelExecutionPhaseDExecutorLocalMode(graph, js.new TaskProviderLocalMode(graph.vertexSet().size()));
-		List<List> results = js.getLastStageOutput(graph, mdststs, false, false, true, false, js.resultstream);
-		int sum = 0;
-		for (List result : results) {
-			sum += result.size();
-		}
-		assertEquals(46361, sum);
-	}
-
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	@Test
-	public void testParallelExecutionPhaseDExecutorLocalModeMultiplePartitionBatchSize() throws Exception {
-
-		PipelineConfig pc = new PipelineConfig();
-		pc.setMode(MDCConstants.MODE_NORMAL);
-		pc.setOutput(new Output(System.out));
-		pc.setLocal("true");
-		pc.setIsblocksuserdefined("true");
-		pc.setBlocksize("1");
-		pc.setBatchsize("3");
-		MassiveDataPipeline<String> mdp = MassiveDataPipeline.newStreamHDFS(hdfsfilepath, airlinesample, pc);
-		MassiveDataPipeline<String[]> mdparr = mdp.map((val) -> val.split(MDCConstants.COMMA));
-		mdparr.finaltasks.add(mdparr.task);
-		mdparr.mdsroots.add(mdp);
-
-		Job job = mdparr.createJob();
-		JobScheduler js = new JobScheduler();
-		js.batchsize = Integer.parseInt(pc.getBatchsize());
-		js.pipelineconfig = pc;
-		js.isignite = Objects.isNull(pc.getMode()) ? false
-				: pc.getMode().equals(MDCConstants.MODE_DEFAULT) ? true : false;
-		js.job = job;
-		js.pipelineconfig = pc;
-		js.semaphore = new Semaphore(1);
-		js.resultstream = new ConcurrentHashMap<>();
-		List<Stage> uniquestagestoprocess = new ArrayList<>(job.topostages);
-		int stagenumber = 0;
-		SimpleDirectedGraph<MassiveDataStreamTaskSchedulerThread, DAGEdge> graph = new SimpleDirectedGraph<>(
-				DAGEdge.class);
-		SimpleDirectedGraph<Task, DAGEdge> taskgraph = new SimpleDirectedGraph<>(DAGEdge.class);
-		// Generate Physical execution plan for each stages.
-		for (Stage stage : uniquestagestoprocess) {
-			JobStage jobstage = new JobStage();
-			jobstage.jobid = job.id;
-			jobstage.stageid = stage.id;
-			jobstage.stage = stage;
-			js.jsidjsmap.put(job.id + stage.id, jobstage);
-			Stage nextstage = stagenumber + 1 < uniquestagestoprocess.size()
-					? uniquestagestoprocess.get(stagenumber + 1)
-					: null;
-			stage.number = stagenumber;
-			js.generatePhysicalExecutionPlan(stage, nextstage, job.stageoutputmap, job.id, graph, taskgraph);
-			stagenumber++;
-		}
-		Iterator<MassiveDataStreamTaskSchedulerThread> topostages = new TopologicalOrderIterator(graph);
-		List<MassiveDataStreamTaskSchedulerThread> mdststs = new ArrayList<>();
-		// Sequential ordering of topological ordering is obtained to
-		// process for parallelization.
-		while (topostages.hasNext())
-			mdststs.add(topostages.next());
-		js.parallelExecutionPhaseDExecutorLocalMode(graph, js.new TaskProviderLocalMode(graph.vertexSet().size()));
-		List<List> results = js.getLastStageOutput(graph, mdststs, false, false, true, false, js.resultstream);
-		int sum = 0;
-		for (List result : results) {
-			sum += result.size();
-		}
-		assertEquals(46361, sum);
-	}
-
-	@Test
-	public void testGeneratePhysicalExecutionPlanMap() throws Exception {
-
-		PipelineConfig pc = new PipelineConfig();
-		pc.setMode(MDCConstants.MODE_NORMAL);
-		pc.setOutput(new Output(System.out));
-		pc.setLocal("true");
-		MassiveDataPipeline<String> mdp = MassiveDataPipeline.newStreamHDFS(hdfsfilepath, airlinesample, pc);
-		MassiveDataPipeline<String[]> mdparr = mdp.map((val) -> val.split(MDCConstants.COMMA));
-		mdparr.finaltasks.add(mdparr.task);
-		mdparr.mdsroots.add(mdp);
-
-		Job job = mdparr.createJob();
+		((MassiveDataPipeline) intersection.root).finaltasks.add(intersection.task);
+		((MassiveDataPipeline) intersection.root).mdsroots.add(mdp);
+		Job job = ((MassiveDataPipeline) intersection.root).createJob();
 		JobScheduler js = new JobScheduler();
 		job.pipelineconfig = pc;
 		js.isignite = Objects.isNull(pc.getMode()) ? false
@@ -361,228 +117,8 @@ public class JobSchedulerTest extends MassiveDataPipelineBaseTestClassCommon {
 			js.generatePhysicalExecutionPlan(stage, nextstage, job.stageoutputmap, job.id, graph, taskgraph);
 			stagenumber++;
 		}
-		assertEquals(1, graph.vertexSet().size());
-		assertEquals(0, graph.edgeSet().size());
-	}
-
-	@Test
-	public void testGeneratePhysicalExecutionPlanMapMultiplePartition() throws Exception {
-
-		PipelineConfig pc = new PipelineConfig();
-		pc.setMode(MDCConstants.MODE_NORMAL);
-		pc.setOutput(new Output(System.out));
-		pc.setLocal("true");
-		pc.setIsblocksuserdefined("true");
-		pc.setBlocksize("1");
-		MassiveDataPipeline<String> mdp = MassiveDataPipeline.newStreamHDFS(hdfsfilepath, airlinesample, pc);
-		MassiveDataPipeline<String[]> mdparr = mdp.map((val) -> val.split(MDCConstants.COMMA));
-		mdparr.finaltasks.add(mdparr.task);
-		mdparr.mdsroots.add(mdp);
-
-		Job job = mdparr.createJob();
-		JobScheduler js = new JobScheduler();
-		job.pipelineconfig = pc;
-		js.isignite = Objects.isNull(pc.getMode()) ? false
-				: pc.getMode().equals(MDCConstants.MODE_DEFAULT) ? true : false;
-		js.job = job;
-		js.pipelineconfig = pc;
-		js.semaphore = new Semaphore(1);
-		js.resultstream = new ConcurrentHashMap<>();
-		List<Stage> uniquestagestoprocess = new ArrayList<>(job.topostages);
-		int stagenumber = 0;
-		SimpleDirectedGraph<MassiveDataStreamTaskSchedulerThread, DAGEdge> graph = new SimpleDirectedGraph<>(
-				DAGEdge.class);
-		SimpleDirectedGraph<Task, DAGEdge> taskgraph = new SimpleDirectedGraph<>(DAGEdge.class);
-		// Generate Physical execution plan for each stages.
-		for (Stage stage : uniquestagestoprocess) {
-			Stage nextstage = stagenumber + 1 < uniquestagestoprocess.size()
-					? uniquestagestoprocess.get(stagenumber + 1)
-					: null;
-			stage.number = stagenumber;
-			js.generatePhysicalExecutionPlan(stage, nextstage, job.stageoutputmap, job.id, graph, taskgraph);
-			stagenumber++;
-		}
-		assertEquals(5, graph.vertexSet().size());
-		assertEquals(0, graph.edgeSet().size());
-	}
-
-	@Test
-	public void testGeneratePhysicalExecutionPlanMapFilterMapPairReduceByKey() throws Exception {
-
-		PipelineConfig pc = new PipelineConfig();
-		pc.setMode(MDCConstants.MODE_NORMAL);
-		pc.setOutput(new Output(System.out));
-		pc.setLocal("true");
-		MassiveDataPipeline<String> mdp = MassiveDataPipeline.newStreamHDFS(hdfsfilepath, airlinesample, pc);
-		MassiveDataPipeline<String[]> mdparr = mdp.map((val) -> val.split(MDCConstants.COMMA));
-		MassiveDataPipeline<String[]> filter = mdparr
-				.filter((val) -> !val[14].equals("ArrDelay") && !val[14].equals("NA"));
-		MapPair<String, Long> mappair = filter.mapToPair((val) -> Tuple.tuple(val[8], Long.parseLong(val[14])));
-		MapPair<String, Long> reducebykey = mappair.reduceByKey((a, b) -> a + b);
-		mdparr.finaltasks.add(reducebykey.task);
-		mdparr.mdsroots.add(mdp);
-
-		Job job = mdparr.createJob();
-		JobScheduler js = new JobScheduler();
-		job.pipelineconfig = pc;
-		js.isignite = Objects.isNull(pc.getMode()) ? false
-				: pc.getMode().equals(MDCConstants.MODE_DEFAULT) ? true : false;
-		js.job = job;
-		js.pipelineconfig = pc;
-		js.semaphore = new Semaphore(1);
-		js.resultstream = new ConcurrentHashMap<>();
-		List<Stage> uniquestagestoprocess = new ArrayList<>(job.topostages);
-		int stagenumber = 0;
-		SimpleDirectedGraph<MassiveDataStreamTaskSchedulerThread, DAGEdge> graph = new SimpleDirectedGraph<>(
-				DAGEdge.class);
-		SimpleDirectedGraph<Task, DAGEdge> taskgraph = new SimpleDirectedGraph<>(DAGEdge.class);
-		// Generate Physical execution plan for each stages.
-		for (Stage stage : uniquestagestoprocess) {
-			Stage nextstage = stagenumber + 1 < uniquestagestoprocess.size()
-					? uniquestagestoprocess.get(stagenumber + 1)
-					: null;
-			stage.number = stagenumber;
-			js.generatePhysicalExecutionPlan(stage, nextstage, job.stageoutputmap, job.id, graph, taskgraph);
-			stagenumber++;
-		}
-		assertEquals(1, graph.vertexSet().size());
-		assertEquals(0, graph.edgeSet().size());
-	}
-
-	@Test
-	public void testGeneratePhysicalExecutionPlanMapFilterMapPairReduceByKeyPartitioned() throws Exception {
-
-		PipelineConfig pc = new PipelineConfig();
-		pc.setMode(MDCConstants.MODE_NORMAL);
-		pc.setOutput(new Output(System.out));
-		pc.setLocal("true");
-		pc.setIsblocksuserdefined("true");
-		pc.setBlocksize("1");
-		MassiveDataPipeline<String> mdp = MassiveDataPipeline.newStreamHDFS(hdfsfilepath, airlinesample, pc);
-		MassiveDataPipeline<String[]> mdparr = mdp.map((val) -> val.split(MDCConstants.COMMA));
-		MassiveDataPipeline<String[]> filter = mdparr
-				.filter((val) -> !val[14].equals("ArrDelay") && !val[14].equals("NA"));
-		MapPair<String, Long> mappair = filter.mapToPair((val) -> Tuple.tuple(val[8], Long.parseLong(val[14])));
-		MapPair<String, Long> reducebykey = mappair.reduceByKey((a, b) -> a + b);
-		mdparr.finaltasks.add(reducebykey.task);
-		mdparr.mdsroots.add(mdp);
-
-		Job job = mdparr.createJob();
-		JobScheduler js = new JobScheduler();
-		job.pipelineconfig = pc;
-		js.isignite = Objects.isNull(pc.getMode()) ? false
-				: pc.getMode().equals(MDCConstants.MODE_DEFAULT) ? true : false;
-		js.job = job;
-		js.pipelineconfig = pc;
-		js.semaphore = new Semaphore(1);
-		js.resultstream = new ConcurrentHashMap<>();
-		List<Stage> uniquestagestoprocess = new ArrayList<>(job.topostages);
-		int stagenumber = 0;
-		SimpleDirectedGraph<MassiveDataStreamTaskSchedulerThread, DAGEdge> graph = new SimpleDirectedGraph<>(
-				DAGEdge.class);
-		SimpleDirectedGraph<Task, DAGEdge> taskgraph = new SimpleDirectedGraph<>(DAGEdge.class);
-		// Generate Physical execution plan for each stages.
-		for (Stage stage : uniquestagestoprocess) {
-			Stage nextstage = stagenumber + 1 < uniquestagestoprocess.size()
-					? uniquestagestoprocess.get(stagenumber + 1)
-					: null;
-			stage.number = stagenumber;
-			js.generatePhysicalExecutionPlan(stage, nextstage, job.stageoutputmap, job.id, graph, taskgraph);
-			stagenumber++;
-		}
-		assertEquals(5, graph.vertexSet().size());
-		assertEquals(0, graph.edgeSet().size());
-	}
-
-	@Test
-	public void testGeneratePhysicalExecutionPlanMapFilterMapPairReduceByKeyCoalesce() throws Exception {
-
-		PipelineConfig pc = new PipelineConfig();
-		pc.setMode(MDCConstants.MODE_NORMAL);
-		pc.setOutput(new Output(System.out));
-		pc.setLocal("true");
-		MassiveDataPipeline<String> mdp = MassiveDataPipeline.newStreamHDFS(hdfsfilepath, airlinesample, pc);
-		MassiveDataPipeline<String[]> mdparr = mdp.map((val) -> val.split(MDCConstants.COMMA));
-		MassiveDataPipeline<String[]> filter = mdparr
-				.filter((val) -> !val[14].equals("ArrDelay") && !val[14].equals("NA"));
-		MapPair<String, Long> mappair = filter.mapToPair((val) -> Tuple.tuple(val[8], Long.parseLong(val[14])));
-		MapPair<String, Long> reducebykey = mappair.reduceByKey((a, b) -> a + b);
-		MapPair<String, Long> coalesce = reducebykey.coalesce(1, (a, b) -> a + b);
-		mdparr.finaltasks.add(coalesce.task);
-		mdparr.mdsroots.add(mdp);
-
-		Job job = mdparr.createJob();
-		JobScheduler js = new JobScheduler();
-		job.pipelineconfig = pc;
-		js.isignite = Objects.isNull(pc.getMode()) ? false
-				: pc.getMode().equals(MDCConstants.MODE_DEFAULT) ? true : false;
-		js.job = job;
-		js.pipelineconfig = pc;
-		js.semaphore = new Semaphore(1);
-		js.resultstream = new ConcurrentHashMap<>();
-		List<Stage> uniquestagestoprocess = new ArrayList<>(job.topostages);
-		int stagenumber = 0;
-		SimpleDirectedGraph<MassiveDataStreamTaskSchedulerThread, DAGEdge> graph = new SimpleDirectedGraph<>(
-				DAGEdge.class);
-		SimpleDirectedGraph<Task, DAGEdge> taskgraph = new SimpleDirectedGraph<>(DAGEdge.class);
-		// Generate Physical execution plan for each stages.
-		for (Stage stage : uniquestagestoprocess) {
-			Stage nextstage = stagenumber + 1 < uniquestagestoprocess.size()
-					? uniquestagestoprocess.get(stagenumber + 1)
-					: null;
-			stage.number = stagenumber;
-			js.generatePhysicalExecutionPlan(stage, nextstage, job.stageoutputmap, job.id, graph, taskgraph);
-			stagenumber++;
-		}
-		assertEquals(2, graph.vertexSet().size());
-		assertEquals(1, graph.edgeSet().size());
-	}
-
-	@Test
-	public void testGeneratePhysicalExecutionPlanMapFilterMapPairReduceByKeyCoalescePartitioned() throws Exception {
-
-		PipelineConfig pc = new PipelineConfig();
-		pc.setMode(MDCConstants.MODE_NORMAL);
-		pc.setOutput(new Output(System.out));
-		pc.setLocal("true");
-		pc.setIsblocksuserdefined("true");
-		pc.setBlocksize("1");
-		MassiveDataPipeline<String> mdp = MassiveDataPipeline.newStreamHDFS(hdfsfilepath, airlinesample, pc);
-		MassiveDataPipeline<String[]> mdparr = mdp.map((val) -> val.split(MDCConstants.COMMA));
-		MassiveDataPipeline<String[]> filter = mdparr
-				.filter((val) -> !val[14].equals("ArrDelay") && !val[14].equals("NA"));
-		MapPair<String, Long> mappair = filter.mapToPair((val) -> Tuple.tuple(val[8], Long.parseLong(val[14])));
-		MapPair<String, Long> reducebykey = mappair.reduceByKey((a, b) -> a + b);
-		MapPair<String, Long> coalesce = reducebykey.coalesce(1, (a, b) -> a + b);
-		mdparr.finaltasks.add(coalesce.task);
-		mdparr.finaltasks.add(reducebykey.task);
-		mdparr.mdsroots.add(mdp);
-
-		Job job = mdparr.createJob();
-		JobScheduler js = new JobScheduler();
-		job.pipelineconfig = pc;
-		js.isignite = Objects.isNull(pc.getMode()) ? false
-				: pc.getMode().equals(MDCConstants.MODE_DEFAULT) ? true : false;
-		js.job = job;
-		js.pipelineconfig = pc;
-		js.semaphore = new Semaphore(1);
-		js.resultstream = new ConcurrentHashMap<>();
-		List<Stage> uniquestagestoprocess = new ArrayList<>(job.topostages);
-		int stagenumber = 0;
-		SimpleDirectedGraph<MassiveDataStreamTaskSchedulerThread, DAGEdge> graph = new SimpleDirectedGraph<>(
-				DAGEdge.class);
-		SimpleDirectedGraph<Task, DAGEdge> taskgraph = new SimpleDirectedGraph<>(DAGEdge.class);
-		// Generate Physical execution plan for each stages.
-		for (Stage stage : uniquestagestoprocess) {
-			Stage nextstage = stagenumber + 1 < uniquestagestoprocess.size()
-					? uniquestagestoprocess.get(stagenumber + 1)
-					: null;
-			stage.number = stagenumber;
-			js.generatePhysicalExecutionPlan(stage, nextstage, job.stageoutputmap, job.id, graph, taskgraph);
-			stagenumber++;
-		}
-		assertEquals(6, graph.vertexSet().size());
-		assertEquals(5, graph.edgeSet().size());
+		assertEquals(35, graph.vertexSet().size());
+		assertEquals(50, graph.edgeSet().size());
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -798,6 +334,265 @@ public class JobSchedulerTest extends MassiveDataPipelineBaseTestClassCommon {
 		assertEquals(50, graph.edgeSet().size());
 	}
 
+	@Test
+	public void testGeneratePhysicalExecutionPlanMap() throws Exception {
+
+		PipelineConfig pc = new PipelineConfig();
+		pc.setMode(MDCConstants.MODE_NORMAL);
+		pc.setOutput(new Output(System.out));
+		pc.setLocal("true");
+		MassiveDataPipeline<String> mdp = MassiveDataPipeline.newStreamHDFS(hdfsfilepath, airlinesample, pc);
+		MassiveDataPipeline<String[]> mdparr = mdp.map((val) -> val.split(MDCConstants.COMMA));
+		mdparr.finaltasks.add(mdparr.task);
+		mdparr.mdsroots.add(mdp);
+
+		Job job = mdparr.createJob();
+		JobScheduler js = new JobScheduler();
+		job.pipelineconfig = pc;
+		js.isignite = Objects.isNull(pc.getMode()) ? false
+				: pc.getMode().equals(MDCConstants.MODE_DEFAULT) ? true : false;
+		js.job = job;
+		js.pipelineconfig = pc;
+		js.semaphore = new Semaphore(1);
+		js.resultstream = new ConcurrentHashMap<>();
+		List<Stage> uniquestagestoprocess = new ArrayList<>(job.topostages);
+		int stagenumber = 0;
+		SimpleDirectedGraph<MassiveDataStreamTaskSchedulerThread, DAGEdge> graph = new SimpleDirectedGraph<>(
+				DAGEdge.class);
+		SimpleDirectedGraph<Task, DAGEdge> taskgraph = new SimpleDirectedGraph<>(DAGEdge.class);
+		// Generate Physical execution plan for each stages.
+		for (Stage stage : uniquestagestoprocess) {
+			Stage nextstage = stagenumber + 1 < uniquestagestoprocess.size()
+					? uniquestagestoprocess.get(stagenumber + 1)
+					: null;
+			stage.number = stagenumber;
+			js.generatePhysicalExecutionPlan(stage, nextstage, job.stageoutputmap, job.id, graph, taskgraph);
+			stagenumber++;
+		}
+		assertEquals(1, graph.vertexSet().size());
+		assertEquals(0, graph.edgeSet().size());
+	}
+
+	@Test
+	public void testGeneratePhysicalExecutionPlanMapFilterMapPairReduceByKey() throws Exception {
+
+		PipelineConfig pc = new PipelineConfig();
+		pc.setMode(MDCConstants.MODE_NORMAL);
+		pc.setOutput(new Output(System.out));
+		pc.setLocal("true");
+		MassiveDataPipeline<String> mdp = MassiveDataPipeline.newStreamHDFS(hdfsfilepath, airlinesample, pc);
+		MassiveDataPipeline<String[]> mdparr = mdp.map((val) -> val.split(MDCConstants.COMMA));
+		MassiveDataPipeline<String[]> filter = mdparr
+				.filter((val) -> !val[14].equals("ArrDelay") && !val[14].equals("NA"));
+		MapPair<String, Long> mappair = filter.mapToPair((val) -> Tuple.tuple(val[8], Long.parseLong(val[14])));
+		MapPair<String, Long> reducebykey = mappair.reduceByKey((a, b) -> a + b);
+		mdparr.finaltasks.add(reducebykey.task);
+		mdparr.mdsroots.add(mdp);
+
+		Job job = mdparr.createJob();
+		JobScheduler js = new JobScheduler();
+		job.pipelineconfig = pc;
+		js.isignite = Objects.isNull(pc.getMode()) ? false
+				: pc.getMode().equals(MDCConstants.MODE_DEFAULT) ? true : false;
+		js.job = job;
+		js.pipelineconfig = pc;
+		js.semaphore = new Semaphore(1);
+		js.resultstream = new ConcurrentHashMap<>();
+		List<Stage> uniquestagestoprocess = new ArrayList<>(job.topostages);
+		int stagenumber = 0;
+		SimpleDirectedGraph<MassiveDataStreamTaskSchedulerThread, DAGEdge> graph = new SimpleDirectedGraph<>(
+				DAGEdge.class);
+		SimpleDirectedGraph<Task, DAGEdge> taskgraph = new SimpleDirectedGraph<>(DAGEdge.class);
+		// Generate Physical execution plan for each stages.
+		for (Stage stage : uniquestagestoprocess) {
+			Stage nextstage = stagenumber + 1 < uniquestagestoprocess.size()
+					? uniquestagestoprocess.get(stagenumber + 1)
+					: null;
+			stage.number = stagenumber;
+			js.generatePhysicalExecutionPlan(stage, nextstage, job.stageoutputmap, job.id, graph, taskgraph);
+			stagenumber++;
+		}
+		assertEquals(1, graph.vertexSet().size());
+		assertEquals(0, graph.edgeSet().size());
+	}
+
+	@Test
+	public void testGeneratePhysicalExecutionPlanMapFilterMapPairReduceByKeyCoalesce() throws Exception {
+
+		PipelineConfig pc = new PipelineConfig();
+		pc.setMode(MDCConstants.MODE_NORMAL);
+		pc.setOutput(new Output(System.out));
+		pc.setLocal("true");
+		MassiveDataPipeline<String> mdp = MassiveDataPipeline.newStreamHDFS(hdfsfilepath, airlinesample, pc);
+		MassiveDataPipeline<String[]> mdparr = mdp.map((val) -> val.split(MDCConstants.COMMA));
+		MassiveDataPipeline<String[]> filter = mdparr
+				.filter((val) -> !val[14].equals("ArrDelay") && !val[14].equals("NA"));
+		MapPair<String, Long> mappair = filter.mapToPair((val) -> Tuple.tuple(val[8], Long.parseLong(val[14])));
+		MapPair<String, Long> reducebykey = mappair.reduceByKey((a, b) -> a + b);
+		MapPair<String, Long> coalesce = reducebykey.coalesce(1, (a, b) -> a + b);
+		mdparr.finaltasks.add(coalesce.task);
+		mdparr.mdsroots.add(mdp);
+
+		Job job = mdparr.createJob();
+		JobScheduler js = new JobScheduler();
+		job.pipelineconfig = pc;
+		js.isignite = Objects.isNull(pc.getMode()) ? false
+				: pc.getMode().equals(MDCConstants.MODE_DEFAULT) ? true : false;
+		js.job = job;
+		js.pipelineconfig = pc;
+		js.semaphore = new Semaphore(1);
+		js.resultstream = new ConcurrentHashMap<>();
+		List<Stage> uniquestagestoprocess = new ArrayList<>(job.topostages);
+		int stagenumber = 0;
+		SimpleDirectedGraph<MassiveDataStreamTaskSchedulerThread, DAGEdge> graph = new SimpleDirectedGraph<>(
+				DAGEdge.class);
+		SimpleDirectedGraph<Task, DAGEdge> taskgraph = new SimpleDirectedGraph<>(DAGEdge.class);
+		// Generate Physical execution plan for each stages.
+		for (Stage stage : uniquestagestoprocess) {
+			Stage nextstage = stagenumber + 1 < uniquestagestoprocess.size()
+					? uniquestagestoprocess.get(stagenumber + 1)
+					: null;
+			stage.number = stagenumber;
+			js.generatePhysicalExecutionPlan(stage, nextstage, job.stageoutputmap, job.id, graph, taskgraph);
+			stagenumber++;
+		}
+		assertEquals(2, graph.vertexSet().size());
+		assertEquals(1, graph.edgeSet().size());
+	}
+
+	@Test
+	public void testGeneratePhysicalExecutionPlanMapFilterMapPairReduceByKeyCoalescePartitioned() throws Exception {
+
+		PipelineConfig pc = new PipelineConfig();
+		pc.setMode(MDCConstants.MODE_NORMAL);
+		pc.setOutput(new Output(System.out));
+		pc.setLocal("true");
+		pc.setIsblocksuserdefined("true");
+		pc.setBlocksize("1");
+		MassiveDataPipeline<String> mdp = MassiveDataPipeline.newStreamHDFS(hdfsfilepath, airlinesample, pc);
+		MassiveDataPipeline<String[]> mdparr = mdp.map((val) -> val.split(MDCConstants.COMMA));
+		MassiveDataPipeline<String[]> filter = mdparr
+				.filter((val) -> !val[14].equals("ArrDelay") && !val[14].equals("NA"));
+		MapPair<String, Long> mappair = filter.mapToPair((val) -> Tuple.tuple(val[8], Long.parseLong(val[14])));
+		MapPair<String, Long> reducebykey = mappair.reduceByKey((a, b) -> a + b);
+		MapPair<String, Long> coalesce = reducebykey.coalesce(1, (a, b) -> a + b);
+		mdparr.finaltasks.add(coalesce.task);
+		mdparr.finaltasks.add(reducebykey.task);
+		mdparr.mdsroots.add(mdp);
+
+		Job job = mdparr.createJob();
+		JobScheduler js = new JobScheduler();
+		job.pipelineconfig = pc;
+		js.isignite = Objects.isNull(pc.getMode()) ? false
+				: pc.getMode().equals(MDCConstants.MODE_DEFAULT) ? true : false;
+		js.job = job;
+		js.pipelineconfig = pc;
+		js.semaphore = new Semaphore(1);
+		js.resultstream = new ConcurrentHashMap<>();
+		List<Stage> uniquestagestoprocess = new ArrayList<>(job.topostages);
+		int stagenumber = 0;
+		SimpleDirectedGraph<MassiveDataStreamTaskSchedulerThread, DAGEdge> graph = new SimpleDirectedGraph<>(
+				DAGEdge.class);
+		SimpleDirectedGraph<Task, DAGEdge> taskgraph = new SimpleDirectedGraph<>(DAGEdge.class);
+		// Generate Physical execution plan for each stages.
+		for (Stage stage : uniquestagestoprocess) {
+			Stage nextstage = stagenumber + 1 < uniquestagestoprocess.size()
+					? uniquestagestoprocess.get(stagenumber + 1)
+					: null;
+			stage.number = stagenumber;
+			js.generatePhysicalExecutionPlan(stage, nextstage, job.stageoutputmap, job.id, graph, taskgraph);
+			stagenumber++;
+		}
+		assertEquals(6, graph.vertexSet().size());
+		assertEquals(5, graph.edgeSet().size());
+	}
+
+	@Test
+	public void testGeneratePhysicalExecutionPlanMapFilterMapPairReduceByKeyPartitioned() throws Exception {
+
+		PipelineConfig pc = new PipelineConfig();
+		pc.setMode(MDCConstants.MODE_NORMAL);
+		pc.setOutput(new Output(System.out));
+		pc.setLocal("true");
+		pc.setIsblocksuserdefined("true");
+		pc.setBlocksize("1");
+		MassiveDataPipeline<String> mdp = MassiveDataPipeline.newStreamHDFS(hdfsfilepath, airlinesample, pc);
+		MassiveDataPipeline<String[]> mdparr = mdp.map((val) -> val.split(MDCConstants.COMMA));
+		MassiveDataPipeline<String[]> filter = mdparr
+				.filter((val) -> !val[14].equals("ArrDelay") && !val[14].equals("NA"));
+		MapPair<String, Long> mappair = filter.mapToPair((val) -> Tuple.tuple(val[8], Long.parseLong(val[14])));
+		MapPair<String, Long> reducebykey = mappair.reduceByKey((a, b) -> a + b);
+		mdparr.finaltasks.add(reducebykey.task);
+		mdparr.mdsroots.add(mdp);
+
+		Job job = mdparr.createJob();
+		JobScheduler js = new JobScheduler();
+		job.pipelineconfig = pc;
+		js.isignite = Objects.isNull(pc.getMode()) ? false
+				: pc.getMode().equals(MDCConstants.MODE_DEFAULT) ? true : false;
+		js.job = job;
+		js.pipelineconfig = pc;
+		js.semaphore = new Semaphore(1);
+		js.resultstream = new ConcurrentHashMap<>();
+		List<Stage> uniquestagestoprocess = new ArrayList<>(job.topostages);
+		int stagenumber = 0;
+		SimpleDirectedGraph<MassiveDataStreamTaskSchedulerThread, DAGEdge> graph = new SimpleDirectedGraph<>(
+				DAGEdge.class);
+		SimpleDirectedGraph<Task, DAGEdge> taskgraph = new SimpleDirectedGraph<>(DAGEdge.class);
+		// Generate Physical execution plan for each stages.
+		for (Stage stage : uniquestagestoprocess) {
+			Stage nextstage = stagenumber + 1 < uniquestagestoprocess.size()
+					? uniquestagestoprocess.get(stagenumber + 1)
+					: null;
+			stage.number = stagenumber;
+			js.generatePhysicalExecutionPlan(stage, nextstage, job.stageoutputmap, job.id, graph, taskgraph);
+			stagenumber++;
+		}
+		assertEquals(5, graph.vertexSet().size());
+		assertEquals(0, graph.edgeSet().size());
+	}
+
+	@Test
+	public void testGeneratePhysicalExecutionPlanMapMultiplePartition() throws Exception {
+
+		PipelineConfig pc = new PipelineConfig();
+		pc.setMode(MDCConstants.MODE_NORMAL);
+		pc.setOutput(new Output(System.out));
+		pc.setLocal("true");
+		pc.setIsblocksuserdefined("true");
+		pc.setBlocksize("1");
+		MassiveDataPipeline<String> mdp = MassiveDataPipeline.newStreamHDFS(hdfsfilepath, airlinesample, pc);
+		MassiveDataPipeline<String[]> mdparr = mdp.map((val) -> val.split(MDCConstants.COMMA));
+		mdparr.finaltasks.add(mdparr.task);
+		mdparr.mdsroots.add(mdp);
+
+		Job job = mdparr.createJob();
+		JobScheduler js = new JobScheduler();
+		job.pipelineconfig = pc;
+		js.isignite = Objects.isNull(pc.getMode()) ? false
+				: pc.getMode().equals(MDCConstants.MODE_DEFAULT) ? true : false;
+		js.job = job;
+		js.pipelineconfig = pc;
+		js.semaphore = new Semaphore(1);
+		js.resultstream = new ConcurrentHashMap<>();
+		List<Stage> uniquestagestoprocess = new ArrayList<>(job.topostages);
+		int stagenumber = 0;
+		SimpleDirectedGraph<MassiveDataStreamTaskSchedulerThread, DAGEdge> graph = new SimpleDirectedGraph<>(
+				DAGEdge.class);
+		SimpleDirectedGraph<Task, DAGEdge> taskgraph = new SimpleDirectedGraph<>(DAGEdge.class);
+		// Generate Physical execution plan for each stages.
+		for (Stage stage : uniquestagestoprocess) {
+			Stage nextstage = stagenumber + 1 < uniquestagestoprocess.size()
+					? uniquestagestoprocess.get(stagenumber + 1)
+					: null;
+			stage.number = stagenumber;
+			js.generatePhysicalExecutionPlan(stage, nextstage, job.stageoutputmap, job.id, graph, taskgraph);
+			stagenumber++;
+		}
+		assertEquals(5, graph.vertexSet().size());
+		assertEquals(0, graph.edgeSet().size());
+	}
+
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Test
 	public void testGeneratePhysicalExecutionPlanRightJoin() throws Exception {
@@ -994,90 +789,33 @@ public class JobSchedulerTest extends MassiveDataPipelineBaseTestClassCommon {
 		assertEquals(50, graph.edgeSet().size());
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings("resource")
 	@Test
-	public void testGeneratePhysicalExecutionPlanIntersection() throws Exception {
+	public void testGetContainersHostPort() throws Exception {
 
 		PipelineConfig pc = new PipelineConfig();
 		pc.setMode(MDCConstants.MODE_NORMAL);
 		pc.setOutput(new Output(System.out));
-		pc.setLocal("true");
+		pc.setLocal("false");
+		pc.setJgroups("false");
 		MassiveDataPipeline<String> mdp = MassiveDataPipeline.newStreamHDFS(hdfsfilepath, airlinesample, pc);
+		MassiveDataPipeline<String[]> mdparr = mdp.map((val) -> val.split(MDCConstants.COMMA));
+		mdparr.finaltasks.add(mdparr.task);
+		mdparr.mdsroots.add(mdp);
 
-		MassiveDataPipeline<String> mdp1 = MassiveDataPipeline.newStreamHDFS(hdfsfilepath, airlinesample, pc);
-
-		MassiveDataPipeline<String> intersection = mdp.filter((val) -> true).intersection(mdp1.filter((val) -> true));
-
-		((MassiveDataPipeline) intersection.root).finaltasks.add(intersection.task);
-		((MassiveDataPipeline) intersection.root).mdsroots.add(mdp);
-		Job job = ((MassiveDataPipeline) intersection.root).createJob();
+		Job job = mdparr.createJob();
 		JobScheduler js = new JobScheduler();
-		job.pipelineconfig = pc;
+		js.pipelineconfig = pc;
 		js.isignite = Objects.isNull(pc.getMode()) ? false
 				: pc.getMode().equals(MDCConstants.MODE_DEFAULT) ? true : false;
 		js.job = job;
 		js.pipelineconfig = pc;
-		js.semaphore = new Semaphore(1);
-		js.resultstream = new ConcurrentHashMap<>();
-		List<Stage> uniquestagestoprocess = new ArrayList<>(job.topostages);
-		int stagenumber = 0;
-		SimpleDirectedGraph<MassiveDataStreamTaskSchedulerThread, DAGEdge> graph = new SimpleDirectedGraph<>(
-				DAGEdge.class);
-		SimpleDirectedGraph<Task, DAGEdge> taskgraph = new SimpleDirectedGraph<>(DAGEdge.class);
-		// Generate Physical execution plan for each stages.
-		for (Stage stage : uniquestagestoprocess) {
-			Stage nextstage = stagenumber + 1 < uniquestagestoprocess.size()
-					? uniquestagestoprocess.get(stagenumber + 1)
-					: null;
-			stage.number = stagenumber;
-			js.generatePhysicalExecutionPlan(stage, nextstage, job.stageoutputmap, job.id, graph, taskgraph);
-			stagenumber++;
-		}
-		assertEquals(3, graph.vertexSet().size());
-		assertEquals(2, graph.edgeSet().size());
-	}
-
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	@Test
-	public void testGeneratePhysicalExecutionPlanIntersectionPartitioned() throws Exception {
-
-		PipelineConfig pc = new PipelineConfig();
-		pc.setMode(MDCConstants.MODE_NORMAL);
-		pc.setOutput(new Output(System.out));
-		pc.setLocal("true");
-		pc.setIsblocksuserdefined("true");
-		pc.setBlocksize("1");
-		MassiveDataPipeline<String> mdp = MassiveDataPipeline.newStreamHDFS(hdfsfilepath, airlinesample, pc);
-		MassiveDataPipeline<String> mdp1 = MassiveDataPipeline.newStreamHDFS(hdfsfilepath, airlinesample, pc);
-		MassiveDataPipeline<String> intersection = mdp.filter((val) -> true).intersection(mdp1.filter((val) -> true));
-
-		((MassiveDataPipeline) intersection.root).finaltasks.add(intersection.task);
-		((MassiveDataPipeline) intersection.root).mdsroots.add(mdp);
-		Job job = ((MassiveDataPipeline) intersection.root).createJob();
-		JobScheduler js = new JobScheduler();
-		job.pipelineconfig = pc;
-		js.isignite = Objects.isNull(pc.getMode()) ? false
-				: pc.getMode().equals(MDCConstants.MODE_DEFAULT) ? true : false;
-		js.job = job;
-		js.pipelineconfig = pc;
-		js.semaphore = new Semaphore(1);
-		js.resultstream = new ConcurrentHashMap<>();
-		List<Stage> uniquestagestoprocess = new ArrayList<>(job.topostages);
-		int stagenumber = 0;
-		SimpleDirectedGraph<MassiveDataStreamTaskSchedulerThread, DAGEdge> graph = new SimpleDirectedGraph<>(
-				DAGEdge.class);
-		SimpleDirectedGraph<Task, DAGEdge> taskgraph = new SimpleDirectedGraph<>(DAGEdge.class);
-		// Generate Physical execution plan for each stages.
-		for (Stage stage : uniquestagestoprocess) {
-			Stage nextstage = stagenumber + 1 < uniquestagestoprocess.size()
-					? uniquestagestoprocess.get(stagenumber + 1)
-					: null;
-			stage.number = stagenumber;
-			js.generatePhysicalExecutionPlan(stage, nextstage, job.stageoutputmap, job.id, graph, taskgraph);
-			stagenumber++;
-		}
-		assertEquals(35, graph.vertexSet().size());
-		assertEquals(50, graph.edgeSet().size());
+		HeartBeatServerStream hbss = new HeartBeatServerStream();
+		js.hbss = hbss;
+		js.getContainersHostPort();
+		assertEquals(job.containers.size(), js.taskexecutors.size());
+		assertTrue(job.containers.containsAll(js.taskexecutors));
+		js.destroyContainers();
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked", "resource" })
@@ -1097,6 +835,7 @@ public class JobSchedulerTest extends MassiveDataPipelineBaseTestClassCommon {
 		mdparr.mdsroots.add(mdp);
 
 		Job job = mdparr.createJob();
+		job.trigger = Job.TRIGGER.COLLECT;
 		JobScheduler js = new JobScheduler();
 		js.pipelineconfig = pc;
 		js.isignite = Objects.isNull(pc.getMode()) ? false
@@ -1140,15 +879,21 @@ public class JobSchedulerTest extends MassiveDataPipelineBaseTestClassCommon {
 			stagenumber++;
 		}
 		js.broadcastJobStageToTaskExecutors();
-		js.parallelExecutionPhaseDExecutor(graph);
 		Iterator<MassiveDataStreamTaskSchedulerThread> topostages = new TopologicalOrderIterator(graph);
 		List<MassiveDataStreamTaskSchedulerThread> mdststs = new ArrayList<>();
 		// Sequential ordering of topological ordering is obtained to
 		// process for parallelization.
 		while (topostages.hasNext())
 			mdststs.add(topostages.next());
-		js.parallelExecutionPhaseDExecutorLocalMode(graph, js.new TaskProviderLocalMode(graph.vertexSet().size()));
-		List<List> results = js.getLastStageOutput(graph, mdststs, false, false, false, false, js.resultstream);
+		var mdstts = js.getFinalPhasesWithNoSuccessors(graph, mdststs);
+		var partitionnumber = 0;
+		for(var mdstst:mdstts) {
+			mdstst.getTask().finalphase = true;
+			mdstst.getTask().hdfsurl = job.uri;
+			mdstst.getTask().filepath = job.savepath + MDCConstants.HYPHEN + partitionnumber++;
+		}
+		js.parallelExecutionPhaseDExecutor(graph);
+		List<List> results = js.getLastStageOutput(mdstts, graph, mdststs, false, false, false, false, js.resultstream);
 		int sum = 0;
 		for (List result : results) {
 			sum += result.size();
@@ -1159,6 +904,291 @@ public class JobSchedulerTest extends MassiveDataPipelineBaseTestClassCommon {
 		js.hbss.stop();
 		js.hbss.destroy();
 		js.destroyContainers();
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@Test
+	public void testParallelExecutionPhaseDExecutorLocalMode() throws Exception {
+
+		PipelineConfig pc = new PipelineConfig();
+		pc.setMode(MDCConstants.MODE_NORMAL);
+		pc.setOutput(new Output(System.out));
+		pc.setLocal("true");
+		pc.setBatchsize("1");
+		MassiveDataPipeline<String> mdp = MassiveDataPipeline.newStreamHDFS(hdfsfilepath, airlinesample, pc);
+		MassiveDataPipeline<String[]> mdparr = mdp.map((val) -> val.split(MDCConstants.COMMA));
+		mdparr.finaltasks.add(mdparr.task);
+		mdparr.mdsroots.add(mdp);
+
+		Job job = mdparr.createJob();
+		JobScheduler js = new JobScheduler();
+		js.batchsize = Integer.parseInt(pc.getBatchsize()); 
+		js.pipelineconfig = pc;
+		js.isignite = Objects.isNull(pc.getMode()) ? false
+				: pc.getMode().equals(MDCConstants.MODE_DEFAULT) ? true : false;
+		js.job = job;
+		js.pipelineconfig = pc;
+		js.semaphore = new Semaphore(1);
+		js.resultstream = new ConcurrentHashMap<>();
+		List<Stage> uniquestagestoprocess = new ArrayList<>(job.topostages);
+		int stagenumber = 0;
+		SimpleDirectedGraph<MassiveDataStreamTaskSchedulerThread, DAGEdge> graph = new SimpleDirectedGraph<>(
+				DAGEdge.class);
+		SimpleDirectedGraph<Task, DAGEdge> taskgraph = new SimpleDirectedGraph<>(DAGEdge.class);
+		// Generate Physical execution plan for each stages.
+		for (Stage stage : uniquestagestoprocess) {
+			JobStage jobstage = new JobStage();
+			jobstage.jobid = job.id;
+			jobstage.stageid = stage.id;
+			jobstage.stage = stage;
+			js.jsidjsmap.put(job.id + stage.id, jobstage);
+			Stage nextstage = stagenumber + 1 < uniquestagestoprocess.size()
+					? uniquestagestoprocess.get(stagenumber + 1)
+					: null;
+			stage.number = stagenumber;
+			js.generatePhysicalExecutionPlan(stage, nextstage, job.stageoutputmap, job.id, graph, taskgraph);
+			stagenumber++;
+		}
+		Iterator<MassiveDataStreamTaskSchedulerThread> topostages = new TopologicalOrderIterator(graph);
+		List<MassiveDataStreamTaskSchedulerThread> mdststs = new ArrayList<>();
+		// Sequential ordering of topological ordering is obtained to
+		// process for parallelization.
+		while (topostages.hasNext())
+			mdststs.add(topostages.next());
+		var mdstts = js.getFinalPhasesWithNoSuccessors(graph, mdststs);
+		var partitionnumber = 0;
+		for(var mdstst:mdstts) {
+			mdstst.getTask().finalphase = true;
+			mdstst.getTask().hdfsurl = job.uri;
+			mdstst.getTask().filepath = job.savepath + MDCConstants.HYPHEN + partitionnumber++;
+		}
+		js.parallelExecutionPhaseDExecutorLocalMode(graph, js.new TaskProviderLocalMode(graph.vertexSet().size()));
+		List<List> result = js.getLastStageOutput(mdstts,graph, mdststs, false, false, true, false, js.resultstream);
+		assertEquals(46361, result.get(0).size());
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@Test
+	public void testParallelExecutionPhaseDExecutorLocalModeMultiplePartition() throws Exception {
+
+		PipelineConfig pc = new PipelineConfig();
+		pc.setMode(MDCConstants.MODE_NORMAL);
+		pc.setOutput(new Output(System.out));
+		pc.setLocal("true");
+		pc.setIsblocksuserdefined("true");
+		pc.setBlocksize("1");
+		MassiveDataPipeline<String> mdp = MassiveDataPipeline.newStreamHDFS(hdfsfilepath, airlinesample, pc);
+		MassiveDataPipeline<String[]> mdparr = mdp.map((val) -> val.split(MDCConstants.COMMA));
+		mdparr.finaltasks.add(mdparr.task);
+		mdparr.mdsroots.add(mdp);
+
+		Job job = mdparr.createJob();
+		JobScheduler js = new JobScheduler();
+		js.batchsize = Integer.parseInt(pc.getBatchsize()); 
+		js.pipelineconfig = pc;
+		js.isignite = Objects.isNull(pc.getMode()) ? false
+				: pc.getMode().equals(MDCConstants.MODE_DEFAULT) ? true : false;
+		js.job = job;
+		js.pipelineconfig = pc;
+		js.semaphore = new Semaphore(1);
+		js.resultstream = new ConcurrentHashMap<>();
+		List<Stage> uniquestagestoprocess = new ArrayList<>(job.topostages);
+		int stagenumber = 0;
+		SimpleDirectedGraph<MassiveDataStreamTaskSchedulerThread, DAGEdge> graph = new SimpleDirectedGraph<>(
+				DAGEdge.class);
+		SimpleDirectedGraph<Task, DAGEdge> taskgraph = new SimpleDirectedGraph<>(DAGEdge.class);
+		// Generate Physical execution plan for each stages.
+		for (Stage stage : uniquestagestoprocess) {
+			JobStage jobstage = new JobStage();
+			jobstage.jobid = job.id;
+			jobstage.stageid = stage.id;
+			jobstage.stage = stage;
+			js.jsidjsmap.put(job.id + stage.id, jobstage);
+			Stage nextstage = stagenumber + 1 < uniquestagestoprocess.size()
+					? uniquestagestoprocess.get(stagenumber + 1)
+					: null;
+			stage.number = stagenumber;
+			js.generatePhysicalExecutionPlan(stage, nextstage, job.stageoutputmap, job.id, graph, taskgraph);
+			stagenumber++;
+		}
+		Iterator<MassiveDataStreamTaskSchedulerThread> topostages = new TopologicalOrderIterator(graph);
+		List<MassiveDataStreamTaskSchedulerThread> mdststs = new ArrayList<>();
+		// Sequential ordering of topological ordering is obtained to
+		// process for parallelization.
+		while (topostages.hasNext())
+			mdststs.add(topostages.next());
+		var mdstts = js.getFinalPhasesWithNoSuccessors(graph, mdststs);
+		var partitionnumber = 0;
+		for(var mdstst:mdstts) {
+			mdstst.getTask().finalphase = true;
+			mdstst.getTask().hdfsurl = job.uri;
+			mdstst.getTask().filepath = job.savepath + MDCConstants.HYPHEN + partitionnumber++;
+		}
+		js.parallelExecutionPhaseDExecutorLocalMode(graph, js.new TaskProviderLocalMode(graph.vertexSet().size()));
+		List<List> results = js.getLastStageOutput(mdstts,graph, mdststs, false, false, true, false, js.resultstream);
+		int sum = 0;
+		for (List result : results) {
+			sum += result.size();
+		}
+		assertEquals(46361, sum);
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@Test
+	public void testParallelExecutionPhaseDExecutorLocalModeMultiplePartitionBatchSize() throws Exception {
+
+		PipelineConfig pc = new PipelineConfig();
+		pc.setMode(MDCConstants.MODE_NORMAL);
+		pc.setOutput(new Output(System.out));
+		pc.setLocal("true");
+		pc.setIsblocksuserdefined("true");
+		pc.setBlocksize("1");
+		pc.setBatchsize("3");
+		MassiveDataPipeline<String> mdp = MassiveDataPipeline.newStreamHDFS(hdfsfilepath, airlinesample, pc);
+		MassiveDataPipeline<String[]> mdparr = mdp.map((val) -> val.split(MDCConstants.COMMA));
+		mdparr.finaltasks.add(mdparr.task);
+		mdparr.mdsroots.add(mdp);
+
+		Job job = mdparr.createJob();
+		JobScheduler js = new JobScheduler();
+		js.batchsize = Integer.parseInt(pc.getBatchsize());
+		js.pipelineconfig = pc;
+		js.isignite = Objects.isNull(pc.getMode()) ? false
+				: pc.getMode().equals(MDCConstants.MODE_DEFAULT) ? true : false;
+		js.job = job;
+		js.pipelineconfig = pc;
+		js.semaphore = new Semaphore(1);
+		js.resultstream = new ConcurrentHashMap<>();
+		List<Stage> uniquestagestoprocess = new ArrayList<>(job.topostages);
+		int stagenumber = 0;
+		SimpleDirectedGraph<MassiveDataStreamTaskSchedulerThread, DAGEdge> graph = new SimpleDirectedGraph<>(
+				DAGEdge.class);
+		SimpleDirectedGraph<Task, DAGEdge> taskgraph = new SimpleDirectedGraph<>(DAGEdge.class);
+		// Generate Physical execution plan for each stages.
+		for (Stage stage : uniquestagestoprocess) {
+			JobStage jobstage = new JobStage();
+			jobstage.jobid = job.id;
+			jobstage.stageid = stage.id;
+			jobstage.stage = stage;
+			js.jsidjsmap.put(job.id + stage.id, jobstage);
+			Stage nextstage = stagenumber + 1 < uniquestagestoprocess.size()
+					? uniquestagestoprocess.get(stagenumber + 1)
+					: null;
+			stage.number = stagenumber;
+			js.generatePhysicalExecutionPlan(stage, nextstage, job.stageoutputmap, job.id, graph, taskgraph);
+			stagenumber++;
+		}
+		Iterator<MassiveDataStreamTaskSchedulerThread> topostages = new TopologicalOrderIterator(graph);
+		List<MassiveDataStreamTaskSchedulerThread> mdststs = new ArrayList<>();
+		// Sequential ordering of topological ordering is obtained to
+		// process for parallelization.
+		while (topostages.hasNext())
+			mdststs.add(topostages.next());
+		var mdstts = js.getFinalPhasesWithNoSuccessors(graph, mdststs);
+		var partitionnumber = 0;
+		for(var mdstst:mdstts) {
+			mdstst.getTask().finalphase = true;
+			mdstst.getTask().hdfsurl = job.uri;
+			mdstst.getTask().filepath = job.savepath + MDCConstants.HYPHEN + partitionnumber++;
+		}
+		js.parallelExecutionPhaseDExecutorLocalMode(graph, js.new TaskProviderLocalMode(graph.vertexSet().size()));
+		List<List> results = js.getLastStageOutput(mdstts, graph, mdststs, false, false, true, false, js.resultstream);
+		int sum = 0;
+		for (List result : results) {
+			sum += result.size();
+		}
+		assertEquals(46361, sum);
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@Test
+	public void testScheduleJobJGroups() throws Exception {
+
+		PipelineConfig pc = new PipelineConfig();
+		pc.setMode(MDCConstants.MODE_NORMAL);
+		pc.setOutput(new Output(System.out));
+		pc.setLocal("false");
+		pc.setJgroups("true");
+		pc.setStorage(MDCConstants.STORAGE.DISK);
+		MassiveDataPipeline<String> mdp = MassiveDataPipeline.newStreamHDFS(hdfsfilepath, airlinesample, pc);
+		MassiveDataPipeline<String[]> mdparr = mdp.map((val) -> val.split(MDCConstants.COMMA));
+		mdparr.finaltasks.add(mdparr.task);
+		mdparr.mdsroots.add(mdp);
+		Job job = mdparr.createJob();
+		JobScheduler js = new JobScheduler();
+		job.pipelineconfig = pc;
+		js.pipelineconfig = pc;
+		js.isignite = Objects.isNull(pc.getMode()) ? false
+				: pc.getMode().equals(MDCConstants.MODE_DEFAULT) ? true : false;
+		List<List> result = (List<List>) js.schedule(job);
+		assertEquals(1, result.size());
+		assertEquals(46361, result.get(0).size());
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@Test
+	public void testScheduleJobLocal() throws Exception {
+
+		PipelineConfig pc = new PipelineConfig();
+		pc.setMode(MDCConstants.MODE_NORMAL);
+		pc.setOutput(new Output(System.out));
+		MassiveDataPipeline<String> mdp = MassiveDataPipeline.newStreamHDFS(hdfsfilepath, airlinesample, pc);
+		MassiveDataPipeline<String[]> mdparr = mdp.map((val) -> val.split(MDCConstants.COMMA));
+		mdparr.finaltasks.add(mdparr.task);
+		mdparr.mdsroots.add(mdp);
+
+		Job job = mdparr.createJob();
+		JobScheduler js = new JobScheduler();
+		job.pipelineconfig = pc;
+		js.isignite = Objects.isNull(pc.getMode()) ? false
+				: pc.getMode().equals(MDCConstants.MODE_DEFAULT) ? true : false;
+		List<List> result = (List<List>) js.schedule(job);
+		assertEquals(1, result.size());
+		assertEquals(46361, result.get(0).size());
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@Test
+	public void testScheduleJobStandalone1() throws Exception {
+
+		PipelineConfig pc = new PipelineConfig();
+		pc.setMode(MDCConstants.MODE_NORMAL);
+		pc.setOutput(new Output(System.out));
+		pc.setLocal("false");
+		pc.setJgroups("false");
+		MassiveDataPipeline<String> mdp = MassiveDataPipeline.newStreamHDFS(hdfsfilepath, airlinesample, pc);
+		MassiveDataPipeline<String[]> mdparr = mdp.map((val) -> val.split(MDCConstants.COMMA));
+		mdparr.finaltasks.add(mdparr.task);
+		mdparr.mdsroots.add(mdp);
+		Job job = mdparr.createJob();
+		JobScheduler js = new JobScheduler();
+		job.pipelineconfig = pc;
+		js.isignite = Objects.isNull(pc.getMode()) ? false
+				: pc.getMode().equals(MDCConstants.MODE_DEFAULT) ? true : false;
+		List<List> result = (List<List>) js.schedule(job);
+		assertEquals(1, result.size());
+		assertEquals(46361, result.get(0).size());
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public void testScheduleJobStandalone2() throws Exception {
+		PipelineConfig pc = new PipelineConfig();
+		pc.setMode(MDCConstants.MODE_NORMAL);
+		pc.setOutput(new Output(System.out));
+		pc.setLocal("false");
+		pc.setJgroups("false");
+		MassiveDataPipeline<String> mdp = MassiveDataPipeline.newStreamHDFS(hdfsfilepath, airlinesample, pc);
+		MassiveDataPipeline<String[]> mdparr = mdp.map((val) -> val.split(MDCConstants.COMMA));
+		mdparr.finaltasks.add(mdparr.task);
+		mdparr.mdsroots.add(mdp);
+		Job job = mdparr.createJob();
+		JobScheduler js = new JobScheduler();
+		job.pipelineconfig = pc;
+		js.isignite = Objects.isNull(pc.getMode()) ? false
+				: pc.getMode().equals(MDCConstants.MODE_DEFAULT) ? true : false;
+		List<List> result = (List<List>) js.schedule(job);
+		assertEquals(1, result.size());
+		assertEquals(46361, result.get(0).size());
 	}
 
 }

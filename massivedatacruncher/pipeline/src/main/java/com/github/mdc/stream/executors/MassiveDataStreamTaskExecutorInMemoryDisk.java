@@ -17,7 +17,8 @@ import org.apache.log4j.Logger;
 import org.ehcache.Cache;
 import org.xerial.snappy.SnappyInputStream;
 
-import com.github.mdc.common.ByteArrayOutputStreamPool;
+import com.github.mdc.common.ByteBufferPool;
+import com.github.mdc.common.CloseableByteBufferOutputStream;
 import com.github.mdc.common.HeartBeatTaskSchedulerStream;
 import com.github.mdc.common.JobStage;
 import com.github.mdc.common.MDCConstants;
@@ -39,7 +40,7 @@ public final class MassiveDataStreamTaskExecutorInMemoryDisk extends MassiveData
 	
 	public MassiveDataStreamTaskExecutorInMemoryDisk(JobStage jobstage,
 			ConcurrentMap<String,OutputStream> resultstream,
-			Cache cache,HeartBeatTaskSchedulerStream hbtss) {
+			Cache cache,HeartBeatTaskSchedulerStream hbtss) throws Exception {
 		super(jobstage, resultstream, cache);
 		iscacheable = true;
 		this.hbtss = hbtss;
@@ -70,9 +71,8 @@ public final class MassiveDataStreamTaskExecutorInMemoryDisk extends MassiveData
 	public OutputStream createIntermediateDataToFS(Task task) throws MassiveDataPipelineException {
 		log.debug("Entered MassiveDataStreamTaskExecutorInMemory.createIntermediateDataToFS");
 		try {
-			var path = getIntermediateDataFSFilePath(task);
-			OutputStream os = ByteArrayOutputStreamPool.get().borrowObject();
-			resultstream.put(path, os);
+			OutputStream os;
+			os = new CloseableByteBufferOutputStream(ByteBufferPool.get().borrowObject());
 			log.debug("Exiting MassiveDataStreamTaskExecutorInMemory.createIntermediateDataToFS");
 			return os;
 		} catch (Exception e) {
@@ -166,6 +166,14 @@ public final class MassiveDataStreamTaskExecutorInMemoryDisk extends MassiveData
 				hbtss.pingOnce(task.stageid, task.taskid, task.hostport, Task.TaskStatus.FAILED, 0.0, new String(baos.toByteArray()));
 			} catch (Exception e) {
 				log.error("Message Send Failed for Task Failed: ",e);
+			}
+		} finally {
+			if(!Objects.isNull(hdfs)) {
+				try {
+					hdfs.close();
+				} catch (Exception e) {
+					log.error("HDFS client close error: ", e);
+				}
 			}
 		}
 		log.debug("Exiting MassiveDataStreamTaskExecutorInMemory.call");

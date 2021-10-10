@@ -24,10 +24,12 @@ import org.springframework.yarn.am.allocate.DefaultContainerAllocator;
 import org.springframework.yarn.am.container.AbstractLauncher;
 
 import com.github.mdc.common.BlocksLocation;
+import com.github.mdc.common.ByteBufferPool;
 import com.github.mdc.common.ByteBufferPoolDirect;
 import com.github.mdc.common.DAGEdge;
 import com.github.mdc.common.JobStage;
 import com.github.mdc.common.MDCConstants;
+import com.github.mdc.common.MDCProperties;
 import com.github.mdc.common.RemoteDataFetcher;
 import com.github.mdc.common.Task;
 import com.github.mdc.stream.scheduler.MassiveDataStreamTaskSchedulerThread;
@@ -78,7 +80,8 @@ public class YarnAppmasterMDC extends StaticEventingAppmaster implements Contain
 	@Override
 	public void submitApplication() {
 		try {
-			ByteBufferPoolDirect.init(3);
+			ByteBufferPoolDirect.init();
+			ByteBufferPool.init(3);
 			log.debug("Task Id Counter: " + taskidcounter);
 			log.debug("Environment: " + getEnvironment());
 			var yarninputfolder = MDCConstants.YARNINPUTFOLDER + MDCConstants.BACKWARD_SLASH

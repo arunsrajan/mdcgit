@@ -343,8 +343,10 @@ public class MdcJob implements Callable<List<DataCruncherContext>> {
 			}
 			res.setCpu(cpu);
 			var meminmb = actualmemory/MDCConstants.MB;
-			res.setMinmemory(meminmb);
-			res.setMaxmemory(meminmb);
+			var heapmem = meminmb*Integer.valueOf(jobconf.getHeappercentage())/100;
+			res.setMinmemory(heapmem);
+			res.setMaxmemory(heapmem);
+			res.setDirectheap(meminmb-heapmem);
 			res.setGctype(gctype);
 			cr.add(res);
 			resources.setFreememory(0l);

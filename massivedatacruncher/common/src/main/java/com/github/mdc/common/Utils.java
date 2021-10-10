@@ -945,10 +945,9 @@ public class Utils {
 	
 	public static void writeResultToHDFS(String hdfsurl, String filepath, InputStream is) throws Exception {
 		try (var hdfs = FileSystem.get(new URI(hdfsurl), new Configuration());
-				var fsdos = hdfs.create(new Path(hdfsurl + filepath),
+				BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(hdfs.create(new Path(hdfsurl + filepath),
 						Short.parseShort(MDCProperties.get().getProperty(MDCConstants.DFSOUTPUTFILEREPLICATION,
-								MDCConstants.DFSOUTPUTFILEREPLICATION_DEFAULT)));
-				BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(fsdos));
+								MDCConstants.DFSOUTPUTFILEREPLICATION_DEFAULT)))));
 				Input input = new Input(is)) {
 			Kryo kryo = getKryoNonDeflateSerializer();
 			while (input.available() > 0) {
@@ -963,11 +962,49 @@ public class Utils {
 				}
 			}
 			bw.flush();
-			fsdos.hflush();
-		} catch (Exception ioe) {
-			log.error(MassiveDataPipelineConstants.FILEIOERROR, ioe);
-			throw new Exception(MassiveDataPipelineConstants.FILEIOERROR, ioe);
+		} catch (IOException ioe) {
+		} catch (Exception e) {
+			log.error(MassiveDataPipelineConstants.FILEIOERROR, e);
+			throw new Exception(MassiveDataPipelineConstants.FILEIOERROR, e);
 		}
 
+	}
+
+	public static void writeResultToHDFS(String hdfsurl, String filepath, Object out) throws Exception {
+		try (var hdfs = FileSystem.get(new URI(hdfsurl), new Configuration());
+				BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(hdfs.create(new Path(hdfsurl + filepath),
+						Short.parseShort(MDCProperties.get().getProperty(MDCConstants.DFSOUTPUTFILEREPLICATION,
+								MDCConstants.DFSOUTPUTFILEREPLICATION_DEFAULT)))));) {
+			if (out instanceof List res) {
+				for (var value : res) {
+					bw.write(value.toString());
+					bw.write(MDCConstants.NEWLINE);
+				}
+			} else {
+				bw.write(out.toString());
+			}
+			bw.flush();
+		} catch (IOException ioe) {
+		} catch (Exception e) {
+			log.error(MassiveDataPipelineConstants.FILEIOERROR, e);
+			throw new Exception(MassiveDataPipelineConstants.FILEIOERROR, e);
+		}
+	}
+	public static String getIntermediateInputStreamRDF(RemoteDataFetch rdf) throws Exception {
+		log.debug("Entered Utils.getIntermediateInputStreamRDF");
+		var path = (rdf.jobid + MDCConstants.HYPHEN +
+				rdf.stageid + MDCConstants.HYPHEN +rdf.taskid
+				+ MDCConstants.DATAFILEEXTN);
+		log.debug("Returned Utils.getIntermediateInputStreamRDF");
+		return path;
+	}
+	
+	public static String getIntermediateInputStreamTask(Task task) throws Exception {
+		log.debug("Entered Utils.getIntermediateInputStreamTask");
+		var path = (task.jobid + MDCConstants.HYPHEN +
+				task.stageid + MDCConstants.HYPHEN +task.taskid
+				+ MDCConstants.DATAFILEEXTN);
+		log.debug("Returned Utils.getIntermediateInputStreamTask");
+		return path;
 	}
 }

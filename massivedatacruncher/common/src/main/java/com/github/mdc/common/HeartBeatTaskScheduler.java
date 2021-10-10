@@ -8,7 +8,6 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Semaphore;
 
-import org.jgroups.BytesMessage;
 import org.jgroups.Message;
 import org.jgroups.ObjectMessage;
 import org.jgroups.Receiver;
@@ -84,7 +83,7 @@ public final class HeartBeatTaskScheduler extends HeartBeatServer implements Hea
 				try {
 					log.debug("Entered Receiver.receive");
 					var kryo = Utils.getKryoNonDeflateSerializer();
-					var rawbuffer = (byte[])((BytesMessage)msg).getArray();
+					var rawbuffer = (byte[])((ObjectMessage)msg).getObject();
 					try (var bais = new ByteArrayInputStream(rawbuffer);
 							var input = new Input(bais);) {
 						var apptask = (ApplicationTask) Utils.readKryoInputObjectWithClass(kryo, input);
@@ -99,7 +98,7 @@ public final class HeartBeatTaskScheduler extends HeartBeatServer implements Hea
 								try (var baos = new ByteArrayOutputStream();
 										var output = new Output(baos);) {
 									Utils.writeKryoOutputClassObject(kryo, output, mrjr);
-									channel.send(new BytesMessage(msg.getSrc(), baos.toByteArray()));
+									channel.send(new ObjectMessage(msg.getSrc(), baos.toByteArray()));
 								} finally {
 
 								}
@@ -150,7 +149,7 @@ public final class HeartBeatTaskScheduler extends HeartBeatServer implements Hea
 						}
 
 						public void receive(Message msg) {
-							var rawbuffer = (byte[])((BytesMessage)msg).getArray();
+							var rawbuffer = (byte[])((ObjectMessage)msg).getObject();
 							var kryo = Utils.getKryoNonDeflateSerializer();
 							try (var bais = new ByteArrayInputStream(rawbuffer);
 									var input = new Input(bais);) {
@@ -166,11 +165,11 @@ public final class HeartBeatTaskScheduler extends HeartBeatServer implements Hea
 						}
 					});
 					while (!responsereceived) {
-						channel.send(new BytesMessage(null, baos.toByteArray()));
+						channel.send(new ObjectMessage(null, baos.toByteArray()));
 						Thread.sleep(500);
 					}
 				} else {
-					channel.send(new BytesMessage(null, baos.toByteArray()));
+					channel.send(new ObjectMessage(null, baos.toByteArray()));
 				}
 			} finally {
 

@@ -48,6 +48,7 @@ public class MassiveDataPipelineBase {
 	static String airportssample = "/airports";
 	static String airlinesamplesql = "/airlinesamplesql";
 	static String airlinesamplejoin = "/airlinesamplejoin";
+	static String airlinesamplecsv = "/airlinesamplecsv";
 	static String csvfileextn = ".csv";
 	static String txtfileextn = ".txt";
 	static String jsonfileextn = ".json";

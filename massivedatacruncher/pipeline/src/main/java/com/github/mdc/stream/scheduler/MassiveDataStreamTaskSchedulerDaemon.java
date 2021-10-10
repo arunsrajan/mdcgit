@@ -27,6 +27,7 @@ import org.jgroups.View;
 import org.xerial.snappy.SnappyInputStream;
 
 import com.esotericsoftware.kryo.io.Input;
+import com.github.mdc.common.ByteBufferPool;
 import com.github.mdc.common.ByteBufferPoolDirect;
 import com.github.mdc.common.CacheUtils;
 import com.github.mdc.common.HeartBeatServerStream;
@@ -73,7 +74,8 @@ public class MassiveDataStreamTaskSchedulerDaemon {
 							Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.ZOOKEEPER_RETRYDELAY))));
 			cf.start();
 			cf.blockUntilConnected();
-			ByteBufferPoolDirect.init(Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.BYTEBUFFERPOOL_MAX, MDCConstants.BYTEBUFFERPOOL_MAX_DEFAULT)));
+			ByteBufferPoolDirect.init();
+			ByteBufferPool.init(Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.BYTEBUFFERPOOL_MAX, MDCConstants.BYTEBUFFERPOOL_MAX_DEFAULT)));
 			LeaderLatch ll = new LeaderLatch(cf,
 					MDCConstants.BACKWARD_SLASH + MDCProperties.get().getProperty(MDCConstants.CLUSTERNAME)
 							+ MDCConstants.BACKWARD_SLASH + MDCConstants.TSS);

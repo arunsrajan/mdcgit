@@ -2,6 +2,7 @@ package com.github.mdc.stream.executors;
 
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Objects;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

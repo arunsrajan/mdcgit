@@ -2,12 +2,10 @@ package com.github.mdc.stream.executors;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentMap;
@@ -19,7 +17,6 @@ import org.ehcache.Cache;
 import org.xerial.snappy.SnappyInputStream;
 
 import com.github.mdc.common.ByteBufferPool;
-import com.github.mdc.common.ByteBufferPoolDirect;
 import com.github.mdc.common.CloseableByteBufferOutputStream;
 import com.github.mdc.common.JobStage;
 import com.github.mdc.common.MDCConstants;
@@ -36,12 +33,12 @@ import com.github.mdc.stream.MassiveDataPipelineException;
  * Task executors thread for standalone task executors daemon.  
  */
 @SuppressWarnings("rawtypes")
-public sealed class MassiveDataStreamTaskExecutorInMemory extends MassiveDataStreamTaskDExecutor permits MassiveDataStreamTaskExecutorInMemoryDisk  {
-	private static Logger log = Logger.getLogger(MassiveDataStreamTaskExecutorInMemory.class);
+public final class MassiveDataStreamTaskExecutorLocal extends MassiveDataStreamTaskDExecutor  {
+	private static Logger log = Logger.getLogger(MassiveDataStreamTaskExecutorLocal.class);
 	protected ConcurrentMap<String,OutputStream> resultstream = null;
 	public double timetaken = 0.0;
 	
-	public MassiveDataStreamTaskExecutorInMemory(JobStage jobstage, 
+	public MassiveDataStreamTaskExecutorLocal(JobStage jobstage, 
 			ConcurrentMap<String,OutputStream> resultstream, Cache cache) {
 		super(jobstage, cache);
 		this.resultstream = resultstream;
@@ -132,7 +129,7 @@ public sealed class MassiveDataStreamTaskExecutorInMemory extends MassiveDataStr
 
 	
 	@Override
-	public MassiveDataStreamTaskExecutorInMemory call() {
+	public MassiveDataStreamTaskExecutorLocal call() {
 		log.debug("Entered MassiveDataStreamTaskExecutorInMemory.call");
 		var stageTasks = getStagesTask();
 		var hdfsfilepath = MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_HDFSNN);
@@ -175,14 +172,6 @@ public sealed class MassiveDataStreamTaskExecutorInMemory extends MassiveDataStr
 							new String(baos.toByteArray()));
 				} catch (Exception e) {
 					log.error("Message Send Failed for Task Failed: ", e);
-				}
-			}
-		} finally {
-			if(!Objects.isNull(hdfs)) {
-				try {
-					hdfs.close();
-				} catch (Exception e) {
-					log.error("HDFS client close error: ", e);
 				}
 			}
 		}

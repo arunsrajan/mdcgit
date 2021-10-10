@@ -20,6 +20,7 @@ import org.springframework.yarn.integration.container.AbstractIntegrationYarnCon
 import org.springframework.yarn.integration.ip.mind.MindAppmasterServiceClient;
 
 import com.esotericsoftware.kryo.io.Input;
+import com.github.mdc.common.ByteBufferPool;
 import com.github.mdc.common.ByteBufferPoolDirect;
 import com.github.mdc.common.CacheUtils;
 import com.github.mdc.common.Context;
@@ -63,7 +64,8 @@ public class MRYarnContainer extends AbstractIntegrationYarnContainer {
 		var containerid = getEnvironment().get(MDCConstants.SHDP_CONTAINERID);
 		MindAppmasterServiceClient client = null;
 		try {
-			ByteBufferPoolDirect.init(3);
+			ByteBufferPoolDirect.init();
+			ByteBufferPool.init(3);
 			while (true) {
 				request = new JobRequest();
 				request.setState(JobRequest.State.WHATTODO);

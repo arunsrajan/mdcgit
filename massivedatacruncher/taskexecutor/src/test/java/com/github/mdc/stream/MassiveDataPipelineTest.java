@@ -18,12 +18,6 @@ import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
-import com.github.mdc.stream.CsvStream;
-import com.github.mdc.stream.MapPair;
-import com.github.mdc.stream.MassiveDataPipeline;
-import com.github.mdc.stream.NumPartitions;
-import com.github.mdc.stream.NumPartitionsEachFile;
-
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class MassiveDataPipelineTest extends MassiveDataPipelineBaseTestClassCommon {
 

@@ -26,6 +26,7 @@ import org.apache.log4j.Logger;
 import org.apache.zookeeper.server.ServerCnxnFactory;
 
 import com.esotericsoftware.kryo.io.Input;
+import com.github.mdc.common.ByteBufferPool;
 import com.github.mdc.common.ByteBufferPoolDirect;
 import com.github.mdc.common.HeartBeatServer;
 import com.github.mdc.common.HeartBeatServerStream;
@@ -64,7 +65,8 @@ public class Standalone {
 			scf = Utils.startZookeeperServer(clientport, numconnections, ticktime);
 			cf.start();
 			cf.blockUntilConnected();
-			ByteBufferPoolDirect.init(Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.BYTEBUFFERPOOL_MAX, MDCConstants.BYTEBUFFERPOOL_MAX_DEFAULT)));
+			ByteBufferPoolDirect.init();
+			ByteBufferPool.init(Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.BYTEBUFFERPOOL_MAX, MDCConstants.BYTEBUFFERPOOL_MAX_DEFAULT)));
 			startTaskScheduler(cf, cdl);
 			startTaskSchedulerStream(cf, cdl);
 			startContainerLauncher(cdl);

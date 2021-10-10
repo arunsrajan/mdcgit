@@ -117,6 +117,7 @@ public class TaskExecutor implements Runnable {
 									resultstream, inmemorycache):new MassiveDataStreamTaskDExecutor(jobidstageidjobstagemap.get(key),inmemorycache);
 					mdste.setTask(task);
 					mdste.setHbtss(hbtss);
+					mdste.setExecutor(es);
 					jobstageexecutormap.remove(key + task.taskid);
 					jobstageexecutormap.put(key + task.taskid, mdste);
 					Map<String, Object> stageidexecutormap;
@@ -139,6 +140,7 @@ public class TaskExecutor implements Runnable {
 				if (taskexecutor == null) {
 					mdste = new MassiveDataStreamJGroupsTaskExecutor(jobidstageidjobstagemap, stagesgraph.getTasks(),
 							port, inmemorycache);
+					mdste.setExecutor(es);
 					var key = stagesgraph.getTasks().get(0).jobid;
 					jobstageexecutormap.put(key, mdste);
 					taskqueue.offer(mdste);
@@ -184,50 +186,13 @@ public class TaskExecutor implements Runnable {
 							rdf.data = ((ByteArrayOutputStream)os).toByteArray();
 						}
 					}else if(task.storage == MDCConstants.STORAGE.INMEMORY_DISK) {
-						var path = getIntermediateInputStreamRDF(rdf);
+						var path = Utils.getIntermediateInputStreamRDF(rdf);
 						rdf.data = (byte[]) inmemorycache.get(path);
 					}
 					Utils.writeObjectByStream(s.getOutputStream(), rdf);
 					s.close();
 				}
 				log.info("Exiting RemoteDataFetch: ");
-			}else if (deserobj instanceof RemoteDataWriterTask rdwt) {
-				log.info("Entering RemoteDataWriterTask: " + deserobj);
-				var taskexecutor = jobstageexecutormap.get(rdwt.rdf.jobid + rdwt.rdf.stageid + rdwt.rdf.taskid);
-				var mdstde = (MassiveDataStreamTaskDExecutor) taskexecutor;
-				if (taskexecutor != null) {
-					Task task  = mdstde.getTask();
-					byte[] data = null;
-					if(task.storage == MDCConstants.STORAGE.INMEMORY) {
-						var os = ((MassiveDataStreamTaskExecutorInMemory)mdstde).getIntermediateInputStreamRDF(rdwt.rdf);
-						if (!Objects.isNull(os)) {
-							data = ((ByteArrayOutputStream)os).toByteArray();							
-						}
-					}else if(task.storage == MDCConstants.STORAGE.INMEMORY_DISK) {
-						var path = getIntermediateInputStreamRDF(rdwt.rdf);
-						data = (byte[]) inmemorycache.get(path);						
-					}
-					ByteBuffer buf = ByteBufferPoolDirect.get().take(128*1024*1024);
-					buf.put(data);
-					buf.flip();
-					log.info("Buffer Allocated: "+buf);
-					try(SnappyInputStream sis = new SnappyInputStream(new ByteBufferInputStream(buf));){
-						Utils.writeResultToHDFS(rdwt.hdfsurl,rdwt.filepath,sis);
-						rdwt.status = RemoteDataWriterTask.ResultWriteStatus.SUCCESS;
-					}					
-					catch(Exception ex) {
-						log.error(MDCConstants.EMPTY,ex);
-						rdwt.status = RemoteDataWriterTask.ResultWriteStatus.FAILURE;
-					}
-					Utils.writeObjectByStream(s.getOutputStream(), rdwt);
-					s.close();
-				} else {
-					rdwt.status = RemoteDataWriterTask.ResultWriteStatus.FAILURE;
-					Utils.writeObjectByStream(s.getOutputStream(), rdwt);
-					s.close();
-				}
-				
-				log.info("Exiting RemoteDataWriterTask: ");
 			} else if (deserobj instanceof CacheAvailability ca) {
 				var bl = ca.bl;
 				ca.available = true;
@@ -318,13 +283,5 @@ public class TaskExecutor implements Runnable {
 			log.error("Job Execution Problem", ex);
 		}
 
-	}
-	public String getIntermediateInputStreamRDF(RemoteDataFetch rdf) throws Exception {
-		log.debug("Entered TaskExecutor.getIntermediateInputStreamRDF");
-		var path = (rdf.jobid + MDCConstants.HYPHEN +
-				rdf.stageid + MDCConstants.HYPHEN +rdf.taskid
-				+ MDCConstants.DATAFILEEXTN);
-		log.debug("Returned TaskExecutor.getIntermediateInputStreamRDF");
-		return path;
 	}
 }

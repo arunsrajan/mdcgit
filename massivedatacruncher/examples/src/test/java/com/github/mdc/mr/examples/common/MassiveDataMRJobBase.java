@@ -26,6 +26,7 @@ import org.apache.log4j.Logger;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 
+import com.github.mdc.common.ByteBufferPool;
 import com.github.mdc.common.ByteBufferPoolDirect;
 import com.github.mdc.common.CacheUtils;
 import com.github.mdc.common.HeartBeatServer;
@@ -87,7 +88,8 @@ public class MassiveDataMRJobBase {
 			System.setProperty("HIBCFG", "../config/mdchibernate.cfg.xml");
 			System.setProperty("HADOOP_HOME", "D:\\DEVELOPMENT\\hadoop-2.7.1");
 			Utils.loadLog4JSystemPropertiesClassPath("mdctest.properties");
-			ByteBufferPoolDirect.init(3);
+			ByteBufferPoolDirect.init();
+			ByteBufferPool.init(3);
 			CacheUtils.initCache();
 			testingserver = new TestingServer(zookeeperport);
 			testingserver.start();

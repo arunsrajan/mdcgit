@@ -773,4 +773,26 @@ public class MassiveDataPipelineSqlTest extends MassiveDataPipelineBaseTestClass
 		log.info("In testMDPSqlBuilderUniqueCarrierCountArrDelay() method Exit");
 	}
 	
+	@SuppressWarnings({ "unchecked" })
+	@Test
+	public void testMDPSqlBuilderUniqueCarrierCountArrDelaySA() throws Exception {
+		PipelineConfig pc = new PipelineConfig();
+		pc.setLocal("false");
+		log.info("In testMDPSqlBuilderUniqueCarrierCountArrDelaySA() method Entry");
+		String statement = "SELECT UniqueCarrier,count(ArrDelay) "
+				+ "FROM airline where ArrDelay<>'ArrDelay' and ArrDelay<>'NA' group by UniqueCarrier";
+		MDPSql mdpsql = MDPSqlBuilder.newBuilder().add(airlinesamplesql, "airline", airlineheader, airsqltype)
+				.setHdfs(hdfsfilepath)
+				.setPipelineConfig(pc).setSql(statement).build();
+		List<List<Map<String,Object>>> records = (List<List<Map<String,Object>>>) mdpsql.collect(true, null);
+		long sum = 0;
+		for (List<Map<String,Object>> recs : records) {
+			for (Map<String,Object> rec : recs) {
+				log.info(rec);
+				sum += (Long)rec.get("count()");
+			}
+		}
+		assertEquals(45957, sum);
+		log.info("In testMDPSqlBuilderUniqueCarrierCountArrDelaySA() method Exit");
+	}
 }

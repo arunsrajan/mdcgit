@@ -38,6 +38,7 @@ public class PipelineConfig implements Cloneable{
 	private STORAGE storage;
 	private String containeralloc;
 	private String jobname;
+	private String heappercent;
 	public void setKryoOutput(Output output) {
 		this.output = output;
 	}
@@ -229,6 +230,13 @@ public class PipelineConfig implements Cloneable{
 		this.containeralloc = containeralloc;
 	}
 	
+	public String getHeappercent() {
+		return Objects.isNull(heappercent)
+				?MDCProperties.get().getProperty(MDCConstants.HEAP_PERCENTAGE, MDCConstants.HEAP_PERCENTAGE_DEFAULT):heappercent;
+	}
+	public void setHeappercent(String heappercent) {
+		this.heappercent = heappercent;
+	}
 	public String getJobname() {
 		return jobname;
 	}

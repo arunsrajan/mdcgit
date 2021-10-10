@@ -21,6 +21,7 @@ public class MassiveDataStreamTaskSchedulerThread implements MassiveDataStreamTa
 	private Task task;
 	private String hp;
 	private boolean completedexecution;
+	private boolean resultobtainedte;
 	public MassiveDataStreamTaskSchedulerThread(){}
 
 	
@@ -131,6 +132,20 @@ public class MassiveDataStreamTaskSchedulerThread implements MassiveDataStreamTa
 	public void setLevel(int level) {
 		this.level = level;
 	}
+
+
+
+	public boolean isResultobtainedte() {
+		return resultobtainedte;
+	}
+
+
+
+	public void setResultobtainedte(boolean resultobtainedte) {
+		this.resultobtainedte = resultobtainedte;
+	}
+	
+	
 	
 	
 	

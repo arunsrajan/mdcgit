@@ -38,6 +38,7 @@ public class ContainerLauncher {
 			argumentsForSpawn.add("-D"+MDCConstants.CACHEDISKPATH+"=" + diskcache);
 			argumentsForSpawn.add(cls.getName());
 			argumentsForSpawn.add(prop);
+			argumentsForSpawn.add(""+cr.getDirectheap());
 			log.debug("Launching Container Daemon Process: "+argumentsForSpawn);
 			var process = Runtime.getRuntime().exec(argumentsForSpawn.toArray(new String[argumentsForSpawn.size()]));
 			return process;

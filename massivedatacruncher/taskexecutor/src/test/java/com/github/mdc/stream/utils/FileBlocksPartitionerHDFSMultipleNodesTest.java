@@ -138,7 +138,7 @@ public class FileBlocksPartitionerHDFSMultipleNodesTest extends MassiveDataPipel
 		fbp.job = new Job();
 		Map<String,Long> nodestotalblockmem = new ConcurrentHashMap<>();
 		fbp.getDnXref(bls, false);
-		fbp.getNodesResourcesSortedAuto(bls,nodestotalblockmem);
+		fbp.getNodesResourcesSorted(bls,nodestotalblockmem);
 		log.info(fbp.nodessorted);
 		log.info("FileBlocksPartitionerHDFSMultipleNodesTest.testGetNodesResourcesSortedAuto() Exiting------------------------------");
 	}
@@ -157,7 +157,7 @@ public class FileBlocksPartitionerHDFSMultipleNodesTest extends MassiveDataPipel
 		fbp.job = new Job();
 		fbp.isignite = false;
 		fbp.getDnXref(bls, false);
-		fbp.getTaskExecutorsAuto(bls);
+		fbp.getTaskExecutors(bls);
 		log.info(fbp.job.nodes);
 		log.info(fbp.job.containers);		
 		fbp.destroyContainers();
@@ -178,7 +178,7 @@ public class FileBlocksPartitionerHDFSMultipleNodesTest extends MassiveDataPipel
 		fbp.isblocksuserdefined = false;
 		fbp.hdfs = hdfs;
 		fbp.getDnXref(bls, false);
-		fbp.getTaskExecutorsAuto(bls);
+		fbp.getTaskExecutors(bls);
 		log.info(fbp.job.nodes);
 		log.info(fbp.job.containers);
 		fbp.destroyContainers();

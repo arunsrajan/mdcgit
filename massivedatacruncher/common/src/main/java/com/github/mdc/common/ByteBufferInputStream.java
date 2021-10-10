@@ -56,7 +56,7 @@ public class ByteBufferInputStream extends InputStream {
 				log.info("ByteBuffer returning to pool: "+deallocation++ + bb);
 				bb.clear();
 				bb.rewind();
-				ByteBufferPoolDirect.get().give(bb);
+				ByteBufferPool.get().returnObject(bb);
 			} catch (Exception e) {
 				log.error(MDCConstants.EMPTY,e);
 			} finally {

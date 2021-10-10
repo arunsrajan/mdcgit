@@ -10,6 +10,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,6 +24,8 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.Vector;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
 import java.util.function.IntSupplier;
 import java.util.stream.BaseStream;
 import java.util.stream.Collectors;
@@ -50,7 +54,8 @@ import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 import com.github.mdc.common.Blocks;
 import com.github.mdc.common.BlocksLocation;
-import com.github.mdc.common.ByteArrayOutputStreamPool;
+import com.github.mdc.common.ByteBufferInputStream;
+import com.github.mdc.common.CloseableByteBufferOutputStream;
 import com.github.mdc.common.FileSystemSupport;
 import com.github.mdc.common.HdfsBlockReader;
 import com.github.mdc.common.HeartBeatTaskSchedulerStream;
@@ -83,6 +88,7 @@ import com.github.mdc.stream.functions.Sum;
 import com.github.mdc.stream.functions.SummaryStatistics;
 import com.github.mdc.stream.functions.UnionFunction;
 import com.github.mdc.stream.utils.StreamUtils;
+import com.pivovarit.collectors.ParallelCollectors;
 
 /**
  * 
@@ -90,7 +96,7 @@ import com.github.mdc.stream.utils.StreamUtils;
  */
 @SuppressWarnings("rawtypes")
 public sealed class MassiveDataStreamTaskDExecutor implements
-		Callable<MassiveDataStreamTaskDExecutor> permits MassiveDataStreamTaskExecutorInMemory,MassiveDataStreamJGroupsTaskExecutor,MassiveDataStreamTaskExecutorMesos,MassiveDataStreamTaskExecutorYarn {
+		Callable<MassiveDataStreamTaskDExecutor>permits MassiveDataStreamTaskExecutorInMemory,MassiveDataStreamJGroupsTaskExecutor,MassiveDataStreamTaskExecutorMesos,MassiveDataStreamTaskExecutorYarn,MassiveDataStreamTaskExecutorLocal {
 	protected JobStage jobstage;
 	protected HeartBeatTaskSchedulerStream hbtss;
 	private static Logger log = Logger.getLogger(MassiveDataStreamTaskDExecutor.class);
@@ -98,7 +104,9 @@ public sealed class MassiveDataStreamTaskDExecutor implements
 	protected boolean completed = false;
 	Cache cache;
 	Task task;
-	boolean iscacheable=false;
+	boolean iscacheable = false;
+	ExecutorService executor;
+
 	public MassiveDataStreamTaskDExecutor(JobStage jobstage, Cache cache) {
 		this.jobstage = jobstage;
 		this.cache = cache;
@@ -130,6 +138,23 @@ public sealed class MassiveDataStreamTaskDExecutor implements
 
 	public void setTask(Task task) {
 		this.task = task;
+		if(task.finalphase && task.saveresulttohdfs) {
+			try {
+				this.hdfs = FileSystem.newInstance(
+						new URI(task.hdfsurl),
+						new Configuration());
+			} catch (IOException | URISyntaxException e) {
+				log.error("Exception in creating hdfs client connection: ",e);
+			}
+		}
+	}
+
+	public ExecutorService getExecutor() {
+		return executor;
+	}
+
+	public void setExecutor(ExecutorService executor) {
+		this.executor = executor;
 	}
 
 	/**
@@ -180,20 +205,37 @@ public sealed class MassiveDataStreamTaskDExecutor implements
 				var buffer1 = new BufferedReader(new InputStreamReader(bais1));
 				var bais2 = HdfsBlockReader.getBlockDataLZFStream(blockssecond, hdfs);
 				var buffer2 = new BufferedReader(new InputStreamReader(bais2));
-				var streamfirst = buffer1.lines().parallel();
-				var streamsecond = buffer2.lines().parallel();) {
-			var setsecond = (Set) streamsecond.distinct().collect(Collectors.toSet());
-			// Get the result of intersection functions parallel.
-			var result = (List) streamfirst.distinct().filter(setsecond::contains)
-					.collect(Collectors.toCollection(Vector::new));
-			var kryo = Utils.getKryoNonDeflateSerializer();
-			kryo.writeClassAndObject(output, result);
-			output.flush();
-			if(iscacheable) {
-				cache.put(getIntermediateDataFSFilePath(task), ((ByteArrayOutputStream) fsdos).toByteArray());
-				((ByteArrayOutputStream) fsdos).reset();
-				ByteArrayOutputStreamPool.get().returnObject(((ByteArrayOutputStream) fsdos));
+				var streamfirst = buffer1.lines();
+				var streamsecond = buffer2.lines();) {
+			var cf = (CompletableFuture) streamsecond.distinct().collect(ParallelCollectors.parallel(value -> value,
+					Collectors.toCollection(LinkedHashSet::new), executor, Runtime.getRuntime().availableProcessors()));
+			;
+			var setsecond = (Set) cf.get();
+			if (task.finalphase && task.saveresulttohdfs && (task.storage == MDCConstants.STORAGE.INMEMORY
+					|| task.storage == MDCConstants.STORAGE.INMEMORY_DISK)) {
+				try (OutputStream os = hdfs.create(new Path(task.hdfsurl + task.filepath),
+						Short.parseShort(MDCProperties.get().getProperty(MDCConstants.DFSOUTPUTFILEREPLICATION,
+								MDCConstants.DFSOUTPUTFILEREPLICATION_DEFAULT)));) {
+					int ch = (int) '\n';
+					streamfirst.distinct().filter(setsecond::contains).forEach(val -> {
+						try {
+							os.write(val.toString().getBytes());
+							os.write(ch);
+						} catch (IOException e) {
+						}
+					});
+				}
+				var timetaken = (System.currentTimeMillis() - starttime) / 1000.0;
+				return timetaken;
 			}
+			// Get the result of intersection functions parallel.
+			cf = (CompletableFuture) streamfirst.distinct().filter(setsecond::contains)
+					.collect(ParallelCollectors.parallel(value -> value, Collectors.toCollection(Vector::new), executor,
+							Runtime.getRuntime().availableProcessors()));
+			var kryo = Utils.getKryoNonDeflateSerializer();
+			kryo.writeClassAndObject(output, cf.get());
+			output.flush();
+			cacheAble(fsdos);
 			log.debug("Exiting MassiveDataStreamTaskDExecutor.processBlockHDFSIntersection");
 			var timetaken = (System.currentTimeMillis() - starttime) / 1000.0;
 			log.debug("Time taken to compute the Intersection Task is " + timetaken + " seconds");
@@ -228,20 +270,37 @@ public sealed class MassiveDataStreamTaskDExecutor implements
 				var inputfirst = new Input(new BufferedInputStream(fsstreamfirst.iterator().next()));
 				var bais2 = HdfsBlockReader.getBlockDataLZFStream(blockssecond.get(0), hdfs);
 				var buffer2 = new BufferedReader(new InputStreamReader(bais2));
-				var streamsecond = buffer2.lines().parallel();) {
+				var streamsecond = buffer2.lines();) {
 			var kryo = Utils.getKryoNonDeflateSerializer();
 			var datafirst = (List) kryo.readClassAndObject(inputfirst);
-			var setsecond = (Set) streamsecond.distinct().collect(Collectors.toSet());
-			// Parallel execution of the intersection function.
-			var result = (List) datafirst.parallelStream().distinct().filter(setsecond::contains)
-					.collect(Collectors.toCollection(Vector::new));
-			kryo.writeClassAndObject(output, result);
-			output.flush();
-			if(iscacheable) {
-				cache.put(getIntermediateDataFSFilePath(task), ((ByteArrayOutputStream) fsdos).toByteArray());
-				((ByteArrayOutputStream) fsdos).reset();
-				ByteArrayOutputStreamPool.get().returnObject(((ByteArrayOutputStream) fsdos));
+			var cf = (CompletableFuture) streamsecond.distinct().collect(ParallelCollectors.parallel(value -> value,
+					Collectors.toCollection(LinkedHashSet::new), executor, Runtime.getRuntime().availableProcessors()));
+			;
+			var setsecond = (Set) cf.get();
+			if (task.finalphase && task.saveresulttohdfs && (task.storage == MDCConstants.STORAGE.INMEMORY
+					|| task.storage == MDCConstants.STORAGE.INMEMORY_DISK)) {
+				try (OutputStream os = hdfs.create(new Path(task.hdfsurl + task.filepath),
+						Short.parseShort(MDCProperties.get().getProperty(MDCConstants.DFSOUTPUTFILEREPLICATION,
+								MDCConstants.DFSOUTPUTFILEREPLICATION_DEFAULT)));) {
+					int ch = (int) '\n';
+					datafirst.stream().distinct().filter(setsecond::contains).forEach(val -> {
+						try {
+							os.write(val.toString().getBytes());
+							os.write(ch);
+						} catch (IOException e) {
+						}
+					});
+				}
+				var timetaken = (System.currentTimeMillis() - starttime) / 1000.0;
+				return timetaken;
 			}
+			// Parallel execution of the intersection function.
+			cf = (CompletableFuture) datafirst.stream().distinct().filter(setsecond::contains)
+					.collect(ParallelCollectors.parallel(value -> value, Collectors.toCollection(Vector::new), executor,
+							Runtime.getRuntime().availableProcessors()));
+			kryo.writeClassAndObject(output, cf.get());
+			output.flush();
+			cacheAble(fsdos);
 			log.debug("Exiting MassiveDataStreamTaskDExecutor.processBlockHDFSIntersection");
 			var timetaken = (System.currentTimeMillis() - starttime) / 1000.0;
 			log.debug("Time taken to compute the Intersection Task is " + timetaken + " seconds");
@@ -280,16 +339,30 @@ public sealed class MassiveDataStreamTaskDExecutor implements
 			var kryo = Utils.getKryoNonDeflateSerializer();
 			var datafirst = (List) kryo.readClassAndObject(inputfirst);
 			var datasecond = (List) kryo.readClassAndObject(inputsecond);
-			// parallel execution of intersection function.
-			var result = (List) datafirst.parallelStream().distinct().filter(datasecond::contains)
-					.collect(Collectors.toCollection(Vector::new));
-			kryo.writeClassAndObject(output, result);
-			output.flush();
-			if(iscacheable) {
-				cache.put(getIntermediateDataFSFilePath(task), ((ByteArrayOutputStream) fsdos).toByteArray());
-				((ByteArrayOutputStream) fsdos).reset();
-				ByteArrayOutputStreamPool.get().returnObject(((ByteArrayOutputStream) fsdos));
+			if (task.finalphase && task.saveresulttohdfs && (task.storage == MDCConstants.STORAGE.INMEMORY
+					|| task.storage == MDCConstants.STORAGE.INMEMORY_DISK)) {
+				try (OutputStream os = hdfs.create(new Path(task.hdfsurl + task.filepath),
+						Short.parseShort(MDCProperties.get().getProperty(MDCConstants.DFSOUTPUTFILEREPLICATION,
+								MDCConstants.DFSOUTPUTFILEREPLICATION_DEFAULT)));) {
+					int ch = (int) '\n';
+					datafirst.stream().distinct().filter(datasecond::contains).forEach(val -> {
+						try {
+							os.write(val.toString().getBytes());
+							os.write(ch);
+						} catch (IOException e) {
+						}
+					});
+				}
+				var timetaken = (System.currentTimeMillis() - starttime) / 1000.0;
+				return timetaken;
 			}
+			// parallel execution of intersection function.
+			var cf = (CompletableFuture) datafirst.stream().distinct().filter(datasecond::contains)
+					.collect(ParallelCollectors.parallel(value -> value, Collectors.toCollection(Vector::new), executor,
+							Runtime.getRuntime().availableProcessors()));
+			kryo.writeClassAndObject(output, cf.get());
+			output.flush();
+			cacheAble(fsdos);
 			log.debug("Exiting MassiveDataStreamTaskDExecutor.processBlockHDFSIntersection");
 			var timetaken = (System.currentTimeMillis() - starttime) / 1000.0;
 			log.debug("Time taken to compute the Intersection Task is " + timetaken + " seconds");
@@ -388,29 +461,49 @@ public sealed class MassiveDataStreamTaskDExecutor implements
 				var buffer1 = new BufferedReader(new InputStreamReader(bais1));
 				var bais2 = HdfsBlockReader.getBlockDataLZFStream(blockssecond, hdfs);
 				var buffer2 = new BufferedReader(new InputStreamReader(bais2));
-				var streamfirst = buffer1.lines().parallel();
-				var streamsecond = buffer2.lines().parallel();) {
+				var streamfirst = buffer1.lines();
+				var streamsecond = buffer2.lines();) {
 			boolean terminalCount = false;
 			if (jobstage.stage.tasks.get(0) instanceof CalculateCount) {
 				terminalCount = true;
 			}
 			List result;
+			if (task.finalphase && task.saveresulttohdfs && (task.storage == MDCConstants.STORAGE.INMEMORY
+					|| task.storage == MDCConstants.STORAGE.INMEMORY_DISK)) {
+				try (OutputStream os = hdfs.create(new Path(task.hdfsurl + task.filepath),
+						Short.parseShort(MDCProperties.get().getProperty(MDCConstants.DFSOUTPUTFILEREPLICATION,
+								MDCConstants.DFSOUTPUTFILEREPLICATION_DEFAULT)));) {
+					int ch = (int) '\n';
+					if (terminalCount) {
+						os.write(("" + java.util.stream.Stream.concat(streamfirst, streamsecond).distinct().count())
+								.getBytes());
+					} else {
+						java.util.stream.Stream.concat(streamfirst, streamsecond).distinct().forEach(val -> {
+							try {
+								os.write(val.toString().getBytes());
+								os.write(ch);
+							} catch (IOException e) {
+							}
+						});
+					}
+				}
+				var timetaken = (System.currentTimeMillis() - starttime) / 1000.0;
+				return timetaken;
+			}
 			if (terminalCount) {
 				result = new Vector<>();
 				result.add(java.util.stream.Stream.concat(streamfirst, streamsecond).distinct().count());
 			} else {
 				// parallel stream union operation result
-				result = (List) java.util.stream.Stream.concat(streamfirst, streamsecond).distinct()
-						.collect(Collectors.toCollection(Vector::new));
+				var cf = (CompletableFuture) java.util.stream.Stream.concat(streamfirst, streamsecond).distinct()
+						.collect(ParallelCollectors.parallel(value -> value, Collectors.toCollection(Vector::new),
+								executor, Runtime.getRuntime().availableProcessors()));
+				result = (List) cf.get();
 			}
 			var kryo = Utils.getKryoNonDeflateSerializer();
 			kryo.writeClassAndObject(output, result);
 			output.flush();
-			if(iscacheable) {
-				cache.put(getIntermediateDataFSFilePath(task), ((ByteArrayOutputStream) fsdos).toByteArray());
-				((ByteArrayOutputStream) fsdos).reset();
-				ByteArrayOutputStreamPool.get().returnObject(((ByteArrayOutputStream) fsdos));
-			}
+			cacheAble(fsdos);
 			log.debug("Exiting MassiveDataStreamTaskDExecutor.processBlockHDFSUnion");
 			var timetaken = (System.currentTimeMillis() - starttime) / 1000.0;
 			log.debug("Time taken to compute the Union Task is " + timetaken + " seconds");
@@ -444,7 +537,7 @@ public sealed class MassiveDataStreamTaskDExecutor implements
 				var inputfirst = new Input(new BufferedInputStream(fsstreamfirst.iterator().next()));
 				var bais2 = HdfsBlockReader.getBlockDataLZFStream(blockssecond.get(0), hdfs);
 				var buffer2 = new BufferedReader(new InputStreamReader(bais2));
-				var streamsecond = buffer2.lines().parallel();) {
+				var streamsecond = buffer2.lines();) {
 			var kryo = Utils.getKryoNonDeflateSerializer();
 
 			var datafirst = (List) kryo.readClassAndObject(inputfirst);
@@ -452,22 +545,43 @@ public sealed class MassiveDataStreamTaskDExecutor implements
 			if (jobstage.stage.tasks.get(0) instanceof CalculateCount) {
 				terminalCount = true;
 			}
+			if (task.finalphase && task.saveresulttohdfs && (task.storage == MDCConstants.STORAGE.INMEMORY
+					|| task.storage == MDCConstants.STORAGE.INMEMORY_DISK)) {
+				try (OutputStream os = hdfs.create(new Path(task.hdfsurl + task.filepath),
+						Short.parseShort(MDCProperties.get().getProperty(MDCConstants.DFSOUTPUTFILEREPLICATION,
+								MDCConstants.DFSOUTPUTFILEREPLICATION_DEFAULT)));) {
+					int ch = (int) '\n';
+					if (terminalCount) {
+						os.write((""
+								+ java.util.stream.Stream.concat(datafirst.stream(), streamsecond).distinct().count())
+										.getBytes());
+					} else {
+						java.util.stream.Stream.concat(datafirst.stream(), streamsecond).distinct().forEach(val -> {
+							try {
+								os.write(val.toString().getBytes());
+								os.write(ch);
+							} catch (IOException e) {
+							}
+						});
+					}
+				}
+				var timetaken = (System.currentTimeMillis() - starttime) / 1000.0;
+				return timetaken;
+			}
 			List result;
 			if (terminalCount) {
 				result = new Vector<>();
-				result.add(java.util.stream.Stream.concat(datafirst.parallelStream(), streamsecond).distinct().count());
+				result.add(java.util.stream.Stream.concat(datafirst.stream(), streamsecond).distinct().count());
 			} else {
 				// parallel stream union operation result
-				result = (List) java.util.stream.Stream.concat(datafirst.parallelStream(), streamsecond).distinct()
-						.collect(Collectors.toCollection(Vector::new));
+				var cf = (CompletableFuture) java.util.stream.Stream.concat(datafirst.stream(), streamsecond).distinct()
+						.collect(ParallelCollectors.parallel(value -> value, Collectors.toCollection(Vector::new),
+								executor, Runtime.getRuntime().availableProcessors()));
+				result = (List) cf.get();
 			}
 			kryo.writeClassAndObject(output, result);
 			output.flush();
-			if(iscacheable) {
-				cache.put(getIntermediateDataFSFilePath(task), ((ByteArrayOutputStream) fsdos).toByteArray());
-				((ByteArrayOutputStream) fsdos).reset();
-				ByteArrayOutputStreamPool.get().returnObject(((ByteArrayOutputStream) fsdos));
-			}
+			cacheAble(fsdos);
 			log.debug("Exiting MassiveDataStreamTaskDExecutor.processBlockHDFSUnion");
 			var timetaken = (System.currentTimeMillis() - starttime) / 1000.0;
 			log.debug("Time taken to compute the Union Task is " + timetaken + " seconds");
@@ -510,25 +624,45 @@ public sealed class MassiveDataStreamTaskDExecutor implements
 			if (jobstage.stage.tasks.get(0) instanceof CalculateCount) {
 				terminalCount = true;
 			}
-
+			if (task.finalphase && task.saveresulttohdfs && (task.storage == MDCConstants.STORAGE.INMEMORY
+					|| task.storage == MDCConstants.STORAGE.INMEMORY_DISK)) {
+				try (OutputStream os = hdfs.create(new Path(task.hdfsurl + task.filepath),
+						Short.parseShort(MDCProperties.get().getProperty(MDCConstants.DFSOUTPUTFILEREPLICATION,
+								MDCConstants.DFSOUTPUTFILEREPLICATION_DEFAULT)));) {
+					int ch = (int) '\n';
+					if (terminalCount) {
+						os.write(("" + java.util.stream.Stream.concat(datafirst.stream(), datasecond.stream())
+								.distinct().count()).getBytes());
+					} else {
+						java.util.stream.Stream.concat(datafirst.stream(), datasecond.stream()).forEach(val -> {
+							try {
+								os.write(val.toString().getBytes());
+								os.write(ch);
+							} catch (IOException e) {
+							}
+						});
+					}
+				}
+				var timetaken = (System.currentTimeMillis() - starttime) / 1000.0;
+				return timetaken;
+			}
 			if (terminalCount) {
 				result = new ArrayList<>();
 				result.add(java.util.stream.Stream.concat(datafirst.parallelStream(), datasecond.parallelStream())
 						.distinct().count());
 			} else {
 				// parallel stream union operation result
-				result = (List) java.util.stream.Stream.concat(datafirst.parallelStream(), datasecond.parallelStream())
-						.distinct().collect(Collectors.toCollection(Vector::new));
+				var cf = (CompletableFuture) java.util.stream.Stream.concat(datafirst.stream(), datasecond.stream())
+						.distinct()
+						.collect(ParallelCollectors.parallel(value -> value, Collectors.toCollection(Vector::new),
+								executor, Runtime.getRuntime().availableProcessors()));
+				result = (List) cf.get();
 			}
 
 			kryo.writeClassAndObject(output, result);
-			output.flush();			
+			output.flush();
 			fsdos.flush();
-			if(iscacheable) {
-				cache.put(getIntermediateDataFSFilePath(task), ((ByteArrayOutputStream) fsdos).toByteArray());
-				((ByteArrayOutputStream) fsdos).reset();
-				ByteArrayOutputStreamPool.get().returnObject(((ByteArrayOutputStream) fsdos));
-			}
+			cacheAble(fsdos);
 			log.debug("Exiting MassiveDataStreamTaskDExecutor.processBlockHDFSUnion");
 			var timetaken = (System.currentTimeMillis() - starttime) / 1000.0;
 			log.debug("Time taken to compute the Union Task is " + timetaken + " seconds");
@@ -564,11 +698,9 @@ public sealed class MassiveDataStreamTaskDExecutor implements
 				var buffer = new BufferedReader(new InputStreamReader(bais));) {
 
 			var kryo = Utils.getKryoNonDeflateSerializer();
-			List datastream = null;
-			var tasks = jobstage.stage.tasks;
 			Stream intermediatestreamobject;
 			if (jobstage.stage.tasks.get(0) instanceof Json) {
-				intermediatestreamobject = buffer.lines().parallel();
+				intermediatestreamobject = buffer.lines();
 				intermediatestreamobject = intermediatestreamobject.map(line -> {
 					try {
 						return new JSONParser().parse((String) line);
@@ -585,7 +717,7 @@ public sealed class MassiveDataStreamTaskDExecutor implements
 					try {
 						records = csvformat.parse(buffer);
 						Stream<CSVRecord> streamcsv = StreamSupport.stream(records.spliterator(), false);
-						intermediatestreamobject = streamcsv.parallel();
+						intermediatestreamobject = streamcsv;
 					} catch (IOException ioe) {
 						log.error(MassiveDataPipelineConstants.FILEIOERROR, ioe);
 						throw new MassiveDataPipelineException(MassiveDataPipelineConstants.FILEIOERROR, ioe);
@@ -594,7 +726,7 @@ public sealed class MassiveDataStreamTaskDExecutor implements
 						throw new MassiveDataPipelineException(MassiveDataPipelineConstants.PROCESSHDFSERROR, ex);
 					}
 				} else {
-					intermediatestreamobject = buffer.lines().parallel();
+					intermediatestreamobject = buffer.lines();
 				}
 
 			}
@@ -637,24 +769,43 @@ public sealed class MassiveDataStreamTaskDExecutor implements
 
 				} else if (finaltask instanceof StandardDeviation) {
 					out = new Vector<>();
-					var streamtmp = ((java.util.stream.IntStream) streammap).boxed().collect(Collectors.toList());
+					CompletableFuture<List> cf = (CompletableFuture) ((java.util.stream.IntStream) streammap).boxed()
+							.collect(ParallelCollectors.parallel(value -> value, Collectors.toCollection(Vector::new),
+									executor, Runtime.getRuntime().availableProcessors()));
+					var streamtmp = cf.get();
 					var mean = (streamtmp).stream().mapToInt(Integer.class::cast).average().getAsDouble();
 					var variance = (streamtmp).stream().mapToInt(Integer.class::cast)
 							.mapToDouble(i -> (i - mean) * (i - mean)).average().getAsDouble();
 					var standardDeviation = Math.sqrt(variance);
 					out.add(standardDeviation);
 
+				} else if (task.finalphase && task.saveresulttohdfs && (task.storage == MDCConstants.STORAGE.INMEMORY
+						|| task.storage == MDCConstants.STORAGE.INMEMORY_DISK)) {
+					try (OutputStream os = hdfs.create(new Path(task.hdfsurl + task.filepath),
+							Short.parseShort(MDCProperties.get().getProperty(MDCConstants.DFSOUTPUTFILEREPLICATION,
+									MDCConstants.DFSOUTPUTFILEREPLICATION_DEFAULT)));) {
+						int ch = (int) '\n';
+						((Stream) streammap).forEach(val -> {
+							try {
+								os.write(val.toString().getBytes());
+								os.write(ch);
+							} catch (IOException e) {
+							}
+						});
+					}
+					var timetaken = (System.currentTimeMillis() - starttime) / 1000.0;
+					return timetaken;
 				} else {
-					out = (List) ((Stream) streammap).collect(Collectors.toCollection(ArrayList::new));
+					log.info("Map Collect Start");
+					CompletableFuture<List> cf = (CompletableFuture<List>) ((Stream) streammap).collect(
+							ParallelCollectors.parallel(value -> value, Collectors.toCollection(ArrayList::new),
+									executor, Runtime.getRuntime().availableProcessors()));
+					out = cf.get();
+					log.info("Map Collect End");
 				}
 				kryo.writeClassAndObject(output, out);
 				output.flush();
-				fsdos.flush();
-				if(iscacheable) {
-					cache.put(getIntermediateDataFSFilePath(task), ((ByteArrayOutputStream) fsdos).toByteArray());
-					((ByteArrayOutputStream) fsdos).reset();
-					ByteArrayOutputStreamPool.get().returnObject(((ByteArrayOutputStream) fsdos));
-				}
+				cacheAble(fsdos);
 				log.debug("Exiting MassiveDataStreamTaskDExecutor.processBlockHDFSMap");
 				var timetaken = (System.currentTimeMillis() - starttime) / 1000.0;
 				log.debug("Time taken to compute the Map Task is " + timetaken + " seconds");
@@ -673,19 +824,31 @@ public sealed class MassiveDataStreamTaskDExecutor implements
 		} catch (Exception ex) {
 			log.error(MassiveDataPipelineConstants.PROCESSHDFSERROR, ex);
 			throw new MassiveDataPipelineException(MassiveDataPipelineConstants.PROCESSHDFSERROR, ex);
-		}
-		finally {
-			if(!Objects.isNull(records)) {
+		} finally {
+			if (!Objects.isNull(records)) {
 				try {
 					records.close();
 				} catch (Exception e) {
-					log.error(MDCConstants.EMPTY,e);
+					log.error(MDCConstants.EMPTY, e);
 				}
 			}
 		}
 
 	}
 
+	@SuppressWarnings("unchecked")
+	public void cacheAble(OutputStream fsdos) {
+		if (iscacheable) {
+			ByteBuffer buf = ((CloseableByteBufferOutputStream)fsdos).get();
+			byte[] bt =  new byte[buf.position()];
+			buf.flip();
+			buf.get(bt);
+			cache.put(getIntermediateDataFSFilePath(task),
+					bt);
+		}
+	}
+	
+	
 	/**
 	 * Perform map operation to obtain intermediate stage result.
 	 * 
@@ -711,7 +874,7 @@ public sealed class MassiveDataStreamTaskDExecutor implements
 					var inputdatas = (List) kryo.readClassAndObject(input);
 					// Get Streams object from list of map functions.
 					try (BaseStream streammap = (BaseStream) StreamUtils.getFunctionsToStream(functions,
-							inputdatas.parallelStream());) {
+							inputdatas.stream());) {
 						if (finaltask instanceof CalculateCount) {
 							out = new Vector<>();
 							if (streammap instanceof IntStream stmap) {
@@ -742,16 +905,41 @@ public sealed class MassiveDataStreamTaskDExecutor implements
 
 						} else if (finaltask instanceof StandardDeviation) {
 							out = new Vector<>();
-							var streamtmp = (List) ((java.util.stream.IntStream) streammap).boxed()
-									.collect(Collectors.toList());
+							CompletableFuture<List> cf = (CompletableFuture) ((java.util.stream.IntStream) streammap)
+									.boxed()
+									.collect(ParallelCollectors.parallel(value -> value,
+											Collectors.toCollection(Vector::new), executor,
+											Runtime.getRuntime().availableProcessors()));
+							var streamtmp = cf.get();
 							double mean = (streamtmp).stream().mapToInt(Integer.class::cast).average().getAsDouble();
 							double variance = (double) (streamtmp).stream().mapToInt(Integer.class::cast)
 									.mapToDouble(i -> (i - mean) * (i - mean)).average().getAsDouble();
 							double standardDeviation = Math.sqrt(variance);
 							out.add(standardDeviation);
 
+						} else if (task.finalphase && task.saveresulttohdfs
+								&& (task.storage == MDCConstants.STORAGE.INMEMORY
+										|| task.storage == MDCConstants.STORAGE.INMEMORY_DISK)) {
+							try (OutputStream os = hdfs.create(new Path(task.hdfsurl + task.filepath),
+									Short.parseShort(
+											MDCProperties.get().getProperty(MDCConstants.DFSOUTPUTFILEREPLICATION,
+													MDCConstants.DFSOUTPUTFILEREPLICATION_DEFAULT)));) {
+								int ch = (int) '\n';
+								((Stream) streammap).forEach(val -> {
+									try {
+										os.write(val.toString().getBytes());
+										os.write(ch);
+									} catch (IOException e) {
+									}
+								});
+							}
+							var timetaken = (System.currentTimeMillis() - starttime) / 1000.0;
+							return timetaken;
 						} else {
-							out = (List) ((Stream) streammap).collect(Collectors.toCollection(Vector::new));
+							CompletableFuture<List> cf = (CompletableFuture) ((Stream) streammap).collect(
+									ParallelCollectors.parallel(value -> value, Collectors.toCollection(Vector::new),
+											executor, Runtime.getRuntime().availableProcessors()));
+							out = cf.get();
 						}
 					} catch (Exception ex) {
 						log.error(MassiveDataPipelineConstants.PROCESSHDFSERROR, ex);
@@ -766,11 +954,7 @@ public sealed class MassiveDataStreamTaskDExecutor implements
 			kryo.writeClassAndObject(output, out);
 			output.flush();
 			fsdos.flush();
-			if(iscacheable) {
-				cache.put(getIntermediateDataFSFilePath(task), ((ByteArrayOutputStream) fsdos).toByteArray());
-				((ByteArrayOutputStream) fsdos).reset();
-				ByteArrayOutputStreamPool.get().returnObject(((ByteArrayOutputStream) fsdos));
-			}
+			cacheAble(fsdos);
 			log.debug("Exiting MassiveDataStreamTaskDExecutor.processBlockHDFSMap");
 			var timetaken = (System.currentTimeMillis() - starttime) / 1000.0;
 			log.debug("Time taken to compute the Map Task is " + timetaken + " seconds");
@@ -794,27 +978,47 @@ public sealed class MassiveDataStreamTaskDExecutor implements
 				var output = new Output(new SnappyOutputStream(new BufferedOutputStream(fsdos)));
 				var bais = HdfsBlockReader.getBlockDataLZFStream(blockslocation, hdfs);
 				var buffer = new BufferedReader(new InputStreamReader(bais));
-				var stringdata = buffer.lines().parallel();) {
+				var stringdata = buffer.lines();) {
 			Kryo kryo = Utils.getKryoNonDeflateSerializer();
 			// Limit the sample using the limit method.
 			boolean terminalCount = false;
 			if (jobstage.stage.tasks.get(jobstage.stage.tasks.size() - 1) instanceof CalculateCount) {
 				terminalCount = true;
 			}
+			if (task.finalphase && task.saveresulttohdfs && (task.storage == MDCConstants.STORAGE.INMEMORY
+					|| task.storage == MDCConstants.STORAGE.INMEMORY_DISK)) {
+				try (OutputStream os = hdfs.create(new Path(task.hdfsurl + task.filepath),
+						Short.parseShort(MDCProperties.get().getProperty(MDCConstants.DFSOUTPUTFILEREPLICATION,
+								MDCConstants.DFSOUTPUTFILEREPLICATION_DEFAULT)));) {
+					int ch = (int) '\n';
+					if (terminalCount) {
+						os.write(("" + stringdata.limit(numofsample).count()).getBytes());
+					} else {
+						stringdata.limit(numofsample).forEach(val -> {
+							try {
+								os.write(val.toString().getBytes());
+								os.write(ch);
+							} catch (IOException e) {
+							}
+						});
+					}
+				}
+				var timetaken = (System.currentTimeMillis() - starttime) / 1000.0;
+				return timetaken;
+			}
 			List out;
 			if (terminalCount) {
 				out = new Vector<>();
 				out.add(stringdata.limit(numofsample).count());
 			} else {
-				out = (List) stringdata.limit(numofsample).collect(Collectors.toCollection(Vector::new));
+				CompletableFuture<List> cf = (CompletableFuture) stringdata.limit(numofsample)
+						.collect(ParallelCollectors.parallel(value -> value, Collectors.toCollection(Vector::new),
+								executor, Runtime.getRuntime().availableProcessors()));
+				out = cf.get();
 			}
 			kryo.writeClassAndObject(output, out);
 			output.flush();
-			if(iscacheable) {
-				cache.put(getIntermediateDataFSFilePath(task), ((ByteArrayOutputStream) fsdos).toByteArray());
-				((ByteArrayOutputStream) fsdos).reset();
-				ByteArrayOutputStreamPool.get().returnObject(((ByteArrayOutputStream) fsdos));
-			}
+			cacheAble(fsdos);
 			log.debug("Exiting MassiveDataStreamTaskDExecutor.processSamplesBlocks");
 			var timetaken = (System.currentTimeMillis() - starttime) / 1000.0;
 			log.debug("Time taken to compute the Sampling Task is " + timetaken + " seconds");
@@ -837,6 +1041,7 @@ public sealed class MassiveDataStreamTaskDExecutor implements
 	 * @param hdfs
 	 * @throws Exception
 	 */
+	@SuppressWarnings("unchecked")
 	public double processSamplesObjects(Integer numofsample, List fsstreams) throws MassiveDataPipelineException {
 		var starttime = System.currentTimeMillis();
 		log.debug("Entered MassiveDataStreamTaskDExecutor.processSamplesObjects");
@@ -849,22 +1054,41 @@ public sealed class MassiveDataStreamTaskDExecutor implements
 			if (jobstage.stage.tasks.get(0) instanceof CalculateCount) {
 				terminalCount = true;
 			}
+			if (task.finalphase && task.saveresulttohdfs && (task.storage == MDCConstants.STORAGE.INMEMORY
+					|| task.storage == MDCConstants.STORAGE.INMEMORY_DISK)) {
+				try (OutputStream os = hdfs.create(new Path(task.hdfsurl + task.filepath),
+						Short.parseShort(MDCProperties.get().getProperty(MDCConstants.DFSOUTPUTFILEREPLICATION,
+								MDCConstants.DFSOUTPUTFILEREPLICATION_DEFAULT)));) {
+					int ch = (int) '\n';
+					if (terminalCount) {
+						os.write(("" + datafirst.parallelStream().limit(numofsample).count()).getBytes());
+					} else {
+						datafirst.parallelStream().limit(numofsample).forEach(val -> {
+							try {
+								os.write(val.toString().getBytes());
+								os.write(ch);
+							} catch (IOException e) {
+							}
+						});
+					}
+				}
+				var timetaken = (System.currentTimeMillis() - starttime) / 1000.0;
+				return timetaken;
+			}
 			List out;
 			if (terminalCount) {
 				out = new Vector<>();
 				out.add(datafirst.parallelStream().limit(numofsample).count());
 			} else {
 				// Limit the sample using the limit method.
-				out = (List) datafirst.parallelStream().limit(numofsample)
-						.collect(Collectors.toCollection(Vector::new));
+				CompletableFuture<List> cf = (CompletableFuture) datafirst.stream().limit(numofsample)
+						.collect(ParallelCollectors.parallel(value -> value, Collectors.toCollection(Vector::new),
+								executor, Runtime.getRuntime().availableProcessors()));
+				out = cf.get();
 			}
 			kryo.writeClassAndObject(output, out);
 			output.flush();
-			if(iscacheable) {
-				cache.put(getIntermediateDataFSFilePath(task), ((ByteArrayOutputStream) fsdos).toByteArray());
-				((ByteArrayOutputStream) fsdos).reset();
-				ByteArrayOutputStreamPool.get().returnObject(((ByteArrayOutputStream) fsdos));
-			}
+			cacheAble(fsdos);
 			log.debug("Exiting MassiveDataStreamTaskDExecutor.processSamplesObjects");
 			var timetaken = (System.currentTimeMillis() - starttime) / 1000.0;
 			log.debug("Time taken to compute the Sampling Task is " + timetaken + " seconds");
@@ -932,6 +1156,7 @@ public sealed class MassiveDataStreamTaskDExecutor implements
 		return this;
 	}
 
+	@SuppressWarnings("unchecked")
 	public double computeTasks(Task task, FileSystem hdfs) throws Exception {
 		var timetakenseconds = 0.0;
 		if (jobstage.stage.tasks.get(0) instanceof JoinPredicate jp) {
@@ -1130,23 +1355,51 @@ public sealed class MassiveDataStreamTaskDExecutor implements
 			if (Objects.isNull(buffreader1)) {
 				inputs1 = (List) kryo.readClassAndObject(inputfirst);
 			} else {
-				inputs1 = buffreader1.lines().collect(Collectors.toList());
+				CompletableFuture<List> cf = buffreader1.lines().collect(ParallelCollectors.parallel(value -> value,
+						Collectors.toCollection(Vector::new), executor, Runtime.getRuntime().availableProcessors()));
+				inputs1 = cf.get();
 			}
 			if (Objects.isNull(buffreader2)) {
 				inputs2 = (List) kryo.readClassAndObject(inputsecond);
 			} else {
-				inputs2 = buffreader2.lines().collect(Collectors.toList());
+				CompletableFuture<List> cf = buffreader2.lines().collect(ParallelCollectors.parallel(value -> value,
+						Collectors.toCollection(Vector::new), executor, Runtime.getRuntime().availableProcessors()));
+				inputs2 = cf.get();
 			}
 			var terminalCount = false;
 			if (jobstage.stage.tasks.get(0) instanceof CalculateCount) {
 				terminalCount = true;
+			}
+			if (task.finalphase && task.saveresulttohdfs && (task.storage == MDCConstants.STORAGE.INMEMORY
+					|| task.storage == MDCConstants.STORAGE.INMEMORY_DISK)) {
+				try (OutputStream os = hdfs.create(new Path(task.hdfsurl + task.filepath),
+						Short.parseShort(MDCProperties.get().getProperty(MDCConstants.DFSOUTPUTFILEREPLICATION,
+								MDCConstants.DFSOUTPUTFILEREPLICATION_DEFAULT)));
+						var seq1 = Seq.of(inputs1.toArray());
+						var seq2 = Seq.of(inputs2.toArray());
+						var seqinnerjoin = seq1.innerJoin(seq2, joinpredicate);) {
+					int ch = (int) '\n';
+					if (terminalCount) {
+						os.write(("" + seqinnerjoin.count()).getBytes());
+					} else {
+						seqinnerjoin.forEach(val -> {
+							try {
+								os.write(val.toString().getBytes());
+								os.write(ch);
+							} catch (IOException e) {
+							}
+						});
+					}
+				}
+				var timetaken = (System.currentTimeMillis() - starttime) / 1000.0;
+				return timetaken;
 			}
 			List joinpairsout;
 			if (terminalCount) {
 				joinpairsout = new Vector<>();
 				try (var seq1 = Seq.of(inputs1.toArray());
 						var seq2 = Seq.of(inputs2.toArray());
-						var seqinnerjoin = seq1.parallel().innerJoin(seq2.parallel(), joinpredicate)) {
+						var seqinnerjoin = seq1.innerJoin(seq2, joinpredicate)) {
 					joinpairsout.add(seqinnerjoin.count());
 				} catch (Exception ex) {
 					log.error(MassiveDataPipelineConstants.PROCESSJOIN, ex);
@@ -1156,13 +1409,13 @@ public sealed class MassiveDataStreamTaskDExecutor implements
 				// Parallel join pair result.
 				try (var seq1 = Seq.of(inputs1.toArray());
 						var seq2 = Seq.of(inputs2.toArray());
-						var seqinnerjoin = seq1.parallel().innerJoin(seq2.parallel(), joinpredicate)) {
+						var seqinnerjoin = seq1.innerJoin(seq2, joinpredicate)) {
 					joinpairsout = seqinnerjoin.toList();
 					if (!joinpairsout.isEmpty()) {
 						Tuple2 tuple2 = (Tuple2) joinpairsout.get(0);
 						if (tuple2.v1 instanceof CSVRecord && tuple2.v2 instanceof CSVRecord) {
-							joinpairsout = (List<Map<String, String>>) joinpairsout.stream()
-									.filter(val -> val instanceof Tuple2).filter(value -> {
+							var cf = (CompletableFuture) joinpairsout.stream().filter(val -> val instanceof Tuple2)
+									.filter(value -> {
 										Tuple2 csvrec = (Tuple2) value;
 										Object rec1 = csvrec.v1;
 										Object rec2 = csvrec.v2;
@@ -1185,7 +1438,11 @@ public sealed class MassiveDataStreamTaskDExecutor implements
 
 										}
 										return null;
-									}).collect(Collectors.toList());
+									})
+									.collect(ParallelCollectors.parallel(value -> value,
+											Collectors.toCollection(Vector::new), executor,
+											Runtime.getRuntime().availableProcessors()));
+							joinpairsout = (List<Map<String, String>>) cf.get();
 						}
 					}
 				} catch (Exception ex) {
@@ -1196,11 +1453,7 @@ public sealed class MassiveDataStreamTaskDExecutor implements
 			}
 			kryo.writeClassAndObject(output, joinpairsout);
 			output.flush();
-			if(iscacheable) {
-				cache.put(getIntermediateDataFSFilePath(task), ((ByteArrayOutputStream) fsdos).toByteArray());
-				((ByteArrayOutputStream) fsdos).reset();
-				ByteArrayOutputStreamPool.get().returnObject(((ByteArrayOutputStream) fsdos));
-			}
+			cacheAble(fsdos);
 			log.debug("Exiting MassiveDataStreamTaskDExecutor.processJoinLZF");
 			var timetaken = (System.currentTimeMillis() - starttime) / 1000.0;
 			log.debug("Time taken to compute the Join task is " + timetaken + " seconds");
@@ -1237,23 +1490,51 @@ public sealed class MassiveDataStreamTaskDExecutor implements
 			if (Objects.isNull(buffreader1)) {
 				inputs1 = (List) kryo.readClassAndObject(inputfirst);
 			} else {
-				inputs1 = buffreader1.lines().collect(Collectors.toList());
+				CompletableFuture<List> cf = buffreader1.lines().collect(ParallelCollectors.parallel(value -> value,
+						Collectors.toCollection(Vector::new), executor, Runtime.getRuntime().availableProcessors()));
+				inputs1 = cf.get();
 			}
 			if (Objects.isNull(buffreader2)) {
 				inputs2 = (List) kryo.readClassAndObject(inputsecond);
 			} else {
-				inputs2 = buffreader2.lines().collect(Collectors.toList());
+				CompletableFuture<List> cf = buffreader2.lines().collect(ParallelCollectors.parallel(value -> value,
+						Collectors.toCollection(Vector::new), executor, Runtime.getRuntime().availableProcessors()));
+				inputs2 = cf.get();
 			}
 			boolean terminalCount = false;
 			if (jobstage.stage.tasks.get(0) instanceof CalculateCount) {
 				terminalCount = true;
+			}
+			if (task.finalphase && task.saveresulttohdfs && (task.storage == MDCConstants.STORAGE.INMEMORY
+					|| task.storage == MDCConstants.STORAGE.INMEMORY_DISK)) {
+				try (OutputStream os = hdfs.create(new Path(task.hdfsurl + task.filepath),
+						Short.parseShort(MDCProperties.get().getProperty(MDCConstants.DFSOUTPUTFILEREPLICATION,
+								MDCConstants.DFSOUTPUTFILEREPLICATION_DEFAULT)));
+						var seq1 = Seq.of(inputs1.toArray());
+						var seq2 = Seq.of(inputs2.toArray());
+						var seqleftouterjoin = seq1.leftOuterJoin(seq2, leftouterjoinpredicate);) {
+					int ch = (int) '\n';
+					if (terminalCount) {
+						os.write(("" + seqleftouterjoin.count()).getBytes());
+					} else {
+						seqleftouterjoin.forEach(val -> {
+							try {
+								os.write(val.toString().getBytes());
+								os.write(ch);
+							} catch (IOException e) {
+							}
+						});
+					}
+				}
+				var timetaken = (System.currentTimeMillis() - starttime) / 1000.0;
+				return timetaken;
 			}
 			List joinpairsout;
 			if (terminalCount) {
 				joinpairsout = new Vector<>();
 				try (var seq1 = Seq.of(inputs1.toArray());
 						var seq2 = Seq.of(inputs2.toArray());
-						var seqleftouterjoin = seq1.parallel().leftOuterJoin(seq2.parallel(), leftouterjoinpredicate)) {
+						var seqleftouterjoin = seq1.leftOuterJoin(seq2, leftouterjoinpredicate)) {
 					joinpairsout.add(seqleftouterjoin.count());
 				} catch (Exception ex) {
 					log.error(MassiveDataPipelineConstants.PROCESSLEFTOUTERJOIN, ex);
@@ -1263,13 +1544,13 @@ public sealed class MassiveDataStreamTaskDExecutor implements
 				// Parallel join pair result.
 				try (var seq1 = Seq.of(inputs1.toArray());
 						var seq2 = Seq.of(inputs2.toArray());
-						var seqleftouterjoin = seq1.parallel().leftOuterJoin(seq2.parallel(), leftouterjoinpredicate)) {
+						var seqleftouterjoin = seq1.leftOuterJoin(seq2, leftouterjoinpredicate)) {
 					joinpairsout = seqleftouterjoin.toList();
 					if (!joinpairsout.isEmpty()) {
 						Tuple2 tuple2 = (Tuple2) joinpairsout.get(0);
 						if (tuple2.v1 instanceof CSVRecord && tuple2.v2 instanceof CSVRecord) {
-							joinpairsout = (List<Map<String, String>>) joinpairsout.stream()
-									.filter(val -> val instanceof Tuple2).filter(value -> {
+							var cf = (CompletableFuture) joinpairsout.stream().filter(val -> val instanceof Tuple2)
+									.filter(value -> {
 										Tuple2 csvrec = (Tuple2) value;
 										Object rec1 = csvrec.v1;
 										Object rec2 = csvrec.v2;
@@ -1292,7 +1573,11 @@ public sealed class MassiveDataStreamTaskDExecutor implements
 
 										}
 										return null;
-									}).collect(Collectors.toList());
+									})
+									.collect(ParallelCollectors.parallel(value -> value,
+											Collectors.toCollection(Vector::new), executor,
+											Runtime.getRuntime().availableProcessors()));
+							joinpairsout = (List) cf.get();
 						}
 					}
 				} catch (Exception ex) {
@@ -1302,11 +1587,7 @@ public sealed class MassiveDataStreamTaskDExecutor implements
 			}
 			kryo.writeClassAndObject(output, joinpairsout);
 			output.flush();
-			if(iscacheable) {
-				cache.put(getIntermediateDataFSFilePath(task), ((ByteArrayOutputStream) fsdos).toByteArray());
-				((ByteArrayOutputStream) fsdos).reset();
-				ByteArrayOutputStreamPool.get().returnObject(((ByteArrayOutputStream) fsdos));
-			}
+			cacheAble(fsdos);
 			log.debug("Exiting MassiveDataStreamTaskDExecutor.processLeftOuterJoinLZF");
 			var timetaken = (System.currentTimeMillis() - starttime) / 1000.0;
 			log.debug("Time taken to compute the Left Outer Join task is " + timetaken + " seconds");
@@ -1343,24 +1624,51 @@ public sealed class MassiveDataStreamTaskDExecutor implements
 			if (Objects.isNull(buffreader1)) {
 				inputs1 = (List) kryo.readClassAndObject(inputfirst);
 			} else {
-				inputs1 = buffreader1.lines().collect(Collectors.toList());
+				CompletableFuture<List> cf = buffreader1.lines().collect(ParallelCollectors.parallel(value -> value,
+						Collectors.toCollection(Vector::new), executor, Runtime.getRuntime().availableProcessors()));
+				inputs1 = cf.get();
 			}
 			if (Objects.isNull(buffreader2)) {
 				inputs2 = (List) kryo.readClassAndObject(inputsecond);
 			} else {
-				inputs2 = buffreader2.lines().collect(Collectors.toList());
+				CompletableFuture<List> cf = buffreader2.lines().collect(ParallelCollectors.parallel(value -> value,
+						Collectors.toCollection(Vector::new), executor, Runtime.getRuntime().availableProcessors()));
+				inputs2 = cf.get();
 			}
 			boolean terminalCount = false;
 			if (jobstage.stage.tasks.get(0) instanceof CalculateCount) {
 				terminalCount = true;
+			}
+			if (task.finalphase && task.saveresulttohdfs && (task.storage == MDCConstants.STORAGE.INMEMORY
+					|| task.storage == MDCConstants.STORAGE.INMEMORY_DISK)) {
+				try (OutputStream os = hdfs.create(new Path(task.hdfsurl + task.filepath),
+						Short.parseShort(MDCProperties.get().getProperty(MDCConstants.DFSOUTPUTFILEREPLICATION,
+								MDCConstants.DFSOUTPUTFILEREPLICATION_DEFAULT)));
+						var seq1 = Seq.of(inputs1.toArray());
+						var seq2 = Seq.of(inputs2.toArray());
+						var seqrightouterjoin = seq1.rightOuterJoin(seq2, rightouterjoinpredicate);) {
+					int ch = (int) '\n';
+					if (terminalCount) {
+						os.write(("" + seqrightouterjoin.count()).getBytes());
+					} else {
+						seqrightouterjoin.forEach(val -> {
+							try {
+								os.write(val.toString().getBytes());
+								os.write(ch);
+							} catch (IOException e) {
+							}
+						});
+					}
+				}
+				var timetaken = (System.currentTimeMillis() - starttime) / 1000.0;
+				return timetaken;
 			}
 			List joinpairsout;
 			if (terminalCount) {
 				joinpairsout = new Vector<>();
 				try (var seq1 = Seq.of(inputs1.toArray());
 						var seq2 = Seq.of(inputs2.toArray());
-						var seqrightouterjoin = seq1.parallel().rightOuterJoin(seq2.parallel(),
-								rightouterjoinpredicate)) {
+						var seqrightouterjoin = seq1.rightOuterJoin(seq2, rightouterjoinpredicate)) {
 					joinpairsout.add(seqrightouterjoin.count());
 				} catch (Exception ex) {
 					log.error(MassiveDataPipelineConstants.PROCESSRIGHTOUTERJOIN, ex);
@@ -1370,14 +1678,13 @@ public sealed class MassiveDataStreamTaskDExecutor implements
 				// Parallel join pair result.
 				try (var seq1 = Seq.of(inputs1.toArray());
 						var seq2 = Seq.of(inputs2.toArray());
-						var seqrightouterjoin = seq1.parallel().rightOuterJoin(seq2.parallel(),
-								rightouterjoinpredicate)) {
+						var seqrightouterjoin = seq1.rightOuterJoin(seq2, rightouterjoinpredicate)) {
 					joinpairsout = seqrightouterjoin.toList();
 					if (!joinpairsout.isEmpty()) {
 						Tuple2 tuple2 = (Tuple2) joinpairsout.get(0);
 						if (tuple2.v1 instanceof CSVRecord && tuple2.v2 instanceof CSVRecord) {
-							joinpairsout = (List<Map<String, String>>) joinpairsout.stream()
-									.filter(val -> val instanceof Tuple2).filter(value -> {
+							var cf = (CompletableFuture) joinpairsout.stream().filter(val -> val instanceof Tuple2)
+									.filter(value -> {
 										Tuple2 csvrec = (Tuple2) value;
 										Object rec1 = csvrec.v1;
 										Object rec2 = csvrec.v2;
@@ -1400,7 +1707,11 @@ public sealed class MassiveDataStreamTaskDExecutor implements
 
 										}
 										return null;
-									}).collect(Collectors.toList());
+									})
+									.collect(ParallelCollectors.parallel(value -> value,
+											Collectors.toCollection(Vector::new), executor,
+											Runtime.getRuntime().availableProcessors()));
+							joinpairsout = (List) cf.get();
 						}
 					}
 				} catch (Exception ex) {
@@ -1410,11 +1721,7 @@ public sealed class MassiveDataStreamTaskDExecutor implements
 			}
 			kryo.writeClassAndObject(output, joinpairsout);
 			output.flush();
-			if(iscacheable) {
-				cache.put(getIntermediateDataFSFilePath(task), ((ByteArrayOutputStream) fsdos).toByteArray());
-				((ByteArrayOutputStream) fsdos).reset();
-				ByteArrayOutputStreamPool.get().returnObject(((ByteArrayOutputStream) fsdos));
-			}
+			cacheAble(fsdos);
 			log.debug("Exiting MassiveDataStreamTaskDExecutor.processRightOuterJoinLZF");
 			var timetaken = (System.currentTimeMillis() - starttime) / 1000.0;
 			log.debug("Time taken to compute the Right Outer Join task is " + timetaken + " seconds");
@@ -1464,29 +1771,63 @@ public sealed class MassiveDataStreamTaskDExecutor implements
 					throw new MassiveDataPipelineException(MassiveDataPipelineConstants.PROCESSGROUPBYKEY, ex);
 				}
 			}
+			if (task.finalphase && task.saveresulttohdfs && (task.storage == MDCConstants.STORAGE.INMEMORY
+					|| task.storage == MDCConstants.STORAGE.INMEMORY_DISK)) {
+				try (OutputStream os = hdfs.create(new Path(task.hdfsurl + task.filepath),
+						Short.parseShort(MDCProperties.get().getProperty(MDCConstants.DFSOUTPUTFILEREPLICATION,
+								MDCConstants.DFSOUTPUTFILEREPLICATION_DEFAULT)));) {
+					int ch = (int) '\n';
+					if (!allpairs.isEmpty()) {
+						var processedgroupbykey = Seq.of(allpairs.toArray(new Tuple2[allpairs.size()])).groupBy(
+								tup2 -> tup2.v1, Collectors.mapping(Tuple2::v2, Collectors.toCollection(Vector::new)));
+						processedgroupbykey.keySet().stream().map(key -> Tuple.tuple(key, processedgroupbykey.get(key)))
+								.forEach(val -> {
+									try {
+										os.write(val.toString().getBytes());
+										os.write(ch);
+									} catch (IOException e) {
+									}
+								});
+
+					} else if (!mapgpbykey.isEmpty()) {
+						var result = (Map) mapgpbykey.parallelStream().flatMap(map1 -> map1.entrySet().parallelStream())
+								.collect(Collectors.groupingBy((Entry entry) -> entry.getKey(), Collectors.mapping(
+										(Entry entry) -> entry.getValue(), Collectors.toCollection(Vector::new))));
+						result.keySet().stream().map(key -> Tuple.tuple(key, result.get(key))).forEach(val -> {
+							try {
+								os.write(val.toString().getBytes());
+								os.write(ch);
+							} catch (IOException e) {
+							}
+						});
+
+					}
+				}
+				var timetaken = (System.currentTimeMillis() - starttime) / 1000.0;
+				return timetaken;
+			}
 			// Parallel processing of group by key operation.
 			if (!allpairs.isEmpty()) {
-				var processedgroupbykey = Seq.of(allpairs.toArray(new Tuple2[allpairs.size()])).parallel()
-						.groupBy(tup2 -> tup2.v1, Collectors.mapping(Tuple2::v2, Collectors.toCollection(Vector::new)));
-				var out = processedgroupbykey.keySet().parallelStream()
+				var processedgroupbykey = Seq.of(allpairs.toArray(new Tuple2[allpairs.size()])).groupBy(tup2 -> tup2.v1,
+						Collectors.mapping(Tuple2::v2, Collectors.toCollection(Vector::new)));
+				var cf = (CompletableFuture) processedgroupbykey.keySet().stream()
 						.map(key -> Tuple.tuple(key, processedgroupbykey.get(key)))
-						.collect(Collectors.toCollection(ArrayList::new));
-				kryo.writeClassAndObject(output, out);
+						.collect(ParallelCollectors.parallel(value -> value, Collectors.toCollection(Vector::new),
+								executor, Runtime.getRuntime().availableProcessors()));
+				kryo.writeClassAndObject(output, cf.get());
 			} else if (!mapgpbykey.isEmpty()) {
 				var result = (Map) mapgpbykey.parallelStream().flatMap(map1 -> map1.entrySet().parallelStream())
 						.collect(Collectors.groupingBy((Entry entry) -> entry.getKey(), Collectors
 								.mapping((Entry entry) -> entry.getValue(), Collectors.toCollection(Vector::new))));
-				var out = (List<Tuple2>) result.keySet().parallelStream().map(key -> Tuple.tuple(key, result.get(key)))
-						.collect(Collectors.toCollection(ArrayList::new));
+				var cf = (CompletableFuture) result.keySet().stream().map(key -> Tuple.tuple(key, result.get(key)))
+						.collect(ParallelCollectors.parallel(value -> value, Collectors.toCollection(Vector::new),
+								executor, Runtime.getRuntime().availableProcessors()));
+				var out = (List) cf.get();
 				result.keySet().parallelStream().forEach(key -> out.add(Tuple.tuple(key, result.get(key))));
 				kryo.writeClassAndObject(output, out);
 			}
 			output.flush();
-			if(iscacheable) {
-				cache.put(getIntermediateDataFSFilePath(task), ((ByteArrayOutputStream) fsdos).toByteArray());
-				((ByteArrayOutputStream) fsdos).reset();
-				ByteArrayOutputStreamPool.get().returnObject(((ByteArrayOutputStream) fsdos));
-			}
+			cacheAble(fsdos);
 			log.debug("Exiting MassiveDataStreamTaskDExecutor.processGroupByKeyTuple2");
 			var timetaken = (System.currentTimeMillis() - starttime) / 1000.0;
 			log.debug("Time taken to compute the Group By Key Task is " + timetaken + " seconds");
@@ -1538,12 +1879,54 @@ public sealed class MassiveDataStreamTaskDExecutor implements
 			}
 			// Parallel processing of fold by key operation.
 			var foldbykey = (FoldByKey) jobstage.stage.tasks.get(0);
+			if (task.finalphase && task.saveresulttohdfs && (task.storage == MDCConstants.STORAGE.INMEMORY
+					|| task.storage == MDCConstants.STORAGE.INMEMORY_DISK)) {
+				try (OutputStream os = hdfs.create(new Path(task.hdfsurl + task.filepath),
+						Short.parseShort(MDCProperties.get().getProperty(MDCConstants.DFSOUTPUTFILEREPLICATION,
+								MDCConstants.DFSOUTPUTFILEREPLICATION_DEFAULT)));) {
+					int ch = (int) '\n';
+					if (!allpairs.isEmpty()) {
+						var processedgroupbykey = Seq.of(allpairs.toArray(new Tuple2[allpairs.size()])).groupBy(
+								tup2 -> tup2.v1, Collectors.mapping(Tuple2::v2, Collectors.toCollection(Vector::new)));
+						for (var key : processedgroupbykey.keySet()) {
+							var seqtuple2 = Seq.of(processedgroupbykey.get(key).toArray());
+							Object foldbykeyresult;
+							if (foldbykey.isLeft()) {
+								foldbykeyresult = seqtuple2.foldLeft(foldbykey.getValue(),
+										foldbykey.getReduceFunction());
+							} else {
+								foldbykeyresult = seqtuple2.foldRight(foldbykey.getValue(),
+										foldbykey.getReduceFunction());
+							}
+							os.write(Tuple.tuple(key, foldbykeyresult).toString().getBytes());
+							os.write(ch);
+
+						}
+					} else if (!mapgpbykey.isEmpty()) {
+						var result = (Map<Object, List<Object>>) mapgpbykey.parallelStream()
+								.flatMap(map1 -> map1.entrySet().parallelStream())
+								.collect(Collectors.groupingBy((Entry entry) -> entry.getKey(), Collectors.mapping(
+										(Entry entry) -> entry.getValue(), Collectors.toCollection(Vector::new))));
+						result.keySet().parallelStream().forEach(key -> {
+							try {
+								os.write(Tuple.tuple(key, result.get(key)).toString().getBytes());
+								os.write(ch);
+							} catch (Exception ex) {
+
+							}
+						});
+					}
+				}
+				var timetaken = (System.currentTimeMillis() - starttime) / 1000.0;
+				return timetaken;
+			}
+
 			if (!allpairs.isEmpty()) {
 				var finalfoldbykeyobj = new ArrayList<>();
-				var processedgroupbykey = Seq.of(allpairs.toArray(new Tuple2[allpairs.size()])).parallel()
-						.groupBy(tup2 -> tup2.v1, Collectors.mapping(Tuple2::v2, Collectors.toCollection(Vector::new)));
+				var processedgroupbykey = Seq.of(allpairs.toArray(new Tuple2[allpairs.size()])).groupBy(tup2 -> tup2.v1,
+						Collectors.mapping(Tuple2::v2, Collectors.toCollection(Vector::new)));
 				for (var key : processedgroupbykey.keySet()) {
-					var seqtuple2 = Seq.of(processedgroupbykey.get(key).toArray()).parallel();
+					var seqtuple2 = Seq.of(processedgroupbykey.get(key).toArray());
 					Object foldbykeyresult;
 					if (foldbykey.isLeft()) {
 						foldbykeyresult = seqtuple2.foldLeft(foldbykey.getValue(), foldbykey.getReduceFunction());
@@ -1563,11 +1946,7 @@ public sealed class MassiveDataStreamTaskDExecutor implements
 				kryo.writeClassAndObject(output, out);
 			}
 			output.flush();
-			if(iscacheable) {
-				cache.put(getIntermediateDataFSFilePath(task), ((ByteArrayOutputStream) fsdos).toByteArray());
-				((ByteArrayOutputStream) fsdos).reset();
-				ByteArrayOutputStreamPool.get().returnObject(((ByteArrayOutputStream) fsdos));
-			}
+			cacheAble(fsdos);
 			log.debug("Exiting MassiveDataStreamTaskDExecutor.processFoldByKeyTuple2");
 			var timetaken = (System.currentTimeMillis() - starttime) / 1000.0;
 			log.debug("Time taken to compute the Fold By Key Task is " + timetaken + " seconds");
@@ -1588,6 +1967,7 @@ public sealed class MassiveDataStreamTaskDExecutor implements
 	 * @param hdfs
 	 * @throws Exception
 	 */
+	@SuppressWarnings("unchecked")
 	public double processCountByKeyTuple2() throws MassiveDataPipelineException {
 		var starttime = System.currentTimeMillis();
 		log.debug("Entered MassiveDataStreamTaskDExecutor.processCountByKeyTuple2");
@@ -1607,27 +1987,56 @@ public sealed class MassiveDataStreamTaskDExecutor implements
 				// }
 				input.close();
 			}
+			if (task.finalphase && task.saveresulttohdfs && (task.storage == MDCConstants.STORAGE.INMEMORY
+					|| task.storage == MDCConstants.STORAGE.INMEMORY_DISK)) {
+				try (OutputStream os = hdfs.create(new Path(task.hdfsurl + task.filepath),
+						Short.parseShort(MDCProperties.get().getProperty(MDCConstants.DFSOUTPUTFILEREPLICATION,
+								MDCConstants.DFSOUTPUTFILEREPLICATION_DEFAULT)));) {
+					int ch = (int) '\n';
+					if (!allpairs.isEmpty()) {
+						var processedcountbykey = (Map) allpairs.parallelStream()
+								.collect(Collectors.toMap(Tuple2::v1, (Object v2) -> 1l, (a, b) -> a + b));
+						var cf = processedcountbykey.entrySet().stream()
+								.map(entry -> Tuple.tuple(((Entry) entry).getKey(), ((Entry) entry).getValue()));
+						if (jobstage.stage.tasks.size() > 1) {
+							var functions = getFunctions();
+							functions.remove(0);
+							cf = ((Stream) StreamUtils.getFunctionsToStream(functions, cf.parallel()));
+						}
+						cf.forEach(val -> {
+							try {
+								os.write(val.toString().getBytes());
+								os.write(ch);
+							} catch (IOException e) {
+							}
+						});
+					}
+				}
+				var timetaken = (System.currentTimeMillis() - starttime) / 1000.0;
+				return timetaken;
+			}
 			// Parallel processing of group by key operation.
 			if (!allpairs.isEmpty()) {
 				var processedcountbykey = (Map) allpairs.parallelStream()
 						.collect(Collectors.toMap(Tuple2::v1, (Object v2) -> 1l, (a, b) -> a + b));
-				var intermediatelist = (List<Tuple2>) processedcountbykey.entrySet().parallelStream()
+				var cf = (CompletableFuture) processedcountbykey.entrySet().stream()
 						.map(entry -> Tuple.tuple(((Entry) entry).getKey(), ((Entry) entry).getValue()))
-						.collect(Collectors.toCollection(Vector::new));
+						.collect(ParallelCollectors.parallel(value -> value, Collectors.toCollection(Vector::new),
+								executor, Runtime.getRuntime().availableProcessors()));
+				var intermediatelist = (List<Tuple2>) cf.get();
 				if (jobstage.stage.tasks.size() > 1) {
 					var functions = getFunctions();
 					functions.remove(0);
-					intermediatelist = (List<Tuple2>) ((Stream) StreamUtils.getFunctionsToStream(functions,
-							intermediatelist.parallelStream())).collect(Collectors.toCollection(Vector::new));
+					cf = (CompletableFuture) ((Stream) StreamUtils.getFunctionsToStream(functions,
+							intermediatelist.parallelStream())).collect(
+									ParallelCollectors.parallel(value -> value, Collectors.toCollection(Vector::new),
+											executor, Runtime.getRuntime().availableProcessors()));
+					intermediatelist = (List<Tuple2>) cf.get();
 				}
 				kryo.writeClassAndObject(output, intermediatelist);
 			}
 			output.flush();
-			if(iscacheable) {
-				cache.put(getIntermediateDataFSFilePath(task), ((ByteArrayOutputStream) fsdos).toByteArray());
-				((ByteArrayOutputStream) fsdos).reset();
-				ByteArrayOutputStreamPool.get().returnObject(((ByteArrayOutputStream) fsdos));
-			}
+			cacheAble(fsdos);
 			log.debug("Exiting MassiveDataStreamTaskDExecutor.processCountByKeyTuple2");
 			var timetaken = (System.currentTimeMillis() - starttime) / 1000.0;
 			log.debug("Time taken to compute the Count By Key Task is " + timetaken + " seconds");
@@ -1648,6 +2057,7 @@ public sealed class MassiveDataStreamTaskDExecutor implements
 	 * @param hdfs
 	 * @throws Exception
 	 */
+	@SuppressWarnings("unchecked")
 	public double processCountByValueTuple2() throws MassiveDataPipelineException {
 		var starttime = System.currentTimeMillis();
 		log.debug("Entered MassiveDataStreamTaskDExecutor.processCountByValueTuple2");
@@ -1667,28 +2077,57 @@ public sealed class MassiveDataStreamTaskDExecutor implements
 				// }
 				input.close();
 			}
+			if (task.finalphase && task.saveresulttohdfs && (task.storage == MDCConstants.STORAGE.INMEMORY
+					|| task.storage == MDCConstants.STORAGE.INMEMORY_DISK)) {
+				try (OutputStream os = hdfs.create(new Path(task.hdfsurl + task.filepath),
+						Short.parseShort(MDCProperties.get().getProperty(MDCConstants.DFSOUTPUTFILEREPLICATION,
+								MDCConstants.DFSOUTPUTFILEREPLICATION_DEFAULT)));) {
+					int ch = (int) '\n';
+					if (!allpairs.isEmpty()) {
+						var processedcountbyvalue = (Map) allpairs.parallelStream()
+								.collect(Collectors.toMap(tuple2 -> tuple2, (Object v2) -> 1l, (a, b) -> a + b));
+						var cf = processedcountbyvalue.entrySet().stream()
+								.map(entry -> Tuple.tuple(((Entry) entry).getKey(), ((Entry) entry).getValue()));
+						if (jobstage.stage.tasks.size() > 1) {
+							var functions = getFunctions();
+							functions.remove(0);
+							cf = ((Stream) StreamUtils.getFunctionsToStream(functions, cf.parallel()));
+						}
+						cf.forEach(val -> {
+							try {
+								os.write(val.toString().getBytes());
+								os.write(ch);
+							} catch (IOException e) {
+							}
+						});
+					}
+				}
+				var timetaken = (System.currentTimeMillis() - starttime) / 1000.0;
+				return timetaken;
+			}
 			// Parallel processing of group by key operation.
 			if (!allpairs.isEmpty()) {
 				var processedcountbyvalue = (Map) allpairs.parallelStream()
 						.collect(Collectors.toMap(tuple2 -> tuple2, (Object v2) -> 1l, (a, b) -> a + b));
-				var intermediatelist = (List<Tuple2>) processedcountbyvalue.entrySet().parallelStream()
+				var cf = (CompletableFuture) processedcountbyvalue.entrySet().stream()
 						.map(entry -> Tuple.tuple(((Entry) entry).getKey(), ((Entry) entry).getValue()))
-						.collect(Collectors.toCollection(Vector::new));
+						.collect(ParallelCollectors.parallel(value -> value, Collectors.toCollection(Vector::new),
+								executor, Runtime.getRuntime().availableProcessors()));
+				var intermediatelist = (List) cf.get();
 				if (jobstage.stage.tasks.size() > 1) {
 					var functions = getFunctions();
 					functions.remove(0);
-					intermediatelist = (List<Tuple2>) ((Stream) StreamUtils.getFunctionsToStream(functions,
-							intermediatelist.parallelStream())).collect(Collectors.toCollection(Vector::new));
+					cf = (CompletableFuture) ((Stream) StreamUtils.getFunctionsToStream(functions,
+							intermediatelist.stream())).collect(
+									ParallelCollectors.parallel(value -> value, Collectors.toCollection(Vector::new),
+											executor, Runtime.getRuntime().availableProcessors()));
+					intermediatelist = (List) cf.get();
 				}
 
 				kryo.writeClassAndObject(output, intermediatelist);
 			}
 			output.flush();
-			if(iscacheable) {
-				cache.put(getIntermediateDataFSFilePath(task), ((ByteArrayOutputStream) fsdos).toByteArray());
-				((ByteArrayOutputStream) fsdos).reset();
-				ByteArrayOutputStreamPool.get().returnObject(((ByteArrayOutputStream) fsdos));
-			}
+			cacheAble(fsdos);
 			log.debug("Exiting MassiveDataStreamTaskDExecutor.processCountByValueTuple2");
 			var timetaken = (System.currentTimeMillis() - starttime) / 1000.0;
 			log.debug("Time taken to compute the Count By Value Task is " + timetaken + " seconds");
@@ -1736,14 +2175,36 @@ public sealed class MassiveDataStreamTaskDExecutor implements
 			// Parallel execution of reduce by key stream execution.
 			var out = keyvaluepairs.parallelStream().collect(Collectors.toMap(Tuple2::v1, Tuple2::v2,
 					(input1, input2) -> coalescefunction.get(0).coalescefuncion.apply(input1, input2)));
-			var outpairs = (List) out.entrySet().parallelStream()
+			if (task.finalphase && task.saveresulttohdfs && (task.storage == MDCConstants.STORAGE.INMEMORY
+					|| task.storage == MDCConstants.STORAGE.INMEMORY_DISK)) {
+				try (OutputStream os = hdfs.create(new Path(task.hdfsurl + task.filepath),
+						Short.parseShort(MDCProperties.get().getProperty(MDCConstants.DFSOUTPUTFILEREPLICATION,
+								MDCConstants.DFSOUTPUTFILEREPLICATION_DEFAULT)));) {
+					int ch = (int) '\n';
+					out.entrySet().stream()
+							.map(entry -> Tuple.tuple(((Entry) entry).getKey(), ((Entry) entry).getValue()))
+							.forEach(val -> {
+								try {
+									os.write(val.toString().getBytes());
+									os.write(ch);
+								} catch (IOException e) {
+								}
+							});
+				}
+				var timetaken = (System.currentTimeMillis() - starttime) / 1000.0;
+				return timetaken;
+			}
+
+			CompletableFuture<List> cf = (CompletableFuture) out.entrySet().stream()
 					.map(entry -> Tuple.tuple(((Entry) entry).getKey(), ((Entry) entry).getValue()))
-					.collect(Collectors.toCollection(Vector::new));
+					.collect(ParallelCollectors.parallel(value -> value, Collectors.toCollection(Vector::new), executor,
+							Runtime.getRuntime().availableProcessors()));
+			var outpairs = cf.get();
 			var functions = getFunctions();
 			if (functions.size() > 1) {
 				functions.remove(0);
 				var finaltask = functions.get(functions.size() - 1);
-				var stream = StreamUtils.getFunctionsToStream(functions, outpairs.parallelStream());
+				var stream = StreamUtils.getFunctionsToStream(functions, outpairs.stream());
 				if (finaltask instanceof CalculateCount) {
 					outpairs = new Vector<>();
 					if (stream instanceof IntStream ints) {
@@ -1757,17 +2218,16 @@ public sealed class MassiveDataStreamTaskDExecutor implements
 							piplineistream.getObjIntConsumer(), piplineistream.getBiConsumer()));
 
 				} else {
-					outpairs = (List) ((Stream) stream).collect(Collectors.toCollection(Vector::new));
+					cf = (CompletableFuture) ((Stream) stream)
+							.collect(ParallelCollectors.parallel(value -> value, Collectors.toCollection(Vector::new),
+									executor, Runtime.getRuntime().availableProcessors()));
+					outpairs = cf.get();
 				}
 			}
 			kryo.writeClassAndObject(currentoutput, outpairs);
 			currentoutput.flush();
 			fsdos.flush();
-			if(iscacheable) {
-				cache.put(getIntermediateDataFSFilePath(task), ((ByteArrayOutputStream) fsdos).toByteArray());
-				((ByteArrayOutputStream) fsdos).reset();
-				ByteArrayOutputStreamPool.get().returnObject(((ByteArrayOutputStream) fsdos));
-			}
+			cacheAble(fsdos);
 			log.debug("Exiting MassiveDataStreamTaskDExecutor.processCoalesce");
 			var timetaken = (System.currentTimeMillis() - starttime) / 1000.0;
 			log.debug("Time taken to compute the Coalesce Task is " + timetaken + " seconds");
@@ -1780,5 +2240,20 @@ public sealed class MassiveDataStreamTaskDExecutor implements
 			log.error(MassiveDataPipelineConstants.PROCESSCOALESCE, ex);
 			throw new MassiveDataPipelineException(MassiveDataPipelineConstants.PROCESSCOALESCE, ex);
 		}
+	}
+
+	public void writeFinalPhaseResultsToHdfs(OutputStream os) throws Exception {
+		if (os instanceof CloseableByteBufferOutputStream cbbos) {
+			log.info("Limit of Buffer: " + cbbos.get().limit());
+			cbbos.get().flip();
+			log.info("Buffer Allocated: " + cbbos.get());
+			try (InputStream sis = new ByteBufferInputStream(cbbos.get());) {
+				Utils.writeResultToHDFS(task.hdfsurl, task.filepath, sis);
+			} catch (Exception ex) {
+				log.error(MDCConstants.EMPTY, ex);
+				throw ex;
+			}
+		}
+		log.info("Exiting writeFinalPhaseResultsToHdfs: ");
 	}
 }

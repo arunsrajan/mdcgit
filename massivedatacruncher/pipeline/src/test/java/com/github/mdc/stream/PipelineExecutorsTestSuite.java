@@ -17,10 +17,12 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
-import com.github.mdc.common.ByteArrayOutputStreamPool;
+import com.github.mdc.common.ByteBufferPool;
 import com.github.mdc.common.ByteBufferPoolDirect;
 import com.github.mdc.common.CacheUtils;
 import com.github.mdc.common.MDCCache;
+import com.github.mdc.common.MDCConstants;
+import com.github.mdc.common.MDCProperties;
 import com.github.mdc.common.Utils;
 import com.github.mdc.stream.executors.MassiveDataStreamTaskDExecutorTest;
 import com.github.mdc.stream.executors.MassiveDataStreamTaskExecutorInMemoryDiskTest;
@@ -48,9 +50,9 @@ public class PipelineExecutorsTestSuite extends MDCPipelineTestsCommon{
 		System.setProperty("HADOOP_HOME", "E:\\DEVELOPMENT\\hadoop\\hadoop-3.2.1");
 		Configuration conf = new Configuration();
 		Utils.loadLog4JSystemPropertiesClassPath("mdctest.properties");
-		ByteBufferPoolDirect.init(3);
+		ByteBufferPoolDirect.init();
 		CacheUtils.initCache();
-		ByteArrayOutputStreamPool.init(2);
+		ByteBufferPool.init(Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.BYTEBUFFERPOOL_MAX, MDCConstants.BYTEBUFFERPOOL_MAX_DEFAULT)));
 		cache = (Cache<String, byte[]>) MDCCache.get();
 		try(Socket sock = new Socket("localhost",9000);){}
 		catch(Exception ex) {

@@ -30,6 +30,7 @@ public class JobConfigurationBuilder {
 	String yarnrm;
 	String yarnscheduler;
 	String containeralloc;
+	String heappercentage;
 	private JobConfigurationBuilder() {
 		hdfsurl = MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULER_HDFSNN);
 		tstempdir = MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULER_TMP_DIR);
@@ -58,6 +59,7 @@ public class JobConfigurationBuilder {
 		yarnrm = MDCProperties.get().getProperty(MDCConstants.YARNRM, MDCConstants.YARNRM_DEFAULT);;
 		yarnscheduler = MDCProperties.get().getProperty(MDCConstants.YARNSCHEDULER, MDCConstants.YARNSCHEDULER_DEFAULT);;;
 		containeralloc = MDCProperties.get().getProperty(MDCConstants.CONTAINER_ALLOC, MDCConstants.CONTAINER_ALLOC_DEFAULT);
+		heappercentage = MDCProperties.get().getProperty(MDCConstants.HEAP_PERCENTAGE, MDCConstants.HEAP_PERCENTAGE_DEFAULT);
 	}
 
 	public static JobConfigurationBuilder newBuilder() {
@@ -138,7 +140,7 @@ public class JobConfigurationBuilder {
 		return new JobConfiguration(hdfsurl, tstempdir, tshost, tsport, zkport, zkretrydelay, tspingdelay,
 				tsrescheduledelay, tsinitialdelay, tepingdelay, hdfs, blocksize, batchsize, numofreducers, minmem,
 				maxmem, gctype, numberofcontainers, isblocksuserdefined, execmode, taskexeccount, 
-				ignitemulticastgroup, ignitebackup, yarnrm, yarnscheduler, containeralloc);
+				ignitemulticastgroup, ignitebackup, yarnrm, yarnscheduler, containeralloc, heappercentage);
 		
 	}
 
@@ -221,6 +223,11 @@ public class JobConfigurationBuilder {
 
 	public JobConfigurationBuilder setContaineralloc(String containeralloc) {
 		this.containeralloc = containeralloc;
+		return this;
+	}
+
+	public JobConfigurationBuilder setHeappercentage(String heappercentage) {
+		this.heappercentage = heappercentage;
 		return this;
 	}
 	

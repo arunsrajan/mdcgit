@@ -643,8 +643,10 @@ public class FileBlocksPartitionerHDFS {
 			}
 			res.setCpu(cpu);
 			var meminmb = actualmemory/MDCConstants.MB;
-			res.setMinmemory(meminmb);
-			res.setMaxmemory(meminmb);
+			var heapmem = meminmb*Integer.valueOf(pipelineconfig.getHeappercent())/100;
+			res.setMinmemory(heapmem);
+			res.setMaxmemory(heapmem);
+			res.setDirectheap(meminmb-heapmem);
 			res.setGctype(gctype);
 			cr.add(res);
 			resources.setFreememory(0l);

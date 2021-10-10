@@ -58,7 +58,6 @@ import org.xerial.snappy.SnappyOutputStream;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.dexecutor.core.DefaultDexecutor;
 import com.github.dexecutor.core.DexecutorConfig;
 import com.github.dexecutor.core.ExecutionConfig;
@@ -89,7 +88,6 @@ import com.github.mdc.common.NetworkUtil;
 import com.github.mdc.common.PipelineConfig;
 import com.github.mdc.common.RemoteDataFetch;
 import com.github.mdc.common.RemoteDataFetcher;
-import com.github.mdc.common.RemoteDataWriterTask;
 import com.github.mdc.common.Stage;
 import com.github.mdc.common.Task;
 import com.github.mdc.common.TasksGraphExecutor;
@@ -99,7 +97,7 @@ import com.github.mdc.common.Utils;
 import com.github.mdc.common.WhoIsResponse;
 import com.github.mdc.stream.MassiveDataPipelineException;
 import com.github.mdc.stream.executors.MassiveDataStreamTaskDExecutor;
-import com.github.mdc.stream.executors.MassiveDataStreamTaskExecutorInMemory;
+import com.github.mdc.stream.executors.MassiveDataStreamTaskExecutorLocal;
 import com.github.mdc.stream.executors.MassiveDataStreamTaskIgnite;
 import com.github.mdc.stream.functions.AggregateReduceFunction;
 import com.github.mdc.stream.functions.Coalesce;
@@ -134,8 +132,11 @@ public class JobScheduler {
 	public PipelineConfig pipelineconfig;
 	AtomicBoolean istaskcancelled = new AtomicBoolean();
 	public Map<String, JobStage> jsidjsmap = new ConcurrentHashMap<>();
-
+	public List<Object> stageoutput = new ArrayList<>();
+	String hdfsfilepath = null;
+	FileSystem hdfs = null;
 	public JobScheduler() {
+		hdfsfilepath = MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULERSTREAM_HDFSNN);
 	}
 
 	ExecutorService jobping = Executors.newWorkStealingPool();
@@ -168,7 +169,10 @@ public class JobScheduler {
 		isignite = Objects.isNull(pipelineconfig.getMode()) ? false
 				: pipelineconfig.getMode().equals(MDCConstants.MODE_DEFAULT) ? true : false;
 
-		try (var hbtss = new HeartBeatTaskSchedulerStream(); var hbss = new HeartBeatServerStream()) {
+		try (var hbtss = new HeartBeatTaskSchedulerStream(); 
+				var hbss = new HeartBeatServerStream();
+				var hdfs = FileSystem.newInstance(new URI(hdfsfilepath), new Configuration());) {
+			this.hdfs = hdfs;
 			this.hbtss = hbtss;
 			this.hbss = hbss;
 			// If not yarn and mesos start the resources and task scheduler
@@ -264,6 +268,18 @@ public class JobScheduler {
 			while (topostages.hasNext())
 				mdststs.add(topostages.next());
 			log.debug(mdststs);
+			var mdstts = getFinalPhasesWithNoSuccessors(graph, mdststs);
+			var partitionnumber = 0;
+			for (var mdstst : mdstts) {
+				mdstst.getTask().finalphase = true;
+				if (job.trigger == Job.TRIGGER.SAVERESULTSTOFILE
+						&& (mdstst.getTask().storage == MDCConstants.STORAGE.INMEMORY
+						|| mdstst.getTask().storage == MDCConstants.STORAGE.INMEMORY_DISK) ) {
+					mdstst.getTask().saveresulttohdfs = true;
+					mdstst.getTask().hdfsurl = job.uri;
+					mdstst.getTask().filepath = job.savepath + MDCConstants.HYPHEN + partitionnumber++;
+				}
+			}
 			Utils.writeKryoOutput(kryo, pipelineconfig.getOutput(), "stages: " + mdststs);
 			if (isignite) {
 				parallelExecutionPhaseIgnite(graph, new TaskProviderIgnite());
@@ -410,7 +426,7 @@ public class JobScheduler {
 
 			// Obtain the final stage job results after final stage is
 			// completed.
-			var finalstageoutput = getLastStageOutput(graph, mdststs, ismesos, isyarn, islocal, isjgroups,
+			var finalstageoutput = getLastStageOutput(mdstts, graph, mdststs, ismesos, isyarn, islocal, isjgroups,
 					resultstream);
 			job.iscompleted = true;
 			job.jm.jobcompletiontime = System.currentTimeMillis();
@@ -995,7 +1011,7 @@ public class JobScheduler {
 	 * @author arun The task provider for the local mode stage execution.
 	 */
 	public class TaskProviderLocalMode
-			implements TaskProvider<MassiveDataStreamTaskSchedulerThread, MassiveDataStreamTaskExecutorInMemory> {
+			implements TaskProvider<MassiveDataStreamTaskSchedulerThread, MassiveDataStreamTaskExecutorLocal> {
 
 		
 		double totaltasks;
@@ -1006,17 +1022,19 @@ public class JobScheduler {
 			this.totaltasks = totaltasks;
 		}
 		
-		public com.github.dexecutor.core.task.Task<MassiveDataStreamTaskSchedulerThread, MassiveDataStreamTaskExecutorInMemory> provideTask(
+		public com.github.dexecutor.core.task.Task<MassiveDataStreamTaskSchedulerThread, MassiveDataStreamTaskExecutorLocal> provideTask(
 				final MassiveDataStreamTaskSchedulerThread mdstst) {
 
-			return new com.github.dexecutor.core.task.Task<MassiveDataStreamTaskSchedulerThread, MassiveDataStreamTaskExecutorInMemory>() {
+			return new com.github.dexecutor.core.task.Task<MassiveDataStreamTaskSchedulerThread, MassiveDataStreamTaskExecutorLocal>() {
 				Task task = mdstst.getTask();
 				private static final long serialVersionUID = 1L;
 
-				public MassiveDataStreamTaskExecutorInMemory execute() {					
-					var mdste = new MassiveDataStreamTaskExecutorInMemory(jsidjsmap.get(task.jobid + task.stageid),
+				public MassiveDataStreamTaskExecutorLocal execute() {					
+					var mdste = new MassiveDataStreamTaskExecutorLocal(jsidjsmap.get(task.jobid + task.stageid),
 							resultstream, cache);
 					mdste.setTask(task);
+					mdste.setExecutor(jobping);
+					mdste.setHdfs(hdfs);
 					try {
 						semaphore.acquire();
 						mdste.call();
@@ -1077,7 +1095,7 @@ public class JobScheduler {
 	 * 
 	 * @author arun The task provider for the standlone mode stage execution.
 	 */
-	private class DAGScheduler implements TaskProvider<MassiveDataStreamTaskSchedulerThread, Boolean> {
+	public class DAGScheduler implements TaskProvider<MassiveDataStreamTaskSchedulerThread, Boolean> {
 		Logger log = Logger.getLogger(DAGScheduler.class);
 		double totaltasks;
 		double counttaskscomp=0;
@@ -1103,6 +1121,12 @@ public class JobScheduler {
 						try {
 							printresult.acquire();
 							counttaskscomp++;
+							if (job.trigger != Job.TRIGGER.SAVERESULTSTOFILE && !mdststlocal.isResultobtainedte() 
+									&& mdststlocal.getTask().finalphase && mdststlocal.isCompletedexecution() 
+									&& (mdststlocal.getTask().storage == MDCConstants.STORAGE.INMEMORY
+									||mdststlocal.getTask().storage == MDCConstants.STORAGE.INMEMORY_DISK)) {
+								writeOutputToFileInMemory(mdststlocal,kryo,stageoutput);
+							}
 							double percentagecompleted = Math.floor((counttaskscomp / totaltasks) * 100.0);
 							Utils.writeKryoOutput(kryo, pipelineconfig.getOutput(), "\nPercentage Completed TE("
 									+ mdststlocal.getHostPort() + ") " + percentagecompleted + "% \n");
@@ -1129,6 +1153,13 @@ public class JobScheduler {
 								mdststlocal.setCompletedexecution(true);
 								printresult.acquire();
 								counttaskscomp++;
+								if (job.trigger != Job.TRIGGER.SAVERESULTSTOFILE && mdststlocal.getTask().finalphase 
+										&& mdststlocal.isCompletedexecution() 
+										&& (mdststlocal.getTask().storage == MDCConstants.STORAGE.INMEMORY
+										||mdststlocal.getTask().storage == MDCConstants.STORAGE.INMEMORY_DISK)) {
+									writeOutputToFileInMemory(mdststlocal,kryo,stageoutput);
+									mdststlocal.setResultobtainedte(true);
+								}
 								double percentagecompleted = Math.floor((counttaskscomp / totaltasks) * 100.0);
 								Object[] input=mdststlocal.getTask().input;
 								Utils.writeKryoOutput(kryo, pipelineconfig.getOutput(), "Task Completed ("+(Objects.isNull(input)?task:input[0])+") "
@@ -1142,6 +1173,7 @@ public class JobScheduler {
 								job.jm.containersallocated.put(mdststlocal.getHostPort(),percentagecompleted);								
 								printresult.release();
 								cdl.countDown();
+								
 							} else if (mdststlocal.getTask().taskid.equals(task.taskid)
 									&& task.taskstatus == Task.TaskStatus.FAILED) {
 								var timer = jobtimer.get(task.taskid);
@@ -1505,7 +1537,7 @@ public class JobScheduler {
 	 * @return
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private Set<MassiveDataStreamTaskSchedulerThread> getFinalPhasesWithNoSuccessors(Graph graph,
+	public Set<MassiveDataStreamTaskSchedulerThread> getFinalPhasesWithNoSuccessors(Graph graph,
 			List<MassiveDataStreamTaskSchedulerThread> mdststs) {
 		return mdststs.stream().filter(mdstst -> Graphs.successorListOf(graph, mdstst).isEmpty())
 				.collect(Collectors.toCollection(LinkedHashSet::new));
@@ -1537,17 +1569,13 @@ public class JobScheduler {
 	 * @throws MassiveDataPipelineException
 	 */
 	@SuppressWarnings({ "rawtypes" })
-	public List getLastStageOutput(Graph graph, List<MassiveDataStreamTaskSchedulerThread> mdststs, Boolean ismesos,
+	public List getLastStageOutput(Set<MassiveDataStreamTaskSchedulerThread> mdstts,Graph graph, List<MassiveDataStreamTaskSchedulerThread> mdststs, Boolean ismesos,
 			Boolean isyarn, Boolean islocal, Boolean isjgroups,
-			ConcurrentMap<String, OutputStream> resultstream) throws MassiveDataPipelineException {
-		var stageoutput = new ArrayList<>();
-		var hdfsfilepath = MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULERSTREAM_HDFSNN);
+			ConcurrentMap<String, OutputStream> resultstream) throws MassiveDataPipelineException {		
 		log.debug("HDFS Path TO Retrieve Final Task Output: " + hdfsfilepath);
 		var configuration = new Configuration();
 		var kryofinal = KryoPool.getKryoPool().obtain();
 		try (var hdfs = FileSystem.newInstance(new URI(hdfsfilepath), configuration);) {
-			// Get the final stages of graph with no successors.
-			var mdstts = getFinalPhasesWithNoSuccessors(graph, mdststs);
 			log.debug("Final Stages: " + mdstts);
 			Utils.writeKryoOutput(kryo, pipelineconfig.getOutput(), "Final Stages: " + mdstts);
 			
@@ -1561,39 +1589,33 @@ public class JobScheduler {
 					}
 				}
 			} else if (Boolean.TRUE.equals(islocal)) {
-				for (var mdstt : mdstts) {
-					var key = getIntermediateResultFS(mdstt.getTask());
-					try (var fsstream = resultstream.get(key);
-							var input = new Input(
-									new SnappyInputStream(new ByteArrayInputStream(((ByteArrayOutputStream)fsstream).toByteArray())));) {
-						var obj = kryofinal.readClassAndObject(input);
-						resultstream.remove(key);
-						writeOutputToFile(stageoutput.size(),obj);
-						stageoutput.add(obj);
-					} catch (Exception ex) {
-						log.error(MassiveDataPipelineConstants.JOBSCHEDULERFINALSTAGERESULTSERROR, ex);
-						throw ex;
+				if(job.trigger != Job.TRIGGER.SAVERESULTSTOFILE) {
+					for (var mdstt : mdstts) {
+						var key = getIntermediateResultFS(mdstt.getTask());
+						try (var fsstream = resultstream.get(key);
+								var input = new Input(
+										new SnappyInputStream(new ByteArrayInputStream(((ByteArrayOutputStream)fsstream).toByteArray())));) {
+							var obj = kryofinal.readClassAndObject(input);
+							resultstream.remove(key);
+							writeOutputToFile(stageoutput.size(),obj);
+							stageoutput.add(obj);
+						} catch (Exception ex) {
+							log.error(MassiveDataPipelineConstants.JOBSCHEDULERFINALSTAGERESULTSERROR, ex);
+							throw ex;
+						}
 					}
 				}
-			} else if (Boolean.TRUE.equals(ismesos) || Boolean.TRUE.equals(isyarn) || Boolean.TRUE.equals(isjgroups)) {
+			} else if (Boolean.TRUE.equals(ismesos) || Boolean.TRUE.equals(isyarn) || Boolean.TRUE.equals(isjgroups)
+					&& job.trigger != Job.TRIGGER.SAVERESULTSTOFILE) {
 				int partition = 0;
 				for (var mdstt : mdstts) {
 					// Get final stage results mesos or yarn
 					writeOutputToHDFS(hdfs,mdstt.getTask(),partition++,stageoutput);
 				}
 			} else {
-				int partcount = 0;
 				for (var mdstt : mdstts) {
 					// Get final stage results
-					if (mdstt.isCompletedexecution() && (mdstt.getTask().storage == MDCConstants.STORAGE.INMEMORY
-									||mdstt.getTask().storage == MDCConstants.STORAGE.INMEMORY_DISK)) {
-						try {
-							writeOutputToFileInMemory(partcount++,mdstt,kryofinal,stageoutput);
-						} catch (Exception ex) {
-							log.error(MassiveDataPipelineConstants.JOBSCHEDULERFINALSTAGERESULTSERROR, ex);
-							throw ex;
-						}
-					} else if (mdstt.isCompletedexecution() && mdstt.getTask().storage == MDCConstants.STORAGE.DISK) {
+					if (mdstt.isCompletedexecution() && mdstt.getTask().storage == MDCConstants.STORAGE.DISK) {
 						Task task = mdstt.getTask();
 						try (var fsstream = RemoteDataFetcher.readIntermediatePhaseOutputFromDFS(task.jobid,
 								getIntermediateDataFSFilePath(task.jobid, task.stageid, task.taskid), hdfs);
@@ -1652,23 +1674,8 @@ public class JobScheduler {
 	}
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public void writeOutputToFileInMemory(int partcount, MassiveDataStreamTaskSchedulerThread mdstst,Kryo kryo,List stageoutput)
+	public void writeOutputToFileInMemory(MassiveDataStreamTaskSchedulerThread mdstst,Kryo kryo,List stageoutput)
 			throws MassiveDataPipelineException {
-		if (job.trigger == Job.TRIGGER.SAVERESULTSTOFILE) {
-			try {
-				RemoteDataWriterTask rdwt = new RemoteDataWriterTask();
-				rdwt.hdfsurl = job.uri;
-				rdwt.filepath = job.savepath + MDCConstants.HYPHEN + partcount;
-				rdwt.rdf = getIntermediateRdfInMemory(mdstst.getTask());
-				rdwt = (RemoteDataWriterTask) Utils.getResultObjectByInput(rdwt.rdf.hp, rdwt);
-				log.info("Result Written status of "+rdwt.hdfsurl+rdwt.filepath+": "+rdwt.status);
-				Utils.writeKryoOutput(kryo, pipelineconfig.getOutput(), "Result Written status of "+rdwt.hdfsurl
-						+rdwt.filepath+": "+rdwt.status);
-			} catch (Exception ioe) {
-				log.error(MassiveDataPipelineConstants.FILEIOERROR, ioe);
-				throw new MassiveDataPipelineException(MassiveDataPipelineConstants.FILEIOERROR, ioe);
-			}
-		}else {
 			try (var fsstream = getIntermediateInputStreamInMemory(mdstst.getTask());
 					var input = new Input(fsstream);) {
 				var obj = kryo.readClassAndObject(input);
@@ -1678,7 +1685,6 @@ public class JobScheduler {
 				log.error(MassiveDataPipelineConstants.JOBSCHEDULERFINALSTAGERESULTSERROR, ex);
 				throw new MassiveDataPipelineException(MassiveDataPipelineConstants.FILEIOERROR, ex);
 			}
-		}
 	}
 	/**
 	 * Get the file streams from HDFS and jobid and stageid.
@@ -1725,17 +1731,7 @@ public class JobScheduler {
 					+ (task.jobid + MDCConstants.HYPHEN + task.stageid + MDCConstants.HYPHEN + task.taskid
 							+ MDCConstants.DATAFILEEXTN));			
 			try (var input = new Input(new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path)))));) {
-				
-				var obj = new ArrayList<>(); 
-				while(input.available()>0)	{
-					obj.add(kryo.readClassAndObject(input));				
-				}
-				if (job.trigger == Job.TRIGGER.SAVERESULTSTOFILE) {
-					writeOutputToFile(partition,obj);
-				}
-				else {
-					stageoutput.add(obj);
-				}
+				stageoutput.add(kryo.readClassAndObject(input));
 			} catch (Exception ex) {
 				log.error(MassiveDataPipelineConstants.JOBSCHEDULERFINALSTAGERESULTSERROR, ex);
 				throw new MassiveDataPipelineException(MassiveDataPipelineConstants.FILEIOERROR, ex);

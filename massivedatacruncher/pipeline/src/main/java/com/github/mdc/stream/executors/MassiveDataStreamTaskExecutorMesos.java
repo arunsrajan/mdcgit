@@ -2,6 +2,7 @@ package com.github.mdc.stream.executors;
 
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Objects;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;

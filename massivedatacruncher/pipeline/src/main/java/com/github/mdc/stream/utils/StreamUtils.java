@@ -177,20 +177,20 @@ public class StreamUtils {
 	private static Stream reduce(ReduceByKeyFunction reducefunction, Stream<Tuple2> stream) {
 		java.util.Map out = stream.collect(Collectors.toMap(Tuple2::v1, Tuple2::v2,reducefunction::apply));
 		return ((List) out.entrySet().parallelStream()
-				.map(entry->Tuple.tuple(((Entry)entry).getKey(),((Entry)entry).getValue())).collect(Collectors.toCollection(Vector::new))).parallelStream();
+				.map(entry->Tuple.tuple(((Entry)entry).getKey(),((Entry)entry).getValue())).collect(Collectors.toCollection(Vector::new))).stream();
 	}
 	
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private static Stream reduce(ReduceByKeyFunctionValues reducefunctionvalues, Stream<Tuple2> stream) {
 		java.util.Map out = stream.collect(Collectors.toMap(Tuple2::v1, Tuple2::v2,reducefunctionvalues::apply));
 		return ((List) out.entrySet().parallelStream()
-				.map(entry->Tuple.tuple(((Entry)entry).getKey(),((Entry)entry).getValue())).collect(Collectors.toCollection(Vector::new))).parallelStream();
+				.map(entry->Tuple.tuple(((Entry)entry).getKey(),((Entry)entry).getValue())).collect(Collectors.toCollection(Vector::new))).stream();
 	}
 	
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private static Stream coalesce(CoalesceFunction coelescefunction, Stream<Tuple2> stream) {
 		java.util.Map out = stream.collect(Collectors.toMap(Tuple2::v1, Tuple2::v2,coelescefunction::apply));
-		return ((List) out.entrySet().parallelStream()
+		return ((List) out.entrySet().stream()
 				.map(entry->Tuple.tuple(((Entry)entry).getKey(),((Entry)entry).getValue())).collect(Collectors.toCollection(Vector::new))).parallelStream();
 	}
 }

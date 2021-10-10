@@ -40,7 +40,8 @@ public class CacheUtilsTest {
 	public static void initCache() throws Exception {
 		Utils.loadLog4JSystemPropertiesClassPath(MDCConstants.MDC_TEST_PROPERTIES);
 		CacheUtils.initCache();
-		ByteBufferPoolDirect.init(1);
+		ByteBufferPoolDirect.init();
+		ByteBufferPool.init(Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.BYTEBUFFERPOOL_MAX, MDCConstants.BYTEBUFFERPOOL_MAX_DEFAULT)));
 	}
 	
 	@Test

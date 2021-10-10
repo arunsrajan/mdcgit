@@ -34,12 +34,13 @@ public class JobConfiguration {
 	String yarnrm;
 	String yarnscheduler;
 	String containeralloc;
+	String heappercentage;
 	public JobConfiguration(String hdfsurl, String tstempdir, String tshost, String tsport, String zkport,
 			String zkretrydelay, String tspingdelay, String tsrescheduledelay, String tsinitialdelay,
 			String tepingdelay, Boolean hdfs, String blocksize, String batchsize, String numofreducers, String minmem,
 			String maxmem, String gctype, String numberofcontainers, String isblocksuserdefined, String execmode
 			, String taskexeccount,String ignitemulticastgroup, String ignitebackup, String yarnrm, String yarnscheduler,
-			String containeralloc) {
+			String containeralloc, String heappercentage) {
 		this.hdfsurl = hdfsurl;
 		this.tstempdir = tstempdir;
 		this.tshost = tshost;
@@ -66,6 +67,7 @@ public class JobConfiguration {
 		this.yarnrm = yarnrm;
 		this.yarnscheduler = yarnscheduler;
 		this.containeralloc = containeralloc;
+		this.heappercentage = heappercentage;
 	}
 
 	public String getHdfsurl() {
@@ -302,6 +304,13 @@ public class JobConfiguration {
 	public void setContaineralloc(String containeralloc) {
 		this.containeralloc = containeralloc;
 	}
-	
+
+	public String getHeappercentage() {
+		return heappercentage;
+	}
+
+	public void setHeappercentage(String heappercentage) {
+		this.heappercentage = heappercentage;
+	}
 	
 }

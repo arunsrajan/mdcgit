@@ -3,6 +3,9 @@ package com.github.mdc.stream.yarn.container;
 import java.io.ByteArrayInputStream;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -10,6 +13,7 @@ import org.springframework.yarn.integration.container.AbstractIntegrationYarnCon
 import org.springframework.yarn.integration.ip.mind.MindAppmasterServiceClient;
 
 import com.esotericsoftware.kryo.io.Input;
+import com.github.mdc.common.ByteBufferPool;
 import com.github.mdc.common.ByteBufferPoolDirect;
 import com.github.mdc.common.JobStage;
 import com.github.mdc.common.MDCConstants;
@@ -28,7 +32,7 @@ import com.github.mdc.stream.yarn.appmaster.JobResponse;
 public class YarnContainer extends AbstractIntegrationYarnContainer {
 
 	private Map<String, String> containerprops;
-	
+	private ExecutorService executor; 
 	private static final Log log = LogFactory.getLog(YarnContainer.class);
 	private Map<String,JobStage> jsidjsmap;
 	/**
@@ -44,8 +48,10 @@ public class YarnContainer extends AbstractIntegrationYarnContainer {
 		byte[] job = null;
 		var containerid = getEnvironment().get(MDCConstants.SHDP_CONTAINERID);
 		MindAppmasterServiceClient client = null;
+		executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 		try {
-			ByteBufferPoolDirect.init(3);
+			ByteBufferPoolDirect.init();
+			ByteBufferPool.init(3);
 			while(true) {
 				request = new JobRequest();
 				request.setState(JobRequest.State.WHATTODO);
@@ -94,6 +100,7 @@ public class YarnContainer extends AbstractIntegrationYarnContainer {
 					MDCProperties.put(prop);
 					var yarnexecutor = new MassiveDataStreamTaskExecutorYarn( containerprops.get(MDCConstants.TASKEXECUTOR_HDFSNN),jsidjsmap.get(task.jobid + task.stageid));
 					yarnexecutor.setTask(task);
+					yarnexecutor.setExecutor(executor);
 					yarnexecutor.call();
 					request = new JobRequest();
 					request.setState(JobRequest.State.JOBDONE);
@@ -112,6 +119,7 @@ public class YarnContainer extends AbstractIntegrationYarnContainer {
 			}
 			log.debug(containerid+": Completed Job Exiting with status 0...");
 			ByteBufferPoolDirect.get().close();
+			shutdownExecutor();
 			System.exit(0);
 		}
 		catch(Exception ex) {
@@ -123,10 +131,22 @@ public class YarnContainer extends AbstractIntegrationYarnContainer {
 				log.debug("Job Completion Error..."+response.getState()+"..., See cause below \n",ex);
 			}
 			ByteBufferPoolDirect.get().close();
+			try {
+				shutdownExecutor();
+			} catch (Exception e) {
+				log.error("",e);
+			}
 			System.exit(-1);
 		}
 	}
 
+	public void shutdownExecutor() throws InterruptedException {
+		if(executor!=null) {
+			executor.shutdownNow();
+			executor.awaitTermination(1, TimeUnit.SECONDS);
+		}
+	}
+	
 	public Map<String, String> getContainerprops() {
 		return containerprops;
 	}

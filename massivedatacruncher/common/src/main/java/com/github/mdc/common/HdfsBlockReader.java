@@ -161,7 +161,7 @@ public class HdfsBlockReader {
 	 * @throws Exception
 	 */
 	public static SnappyInputStream getBlockDataLZFStream(final BlocksLocation bl, FileSystem hdfs) throws Exception {
-		ByteBuffer bb = ByteBufferPoolDirect.get().take(128*1024*1024);
+		ByteBuffer bb = ByteBufferPool.get().borrowObject();
 		try(var bbos = new ByteBufferOutputStream(bb);
 				var lzfos = new SnappyOutputStream(bbos)) {
 			log.debug("Entered HdfsBlockReader.getBlockDataMR");
