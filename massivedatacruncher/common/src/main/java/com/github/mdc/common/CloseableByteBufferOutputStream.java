@@ -35,6 +35,7 @@ public class CloseableByteBufferOutputStream extends OutputStream {
 				bb.clear();
 				bb.rewind();
 				ByteBufferPool.get().returnObject(bb);
+				ByteBufferPoolDirect.get().give(bb);
 			} catch (Exception e) {
 			} finally {
 			}

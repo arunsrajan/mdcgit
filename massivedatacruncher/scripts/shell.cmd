@@ -1,1 +1,1 @@
-jshell --class-path "../lib/*;../modules/*"
+jshell --enable-preview --class-path "../lib/*;../modules/*"

@@ -54,6 +54,11 @@ public class LaunchContainers implements Serializable {
 	public void setNodehostport(String nodehostport) {
 		this.nodehostport = nodehostport;
 	}
+	@Override
+	public String toString() {
+		return "LaunchContainers [nodehostport=" + nodehostport + ", containerid=" + containerid + ", appid=" + appid
+				+ ", jobid=" + jobid + ", mode=" + mode + ", cla=" + cla + "]";
+	}
 
 	
 }

@@ -84,7 +84,7 @@ public class StreamPipelineTestSuite extends StreamPipelineBase {
 			
 			Boolean ishdfs = Boolean.parseBoolean(MDCProperties.get().getProperty("taskexecutor.ishdfs"));
 			Configuration configuration = new Configuration();
-			hdfs = FileSystem.newInstance(new URI(MDCProperties.get().getProperty("taskschedulerstream.hdfsnn")),
+			hdfs = FileSystem.newInstance(new URI(MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL)),
 					configuration);
 			Boolean islocal = Boolean.parseBoolean(pipelineconfig.getLocal());
 			if (numberofnodes > 0) {

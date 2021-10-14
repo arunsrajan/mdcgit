@@ -50,7 +50,7 @@ public class StreamPipelineUserDefinedObjectsTest extends StreamPipelineBaseTest
 	public void testMapContainerExecuteCollect() throws Throwable {
 		log.info("testMapContainerExecuteCollect Before---------------------------------------");
 		String localmode = pipelineconfig.getLocal();
-		pipelineconfig.setLocal("false");
+		pipelineconfig.setLocal("true");
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Map>> data = (List<List<Map>>) datapipeline.map(value->value.split(","))

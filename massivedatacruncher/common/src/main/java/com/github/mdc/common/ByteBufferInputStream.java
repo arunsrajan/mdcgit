@@ -57,6 +57,7 @@ public class ByteBufferInputStream extends InputStream {
 				bb.clear();
 				bb.rewind();
 				ByteBufferPool.get().returnObject(bb);
+				ByteBufferPoolDirect.get().give(bb);
 			} catch (Exception e) {
 				log.error(MDCConstants.EMPTY,e);
 			} finally {

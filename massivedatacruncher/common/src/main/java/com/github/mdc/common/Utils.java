@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.GregorianCalendar;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -1007,4 +1008,62 @@ public class Utils {
 		log.debug("Returned Utils.getIntermediateInputStreamTask");
 		return path;
 	}
+	
+	
+	@SuppressWarnings("unchecked")
+	public static String launchContainers(Integer numberofcontainers){
+		var containerid = MDCConstants.CONTAINER+MDCConstants.HYPHEN+Utils.getUniqueID();
+		var jobid = MDCConstants.JOB+MDCConstants.HYPHEN+Utils.getUniqueID();
+		var ac = new AllocateContainers();
+		ac.setContainerid(containerid);
+		ac.setNumberofcontainers(numberofcontainers);
+		var nrs = MDCNodesResourcesSnapshot.get();		
+		var resources = nrs.values();
+		int numavailable = Math.min(numberofcontainers, resources.size());
+		Iterator<Resources> res = resources.iterator();
+		var lcs = new ArrayList<LaunchContainers>();
+		for(int container=0;container<numavailable;container++) {
+			Resources restolaunch = res.next();
+			List<Integer> ports = (List<Integer>) Utils.getResultObjectByInput(restolaunch.getNodeport(), ac);
+			log.info("Container Allocated In Node: "+restolaunch.getNodeport()+" With Ports: "+ports);
+			var cla = new ContainerLaunchAttributes();
+			var crs = new ContainerResources();
+			crs.setPort(ports.get(0));
+			crs.setCpu(restolaunch.getNumberofprocessors());
+			var meminmb = restolaunch.getFreememory()/MDCConstants.MB;
+			var heapmem = meminmb*30/100;
+			crs.setMinmemory(heapmem);
+			crs.setMaxmemory(heapmem);
+			crs.setDirectheap(meminmb-heapmem);
+			crs.setGctype(MDCConstants.ZGC);
+			cla.setCr(Arrays.asList(crs));
+			cla.setNumberofcontainers(1);
+			LaunchContainers lc = new LaunchContainers();
+			lc.setCla(cla);
+			lc.setNodehostport(restolaunch.getNodeport());
+			lc.setContainerid(containerid);
+			lc.setJobid(jobid);
+			List<Integer> launchedcontainerports = (List<Integer>) Utils.getResultObjectByInput(lc.getNodehostport(), lc);			
+			int index = 0;
+			while (index < launchedcontainerports.size()) {
+				while (true) {
+					String tehost = lc.getNodehostport().split("_")[0];
+					try (var sock = new Socket(tehost, launchedcontainerports.get(index));) {
+						break;
+					} catch (Exception ex) {
+						try {
+							log.info("Waiting for container "+ tehost+MDCConstants.UNDERSCORE+launchedcontainerports.get(index)+ " to complete launch....");
+							Thread.sleep(1000);
+						} catch (Exception e) {
+						}
+					}
+				}
+				index++;
+			}
+			log.info("Container Launched In Node: "+restolaunch.getNodeport()+" With Ports: "+launchedcontainerports);
+			lcs.add(lc);
+		}
+		return containerid;
+	}
+	
 }
