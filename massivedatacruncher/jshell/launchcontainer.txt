@@ -11,10 +11,10 @@ pc.setBlocksize("64");
 pc.setNumberofcontainers("1");
 pc.setMaxmem("1024");
 pc.setMinmem("1024");
-pc.setLocal("true")
-pc.setJgroups("false")
-pc.setMesos("false")
-pc.setYarn("false")
+pc.setLocal("true");
+pc.setJgroups("false");
+pc.setMesos("false");
+pc.setYarn("false");
 pc.setOutput(new Output(System.out));
 pc.setIsblocksuserdefined("true");
 pc.setBlocksize("64");
@@ -27,4 +27,5 @@ mapres.put("127.0.0.1_12121",resources);
 resources.setNodeport("127.0.0.1_12121");
 MDCNodesResources.put(mapres);
 MDCNodesResourcesSnapshot.put(mapres);
-Utils.launchContainers(1);
+var lc = Utils.launchContainers(1);
+Utils.destroyContainers(lc);

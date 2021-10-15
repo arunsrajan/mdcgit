@@ -392,4 +392,7 @@ public class MDCConstants {
 	public static final String HEAP_PERCENTAGE = "heap.percent";
 	public static final String HEAP_PERCENTAGE_DEFAULT = "40";
 	
+	public static final String USEGLOBALTASKEXECUTORS = "taskexecutors.isglobal";
+	public static final String USEGLOBALTASKEXECUTORS_DEFAULT = "false";
+	
 }

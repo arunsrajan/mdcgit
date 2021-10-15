@@ -747,7 +747,7 @@ public class Utils {
 			var obj = kryo.readClassAndObject(input);
 			return obj;
 		} catch (Exception ex) {
-			log.error("Unable to retreive Object: " + inputobj, ex);
+			log.error("Unable to read result Object: " + inputobj+" "+hp, ex);
 		}
 		return null;
 	}
@@ -764,7 +764,7 @@ public class Utils {
 			return kryo.readClassAndObject(input);
 
 		} catch (Exception ex) {
-			log.error("Unable to retreive Object: ", ex);
+			log.error("Unable to read Object: ", ex);
 		}
 		return null;
 	}
@@ -782,7 +782,7 @@ public class Utils {
 			return kryo.readClassAndObject(input);
 
 		} catch (Exception ex) {
-			log.error("Unable to retreive Object: ", ex);
+			log.error("Unable to read Object: ", ex);
 		}
 		return null;
 	}
@@ -799,7 +799,7 @@ public class Utils {
 			kryo.writeClassAndObject(output, object);
 			output.flush();
 		} catch (Exception ex) {
-			log.error("Unable to retreive Object: ", ex);
+			log.error("Unable to write Object: ", ex);
 		}
 	}
 
@@ -816,11 +816,11 @@ public class Utils {
 
 			writeObjectByStream(socket.getOutputStream(), inputobj);
 		} catch (IOException ex) {
-			log.error("Unable to retreive Object: " + inputobj);
+			log.error("Unable to write Object: " + inputobj);
 			throw ex;
 		}
 		catch (Exception ex) {
-			log.error("Unable to retreive Object: " + inputobj);
+			log.error("Unable to write Object: " + inputobj);
 		}
 	}
 	/**
@@ -837,7 +837,7 @@ public class Utils {
 			kryo.writeClassAndObject(output, inputobj);
 			output.flush();
 		} catch (Exception ex) {
-			log.error("Unable to retreive Object: " + inputobj);
+			log.error("Unable to write Object Stream: " + inputobj);
 		}
 	}
 	
@@ -1063,7 +1063,25 @@ public class Utils {
 			log.info("Container Launched In Node: "+restolaunch.getNodeport()+" With Ports: "+launchedcontainerports);
 			lcs.add(lc);
 		}
+		GlobalContainerLaunchers.put(containerid, lcs);
 		return containerid;
 	}
+	
+	
+	public static void destroyContainers(String containerid) {
+		var dc = new DestroyContainers();
+		dc.setContainerid(containerid);
+		var lcs = GlobalContainerLaunchers.get(containerid);
+		lcs.stream().forEach(lc->{
+			try {
+				Utils.writeObject(lc.getNodehostport(), dc);
+			} catch (Exception e) {
+				log.error(MDCConstants.EMPTY,e);
+			}
+		});
+		GlobalContainerLaunchers.remove(containerid);
+	}
+	
+	
 	
 }

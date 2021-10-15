@@ -47,13 +47,13 @@ import com.github.mdc.common.DestroyContainer;
 import com.github.mdc.common.DestroyContainers;
 import com.github.mdc.common.FileSystemSupport;
 import com.github.mdc.common.GlobalContainerAllocDealloc;
+import com.github.mdc.common.GlobalContainerLaunchers;
 import com.github.mdc.common.HDFSBlockUtils;
 import com.github.mdc.common.HdfsBlockReader;
 import com.github.mdc.common.Job;
 import com.github.mdc.common.LaunchContainers;
 import com.github.mdc.common.LoadJar;
 import com.github.mdc.common.MDCConstants;
-import com.github.mdc.common.MDCNodesResources;
 import com.github.mdc.common.MDCNodesResourcesSnapshot;
 import com.github.mdc.common.MassiveDataPipelineConstants;
 import com.github.mdc.common.PipelineConfig;
@@ -61,9 +61,9 @@ import com.github.mdc.common.Resources;
 import com.github.mdc.common.Stage;
 import com.github.mdc.common.Utils;
 import com.github.mdc.stream.AbstractPipeline;
-import com.github.mdc.stream.StreamPipeline;
-import com.github.mdc.stream.PipelineException;
 import com.github.mdc.stream.IgnitePipeline;
+import com.github.mdc.stream.PipelineException;
+import com.github.mdc.stream.StreamPipeline;
 
 public class FileBlocksPartitionerHDFS {
 	private static Logger log = Logger.getLogger(FileBlocksPartitionerHDFS.class);
@@ -203,7 +203,11 @@ public class FileBlocksPartitionerHDFS {
 				sendDataToIgniteServer(totalblockslocation,((IgnitePipeline)mdsroots.iterator().next()).getHdfspath());
 			}else if(isjgroups||!islocal&&!isyarn&&!ismesos){
 				getDnXref(totalblockslocation, true);
-				getTaskExecutors(totalblockslocation);
+				if(!pc.getUseglobaltaskexecutors()) {
+					getTaskExecutors(totalblockslocation);
+				}else {
+					getTaskExecutorsGlobal();
+				}
 				getContainersBalanced(totalblockslocation);
 				job.jm.nodes = nodeschoosen;
 				job.jm.containersallocated = containers.stream().collect(Collectors.toMap(key->key, value->0d));
@@ -579,6 +583,20 @@ public class FileBlocksPartitionerHDFS {
 		}
 	}
 
+	
+	protected void getTaskExecutorsGlobal() {
+		job.lcs = GlobalContainerLaunchers.getAll();
+		job.containerid = job.lcs.get(0).getContainerid();
+		containers = job.containers = job.lcs.stream().flatMap(lc->{
+			var host = lc.getNodehostport().split(MDCConstants.UNDERSCORE);
+			return lc.getCla().getCr().stream().map(cr->{
+				return host[0]+MDCConstants.UNDERSCORE+cr.getPort();
+			}
+			).collect(Collectors.toList()).stream();
+		}).collect(Collectors.toList());
+		job.nodes = job.lcs.stream().map(lc->lc.getNodehostport()).collect(Collectors.toSet());
+	}
+	
 	protected void getNodesResourcesSorted(List<BlocksLocation> bls,Map<String,Long> nodestotalblockmem) {
 		resources = MDCNodesResourcesSnapshot.get();
 		

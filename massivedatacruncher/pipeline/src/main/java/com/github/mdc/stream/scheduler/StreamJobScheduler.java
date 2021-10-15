@@ -455,15 +455,17 @@ public class StreamJobScheduler {
 			}
 			if ((Boolean.FALSE.equals(ismesos) && Boolean.FALSE.equals(isyarn) && Boolean.FALSE.equals(islocal)
 					|| Boolean.TRUE.equals(isjgroups)) && !isignite) {
-				if (!Boolean.TRUE.equals(isjgroups)) {
-					var cce = new FreeResourcesCompletedJob();
-					cce.jobid = job.id;
-					cce.containerid = job.containerid;
-					for (var te : taskexecutors) {
-						Utils.writeObject(te, cce);
+				if(!pipelineconfig.getUseglobaltaskexecutors()) {
+					if (!Boolean.TRUE.equals(isjgroups)) {
+						var cce = new FreeResourcesCompletedJob();
+						cce.jobid = job.id;
+						cce.containerid = job.containerid;
+						for (var te : taskexecutors) {
+							Utils.writeObject(te, cce);
+						}
 					}
+					destroyContainers();
 				}
-				destroyContainers();
 			}
 			if (!Objects.isNull(hbss)) {
 				hbss.close();
@@ -508,7 +510,14 @@ public class StreamJobScheduler {
 			var loadjar = new LoadJar();
 			loadjar.mrjar = pipelineconfig.getJar();
 			for (var lc : job.lcs) {
-				List<Integer> ports = (List<Integer>) Utils.getResultObjectByInput(lc.getNodehostport(), lc);
+				List<Integer> ports = null;
+				if(pipelineconfig.getUseglobaltaskexecutors()) {
+					ports = lc.getCla().getCr().stream().map(cr->{
+						return cr.getPort();
+					}).collect(Collectors.toList());
+				}else {
+					ports =	(List<Integer>) Utils.getResultObjectByInput(lc.getNodehostport(), lc);
+				}
 				int index = 0;
 				String tehost = lc.getNodehostport().split("_")[0];
 				while (index < ports.size()) {

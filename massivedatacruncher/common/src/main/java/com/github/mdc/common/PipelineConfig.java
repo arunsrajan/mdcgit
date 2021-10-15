@@ -39,6 +39,7 @@ public class PipelineConfig implements Cloneable{
 	private String containeralloc;
 	private String jobname;
 	private String heappercent;
+	private Boolean useglobaltaskexecutors;
 	public void setKryoOutput(Output output) {
 		this.output = output;
 	}
@@ -233,6 +234,14 @@ public class PipelineConfig implements Cloneable{
 	public String getHeappercent() {
 		return Objects.isNull(heappercent)
 				?MDCProperties.get().getProperty(MDCConstants.HEAP_PERCENTAGE, MDCConstants.HEAP_PERCENTAGE_DEFAULT):heappercent;
+	}
+	
+	public Boolean getUseglobaltaskexecutors() {
+		return Objects.isNull(useglobaltaskexecutors)
+				?Boolean.parseBoolean(MDCProperties.get().getProperty(MDCConstants.USEGLOBALTASKEXECUTORS, MDCConstants.USEGLOBALTASKEXECUTORS_DEFAULT)):useglobaltaskexecutors;
+	}
+	public void setUseglobaltaskexecutors(Boolean useglobaltaskexecutors) {
+		this.useglobaltaskexecutors = useglobaltaskexecutors;
 	}
 	public void setHeappercent(String heappercent) {
 		this.heappercent = heappercent;

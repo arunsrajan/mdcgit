@@ -108,8 +108,8 @@ public sealed class HeartBeatServerStream implements HeartBeatServerMBean,HeartB
 		channel.setName(networkaddress + MDCConstants.UNDERSCORE + serverport);
 		channel.setReceiver(new Receiver() {
 			public void viewAccepted(View newView) {
-				log.debug("Entered Receiver.viewAccepted");
-				log.debug("Nodes View: "+newView.getMembers());
+				log.info("Entered Receiver.viewAccepted");
+				log.info("Nodes View: "+newView.getMembers());
 				var addresses = newView.getMembers();
 				
 				var schedulerHostPort = networkaddress + MDCConstants.UNDERSCORE + serverport;
@@ -158,7 +158,6 @@ public sealed class HeartBeatServerStream implements HeartBeatServerMBean,HeartB
 			}
 		    }
 		});
-		channel.setDiscardOwnMessages(true);
 		if(clusterid!=null && !clusterid.trim().equals(MDCConstants.EMPTY)) {
 			channel.connect(clusterid);
 		}
