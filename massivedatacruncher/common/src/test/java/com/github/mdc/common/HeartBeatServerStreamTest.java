@@ -11,10 +11,6 @@ import java.util.Objects;
 import org.jgroups.util.UUID;
 import org.junit.Test;
 
-import com.github.mdc.common.HeartBeatServerStream;
-import com.github.mdc.common.MDCConstants;
-import com.github.mdc.common.Resources;
-
 public class HeartBeatServerStreamTest extends HeartBeatCommon {
 
 	@Test
@@ -98,11 +94,8 @@ public class HeartBeatServerStreamTest extends HeartBeatCommon {
 	public void testHeartBeatServerStreamInitWithArgs() throws Exception {
 		HeartBeatServerStream hbss = new HeartBeatServerStream();
 		hbss.init(10000, 2000, "127.0.0.1", 1000, 5000,MDCConstants.EMPTY);
-		assertNotNull(hbss.pingdelay);
 		assertEquals(5000, hbss.pingdelay);
-		assertNotNull(hbss.serverport);
 		assertEquals(2000, hbss.serverport);
-		assertNotNull(hbss.networkaddress);
 		assertEquals("127.0.0.1", hbss.networkaddress);
 		assertNotNull(hbss.threadpool);
 	}

@@ -99,11 +99,8 @@ public class HeartBeatServerTest extends HeartBeatCommon {
 	public void testHeartBeatServerInitWithArgs() throws Exception {
 		HeartBeatServer hbs = new HeartBeatServer();
 		hbs.init(10000, 2000, "127.0.0.1", 1000, 5000,MDCConstants.EMPTY);
-		assertNotNull(hbs.pingdelay);
 		assertEquals(5000, hbs.pingdelay);
-		assertNotNull(hbs.serverport);
 		assertEquals(2000, hbs.serverport);
-		assertNotNull(hbs.networkaddress);
 		assertEquals("127.0.0.1", hbs.networkaddress);
 		assertNotNull(hbs.threadpool);
 	}

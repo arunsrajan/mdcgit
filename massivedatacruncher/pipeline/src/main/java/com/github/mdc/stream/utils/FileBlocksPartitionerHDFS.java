@@ -362,11 +362,16 @@ public class FileBlocksPartitionerHDFS {
 			if(Objects.isNull(hostportcontainer)) {
 				throw new PipelineException(MassiveDataPipelineConstants.INSUFFNODESFORDATANODEERROR.replace("%s", b.block[0].hp).replace("%d", hostcontainermap.toString()));
 			}
-			var container = hostportcontainer.stream().sorted((xref1, xref2) -> {
+			var optional = hostportcontainer.stream().sorted((xref1, xref2) -> {
 						return containerallocatecount.get(xref1).compareTo(containerallocatecount.get(xref2));
-					}).findFirst().get();
-			b.executorhp = container;
-			containerallocatecount.put(container, containerallocatecount.get(container)+1);
+					}).findFirst();
+			if(optional.isPresent()) {
+				var container = optional.get();
+				b.executorhp = container;
+				containerallocatecount.put(container, containerallocatecount.get(container)+1);
+			}else {
+				throw new PipelineException(MassiveDataPipelineConstants.CONTAINERALLOCATIONERROR);
+			}
 		}
 		log.debug("Exiting FileBlocksPartitionerHDFS.getContainersBalanced");
 	}

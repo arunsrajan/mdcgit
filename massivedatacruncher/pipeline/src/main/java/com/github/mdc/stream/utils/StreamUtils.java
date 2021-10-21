@@ -3,6 +3,7 @@ package com.github.mdc.stream.utils;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Vector;
 import java.util.function.IntUnaryOperator;
 import java.util.function.ToIntFunction;
@@ -14,6 +15,8 @@ import java.util.stream.Stream;
 import org.jooq.lambda.tuple.Tuple;
 import org.jooq.lambda.tuple.Tuple2;
 
+import com.github.mdc.common.MassiveDataPipelineConstants;
+import com.github.mdc.stream.PipelineException;
 import com.github.mdc.stream.functions.CoalesceFunction;
 import com.github.mdc.stream.functions.Distinct;
 import com.github.mdc.stream.functions.DoubleFlatMapFunction;
@@ -36,7 +39,7 @@ import com.github.mdc.stream.functions.TupleFlatMapFunction;
 public class StreamUtils {
 	private StreamUtils() {}
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public static Object getFunctionsToStream(List functions, BaseStream stream) {
+	public static Object getFunctionsToStream(List functions, BaseStream stream) throws PipelineException {
 		var streamparser = stream;
 		for (var function : functions) {
 			if (function instanceof MapFunction mf) {
@@ -167,9 +170,15 @@ public class StreamUtils {
 	}
 	
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private static Stream reduce(ReduceFunction reducefunction, Stream stream) {
-		List out = Arrays.asList(stream.reduce(reducefunction).get());
-		return out.stream();
+	private static Stream reduce(ReduceFunction reducefunction, Stream stream) throws PipelineException {
+		Optional optional = stream.reduce(reducefunction);
+		if(optional.isPresent()) {
+			List out = Arrays.asList(optional.get());
+			return out.stream();
+		}
+		else {
+			throw new PipelineException(MassiveDataPipelineConstants.REDUCEEXECUTIONVALUEEMPTY);
+		}
 	}
 	
 	

@@ -81,4 +81,6 @@ public class MassiveDataPipelineConstants {
 	public static final String RESOURCESDOWNRESUBMIT = "Resources (TaskExecutor) %s down while manipulating blocks, Please Resubmit";
 	public static final String INSUFFNODESFORDATANODEERROR = "Insufficient computing nodes for datanode %s,available computing nodes are %d";
 	public static final String ERROREDTASKS = "Task execution exceeded the limit %s, See the Errored tasks, please find below for cause: ";
+	public static final String CONTAINERALLOCATIONERROR = "Container Allocation Error";
+	public static final String REDUCEEXECUTIONVALUEEMPTY = "Reduce Execution Empty Value Error";
 }

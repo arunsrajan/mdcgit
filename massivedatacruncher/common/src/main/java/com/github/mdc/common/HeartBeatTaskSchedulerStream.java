@@ -109,6 +109,10 @@ public final class HeartBeatTaskSchedulerStream extends HeartBeatServerStream im
 						}
 						log.info("Exiting Receiver.receive");
 					}
+				} catch (InterruptedException e) {
+					log.warn("Interrupted!", e);
+				    // Restore interrupted state...
+				    Thread.currentThread().interrupt();
 				} catch (Exception ex) {
 					log.info("Heartbeat Receive Updates error, See Cause below: \n",ex);
 				}
@@ -193,6 +197,10 @@ public final class HeartBeatTaskSchedulerStream extends HeartBeatServerStream im
 
 			log.info("Exiting Pinging Message: " + jobid + MDCConstants.SINGLESPACE + stageid + MDCConstants.SINGLESPACE
 					+ taskid + MDCConstants.SINGLESPACE + taskstatus);
+		} catch (InterruptedException e) {
+			log.warn("Interrupted!", e);
+		    // Restore interrupted state...
+		    Thread.currentThread().interrupt();
 		} catch (Exception ex) {
 			log.info("Heartbeat ping once error, See Cause below: \n", ex);
 		}

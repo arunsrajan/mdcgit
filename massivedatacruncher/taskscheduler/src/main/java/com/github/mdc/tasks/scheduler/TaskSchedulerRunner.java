@@ -136,6 +136,10 @@ public class TaskSchedulerRunner {
 				}
 			});
 			cdl.await();
+		} catch (InterruptedException e) {
+			log.warn("Interrupted!", e);
+		    // Restore interrupted state...
+		    Thread.currentThread().interrupt();
 		} catch (Exception ex) {
 			log.error(MDCConstants.EMPTY, ex);
 		}

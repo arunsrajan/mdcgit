@@ -195,7 +195,6 @@ public class StreamJobScheduler {
 				hbtss.getHbo().start();
 				getContainersHostPort();
 				batchsize = Integer.parseInt(pipelineconfig.getBatchsize());
-				taskexecutors.parallelStream().collect(Collectors.toMap(val -> val, val -> new Semaphore(batchsize)));
 				var taskexecutorssize = taskexecutors.size();
 				taskexecutorssize = taskexecutors.size();
 				log.debug("taskexecutorssize: " + taskexecutorssize);
@@ -414,7 +413,12 @@ public class StreamJobScheduler {
 					stagepartidstatusmapresp.clear();
 					stagepartidstatusmapreq.clear();
 					closeResourcesTaskExecutor(tasksgraphexecutor);
+				} catch (InterruptedException e) {
+					log.warn("Interrupted!", e);
+				    // Restore interrupted state...
+				    Thread.currentThread().interrupt();
 				} catch (Exception e) {
+					log.error(MDCConstants.EMPTY,e);
 				}
 			}
 			// If not yarn or mesos schedule via standalone task executors
@@ -443,6 +447,11 @@ public class StreamJobScheduler {
 				resultstream = null;
 			}
 			return finalstageoutput;
+		} catch (InterruptedException e) {
+			log.warn("Interrupted!", e);
+		    // Restore interrupted state...
+		    Thread.currentThread().interrupt();
+		    return null;
 		} catch (Exception ex) {
 			log.error(MassiveDataPipelineConstants.JOBSCHEDULERERROR, ex);
 			throw new PipelineException(MassiveDataPipelineConstants.JOBSCHEDULERERROR, ex);
@@ -482,6 +491,7 @@ public class StreamJobScheduler {
 			istaskcancelled.set(true);
 			jobping.shutdownNow();
 		}
+		
 	}
 
 	public void broadcastJobStageToTaskExecutors() throws Exception {
@@ -554,6 +564,10 @@ public class StreamJobScheduler {
 				taskexecutors = new LinkedHashSet<>(hbss.containers);
 				Thread.sleep(500);
 			}
+		} catch (InterruptedException e) {
+			log.warn("Interrupted!", e);
+		    // Restore interrupted state...
+		    Thread.currentThread().interrupt();
 		} catch (Exception ex) {
 			log.error(MassiveDataPipelineConstants.JOBSCHEDULERCONTAINERERROR, ex);
 			throw new PipelineException(MassiveDataPipelineConstants.JOBSCHEDULERCONTAINERERROR, ex);
@@ -800,12 +814,14 @@ public class StreamJobScheduler {
 			Utils.writeKryoOutput(kryo, pipelineconfig.getOutput(), "Number of Executions: " + numexecute);
 			if (!completed) {
 				StringBuilder sb = new StringBuilder();
-				erroredresult.forEach(exec -> {
-					sb.append(MDCConstants.NEWLINE);
-					sb.append(exec.getId().getTask().stagefailuremessage);
-				});
-				if(!sb.isEmpty()) {
-					throw new PipelineException(MassiveDataPipelineConstants.ERROREDTASKS.replace("%s", ""+executioncount)+sb.toString());
+				if(erroredresult!=null) {
+					erroredresult.forEach(exec -> {
+						sb.append(MDCConstants.NEWLINE);
+						sb.append(exec.getId().getTask().stagefailuremessage);
+					});
+					if(!sb.isEmpty()) {
+						throw new PipelineException(MassiveDataPipelineConstants.ERROREDTASKS.replace("%s", ""+executioncount)+sb.toString());
+					}
 				}
 			}
 		} catch (Exception ex) {
@@ -1056,6 +1072,10 @@ public class StreamJobScheduler {
 						Utils.writeKryoOutput(kryo, pipelineconfig.getOutput(), "\nPercentage Completed "
 								+ Math.floor((counttaskscomp / totaltasks) * 100.0) + "% \n");
 						printresults.release();						
+					} catch (InterruptedException e) {
+						log.warn("Interrupted!", e);
+					    // Restore interrupted state...
+					    Thread.currentThread().interrupt();
 					} catch (Exception e) {
 						log.error("SleepyTaskProvider error", e);
 					}
@@ -1091,6 +1111,10 @@ public class StreamJobScheduler {
 								"Completed Job And Stages: " + task.jobid + MDCConstants.HYPHEN + task.stageid);
 						Utils.writeKryoOutput(kryo, pipelineconfig.getOutput(), "Completed Tasks: " + task);
 						semaphore.release();
+					} catch (InterruptedException e) {
+						log.warn("Interrupted!", e);
+					    // Restore interrupted state...
+					    Thread.currentThread().interrupt();
 					} catch (Exception e) {
 						log.error("TaskProviderIgnite error", e);
 					}
@@ -1141,6 +1165,10 @@ public class StreamJobScheduler {
 									+ mdststlocal.getHostPort() + ") " + percentagecompleted + "% \n");
 							job.jm.containersallocated.put(mdststlocal.getHostPort(), percentagecompleted);
 							printresult.release();
+						} catch (InterruptedException e) {
+							log.warn("Interrupted!", e);
+						    // Restore interrupted state...
+						    Thread.currentThread().interrupt();
 						} catch (Exception e) {
 							log.info("DAGTaskExecutor error", e);
 						}
@@ -1202,6 +1230,10 @@ public class StreamJobScheduler {
 								printresult.release();
 								cdl.countDown();
 							}
+						} catch (InterruptedException e) {
+							log.warn("Interrupted!", e);
+						    // Restore interrupted state...
+						    Thread.currentThread().interrupt();
 						} catch (Exception e) {
 							log.info("DAGTaskExecutor error", e);
 						} finally {
@@ -1247,6 +1279,10 @@ public class StreamJobScheduler {
 						}
 						mutex.release();
 						hbtss.getHbo().removePropertyChangeListener(observer);
+					} catch (InterruptedException e) {
+						log.warn("Interrupted!", e);
+					    // Restore interrupted state...
+					    Thread.currentThread().interrupt();
 					} catch (Exception e) {
 						log.info("Job Submission error", e);
 						mdststlocal.setCompletedexecution(false);
@@ -1897,6 +1933,10 @@ public class StreamJobScheduler {
 					Utils.writeKryoOutputClassObject(kryo, output, job);
 					chtssha.send(new ObjectMessage(null, baos.toByteArray()));
 					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+					log.warn("Interrupted!", e);
+				    // Restore interrupted state...
+				    Thread.currentThread().interrupt();
 				} catch (Exception e) {
 					log.error(MDCConstants.EMPTY, e);
 					break;

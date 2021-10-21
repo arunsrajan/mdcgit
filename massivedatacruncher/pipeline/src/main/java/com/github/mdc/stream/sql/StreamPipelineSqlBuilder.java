@@ -210,7 +210,7 @@ public class StreamPipelineSqlBuilder {
 				globalindexcolumnsmap.put("$" + globalcolumnindex, field.getName());
 				globalindextablesmap.put("$" + globalcolumnindex, rtimpl.getQualifiedName().get(1));
 				tableindextablesmap.put("$" + globalcolumnindex, rtimpl.getQualifiedName().get(1));
-				if(!Objects.isNull(parentnode) && parentnode instanceof EnumerableFilter && tablescancolumns.contains("$" + tablespecindex)){
+				if(!Objects.isNull(parentnode) && parentnode instanceof EnumerableFilter && tablescancolumns!=null && tablescancolumns.contains("$" + tablespecindex)){
 					tscolumnsreq.add(field.getName());
 				}
 				if(this.tablescancolumns.contains("$" + globalcolumnindex)){
@@ -436,9 +436,9 @@ public class StreamPipelineSqlBuilder {
 			Map outputmap = new LinkedHashMap<>();
 			for(OperandSqlFunction osf:osfs) {
 					if(osf.column.startsWith("sum")) {
-						outputmap.put(osf.column, rec.v2.v1.longValue());
+						outputmap.put(osf.column, rec.v2.v1);
 					}else if(osf.column.startsWith("count")){
-						outputmap.put(osf.column, rec.v2.v2.longValue());
+						outputmap.put(osf.column, rec.v2.v2);
 					}else {
 						outputmap.put(osf.column, inputmap.get(osf.column));
 					}
@@ -730,7 +730,7 @@ public class StreamPipelineSqlBuilder {
 
 	public Object cast(Object value, String sqloperatortype) {
 		if (!Objects.isNull(sqloperatortype) && sqloperatortype.toLowerCase().startsWith("integer")
-				|| sqloperatortype.toLowerCase().startsWith("decimal")) {
+				|| !Objects.isNull(sqloperatortype) && sqloperatortype.toLowerCase().startsWith("decimal")) {
 			return Long.valueOf((String)(String) value);
 		}
 		return value;

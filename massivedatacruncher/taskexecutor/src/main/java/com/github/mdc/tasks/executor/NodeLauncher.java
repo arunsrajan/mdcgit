@@ -33,16 +33,15 @@ public class NodeLauncher {
 	public static void main(String[] args) throws Exception {
 		Utils.loadLog4JSystemProperties(MDCConstants.PREV_FOLDER + MDCConstants.BACKWARD_SLASH
 				+ MDCConstants.DIST_CONFIG_FOLDER + MDCConstants.BACKWARD_SLASH, MDCConstants.MDC_PROPERTIES);
-		try(var hbss = new HeartBeatServerStream();){
-			var port = Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.NODE_PORT));
+		var port = Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.NODE_PORT));
+		try(var hbss = new HeartBeatServerStream();var server = new ServerSocket(port,256,InetAddress.getByAddress(new byte[] { 0x00, 0x00, 0x00, 0x00 }));){
 			var pingdelay = Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULER_PINGDELAY));
 			var host = NetworkUtil.getNetworkAddress(MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_HOST));
 		hbss.init(0, port, host, 0, pingdelay,"");
 		var hb = new HeartBeatServer();
 		hb.init(0, port, host, 0, pingdelay,"");
 		hbss.ping();
-		hb.ping();
-		var server = new ServerSocket(port,256,InetAddress.getByAddress(new byte[] { 0x00, 0x00, 0x00, 0x00 }));
+		hb.ping();		
 		var teport = Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_PORT));
 		var es = Executors.newWorkStealingPool();
 		var escontainer = Executors.newWorkStealingPool();
@@ -66,6 +65,10 @@ public class NodeLauncher {
 							containerprocesses, hdfs, containeridthreads,containeridports);
 					Future<Boolean> containerallocated = escontainer.submit(container);
 					log.info("Containers Allocated: "+containerallocated.get()+" Next Port Allocation:"+portinc.get());
+				} catch (InterruptedException e) {
+					log.warn("Interrupted!", e);
+				    // Restore interrupted state...
+				    Thread.currentThread().interrupt();
 				} catch (Exception e) {
 					log.error(MDCConstants.EMPTY, e);
 				}
@@ -93,6 +96,11 @@ public class NodeLauncher {
 			}
 		});
 		cdl.await();
+		}
+		catch (InterruptedException e) {
+			log.warn("Interrupted!", e);
+		    // Restore interrupted state...
+		    Thread.currentThread().interrupt();
 		}
 		catch(Exception ex) {
 			log.error("Unable to start Node Manager due to ",ex);

@@ -66,11 +66,16 @@ public class EmbeddedSchedulersNodeLauncher {
 			cf.start();
 			cf.blockUntilConnected();
 			ByteBufferPoolDirect.init();
-			ByteBufferPool.init(Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.BYTEBUFFERPOOL_MAX, MDCConstants.BYTEBUFFERPOOL_MAX_DEFAULT)));
+			ByteBufferPool.init(Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.BYTEBUFFERPOOL_MAX,
+					MDCConstants.BYTEBUFFERPOOL_MAX_DEFAULT)));
 			startTaskScheduler(cf, cdl);
 			startTaskSchedulerStream(cf, cdl);
 			startContainerLauncher(cdl);
 			cdl.await();
+		} catch (InterruptedException e) {
+			log.warn("Interrupted!", e);
+			// Restore interrupted state...
+			Thread.currentThread().interrupt();
 		} catch (Exception ex) {
 			log.error(MDCConstants.EMPTY, ex);
 		}
@@ -91,7 +96,7 @@ public class EmbeddedSchedulersNodeLauncher {
 			var hb = new HeartBeatServer();
 			hb.init(0, port, host, 0, pingdelay, "");
 			hbss.ping();
-			var server = new ServerSocket(port,256,InetAddress.getByAddress(new byte[] { 0x00, 0x00, 0x00, 0x00 }));
+			var server = new ServerSocket(port, 256, InetAddress.getByAddress(new byte[] { 0x00, 0x00, 0x00, 0x00 }));
 			var teport = Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_PORT));
 			var es = Executors.newWorkStealingPool();
 			var escontainer = Executors.newWorkStealingPool();
@@ -118,6 +123,10 @@ public class EmbeddedSchedulersNodeLauncher {
 						Future<Boolean> containerallocated = escontainer.submit(container);
 						log.info("Containers Allocated: " + containerallocated.get() + " Next Port Allocation:"
 								+ portinc.get());
+					} catch (InterruptedException e) {
+						log.warn("Interrupted!", e);
+						// Restore interrupted state...
+						Thread.currentThread().interrupt();
 					} catch (Exception e) {
 						log.error(MDCConstants.EMPTY, e);
 					}
@@ -202,40 +211,44 @@ public class EmbeddedSchedulersNodeLauncher {
 		// Start Resources gathering via heart beat resources
 		// status update.
 		hbss.start();
-		var ss = new ServerSocket(
-				Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULERSTREAM_PORT)), 256,
-				InetAddress.getByAddress(new byte[] { 0x00, 0x00, 0x00, 0x00 }));
+
 		// Execute when request arrives.
 		esstream.execute(() -> {
-			while (true) {
-				try {
-					var s = ss.accept();
-					var bytesl = new ArrayList<byte[]>();
-					var kryo = Utils.getKryoNonDeflateSerializer();
-					var input = new Input(s.getInputStream());
-					log.debug("Obtaining Input Objects From Submitter");
-					while (true) {
-						var obj = kryo.readClassAndObject(input);
-						log.debug("Input Object: " + obj);
-						if (obj instanceof Integer brkintval && brkintval == -1)
-							break;
-						bytesl.add((byte[]) obj);
-					}
-					String[] arguments = null;
-					if (bytesl.size() > 2) {
-						var totalargs = bytesl.size();
-						arguments = new String[totalargs - 1];
-						for (var index = 2; index < totalargs; index++) {
-							arguments[index - 2] = new String(bytesl.get(index));
+			try (var ss = new ServerSocket(
+					Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULERSTREAM_PORT)), 256,
+					InetAddress.getByAddress(new byte[] { 0x00, 0x00, 0x00, 0x00 }));) {
+				while (true) {
+					try {
+						var s = ss.accept();
+						var bytesl = new ArrayList<byte[]>();
+						var kryo = Utils.getKryoNonDeflateSerializer();
+						var input = new Input(s.getInputStream());
+						log.debug("Obtaining Input Objects From Submitter");
+						while (true) {
+							var obj = kryo.readClassAndObject(input);
+							log.debug("Input Object: " + obj);
+							if (obj instanceof Integer brkintval && brkintval == -1)
+								break;
+							bytesl.add((byte[]) obj);
 						}
+						String[] arguments = null;
+						if (bytesl.size() > 2) {
+							var totalargs = bytesl.size();
+							arguments = new String[totalargs - 1];
+							for (var index = 2; index < totalargs; index++) {
+								arguments[index - 2] = new String(bytesl.get(index));
+							}
+						}
+						// Execute concurrently through thread pool
+						// executors.
+						es.execute(new StreamPipelineTaskScheduler(cf, new String(bytesl.get(1)), bytesl.get(0),
+								arguments, s));
+					} catch (Exception ex) {
+						log.info("Launching Stream Task scheduler error, See cause below \n", ex);
 					}
-					// Execute concurrently through thread pool
-					// executors.
-					es.execute(new StreamPipelineTaskScheduler(cf, new String(bytesl.get(1)), bytesl.get(0),
-							arguments, s));
-				} catch (Exception ex) {
-					log.info("Launching Stream Task scheduler error, See cause below \n", ex);
 				}
+			} catch (Exception ex) {
+
 			}
 		});
 		Utils.addShutdownHook(() -> {
@@ -254,13 +267,6 @@ public class EmbeddedSchedulersNodeLauncher {
 				}
 				if (!Objects.isNull(esstream)) {
 					esstream.shutdown();
-				}
-				if (!Objects.isNull(ss)) {
-					try {
-						ss.close();
-					} catch (IOException e) {
-						log.error(MDCConstants.EMPTY, e);
-					}
 				}
 				if (!Objects.isNull(su)) {
 					su.stop();

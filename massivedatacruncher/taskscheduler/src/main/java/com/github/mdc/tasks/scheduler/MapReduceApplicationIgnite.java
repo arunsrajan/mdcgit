@@ -314,6 +314,10 @@ public class MapReduceApplicationIgnite implements Callable<List<DataCruncherCon
 						log.info(mrresult);
 						resultsemaphore.release();
 						semaphore.release();
+					} catch (InterruptedException e) {
+						log.warn("Interrupted!", e);
+					    // Restore interrupted state...
+					    Thread.currentThread().interrupt();
 					} catch (Exception e) {
 						log.error("TaskProviderIgnite error", e);
 					}

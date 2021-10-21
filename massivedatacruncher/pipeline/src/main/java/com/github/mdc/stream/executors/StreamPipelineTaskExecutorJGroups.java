@@ -121,12 +121,16 @@ public final class StreamPipelineTaskExecutorJGroups extends StreamPipelineTaskE
 					var timetakenseconds = computeTasks(task, hdfs);
 					log.debug("Completed Stage " + stagePartition+" in "+timetakenseconds);
 					stagepartidstatusconcmapreq.put(stagePartition, WhoIsResponse.STATUS.COMPLETED);
-				} catch (Exception ex) {
-
+				} finally {
+					
 				}
 			}
 			log.debug("StagePartitionId with Stage Statuses: " + stagepartidstatusconcmapreq
 					+ " WhoIs Response stauses: " + stagepartidstatusconcmapresp);
+		} catch (InterruptedException e) {
+			log.warn("Interrupted!", e);
+		    // Restore interrupted state...
+		    Thread.currentThread().interrupt();
 		} catch (Exception ex) {
 			log.debug("Failed Stage " + tasks, ex);
 		}

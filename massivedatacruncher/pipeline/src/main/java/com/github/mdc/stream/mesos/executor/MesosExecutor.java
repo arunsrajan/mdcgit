@@ -63,11 +63,16 @@ public class MesosExecutor implements Executor {
 	 */
 	public void pullPropertiesMesosDistributor(String httpurl,String[] propertyfiles) throws Exception{
 		for(var propertyfile:propertyfiles) {
+			try(
+			
 			var istream = new URL(httpurl+MDCConstants.BACKWARD_SLASH+propertyfile).openStream();
-			var fos = new FileOutputStream(propertyfile);
-			IOUtils.copy(istream, fos);
-			istream.close();
-			fos.close();
+			var fos = new FileOutputStream(propertyfile);){
+				IOUtils.copy(istream, fos);
+			}
+			catch(Exception ex) {
+				log.error(MDCConstants.EMPTY,ex);
+				throw ex;
+			}
 		}
 		
 	}

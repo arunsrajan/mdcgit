@@ -252,6 +252,10 @@ public class MapReduceApplicationYarn implements Callable<List<DataCruncherConte
 					"Completed Job in " + (jm.totaltimetaken) + " seconds");
 			}
 			return null;
+		} catch (InterruptedException e) {
+			log.warn("Interrupted!", e);
+		    // Restore interrupted state...
+		    Thread.currentThread().interrupt();
 		} catch (Exception ex) {
 			log.info("Unable To Execute Job, See Cause Below:", ex);
 		} finally {

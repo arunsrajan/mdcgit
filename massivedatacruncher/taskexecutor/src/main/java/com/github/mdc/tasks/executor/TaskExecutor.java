@@ -4,7 +4,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.net.URI;
-import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -19,12 +18,9 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.log4j.Logger;
 import org.ehcache.Cache;
-import org.xerial.snappy.SnappyInputStream;
 
-import com.esotericsoftware.kryo.io.Input;
+import com.github.mdc.common.ApplicationTask.TaskStatus;
 import com.github.mdc.common.BlocksLocation;
-import com.github.mdc.common.ByteBufferInputStream;
-import com.github.mdc.common.ByteBufferPoolDirect;
 import com.github.mdc.common.CacheAvailability;
 import com.github.mdc.common.CacheUtils;
 import com.github.mdc.common.CloseStagesGraphExecutor;
@@ -35,22 +31,20 @@ import com.github.mdc.common.HeartBeatTaskScheduler;
 import com.github.mdc.common.HeartBeatTaskSchedulerStream;
 import com.github.mdc.common.JobStage;
 import com.github.mdc.common.MDCConstants;
+import com.github.mdc.common.MDCConstants.STORAGE;
 import com.github.mdc.common.MDCProperties;
 import com.github.mdc.common.ReducerValues;
 import com.github.mdc.common.RemoteDataFetch;
 import com.github.mdc.common.RemoteDataFetcher;
-import com.github.mdc.common.RemoteDataWriterTask;
 import com.github.mdc.common.RetrieveData;
 import com.github.mdc.common.RetrieveKeys;
 import com.github.mdc.common.Task;
 import com.github.mdc.common.TasksGraphExecutor;
 import com.github.mdc.common.Utils;
-import com.github.mdc.common.ApplicationTask.TaskStatus;
-import com.github.mdc.common.MDCConstants.STORAGE;
-import com.github.mdc.stream.executors.StreamPipelineTaskExecutorJGroups;
 import com.github.mdc.stream.executors.StreamPipelineTaskExecutor;
 import com.github.mdc.stream.executors.StreamPipelineTaskExecutorInMemory;
 import com.github.mdc.stream.executors.StreamPipelineTaskExecutorInMemoryDisk;
+import com.github.mdc.stream.executors.StreamPipelineTaskExecutorJGroups;
 
 public class TaskExecutor implements Runnable {
 	private static Logger log = Logger.getLogger(TaskExecutor.class);
@@ -221,18 +215,18 @@ public class TaskExecutor implements Runnable {
 								mdtemc.getHbts().destroy();
 								apptaskexecutormap.remove(apptaskid);
 							}
-							var hdfs = FileSystem.newInstance(
+							try(var hdfs = FileSystem.newInstance(
 									new URI(MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL)),
-									configuration);
+									configuration)){
 							log.debug("Application Submitted:" + applicationid + "-" + taskid);
-							var taskpool = Executors.newWorkStealingPool();
+							
 							var hbts = hbtsappid.get(applicationid);
 							mdtemc = new TaskExecutorMapperCombiner(blockslocation,
-									CacheUtils.getBlockData(blockslocation, hdfs), applicationid, taskid, taskpool, cl,
+									CacheUtils.getBlockData(blockslocation, hdfs), applicationid, taskid, es, cl,
 									port, hbts);
-							hdfs.close();
+							}
 							apptaskexecutormap.put(apptaskid, mdtemc);
-							taskpool.execute(mdtemc);
+							es.execute(mdtemc);
 						}
 					} else if (object instanceof ReducerValues rv) {
 						var mdter = (TaskExecutorReducer) taskexecutor;
@@ -242,13 +236,12 @@ public class TaskExecutor implements Runnable {
 								mdter.getHbts().destroy();
 								apptaskexecutormap.remove(apptaskid);
 							}
-							var taskpool = Executors.newWorkStealingPool();
 							var hbts = hbtsappid.get(applicationid);
-							mdter = new TaskExecutorReducer(rv, applicationid, taskid, taskpool, cl, port,
+							mdter = new TaskExecutorReducer(rv, applicationid, taskid, es, cl, port,
 									hbts);
 							apptaskexecutormap.put(apptaskid, mdter);
 							log.debug("Reducer submission:" + apptaskid);
-							taskpool.execute(mdter);
+							es.execute(mdter);
 						}
 					} else if (object instanceof RetrieveData) {
 						Context ctx = null;

@@ -22,7 +22,7 @@ public class IgniteMapper{
 	@IgniteInstanceResource
 	Ignite ignite;
 	
-	
+	public IgniteMapper() {}
 	
 	static Logger log = Logger.getLogger(IgniteMapper.class);
 	BlocksLocation blockslocation;

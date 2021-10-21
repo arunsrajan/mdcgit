@@ -130,7 +130,7 @@ public class MapReduceApplicatiion implements Callable<List<DataCruncherContext>
 	public List<LaunchContainers> lcs = new ArrayList<>();
 	private ConcurrentMap<String, Resources> resources;;
 	
-	private void getContainersBalanced(List<BlocksLocation> bls) {
+	private void getContainersBalanced(List<BlocksLocation> bls) throws MapReduceException {
 		log.debug("Entered MdcJob.getContainersBalanced");
 		var hostcontainermap = containers.stream()
 				.collect(Collectors.groupingBy(key->key.split(MDCConstants.UNDERSCORE)[0],
@@ -140,11 +140,16 @@ public class MapReduceApplicatiion implements Callable<List<DataCruncherContext>
 		List<String> hostportcontainer;
 		for (var b : bls) {
 			hostportcontainer = hostcontainermap.get(b.block[0].hp.split(MDCConstants.COLON)[0]);
-			var container = hostportcontainer.stream().sorted((xref1, xref2) -> {
+			var optional = hostportcontainer.stream().sorted((xref1, xref2) -> {
 						return containerallocatecount.get(xref1).compareTo(containerallocatecount.get(xref2));
-					}).findFirst().get();
-			b.executorhp = container;
-			containerallocatecount.put(container, containerallocatecount.get(container)+1);
+					}).findFirst();
+			if(optional.isPresent()) {
+				var container = optional.get();
+				b.executorhp = container;
+				containerallocatecount.put(container, containerallocatecount.get(container)+1);
+			}else {
+				throw new MapReduceException(MDCConstants.CONTAINERALLOCATIONERROR);
+			}
 		}
 		log.debug("Exiting MdcJob.getContainersBalanced");
 	}
@@ -716,6 +721,10 @@ public class MapReduceApplicatiion implements Callable<List<DataCruncherContext>
 						exceptionmsg = apptask.apperrormessage;
 						cdlreducercomplete.countDown();
 					}
+				} catch (InterruptedException e) {
+					log.warn("Interrupted!", e);
+				    // Restore interrupted state...
+				    Thread.currentThread().interrupt();
 				} catch (Exception ex) {
 				}
 			};
@@ -793,6 +802,10 @@ public class MapReduceApplicatiion implements Callable<List<DataCruncherContext>
 					"Completed Job in " + ((System.currentTimeMillis() - starttime) / 1000.0) + " seconds");
 			}
 			return dccred;
+		} catch (InterruptedException e) {
+			log.warn("Interrupted!", e);
+		    // Restore interrupted state...
+		    Thread.currentThread().interrupt();
 		} catch (Exception ex) {
 			log.info("Unable To Execute Job, See Cause Below:", ex);
 		} finally {
@@ -935,6 +948,10 @@ public class MapReduceApplicatiion implements Callable<List<DataCruncherContext>
 						cdls.get(mdtstmc.apptask.applicationid
 								+ mdtstmc.apptask.taskid).await();
 						
+					} catch (InterruptedException e) {
+						log.warn("Interrupted!", e);
+					    // Restore interrupted state...
+					    Thread.currentThread().interrupt();
 					} catch (Exception ex) {
 						log.error("MapCombinerTaskExecutor error", ex);
 					}
@@ -987,6 +1004,10 @@ public class MapReduceApplicatiion implements Callable<List<DataCruncherContext>
 							semaphorebatch.release();
 							cdl.countDown();
 						}
+					} catch (InterruptedException e) {
+						log.warn("Interrupted!", e);
+					    // Restore interrupted state...
+					    Thread.currentThread().interrupt();
 					} catch (Exception ex) {
 						log.info("Mapper Submitted Failed For Getting Response: ", ex);
 					}

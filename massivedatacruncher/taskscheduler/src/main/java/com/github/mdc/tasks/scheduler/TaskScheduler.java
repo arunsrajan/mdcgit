@@ -31,30 +31,31 @@ public class TaskScheduler implements Runnable {
 	@Override
 	public void run() {
 		final ClassLoader loader = Thread.currentThread().getContextClassLoader();
-		try {
-			new File(MDCConstants.LOCAL_FS_APPJRPATH).mkdirs();
-			var fos = new FileOutputStream(MDCConstants.LOCAL_FS_APPJRPATH+filename);
+		new File(MDCConstants.LOCAL_FS_APPJRPATH).mkdirs();
+		try (var fos = new FileOutputStream(MDCConstants.LOCAL_FS_APPJRPATH+filename);) {	
 			fos.write(mrjar);
-			fos.close();
 			var clsloader = MDCMapReducePhaseClassLoader.newInstance(mrjar, loader);
 			Thread.currentThread().setContextClassLoader(clsloader);
 			var kryo = Utils.getKryoNonDeflateSerializer();
-
+			String[] argscopy;
 			//Get the main class to execute.
-			var mainclass = args[0];
-			var main = Class.forName(mainclass,true,clsloader);
+			String mainclass;
 			if(args==null) {
-				args = new String[] {};
+				argscopy = new String[] {};
+				mainclass = "";
 			} else {
-				args = Arrays.copyOfRange(args, 1, args.length);
+				mainclass = args[0];
+				argscopy = Arrays.copyOfRange(args, 1, args.length);
 			}
+			
+			var main = Class.forName(mainclass,true,clsloader);
 			var jc = JobConfigurationBuilder.newBuilder().build();
 			jc.setMrjar(mrjar);
 			var tssos = tss.getOutputStream();
 			var output = new Output(tssos);
 			jc.setOutput(output);
 			var mrjob = (Application) main.newInstance();
-			mrjob.runMRJob(args, jc);
+			mrjob.runMRJob(argscopy, jc);
 			kryo.writeClassAndObject(output, "Successfully Completed executing the task " + mainclass);
 			kryo.writeClassAndObject(output, "quit");
 			output.close();

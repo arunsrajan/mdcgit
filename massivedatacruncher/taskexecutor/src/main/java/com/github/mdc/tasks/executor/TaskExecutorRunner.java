@@ -224,6 +224,10 @@ public class TaskExecutorRunner implements TaskExecutorRunnerMBean {
 								jobidstageidexecutormap,
 								taskqueue, jobidstageidjobstagemap));
 					}
+				} catch (InterruptedException e) {
+					log.warn("Interrupted!", e);
+				    // Restore interrupted state...
+				    Thread.currentThread().interrupt();
 				} catch (Exception ex) {
 					log.info(MDCConstants.EMPTY, ex);
 				}
@@ -239,9 +243,15 @@ public class TaskExecutorRunner implements TaskExecutorRunnerMBean {
 						ExecutorsFutureTask eft = new ExecutorsFutureTask();
 						eft.future = future;
 						eft.estask = estask;
-						taskresultqueue.offer(eft);
+						if(!taskresultqueue.offer(eft)) {
+							log.info("Task Exceution Queue Full");
+						}
 					}
 					Thread.sleep(300);
+				} catch (InterruptedException e) {
+					log.warn("Interrupted!", e);
+				    // Restore interrupted state...
+				    Thread.currentThread().interrupt();
 				} catch (Exception e) {
 				} finally {
 				}
@@ -256,6 +266,10 @@ public class TaskExecutorRunner implements TaskExecutorRunnerMBean {
 						eft.estask.shutdown();
 					}
 					Thread.sleep(300);
+				} catch (InterruptedException e) {
+					log.warn("Interrupted!", e);
+				    // Restore interrupted state...
+				    Thread.currentThread().interrupt();
 				} catch (Exception e) {
 				} 
 			}

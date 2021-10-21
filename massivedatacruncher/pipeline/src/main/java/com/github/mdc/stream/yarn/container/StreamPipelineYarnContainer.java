@@ -122,6 +122,11 @@ public class StreamPipelineYarnContainer extends AbstractIntegrationYarnContaine
 			shutdownExecutor();
 			System.exit(0);
 		}
+		catch (InterruptedException e) {
+			log.warn("Interrupted!", e);
+		    // Restore interrupted state...
+		    Thread.currentThread().interrupt();
+		}
 		catch(Exception ex) {
 			request = new JobRequest();
 			request.setState(JobRequest.State.JOBFAILED);
@@ -133,6 +138,10 @@ public class StreamPipelineYarnContainer extends AbstractIntegrationYarnContaine
 			ByteBufferPoolDirect.get().close();
 			try {
 				shutdownExecutor();
+			} catch (InterruptedException e) {
+				log.warn("Interrupted!", e);
+			    // Restore interrupted state...
+			    Thread.currentThread().interrupt();
 			} catch (Exception e) {
 				log.error("",e);
 			}
@@ -158,6 +167,10 @@ public class StreamPipelineYarnContainer extends AbstractIntegrationYarnContaine
 	private static void sleep(int seconds) {
 		try {
 			Thread.sleep(1000l * seconds);
+		} catch (InterruptedException e) {
+			log.warn("Interrupted!", e);
+		    // Restore interrupted state...
+		    Thread.currentThread().interrupt();
 		} catch (Exception ex) {
 			log.debug("Delay error, See cause below \n",ex);
 		}

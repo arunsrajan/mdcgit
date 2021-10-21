@@ -395,4 +395,6 @@ public class MDCConstants {
 	public static final String USEGLOBALTASKEXECUTORS = "taskexecutors.isglobal";
 	public static final String USEGLOBALTASKEXECUTORS_DEFAULT = "false";
 	
+	public static final String CONTAINERALLOCATIONERROR = "Container Allocation Error";
+	
 }

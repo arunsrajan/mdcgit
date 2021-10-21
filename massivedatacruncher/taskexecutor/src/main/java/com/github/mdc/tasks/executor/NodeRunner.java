@@ -98,6 +98,10 @@ public class NodeRunner implements Callable<Boolean> {
 											log.debug(IOUtils.readLines(istr, StandardCharsets.UTF_8));
 											Thread.sleep(5000);
 										}
+									} catch (InterruptedException e) {
+										log.warn("Interrupted!", e);
+									    // Restore interrupted state...
+									    Thread.currentThread().interrupt();
 									} catch (Exception ex) {
 										log.debug("Unable to Launch Container:", ex);
 									}
@@ -115,6 +119,10 @@ public class NodeRunner implements Callable<Boolean> {
 											log.debug(IOUtils.readLines(istr, StandardCharsets.UTF_8));
 											Thread.sleep(5000);
 										}
+									} catch (InterruptedException e) {
+										log.warn("Interrupted!", e);
+									    // Restore interrupted state...
+									    Thread.currentThread().interrupt();
 									} catch (Exception ex) {
 										log.debug("Unable to Launch Container:", ex);
 									}

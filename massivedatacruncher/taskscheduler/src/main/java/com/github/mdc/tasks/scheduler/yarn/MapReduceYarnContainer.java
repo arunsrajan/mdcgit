@@ -204,6 +204,10 @@ public class MapReduceYarnContainer extends AbstractIntegrationYarnContainer {
 	private static void sleep(int seconds) {
 		try {
 			Thread.sleep(1000l * seconds);
+		} catch (InterruptedException e) {
+			log.warn("Interrupted!", e);
+		    // Restore interrupted state...
+		    Thread.currentThread().interrupt();
 		} catch (Exception ex) {
 			log.info("Delay error, See cause below \n", ex);
 		}

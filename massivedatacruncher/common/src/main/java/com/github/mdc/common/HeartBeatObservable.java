@@ -2,6 +2,7 @@ package com.github.mdc.common;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -111,7 +112,11 @@ public class HeartBeatObservable<T> {
 							log.info("Object Queued will be triggered: " + objecttotrigger);
 							triggerNotification(objecttotrigger);
 						}
-
+						catch (InterruptedException e) {
+							log.warn("Interrupted!", e);
+						    // Restore interrupted state...
+						    Thread.currentThread().interrupt();
+						}
 						catch (Exception e) {
 							log.error("Exiting HeartBeatObservable.stop");
 						}

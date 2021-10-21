@@ -1035,8 +1035,8 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 				joinpairsout = new Vector<>();
 				try (var seq1 = Seq.of(inputs1.toArray());
 						var seq2 = Seq.of(inputs2.toArray());
-						var seqinnerjoin = seq1.parallel().innerJoin(seq2.parallel(), joinpredicate)) {
-					joinpairsout.add(seqinnerjoin.count());
+						) {
+					joinpairsout.add(seq1.innerJoin(seq2.parallel(), joinpredicate).count());
 				} catch (Exception ex) {
 					log.error(MassiveDataPipelineConstants.PROCESSJOIN, ex);
 					throw new PipelineException(MassiveDataPipelineConstants.PROCESSJOIN, ex);
@@ -1045,8 +1045,8 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 				// Parallel join pair result.
 				try (var seq1 = Seq.of(inputs1.toArray());
 						var seq2 = Seq.of(inputs2.toArray());
-						var seqinnerjoin = seq1.parallel().innerJoin(seq2.parallel(), joinpredicate)) {
-					joinpairsout = seqinnerjoin.toList();
+						) {
+					joinpairsout = seq1.innerJoin(seq2.parallel(), joinpredicate).toList();
 				} catch (Exception ex) {
 					log.error(MassiveDataPipelineConstants.PROCESSJOIN, ex);
 					throw new PipelineException(MassiveDataPipelineConstants.PROCESSJOIN, ex);
@@ -1110,8 +1110,8 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 				joinpairsout = new Vector<>();
 				try (var seq1 = Seq.of(inputs1.toArray());
 						var seq2 = Seq.of(inputs2.toArray());
-						var seqleftouterjoin = seq1.parallel().leftOuterJoin(seq2.parallel(), leftouterjoinpredicate)) {
-					joinpairsout.add(seqleftouterjoin.count());
+						) {
+					joinpairsout.add(seq1.leftOuterJoin(seq2.parallel(), leftouterjoinpredicate).count());
 				} catch (Exception ex) {
 					log.error(MassiveDataPipelineConstants.PROCESSLEFTOUTERJOIN, ex);
 					throw new PipelineException(MassiveDataPipelineConstants.PROCESSLEFTOUTERJOIN, ex);
@@ -1120,8 +1120,8 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 				// Parallel join pair result.
 				try (var seq1 = Seq.of(inputs1.toArray());
 						var seq2 = Seq.of(inputs2.toArray());
-						var seqleftouterjoin = seq1.parallel().leftOuterJoin(seq2.parallel(), leftouterjoinpredicate)) {
-					joinpairsout = seqleftouterjoin.toList();
+						) {
+					joinpairsout = seq1.leftOuterJoin(seq2.parallel(), leftouterjoinpredicate).toList();
 				} catch (Exception ex) {
 					log.error(MassiveDataPipelineConstants.PROCESSLEFTOUTERJOIN, ex);
 					throw new PipelineException(MassiveDataPipelineConstants.PROCESSLEFTOUTERJOIN, ex);
@@ -1183,8 +1183,8 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 				joinpairsout = new Vector<>();
 				try (var seq1 = Seq.of(inputs1.toArray());
 						var seq2 = Seq.of(inputs2.toArray());
-						var seqrightouterjoin = seq1.parallel().rightOuterJoin(seq2.parallel(), rightouterjoinpredicate)) {
-					joinpairsout.add(seqrightouterjoin.count());
+						) {
+					joinpairsout.add(seq1.rightOuterJoin(seq2.parallel(), rightouterjoinpredicate).count());
 				} catch (Exception ex) {
 					log.error(MassiveDataPipelineConstants.PROCESSRIGHTOUTERJOIN, ex);
 					throw new PipelineException(MassiveDataPipelineConstants.PROCESSRIGHTOUTERJOIN, ex);
@@ -1193,8 +1193,8 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 				// Parallel join pair result.
 				try (var seq1 = Seq.of(inputs1.toArray());
 						var seq2 = Seq.of(inputs2.toArray());
-						var seqrightouterjoin = seq1.parallel().rightOuterJoin(seq2.parallel(), rightouterjoinpredicate)) {
-					joinpairsout = seqrightouterjoin.toList();
+						) {
+					joinpairsout = seq1.rightOuterJoin(seq2.parallel(), rightouterjoinpredicate).toList();
 				} catch (Exception ex) {
 					log.error(MassiveDataPipelineConstants.PROCESSRIGHTOUTERJOIN, ex);
 					throw new PipelineException(MassiveDataPipelineConstants.PROCESSRIGHTOUTERJOIN, ex);
@@ -1254,8 +1254,7 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 			}
 			// Parallel processing of group by key operation.
 			if (!allpairs.isEmpty()) {
-				var processedgroupbykey = (Map) Seq.of(allpairs.toArray(new Tuple2[allpairs.size()])).parallel()
-						.groupBy(tup2 -> tup2.v1, Collectors.mapping(Tuple2::v2, Collectors.toCollection(Vector::new)));
+				var processedgroupbykey = (Map) Seq.of(allpairs.toArray(new Tuple2[allpairs.size()])).groupBy(tup2 -> tup2.v1, Collectors.mapping(Tuple2::v2, Collectors.toCollection(Vector::new)));
 				var out = (List<Tuple2>) processedgroupbykey.keySet().parallelStream()
 						.map(key -> Tuple.tuple(key, processedgroupbykey.get(key)))
 						.collect(Collectors.toCollection(ArrayList::new));
@@ -1326,15 +1325,13 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 			var foldbykey = (FoldByKey)  jobstage.stage.tasks.get(0);
 			if (!allpairs.isEmpty()) {
 				var finalfoldbykeyobj = new ArrayList<Tuple2>();
-				var processedgroupbykey = Seq.of(allpairs.toArray(new Tuple2[allpairs.size()])).parallel()
-						.groupBy(tup2 -> tup2.v1, Collectors.mapping(Tuple2::v2, Collectors.toCollection(Vector::new)));
+				var processedgroupbykey = Seq.of(allpairs.toArray(new Tuple2[allpairs.size()])).groupBy(tup2 -> tup2.v1, Collectors.mapping(Tuple2::v2, Collectors.toCollection(Vector::new)));
 				for(var key:processedgroupbykey.keySet()) {
-					var seqtuple2 = Seq.of(processedgroupbykey.get(key).toArray()).parallel();
 					Object foldbykeyresult;
 					if (foldbykey.isLeft()) {
-						foldbykeyresult = seqtuple2.foldLeft(foldbykey.getValue(), foldbykey.getReduceFunction());
+						foldbykeyresult = Seq.of(processedgroupbykey.get(key).toArray()).foldLeft(foldbykey.getValue(), foldbykey.getReduceFunction());
 					} else {
-						foldbykeyresult = seqtuple2.foldRight(foldbykey.getValue(), foldbykey.getReduceFunction());
+						foldbykeyresult = Seq.of(processedgroupbykey.get(key).toArray()).foldRight(foldbykey.getValue(), foldbykey.getReduceFunction());
 					}
 					finalfoldbykeyobj.add(Tuple.tuple(key, foldbykeyresult));
 				}

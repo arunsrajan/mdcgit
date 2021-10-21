@@ -105,9 +105,11 @@ public final class HeartBeatTaskScheduler extends HeartBeatServer implements Hea
 							}
 						}
 						log.debug("Exiting Receiver.receive");
-					} catch (Exception ex) {
-						log.error("Heartbeat Receive Updates error, See Cause below: \n", ex);
-					}
+					} 
+				} catch (InterruptedException e) {
+					log.warn("Interrupted!", e);
+				    // Restore interrupted state...
+				    Thread.currentThread().interrupt();
 				} catch (Exception ex) {
 					log.error("Heartbeat Receive Updates error, See Cause below: \n", ex);
 				}
@@ -164,9 +166,11 @@ public final class HeartBeatTaskScheduler extends HeartBeatServer implements Hea
 							}
 						}
 					});
-					while (!responsereceived) {
+					while (true) {
 						channel.send(new ObjectMessage(null, baos.toByteArray()));
-						Thread.sleep(500);
+						if(responsereceived) {
+							break;
+						}
 					}
 				} else {
 					channel.send(new ObjectMessage(null, baos.toByteArray()));
@@ -174,7 +178,11 @@ public final class HeartBeatTaskScheduler extends HeartBeatServer implements Hea
 			} finally {
 
 			}
-		} catch (Exception ex) {
+		} catch (InterruptedException e) {
+			log.warn("Interrupted!", e);
+		    // Restore interrupted state...
+		    Thread.currentThread().interrupt();
+		  } catch (Exception ex) {
 			log.info("Heartbeat ping once error, See Cause below: \n", ex);
 		}
 		log.debug("Exiting HeartBeatTaskScheduler.pingOnce");
@@ -220,9 +228,11 @@ public final class HeartBeatTaskScheduler extends HeartBeatServer implements Hea
 							}
 						}
 					});
-					while (!responsereceived) {
+					while (true) {
 						channel.send(new ObjectMessage(null, baos.toByteArray()));
-						Thread.sleep(500);
+						if(responsereceived) {
+							break;
+						}
 					}
 				} else {
 					channel.send(new ObjectMessage(null, baos.toByteArray()));
@@ -230,7 +240,11 @@ public final class HeartBeatTaskScheduler extends HeartBeatServer implements Hea
 			} finally {
 
 			}
-		} catch (Exception ex) {
+		} catch (InterruptedException e) {
+			log.warn("Interrupted!", e);
+		    // Restore interrupted state...
+		    Thread.currentThread().interrupt();
+		  } catch (Exception ex) {
 			log.info("Heartbeat ping once error, See Cause below: \n", ex);
 		}
 		log.debug("Exiting HeartBeatTaskScheduler.pingOnce");

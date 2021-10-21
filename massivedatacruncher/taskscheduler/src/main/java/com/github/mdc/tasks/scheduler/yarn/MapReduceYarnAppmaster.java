@@ -223,7 +223,11 @@ public class MapReduceYarnAppmaster extends StaticEventingAppmaster implements C
 			super.onContainerCompleted(status);
 			log.info("Container completed: "+status.getContainerId());
 		}
-		catch(Exception ex) {
+		catch (InterruptedException e) {
+			log.warn("Interrupted!", e);
+		    // Restore interrupted state...
+		    Thread.currentThread().interrupt();
+		}catch(Exception ex) {
 			log.info("Container Completion fails",ex);
 		}
 		finally {
@@ -242,7 +246,12 @@ public class MapReduceYarnAppmaster extends StaticEventingAppmaster implements C
 			log.info("Container failed: "+status.getContainerId());
 			return true;
 		}
-		catch(Exception ex) {
+		catch (InterruptedException e) {
+			log.warn("Interrupted!", e);
+		    // Restore interrupted state...
+		    Thread.currentThread().interrupt();
+		    return false;
+		} catch(Exception ex) {
 			log.info("Container allocation fails",ex);
 			return false;
 		}
@@ -273,7 +282,11 @@ public class MapReduceYarnAppmaster extends StaticEventingAppmaster implements C
 				pendingjobs.put(mc.apptask.applicationid+mc.apptask.taskid,mc);
 			}
 		}
-		catch(Exception ex) {
+		catch (InterruptedException e) {
+			log.warn("Interrupted!", e);
+		    // Restore interrupted state...
+		    Thread.currentThread().interrupt();
+		} catch(Exception ex) {
 			log.info("reportJobStatus fails",ex);
 		}
 		finally {
@@ -323,6 +336,11 @@ public class MapReduceYarnAppmaster extends StaticEventingAppmaster implements C
 				pendingjobs.put(r.apptask.applicationid+r.apptask.taskid,r);
 			}
 		}
+		catch (InterruptedException e) {
+			log.warn("Interrupted!", e);
+		    // Restore interrupted state...
+		    Thread.currentThread().interrupt();
+		}
 		catch(Exception ex) {
 			log.info("reportJobStatus fails",ex);
 		}
@@ -369,6 +387,11 @@ public class MapReduceYarnAppmaster extends StaticEventingAppmaster implements C
 				return rs.get(redtasksubmitted++);
 			}
 			return null;
+		} catch (InterruptedException e) {
+			log.warn("Interrupted!", e);
+		    // Restore interrupted state...
+		    Thread.currentThread().interrupt();
+		    return null;
 		} catch (Exception ex) {
 			log.info("reportJobStatus fails", ex);
 			return null;
@@ -386,7 +409,12 @@ public class MapReduceYarnAppmaster extends StaticEventingAppmaster implements C
 			lock.acquire();
 			return (pendingjobs.size()>0||taskcompleted<totalmappersize||redtaskcompleted<rs.size());
 		}
-		catch(Exception ex) {
+		catch (InterruptedException e) {
+			log.warn("Interrupted!", e);
+		    // Restore interrupted state...
+		    Thread.currentThread().interrupt();
+		    return false;
+		} catch(Exception ex) {
 			log.info("hasJobs fails",ex);
 			return false;
 		}
