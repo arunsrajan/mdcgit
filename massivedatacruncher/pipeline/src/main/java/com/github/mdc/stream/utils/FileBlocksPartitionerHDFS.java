@@ -54,7 +54,7 @@ import com.github.mdc.common.Job;
 import com.github.mdc.common.LaunchContainers;
 import com.github.mdc.common.LoadJar;
 import com.github.mdc.common.MDCConstants;
-import com.github.mdc.common.MDCNodesResourcesSnapshot;
+import com.github.mdc.common.MDCNodesResources;
 import com.github.mdc.common.MassiveDataPipelineConstants;
 import com.github.mdc.common.PipelineConfig;
 import com.github.mdc.common.Resources;
@@ -291,10 +291,6 @@ public class FileBlocksPartitionerHDFS {
 							containers.remove(container);
 							Utils.writeObject(node, dc);
 							ContainerResources cr = chpcres.remove(container);
-							long freememory = MDCNodesResourcesSnapshot.get().get(node).getFreememory();
-							long cpu = MDCNodesResourcesSnapshot.get().get(node).getNumberofprocessors();
-							MDCNodesResourcesSnapshot.get().get(node).setFreememory(freememory + cr.getMaxmemory()*MDCConstants.MB);
-							MDCNodesResourcesSnapshot.get().get(node).setNumberofprocessors((int) (cpu + cr.getCpu()));
 						} else {
 							deallocateall = false;
 						}
@@ -305,10 +301,6 @@ public class FileBlocksPartitionerHDFS {
 					dc.setContainerid(job.containerid);
 					log.debug("Destroying Containers with id:" + job.containerid + " for the hosts: " + nodes);
 					for (var node : nodes) {
-						long freememory = MDCNodesResourcesSnapshot.get().get(node).getFreememory();
-						MDCNodesResourcesSnapshot.get().get(node).setFreememory(freememory + 256 * MDCConstants.MB);
-						int cpu = MDCNodesResourcesSnapshot.get().get(node).getNumberofprocessors();
-						MDCNodesResourcesSnapshot.get().get(node).setNumberofprocessors((int) (cpu + 2));
 						Utils.writeObject(node, dc);
 					}
 				}
@@ -397,7 +389,7 @@ public class FileBlocksPartitionerHDFS {
 			return dnxrefs.get(key).stream();
 		}).collect(Collectors.toMap(xref -> xref, xref -> 0l));
 		if (issa) {
-			resources = MDCNodesResourcesSnapshot.get();
+			resources = MDCNodesResources.get();
 			var computingnodes = resources.keySet().stream().map(node -> node.split(MDCConstants.UNDERSCORE)[0])
 					.collect(Collectors.toList());
 			for (var b : bls) {
@@ -603,7 +595,7 @@ public class FileBlocksPartitionerHDFS {
 	}
 	
 	protected void getNodesResourcesSorted(List<BlocksLocation> bls,Map<String,Long> nodestotalblockmem) {
-		resources = MDCNodesResourcesSnapshot.get();
+		resources = MDCNodesResources.get();
 		
 		var nodeswithhostonly = bls.stream().flatMap(bl -> {
 			var block1 = bl.block[0];
@@ -672,8 +664,6 @@ public class FileBlocksPartitionerHDFS {
 			res.setDirectheap(meminmb-heapmem);
 			res.setGctype(gctype);
 			cr.add(res);
-			resources.setFreememory(0l);
-			resources.setNumberofprocessors(0);
 			return cr;
 		}else {
 			var actualmemory = (resources.getFreememory()-256*MDCConstants.MB);

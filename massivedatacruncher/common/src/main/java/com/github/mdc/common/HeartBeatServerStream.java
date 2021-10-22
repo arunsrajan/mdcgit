@@ -123,7 +123,6 @@ public sealed class HeartBeatServerStream implements HeartBeatServerMBean,HeartB
 							nodes = leftmembers.stream().map(address->address.toString()).
 									filter(addresss->!addresss.equals(schedulerHostPort)).collect(Collectors.toList());
 							MDCNodesResources.get().keySet().retainAll(nodes);
-							MDCNodesResourcesSnapshot.get().keySet().retainAll(nodes);
 						}
 					}
 				}
@@ -150,7 +149,6 @@ public sealed class HeartBeatServerStream implements HeartBeatServerMBean,HeartB
 				}
 				if(resources.getNodeport()!=null) {
 					hpresmap.put(resources.getNodeport(), resources);
-					MDCNodesResourcesSnapshot.get().putIfAbsent(resources.getNodeport(), resources);
 				}
 				log.debug("Exiting Receiver.receive");
 			} catch (Exception e) {
@@ -395,7 +393,6 @@ public sealed class HeartBeatServerStream implements HeartBeatServerMBean,HeartB
 				if (object instanceof Resources resources) {
 					if ((prevresources != null && prevresources == resources) || prevresources == null) {
 						hpresmap.remove(key);
-						MDCNodesResourcesSnapshot.get().remove(key);
 					}
 					prevresources = resources;
 				}

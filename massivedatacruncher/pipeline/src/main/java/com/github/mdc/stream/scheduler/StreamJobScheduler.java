@@ -81,7 +81,7 @@ import com.github.mdc.common.KryoPool;
 import com.github.mdc.common.LoadJar;
 import com.github.mdc.common.MDCCache;
 import com.github.mdc.common.MDCConstants;
-import com.github.mdc.common.MDCNodesResourcesSnapshot;
+import com.github.mdc.common.MDCNodesResources;
 import com.github.mdc.common.MDCProperties;
 import com.github.mdc.common.MassiveDataPipelineConstants;
 import com.github.mdc.common.NetworkUtil;
@@ -603,10 +603,6 @@ public class StreamJobScheduler {
 							containers.remove(container);
 							Utils.writeObject(node, dc);
 							ContainerResources cr = chpcres.remove(container);
-							long freememory = MDCNodesResourcesSnapshot.get().get(node).getFreememory();
-							long cpu = MDCNodesResourcesSnapshot.get().get(node).getNumberofprocessors();
-							MDCNodesResourcesSnapshot.get().get(node).setFreememory(freememory + cr.getMaxmemory()*MDCConstants.MB);
-							MDCNodesResourcesSnapshot.get().get(node).setNumberofprocessors((int) (cpu + cr.getCpu()));
 						} else {
 							deallocateall = false;
 						}
@@ -617,10 +613,6 @@ public class StreamJobScheduler {
 					dc.setContainerid(job.containerid);
 					log.debug("Destroying Containers with id:" + job.containerid + " for the hosts: " + nodes);
 					for (var node : nodes) {
-						long freememory = MDCNodesResourcesSnapshot.get().get(node).getFreememory();
-						MDCNodesResourcesSnapshot.get().get(node).setFreememory(freememory + 256 * MDCConstants.MB);
-						int cpu = MDCNodesResourcesSnapshot.get().get(node).getNumberofprocessors();
-						MDCNodesResourcesSnapshot.get().get(node).setNumberofprocessors((int) (cpu + 2));
 						Utils.writeObject(node, dc);
 					}
 				}

@@ -1063,7 +1063,7 @@ public class Utils {
 		var ac = new AllocateContainers();
 		ac.setContainerid(containerid);
 		ac.setNumberofcontainers(numberofcontainers);
-		var nrs = MDCNodesResourcesSnapshot.get();
+		var nrs = MDCNodesResources.get();
 		var resources = nrs.values();
 		int numavailable = Math.min(numberofcontainers, resources.size());
 		Iterator<Resources> res = resources.iterator();

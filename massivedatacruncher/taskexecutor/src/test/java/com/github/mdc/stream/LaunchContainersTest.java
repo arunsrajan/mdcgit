@@ -3,7 +3,6 @@ package com.github.mdc.stream;
 import static org.junit.Assert.assertNotNull;
 
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -17,7 +16,6 @@ import com.github.mdc.common.ByteBufferPool;
 import com.github.mdc.common.ByteBufferPoolDirect;
 import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.MDCNodesResources;
-import com.github.mdc.common.MDCNodesResourcesSnapshot;
 import com.github.mdc.common.MDCProperties;
 import com.github.mdc.common.PipelineConfig;
 import com.github.mdc.common.Resources;
@@ -48,7 +46,6 @@ public class LaunchContainersTest extends StreamPipelineBaseTestCommon{
 		mapres.put("127.0.0.1_12121",resources);
 		resources.setNodeport("127.0.0.1_12121");
 		MDCNodesResources.put(mapres);
-		MDCNodesResourcesSnapshot.put(mapres);
 		String containerid = Utils.launchContainers(1);
 		assertNotNull(containerid);
 		Utils.destroyContainers(containerid);
@@ -75,7 +72,6 @@ public class LaunchContainersTest extends StreamPipelineBaseTestCommon{
 		mapres.put("127.0.0.1_12121",resources);
 		resources.setNodeport("127.0.0.1_12121");
 		MDCNodesResources.put(mapres);
-		MDCNodesResourcesSnapshot.put(mapres);
 		var lc = Utils.launchContainers(1);
 		assertNotNull(lc);
 		ByteBufferPoolDirect.init();

@@ -10,9 +10,9 @@ import org.jooq.lambda.tuple.Tuple2;
 import org.junit.Test;
 
 import com.github.mdc.common.MDCConstants;
-import com.github.mdc.common.MDCNodesResourcesSnapshot;
-import com.github.mdc.common.PipelineConfig;
 import com.github.mdc.common.MDCConstants.STORAGE;
+import com.github.mdc.common.MDCNodesResources;
+import com.github.mdc.common.PipelineConfig;
 
 public class StreamPipelineBigFilesTest extends StreamPipelineBaseTestCommon {
 	
@@ -422,7 +422,7 @@ public class StreamPipelineBigFilesTest extends StreamPipelineBaseTestCommon {
 		pipelineconfig.setGctype(MDCConstants.ZGC);
 		pipelineconfig.setNumberofcontainers("1");
 		pipelineconfig.setBatchsize("2");
-		log.info(MDCNodesResourcesSnapshot.get());
+		log.info(MDCNodesResources.get());
 		StreamPipeline<String> datastream = StreamPipeline.newStreamHDFS(hdfsfilepath, airlines,
 				pipelineconfig);
 		List<List<Tuple2<String,Tuple2<Long,Long>>>> redByKeyList = (List) datastream.map(dat -> dat.split(","))
@@ -440,7 +440,7 @@ public class StreamPipelineBigFilesTest extends StreamPipelineBaseTestCommon {
 			}
 		}
 		log.info(sum);
-		log.info(MDCNodesResourcesSnapshot.get());
+		log.info(MDCNodesResources.get());
 		log.info("testResourcesAllocationBeforeAndAfterExecCombined After---------------------------------------");
 	}
 	@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -458,7 +458,7 @@ public class StreamPipelineBigFilesTest extends StreamPipelineBaseTestCommon {
 		pipelineconfig.setNumberofcontainers("1");
 		pipelineconfig.setBatchsize("1");
 		pipelineconfig.setContaineralloc("DIVIDED");
-		log.info(MDCNodesResourcesSnapshot.get());
+		log.info(MDCNodesResources.get());
 		StreamPipeline<String> datastream = StreamPipeline.newStreamHDFS(hdfsfilepath, "/test3gb",
 				pipelineconfig);
 		List<List<Tuple2<String,Tuple2<Long,Long>>>> redByKeyList = (List) datastream.map(dat -> dat.split(","))
@@ -476,7 +476,7 @@ public class StreamPipelineBigFilesTest extends StreamPipelineBaseTestCommon {
 			}
 		}
 		log.info(sum);
-		log.info(MDCNodesResourcesSnapshot.get());
+		log.info(MDCNodesResources.get());
 		log.info("testResourcesAllocationBeforeAndAfterExecDivided After---------------------------------------");
 	}
 	
