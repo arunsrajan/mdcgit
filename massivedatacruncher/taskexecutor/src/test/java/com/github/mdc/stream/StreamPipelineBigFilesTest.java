@@ -531,4 +531,40 @@ public class StreamPipelineBigFilesTest extends StreamPipelineBaseTestCommon {
 		.saveAsTextFile(new URI(hdfsfilepath), "/filtertest/FilterFilter-" + System.currentTimeMillis());
 		log.info("testFilterFilterSaveAsTextFile After---------------------------------------");
 	}
+	
+	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@Test
+	public void testResourcesAllocationCoalesceExecDivided() throws Throwable {
+		log.info("testResourcesAllocationCoalesceExecDivided Before---------------------------------------");
+		PipelineConfig pipelineconfig = new PipelineConfig();
+		pipelineconfig.setLocal("false");
+		pipelineconfig.setStorage(MDCConstants.STORAGE.INMEMORY_DISK);
+		pipelineconfig.setIsblocksuserdefined("true");
+		pipelineconfig.setBlocksize("128");
+		pipelineconfig.setGctype(MDCConstants.ZGC);
+		pipelineconfig.setNumberofcontainers("3");
+		pipelineconfig.setBatchsize("2");
+		pipelineconfig.setContaineralloc("DIVIDED");
+		log.info(MDCNodesResources.get());
+		StreamPipeline<String> datastream = StreamPipeline.newStreamHDFS(hdfsfilepath, airlines,
+				pipelineconfig);
+		List<List<Tuple2<String,Tuple2<Long,Long>>>> redByKeyList = (List) datastream.map(dat -> dat.split(","))
+				.filter(dat -> dat != null && !dat[14].equals("ArrDelay") && !dat[14].equals("NA"))
+				.mapToPair(dat -> (Tuple2<String, Long>) Tuple.tuple(dat[8], Long.parseLong(dat[14])))
+				.mapValues(mv->new Tuple2<Long,Long>(mv,1l))
+				.reduceByValues((tuple1,tuple2)->new Tuple2<Long,Long>(tuple1.v1+tuple2.v1,tuple1.v2+tuple2.v2))
+				.coalesce(1, (tuple1,tuple2)->new Tuple2<Long,Long>(tuple1.v1+tuple2.v1,tuple1.v2+tuple2.v2))
+				.collect(toexecute, null);
+		long sum = 0;
+		for (List<Tuple2<String,Tuple2<Long,Long>>> tuples : redByKeyList) {
+			for (Tuple2<String,Tuple2<Long,Long>> pair : tuples) {
+				log.info(pair);
+				sum += (Long) pair.v2.v1;
+			}
+		}
+		log.info(sum);
+		log.info(MDCNodesResources.get());
+		log.info("testResourcesAllocationCoalesceExecDivided After---------------------------------------");
+	}
 }

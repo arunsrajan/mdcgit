@@ -11,6 +11,8 @@ public class ByteBufferPool {
 	public static void init(int maxpoolsize) {
 		if(Objects.isNull(pool)||pool.isClosed()) {
 			var config = new GenericObjectPoolConfig<ByteBuffer>();
+			config.setMinIdle(1);
+			config.setMaxIdle(1);
 			config.setMaxTotal(maxpoolsize);
 			config.setBlockWhenExhausted(true);
 			var factory = new ByteBufferFactory(); 

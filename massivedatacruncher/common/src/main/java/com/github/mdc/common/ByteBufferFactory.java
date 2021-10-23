@@ -10,7 +10,10 @@ public class ByteBufferFactory extends BasePooledObjectFactory<ByteBuffer> {
 
 	@Override
 	public ByteBuffer create() throws Exception {
-		return ByteBufferPoolDirect.get().take(128*MDCConstants.MB);
+		GlobalByteBufferSemaphore.get().acquire();
+		ByteBuffer bb = ByteBufferPoolDirect.get().take(128*MDCConstants.MB);
+		GlobalByteBufferSemaphore.get().release();
+		return bb;
 	}
 
 	@Override
@@ -20,7 +23,7 @@ public class ByteBufferFactory extends BasePooledObjectFactory<ByteBuffer> {
 	
 	@Override
     public void passivateObject(PooledObject<ByteBuffer> pooledObject) {
-        pooledObject.getObject().reset();
+        
     }
 	
 	@Override

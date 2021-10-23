@@ -678,8 +678,6 @@ public class FileBlocksPartitionerHDFS {
 					res.setMaxmemory(1024);
 					res.setGctype(gctype);
 					cr.add(res);
-					resources.setFreememory(actualmemory - totalmem);
-					resources.setNumberofprocessors(cpu-1);
 					return cr;
 				} else {
 					throw new PipelineException(MassiveDataPipelineConstants.INSUFFMEMORYALLOCATIONERROR);
@@ -687,37 +685,49 @@ public class FileBlocksPartitionerHDFS {
 			}
 			if (cpu == 0)
 				return cr;
-			var maxmemory = actualmemory / cpu;
+			var numofcontainerspermachine = Integer.parseInt(pipelineconfig.getNumberofcontainers());
+			var dividedcpus = cpu/numofcontainerspermachine;
+			var maxmemory = actualmemory / numofcontainerspermachine;
 			var maxmemmb = maxmemory / MDCConstants.MB;
-			if (totalmem < maxmemory && cpu >= 1) {
+			var totalmemmb = totalmem / MDCConstants.MB;
+			if(dividedcpus==0 && cpu>=1) {
+				dividedcpus = 1;
+			}
+			if (totalmem < maxmemory && dividedcpus >= 1) {
 				var res = new ContainerResources();
-				res.setCpu(1);
-				res.setMinmemory(totalmem / MDCConstants.MB);
-				res.setMaxmemory(totalmem / MDCConstants.MB);
+				res.setCpu(dividedcpus);
+				var heapmem = totalmemmb*Integer.valueOf(pipelineconfig.getHeappercent())/100;
+				res.setMinmemory(heapmem);
+				res.setMaxmemory(heapmem);
+				res.setDirectheap(totalmemmb-heapmem);
 				res.setGctype(gctype);
 				cr.add(res);
-				resources.setFreememory(maxmemory - totalmem);
-				resources.setNumberofprocessors(cpu-1);
 				return cr;
 			}
-	
 			while (true) {
-				cpu--;
-				totalmem -= maxmemory;
-				if (cpu >= 0 && totalmem >= 0) {
+				if (cpu >= dividedcpus && totalmem >= 0) {
 					var res = new ContainerResources();
-					res.setCpu(1);
-					res.setMinmemory(maxmemmb);
-					res.setMaxmemory(maxmemmb);
+					res.setCpu(dividedcpus);
+					var heapmem = maxmemmb*Integer.valueOf(pipelineconfig.getHeappercent())/100;
+					res.setMinmemory(heapmem);
+					res.setMaxmemory(heapmem);
+					res.setDirectheap(maxmemmb-heapmem);
 					res.setGctype(gctype);
 					cr.add(res);
-				} else {
-					cpu++;
-					totalmem += maxmemory;
-					resources.setFreememory(maxmemory * cpu);
-					resources.setNumberofprocessors(cpu);
+				} else if (cpu >= 1 && totalmem >= 0) {
+					var res = new ContainerResources();
+					res.setCpu(cpu);
+					var heapmem = maxmemmb*Integer.valueOf(pipelineconfig.getHeappercent())/100;
+					res.setMinmemory(heapmem);
+					res.setMaxmemory(heapmem);
+					res.setDirectheap(maxmemmb-heapmem);
+					res.setGctype(gctype);
+					cr.add(res);
+				}else {
 					break;
 				}
+				cpu-=dividedcpus;
+				totalmem -= maxmemory;
 			}
 			return cr;
 		}
