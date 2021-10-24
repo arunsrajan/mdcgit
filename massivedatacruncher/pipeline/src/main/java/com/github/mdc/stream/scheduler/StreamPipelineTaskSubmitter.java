@@ -105,7 +105,7 @@ public class StreamPipelineTaskSubmitter implements StreamPipelineTaskSubmitterM
 
 	@Override
 	public String toString() {
-		return "MassiveDataStreamTaskSchedulerThread [task=" + task + ", hp=" + hp + ", completedexecution=" + completedexecution + "]";
+		return "StreamPipelineTaskSubmitter [task=" + task + ", hp=" + hp + ", completedexecution=" + completedexecution + "]";
 	}
 
 

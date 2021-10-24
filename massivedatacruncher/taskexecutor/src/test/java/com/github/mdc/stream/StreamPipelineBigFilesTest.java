@@ -539,10 +539,14 @@ public class StreamPipelineBigFilesTest extends StreamPipelineBaseTestCommon {
 		log.info("testResourcesAllocationCoalesceExecDivided Before---------------------------------------");
 		PipelineConfig pipelineconfig = new PipelineConfig();
 		pipelineconfig.setLocal("false");
+		pipelineconfig.setMesos("false");
+		pipelineconfig.setYarn("false");
+		pipelineconfig.setJgroups("false");
 		pipelineconfig.setStorage(MDCConstants.STORAGE.INMEMORY_DISK);
 		pipelineconfig.setIsblocksuserdefined("true");
 		pipelineconfig.setBlocksize("128");
 		pipelineconfig.setGctype(MDCConstants.ZGC);
+		pipelineconfig.setMode(MDCConstants.NORMAL);
 		pipelineconfig.setNumberofcontainers("3");
 		pipelineconfig.setBatchsize("2");
 		pipelineconfig.setContaineralloc("DIVIDED");

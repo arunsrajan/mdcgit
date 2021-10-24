@@ -343,6 +343,8 @@ tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.examples.t
 tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.examples.tests.StreamAggSumCountArrDelayYARN hdfs://127.0.0.1:9000 /airline1989 /examplesmdc 1024 1
 
 
+tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.examples.tests.StreamCoalesceNormalInMemoryDiskContainerDivided hdfs://127.0.0.1:9000 /airline1989 /examplesmdc 1
+
 Filter Operation Streaming
 ------------------------
 

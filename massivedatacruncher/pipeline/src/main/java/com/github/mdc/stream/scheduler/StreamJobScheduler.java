@@ -777,7 +777,7 @@ public class StreamJobScheduler {
 							configinitialstage);
 					initialstageexecutor.addIndependent(dexecutorinitialstage);
 					mdststsl.stream().forEach(mdststl -> {
-						dexecutorinitialstage.addDependency(mdststl,mdststl);
+						dexecutorinitialstage.addIndependent(mdststl);
 					});
 				});
 				var executionresults = initialstageexecutor.execute(ExecutionConfig.NON_TERMINATING);
@@ -1020,7 +1020,7 @@ public class StreamJobScheduler {
 	 * @return ExecutorsService object.
 	 */
 	private ExecutorService newExecutor(int numberoftasks) {
-		return Executors.newWorkStealingPool();
+		return Executors.newFixedThreadPool(numberoftasks);
 	}
 
 	/**
@@ -1141,7 +1141,8 @@ public class StreamJobScheduler {
 				final StreamPipelineTaskSubmitter mdststlocal = mdstst;
 				private static final long serialVersionUID = 1L;
 
-				public Boolean execute() {					
+				public Boolean execute() {
+					log.info("Task Execution: "+mdststlocal.getTask());
 					if (mdststlocal.isCompletedexecution()) {
 						try {
 							printresult.acquire();
@@ -1264,6 +1265,7 @@ public class StreamJobScheduler {
 
 								}
 							}, delay, delay);
+							Thread.sleep(3000);
 							Utils.writeObject(mdststlocal.getHostPort(), mdststlocal.getTask());
 							cdl.await();
 						} else {

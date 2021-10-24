@@ -123,7 +123,7 @@ public class TaskExecutor implements Runnable {
 					}
 					stageidexecutormap.put(task.stageid, mdste);
 					taskqueue.offer(mdste);
-					log.info("Submitted Job Stage for execution: " + deserobj);
+					log.info("Submitted Task for execution: " + deserobj);
 				} else if (mdste.isCompleted()) {
 					hbtss.setTimetakenseconds(mdste.getHbtss().getTimetakenseconds());
 					hbtss.pingOnce(task.stageid, task.taskid, task.hostport, Task.TaskStatus.COMPLETED, mdste.getHbtss().getTimetakenseconds(), null);
