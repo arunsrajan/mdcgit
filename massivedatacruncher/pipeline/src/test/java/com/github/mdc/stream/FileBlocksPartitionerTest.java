@@ -81,7 +81,7 @@ public class FileBlocksPartitionerTest extends StreamPipelineTestCommon{
 		job.jm = new JobMetrics();
 		PipelineConfig pc = new PipelineConfig();
 		pc.setBlocksize("32");
-		IgnitePipeline mdpi = IgnitePipeline.newStreamFILE("E:\\DEVELOPMENT\\dataset\\airline\\1987", pc).map(val->val.split(MDCConstants.COMMA));
+		IgnitePipeline mdpi = IgnitePipeline.newStreamFILE("C:\\DEVELOPMENT\\dataset\\airline\\1987", pc).map(val->val.split(MDCConstants.COMMA));
 		((IgnitePipeline)mdpi.root).mdsroots.add(mdpi.root);
 		((IgnitePipeline)mdpi.root).finaltasks = new HashSet<>(Arrays.asList(mdpi.root.finaltask));
 		((IgnitePipeline)mdpi.root).getDAG(job);
@@ -103,7 +103,7 @@ public class FileBlocksPartitionerTest extends StreamPipelineTestCommon{
 		job.jm = new JobMetrics();
 		PipelineConfig pc = new PipelineConfig();
 		pc.setBlocksize("64");
-		IgnitePipeline mdpi = IgnitePipeline.newStreamFILE("E:\\DEVELOPMENT\\dataset\\airline\\1989", pc).map(val->val.split(MDCConstants.COMMA));
+		IgnitePipeline mdpi = IgnitePipeline.newStreamFILE("C:\\DEVELOPMENT\\dataset\\airline\\1989", pc).map(val->val.split(MDCConstants.COMMA));
 		((IgnitePipeline)mdpi.root).mdsroots.add(mdpi.root);
 		((IgnitePipeline)mdpi.root).finaltasks = new HashSet<>(Arrays.asList(mdpi.root.finaltask));
 		((IgnitePipeline)mdpi.root).getDAG(job);

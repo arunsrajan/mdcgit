@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -15,6 +14,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.ToIntFunction;
@@ -25,6 +27,8 @@ import org.apache.hadoop.fs.FileUtil;
 import org.apache.hadoop.fs.Path;
 import org.jooq.lambda.tuple.Tuple2;
 import org.json.simple.JSONObject;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.xerial.snappy.SnappyInputStream;
 
@@ -41,7 +45,6 @@ import com.github.mdc.common.Utils;
 import com.github.mdc.stream.CsvOptions;
 import com.github.mdc.stream.Json;
 import com.github.mdc.stream.StreamPipelineTestCommon;
-import com.github.mdc.stream.executors.StreamPipelineTaskExecutorInMemoryDisk;
 import com.github.mdc.stream.functions.CalculateCount;
 import com.github.mdc.stream.functions.Coalesce;
 import com.github.mdc.stream.functions.CountByKeyFunction;
@@ -64,6 +67,7 @@ import com.github.mdc.stream.utils.FileBlocksPartitionerHDFS;
 
 public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTestCommon {
 	ConcurrentMap<String, OutputStream> resultstream = new ConcurrentHashMap<>();
+	
 
 	// CSV Test Cases Start
 	@SuppressWarnings("unchecked")
@@ -84,6 +88,7 @@ public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTe
 		StreamPipelineTaskExecutorInMemoryDisk mdsteim = new StreamPipelineTaskExecutorInMemoryDisk(js, resultstream,
 				MDCCache.get(), null);
 		mdsteim.setHdfs(hdfs);
+		mdsteim.setExecutor(es);
 		List<Path> filepaths = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -95,10 +100,11 @@ public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTe
 		FileBlocksPartitionerHDFS fbp = new FileBlocksPartitionerHDFS();
 		fbp.getDnXref(bls, false);
 		mdsteim.setTask(task);
+		mdsteim.setExecutor(es);
 		mdsteim.processBlockHDFSIntersection(bls.get(0), bls.get(0), hdfs);
 		Kryo kryo = Utils.getKryoNonDeflateSerializer();
 		String path = mdsteim.getIntermediateDataFSFilePath(task);
-		InputStream is = new SnappyInputStream(new ByteArrayInputStream((byte[])cache.get(path)));
+		InputStream is = new SnappyInputStream(new ByteArrayInputStream((byte[]) cache.get(path)));
 		List<String> intersectiondata = (List<String>) kryo.readClassAndObject(new Input(is));
 		assertEquals(46361, intersectiondata.size());
 		is.close();
@@ -122,6 +128,7 @@ public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTe
 		StreamPipelineTaskExecutorInMemoryDisk mdsteim = new StreamPipelineTaskExecutorInMemoryDisk(js, resultstream,
 				MDCCache.get(), null);
 		mdsteim.setHdfs(hdfs);
+		mdsteim.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>(), filepaths2 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -141,10 +148,11 @@ public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTe
 				128 * MDCConstants.MB);
 		fbp.getDnXref(bls2, false);
 		mdsteim.setTask(task);
+		mdsteim.setExecutor(es);
 		mdsteim.processBlockHDFSIntersection(bls1.get(0), bls2.get(0), hdfs);
 		Kryo kryo = Utils.getKryoNonDeflateSerializer();
 		String path = mdsteim.getIntermediateDataFSFilePath(task);
-		InputStream is = new SnappyInputStream(new ByteArrayInputStream((byte[])cache.get(path)));
+		InputStream is = new SnappyInputStream(new ByteArrayInputStream((byte[]) cache.get(path)));
 		List<String> intersectiondata = (List<String>) kryo.readClassAndObject(new Input(is));
 		assertEquals(20, intersectiondata.size());
 		is.close();
@@ -168,6 +176,7 @@ public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTe
 		StreamPipelineTaskExecutorInMemoryDisk mdsteim = new StreamPipelineTaskExecutorInMemoryDisk(js, resultstream,
 				MDCCache.get(), null);
 		mdsteim.setHdfs(hdfs);
+		mdsteim.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>(), filepaths2 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -187,10 +196,11 @@ public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTe
 				128 * MDCConstants.MB);
 		fbp.getDnXref(bls2, false);
 		mdsteim.setTask(task);
+		mdsteim.setExecutor(es);
 		mdsteim.processBlockHDFSIntersection(bls1.get(0), bls1.get(0), hdfs);
 		Kryo kryo = Utils.getKryoNonDeflateSerializer();
 		String path = mdsteim.getIntermediateDataFSFilePath(task);
-		InputStream is = new SnappyInputStream(new ByteArrayInputStream((byte[])cache.get(path)));
+		InputStream is = new SnappyInputStream(new ByteArrayInputStream((byte[]) cache.get(path)));
 		Set<InputStream> istreams = new LinkedHashSet<>(Arrays.asList(is));
 		task = new Task();
 		task.jobid = js.jobid;
@@ -199,11 +209,13 @@ public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTe
 		js.stage.tasks.clear();
 		js.stage.tasks.add(function);
 		mdsteim.setTask(task);
+		mdsteim.setExecutor(es);
 		mdsteim.processBlockHDFSIntersection(istreams, Arrays.asList(bls2.get(0)), hdfs);
 		is.close();
 		mdsteim.setTask(task);
+		mdsteim.setExecutor(es);
 		path = mdsteim.getIntermediateDataFSFilePath(task);
-		is = new SnappyInputStream(new ByteArrayInputStream((byte[])cache.get(path)));
+		is = new SnappyInputStream(new ByteArrayInputStream((byte[]) cache.get(path)));
 		List<String> intersectiondata = (List<String>) kryo.readClassAndObject(new Input(is));
 		assertEquals(20, intersectiondata.size());
 		is.close();
@@ -225,6 +237,7 @@ public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTe
 		StreamPipelineTaskExecutorInMemoryDisk mdsteim = new StreamPipelineTaskExecutorInMemoryDisk(js, resultstream,
 				MDCCache.get(), null);
 		mdsteim.setHdfs(hdfs);
+		mdsteim.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>(), filepaths2 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -244,6 +257,7 @@ public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTe
 				128 * MDCConstants.MB);
 		fbp.getDnXref(bls2, false);
 		mdsteim.setTask(task1);
+		mdsteim.setExecutor(es);
 		mdsteim.processBlockHDFSIntersection(bls1.get(0), bls1.get(0), hdfs);
 		Task task2 = new Task();
 		task2.jobid = js.jobid;
@@ -252,13 +266,14 @@ public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTe
 		js.stage.tasks.clear();
 		js.stage.tasks.add(function);
 		mdsteim.setTask(task2);
+		mdsteim.setExecutor(es);
 		mdsteim.processBlockHDFSIntersection(bls2.get(0), bls2.get(0), hdfs);
 		Kryo kryo = Utils.getKryoNonDeflateSerializer();
 		String path = mdsteim.getIntermediateDataFSFilePath(task1);
-		InputStream is1 = new SnappyInputStream(new ByteArrayInputStream((byte[])cache.get(path)));
+		InputStream is1 = new SnappyInputStream(new ByteArrayInputStream((byte[]) cache.get(path)));
 		List<InputStream> istreams1 = Arrays.asList(is1);
 		path = mdsteim.getIntermediateDataFSFilePath(task2);
-		InputStream is2 = new SnappyInputStream(new ByteArrayInputStream((byte[])cache.get(path)));
+		InputStream is2 = new SnappyInputStream(new ByteArrayInputStream((byte[]) cache.get(path)));
 		List<InputStream> istreams2 = Arrays.asList(is2);
 
 		Task taskinter = new Task();
@@ -273,7 +288,7 @@ public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTe
 		is2.close();
 
 		path = mdsteim.getIntermediateDataFSFilePath(taskinter);
-		InputStream is = new SnappyInputStream(new ByteArrayInputStream((byte[])cache.get(path)));
+		InputStream is = new SnappyInputStream(new ByteArrayInputStream((byte[]) cache.get(path)));
 		List<String> intersectiondata = (List<String>) kryo.readClassAndObject(new Input(is));
 		assertEquals(20, intersectiondata.size());
 		is.close();
@@ -297,6 +312,7 @@ public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTe
 		StreamPipelineTaskExecutorInMemoryDisk mdsteim = new StreamPipelineTaskExecutorInMemoryDisk(js, resultstream,
 				MDCCache.get(), null);
 		mdsteim.setHdfs(hdfs);
+		mdsteim.setExecutor(es);
 		List<Path> filepaths = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -308,10 +324,11 @@ public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTe
 		FileBlocksPartitionerHDFS fbp = new FileBlocksPartitionerHDFS();
 		fbp.getDnXref(bls, false);
 		mdsteim.setTask(task);
+		mdsteim.setExecutor(es);
 		mdsteim.processBlockHDFSUnion(bls.get(0), bls.get(0), hdfs);
 		Kryo kryo = Utils.getKryoNonDeflateSerializer();
 		String path = mdsteim.getIntermediateDataFSFilePath(task);
-		InputStream is = new SnappyInputStream(new ByteArrayInputStream((byte[])cache.get(path)));
+		InputStream is = new SnappyInputStream(new ByteArrayInputStream((byte[]) cache.get(path)));
 		List<String> uniondata = (List<String>) kryo.readClassAndObject(new Input(is));
 		assertEquals(46361, uniondata.size());
 		is.close();
@@ -335,6 +352,7 @@ public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTe
 		StreamPipelineTaskExecutorInMemoryDisk mdsteim = new StreamPipelineTaskExecutorInMemoryDisk(js, resultstream,
 				MDCCache.get(), null);
 		mdsteim.setHdfs(hdfs);
+		mdsteim.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>(), filepaths2 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths3) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -354,10 +372,11 @@ public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTe
 				128 * MDCConstants.MB);
 		fbp.getDnXref(bls2, false);
 		mdsteim.setTask(task);
+		mdsteim.setExecutor(es);
 		mdsteim.processBlockHDFSUnion(bls1.get(0), bls2.get(0), hdfs);
 		Kryo kryo = Utils.getKryoNonDeflateSerializer();
 		String path = mdsteim.getIntermediateDataFSFilePath(task);
-		InputStream is = new SnappyInputStream(new ByteArrayInputStream((byte[])cache.get(path)));
+		InputStream is = new SnappyInputStream(new ByteArrayInputStream((byte[]) cache.get(path)));
 		List<String> uniondata = (List<String>) kryo.readClassAndObject(new Input(is));
 		assertEquals(60, uniondata.size());
 		is.close();
@@ -381,6 +400,7 @@ public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTe
 		StreamPipelineTaskExecutorInMemoryDisk mdsteim = new StreamPipelineTaskExecutorInMemoryDisk(js, resultstream,
 				MDCCache.get(), null);
 		mdsteim.setHdfs(hdfs);
+		mdsteim.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>(), filepaths2 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths3) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -400,10 +420,11 @@ public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTe
 				128 * MDCConstants.MB);
 		fbp.getDnXref(bls2, false);
 		mdsteim.setTask(task);
+		mdsteim.setExecutor(es);
 		mdsteim.processBlockHDFSUnion(bls1.get(0), bls1.get(0), hdfs);
 		Kryo kryo = Utils.getKryoNonDeflateSerializer();
 		String path = mdsteim.getIntermediateDataFSFilePath(task);
-		InputStream is = new SnappyInputStream(new ByteArrayInputStream((byte[])cache.get(path)));
+		InputStream is = new SnappyInputStream(new ByteArrayInputStream((byte[]) cache.get(path)));
 		Set<InputStream> istreams = new LinkedHashSet<>(Arrays.asList(is));
 		task = new Task();
 		task.jobid = js.jobid;
@@ -412,10 +433,11 @@ public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTe
 		js.stage.tasks.clear();
 		js.stage.tasks.add(function);
 		mdsteim.setTask(task);
+		mdsteim.setExecutor(es);
 		mdsteim.processBlockHDFSUnion(istreams, Arrays.asList(bls2.get(0)), hdfs);
 		is.close();
 		path = mdsteim.getIntermediateDataFSFilePath(task);
-		is = new SnappyInputStream(new ByteArrayInputStream((byte[])cache.get(path)));
+		is = new SnappyInputStream(new ByteArrayInputStream((byte[]) cache.get(path)));
 		List<String> uniondata = (List<String>) kryo.readClassAndObject(new Input(is));
 		assertEquals(60, uniondata.size());
 		is.close();
@@ -439,6 +461,7 @@ public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTe
 		StreamPipelineTaskExecutorInMemoryDisk mdsteim = new StreamPipelineTaskExecutorInMemoryDisk(js, resultstream,
 				MDCCache.get(), null);
 		mdsteim.setHdfs(hdfs);
+		mdsteim.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>(), filepaths2 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths3) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -458,6 +481,7 @@ public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTe
 				128 * MDCConstants.MB);
 		fbp.getDnXref(bls2, false);
 		mdsteim.setTask(task1);
+		mdsteim.setExecutor(es);
 		mdsteim.processBlockHDFSUnion(bls1.get(0), bls1.get(0), hdfs);
 		Task task2 = new Task();
 		task2.jobid = js.jobid;
@@ -466,14 +490,15 @@ public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTe
 		js.stage.tasks.clear();
 		js.stage.tasks.add(function);
 		mdsteim.setTask(task2);
+		mdsteim.setExecutor(es);
 		mdsteim.processBlockHDFSUnion(bls2.get(0), bls2.get(0), hdfs);
 		Kryo kryo = Utils.getKryoNonDeflateSerializer();
 		String path = mdsteim.getIntermediateDataFSFilePath(task1);
-		InputStream is1 = new SnappyInputStream(new ByteArrayInputStream((byte[])cache.get(path)));
+		InputStream is1 = new SnappyInputStream(new ByteArrayInputStream((byte[]) cache.get(path)));
 		List<InputStream> istreams1 = Arrays.asList(is1);
 
 		path = mdsteim.getIntermediateDataFSFilePath(task2);
-		InputStream is2 = new SnappyInputStream(new ByteArrayInputStream((byte[])cache.get(path)));
+		InputStream is2 = new SnappyInputStream(new ByteArrayInputStream((byte[]) cache.get(path)));
 		List<InputStream> istreams2 = Arrays.asList(is2);
 
 		Task taskunion = new Task();
@@ -488,7 +513,7 @@ public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTe
 		is2.close();
 
 		path = mdsteim.getIntermediateDataFSFilePath(taskunion);
-		InputStream is = new SnappyInputStream(new ByteArrayInputStream((byte[])cache.get(path)));
+		InputStream is = new SnappyInputStream(new ByteArrayInputStream((byte[]) cache.get(path)));
 		List<String> uniondata = (List<String>) kryo.readClassAndObject(new Input(is));
 		assertEquals(60, uniondata.size());
 		is.close();
@@ -514,6 +539,7 @@ public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTe
 		StreamPipelineTaskExecutorInMemoryDisk mdsteim = new StreamPipelineTaskExecutorInMemoryDisk(js, resultstream,
 				MDCCache.get(), null);
 		mdsteim.setHdfs(hdfs);
+		mdsteim.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -529,7 +555,7 @@ public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTe
 		mdsteim.processBlockHDFSMap(bls1.get(0), hdfs);
 		Kryo kryo = Utils.getKryoNonDeflateSerializer();
 		String path = mdsteim.getIntermediateDataFSFilePath(filtertask);
-		InputStream is = new SnappyInputStream(new ByteArrayInputStream((byte[])cache.get(path)));
+		InputStream is = new SnappyInputStream(new ByteArrayInputStream((byte[]) cache.get(path)));
 		List<String[]> mapfilterdata = (List<String[]>) kryo.readClassAndObject(new Input(is));
 		assertEquals(45957, mapfilterdata.size());
 		is.close();
@@ -556,6 +582,7 @@ public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTe
 		StreamPipelineTaskExecutorInMemoryDisk mdsteim = new StreamPipelineTaskExecutorInMemoryDisk(js, resultstream,
 				MDCCache.get(), null);
 		mdsteim.setHdfs(hdfs);
+		mdsteim.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -570,7 +597,7 @@ public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTe
 		mdsteim.processBlockHDFSMap(bls1.get(0), hdfs);
 		Kryo kryo = Utils.getKryoNonDeflateSerializer();
 		String path = mdsteim.getIntermediateDataFSFilePath(calculatecounttask);
-		InputStream is = new SnappyInputStream(new ByteArrayInputStream((byte[])cache.get(path)));
+		InputStream is = new SnappyInputStream(new ByteArrayInputStream((byte[]) cache.get(path)));
 		List<Long> mapfiltercountdata = (List<Long>) kryo.readClassAndObject(new Input(is));
 		assertEquals(45957l, (long) mapfiltercountdata.get(0));
 		is.close();
@@ -599,6 +626,7 @@ public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTe
 		StreamPipelineTaskExecutorInMemoryDisk mdsteim = new StreamPipelineTaskExecutorInMemoryDisk(js, resultstream,
 				MDCCache.get(), null);
 		mdsteim.setHdfs(hdfs);
+		mdsteim.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -613,7 +641,7 @@ public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTe
 		mdsteim.processBlockHDFSMap(bls1.get(0), hdfs);
 		Kryo kryo = Utils.getKryoNonDeflateSerializer();
 		String path = mdsteim.getIntermediateDataFSFilePath(sstask);
-		InputStream is = new SnappyInputStream(new ByteArrayInputStream((byte[])cache.get(path)));
+		InputStream is = new SnappyInputStream(new ByteArrayInputStream((byte[]) cache.get(path)));
 		List<IntSummaryStatistics> mapfilterssdata = (List<IntSummaryStatistics>) kryo
 				.readClassAndObject(new Input(is));
 		assertEquals(1, (long) mapfilterssdata.size());
@@ -648,6 +676,7 @@ public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTe
 		StreamPipelineTaskExecutorInMemoryDisk mdsteim = new StreamPipelineTaskExecutorInMemoryDisk(js, resultstream,
 				MDCCache.get(), null);
 		mdsteim.setHdfs(hdfs);
+		mdsteim.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -662,7 +691,7 @@ public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTe
 		mdsteim.processBlockHDFSMap(bls1.get(0), hdfs);
 		Kryo kryo = Utils.getKryoNonDeflateSerializer();
 		String path = mdsteim.getIntermediateDataFSFilePath(maxtask);
-		InputStream is = new SnappyInputStream(new ByteArrayInputStream((byte[])cache.get(path)));
+		InputStream is = new SnappyInputStream(new ByteArrayInputStream((byte[]) cache.get(path)));
 		List<Integer> mapfiltermaxdata = (List<Integer>) kryo.readClassAndObject(new Input(is));
 		is.close();
 		assertEquals(623, (int) mapfiltermaxdata.get(0));
@@ -691,6 +720,7 @@ public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTe
 		StreamPipelineTaskExecutorInMemoryDisk mdsteim = new StreamPipelineTaskExecutorInMemoryDisk(js, resultstream,
 				MDCCache.get(), null);
 		mdsteim.setHdfs(hdfs);
+		mdsteim.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -705,7 +735,7 @@ public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTe
 		mdsteim.processBlockHDFSMap(bls1.get(0), hdfs);
 		Kryo kryo = Utils.getKryoNonDeflateSerializer();
 		String path = mdsteim.getIntermediateDataFSFilePath(mintask);
-		InputStream is = new SnappyInputStream(new ByteArrayInputStream((byte[])cache.get(path)));
+		InputStream is = new SnappyInputStream(new ByteArrayInputStream((byte[]) cache.get(path)));
 		List<Integer> mapfiltermaxdata = (List<Integer>) kryo.readClassAndObject(new Input(is));
 		is.close();
 		assertEquals(-89, (int) mapfiltermaxdata.get(0));
@@ -734,6 +764,7 @@ public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTe
 		StreamPipelineTaskExecutorInMemoryDisk mdsteim = new StreamPipelineTaskExecutorInMemoryDisk(js, resultstream,
 				MDCCache.get(), null);
 		mdsteim.setHdfs(hdfs);
+		mdsteim.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -748,7 +779,7 @@ public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTe
 		mdsteim.processBlockHDFSMap(bls1.get(0), hdfs);
 		Kryo kryo = Utils.getKryoNonDeflateSerializer();
 		String path = mdsteim.getIntermediateDataFSFilePath(sumtask);
-		InputStream is = new SnappyInputStream(new ByteArrayInputStream((byte[])cache.get(path)));
+		InputStream is = new SnappyInputStream(new ByteArrayInputStream((byte[]) cache.get(path)));
 		List<Integer> mapfiltermaxdata = (List<Integer>) kryo.readClassAndObject(new Input(is));
 		is.close();
 		assertEquals(-63278, (int) mapfiltermaxdata.get(0));
@@ -777,6 +808,7 @@ public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTe
 		StreamPipelineTaskExecutorInMemoryDisk mdsteim = new StreamPipelineTaskExecutorInMemoryDisk(js, resultstream,
 				MDCCache.get(), null);
 		mdsteim.setHdfs(hdfs);
+		mdsteim.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -791,7 +823,7 @@ public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTe
 		mdsteim.processBlockHDFSMap(bls1.get(0), hdfs);
 		Kryo kryo = Utils.getKryoNonDeflateSerializer();
 		String path = mdsteim.getIntermediateDataFSFilePath(sdtask);
-		InputStream is = new SnappyInputStream(new ByteArrayInputStream((byte[])cache.get(path)));
+		InputStream is = new SnappyInputStream(new ByteArrayInputStream((byte[]) cache.get(path)));
 		List<Double> mapfiltermaxdata = (List<Double>) kryo.readClassAndObject(new Input(is));
 		is.close();
 		assertEquals(1, mapfiltermaxdata.size());
@@ -819,6 +851,7 @@ public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTe
 		StreamPipelineTaskExecutorInMemoryDisk mdsteim = new StreamPipelineTaskExecutorInMemoryDisk(js, resultstream,
 				MDCCache.get(), null);
 		mdsteim.setHdfs(hdfs);
+		mdsteim.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -833,7 +866,7 @@ public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTe
 		mdsteim.processBlockHDFSMap(bls1.get(0), hdfs);
 		Kryo kryo = Utils.getKryoNonDeflateSerializer();
 		String path = mdsteim.getIntermediateDataFSFilePath(calcultecounttask);
-		InputStream is = new SnappyInputStream(new ByteArrayInputStream((byte[])cache.get(path)));
+		InputStream is = new SnappyInputStream(new ByteArrayInputStream((byte[]) cache.get(path)));
 		List<Long> mapfiltercountdata = (List<Long>) kryo.readClassAndObject(new Input(is));
 		assertEquals(45957l, (long) mapfiltercountdata.get(0));
 		is.close();
@@ -860,6 +893,7 @@ public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTe
 		StreamPipelineTaskExecutorInMemoryDisk mdsteim = new StreamPipelineTaskExecutorInMemoryDisk(js, resultstream,
 				MDCCache.get(), null);
 		mdsteim.setHdfs(hdfs);
+		mdsteim.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -874,7 +908,7 @@ public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTe
 		mdsteim.processBlockHDFSMap(bls1.get(0), hdfs);
 		Kryo kryo = Utils.getKryoNonDeflateSerializer();
 		String path = mdsteim.getIntermediateDataFSFilePath(filtertask);
-		InputStream is = new SnappyInputStream(new ByteArrayInputStream((byte[])cache.get(path)));
+		InputStream is = new SnappyInputStream(new ByteArrayInputStream((byte[]) cache.get(path)));
 		List<CSVRecord> filterdata = (List<CSVRecord>) kryo.readClassAndObject(new Input(is));
 		assertEquals(45957l, (long) filterdata.size());
 		is.close();
@@ -904,6 +938,7 @@ public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTe
 		StreamPipelineTaskExecutorInMemoryDisk mdsteim = new StreamPipelineTaskExecutorInMemoryDisk(js, resultstream,
 				MDCCache.get(), null);
 		mdsteim.setHdfs(hdfs);
+		mdsteim.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -918,7 +953,7 @@ public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTe
 		mdsteim.processBlockHDFSMap(bls1.get(0), hdfs);
 		Kryo kryo = Utils.getKryoNonDeflateSerializer();
 		String path = mdsteim.getIntermediateDataFSFilePath(summarystaticstask);
-		InputStream is = new SnappyInputStream(new ByteArrayInputStream((byte[])cache.get(path)));
+		InputStream is = new SnappyInputStream(new ByteArrayInputStream((byte[]) cache.get(path)));
 		List<IntSummaryStatistics> mapfilterssdata = (List<IntSummaryStatistics>) kryo
 				.readClassAndObject(new Input(is));
 		assertEquals(1, (long) mapfilterssdata.size());
@@ -953,6 +988,7 @@ public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTe
 		StreamPipelineTaskExecutorInMemoryDisk mdsteim = new StreamPipelineTaskExecutorInMemoryDisk(js, resultstream,
 				MDCCache.get(), null);
 		mdsteim.setHdfs(hdfs);
+		mdsteim.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -967,7 +1003,7 @@ public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTe
 		mdsteim.processBlockHDFSMap(bls1.get(0), hdfs);
 		Kryo kryo = Utils.getKryoNonDeflateSerializer();
 		String path = mdsteim.getIntermediateDataFSFilePath(maxtask);
-		InputStream is = new SnappyInputStream(new ByteArrayInputStream((byte[])cache.get(path)));
+		InputStream is = new SnappyInputStream(new ByteArrayInputStream((byte[]) cache.get(path)));
 		List<Integer> mapfilterssdata = (List<Integer>) kryo.readClassAndObject(new Input(is));
 		assertEquals(623, (long) mapfilterssdata.get(0));
 		is.close();
@@ -997,6 +1033,7 @@ public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTe
 		StreamPipelineTaskExecutorInMemoryDisk mdsteim = new StreamPipelineTaskExecutorInMemoryDisk(js, resultstream,
 				MDCCache.get(), null);
 		mdsteim.setHdfs(hdfs);
+		mdsteim.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -1011,7 +1048,7 @@ public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTe
 		mdsteim.processBlockHDFSMap(bls1.get(0), hdfs);
 		Kryo kryo = Utils.getKryoNonDeflateSerializer();
 		String path = mdsteim.getIntermediateDataFSFilePath(mintask);
-		InputStream is = new SnappyInputStream(new ByteArrayInputStream((byte[])cache.get(path)));
+		InputStream is = new SnappyInputStream(new ByteArrayInputStream((byte[]) cache.get(path)));
 		List<Integer> mapfilterssdata = (List<Integer>) kryo.readClassAndObject(new Input(is));
 		assertEquals(-89, (long) mapfilterssdata.get(0));
 		is.close();
@@ -1041,6 +1078,7 @@ public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTe
 		StreamPipelineTaskExecutorInMemoryDisk mdsteim = new StreamPipelineTaskExecutorInMemoryDisk(js, resultstream,
 				MDCCache.get(), null);
 		mdsteim.setHdfs(hdfs);
+		mdsteim.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -1055,7 +1093,7 @@ public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTe
 		mdsteim.processBlockHDFSMap(bls1.get(0), hdfs);
 		Kryo kryo = Utils.getKryoNonDeflateSerializer();
 		String path = mdsteim.getIntermediateDataFSFilePath(sumtask);
-		InputStream is = new SnappyInputStream(new ByteArrayInputStream((byte[])cache.get(path)));
+		InputStream is = new SnappyInputStream(new ByteArrayInputStream((byte[]) cache.get(path)));
 		List<Integer> mapfilterssdata = (List<Integer>) kryo.readClassAndObject(new Input(is));
 		assertEquals(-63278, (long) mapfilterssdata.get(0));
 		is.close();
@@ -1085,6 +1123,7 @@ public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTe
 		StreamPipelineTaskExecutorInMemoryDisk mdsteim = new StreamPipelineTaskExecutorInMemoryDisk(js, resultstream,
 				MDCCache.get(), null);
 		mdsteim.setHdfs(hdfs);
+		mdsteim.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -1099,7 +1138,7 @@ public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTe
 		mdsteim.processBlockHDFSMap(bls1.get(0), hdfs);
 		Kryo kryo = Utils.getKryoNonDeflateSerializer();
 		String path = mdsteim.getIntermediateDataFSFilePath(sdtask);
-		InputStream is = new SnappyInputStream(new ByteArrayInputStream((byte[])cache.get(path)));
+		InputStream is = new SnappyInputStream(new ByteArrayInputStream((byte[]) cache.get(path)));
 		List<Double> mapfiltersddata = (List<Double>) kryo.readClassAndObject(new Input(is));
 		assertEquals(1, (long) mapfiltersddata.size());
 		is.close();
@@ -1127,6 +1166,7 @@ public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTe
 		StreamPipelineTaskExecutorInMemoryDisk mdsteim = new StreamPipelineTaskExecutorInMemoryDisk(js, resultstream,
 				MDCCache.get(), null);
 		mdsteim.setHdfs(hdfs);
+		mdsteim.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -1140,7 +1180,7 @@ public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTe
 		mdsteim.setTask(filtertask);
 		mdsteim.processBlockHDFSMap(bls1.get(0), hdfs);
 		String path = mdsteim.getIntermediateDataFSFilePath(filtertask);
-		InputStream is = new SnappyInputStream(new ByteArrayInputStream((byte[])cache.get(path)));
+		InputStream is = new SnappyInputStream(new ByteArrayInputStream((byte[]) cache.get(path)));
 		Set<InputStream> inputtocount = new LinkedHashSet<>(Arrays.asList(is));
 		Task calcultecounttask = new Task();
 		calcultecounttask.jobid = js.jobid;
@@ -1152,7 +1192,7 @@ public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTe
 		is.close();
 		Kryo kryo = Utils.getKryoNonDeflateSerializer();
 		path = mdsteim.getIntermediateDataFSFilePath(calcultecounttask);
-		is = new SnappyInputStream(new ByteArrayInputStream((byte[])cache.get(path)));
+		is = new SnappyInputStream(new ByteArrayInputStream((byte[]) cache.get(path)));
 		List<Long> csvreccount = (List<Long>) kryo.readClassAndObject(new Input(is));
 		assertEquals(45957l, (long) csvreccount.get(0));
 		is.close();
@@ -1180,6 +1220,7 @@ public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTe
 		StreamPipelineTaskExecutorInMemoryDisk mdsteim = new StreamPipelineTaskExecutorInMemoryDisk(js, resultstream,
 				MDCCache.get(), null);
 		mdsteim.setHdfs(hdfs);
+		mdsteim.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -1193,7 +1234,7 @@ public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTe
 		mdsteim.setTask(filtertask);
 		mdsteim.processBlockHDFSMap(bls1.get(0), hdfs);
 		String path = mdsteim.getIntermediateDataFSFilePath(filtertask);
-		InputStream is = new SnappyInputStream(new ByteArrayInputStream((byte[])cache.get(path)));
+		InputStream is = new SnappyInputStream(new ByteArrayInputStream((byte[]) cache.get(path)));
 		Set<InputStream> inputtocount = new LinkedHashSet<>(Arrays.asList(is));
 		ToIntFunction<CSVRecord> csvint = (CSVRecord csvrecord) -> Integer.parseInt(csvrecord.get("ArrDelay"));
 		Task summarystaticstask = new Task();
@@ -1207,7 +1248,7 @@ public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTe
 		is.close();
 		Kryo kryo = Utils.getKryoNonDeflateSerializer();
 		path = mdsteim.getIntermediateDataFSFilePath(summarystaticstask);
-		is = new SnappyInputStream(new ByteArrayInputStream((byte[])cache.get(path)));
+		is = new SnappyInputStream(new ByteArrayInputStream((byte[]) cache.get(path)));
 		List<IntSummaryStatistics> mapfilterssdata = (List<IntSummaryStatistics>) kryo
 				.readClassAndObject(new Input(is));
 		assertEquals(1, (long) mapfilterssdata.size());
@@ -1240,6 +1281,7 @@ public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTe
 		StreamPipelineTaskExecutorInMemoryDisk mdsteim = new StreamPipelineTaskExecutorInMemoryDisk(js, resultstream,
 				MDCCache.get(), null);
 		mdsteim.setHdfs(hdfs);
+		mdsteim.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -1253,7 +1295,7 @@ public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTe
 		mdsteim.setTask(filtertask);
 		mdsteim.processBlockHDFSMap(bls1.get(0), hdfs);
 		String path = mdsteim.getIntermediateDataFSFilePath(filtertask);
-		InputStream is = new SnappyInputStream(new ByteArrayInputStream((byte[])cache.get(path)));
+		InputStream is = new SnappyInputStream(new ByteArrayInputStream((byte[]) cache.get(path)));
 		Set<InputStream> inputtocount = new LinkedHashSet<>(Arrays.asList(is));
 		ToIntFunction<CSVRecord> csvint = (CSVRecord csvrecord) -> Integer.parseInt(csvrecord.get("ArrDelay"));
 		Task maxtask = new Task();
@@ -1267,7 +1309,7 @@ public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTe
 		is.close();
 		Kryo kryo = Utils.getKryoNonDeflateSerializer();
 		path = mdsteim.getIntermediateDataFSFilePath(maxtask);
-		is = new SnappyInputStream(new ByteArrayInputStream((byte[])cache.get(path)));
+		is = new SnappyInputStream(new ByteArrayInputStream((byte[]) cache.get(path)));
 		List<Integer> mapfiltermaxdata = (List<Integer>) kryo.readClassAndObject(new Input(is));
 		assertEquals(623, (int) mapfiltermaxdata.get(0));
 		is.close();
@@ -1294,6 +1336,7 @@ public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTe
 		StreamPipelineTaskExecutorInMemoryDisk mdsteim = new StreamPipelineTaskExecutorInMemoryDisk(js, resultstream,
 				MDCCache.get(), null);
 		mdsteim.setHdfs(hdfs);
+		mdsteim.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -1307,7 +1350,7 @@ public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTe
 		mdsteim.setTask(filtertask);
 		mdsteim.processBlockHDFSMap(bls1.get(0), hdfs);
 		String path = mdsteim.getIntermediateDataFSFilePath(filtertask);
-		InputStream is = new SnappyInputStream(new ByteArrayInputStream((byte[])cache.get(path)));
+		InputStream is = new SnappyInputStream(new ByteArrayInputStream((byte[]) cache.get(path)));
 		Set<InputStream> inputtocount = new LinkedHashSet<>(Arrays.asList(is));
 		ToIntFunction<CSVRecord> csvint = (CSVRecord csvrecord) -> Integer.parseInt(csvrecord.get("ArrDelay"));
 		Task mintask = new Task();
@@ -1321,7 +1364,7 @@ public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTe
 		is.close();
 		Kryo kryo = Utils.getKryoNonDeflateSerializer();
 		path = mdsteim.getIntermediateDataFSFilePath(mintask);
-		is = new SnappyInputStream(new ByteArrayInputStream((byte[])cache.get(path)));
+		is = new SnappyInputStream(new ByteArrayInputStream((byte[]) cache.get(path)));
 		List<Integer> mapfiltermindata = (List<Integer>) kryo.readClassAndObject(new Input(is));
 		assertEquals(-89, (int) mapfiltermindata.get(0));
 		is.close();
@@ -1349,6 +1392,7 @@ public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTe
 		StreamPipelineTaskExecutorInMemoryDisk mdsteim = new StreamPipelineTaskExecutorInMemoryDisk(js, resultstream,
 				MDCCache.get(), null);
 		mdsteim.setHdfs(hdfs);
+		mdsteim.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -1362,7 +1406,7 @@ public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTe
 		mdsteim.setTask(filtertask);
 		mdsteim.processBlockHDFSMap(bls1.get(0), hdfs);
 		String path = mdsteim.getIntermediateDataFSFilePath(filtertask);
-		InputStream is = new SnappyInputStream(new ByteArrayInputStream((byte[])cache.get(path)));
+		InputStream is = new SnappyInputStream(new ByteArrayInputStream((byte[]) cache.get(path)));
 		Set<InputStream> inputtocount = new LinkedHashSet<>(Arrays.asList(is));
 		ToIntFunction<CSVRecord> csvint = (CSVRecord csvrecord) -> Integer.parseInt(csvrecord.get("ArrDelay"));
 		Task sumtask = new Task();
@@ -1376,7 +1420,7 @@ public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTe
 		is.close();
 		Kryo kryo = Utils.getKryoNonDeflateSerializer();
 		path = mdsteim.getIntermediateDataFSFilePath(sumtask);
-		is = new SnappyInputStream(new ByteArrayInputStream((byte[])cache.get(path)));
+		is = new SnappyInputStream(new ByteArrayInputStream((byte[]) cache.get(path)));
 		List<Integer> mapfiltersumdata = (List<Integer>) kryo.readClassAndObject(new Input(is));
 		assertEquals(-63278, (int) mapfiltersumdata.get(0));
 		is.close();
@@ -1404,6 +1448,7 @@ public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTe
 		StreamPipelineTaskExecutorInMemoryDisk mdsteim = new StreamPipelineTaskExecutorInMemoryDisk(js, resultstream,
 				MDCCache.get(), null);
 		mdsteim.setHdfs(hdfs);
+		mdsteim.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -1417,7 +1462,7 @@ public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTe
 		mdsteim.setTask(filtertask);
 		mdsteim.processBlockHDFSMap(bls1.get(0), hdfs);
 		String path = mdsteim.getIntermediateDataFSFilePath(filtertask);
-		InputStream is = new SnappyInputStream(new ByteArrayInputStream((byte[])cache.get(path)));
+		InputStream is = new SnappyInputStream(new ByteArrayInputStream((byte[]) cache.get(path)));
 		Set<InputStream> inputtocount = new LinkedHashSet<>(Arrays.asList(is));
 		ToIntFunction<CSVRecord> csvint = (CSVRecord csvrecord) -> Integer.parseInt(csvrecord.get("ArrDelay"));
 		Task sdtask = new Task();
@@ -1431,7 +1476,7 @@ public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTe
 		is.close();
 		Kryo kryo = Utils.getKryoNonDeflateSerializer();
 		path = mdsteim.getIntermediateDataFSFilePath(sdtask);
-		is = new SnappyInputStream(new ByteArrayInputStream((byte[])cache.get(path)));
+		is = new SnappyInputStream(new ByteArrayInputStream((byte[]) cache.get(path)));
 		List<Integer> mapfiltersddata = (List<Integer>) kryo.readClassAndObject(new Input(is));
 		assertEquals(1, (int) mapfiltersddata.size());
 		is.close();
@@ -1459,6 +1504,7 @@ public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTe
 		StreamPipelineTaskExecutorInMemoryDisk mdsteim = new StreamPipelineTaskExecutorInMemoryDisk(js, resultstream,
 				MDCCache.get(), null);
 		mdsteim.setHdfs(hdfs);
+		mdsteim.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -1473,7 +1519,7 @@ public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTe
 		mdsteim.processSamplesBlocks(100, bls1.get(0), hdfs);
 		String path = mdsteim.getIntermediateDataFSFilePath(filtertask);
 		Kryo kryo = Utils.getKryoNonDeflateSerializer();
-		InputStream is = new SnappyInputStream(new ByteArrayInputStream((byte[])cache.get(path)));
+		InputStream is = new SnappyInputStream(new ByteArrayInputStream((byte[]) cache.get(path)));
 		List<Long> csvreccount = (List<Long>) kryo.readClassAndObject(new Input(is));
 		assertEquals(100, (long) csvreccount.size());
 		is.close();
@@ -1500,6 +1546,7 @@ public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTe
 		StreamPipelineTaskExecutorInMemoryDisk mdsteim = new StreamPipelineTaskExecutorInMemoryDisk(js, resultstream,
 				MDCCache.get(), null);
 		mdsteim.setHdfs(hdfs);
+		mdsteim.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -1514,7 +1561,7 @@ public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTe
 		mdsteim.processSamplesBlocks(150, bls1.get(0), hdfs);
 		String path = mdsteim.getIntermediateDataFSFilePath(counttask);
 		Kryo kryo = Utils.getKryoNonDeflateSerializer();
-		InputStream is = new SnappyInputStream(new ByteArrayInputStream((byte[])cache.get(path)));
+		InputStream is = new SnappyInputStream(new ByteArrayInputStream((byte[]) cache.get(path)));
 		List<Long> csvreccount = (List<Long>) kryo.readClassAndObject(new Input(is));
 		assertEquals(150l, (long) csvreccount.get(0));
 		is.close();
@@ -1542,6 +1589,7 @@ public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTe
 		StreamPipelineTaskExecutorInMemoryDisk mdsteim = new StreamPipelineTaskExecutorInMemoryDisk(js, resultstream,
 				MDCCache.get(), null);
 		mdsteim.setHdfs(hdfs);
+		mdsteim.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -1555,7 +1603,7 @@ public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTe
 		mdsteim.setTask(filtertask);
 		mdsteim.processBlockHDFSMap(bls1.get(0), hdfs);
 		String path = mdsteim.getIntermediateDataFSFilePath(filtertask);
-		InputStream is = new SnappyInputStream(new ByteArrayInputStream((byte[])cache.get(path)));
+		InputStream is = new SnappyInputStream(new ByteArrayInputStream((byte[]) cache.get(path)));
 		List<InputStream> inputtocount = Arrays.asList(is);
 		Task sample = new Task();
 		sample.jobid = js.jobid;
@@ -1568,7 +1616,7 @@ public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTe
 		is.close();
 		Kryo kryo = Utils.getKryoNonDeflateSerializer();
 		path = mdsteim.getIntermediateDataFSFilePath(sample);
-		is = new SnappyInputStream(new ByteArrayInputStream((byte[])cache.get(path)));
+		is = new SnappyInputStream(new ByteArrayInputStream((byte[]) cache.get(path)));
 		List<Integer> mapfiltersddata = (List<Integer>) kryo.readClassAndObject(new Input(is));
 		assertEquals(150, (int) mapfiltersddata.size());
 		is.close();
@@ -1596,6 +1644,7 @@ public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTe
 		StreamPipelineTaskExecutorInMemoryDisk mdsteim = new StreamPipelineTaskExecutorInMemoryDisk(js, resultstream,
 				MDCCache.get(), null);
 		mdsteim.setHdfs(hdfs);
+		mdsteim.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -1609,7 +1658,7 @@ public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTe
 		mdsteim.setTask(filtertask);
 		mdsteim.processBlockHDFSMap(bls1.get(0), hdfs);
 		String path = mdsteim.getIntermediateDataFSFilePath(filtertask);
-		InputStream is = new SnappyInputStream(new ByteArrayInputStream((byte[])cache.get(path)));
+		InputStream is = new SnappyInputStream(new ByteArrayInputStream((byte[]) cache.get(path)));
 		List<InputStream> inputtocount = Arrays.asList(is);
 		Task count = new Task();
 		count.jobid = js.jobid;
@@ -1621,7 +1670,7 @@ public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTe
 		is.close();
 		Kryo kryo = Utils.getKryoNonDeflateSerializer();
 		path = mdsteim.getIntermediateDataFSFilePath(count);
-		is = new SnappyInputStream(new ByteArrayInputStream((byte[])cache.get(path)));
+		is = new SnappyInputStream(new ByteArrayInputStream((byte[]) cache.get(path)));
 		List<Long> mapfiltersddata = (List<Long>) kryo.readClassAndObject(new Input(is));
 		assertEquals(150l, (long) mapfiltersddata.get(0));
 		is.close();
@@ -1652,6 +1701,7 @@ public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTe
 		StreamPipelineTaskExecutorInMemoryDisk mdsteim = new StreamPipelineTaskExecutorInMemoryDisk(js, resultstream,
 				MDCCache.get(), null);
 		mdsteim.setHdfs(hdfs);
+		mdsteim.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>(), filepaths2 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -1686,9 +1736,9 @@ public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTe
 
 		Kryo kryo = Utils.getKryoNonDeflateSerializer();
 		String path1 = mdsteim.getIntermediateDataFSFilePath(reducebykeytask1);
-		InputStream is1 = new SnappyInputStream(new ByteArrayInputStream((byte[])cache.get(path1)));
+		InputStream is1 = new SnappyInputStream(new ByteArrayInputStream((byte[]) cache.get(path1)));
 		String path2 = mdsteim.getIntermediateDataFSFilePath(reducebykeytask2);
-		InputStream is2 = new SnappyInputStream(new ByteArrayInputStream((byte[])cache.get(path2)));
+		InputStream is2 = new SnappyInputStream(new ByteArrayInputStream((byte[]) cache.get(path2)));
 		Task jointask = new Task();
 		jointask.jobid = js.jobid;
 		jointask.stageid = js.stageid;
@@ -1705,7 +1755,7 @@ public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTe
 
 		kryo = Utils.getKryoNonDeflateSerializer();
 		String path = mdsteim.getIntermediateDataFSFilePath(jointask);
-		InputStream is = new SnappyInputStream(new ByteArrayInputStream((byte[])cache.get(path)));
+		InputStream is = new SnappyInputStream(new ByteArrayInputStream((byte[]) cache.get(path)));
 		List<Tuple2<Tuple2<String, Integer>, Tuple2<String, Integer>>> mapfiltersddata = (List) kryo
 				.readClassAndObject(new Input(is));
 		assertEquals(1, (long) mapfiltersddata.size());
@@ -1739,6 +1789,7 @@ public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTe
 		StreamPipelineTaskExecutorInMemoryDisk mdsteim = new StreamPipelineTaskExecutorInMemoryDisk(js, resultstream,
 				MDCCache.get(), null);
 		mdsteim.setHdfs(hdfs);
+		mdsteim.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>(), filepaths2 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -1773,9 +1824,9 @@ public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTe
 
 		Kryo kryo = Utils.getKryoNonDeflateSerializer();
 		String path1 = mdsteim.getIntermediateDataFSFilePath(reducebykeytask1);
-		InputStream is1 = new SnappyInputStream(new ByteArrayInputStream((byte[])cache.get(path1)));
+		InputStream is1 = new SnappyInputStream(new ByteArrayInputStream((byte[]) cache.get(path1)));
 		String path2 = mdsteim.getIntermediateDataFSFilePath(reducebykeytask2);
-		InputStream is2 = new SnappyInputStream(new ByteArrayInputStream((byte[])cache.get(path2)));
+		InputStream is2 = new SnappyInputStream(new ByteArrayInputStream((byte[]) cache.get(path2)));
 		Task jointask = new Task();
 		jointask.jobid = js.jobid;
 		jointask.stageid = js.stageid;
@@ -1793,7 +1844,7 @@ public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTe
 
 		kryo = Utils.getKryoNonDeflateSerializer();
 		String path = mdsteim.getIntermediateDataFSFilePath(jointask);
-		InputStream is = new SnappyInputStream(new ByteArrayInputStream((byte[])cache.get(path)));
+		InputStream is = new SnappyInputStream(new ByteArrayInputStream((byte[]) cache.get(path)));
 		List<Tuple2<Tuple2<String, Integer>, Tuple2<String, Integer>>> mapfiltersddata = (List) kryo
 				.readClassAndObject(new Input(is));
 		assertEquals(1, (long) mapfiltersddata.size());
@@ -1831,6 +1882,7 @@ public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTe
 		StreamPipelineTaskExecutorInMemoryDisk mdsteim = new StreamPipelineTaskExecutorInMemoryDisk(js, resultstream,
 				MDCCache.get(), null);
 		mdsteim.setHdfs(hdfs);
+		mdsteim.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>(), filepaths2 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -1865,9 +1917,9 @@ public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTe
 
 		Kryo kryo = Utils.getKryoNonDeflateSerializer();
 		String path1 = mdsteim.getIntermediateDataFSFilePath(reducebykeytask1);
-		InputStream is1 = new SnappyInputStream(new ByteArrayInputStream((byte[])cache.get(path1)));
+		InputStream is1 = new SnappyInputStream(new ByteArrayInputStream((byte[]) cache.get(path1)));
 		String path2 = mdsteim.getIntermediateDataFSFilePath(reducebykeytask2);
-		InputStream is2 = new SnappyInputStream(new ByteArrayInputStream((byte[])cache.get(path2)));
+		InputStream is2 = new SnappyInputStream(new ByteArrayInputStream((byte[]) cache.get(path2)));
 		Task jointask = new Task();
 		jointask.jobid = js.jobid;
 		jointask.stageid = js.stageid;
@@ -1885,7 +1937,7 @@ public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTe
 
 		kryo = Utils.getKryoNonDeflateSerializer();
 		String path = mdsteim.getIntermediateDataFSFilePath(jointask);
-		InputStream is = new SnappyInputStream(new ByteArrayInputStream((byte[])cache.get(path)));
+		InputStream is = new SnappyInputStream(new ByteArrayInputStream((byte[]) cache.get(path)));
 		List<Tuple2<Tuple2<String, Integer>, Tuple2<String, Integer>>> mapfiltersddata = (List) kryo
 				.readClassAndObject(new Input(is));
 		assertEquals(1, (long) mapfiltersddata.size());
@@ -1921,6 +1973,7 @@ public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTe
 		StreamPipelineTaskExecutorInMemoryDisk mdsteim = new StreamPipelineTaskExecutorInMemoryDisk(js, resultstream,
 				MDCCache.get(), null);
 		mdsteim.setHdfs(hdfs);
+		mdsteim.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -1936,7 +1989,7 @@ public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTe
 
 		Kryo kryo = Utils.getKryoNonDeflateSerializer();
 		String path1 = mdsteim.getIntermediateDataFSFilePath(mappairtask1);
-		InputStream is1 = new SnappyInputStream(new ByteArrayInputStream((byte[])cache.get(path1)));
+		InputStream is1 = new SnappyInputStream(new ByteArrayInputStream((byte[]) cache.get(path1)));
 		Task gbktask = new Task();
 		gbktask.jobid = js.jobid;
 		gbktask.stageid = js.stageid;
@@ -1951,7 +2004,7 @@ public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTe
 
 		kryo = Utils.getKryoNonDeflateSerializer();
 		String path = mdsteim.getIntermediateDataFSFilePath(gbktask);
-		InputStream is = new SnappyInputStream(new ByteArrayInputStream((byte[])cache.get(path)));
+		InputStream is = new SnappyInputStream(new ByteArrayInputStream((byte[]) cache.get(path)));
 		List<Tuple2<String, List<Integer>>> mapfiltersddata = (List) kryo.readClassAndObject(new Input(is));
 		assertEquals(1, (long) mapfiltersddata.size());
 		Tuple2<String, List<Integer>> tupleresult = mapfiltersddata.get(0);
@@ -1982,6 +2035,7 @@ public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTe
 		StreamPipelineTaskExecutorInMemoryDisk mdsteim = new StreamPipelineTaskExecutorInMemoryDisk(js, resultstream,
 				MDCCache.get(), null);
 		mdsteim.setHdfs(hdfs);
+		mdsteim.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -1997,7 +2051,7 @@ public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTe
 
 		Kryo kryo = Utils.getKryoNonDeflateSerializer();
 		String path1 = mdsteim.getIntermediateDataFSFilePath(mappairtask1);
-		InputStream is1 = new SnappyInputStream(new ByteArrayInputStream((byte[])cache.get(path1)));
+		InputStream is1 = new SnappyInputStream(new ByteArrayInputStream((byte[]) cache.get(path1)));
 		Task fbktask = new Task();
 		fbktask.jobid = js.jobid;
 		fbktask.stageid = js.stageid;
@@ -2012,7 +2066,7 @@ public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTe
 
 		kryo = Utils.getKryoNonDeflateSerializer();
 		String path = mdsteim.getIntermediateDataFSFilePath(fbktask);
-		InputStream is = new SnappyInputStream(new ByteArrayInputStream((byte[])cache.get(path)));
+		InputStream is = new SnappyInputStream(new ByteArrayInputStream((byte[]) cache.get(path)));
 		List<Tuple2<String, Long>> mapfiltersddata = (List) kryo.readClassAndObject(new Input(is));
 
 		Tuple2<String, Long> tupleresult = mapfiltersddata.get(0);
@@ -2041,6 +2095,7 @@ public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTe
 		StreamPipelineTaskExecutorInMemoryDisk mdsteim = new StreamPipelineTaskExecutorInMemoryDisk(js, resultstream,
 				MDCCache.get(), null);
 		mdsteim.setHdfs(hdfs);
+		mdsteim.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -2056,7 +2111,7 @@ public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTe
 
 		Kryo kryo = Utils.getKryoNonDeflateSerializer();
 		String path1 = mdsteim.getIntermediateDataFSFilePath(mappairtask1);
-		InputStream is1 = new SnappyInputStream(new ByteArrayInputStream((byte[])cache.get(path1)));
+		InputStream is1 = new SnappyInputStream(new ByteArrayInputStream((byte[]) cache.get(path1)));
 		Task fbktask = new Task();
 		fbktask.jobid = js.jobid;
 		fbktask.stageid = js.stageid;
@@ -2072,7 +2127,7 @@ public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTe
 
 		kryo = Utils.getKryoNonDeflateSerializer();
 		String path = mdsteim.getIntermediateDataFSFilePath(fbktask);
-		InputStream is = new SnappyInputStream(new ByteArrayInputStream((byte[])cache.get(path)));
+		InputStream is = new SnappyInputStream(new ByteArrayInputStream((byte[]) cache.get(path)));
 		List<Tuple2<String, Long>> mapfiltersddata = (List) kryo.readClassAndObject(new Input(is));
 
 		Tuple2<String, Long> tupleresult = mapfiltersddata.get(0);
@@ -2101,6 +2156,7 @@ public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTe
 		StreamPipelineTaskExecutorInMemoryDisk mdsteim = new StreamPipelineTaskExecutorInMemoryDisk(js, resultstream,
 				MDCCache.get(), null);
 		mdsteim.setHdfs(hdfs);
+		mdsteim.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -2116,7 +2172,7 @@ public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTe
 
 		Kryo kryo = Utils.getKryoNonDeflateSerializer();
 		String path1 = mdsteim.getIntermediateDataFSFilePath(mappairtask1);
-		InputStream is1 = new SnappyInputStream(new ByteArrayInputStream((byte[])cache.get(path1)));
+		InputStream is1 = new SnappyInputStream(new ByteArrayInputStream((byte[]) cache.get(path1)));
 		Task cbktask = new Task();
 		cbktask.jobid = js.jobid;
 		cbktask.stageid = js.stageid;
@@ -2129,7 +2185,7 @@ public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTe
 
 		kryo = Utils.getKryoNonDeflateSerializer();
 		String path = mdsteim.getIntermediateDataFSFilePath(cbktask);
-		InputStream is = new SnappyInputStream(new ByteArrayInputStream((byte[])cache.get(path)));
+		InputStream is = new SnappyInputStream(new ByteArrayInputStream((byte[]) cache.get(path)));
 		List<Tuple2<String, Long>> mapfiltersddata = (List) kryo.readClassAndObject(new Input(is));
 
 		Tuple2<String, Long> tupleresult = mapfiltersddata.get(0);
@@ -2158,6 +2214,7 @@ public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTe
 		StreamPipelineTaskExecutorInMemoryDisk mdsteim = new StreamPipelineTaskExecutorInMemoryDisk(js, resultstream,
 				MDCCache.get(), null);
 		mdsteim.setHdfs(hdfs);
+		mdsteim.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -2173,7 +2230,7 @@ public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTe
 
 		Kryo kryo = Utils.getKryoNonDeflateSerializer();
 		String path1 = mdsteim.getIntermediateDataFSFilePath(mappairtask1);
-		InputStream is1 = new SnappyInputStream(new ByteArrayInputStream((byte[])cache.get(path1)));
+		InputStream is1 = new SnappyInputStream(new ByteArrayInputStream((byte[]) cache.get(path1)));
 		Task cbktask = new Task();
 		cbktask.jobid = js.jobid;
 		cbktask.stageid = js.stageid;
@@ -2186,7 +2243,7 @@ public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTe
 
 		kryo = Utils.getKryoNonDeflateSerializer();
 		String path = mdsteim.getIntermediateDataFSFilePath(cbktask);
-		InputStream is = new SnappyInputStream(new ByteArrayInputStream((byte[])cache.get(path)));
+		InputStream is = new SnappyInputStream(new ByteArrayInputStream((byte[]) cache.get(path)));
 		List<Tuple2<Tuple2<String, Long>, Long>> mapfiltersddata = (List) kryo.readClassAndObject(new Input(is));
 		int sum = 0;
 		for (Tuple2<Tuple2<String, Long>, Long> tupleresult : mapfiltersddata) {
@@ -2220,6 +2277,7 @@ public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTe
 		StreamPipelineTaskExecutorInMemoryDisk mdsteim = new StreamPipelineTaskExecutorInMemoryDisk(js, resultstream,
 				MDCCache.get(), null);
 		mdsteim.setHdfs(hdfs);
+		mdsteim.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>(), filepaths2 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -2252,9 +2310,9 @@ public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTe
 
 		Kryo kryo = Utils.getKryoNonDeflateSerializer();
 		String path1 = mdsteim.getIntermediateDataFSFilePath(reducebykeytask1);
-		InputStream is1 = new SnappyInputStream(new ByteArrayInputStream((byte[])cache.get(path1)));
+		InputStream is1 = new SnappyInputStream(new ByteArrayInputStream((byte[]) cache.get(path1)));
 		String path2 = mdsteim.getIntermediateDataFSFilePath(reducebykeytask2);
-		InputStream is2 = new SnappyInputStream(new ByteArrayInputStream((byte[])cache.get(path2)));
+		InputStream is2 = new SnappyInputStream(new ByteArrayInputStream((byte[]) cache.get(path2)));
 		reducebykeytask2.input = new Object[] { is1, is2 };
 		Task coalescetask = new Task();
 		coalescetask.jobid = js.jobid;
@@ -2274,7 +2332,7 @@ public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTe
 
 		kryo = Utils.getKryoNonDeflateSerializer();
 		String path = mdsteim.getIntermediateDataFSFilePath(coalescetask);
-		InputStream is = new SnappyInputStream(new ByteArrayInputStream((byte[])cache.get(path)));
+		InputStream is = new SnappyInputStream(new ByteArrayInputStream((byte[]) cache.get(path)));
 		List<Tuple2<String, Integer>> mapfiltersddata = (List) kryo.readClassAndObject(new Input(is));
 		assertEquals(1, (long) mapfiltersddata.size());
 		Tuple2<String, Integer> tupleresult = mapfiltersddata.get(0);
@@ -2306,6 +2364,7 @@ public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTe
 		StreamPipelineTaskExecutorInMemoryDisk mdsteim = new StreamPipelineTaskExecutorInMemoryDisk(js, resultstream,
 				MDCCache.get(), null);
 		mdsteim.setHdfs(hdfs);
+		mdsteim.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : githubevents1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -2320,11 +2379,12 @@ public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTe
 		mdsteim.processBlockHDFSMap(bls1.get(0), hdfs);
 		Kryo kryo = Utils.getKryoNonDeflateSerializer();
 		String path = mdsteim.getIntermediateDataFSFilePath(filtertask);
-		InputStream is = new SnappyInputStream(new ByteArrayInputStream((byte[])cache.get(path)));
+		InputStream is = new SnappyInputStream(new ByteArrayInputStream((byte[]) cache.get(path)));
 		List<JSONObject> jsonfilterdata = (List<JSONObject>) kryo.readClassAndObject(new Input(is));
 		assertEquals(11l, (long) jsonfilterdata.size());
 		is.close();
 	}
-	// JSON Test cases End
 
+	// JSON Test cases End
+	
 }

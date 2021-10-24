@@ -160,7 +160,7 @@ public class HdfsBlockReader {
 	 * @return
 	 * @throws Exception
 	 */
-	public static SnappyInputStream getBlockDataLZFStream(final BlocksLocation bl, FileSystem hdfs) throws Exception {
+	public static SnappyInputStream getBlockDataSnappyStream(final BlocksLocation bl, FileSystem hdfs) throws Exception {
 		ByteBuffer bb = ByteBufferPool.get().borrowObject();
 		try(var bbos = new ByteBufferOutputStream(bb);
 				var lzfos = new SnappyOutputStream(bbos)) {

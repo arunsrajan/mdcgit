@@ -60,7 +60,7 @@ public class CacheUtilsTest {
 		int blscount = 0;
 		Cache<String,byte[]> cache = (Cache<String, byte[]>) MDCCache.get();
 		for(BlocksLocation bl:bls) {
-			SnappyInputStream sis = HdfsBlockReader.getBlockDataLZFStream(bl, hdfs);
+			SnappyInputStream sis = HdfsBlockReader.getBlockDataSnappyStream(bl, hdfs);
 			byte[] byt = sis.readAllBytes();
 			cache.put(cacheblock+blscount, byt);
 			blscount++;

@@ -53,7 +53,6 @@ import com.github.mdc.common.Utils;
 import com.github.mdc.stream.CsvOptions;
 import com.github.mdc.stream.Json;
 import com.github.mdc.stream.StreamPipelineTestCommon;
-import com.github.mdc.stream.executors.StreamPipelineTaskExecutorIgnite;
 import com.github.mdc.stream.functions.CalculateCount;
 import com.github.mdc.stream.functions.Coalesce;
 import com.github.mdc.stream.functions.CountByKeyFunction;

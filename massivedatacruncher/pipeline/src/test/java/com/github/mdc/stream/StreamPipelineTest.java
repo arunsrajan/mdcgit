@@ -8,7 +8,6 @@ import com.github.mdc.common.Job;
 import com.github.mdc.common.JobMetrics;
 import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.PipelineConfig;
-import com.github.mdc.stream.StreamPipeline;
 
 public class StreamPipelineTest extends StreamPipelineTestCommon{
 	

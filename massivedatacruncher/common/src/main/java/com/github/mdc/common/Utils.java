@@ -78,6 +78,7 @@ import com.esotericsoftware.kryo.serializers.ClosureSerializer;
 import com.esotericsoftware.kryo.serializers.CompatibleFieldSerializer;
 import com.esotericsoftware.kryo.serializers.CompatibleFieldSerializer.CompatibleFieldSerializerConfig;
 import com.esotericsoftware.kryo.serializers.FieldSerializer;
+import com.esotericsoftware.kryo.serializers.JavaSerializer;
 import com.esotericsoftware.kryo.util.DefaultInstantiatorStrategy;
 
 import de.javakaffee.kryoserializers.ArraysAsListSerializer;
@@ -259,7 +260,7 @@ public class Utils {
 		var dis = new com.esotericsoftware.kryo.util.DefaultInstantiatorStrategy(new StdInstantiatorStrategy());
 		kryo.setInstantiatorStrategy(dis);
 		dis.setFallbackInstantiatorStrategy(new StdInstantiatorStrategy());
-		kryo.setDefaultSerializer(FieldSerializer.class);
+		kryo.setDefaultSerializer(CompatibleFieldSerializer.class);
 		kryo.register(Object[].class);
 		kryo.register(Object.class);
 		kryo.register(Class.class);
@@ -274,10 +275,6 @@ public class Utils {
 		kryo.register(Tuple2.class, cfs);
 		kryo.register(LinkedHashSet.class);
 		kryo.register(Tuple2Serializable.class);
-		CompatibleFieldSerializerConfig config = new CompatibleFieldSerializerConfig();
-		config.setSerializeTransient(true);
-		CompatibleFieldSerializer<CSVRecord> withTransient = new CompatibleFieldSerializer<CSVRecord>(kryo,
-				CSVRecord.class, config);
 		kryo.register(BlocksLocation.class);
 		kryo.register(RetrieveData.class);
 		kryo.register(RetrieveKeys.class);
@@ -297,8 +294,17 @@ public class Utils {
 		kryo.register(JSONObject.class);
 		kryo.register(PipelineConfig.class);
 		kryo.register(SimpleDirectedGraph.class);
-		kryo.register(CSVParser.class);
-		kryo.register(CSVRecord.class, withTransient);
+		CompatibleFieldSerializerConfig config = new CompatibleFieldSerializerConfig();
+		config.setSerializeTransient(false);
+		CompatibleFieldSerializer<CSVParser> transientcsvparser = new CompatibleFieldSerializer<CSVParser>(kryo,
+				CSVParser.class, config);
+		transientcsvparser.removeField("lexer");
+		kryo.register(CSVParser.class, transientcsvparser);
+		config = new CompatibleFieldSerializerConfig();
+		config.setSerializeTransient(true);
+		CompatibleFieldSerializer<CSVRecord> transientcsvser = new CompatibleFieldSerializer<CSVRecord>(kryo,
+				CSVRecord.class, config);
+		kryo.register(CSVRecord.class, transientcsvser);
 		kryo.register(ReducerValues.class);
 		kryo.register(Task.class);
 		kryo.register(SkipToNewLine.class);

@@ -838,12 +838,12 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 			InputStream streamfirst = null;
 			InputStream streamsecond = null;
 			if ((task.input[0] instanceof BlocksLocation blfirst) && (task.input[1] instanceof BlocksLocation blsecond)) {
-				streamfirst = HdfsBlockReader.getBlockDataLZFStream(blfirst, hdfs);
-				streamsecond = HdfsBlockReader.getBlockDataLZFStream(blsecond, hdfs);
+				streamfirst = HdfsBlockReader.getBlockDataSnappyStream(blfirst, hdfs);
+				streamsecond = HdfsBlockReader.getBlockDataSnappyStream(blsecond, hdfs);
 			} else if (((task.input[0] instanceof BlocksLocation) && task.input[1] instanceof InputStream)
 					|| ((task.input[0] instanceof InputStream) && task.input[1] instanceof BlocksLocation)) {
-				streamfirst = task.input[0] instanceof BlocksLocation?HdfsBlockReader.getBlockDataLZFStream((BlocksLocation)task.input[0], hdfs):(InputStream)task.input[0];
-				streamsecond = task.input[1] instanceof BlocksLocation?HdfsBlockReader.getBlockDataLZFStream((BlocksLocation)task.input[1], hdfs):(InputStream)task.input[1];
+				streamfirst = task.input[0] instanceof BlocksLocation?HdfsBlockReader.getBlockDataSnappyStream((BlocksLocation)task.input[0], hdfs):(InputStream)task.input[0];
+				streamsecond = task.input[1] instanceof BlocksLocation?HdfsBlockReader.getBlockDataSnappyStream((BlocksLocation)task.input[1], hdfs):(InputStream)task.input[1];
 			} else {
 				streamfirst = (InputStream)task.input[0];
 				streamsecond = (InputStream)task.input[1];
@@ -864,12 +864,12 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 			InputStream streamfirst = null;
 			InputStream streamsecond = null;
 			if ((task.input[0] instanceof BlocksLocation blfirst) && (task.input[1] instanceof BlocksLocation blsecond)) {
-				streamfirst = HdfsBlockReader.getBlockDataLZFStream(blfirst, hdfs);
-				streamsecond = HdfsBlockReader.getBlockDataLZFStream(blsecond, hdfs);
+				streamfirst = HdfsBlockReader.getBlockDataSnappyStream(blfirst, hdfs);
+				streamsecond = HdfsBlockReader.getBlockDataSnappyStream(blsecond, hdfs);
 			} else if (((task.input[0] instanceof BlocksLocation) && task.input[1] instanceof InputStream)
 					|| ((task.input[0] instanceof InputStream) && task.input[1] instanceof BlocksLocation)) {
-				streamfirst = task.input[0] instanceof BlocksLocation?HdfsBlockReader.getBlockDataLZFStream((BlocksLocation)task.input[0], hdfs):(InputStream)task.input[0];
-				streamsecond = task.input[1] instanceof BlocksLocation?HdfsBlockReader.getBlockDataLZFStream((BlocksLocation)task.input[1], hdfs):(InputStream)task.input[1];
+				streamfirst = task.input[0] instanceof BlocksLocation?HdfsBlockReader.getBlockDataSnappyStream((BlocksLocation)task.input[0], hdfs):(InputStream)task.input[0];
+				streamsecond = task.input[1] instanceof BlocksLocation?HdfsBlockReader.getBlockDataSnappyStream((BlocksLocation)task.input[1], hdfs):(InputStream)task.input[1];
 			} else {
 				streamfirst = (InputStream)task.input[0];
 				streamsecond = (InputStream)task.input[1];
@@ -889,12 +889,12 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 			InputStream streamfirst = null;
 			InputStream streamsecond = null;
 			if ((task.input[0] instanceof BlocksLocation blfirst) && (task.input[1] instanceof BlocksLocation blsecond)) {
-				streamfirst = HdfsBlockReader.getBlockDataLZFStream(blfirst, hdfs);
-				streamsecond = HdfsBlockReader.getBlockDataLZFStream(blsecond, hdfs);
+				streamfirst = HdfsBlockReader.getBlockDataSnappyStream(blfirst, hdfs);
+				streamsecond = HdfsBlockReader.getBlockDataSnappyStream(blsecond, hdfs);
 			} else if (((task.input[0] instanceof BlocksLocation) && task.input[1] instanceof InputStream)
 					|| ((task.input[0] instanceof InputStream) && task.input[1] instanceof BlocksLocation)) {
-				streamfirst = task.input[0] instanceof BlocksLocation?HdfsBlockReader.getBlockDataLZFStream((BlocksLocation)task.input[0], hdfs):(InputStream)task.input[0];
-				streamsecond = task.input[1] instanceof BlocksLocation?HdfsBlockReader.getBlockDataLZFStream((BlocksLocation)task.input[1], hdfs):(InputStream)task.input[1];
+				streamfirst = task.input[0] instanceof BlocksLocation?HdfsBlockReader.getBlockDataSnappyStream((BlocksLocation)task.input[0], hdfs):(InputStream)task.input[0];
+				streamsecond = task.input[1] instanceof BlocksLocation?HdfsBlockReader.getBlockDataSnappyStream((BlocksLocation)task.input[1], hdfs):(InputStream)task.input[1];
 			} else {
 				streamfirst = (InputStream)task.input[0];
 				streamsecond = (InputStream)task.input[1];

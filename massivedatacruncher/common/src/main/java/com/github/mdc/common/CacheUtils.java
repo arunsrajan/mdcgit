@@ -101,7 +101,7 @@ public class CacheUtils {
 	 */
 	public static SnappyInputStream getBlockData(BlocksLocation blockslocation, FileSystem hdfs) throws Exception {
 		log.debug("Entered CacheUtils.getBlockData");
-		return HdfsBlockReader.getBlockDataLZFStream(blockslocation, hdfs);
+		return HdfsBlockReader.getBlockDataSnappyStream(blockslocation, hdfs);
 	
 	}
 }

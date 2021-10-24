@@ -39,7 +39,6 @@ import com.github.mdc.common.Utils;
 import com.github.mdc.stream.CsvOptions;
 import com.github.mdc.stream.Json;
 import com.github.mdc.stream.StreamPipelineTestCommon;
-import com.github.mdc.stream.executors.StreamPipelineTaskExecutorJGroups;
 import com.github.mdc.stream.functions.CalculateCount;
 import com.github.mdc.stream.functions.Coalesce;
 import com.github.mdc.stream.functions.CountByKeyFunction;
@@ -82,7 +81,7 @@ public class StreamPipelineTaskExecutorJGroupsTest extends StreamPipelineTestCom
 
 		StreamPipelineTaskExecutorJGroups mdsjte = new StreamPipelineTaskExecutorJGroups(jsidjsmap,
 				Arrays.asList(task), 10101, MDCCache.get());
-		mdsjte.setHdfs(hdfs);
+		mdsjte.setHdfs(hdfs);mdsjte.setExecutor(es);
 		List<Path> filepaths = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -121,7 +120,7 @@ public class StreamPipelineTaskExecutorJGroupsTest extends StreamPipelineTestCom
 
 		StreamPipelineTaskExecutorJGroups mdsjte = new StreamPipelineTaskExecutorJGroups(jsidjsmap,
 				Arrays.asList(task), 10101, MDCCache.get());
-		mdsjte.setHdfs(hdfs);
+		mdsjte.setHdfs(hdfs);mdsjte.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>(), filepaths2 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -168,7 +167,7 @@ public class StreamPipelineTaskExecutorJGroupsTest extends StreamPipelineTestCom
 
 		StreamPipelineTaskExecutorJGroups mdsjte = new StreamPipelineTaskExecutorJGroups(jsidjsmap,
 				Arrays.asList(task), 10101, MDCCache.get());
-		mdsjte.setHdfs(hdfs);
+		mdsjte.setHdfs(hdfs);mdsjte.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>(), filepaths2 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -228,7 +227,7 @@ public class StreamPipelineTaskExecutorJGroupsTest extends StreamPipelineTestCom
 
 		StreamPipelineTaskExecutorJGroups mdsjte = new StreamPipelineTaskExecutorJGroups(jsidjsmap,
 				Arrays.asList(task1), 10101, MDCCache.get());
-		mdsjte.setHdfs(hdfs);
+		mdsjte.setHdfs(hdfs);mdsjte.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>(), filepaths2 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -301,7 +300,7 @@ public class StreamPipelineTaskExecutorJGroupsTest extends StreamPipelineTestCom
 
 		StreamPipelineTaskExecutorJGroups mdsjte = new StreamPipelineTaskExecutorJGroups(jsidjsmap,
 				Arrays.asList(task), 10101, MDCCache.get());
-		mdsjte.setHdfs(hdfs);
+		mdsjte.setHdfs(hdfs);mdsjte.setExecutor(es);
 		List<Path> filepaths = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -340,7 +339,7 @@ public class StreamPipelineTaskExecutorJGroupsTest extends StreamPipelineTestCom
 
 		StreamPipelineTaskExecutorJGroups mdsjte = new StreamPipelineTaskExecutorJGroups(jsidjsmap,
 				Arrays.asList(task), 10101, MDCCache.get());
-		mdsjte.setHdfs(hdfs);
+		mdsjte.setHdfs(hdfs);mdsjte.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>(), filepaths2 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths3) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -387,7 +386,7 @@ public class StreamPipelineTaskExecutorJGroupsTest extends StreamPipelineTestCom
 
 		StreamPipelineTaskExecutorJGroups mdsjte = new StreamPipelineTaskExecutorJGroups(jsidjsmap,
 				Arrays.asList(task), 10101, MDCCache.get());
-		mdsjte.setHdfs(hdfs);
+		mdsjte.setHdfs(hdfs);mdsjte.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>(), filepaths2 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths3) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -446,7 +445,7 @@ public class StreamPipelineTaskExecutorJGroupsTest extends StreamPipelineTestCom
 
 		StreamPipelineTaskExecutorJGroups mdsjte = new StreamPipelineTaskExecutorJGroups(jsidjsmap,
 				Arrays.asList(task1), 10101, MDCCache.get());
-		mdsjte.setHdfs(hdfs);
+		mdsjte.setHdfs(hdfs);mdsjte.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>(), filepaths2 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths3) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -522,7 +521,7 @@ public class StreamPipelineTaskExecutorJGroupsTest extends StreamPipelineTestCom
 
 		StreamPipelineTaskExecutorJGroups mdsjte = new StreamPipelineTaskExecutorJGroups(jsidjsmap,
 				Arrays.asList(filtertask), 10101, MDCCache.get());
-		mdsjte.setHdfs(hdfs);
+		mdsjte.setHdfs(hdfs);mdsjte.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -565,7 +564,7 @@ public class StreamPipelineTaskExecutorJGroupsTest extends StreamPipelineTestCom
 
 		StreamPipelineTaskExecutorJGroups mdsjte = new StreamPipelineTaskExecutorJGroups(jsidjsmap,
 				Arrays.asList(calculatecounttask), 10101, MDCCache.get());
-		mdsjte.setHdfs(hdfs);
+		mdsjte.setHdfs(hdfs);mdsjte.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -609,7 +608,7 @@ public class StreamPipelineTaskExecutorJGroupsTest extends StreamPipelineTestCom
 
 		StreamPipelineTaskExecutorJGroups mdsjte = new StreamPipelineTaskExecutorJGroups(jsidjsmap,
 				Arrays.asList(sstask), 10101, MDCCache.get());
-		mdsjte.setHdfs(hdfs);
+		mdsjte.setHdfs(hdfs);mdsjte.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -659,7 +658,7 @@ public class StreamPipelineTaskExecutorJGroupsTest extends StreamPipelineTestCom
 
 		StreamPipelineTaskExecutorJGroups mdsjte = new StreamPipelineTaskExecutorJGroups(jsidjsmap,
 				Arrays.asList(maxtask), 10101, MDCCache.get());
-		mdsjte.setHdfs(hdfs);
+		mdsjte.setHdfs(hdfs);mdsjte.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -703,7 +702,7 @@ public class StreamPipelineTaskExecutorJGroupsTest extends StreamPipelineTestCom
 
 		StreamPipelineTaskExecutorJGroups mdsjte = new StreamPipelineTaskExecutorJGroups(jsidjsmap,
 				Arrays.asList(mintask), 10101, MDCCache.get());
-		mdsjte.setHdfs(hdfs);
+		mdsjte.setHdfs(hdfs);mdsjte.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -747,7 +746,7 @@ public class StreamPipelineTaskExecutorJGroupsTest extends StreamPipelineTestCom
 
 		StreamPipelineTaskExecutorJGroups mdsjte = new StreamPipelineTaskExecutorJGroups(jsidjsmap,
 				Arrays.asList(sumtask), 10101, MDCCache.get());
-		mdsjte.setHdfs(hdfs);
+		mdsjte.setHdfs(hdfs);mdsjte.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -791,7 +790,7 @@ public class StreamPipelineTaskExecutorJGroupsTest extends StreamPipelineTestCom
 
 		StreamPipelineTaskExecutorJGroups mdsjte = new StreamPipelineTaskExecutorJGroups(jsidjsmap,
 				Arrays.asList(sdtask), 10101, MDCCache.get());
-		mdsjte.setHdfs(hdfs);
+		mdsjte.setHdfs(hdfs);mdsjte.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -834,7 +833,7 @@ public class StreamPipelineTaskExecutorJGroupsTest extends StreamPipelineTestCom
 
 		StreamPipelineTaskExecutorJGroups mdsjte = new StreamPipelineTaskExecutorJGroups(jsidjsmap,
 				Arrays.asList(calcultecounttask), 10101, MDCCache.get());
-		mdsjte.setHdfs(hdfs);
+		mdsjte.setHdfs(hdfs);mdsjte.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -876,7 +875,7 @@ public class StreamPipelineTaskExecutorJGroupsTest extends StreamPipelineTestCom
 
 		StreamPipelineTaskExecutorJGroups mdsjte = new StreamPipelineTaskExecutorJGroups(jsidjsmap,
 				Arrays.asList(filtertask), 10101, MDCCache.get());
-		mdsjte.setHdfs(hdfs);
+		mdsjte.setHdfs(hdfs);mdsjte.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -921,7 +920,7 @@ public class StreamPipelineTaskExecutorJGroupsTest extends StreamPipelineTestCom
 
 		StreamPipelineTaskExecutorJGroups mdsjte = new StreamPipelineTaskExecutorJGroups(jsidjsmap,
 				Arrays.asList(summarystaticstask), 10101, MDCCache.get());
-		mdsjte.setHdfs(hdfs);
+		mdsjte.setHdfs(hdfs);mdsjte.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -971,7 +970,7 @@ public class StreamPipelineTaskExecutorJGroupsTest extends StreamPipelineTestCom
 
 		StreamPipelineTaskExecutorJGroups mdsjte = new StreamPipelineTaskExecutorJGroups(jsidjsmap,
 				Arrays.asList(maxtask), 10101, MDCCache.get());
-		mdsjte.setHdfs(hdfs);
+		mdsjte.setHdfs(hdfs);mdsjte.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -1016,7 +1015,7 @@ public class StreamPipelineTaskExecutorJGroupsTest extends StreamPipelineTestCom
 
 		StreamPipelineTaskExecutorJGroups mdsjte = new StreamPipelineTaskExecutorJGroups(jsidjsmap,
 				Arrays.asList(mintask), 10101, MDCCache.get());
-		mdsjte.setHdfs(hdfs);
+		mdsjte.setHdfs(hdfs);mdsjte.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -1061,7 +1060,7 @@ public class StreamPipelineTaskExecutorJGroupsTest extends StreamPipelineTestCom
 
 		StreamPipelineTaskExecutorJGroups mdsjte = new StreamPipelineTaskExecutorJGroups(jsidjsmap,
 				Arrays.asList(sumtask), 10101, MDCCache.get());
-		mdsjte.setHdfs(hdfs);
+		mdsjte.setHdfs(hdfs);mdsjte.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -1106,7 +1105,7 @@ public class StreamPipelineTaskExecutorJGroupsTest extends StreamPipelineTestCom
 
 		StreamPipelineTaskExecutorJGroups mdsjte = new StreamPipelineTaskExecutorJGroups(jsidjsmap,
 				Arrays.asList(sdtask), 10101, MDCCache.get());
-		mdsjte.setHdfs(hdfs);
+		mdsjte.setHdfs(hdfs);mdsjte.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -1149,7 +1148,7 @@ public class StreamPipelineTaskExecutorJGroupsTest extends StreamPipelineTestCom
 
 		StreamPipelineTaskExecutorJGroups mdsjte = new StreamPipelineTaskExecutorJGroups(jsidjsmap,
 				Arrays.asList(filtertask), 10101, MDCCache.get());
-		mdsjte.setHdfs(hdfs);
+		mdsjte.setHdfs(hdfs);mdsjte.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -1203,7 +1202,7 @@ public class StreamPipelineTaskExecutorJGroupsTest extends StreamPipelineTestCom
 
 		StreamPipelineTaskExecutorJGroups mdsjte = new StreamPipelineTaskExecutorJGroups(jsidjsmap,
 				Arrays.asList(filtertask), 10101, MDCCache.get());
-		mdsjte.setHdfs(hdfs);
+		mdsjte.setHdfs(hdfs);mdsjte.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -1264,7 +1263,7 @@ public class StreamPipelineTaskExecutorJGroupsTest extends StreamPipelineTestCom
 
 		StreamPipelineTaskExecutorJGroups mdsjte = new StreamPipelineTaskExecutorJGroups(jsidjsmap,
 				Arrays.asList(filtertask), 10101, MDCCache.get());
-		mdsjte.setHdfs(hdfs);
+		mdsjte.setHdfs(hdfs);mdsjte.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -1319,7 +1318,7 @@ public class StreamPipelineTaskExecutorJGroupsTest extends StreamPipelineTestCom
 
 		StreamPipelineTaskExecutorJGroups mdsjte = new StreamPipelineTaskExecutorJGroups(jsidjsmap,
 				Arrays.asList(filtertask), 10101, MDCCache.get());
-		mdsjte.setHdfs(hdfs);
+		mdsjte.setHdfs(hdfs);mdsjte.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -1375,7 +1374,7 @@ public class StreamPipelineTaskExecutorJGroupsTest extends StreamPipelineTestCom
 
 		StreamPipelineTaskExecutorJGroups mdsjte = new StreamPipelineTaskExecutorJGroups(jsidjsmap,
 				Arrays.asList(filtertask), 10101, MDCCache.get());
-		mdsjte.setHdfs(hdfs);
+		mdsjte.setHdfs(hdfs);mdsjte.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -1431,7 +1430,7 @@ public class StreamPipelineTaskExecutorJGroupsTest extends StreamPipelineTestCom
 
 		StreamPipelineTaskExecutorJGroups mdsjte = new StreamPipelineTaskExecutorJGroups(jsidjsmap,
 				Arrays.asList(filtertask), 10101, MDCCache.get());
-		mdsjte.setHdfs(hdfs);
+		mdsjte.setHdfs(hdfs);mdsjte.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -1487,7 +1486,7 @@ public class StreamPipelineTaskExecutorJGroupsTest extends StreamPipelineTestCom
 
 		StreamPipelineTaskExecutorJGroups mdsjte = new StreamPipelineTaskExecutorJGroups(jsidjsmap,
 				Arrays.asList(filtertask), 10101, MDCCache.get());
-		mdsjte.setHdfs(hdfs);
+		mdsjte.setHdfs(hdfs);mdsjte.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -1529,7 +1528,7 @@ public class StreamPipelineTaskExecutorJGroupsTest extends StreamPipelineTestCom
 		js.stage.tasks.add(new CalculateCount());
 		StreamPipelineTaskExecutorJGroups mdsjte = new StreamPipelineTaskExecutorJGroups(jsidjsmap,
 				Arrays.asList(counttask), 10101, MDCCache.get());
-		mdsjte.setHdfs(hdfs);
+		mdsjte.setHdfs(hdfs);mdsjte.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -1572,7 +1571,7 @@ public class StreamPipelineTaskExecutorJGroupsTest extends StreamPipelineTestCom
 
 		StreamPipelineTaskExecutorJGroups mdsjte = new StreamPipelineTaskExecutorJGroups(jsidjsmap,
 				Arrays.asList(filtertask), 10101, MDCCache.get());
-		mdsjte.setHdfs(hdfs);
+		mdsjte.setHdfs(hdfs);mdsjte.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -1627,7 +1626,7 @@ public class StreamPipelineTaskExecutorJGroupsTest extends StreamPipelineTestCom
 
 		StreamPipelineTaskExecutorJGroups mdsjte = new StreamPipelineTaskExecutorJGroups(jsidjsmap,
 				Arrays.asList(filtertask), 10101, MDCCache.get());
-		mdsjte.setHdfs(hdfs);
+		mdsjte.setHdfs(hdfs);mdsjte.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -1684,7 +1683,7 @@ public class StreamPipelineTaskExecutorJGroupsTest extends StreamPipelineTestCom
 
 		StreamPipelineTaskExecutorJGroups mdsjte = new StreamPipelineTaskExecutorJGroups(jsidjsmap,
 				Arrays.asList(reducebykeytask1), 10101, MDCCache.get());
-		mdsjte.setHdfs(hdfs);
+		mdsjte.setHdfs(hdfs);mdsjte.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>(), filepaths2 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -1772,7 +1771,7 @@ public class StreamPipelineTaskExecutorJGroupsTest extends StreamPipelineTestCom
 
 		StreamPipelineTaskExecutorJGroups mdsjte = new StreamPipelineTaskExecutorJGroups(jsidjsmap,
 				Arrays.asList(reducebykeytask1), 10101, MDCCache.get());
-		mdsjte.setHdfs(hdfs);
+		mdsjte.setHdfs(hdfs);mdsjte.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>(), filepaths2 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -1865,7 +1864,7 @@ public class StreamPipelineTaskExecutorJGroupsTest extends StreamPipelineTestCom
 
 		StreamPipelineTaskExecutorJGroups mdsjte = new StreamPipelineTaskExecutorJGroups(jsidjsmap,
 				Arrays.asList(reducebykeytask1), 10101, MDCCache.get());
-		mdsjte.setHdfs(hdfs);
+		mdsjte.setHdfs(hdfs);mdsjte.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>(), filepaths2 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -1956,7 +1955,7 @@ public class StreamPipelineTaskExecutorJGroupsTest extends StreamPipelineTestCom
 
 		StreamPipelineTaskExecutorJGroups mdsjte = new StreamPipelineTaskExecutorJGroups(jsidjsmap,
 				Arrays.asList(mappairtask1), 10101, MDCCache.get());
-		mdsjte.setHdfs(hdfs);
+		mdsjte.setHdfs(hdfs);mdsjte.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -2018,7 +2017,7 @@ public class StreamPipelineTaskExecutorJGroupsTest extends StreamPipelineTestCom
 
 		StreamPipelineTaskExecutorJGroups mdsjte = new StreamPipelineTaskExecutorJGroups(jsidjsmap,
 				Arrays.asList(mappairtask1), 10101, MDCCache.get());
-		mdsjte.setHdfs(hdfs);
+		mdsjte.setHdfs(hdfs);mdsjte.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -2080,7 +2079,7 @@ public class StreamPipelineTaskExecutorJGroupsTest extends StreamPipelineTestCom
 
 		StreamPipelineTaskExecutorJGroups mdsjte = new StreamPipelineTaskExecutorJGroups(jsidjsmap,
 				Arrays.asList(mappairtask1), 10101, MDCCache.get());
-		mdsjte.setHdfs(hdfs);
+		mdsjte.setHdfs(hdfs);mdsjte.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -2142,7 +2141,7 @@ public class StreamPipelineTaskExecutorJGroupsTest extends StreamPipelineTestCom
 
 		StreamPipelineTaskExecutorJGroups mdsjte = new StreamPipelineTaskExecutorJGroups(jsidjsmap,
 				Arrays.asList(mappairtask1), 10101, MDCCache.get());
-		mdsjte.setHdfs(hdfs);
+		mdsjte.setHdfs(hdfs);mdsjte.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -2202,7 +2201,7 @@ public class StreamPipelineTaskExecutorJGroupsTest extends StreamPipelineTestCom
 
 		StreamPipelineTaskExecutorJGroups mdsjte = new StreamPipelineTaskExecutorJGroups(jsidjsmap,
 				Arrays.asList(mappairtask1), 10101, MDCCache.get());
-		mdsjte.setHdfs(hdfs);
+		mdsjte.setHdfs(hdfs);mdsjte.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -2266,7 +2265,7 @@ public class StreamPipelineTaskExecutorJGroupsTest extends StreamPipelineTestCom
 
 		StreamPipelineTaskExecutorJGroups mdsjte = new StreamPipelineTaskExecutorJGroups(jsidjsmap,
 				Arrays.asList(reducebykeytask1), 10101, MDCCache.get());
-		mdsjte.setHdfs(hdfs);
+		mdsjte.setHdfs(hdfs);mdsjte.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>(), filepaths2 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -2351,7 +2350,7 @@ public class StreamPipelineTaskExecutorJGroupsTest extends StreamPipelineTestCom
 
 		StreamPipelineTaskExecutorJGroups mdsjte = new StreamPipelineTaskExecutorJGroups(jsidjsmap,
 				Arrays.asList(filtertask), 10101, MDCCache.get());
-		mdsjte.setHdfs(hdfs);
+		mdsjte.setHdfs(hdfs);mdsjte.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : githubevents1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));

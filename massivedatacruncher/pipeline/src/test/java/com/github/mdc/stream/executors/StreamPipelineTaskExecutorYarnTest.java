@@ -36,8 +36,6 @@ import com.github.mdc.common.Utils;
 import com.github.mdc.stream.CsvOptions;
 import com.github.mdc.stream.Json;
 import com.github.mdc.stream.StreamPipelineTestCommon;
-import com.github.mdc.stream.executors.StreamPipelineTaskExecutor;
-import com.github.mdc.stream.executors.StreamPipelineTaskExecutorYarn;
 import com.github.mdc.stream.functions.CalculateCount;
 import com.github.mdc.stream.functions.Coalesce;
 import com.github.mdc.stream.functions.CountByKeyFunction;
@@ -77,7 +75,7 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		js.stage.tasks.add(function);
 
 		StreamPipelineTaskExecutor mdstde = new StreamPipelineTaskExecutorYarn(hdfsurl, js);
-		mdstde.setHdfs(hdfs);
+		mdstde.setHdfs(hdfs);mdstde.setExecutor(es);
 		List<Path> filepaths = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -114,7 +112,7 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		js.stage.tasks.add(function);
 
 		StreamPipelineTaskExecutor mdstde = new StreamPipelineTaskExecutorYarn(hdfsurl, js);
-		mdstde.setHdfs(hdfs);
+		mdstde.setHdfs(hdfs);mdstde.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>(), filepaths2 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -159,7 +157,7 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		js.stage.tasks.add(function);
 
 		StreamPipelineTaskExecutor mdstde = new StreamPipelineTaskExecutorYarn(hdfsurl, js);
-		mdstde.setHdfs(hdfs);
+		mdstde.setHdfs(hdfs);mdstde.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>(), filepaths2 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -215,7 +213,7 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		js.stage.tasks.add(function);
 
 		StreamPipelineTaskExecutor mdstde = new StreamPipelineTaskExecutorYarn(hdfsurl, js);
-		mdstde.setHdfs(hdfs);
+		mdstde.setHdfs(hdfs);mdstde.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>(), filepaths2 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -286,7 +284,7 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		js.stage.tasks.add(function);
 
 		StreamPipelineTaskExecutor mdstde = new StreamPipelineTaskExecutorYarn(hdfsurl, js);
-		mdstde.setHdfs(hdfs);
+		mdstde.setHdfs(hdfs);mdstde.setExecutor(es);
 		List<Path> filepaths = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -323,7 +321,7 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		js.stage.tasks.add(function);
 
 		StreamPipelineTaskExecutor mdstde = new StreamPipelineTaskExecutorYarn(hdfsurl, js);
-		mdstde.setHdfs(hdfs);
+		mdstde.setHdfs(hdfs);mdstde.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>(), filepaths2 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths3) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -368,7 +366,7 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		js.stage.tasks.add(task);
 
 		StreamPipelineTaskExecutor mdstde = new StreamPipelineTaskExecutorYarn(hdfsurl, js);
-		mdstde.setHdfs(hdfs);
+		mdstde.setHdfs(hdfs);mdstde.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>(), filepaths2 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths3) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -425,7 +423,7 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		js.stage.tasks.add(function);
 
 		StreamPipelineTaskExecutor mdstde = new StreamPipelineTaskExecutorYarn(hdfsurl, js);
-		mdstde.setHdfs(hdfs);
+		mdstde.setHdfs(hdfs);mdstde.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>(), filepaths2 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths3) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -499,7 +497,7 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		js.stage.tasks.add(filter);
 
 		StreamPipelineTaskExecutor mdstde = new StreamPipelineTaskExecutorYarn(hdfsurl, js);
-		mdstde.setHdfs(hdfs);
+		mdstde.setHdfs(hdfs);mdstde.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -540,7 +538,7 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		js.stage.tasks.add(new CalculateCount());
 
 		StreamPipelineTaskExecutor mdstde = new StreamPipelineTaskExecutorYarn(hdfsurl, js);
-		mdstde.setHdfs(hdfs);
+		mdstde.setHdfs(hdfs);mdstde.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -582,7 +580,7 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		js.stage.tasks.add(new SummaryStatistics());
 
 		StreamPipelineTaskExecutor mdstde = new StreamPipelineTaskExecutorYarn(hdfsurl, js);
-		mdstde.setHdfs(hdfs);
+		mdstde.setHdfs(hdfs);mdstde.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -630,7 +628,7 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		js.stage.tasks.add(new Max());
 
 		StreamPipelineTaskExecutor mdstde = new StreamPipelineTaskExecutorYarn(hdfsurl, js);
-		mdstde.setHdfs(hdfs);
+		mdstde.setHdfs(hdfs);mdstde.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -672,7 +670,7 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		js.stage.tasks.add(new Min());
 
 		StreamPipelineTaskExecutor mdstde = new StreamPipelineTaskExecutorYarn(hdfsurl, js);
-		mdstde.setHdfs(hdfs);
+		mdstde.setHdfs(hdfs);mdstde.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -714,7 +712,7 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		js.stage.tasks.add(new Sum());
 
 		StreamPipelineTaskExecutor mdstde = new StreamPipelineTaskExecutorYarn(hdfsurl, js);
-		mdstde.setHdfs(hdfs);
+		mdstde.setHdfs(hdfs);mdstde.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -756,7 +754,7 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		js.stage.tasks.add(new StandardDeviation());
 
 		StreamPipelineTaskExecutor mdstde = new StreamPipelineTaskExecutorYarn(hdfsurl, js);
-		mdstde.setHdfs(hdfs);
+		mdstde.setHdfs(hdfs);mdstde.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -797,7 +795,7 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		js.stage.tasks.add(new CalculateCount());
 
 		StreamPipelineTaskExecutor mdstde = new StreamPipelineTaskExecutorYarn(hdfsurl, js);
-		mdstde.setHdfs(hdfs);
+		mdstde.setHdfs(hdfs);mdstde.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -837,7 +835,7 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		js.stage.tasks.add(filter);
 
 		StreamPipelineTaskExecutor mdstde = new StreamPipelineTaskExecutorYarn(hdfsurl, js);
-		mdstde.setHdfs(hdfs);
+		mdstde.setHdfs(hdfs);mdstde.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -880,7 +878,7 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		js.stage.tasks.add(new SummaryStatistics());
 
 		StreamPipelineTaskExecutor mdstde = new StreamPipelineTaskExecutorYarn(hdfsurl, js);
-		mdstde.setHdfs(hdfs);
+		mdstde.setHdfs(hdfs);mdstde.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -928,7 +926,7 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		js.stage.tasks.add(new Max());
 
 		StreamPipelineTaskExecutor mdstde = new StreamPipelineTaskExecutorYarn(hdfsurl, js);
-		mdstde.setHdfs(hdfs);
+		mdstde.setHdfs(hdfs);mdstde.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -971,7 +969,7 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		js.stage.tasks.add(new Min());
 
 		StreamPipelineTaskExecutor mdstde = new StreamPipelineTaskExecutorYarn(hdfsurl, js);
-		mdstde.setHdfs(hdfs);
+		mdstde.setHdfs(hdfs);mdstde.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -1014,7 +1012,7 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		js.stage.tasks.add(new Sum());
 
 		StreamPipelineTaskExecutor mdstde = new StreamPipelineTaskExecutorYarn(hdfsurl, js);
-		mdstde.setHdfs(hdfs);
+		mdstde.setHdfs(hdfs);mdstde.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -1057,7 +1055,7 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		js.stage.tasks.add(new StandardDeviation());
 
 		StreamPipelineTaskExecutor mdstde = new StreamPipelineTaskExecutorYarn(hdfsurl, js);
-		mdstde.setHdfs(hdfs);
+		mdstde.setHdfs(hdfs);mdstde.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -1098,7 +1096,7 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		js.stage.tasks.add(filter);
 
 		StreamPipelineTaskExecutor mdstde = new StreamPipelineTaskExecutorYarn(hdfsurl, js);
-		mdstde.setHdfs(hdfs);
+		mdstde.setHdfs(hdfs);mdstde.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -1150,7 +1148,7 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		js.stage.tasks.add(filter);
 
 		StreamPipelineTaskExecutor mdstde = new StreamPipelineTaskExecutorYarn(hdfsurl, js);
-		mdstde.setHdfs(hdfs);
+		mdstde.setHdfs(hdfs);mdstde.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -1209,7 +1207,7 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		js.stage.tasks.add(filter);
 
 		StreamPipelineTaskExecutor mdstde = new StreamPipelineTaskExecutorYarn(hdfsurl, js);
-		mdstde.setHdfs(hdfs);
+		mdstde.setHdfs(hdfs);mdstde.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -1262,7 +1260,7 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		js.stage.tasks.add(filter);
 
 		StreamPipelineTaskExecutor mdstde = new StreamPipelineTaskExecutorYarn(hdfsurl, js);
-		mdstde.setHdfs(hdfs);
+		mdstde.setHdfs(hdfs);mdstde.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -1316,7 +1314,7 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		js.stage.tasks.add(filter);
 
 		StreamPipelineTaskExecutor mdstde = new StreamPipelineTaskExecutorYarn(hdfsurl, js);
-		mdstde.setHdfs(hdfs);
+		mdstde.setHdfs(hdfs);mdstde.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -1370,7 +1368,7 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		js.stage.tasks.add(filter);
 
 		StreamPipelineTaskExecutor mdstde = new StreamPipelineTaskExecutorYarn(hdfsurl, js);
-		mdstde.setHdfs(hdfs);
+		mdstde.setHdfs(hdfs);mdstde.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -1424,7 +1422,7 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		js.stage.tasks.add(filter);
 
 		StreamPipelineTaskExecutor mdstde = new StreamPipelineTaskExecutorYarn(hdfsurl, js);
-		mdstde.setHdfs(hdfs);
+		mdstde.setHdfs(hdfs);mdstde.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -1464,7 +1462,7 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		js.stage.tasks.add(filter);
 		js.stage.tasks.add(new CalculateCount());
 		StreamPipelineTaskExecutor mdstde = new StreamPipelineTaskExecutorYarn(hdfsurl, js);
-		mdstde.setHdfs(hdfs);
+		mdstde.setHdfs(hdfs);mdstde.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -1505,7 +1503,7 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		js.stage.tasks.add(filter);
 
 		StreamPipelineTaskExecutor mdstde = new StreamPipelineTaskExecutorYarn(hdfsurl, js);
-		mdstde.setHdfs(hdfs);
+		mdstde.setHdfs(hdfs);mdstde.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -1558,7 +1556,7 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		js.stage.tasks.add(filter);
 
 		StreamPipelineTaskExecutor mdstde = new StreamPipelineTaskExecutorYarn(hdfsurl, js);
-		mdstde.setHdfs(hdfs);
+		mdstde.setHdfs(hdfs);mdstde.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -1613,7 +1611,7 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		js.stage.tasks.add(redfunc);
 
 		StreamPipelineTaskExecutor mdstde = new StreamPipelineTaskExecutorYarn(hdfsurl, js);
-		mdstde.setHdfs(hdfs);
+		mdstde.setHdfs(hdfs);mdstde.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>(), filepaths2 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -1699,7 +1697,7 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		js.stage.tasks.add(redfunc);
 
 		StreamPipelineTaskExecutor mdstde = new StreamPipelineTaskExecutorYarn(hdfsurl, js);
-		mdstde.setHdfs(hdfs);
+		mdstde.setHdfs(hdfs);mdstde.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>(), filepaths2 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -1790,7 +1788,7 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		js.stage.tasks.add(redfunc);
 
 		StreamPipelineTaskExecutor mdstde = new StreamPipelineTaskExecutorYarn(hdfsurl, js);
-		mdstde.setHdfs(hdfs);
+		mdstde.setHdfs(hdfs);mdstde.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>(), filepaths2 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -1879,7 +1877,7 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		js.stage.tasks.add(pair);
 
 		StreamPipelineTaskExecutor mdstde = new StreamPipelineTaskExecutorYarn(hdfsurl, js);
-		mdstde.setHdfs(hdfs);
+		mdstde.setHdfs(hdfs);mdstde.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -1939,7 +1937,7 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		js.stage.tasks.add(pair);
 
 		StreamPipelineTaskExecutor mdstde = new StreamPipelineTaskExecutorYarn(hdfsurl, js);
-		mdstde.setHdfs(hdfs);
+		mdstde.setHdfs(hdfs);mdstde.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -1997,7 +1995,7 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		js.stage.tasks.add(pair);
 
 		StreamPipelineTaskExecutor mdstde = new StreamPipelineTaskExecutorYarn(hdfsurl, js);
-		mdstde.setHdfs(hdfs);
+		mdstde.setHdfs(hdfs);mdstde.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -2056,7 +2054,7 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		js.stage.tasks.add(pair);
 
 		StreamPipelineTaskExecutor mdstde = new StreamPipelineTaskExecutorYarn(hdfsurl, js);
-		mdstde.setHdfs(hdfs);
+		mdstde.setHdfs(hdfs);mdstde.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -2112,7 +2110,7 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		js.stage.tasks.add(pair);
 
 		StreamPipelineTaskExecutor mdstde = new StreamPipelineTaskExecutorYarn(hdfsurl, js);
-		mdstde.setHdfs(hdfs);
+		mdstde.setHdfs(hdfs);mdstde.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -2173,7 +2171,7 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		js.stage.tasks.add(redfunc);
 
 		StreamPipelineTaskExecutor mdstde = new StreamPipelineTaskExecutorYarn(hdfsurl, js);
-		mdstde.setHdfs(hdfs);
+		mdstde.setHdfs(hdfs);mdstde.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>(), filepaths2 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -2258,7 +2256,7 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		js.stage.tasks.add(filter);
 
 		StreamPipelineTaskExecutor mdstde = new StreamPipelineTaskExecutorYarn(hdfsurl, js);
-		mdstde.setHdfs(hdfs);
+		mdstde.setHdfs(hdfs);mdstde.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : githubevents1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
