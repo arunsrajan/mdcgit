@@ -12,7 +12,7 @@ public class ByteBufferPool {
 		if(Objects.isNull(pool)||pool.isClosed()) {
 			var config = new GenericObjectPoolConfig<ByteBuffer>();
 			config.setMinIdle(1);
-			config.setMaxIdle(1);
+			config.setMaxIdle(maxpoolsize);
 			config.setMaxTotal(maxpoolsize);
 			config.setBlockWhenExhausted(true);
 			var factory = new ByteBufferFactory(); 

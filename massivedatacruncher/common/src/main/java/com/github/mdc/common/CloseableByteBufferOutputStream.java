@@ -50,12 +50,13 @@ public class CloseableByteBufferOutputStream extends OutputStream {
 	public void close() {
 		if(!Objects.isNull(bb)) {			
 			try {
-				printallocdealloc.acquire();
 				log.info("CloseableByteBufferOutputStream returning to pool: "+deallocation++ + bb);
+				printallocdealloc.acquire();
 				bb.clear();
 				bb.rewind();
 				GlobalByteBufferSemaphore.get().acquire();
 				ByteBufferPool.get().returnObject(bb);
+				log.info("CloseableByteBufferOutputStream returning to pool deallocated: " + bb);
 			} catch(InterruptedException ie) {
 				log.error(MDCConstants.EMPTY,ie);
 				Thread.currentThread().interrupt();

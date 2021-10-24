@@ -85,29 +85,30 @@ public final class HeartBeatTaskSchedulerStream extends HeartBeatServerStream im
 			}
 			public void receive(Message msg) {
 				try {
-					log.info("Entered Receiver.receive");
+					log.debug("Entered Receiver.receive");
 					var rawbuffer = (byte[])((ObjectMessage)msg).getObject();
 					var kryo = Utils.getKryoNonDeflateSerializer();
 					try (var bais = new ByteArrayInputStream(rawbuffer); var input = new Input(bais);) {
 						var task = (Task) Utils.readKryoInputObjectWithClass(kryo, input);
-						log.info("JobStage Rec: "+task+MDCConstants.SINGLESPACE+task.taskstatus+MDCConstants.SINGLESPACE+task.jobid);
+						log.info("Task Status: "+task+MDCConstants.SINGLESPACE+task.taskstatus);
 						if(jobid.equals(task.jobid)) {
 							if((task.taskstatus == Task.TaskStatus.COMPLETED ||
 									task.taskstatus == Task.TaskStatus.FAILED)) {
-								log.info("JobStage Before adding to queue: "+task);
+								log.info("Task adding to queue: "+task);
 								hbo.addToQueue(task);
-								var jsr = new JobStageResponse();
-								jsr.jobid = task.jobid;
-								jsr.stageid = task.stageid;
+								var trs = new TaskResponseStatus();
+								trs.jobid = task.jobid;
+								trs.stageid = task.stageid;
+								trs.taskid = task.taskid;
 								try (var baos = new ByteArrayOutputStream(); var output = new Output(baos);) {
-									Utils.writeKryoOutputClassObject(kryo, output, jsr);
+									Utils.writeKryoOutputClassObject(kryo, output, trs);
 									channel.send(new ObjectMessage(msg.getSrc(), baos.toByteArray()));
 								} finally {
 
 								}
 							}
 						}
-						log.info("Exiting Receiver.receive");
+						log.debug("Exiting Receiver.receive");
 					}
 				} catch (InterruptedException e) {
 					log.warn("Interrupted!", e);
@@ -139,7 +140,7 @@ public final class HeartBeatTaskSchedulerStream extends HeartBeatServerStream im
 	 * @param timetaken
 	 * @throws Exception
 	 */
-	public void pingOnce(String stageid, String taskid, String hostport, TaskStatus taskstatus, double timetaken, String stagefailuremessage)
+	public synchronized void pingOnce(String stageid, String taskid, String hostport, TaskStatus taskstatus, double timetaken, String stagefailuremessage)
 			throws Exception {
 		log.debug("Entered HeartBeatTaskSchedulerStream.pingOnce");
 		pingmutex.acquire();
@@ -174,8 +175,9 @@ public final class HeartBeatTaskSchedulerStream extends HeartBeatServerStream im
 							try (var bais = new ByteArrayInputStream(rawbuffer);
 									var input = new Input(bais);) {
 								var obj = Utils.readKryoInputObjectWithClass(kryo, input);
-								if (obj instanceof JobStageResponse jsr) {
-									if (jsr.jobid.equals(jobid) && jsr.stageid.equals(stageid)) {
+								if (obj instanceof TaskResponseStatus trs) {
+									if (trs.jobid.equals(jobid) && trs.stageid.equals(stageid)
+											&& trs.taskid.equals(taskid)) {
 										responsereceived = true;
 									}
 								}
@@ -186,7 +188,7 @@ public final class HeartBeatTaskSchedulerStream extends HeartBeatServerStream im
 					});
 					while (!responsereceived) {
 						channel.send(new ObjectMessage(null, baos.toByteArray()));
-						Thread.sleep(500);
+						Thread.sleep(1000);
 					}
 				} else {
 					channel.send(new ObjectMessage(null, baos.toByteArray()));

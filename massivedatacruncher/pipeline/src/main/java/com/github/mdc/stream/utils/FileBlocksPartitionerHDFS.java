@@ -674,8 +674,10 @@ public class FileBlocksPartitionerHDFS {
 				if (actualmemory >= totalmem) {
 					var res = new ContainerResources();
 					res.setCpu(1);
-					res.setMinmemory(1024);
-					res.setMaxmemory(1024);
+					var heapmem = 1024*Integer.valueOf(pipelineconfig.getHeappercent())/100;
+					res.setMinmemory(heapmem);
+					res.setMaxmemory(heapmem);
+					res.setDirectheap(1024-heapmem);
 					res.setGctype(gctype);
 					cr.add(res);
 					return cr;
@@ -704,6 +706,7 @@ public class FileBlocksPartitionerHDFS {
 				cr.add(res);
 				return cr;
 			}
+			var numberofcontainer = 0;
 			while (true) {
 				if (cpu >= dividedcpus && totalmem >= 0) {
 					var res = new ContainerResources();
@@ -726,6 +729,8 @@ public class FileBlocksPartitionerHDFS {
 				}else {
 					break;
 				}
+				numberofcontainer++;
+				if(numofcontainerspermachine==numberofcontainer)break;
 				cpu-=dividedcpus;
 				totalmem -= maxmemory;
 			}
