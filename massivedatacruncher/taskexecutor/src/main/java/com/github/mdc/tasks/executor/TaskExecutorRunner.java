@@ -91,7 +91,7 @@ public class TaskExecutorRunner implements TaskExecutorRunnerMBean {
 		log.info("Number Of 128 MB directmemory: "+directmemory);
 		ByteBufferPool.init(directmemory);
 		CacheUtils.initCache();
-		es = Executors.newWorkStealingPool(Runtime.getRuntime().availableProcessors());
+		es = Executors.newScheduledThreadPool(Runtime.getRuntime().availableProcessors());
 		var mdted = new TaskExecutorRunner();
 		mdted.init();
 		mdted.start();

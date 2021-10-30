@@ -6,14 +6,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.junit.Test;
-
-import com.github.mdc.stream.StreamPipeline;
 
 public class StreamPipelineUserDefinedObjectsTest extends StreamPipelineBaseTestCommon {
 	boolean toexecute = true;
 	int sum = 0;
-	
+	static Logger log = Logger.getLogger(StreamPipelineUserDefinedObjectsTest.class);
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Test
 	public void testMapCollect() throws Throwable {
@@ -35,9 +34,6 @@ public class StreamPipelineUserDefinedObjectsTest extends StreamPipelineBaseTest
 				}).collect(toexecute, null);
 		int sum = 0;
 		for (List<Map> partitioneddata : data) {
-			for(Map valuemap:partitioneddata) {
-				log.info(valuemap);
-			}
 			sum+=partitioneddata.size();
 		}
 		assertEquals(46361, sum);
@@ -66,9 +62,6 @@ public class StreamPipelineUserDefinedObjectsTest extends StreamPipelineBaseTest
 				}).collect(toexecute, null);
 		int sum = 0;
 		for (List<Map> partitioneddata : data) {
-			for(Map valuemap:partitioneddata) {
-				log.info(valuemap);
-			}
 			sum+=partitioneddata.size();
 		}
 		assertEquals(46361, sum);
