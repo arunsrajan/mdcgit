@@ -15,7 +15,7 @@ import java.util.stream.Stream;
 import org.jooq.lambda.tuple.Tuple;
 import org.jooq.lambda.tuple.Tuple2;
 
-import com.github.mdc.common.MassiveDataPipelineConstants;
+import com.github.mdc.common.PipelineConstants;
 import com.github.mdc.stream.PipelineException;
 import com.github.mdc.stream.functions.CoalesceFunction;
 import com.github.mdc.stream.functions.Distinct;
@@ -177,7 +177,7 @@ public class StreamUtils {
 			return out.stream();
 		}
 		else {
-			throw new PipelineException(MassiveDataPipelineConstants.REDUCEEXECUTIONVALUEEMPTY);
+			throw new PipelineException(PipelineConstants.REDUCEEXECUTIONVALUEEMPTY);
 		}
 	}
 	

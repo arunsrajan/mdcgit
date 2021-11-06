@@ -42,7 +42,7 @@ import com.github.mdc.common.Job;
 import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.MDCNodesResources;
 import com.github.mdc.common.MDCProperties;
-import com.github.mdc.common.MassiveDataPipelineConstants;
+import com.github.mdc.common.PipelineConstants;
 import com.github.mdc.common.PipelineConfig;
 import com.github.mdc.common.Resources;
 import com.github.mdc.common.Utils;
@@ -326,7 +326,7 @@ public class FileBlocksPartitionerHDFSTest extends StreamPipelineBase{
 			fbp.getDnXref(bls, false);
 			fbp.getTaskExecutors(bls);			
 		} catch (Exception ex) {
-			assertEquals(MassiveDataPipelineConstants.MEMORYALLOCATIONERROR, ex.getCause().getMessage());
+			assertEquals(PipelineConstants.MEMORYALLOCATIONERROR, ex.getCause().getMessage());
 			assertNull(fbp.job.containers);
 			assertNull(fbp.job.nodes);
 		} finally {
@@ -361,7 +361,7 @@ public class FileBlocksPartitionerHDFSTest extends StreamPipelineBase{
 			fbp.getDnXref(bls, false);
 			fbp.getTaskExecutors(bls);			
 		} catch (Exception ex) {
-			assertEquals(MassiveDataPipelineConstants.INSUFFMEMORYALLOCATIONERROR, ex.getCause().getMessage());
+			assertEquals(PipelineConstants.INSUFFMEMORYALLOCATIONERROR, ex.getCause().getMessage());
 			assertNull(fbp.job.containers);
 			assertNull(fbp.job.nodes);
 		} finally {

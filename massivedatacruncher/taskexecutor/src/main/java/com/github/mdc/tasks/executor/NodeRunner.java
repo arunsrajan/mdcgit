@@ -10,8 +10,6 @@ import java.util.Objects;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.io.IOUtils;
@@ -33,7 +31,6 @@ import com.github.mdc.common.Utils;
 
 public class NodeRunner implements Callable<Boolean> {
 	private static Logger log = Logger.getLogger(NodeRunner.class);
-	ExecutorService es = Executors.newWorkStealingPool();
 	Socket sock;
 	AtomicInteger portinc;
 	String proploaderpath;

@@ -49,7 +49,7 @@ import com.github.mdc.common.JobMetrics;
 import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.MDCJobMetrics;
 import com.github.mdc.common.MDCProperties;
-import com.github.mdc.common.MassiveDataPipelineConstants;
+import com.github.mdc.common.PipelineConstants;
 import com.github.mdc.common.PipelineConfig;
 import com.github.mdc.common.Stage;
 import com.github.mdc.common.Task;
@@ -107,8 +107,8 @@ public sealed class IgniteCommon extends AbstractPipeline permits IgnitePipeline
 			return job;
 		}
 		catch(Exception ex) {
-			log.error(MassiveDataPipelineConstants.CREATEOREXECUTEJOBERROR, ex);
-			throw new PipelineException(MassiveDataPipelineConstants.CREATEOREXECUTEJOBERROR, (Exception)ex);
+			log.error(PipelineConstants.CREATEOREXECUTEJOBERROR, ex);
+			throw new PipelineException(PipelineConstants.CREATEOREXECUTEJOBERROR, (Exception)ex);
 		}
 	}
 
@@ -442,8 +442,8 @@ public sealed class IgniteCommon extends AbstractPipeline permits IgnitePipeline
 			stages = null;
 			log.debug("Induce of DAG ended.");
 		} catch (Exception ex) {
-			log.error(MassiveDataPipelineConstants.DAGERROR,ex);
-			throw new PipelineException(MassiveDataPipelineConstants.DAGERROR, ex);
+			log.error(PipelineConstants.DAGERROR,ex);
+			throw new PipelineException(PipelineConstants.DAGERROR, ex);
 		}
 	}
 

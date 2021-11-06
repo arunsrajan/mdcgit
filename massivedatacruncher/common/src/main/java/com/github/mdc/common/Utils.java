@@ -1019,8 +1019,8 @@ public class Utils {
 			bw.flush();
 		} catch (IOException ioe) {
 		} catch (Exception e) {
-			log.error(MassiveDataPipelineConstants.FILEIOERROR, e);
-			throw new Exception(MassiveDataPipelineConstants.FILEIOERROR, e);
+			log.error(PipelineConstants.FILEIOERROR, e);
+			throw new Exception(PipelineConstants.FILEIOERROR, e);
 		}
 
 	}
@@ -1041,8 +1041,8 @@ public class Utils {
 			bw.flush();
 		} catch (IOException ioe) {
 		} catch (Exception e) {
-			log.error(MassiveDataPipelineConstants.FILEIOERROR, e);
-			throw new Exception(MassiveDataPipelineConstants.FILEIOERROR, e);
+			log.error(PipelineConstants.FILEIOERROR, e);
+			throw new Exception(PipelineConstants.FILEIOERROR, e);
 		}
 	}
 

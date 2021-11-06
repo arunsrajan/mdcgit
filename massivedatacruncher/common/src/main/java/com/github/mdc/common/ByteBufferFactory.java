@@ -13,14 +13,12 @@ public class ByteBufferFactory extends BasePooledObjectFactory<ByteBuffer> {
 	@Override
 	public ByteBuffer create() throws Exception {
 		try {
-			GlobalByteBufferSemaphore.get().acquire();
-			ByteBuffer bb = ByteBufferPoolDirect.get().take(128 * MDCConstants.MB);
+			ByteBuffer bb = ByteBuffer.allocateDirect(128 * MDCConstants.MB);
 			return bb;
 		} catch (Exception ex) {
 			log.error(MDCConstants.EMPTY, ex);
 			return null;
 		} finally {
-			GlobalByteBufferSemaphore.get().release();
 		}
 
 	}

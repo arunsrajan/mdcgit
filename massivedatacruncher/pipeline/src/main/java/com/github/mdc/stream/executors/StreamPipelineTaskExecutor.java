@@ -62,7 +62,7 @@ import com.github.mdc.common.HeartBeatTaskSchedulerStream;
 import com.github.mdc.common.JobStage;
 import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.MDCProperties;
-import com.github.mdc.common.MassiveDataPipelineConstants;
+import com.github.mdc.common.PipelineConstants;
 import com.github.mdc.common.RemoteDataFetcher;
 import com.github.mdc.common.Task;
 import com.github.mdc.common.Utils;
@@ -242,11 +242,11 @@ public sealed class StreamPipelineTaskExecutor implements
 			log.debug("GC Status Intersection task:" + Utils.getGCStats());
 			return timetaken;
 		} catch (IOException ioe) {
-			log.error(MassiveDataPipelineConstants.FILEIOERROR, ioe);
-			throw new PipelineException(MassiveDataPipelineConstants.FILEIOERROR, ioe);
+			log.error(PipelineConstants.FILEIOERROR, ioe);
+			throw new PipelineException(PipelineConstants.FILEIOERROR, ioe);
 		} catch (Exception ex) {
-			log.error(MassiveDataPipelineConstants.PROCESSHDFSINTERSECTION, ex);
-			throw new PipelineException(MassiveDataPipelineConstants.PROCESSHDFSINTERSECTION, ex);
+			log.error(PipelineConstants.PROCESSHDFSINTERSECTION, ex);
+			throw new PipelineException(PipelineConstants.PROCESSHDFSINTERSECTION, ex);
 		}
 
 	}
@@ -307,11 +307,11 @@ public sealed class StreamPipelineTaskExecutor implements
 			log.debug("GC Status Intersection task:" + Utils.getGCStats());
 			return timetaken;
 		} catch (IOException ioe) {
-			log.error(MassiveDataPipelineConstants.FILEIOERROR, ioe);
-			throw new PipelineException(MassiveDataPipelineConstants.FILEIOERROR, ioe);
+			log.error(PipelineConstants.FILEIOERROR, ioe);
+			throw new PipelineException(PipelineConstants.FILEIOERROR, ioe);
 		} catch (Exception ex) {
-			log.error(MassiveDataPipelineConstants.PROCESSHDFSINTERSECTION, ex);
-			throw new PipelineException(MassiveDataPipelineConstants.PROCESSHDFSINTERSECTION, ex);
+			log.error(PipelineConstants.PROCESSHDFSINTERSECTION, ex);
+			throw new PipelineException(PipelineConstants.PROCESSHDFSINTERSECTION, ex);
 		}
 	}
 
@@ -369,11 +369,11 @@ public sealed class StreamPipelineTaskExecutor implements
 			log.debug("GC Status Intersection task:" + Utils.getGCStats());
 			return timetaken;
 		} catch (IOException ioe) {
-			log.error(MassiveDataPipelineConstants.FILEIOERROR, ioe);
-			throw new PipelineException(MassiveDataPipelineConstants.FILEIOERROR, ioe);
+			log.error(PipelineConstants.FILEIOERROR, ioe);
+			throw new PipelineException(PipelineConstants.FILEIOERROR, ioe);
 		} catch (Exception ex) {
-			log.error(MassiveDataPipelineConstants.PROCESSHDFSINTERSECTION, ex);
-			throw new PipelineException(MassiveDataPipelineConstants.PROCESSHDFSINTERSECTION, ex);
+			log.error(PipelineConstants.PROCESSHDFSINTERSECTION, ex);
+			throw new PipelineException(PipelineConstants.PROCESSHDFSINTERSECTION, ex);
 		}
 	}
 
@@ -403,8 +403,8 @@ public sealed class StreamPipelineTaskExecutor implements
 			log.debug("Exiting MassiveDataStreamTaskDExecutor.createIntermediateDataToFS");
 			return hdfs.create(hdfspath, false);
 		} catch (IOException ioe) {
-			log.error(MassiveDataPipelineConstants.FILEIOERROR, ioe);
-			throw new PipelineException(MassiveDataPipelineConstants.FILEIOERROR, ioe);
+			log.error(PipelineConstants.FILEIOERROR, ioe);
+			throw new PipelineException(PipelineConstants.FILEIOERROR, ioe);
 		}
 	}
 
@@ -424,8 +424,8 @@ public sealed class StreamPipelineTaskExecutor implements
 			log.debug("Exiting MassiveDataStreamTaskDExecutor.getInputStreamHDFS");
 			return hdfs.open(paths[0]);
 		} catch (IOException ioe) {
-			log.error(MassiveDataPipelineConstants.FILEIOERROR, ioe);
-			throw new PipelineException(MassiveDataPipelineConstants.FILEIOERROR, ioe);
+			log.error(PipelineConstants.FILEIOERROR, ioe);
+			throw new PipelineException(PipelineConstants.FILEIOERROR, ioe);
 		}
 	}
 
@@ -510,11 +510,11 @@ public sealed class StreamPipelineTaskExecutor implements
 			log.debug("GC Status Union task:" + Utils.getGCStats());
 			return timetaken;
 		} catch (IOException ioe) {
-			log.error(MassiveDataPipelineConstants.FILEIOERROR, ioe);
-			throw new PipelineException(MassiveDataPipelineConstants.FILEIOERROR, ioe);
+			log.error(PipelineConstants.FILEIOERROR, ioe);
+			throw new PipelineException(PipelineConstants.FILEIOERROR, ioe);
 		} catch (Exception ex) {
-			log.error(MassiveDataPipelineConstants.PROCESSHDFSUNION, ex);
-			throw new PipelineException(MassiveDataPipelineConstants.PROCESSHDFSUNION, ex);
+			log.error(PipelineConstants.PROCESSHDFSUNION, ex);
+			throw new PipelineException(PipelineConstants.PROCESSHDFSUNION, ex);
 		}
 	}
 
@@ -588,11 +588,11 @@ public sealed class StreamPipelineTaskExecutor implements
 			log.debug("GC Status Union task:" + Utils.getGCStats());
 			return timetaken;
 		} catch (IOException ioe) {
-			log.error(MassiveDataPipelineConstants.FILEIOERROR, ioe);
-			throw new PipelineException(MassiveDataPipelineConstants.FILEIOERROR, ioe);
+			log.error(PipelineConstants.FILEIOERROR, ioe);
+			throw new PipelineException(PipelineConstants.FILEIOERROR, ioe);
 		} catch (Exception ex) {
-			log.error(MassiveDataPipelineConstants.PROCESSHDFSUNION, ex);
-			throw new PipelineException(MassiveDataPipelineConstants.PROCESSHDFSUNION, ex);
+			log.error(PipelineConstants.PROCESSHDFSUNION, ex);
+			throw new PipelineException(PipelineConstants.PROCESSHDFSUNION, ex);
 		}
 	}
 
@@ -669,11 +669,11 @@ public sealed class StreamPipelineTaskExecutor implements
 			log.debug("GC Status Union task:" + Utils.getGCStats());
 			return timetaken;
 		} catch (IOException ioe) {
-			log.error(MassiveDataPipelineConstants.FILEIOERROR, ioe);
-			throw new PipelineException(MassiveDataPipelineConstants.FILEIOERROR, ioe);
+			log.error(PipelineConstants.FILEIOERROR, ioe);
+			throw new PipelineException(PipelineConstants.FILEIOERROR, ioe);
 		} catch (Exception ex) {
-			log.error(MassiveDataPipelineConstants.PROCESSHDFSUNION, ex);
-			throw new PipelineException(MassiveDataPipelineConstants.PROCESSHDFSUNION, ex);
+			log.error(PipelineConstants.PROCESSHDFSUNION, ex);
+			throw new PipelineException(PipelineConstants.PROCESSHDFSUNION, ex);
 		}
 	}
 
@@ -719,11 +719,11 @@ public sealed class StreamPipelineTaskExecutor implements
 						Stream<CSVRecord> streamcsv = StreamSupport.stream(records.spliterator(), false);
 						intermediatestreamobject = streamcsv;
 					} catch (IOException ioe) {
-						log.error(MassiveDataPipelineConstants.FILEIOERROR, ioe);
-						throw new PipelineException(MassiveDataPipelineConstants.FILEIOERROR, ioe);
+						log.error(PipelineConstants.FILEIOERROR, ioe);
+						throw new PipelineException(PipelineConstants.FILEIOERROR, ioe);
 					} catch (Exception ex) {
-						log.error(MassiveDataPipelineConstants.PROCESSHDFSERROR, ex);
-						throw new PipelineException(MassiveDataPipelineConstants.PROCESSHDFSERROR, ex);
+						log.error(PipelineConstants.PROCESSHDFSERROR, ex);
+						throw new PipelineException(PipelineConstants.PROCESSHDFSERROR, ex);
 					}
 				} else {
 					intermediatestreamobject = buffer.lines();
@@ -812,18 +812,18 @@ public sealed class StreamPipelineTaskExecutor implements
 				log.debug("GC Status Map task:" + Utils.getGCStats());
 				return timetaken;
 			} catch (IOException ioe) {
-				log.error(MassiveDataPipelineConstants.FILEIOERROR, ioe);
-				throw new PipelineException(MassiveDataPipelineConstants.FILEIOERROR, ioe);
+				log.error(PipelineConstants.FILEIOERROR, ioe);
+				throw new PipelineException(PipelineConstants.FILEIOERROR, ioe);
 			} catch (Exception ex) {
-				log.error(MassiveDataPipelineConstants.PROCESSHDFSERROR, ex);
-				throw new PipelineException(MassiveDataPipelineConstants.PROCESSHDFSERROR, ex);
+				log.error(PipelineConstants.PROCESSHDFSERROR, ex);
+				throw new PipelineException(PipelineConstants.PROCESSHDFSERROR, ex);
 			}
 		} catch (IOException ioe) {
-			log.error(MassiveDataPipelineConstants.FILEIOERROR, ioe);
-			throw new PipelineException(MassiveDataPipelineConstants.FILEIOERROR, ioe);
+			log.error(PipelineConstants.FILEIOERROR, ioe);
+			throw new PipelineException(PipelineConstants.FILEIOERROR, ioe);
 		} catch (Exception ex) {
-			log.error(MassiveDataPipelineConstants.PROCESSHDFSERROR, ex);
-			throw new PipelineException(MassiveDataPipelineConstants.PROCESSHDFSERROR, ex);
+			log.error(PipelineConstants.PROCESSHDFSERROR, ex);
+			throw new PipelineException(PipelineConstants.PROCESSHDFSERROR, ex);
 		} finally {
 			if (!Objects.isNull(records)) {
 				try {
@@ -942,13 +942,13 @@ public sealed class StreamPipelineTaskExecutor implements
 							out = cf.get();
 						}
 					} catch (Exception ex) {
-						log.error(MassiveDataPipelineConstants.PROCESSHDFSERROR, ex);
-						throw new PipelineException(MassiveDataPipelineConstants.PROCESSHDFSERROR, ex);
+						log.error(PipelineConstants.PROCESSHDFSERROR, ex);
+						throw new PipelineException(PipelineConstants.PROCESSHDFSERROR, ex);
 					}
 					// }
 				} catch (Exception ex) {
-					log.error(MassiveDataPipelineConstants.PROCESSHDFSERROR, ex);
-					throw new PipelineException(MassiveDataPipelineConstants.PROCESSHDFSERROR, ex);
+					log.error(PipelineConstants.PROCESSHDFSERROR, ex);
+					throw new PipelineException(PipelineConstants.PROCESSHDFSERROR, ex);
 				}
 			}
 			kryo.writeClassAndObject(output, out);
@@ -961,11 +961,11 @@ public sealed class StreamPipelineTaskExecutor implements
 			log.debug("GC Status Map task:" + Utils.getGCStats());
 			return timetaken;
 		} catch (IOException ioe) {
-			log.error(MassiveDataPipelineConstants.FILEIOERROR, ioe);
-			throw new PipelineException(MassiveDataPipelineConstants.FILEIOERROR, ioe);
+			log.error(PipelineConstants.FILEIOERROR, ioe);
+			throw new PipelineException(PipelineConstants.FILEIOERROR, ioe);
 		} catch (Exception ex) {
-			log.error(MassiveDataPipelineConstants.PROCESSHDFSERROR, ex);
-			throw new PipelineException(MassiveDataPipelineConstants.PROCESSHDFSERROR, ex);
+			log.error(PipelineConstants.PROCESSHDFSERROR, ex);
+			throw new PipelineException(PipelineConstants.PROCESSHDFSERROR, ex);
 		}
 	}
 
@@ -1025,11 +1025,11 @@ public sealed class StreamPipelineTaskExecutor implements
 			log.debug("GC Status Sampling task:" + Utils.getGCStats());
 			return timetaken;
 		} catch (IOException ioe) {
-			log.error(MassiveDataPipelineConstants.FILEIOERROR, ioe);
-			throw new PipelineException(MassiveDataPipelineConstants.FILEIOERROR, ioe);
+			log.error(PipelineConstants.FILEIOERROR, ioe);
+			throw new PipelineException(PipelineConstants.FILEIOERROR, ioe);
 		} catch (Exception ex) {
-			log.error(MassiveDataPipelineConstants.PROCESSSAMPLE, ex);
-			throw new PipelineException(MassiveDataPipelineConstants.PROCESSSAMPLE, ex);
+			log.error(PipelineConstants.PROCESSSAMPLE, ex);
+			throw new PipelineException(PipelineConstants.PROCESSSAMPLE, ex);
 		}
 	}
 
@@ -1095,11 +1095,11 @@ public sealed class StreamPipelineTaskExecutor implements
 			log.debug("GC Status Sampling task:" + Utils.getGCStats());
 			return timetaken;
 		} catch (IOException ioe) {
-			log.error(MassiveDataPipelineConstants.FILEIOERROR, ioe);
-			throw new PipelineException(MassiveDataPipelineConstants.FILEIOERROR, ioe);
+			log.error(PipelineConstants.FILEIOERROR, ioe);
+			throw new PipelineException(PipelineConstants.FILEIOERROR, ioe);
 		} catch (Exception ex) {
-			log.error(MassiveDataPipelineConstants.PROCESSSAMPLE, ex);
-			throw new PipelineException(MassiveDataPipelineConstants.PROCESSSAMPLE, ex);
+			log.error(PipelineConstants.PROCESSSAMPLE, ex);
+			throw new PipelineException(PipelineConstants.PROCESSSAMPLE, ex);
 		}
 	}
 
@@ -1183,11 +1183,11 @@ public sealed class StreamPipelineTaskExecutor implements
 				timetakenseconds = processJoinLZF(streamfirsttocompute, streamsecondtocompute, jp,
 						task.input[0] instanceof BlocksLocation, task.input[1] instanceof BlocksLocation);
 			} catch (IOException ioe) {
-				log.error(MassiveDataPipelineConstants.FILEIOERROR, ioe);
-				throw new PipelineException(MassiveDataPipelineConstants.FILEIOERROR, ioe);
+				log.error(PipelineConstants.FILEIOERROR, ioe);
+				throw new PipelineException(PipelineConstants.FILEIOERROR, ioe);
 			} catch (Exception ex) {
-				log.error(MassiveDataPipelineConstants.PROCESSJOIN, ex);
-				throw new PipelineException(MassiveDataPipelineConstants.PROCESSJOIN, ex);
+				log.error(PipelineConstants.PROCESSJOIN, ex);
+				throw new PipelineException(PipelineConstants.PROCESSJOIN, ex);
 			}
 
 		} else if (jobstage.stage.tasks.get(0) instanceof LeftOuterJoinPredicate ljp) {
@@ -1214,11 +1214,11 @@ public sealed class StreamPipelineTaskExecutor implements
 				timetakenseconds = processLeftOuterJoinLZF(streamfirsttocompute, streamsecondtocompute, ljp,
 						task.input[0] instanceof BlocksLocation, task.input[1] instanceof BlocksLocation);
 			} catch (IOException ioe) {
-				log.error(MassiveDataPipelineConstants.FILEIOERROR, ioe);
-				throw new PipelineException(MassiveDataPipelineConstants.FILEIOERROR, ioe);
+				log.error(PipelineConstants.FILEIOERROR, ioe);
+				throw new PipelineException(PipelineConstants.FILEIOERROR, ioe);
 			} catch (Exception ex) {
-				log.error(MassiveDataPipelineConstants.PROCESSLEFTOUTERJOIN, ex);
-				throw new PipelineException(MassiveDataPipelineConstants.PROCESSLEFTOUTERJOIN, ex);
+				log.error(PipelineConstants.PROCESSLEFTOUTERJOIN, ex);
+				throw new PipelineException(PipelineConstants.PROCESSLEFTOUTERJOIN, ex);
 			}
 		} else if (jobstage.stage.tasks.get(0) instanceof RightOuterJoinPredicate rjp) {
 			InputStream streamfirst = null;
@@ -1244,11 +1244,11 @@ public sealed class StreamPipelineTaskExecutor implements
 				timetakenseconds = processRightOuterJoinLZF(streamfirsttocompute, streamsecondtocompute, rjp,
 						task.input[0] instanceof BlocksLocation, task.input[1] instanceof BlocksLocation);
 			} catch (IOException ioe) {
-				log.error(MassiveDataPipelineConstants.FILEIOERROR, ioe);
-				throw new PipelineException(MassiveDataPipelineConstants.FILEIOERROR, ioe);
+				log.error(PipelineConstants.FILEIOERROR, ioe);
+				throw new PipelineException(PipelineConstants.FILEIOERROR, ioe);
 			} catch (Exception ex) {
-				log.error(MassiveDataPipelineConstants.PROCESSRIGHTOUTERJOIN, ex);
-				throw new PipelineException(MassiveDataPipelineConstants.PROCESSRIGHTOUTERJOIN, ex);
+				log.error(PipelineConstants.PROCESSRIGHTOUTERJOIN, ex);
+				throw new PipelineException(PipelineConstants.PROCESSRIGHTOUTERJOIN, ex);
 			}
 		} else if (jobstage.stage.tasks.get(0) instanceof IntersectionFunction) {
 
@@ -1402,8 +1402,8 @@ public sealed class StreamPipelineTaskExecutor implements
 						var seqinnerjoin = seq1.innerJoin(seq2, joinpredicate)) {
 					joinpairsout.add(seqinnerjoin.count());
 				} catch (Exception ex) {
-					log.error(MassiveDataPipelineConstants.PROCESSJOIN, ex);
-					throw new PipelineException(MassiveDataPipelineConstants.PROCESSJOIN, ex);
+					log.error(PipelineConstants.PROCESSJOIN, ex);
+					throw new PipelineException(PipelineConstants.PROCESSJOIN, ex);
 				}
 			} else {
 				// Parallel join pair result.
@@ -1446,8 +1446,8 @@ public sealed class StreamPipelineTaskExecutor implements
 						}
 					}
 				} catch (Exception ex) {
-					log.error(MassiveDataPipelineConstants.PROCESSJOIN, ex);
-					throw new PipelineException(MassiveDataPipelineConstants.PROCESSJOIN, ex);
+					log.error(PipelineConstants.PROCESSJOIN, ex);
+					throw new PipelineException(PipelineConstants.PROCESSJOIN, ex);
 				}
 
 			}
@@ -1460,11 +1460,11 @@ public sealed class StreamPipelineTaskExecutor implements
 			log.debug("GC Status Join task:" + Utils.getGCStats());
 			return timetaken;
 		} catch (IOException ioe) {
-			log.error(MassiveDataPipelineConstants.FILEIOERROR, ioe);
-			throw new PipelineException(MassiveDataPipelineConstants.FILEIOERROR, ioe);
+			log.error(PipelineConstants.FILEIOERROR, ioe);
+			throw new PipelineException(PipelineConstants.FILEIOERROR, ioe);
 		} catch (Exception ex) {
-			log.error(MassiveDataPipelineConstants.PROCESSJOIN, ex);
-			throw new PipelineException(MassiveDataPipelineConstants.PROCESSJOIN, ex);
+			log.error(PipelineConstants.PROCESSJOIN, ex);
+			throw new PipelineException(PipelineConstants.PROCESSJOIN, ex);
 		}
 	}
 
@@ -1537,8 +1537,8 @@ public sealed class StreamPipelineTaskExecutor implements
 						var seqleftouterjoin = seq1.leftOuterJoin(seq2, leftouterjoinpredicate)) {
 					joinpairsout.add(seqleftouterjoin.count());
 				} catch (Exception ex) {
-					log.error(MassiveDataPipelineConstants.PROCESSLEFTOUTERJOIN, ex);
-					throw new PipelineException(MassiveDataPipelineConstants.PROCESSLEFTOUTERJOIN, ex);
+					log.error(PipelineConstants.PROCESSLEFTOUTERJOIN, ex);
+					throw new PipelineException(PipelineConstants.PROCESSLEFTOUTERJOIN, ex);
 				}
 			} else {
 				// Parallel join pair result.
@@ -1581,8 +1581,8 @@ public sealed class StreamPipelineTaskExecutor implements
 						}
 					}
 				} catch (Exception ex) {
-					log.error(MassiveDataPipelineConstants.PROCESSLEFTOUTERJOIN, ex);
-					throw new PipelineException(MassiveDataPipelineConstants.PROCESSLEFTOUTERJOIN, ex);
+					log.error(PipelineConstants.PROCESSLEFTOUTERJOIN, ex);
+					throw new PipelineException(PipelineConstants.PROCESSLEFTOUTERJOIN, ex);
 				}
 			}
 			kryo.writeClassAndObject(output, joinpairsout);
@@ -1594,11 +1594,11 @@ public sealed class StreamPipelineTaskExecutor implements
 			log.debug("GC Status Left Outer Join task:" + Utils.getGCStats());
 			return timetaken;
 		} catch (IOException ioe) {
-			log.error(MassiveDataPipelineConstants.FILEIOERROR, ioe);
-			throw new PipelineException(MassiveDataPipelineConstants.FILEIOERROR, ioe);
+			log.error(PipelineConstants.FILEIOERROR, ioe);
+			throw new PipelineException(PipelineConstants.FILEIOERROR, ioe);
 		} catch (Exception ex) {
-			log.error(MassiveDataPipelineConstants.PROCESSLEFTOUTERJOIN, ex);
-			throw new PipelineException(MassiveDataPipelineConstants.PROCESSLEFTOUTERJOIN, ex);
+			log.error(PipelineConstants.PROCESSLEFTOUTERJOIN, ex);
+			throw new PipelineException(PipelineConstants.PROCESSLEFTOUTERJOIN, ex);
 		}
 	}
 
@@ -1671,8 +1671,8 @@ public sealed class StreamPipelineTaskExecutor implements
 						var seqrightouterjoin = seq1.rightOuterJoin(seq2, rightouterjoinpredicate)) {
 					joinpairsout.add(seqrightouterjoin.count());
 				} catch (Exception ex) {
-					log.error(MassiveDataPipelineConstants.PROCESSRIGHTOUTERJOIN, ex);
-					throw new PipelineException(MassiveDataPipelineConstants.PROCESSRIGHTOUTERJOIN, ex);
+					log.error(PipelineConstants.PROCESSRIGHTOUTERJOIN, ex);
+					throw new PipelineException(PipelineConstants.PROCESSRIGHTOUTERJOIN, ex);
 				}
 			} else {
 				// Parallel join pair result.
@@ -1715,8 +1715,8 @@ public sealed class StreamPipelineTaskExecutor implements
 						}
 					}
 				} catch (Exception ex) {
-					log.error(MassiveDataPipelineConstants.PROCESSRIGHTOUTERJOIN, ex);
-					throw new PipelineException(MassiveDataPipelineConstants.PROCESSRIGHTOUTERJOIN, ex);
+					log.error(PipelineConstants.PROCESSRIGHTOUTERJOIN, ex);
+					throw new PipelineException(PipelineConstants.PROCESSRIGHTOUTERJOIN, ex);
 				}
 			}
 			kryo.writeClassAndObject(output, joinpairsout);
@@ -1728,11 +1728,11 @@ public sealed class StreamPipelineTaskExecutor implements
 			log.debug("GC Status Right Outer Join task:" + Utils.getGCStats());
 			return timetaken;
 		} catch (IOException ioe) {
-			log.error(MassiveDataPipelineConstants.FILEIOERROR, ioe);
-			throw new PipelineException(MassiveDataPipelineConstants.FILEIOERROR, ioe);
+			log.error(PipelineConstants.FILEIOERROR, ioe);
+			throw new PipelineException(PipelineConstants.FILEIOERROR, ioe);
 		} catch (Exception ex) {
-			log.error(MassiveDataPipelineConstants.PROCESSRIGHTOUTERJOIN, ex);
-			throw new PipelineException(MassiveDataPipelineConstants.PROCESSRIGHTOUTERJOIN, ex);
+			log.error(PipelineConstants.PROCESSRIGHTOUTERJOIN, ex);
+			throw new PipelineException(PipelineConstants.PROCESSRIGHTOUTERJOIN, ex);
 		}
 	}
 
@@ -1764,11 +1764,11 @@ public sealed class StreamPipelineTaskExecutor implements
 					}
 					// }
 				} catch (IOException ioe) {
-					log.error(MassiveDataPipelineConstants.FILEIOERROR, ioe);
-					throw new PipelineException(MassiveDataPipelineConstants.FILEIOERROR, ioe);
+					log.error(PipelineConstants.FILEIOERROR, ioe);
+					throw new PipelineException(PipelineConstants.FILEIOERROR, ioe);
 				} catch (Exception ex) {
-					log.error(MassiveDataPipelineConstants.PROCESSGROUPBYKEY, ex);
-					throw new PipelineException(MassiveDataPipelineConstants.PROCESSGROUPBYKEY, ex);
+					log.error(PipelineConstants.PROCESSGROUPBYKEY, ex);
+					throw new PipelineException(PipelineConstants.PROCESSGROUPBYKEY, ex);
 				}
 			}
 			if (task.finalphase && task.saveresulttohdfs && (task.storage == MDCConstants.STORAGE.INMEMORY
@@ -1834,11 +1834,11 @@ public sealed class StreamPipelineTaskExecutor implements
 			log.debug("GC Status Group By Key task:" + Utils.getGCStats());
 			return timetaken;
 		} catch (IOException ioe) {
-			log.error(MassiveDataPipelineConstants.FILEIOERROR, ioe);
-			throw new PipelineException(MassiveDataPipelineConstants.FILEIOERROR, ioe);
+			log.error(PipelineConstants.FILEIOERROR, ioe);
+			throw new PipelineException(PipelineConstants.FILEIOERROR, ioe);
 		} catch (Exception ex) {
-			log.error(MassiveDataPipelineConstants.PROCESSGROUPBYKEY, ex);
-			throw new PipelineException(MassiveDataPipelineConstants.PROCESSGROUPBYKEY, ex);
+			log.error(PipelineConstants.PROCESSGROUPBYKEY, ex);
+			throw new PipelineException(PipelineConstants.PROCESSGROUPBYKEY, ex);
 		}
 	}
 
@@ -1870,11 +1870,11 @@ public sealed class StreamPipelineTaskExecutor implements
 					}
 					// }
 				} catch (IOException ioe) {
-					log.error(MassiveDataPipelineConstants.FILEIOERROR, ioe);
-					throw new PipelineException(MassiveDataPipelineConstants.FILEIOERROR, ioe);
+					log.error(PipelineConstants.FILEIOERROR, ioe);
+					throw new PipelineException(PipelineConstants.FILEIOERROR, ioe);
 				} catch (Exception ex) {
-					log.error(MassiveDataPipelineConstants.PROCESSGROUPBYKEY, ex);
-					throw new PipelineException(MassiveDataPipelineConstants.PROCESSGROUPBYKEY, ex);
+					log.error(PipelineConstants.PROCESSGROUPBYKEY, ex);
+					throw new PipelineException(PipelineConstants.PROCESSGROUPBYKEY, ex);
 				}
 			}
 			// Parallel processing of fold by key operation.
@@ -1953,11 +1953,11 @@ public sealed class StreamPipelineTaskExecutor implements
 			log.debug("GC Status Fold By Key task:" + Utils.getGCStats());
 			return timetaken;
 		} catch (IOException ioe) {
-			log.error(MassiveDataPipelineConstants.FILEIOERROR, ioe);
-			throw new PipelineException(MassiveDataPipelineConstants.FILEIOERROR, ioe);
+			log.error(PipelineConstants.FILEIOERROR, ioe);
+			throw new PipelineException(PipelineConstants.FILEIOERROR, ioe);
 		} catch (Exception ex) {
-			log.error(MassiveDataPipelineConstants.PROCESSFOLDBYKEY, ex);
-			throw new PipelineException(MassiveDataPipelineConstants.PROCESSFOLDBYKEY, ex);
+			log.error(PipelineConstants.PROCESSFOLDBYKEY, ex);
+			throw new PipelineException(PipelineConstants.PROCESSFOLDBYKEY, ex);
 		}
 	}
 
@@ -2043,11 +2043,11 @@ public sealed class StreamPipelineTaskExecutor implements
 			log.debug("GC Status Count By Key task:" + Utils.getGCStats());
 			return timetaken;
 		} catch (IOException ioe) {
-			log.error(MassiveDataPipelineConstants.FILEIOERROR, ioe);
-			throw new PipelineException(MassiveDataPipelineConstants.FILEIOERROR, ioe);
+			log.error(PipelineConstants.FILEIOERROR, ioe);
+			throw new PipelineException(PipelineConstants.FILEIOERROR, ioe);
 		} catch (Exception ex) {
-			log.error(MassiveDataPipelineConstants.PROCESSCOUNTBYKEY, ex);
-			throw new PipelineException(MassiveDataPipelineConstants.PROCESSCOUNTBYKEY, ex);
+			log.error(PipelineConstants.PROCESSCOUNTBYKEY, ex);
+			throw new PipelineException(PipelineConstants.PROCESSCOUNTBYKEY, ex);
 		}
 	}
 
@@ -2134,11 +2134,11 @@ public sealed class StreamPipelineTaskExecutor implements
 			log.debug("GC Status Count By Value task:" + Utils.getGCStats());
 			return timetaken;
 		} catch (IOException ioe) {
-			log.error(MassiveDataPipelineConstants.FILEIOERROR, ioe);
-			throw new PipelineException(MassiveDataPipelineConstants.FILEIOERROR, ioe);
+			log.error(PipelineConstants.FILEIOERROR, ioe);
+			throw new PipelineException(PipelineConstants.FILEIOERROR, ioe);
 		} catch (Exception ex) {
-			log.error(MassiveDataPipelineConstants.PROCESSCOUNTBYVALUE, ex);
-			throw new PipelineException(MassiveDataPipelineConstants.PROCESSCOUNTBYVALUE, ex);
+			log.error(PipelineConstants.PROCESSCOUNTBYVALUE, ex);
+			throw new PipelineException(PipelineConstants.PROCESSCOUNTBYVALUE, ex);
 		}
 	}
 
@@ -2234,11 +2234,11 @@ public sealed class StreamPipelineTaskExecutor implements
 			log.debug("GC Status Count By Value task:" + Utils.getGCStats());
 			return timetaken;
 		} catch (IOException ioe) {
-			log.error(MassiveDataPipelineConstants.FILEIOERROR, ioe);
-			throw new PipelineException(MassiveDataPipelineConstants.FILEIOERROR, ioe);
+			log.error(PipelineConstants.FILEIOERROR, ioe);
+			throw new PipelineException(PipelineConstants.FILEIOERROR, ioe);
 		} catch (Exception ex) {
-			log.error(MassiveDataPipelineConstants.PROCESSCOALESCE, ex);
-			throw new PipelineException(MassiveDataPipelineConstants.PROCESSCOALESCE, ex);
+			log.error(PipelineConstants.PROCESSCOALESCE, ex);
+			throw new PipelineException(PipelineConstants.PROCESSCOALESCE, ex);
 		}
 	}
 

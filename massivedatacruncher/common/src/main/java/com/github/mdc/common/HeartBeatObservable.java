@@ -44,7 +44,7 @@ public class HeartBeatObservable<T> {
 	}
 
 	private LinkedBlockingQueue<T> objectqueue = new LinkedBlockingQueue<>();
-	private ExecutorService thrpool = Executors.newWorkStealingPool();
+	private ExecutorService thrpool = Executors.newFixedThreadPool(1);
 
 	private CancellableRunnable throbject;
 

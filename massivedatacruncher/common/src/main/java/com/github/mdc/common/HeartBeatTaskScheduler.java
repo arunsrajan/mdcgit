@@ -71,7 +71,6 @@ public final class HeartBeatTaskScheduler extends HeartBeatServer implements Hea
 	public void start() throws Exception {
 		log.debug("Entered HeartBeatTaskScheduler.start");
 		hbo = new HeartBeatObservable<>();
-		scheduledthreadpool = Executors.newWorkStealingPool();
 		channel = Utils.getChannelWithPStack(networkaddress);
 		channel.setName(applicationid + taskid);
 		channel.setReceiver(new Receiver() {

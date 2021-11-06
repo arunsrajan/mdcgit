@@ -83,7 +83,7 @@ import com.github.mdc.common.MDCCache;
 import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.MDCNodesResources;
 import com.github.mdc.common.MDCProperties;
-import com.github.mdc.common.MassiveDataPipelineConstants;
+import com.github.mdc.common.PipelineConstants;
 import com.github.mdc.common.NetworkUtil;
 import com.github.mdc.common.PipelineConfig;
 import com.github.mdc.common.RemoteDataFetch;
@@ -453,8 +453,8 @@ public class StreamJobScheduler {
 		    Thread.currentThread().interrupt();
 		    return null;
 		} catch (Exception ex) {
-			log.error(MassiveDataPipelineConstants.JOBSCHEDULERERROR, ex);
-			throw new PipelineException(MassiveDataPipelineConstants.JOBSCHEDULERERROR, ex);
+			log.error(PipelineConstants.JOBSCHEDULERERROR, ex);
+			throw new PipelineException(PipelineConstants.JOBSCHEDULERERROR, ex);
 		} finally {
 			if (!Objects.isNull(job.igcache)) {
 				job.igcache.close();
@@ -569,8 +569,8 @@ public class StreamJobScheduler {
 		    // Restore interrupted state...
 		    Thread.currentThread().interrupt();
 		} catch (Exception ex) {
-			log.error(MassiveDataPipelineConstants.JOBSCHEDULERCONTAINERERROR, ex);
-			throw new PipelineException(MassiveDataPipelineConstants.JOBSCHEDULERCONTAINERERROR, ex);
+			log.error(PipelineConstants.JOBSCHEDULERCONTAINERERROR, ex);
+			throw new PipelineException(PipelineConstants.JOBSCHEDULERCONTAINERERROR, ex);
 		} finally {
 			GlobalContainerAllocDealloc.getGlobalcontainerallocdeallocsem().release();
 		}
@@ -618,8 +618,8 @@ public class StreamJobScheduler {
 				}
 			}
 		} catch (Exception ex) {
-			log.error(MassiveDataPipelineConstants.DESTROYCONTAINERERROR, ex);
-			throw new PipelineException(MassiveDataPipelineConstants.DESTROYCONTAINERERROR, ex);
+			log.error(PipelineConstants.DESTROYCONTAINERERROR, ex);
+			throw new PipelineException(PipelineConstants.DESTROYCONTAINERERROR, ex);
 		} finally {
 			GlobalContainerAllocDealloc.getGlobalcontainerallocdeallocsem().release();
 		}
@@ -671,8 +671,8 @@ public class StreamJobScheduler {
 			}
 			executor.execute(ExecutionConfig.NON_TERMINATING);
 		} catch (Exception ex) {
-			log.error(MassiveDataPipelineConstants.JOBSCHEDULEPARALLELEXECUTIONERROR, ex);
-			throw new PipelineException(MassiveDataPipelineConstants.JOBSCHEDULEPARALLELEXECUTIONERROR, ex);
+			log.error(PipelineConstants.JOBSCHEDULEPARALLELEXECUTIONERROR, ex);
+			throw new PipelineException(PipelineConstants.JOBSCHEDULEPARALLELEXECUTIONERROR, ex);
 		} finally {
 			if (!Objects.isNull(es)) {
 				es.shutdownNow();
@@ -711,8 +711,8 @@ public class StreamJobScheduler {
 			}
 			executor.execute(ExecutionConfig.NON_TERMINATING);
 		} catch (Exception ex) {
-			log.error(MassiveDataPipelineConstants.JOBSCHEDULEPARALLELEXECUTIONERROR, ex);
-			throw new PipelineException(MassiveDataPipelineConstants.JOBSCHEDULEPARALLELEXECUTIONERROR, ex);
+			log.error(PipelineConstants.JOBSCHEDULEPARALLELEXECUTIONERROR, ex);
+			throw new PipelineException(PipelineConstants.JOBSCHEDULEPARALLELEXECUTIONERROR, ex);
 		} finally {
 			if (!Objects.isNull(es)) {
 				es.shutdownNow();
@@ -738,11 +738,11 @@ public class StreamJobScheduler {
 			List<ExecutionResult<StreamPipelineTaskSubmitter, Boolean>> erroredresult = null;			
 
 			var temdstdtmap = new ConcurrentHashMap<String, List<StreamPipelineTaskSubmitter>>();			
-
+			var chpcres = GlobalContainerAllocDealloc.getHportcrs();
 			while (!completed && numexecute < executioncount) {
 				temdstdtmap.clear();;
 				var configexec = new DexecutorConfig<StreamPipelineTaskSubmitter, Boolean>(es,
-						new DAGScheduler(graph.vertexSet().size()));
+						new DAGScheduler(graph.vertexSet().size(),batchsize));
 				var dexecutor = new DefaultDexecutor<StreamPipelineTaskSubmitter, Boolean>(configexec);
 
 				var vertices = graph.vertexSet();
@@ -771,13 +771,15 @@ public class StreamJobScheduler {
 						config);
 				temdstdtmap.keySet().stream().forEach(key -> {
 					var mdststsl = temdstdtmap.get(key);
+					var cr = chpcres.get(key);
+					var batchsize = cr.getCpu();
 					var configinitialstage = new DexecutorConfig<StreamPipelineTaskSubmitter, Boolean>(
-							newExecutor(batchsize), new DAGScheduler(mdststsl.size()));
+							newExecutor((int) batchsize), new DAGScheduler(mdststsl.size(),(int) batchsize));
 					var dexecutorinitialstage = new DefaultDexecutor<StreamPipelineTaskSubmitter, Boolean>(
 							configinitialstage);
-					initialstageexecutor.addIndependent(dexecutorinitialstage);
+					initialstageexecutor.addDependency(dexecutorinitialstage,dexecutorinitialstage);
 					mdststsl.stream().forEach(mdststl -> {
-						dexecutorinitialstage.addIndependent(mdststl);
+						dexecutorinitialstage.addDependency(mdststl,mdststl);
 					});
 				});
 				var executionresults = initialstageexecutor.execute(ExecutionConfig.NON_TERMINATING);
@@ -812,13 +814,13 @@ public class StreamJobScheduler {
 						sb.append(exec.getId().getTask().stagefailuremessage);
 					});
 					if(!sb.isEmpty()) {
-						throw new PipelineException(MassiveDataPipelineConstants.ERROREDTASKS.replace("%s", ""+executioncount)+sb.toString());
+						throw new PipelineException(PipelineConstants.ERROREDTASKS.replace("%s", ""+executioncount)+sb.toString());
 					}
 				}
 			}
 		} catch (Exception ex) {
-			log.error(MassiveDataPipelineConstants.JOBSCHEDULEPARALLELEXECUTIONERROR, ex);
-			throw new PipelineException(MassiveDataPipelineConstants.JOBSCHEDULEPARALLELEXECUTIONERROR, ex);
+			log.error(PipelineConstants.JOBSCHEDULEPARALLELEXECUTIONERROR, ex);
+			throw new PipelineException(PipelineConstants.JOBSCHEDULEPARALLELEXECUTIONERROR, ex);
 		} finally {
 			if (!Objects.isNull(es)) {
 				es.shutdownNow();
@@ -1125,13 +1127,14 @@ public class StreamJobScheduler {
 		double totaltasks;
 		double counttaskscomp=0;
 		double counttasksfailed=0;
-		public DAGScheduler(double totaltasks) {
+		public DAGScheduler(double totaltasks, Integer batchsize) {
 			this.totaltasks = totaltasks;
+			this.mutex = new Semaphore(batchsize);
 		}
 		
 		Semaphore printresult = new Semaphore(1);
 		
-		Semaphore mutex = new Semaphore(batchsize);
+		Semaphore mutex;
 		ConcurrentMap<String, Timer> jobtimer = new ConcurrentHashMap<>();
 
 		public com.github.dexecutor.core.task.Task<StreamPipelineTaskSubmitter, Boolean> provideTask(
@@ -1265,7 +1268,6 @@ public class StreamJobScheduler {
 
 								}
 							}, delay, delay);
-							Thread.sleep(3000);
 							Utils.writeObject(mdststlocal.getHostPort(), mdststlocal.getTask());
 							cdl.await();
 						} else {
@@ -1562,8 +1564,8 @@ public class StreamJobScheduler {
 			}
 			stageoutputs.put(currentstage, tasks);
 		} catch (Exception ex) {
-			log.error(MassiveDataPipelineConstants.JOBSCHEDULERPHYSICALEXECUTIONPLANERROR, ex);
-			throw new PipelineException(MassiveDataPipelineConstants.JOBSCHEDULERPHYSICALEXECUTIONPLANERROR,
+			log.error(PipelineConstants.JOBSCHEDULERPHYSICALEXECUTIONPLANERROR, ex);
+			throw new PipelineException(PipelineConstants.JOBSCHEDULERPHYSICALEXECUTIONPLANERROR,
 					ex);
 		}
 	}
@@ -1639,7 +1641,7 @@ public class StreamJobScheduler {
 							writeOutputToFile(stageoutput.size(),obj);
 							stageoutput.add(obj);
 						} catch (Exception ex) {
-							log.error(MassiveDataPipelineConstants.JOBSCHEDULERFINALSTAGERESULTSERROR, ex);
+							log.error(PipelineConstants.JOBSCHEDULERFINALSTAGERESULTSERROR, ex);
 							throw ex;
 						}
 					}
@@ -1663,7 +1665,7 @@ public class StreamJobScheduler {
 							writeOutputToFile(stageoutput.size(),obj);
 							stageoutput.add(obj);
 						} catch (Exception ex) {
-							log.error(MassiveDataPipelineConstants.JOBSCHEDULERFINALSTAGERESULTSERROR, ex);
+							log.error(PipelineConstants.JOBSCHEDULERFINALSTAGERESULTSERROR, ex);
 							throw ex;
 						}
 					}
@@ -1673,8 +1675,8 @@ public class StreamJobScheduler {
 			mdstts = null;
 			return stageoutput;
 		} catch (Exception ex) {
-			log.error(MassiveDataPipelineConstants.JOBSCHEDULERFINALSTAGERESULTSERROR, ex);
-			throw new PipelineException(MassiveDataPipelineConstants.JOBSCHEDULERFINALSTAGERESULTSERROR, ex);
+			log.error(PipelineConstants.JOBSCHEDULERFINALSTAGERESULTSERROR, ex);
+			throw new PipelineException(PipelineConstants.JOBSCHEDULERFINALSTAGERESULTSERROR, ex);
 		} finally {
 			if(!Objects.isNull(kryofinal)) {
 				 KryoPool.getKryoPool().free(kryofinal);
@@ -1706,8 +1708,8 @@ public class StreamJobScheduler {
 				bw.flush();
 				fsdos.hflush();
 			} catch (Exception ioe) {
-				log.error(MassiveDataPipelineConstants.FILEIOERROR, ioe);
-				throw new PipelineException(MassiveDataPipelineConstants.FILEIOERROR, ioe);
+				log.error(PipelineConstants.FILEIOERROR, ioe);
+				throw new PipelineException(PipelineConstants.FILEIOERROR, ioe);
 			}
 		}
 	}
@@ -1721,8 +1723,8 @@ public class StreamJobScheduler {
 				writeOutputToFile(stageoutput.size(),obj);
 				stageoutput.add(obj);
 			} catch (Exception ex) {
-				log.error(MassiveDataPipelineConstants.JOBSCHEDULERFINALSTAGERESULTSERROR, ex);
-				throw new PipelineException(MassiveDataPipelineConstants.FILEIOERROR, ex);
+				log.error(PipelineConstants.JOBSCHEDULERFINALSTAGERESULTSERROR, ex);
+				throw new PipelineException(PipelineConstants.FILEIOERROR, ex);
 			}
 	}
 	/**
@@ -1743,8 +1745,8 @@ public class StreamJobScheduler {
 			RemoteDataFetcher.remoteInMemoryDataFetch(rdf);
 			return new SnappyInputStream(new ByteArrayInputStream(rdf.data));
 		} catch (Exception ex) {
-			log.error(MassiveDataPipelineConstants.JOBSCHEDULERINMEMORYDATAFETCHERROR, ex);
-			throw new PipelineException(MassiveDataPipelineConstants.JOBSCHEDULERINMEMORYDATAFETCHERROR, ex);
+			log.error(PipelineConstants.JOBSCHEDULERINMEMORYDATAFETCHERROR, ex);
+			throw new PipelineException(PipelineConstants.JOBSCHEDULERINMEMORYDATAFETCHERROR, ex);
 		}
 	}
 	public String getIntermediateDataFSFilePath(String jobid, String stageid, String taskid) {
@@ -1772,13 +1774,13 @@ public class StreamJobScheduler {
 			try (var input = new Input(new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path)))));) {
 				stageoutput.add(kryo.readClassAndObject(input));
 			} catch (Exception ex) {
-				log.error(MassiveDataPipelineConstants.JOBSCHEDULERFINALSTAGERESULTSERROR, ex);
-				throw new PipelineException(MassiveDataPipelineConstants.FILEIOERROR, ex);
+				log.error(PipelineConstants.JOBSCHEDULERFINALSTAGERESULTSERROR, ex);
+				throw new PipelineException(PipelineConstants.FILEIOERROR, ex);
 			}
 		
 		} catch (Exception ex) {
-			log.error(MassiveDataPipelineConstants.JOBSCHEDULERHDFSDATAFETCHERROR, ex);
-			throw new PipelineException(MassiveDataPipelineConstants.JOBSCHEDULERHDFSDATAFETCHERROR, ex);
+			log.error(PipelineConstants.JOBSCHEDULERHDFSDATAFETCHERROR, ex);
+			throw new PipelineException(PipelineConstants.JOBSCHEDULERHDFSDATAFETCHERROR, ex);
 		}
 	}
 
@@ -1799,8 +1801,8 @@ public class StreamJobScheduler {
 			rdf.hp = task.hostport;
 			return rdf;
 		} catch (Exception ex) {
-			log.error(MassiveDataPipelineConstants.JOBSCHEDULERINMEMORYDATAFETCHERROR, ex);
-			throw new PipelineException(MassiveDataPipelineConstants.JOBSCHEDULERINMEMORYDATAFETCHERROR, ex);
+			log.error(PipelineConstants.JOBSCHEDULERINMEMORYDATAFETCHERROR, ex);
+			throw new PipelineException(PipelineConstants.JOBSCHEDULERINMEMORYDATAFETCHERROR, ex);
 		}
 	}
 
@@ -1828,12 +1830,12 @@ public class StreamJobScheduler {
 					stageoutput.add(obj);
 				}
 			} catch (Exception ex) {
-				log.error(MassiveDataPipelineConstants.JOBSCHEDULERFINALSTAGERESULTSERROR, ex);
-				throw new PipelineException(MassiveDataPipelineConstants.FILEIOERROR, ex);
+				log.error(PipelineConstants.JOBSCHEDULERFINALSTAGERESULTSERROR, ex);
+				throw new PipelineException(PipelineConstants.FILEIOERROR, ex);
 			}
 		} catch (Exception ex) {
-			log.error(MassiveDataPipelineConstants.JOBSCHEDULERINMEMORYDATAFETCHERROR, ex);
-			throw new PipelineException(MassiveDataPipelineConstants.JOBSCHEDULERINMEMORYDATAFETCHERROR, ex);
+			log.error(PipelineConstants.JOBSCHEDULERINMEMORYDATAFETCHERROR, ex);
+			throw new PipelineException(PipelineConstants.JOBSCHEDULERINMEMORYDATAFETCHERROR, ex);
 		}
 	}
 
@@ -1907,9 +1909,9 @@ public class StreamJobScheduler {
 			task.hostport = hp;
 			return mdstst;
 		} catch (Exception ex) {
-			log.error(MassiveDataPipelineConstants.JOBSCHEDULERCREATINGSTREAMSCHEDULERTHREAD, ex);
+			log.error(PipelineConstants.JOBSCHEDULERCREATINGSTREAMSCHEDULERTHREAD, ex);
 			throw new PipelineException(
-					MassiveDataPipelineConstants.JOBSCHEDULERCREATINGSTREAMSCHEDULERTHREAD, ex);
+					PipelineConstants.JOBSCHEDULERCREATINGSTREAMSCHEDULERTHREAD, ex);
 		}
 	}
 
@@ -1953,9 +1955,9 @@ public class StreamJobScheduler {
 			var executorsl = new ArrayList<String>(taskexecutors);
 			return executorsl.get((int) (currentexecutor % executorsl.size()));
 		} catch (Exception ex) {
-			log.error(MassiveDataPipelineConstants.JOBSCHEDULERGETTINGTASKEXECUTORLOADBALANCEDERROR, ex);
+			log.error(PipelineConstants.JOBSCHEDULERGETTINGTASKEXECUTORLOADBALANCEDERROR, ex);
 			throw new PipelineException(
-					MassiveDataPipelineConstants.JOBSCHEDULERGETTINGTASKEXECUTORLOADBALANCEDERROR, ex);
+					PipelineConstants.JOBSCHEDULERGETTINGTASKEXECUTORLOADBALANCEDERROR, ex);
 		}
 	}
 }

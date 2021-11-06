@@ -4,7 +4,7 @@ import org.apache.log4j.Logger;
 
 import com.github.mdc.common.MDCConstants;
 import com.github.mdc.tasks.scheduler.JobConfiguration;
-import com.github.mdc.tasks.scheduler.MapReduceApplicatiion;
+import com.github.mdc.tasks.scheduler.MapReduceApplication;
 import com.github.mdc.tasks.scheduler.MapReduceApplicationBuilder;
 
 public class MrJobArrivalDelayNormal implements com.github.mdc.tasks.scheduler.Application{
@@ -17,7 +17,7 @@ public class MrJobArrivalDelayNormal implements com.github.mdc.tasks.scheduler.A
 		jobconfiguration.setExecmode(MDCConstants.EXECMODE_DEFAULT);
 		jobconfiguration.setIsblocksuserdefined("true");
 		jobconfiguration.setBlocksize(args[3]);
-		var mdcjob = (MapReduceApplicatiion) MapReduceApplicationBuilder.newBuilder()
+		var mdcjob = (MapReduceApplication) MapReduceApplicationBuilder.newBuilder()
 				.addMapper(CarriersDataMapper.class, args[1])
 				.addMapper(AirlineArrDelayDataMapper.class, args[0])
 				.addMapper(AirlineDepDelayDataMapper.class, args[0])			

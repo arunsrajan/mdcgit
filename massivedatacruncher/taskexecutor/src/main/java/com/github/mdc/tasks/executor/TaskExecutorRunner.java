@@ -91,7 +91,7 @@ public class TaskExecutorRunner implements TaskExecutorRunnerMBean {
 		log.info("Number Of 128 MB directmemory: "+directmemory);
 		ByteBufferPool.init(directmemory);
 		CacheUtils.initCache();
-		es = Executors.newScheduledThreadPool(Runtime.getRuntime().availableProcessors());
+		es = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 		var mdted = new TaskExecutorRunner();
 		mdted.init();
 		mdted.start();
@@ -146,9 +146,9 @@ public class TaskExecutorRunner implements TaskExecutorRunnerMBean {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public void start() throws Exception {
-		var threadpool = Executors.newSingleThreadScheduledExecutor();
-		var launchtaskpool = Executors.newSingleThreadScheduledExecutor();
-		var taskpool = Executors.newSingleThreadScheduledExecutor();
+		var threadpool = Executors.newSingleThreadExecutor();
+		var launchtaskpool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+		var taskpool = Executors.newFixedThreadPool(2);
 		var port = Integer.parseInt(System.getProperty(MDCConstants.TASKEXECUTOR_PORT));
 		log.info("TaskExecutor Port: "+port);
 		var su = new ServerUtils();

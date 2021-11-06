@@ -32,8 +32,6 @@ import org.jgroups.View;
  * task executors implemented using jgroups.
  */
 public sealed class HeartBeatServerStream implements HeartBeatServerMBean,HeartBeatCloseable permits HeartBeatTaskSchedulerStream {
-	ExecutorService threadpool;
-	ExecutorService scheduledthreadpool;
 	JChannel channel;
 	int serverport;
 	int rescheduledelay = 5000;
@@ -91,7 +89,6 @@ public sealed class HeartBeatServerStream implements HeartBeatServerMBean,HeartB
 		}else {
 			throw new HeartBeatException(MDCConstants.HEARTBEAT_EXCEPTION_CONTAINER_ID);
 		}
-		threadpool = Executors.newWorkStealingPool();
 		log.debug("Exiting HeartBeatServerStream.init");
 	}
 	View oldView = null;
@@ -103,7 +100,6 @@ public sealed class HeartBeatServerStream implements HeartBeatServerMBean,HeartB
 	@Override
 	public void start() throws Exception {
 		log.debug("Entered HeartBeatServerStream.start");
-		scheduledthreadpool = Executors.newWorkStealingPool();
 		channel = Utils.getChannelWithPStack(networkaddress);
 		channel.setName(networkaddress + MDCConstants.UNDERSCORE + serverport);
 		channel.setReceiver(new Receiver() {
@@ -143,8 +139,7 @@ public sealed class HeartBeatServerStream implements HeartBeatServerMBean,HeartB
 					var timer = new Timer();
 					timermap.put(resources.nodeport, timer);
 					timer.schedule(
-							new LocalTimerTask(resources.nodeport, timer, hpresmap, timermap, jobstagemap,
-									scheduledthreadpool, HeartBeatServerStream.this, semaphore, 0, 5000),
+							new LocalTimerTask(resources.nodeport, hpresmap),
 							initialdelay, rescheduledelay);
 				}
 				if(resources.getNodeport()!=null) {
@@ -173,14 +168,6 @@ public sealed class HeartBeatServerStream implements HeartBeatServerMBean,HeartB
 	public void stop() throws Exception {
 		try {
 			log.debug("Entered HeartBeatServerStream.stop");
-			if (threadpool != null) {
-				threadpool.shutdown();
-				shutdownThreadPool(threadpool);
-			}
-			if (scheduledthreadpool != null) {
-				scheduledthreadpool.shutdown();
-				shutdownThreadPool(scheduledthreadpool);
-			}
 			var keys = timermap.keySet();
 			for (var key : keys) {
 				var timertopurge = timermap.remove(key);
@@ -372,9 +359,7 @@ public sealed class HeartBeatServerStream implements HeartBeatServerMBean,HeartB
 		Map hpresmap;
 		private Resources prevresources = null;
 		@SuppressWarnings({ "rawtypes" }) 
-		LocalTimerTask(String key, Timer timer, Map hpresmap, Map timermap,
-				ConcurrentMap<String, Callable<Object>> jobstagemap, ExecutorService scheduledthreadpool,
-				HeartBeatServerStream hbs, Semaphore semaphore, int rescheduledelayretry, int rescheduledelay) {
+		LocalTimerTask(String key, Map hpresmap) {
 			this.key = key;
 			this.hpresmap = hpresmap;
 		}

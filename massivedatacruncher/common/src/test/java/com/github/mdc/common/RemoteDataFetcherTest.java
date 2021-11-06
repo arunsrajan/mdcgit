@@ -34,7 +34,7 @@ public class RemoteDataFetcherTest {
 	static int namenodehttpport = 60070;
 	@BeforeClass
 	public static void setUpHdfs() throws Exception {
-		System.setProperty("HADOOP_HOME", "E:\\DEVELOPMENT\\hadoop\\hadoop-3.2.1");
+		System.setProperty("HADOOP_HOME", "C:\\DEVELOPMENT\\hadoop\\hadoop-3.3.1");
 		try(Socket sock = new Socket("localhost",9000);){}
 		catch(Exception ex) {
 			Configuration conf = new Configuration();

@@ -48,7 +48,7 @@ import com.github.mdc.common.HdfsBlockReader;
 import com.github.mdc.common.HeartBeatTaskSchedulerStream;
 import com.github.mdc.common.JobStage;
 import com.github.mdc.common.MDCConstants;
-import com.github.mdc.common.MassiveDataPipelineConstants;
+import com.github.mdc.common.PipelineConstants;
 import com.github.mdc.common.Task;
 import com.github.mdc.common.Utils;
 import com.github.mdc.stream.CsvOptions;
@@ -193,11 +193,11 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 			log.debug("GC Status Intersection task:"+Utils.getGCStats());
 			return timetaken;
 		} catch (IOException ioe) {
-			log.error(MassiveDataPipelineConstants.FILEIOERROR, ioe);
-			throw new PipelineException(MassiveDataPipelineConstants.FILEIOERROR, ioe);
+			log.error(PipelineConstants.FILEIOERROR, ioe);
+			throw new PipelineException(PipelineConstants.FILEIOERROR, ioe);
 		} catch (Exception ex) {
-			log.error(MassiveDataPipelineConstants.PROCESSHDFSINTERSECTION, ex);
-			throw new PipelineException(MassiveDataPipelineConstants.PROCESSHDFSINTERSECTION, ex);
+			log.error(PipelineConstants.PROCESSHDFSINTERSECTION, ex);
+			throw new PipelineException(PipelineConstants.PROCESSHDFSINTERSECTION, ex);
 		}
 		
 	}
@@ -237,11 +237,11 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 			log.debug("GC Status Intersection task:"+Utils.getGCStats());
 			return timetaken;
 		} catch (IOException ioe) {
-			log.error(MassiveDataPipelineConstants.FILEIOERROR, ioe);
-			throw new PipelineException(MassiveDataPipelineConstants.FILEIOERROR, ioe);
+			log.error(PipelineConstants.FILEIOERROR, ioe);
+			throw new PipelineException(PipelineConstants.FILEIOERROR, ioe);
 		} catch (Exception ex) {
-			log.error(MassiveDataPipelineConstants.PROCESSHDFSINTERSECTION, ex);
-			throw new PipelineException(MassiveDataPipelineConstants.PROCESSHDFSINTERSECTION, ex);
+			log.error(PipelineConstants.PROCESSHDFSINTERSECTION, ex);
+			throw new PipelineException(PipelineConstants.PROCESSHDFSINTERSECTION, ex);
 		}
 	}
 
@@ -281,11 +281,11 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 			log.debug("GC Status Intersection task:"+Utils.getGCStats());
 			return timetaken;
 		} catch (IOException ioe) {
-			log.error(MassiveDataPipelineConstants.FILEIOERROR, ioe);
-			throw new PipelineException(MassiveDataPipelineConstants.FILEIOERROR, ioe);
+			log.error(PipelineConstants.FILEIOERROR, ioe);
+			throw new PipelineException(PipelineConstants.FILEIOERROR, ioe);
 		} catch (Exception ex) {
-			log.error(MassiveDataPipelineConstants.PROCESSHDFSINTERSECTION, ex);
-			throw new PipelineException(MassiveDataPipelineConstants.PROCESSHDFSINTERSECTION, ex);
+			log.error(PipelineConstants.PROCESSHDFSINTERSECTION, ex);
+			throw new PipelineException(PipelineConstants.PROCESSHDFSINTERSECTION, ex);
 		}
 	}
 
@@ -369,11 +369,11 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 			log.debug("GC Status Union task:"+Utils.getGCStats());
 			return timetaken;
 		} catch (IOException ioe) {
-			log.error(MassiveDataPipelineConstants.FILEIOERROR, ioe);
-			throw new PipelineException(MassiveDataPipelineConstants.FILEIOERROR, ioe);
+			log.error(PipelineConstants.FILEIOERROR, ioe);
+			throw new PipelineException(PipelineConstants.FILEIOERROR, ioe);
 		} catch (Exception ex) {
-			log.error(MassiveDataPipelineConstants.PROCESSHDFSUNION, ex);
-			throw new PipelineException(MassiveDataPipelineConstants.PROCESSHDFSUNION, ex);
+			log.error(PipelineConstants.PROCESSHDFSUNION, ex);
+			throw new PipelineException(PipelineConstants.PROCESSHDFSUNION, ex);
 		}
 	}
 
@@ -423,11 +423,11 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 			log.debug("GC Status Union task:"+Utils.getGCStats());
 			return timetaken;
 		} catch (IOException ioe) {
-			log.error(MassiveDataPipelineConstants.FILEIOERROR, ioe);
-			throw new PipelineException(MassiveDataPipelineConstants.FILEIOERROR, ioe);
+			log.error(PipelineConstants.FILEIOERROR, ioe);
+			throw new PipelineException(PipelineConstants.FILEIOERROR, ioe);
 		} catch (Exception ex) {
-			log.error(MassiveDataPipelineConstants.PROCESSHDFSUNION, ex);
-			throw new PipelineException(MassiveDataPipelineConstants.PROCESSHDFSUNION, ex);
+			log.error(PipelineConstants.PROCESSHDFSUNION, ex);
+			throw new PipelineException(PipelineConstants.PROCESSHDFSUNION, ex);
 		}
 	}
 
@@ -480,11 +480,11 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 			log.debug("GC Status Union task:" + Utils.getGCStats());
 			return timetaken;
 		} catch (IOException ioe) {
-			log.error(MassiveDataPipelineConstants.FILEIOERROR, ioe);
-			throw new PipelineException(MassiveDataPipelineConstants.FILEIOERROR, ioe);
+			log.error(PipelineConstants.FILEIOERROR, ioe);
+			throw new PipelineException(PipelineConstants.FILEIOERROR, ioe);
 		} catch (Exception ex) {
-			log.error(MassiveDataPipelineConstants.PROCESSHDFSUNION, ex);
-			throw new PipelineException(MassiveDataPipelineConstants.PROCESSHDFSUNION, ex);
+			log.error(PipelineConstants.PROCESSHDFSUNION, ex);
+			throw new PipelineException(PipelineConstants.PROCESSHDFSUNION, ex);
 		}
 	}
 
@@ -533,11 +533,11 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 						datastream = records.getRecords();
 						intermediatestreamobject = datastream.parallelStream();
 					} catch (IOException ioe) {
-						log.error(MassiveDataPipelineConstants.FILEIOERROR, ioe);
-						throw new PipelineException(MassiveDataPipelineConstants.FILEIOERROR, ioe);
+						log.error(PipelineConstants.FILEIOERROR, ioe);
+						throw new PipelineException(PipelineConstants.FILEIOERROR, ioe);
 					} catch (Exception ex) {
-						log.error(MassiveDataPipelineConstants.PROCESSHDFSERROR, ex);
-						throw new PipelineException(MassiveDataPipelineConstants.PROCESSHDFSERROR, ex);
+						log.error(PipelineConstants.PROCESSHDFSERROR, ex);
+						throw new PipelineException(PipelineConstants.PROCESSHDFSERROR, ex);
 					}
 				} else {
 					intermediatestreamobject = buffer.lines().parallel();
@@ -604,18 +604,18 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 				log.debug("GC Status Map task:"+Utils.getGCStats());
 				return timetaken;
 			} catch (IOException ioe) {
-				log.error(MassiveDataPipelineConstants.FILEIOERROR, ioe);
-				throw new PipelineException(MassiveDataPipelineConstants.FILEIOERROR, ioe);
+				log.error(PipelineConstants.FILEIOERROR, ioe);
+				throw new PipelineException(PipelineConstants.FILEIOERROR, ioe);
 			} catch (Exception ex) {
-				log.error(MassiveDataPipelineConstants.PROCESSHDFSERROR, ex);
-				throw new PipelineException(MassiveDataPipelineConstants.PROCESSHDFSERROR, ex);
+				log.error(PipelineConstants.PROCESSHDFSERROR, ex);
+				throw new PipelineException(PipelineConstants.PROCESSHDFSERROR, ex);
 			}
 		} catch (IOException ioe) {
-			log.error(MassiveDataPipelineConstants.FILEIOERROR, ioe);
-			throw new PipelineException(MassiveDataPipelineConstants.FILEIOERROR, ioe);
+			log.error(PipelineConstants.FILEIOERROR, ioe);
+			throw new PipelineException(PipelineConstants.FILEIOERROR, ioe);
 		} catch (Exception ex) {
-			log.error(MassiveDataPipelineConstants.PROCESSHDFSERROR, ex);
-			throw new PipelineException(MassiveDataPipelineConstants.PROCESSHDFSERROR, ex);
+			log.error(PipelineConstants.PROCESSHDFSERROR, ex);
+			throw new PipelineException(PipelineConstants.PROCESSHDFSERROR, ex);
 		}
 
 	}
@@ -689,13 +689,13 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 								out = (List) ((Stream) streammap).collect(Collectors.toCollection(Vector::new));
 							}
 						} catch (Exception ex) {
-							log.error(MassiveDataPipelineConstants.PROCESSHDFSERROR, ex);
-							throw new PipelineException(MassiveDataPipelineConstants.PROCESSHDFSERROR, ex);
+							log.error(PipelineConstants.PROCESSHDFSERROR, ex);
+							throw new PipelineException(PipelineConstants.PROCESSHDFSERROR, ex);
 						}
 					//}
 				} catch (Exception ex) {
-					log.error(MassiveDataPipelineConstants.PROCESSHDFSERROR, ex);
-					throw new PipelineException(MassiveDataPipelineConstants.PROCESSHDFSERROR, ex);
+					log.error(PipelineConstants.PROCESSHDFSERROR, ex);
+					throw new PipelineException(PipelineConstants.PROCESSHDFSERROR, ex);
 				}
 			}
 			kryo.writeClassAndObject(output, out);
@@ -708,11 +708,11 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 			log.debug("GC Status Map task:"+Utils.getGCStats());
 			return timetaken;
 		} catch (IOException ioe) {
-			log.error(MassiveDataPipelineConstants.FILEIOERROR, ioe);
-			throw new PipelineException(MassiveDataPipelineConstants.FILEIOERROR, ioe);
+			log.error(PipelineConstants.FILEIOERROR, ioe);
+			throw new PipelineException(PipelineConstants.FILEIOERROR, ioe);
 		} catch (Exception ex) {
-			log.error(MassiveDataPipelineConstants.PROCESSHDFSERROR, ex);
-			throw new PipelineException(MassiveDataPipelineConstants.PROCESSHDFSERROR, ex);
+			log.error(PipelineConstants.PROCESSHDFSERROR, ex);
+			throw new PipelineException(PipelineConstants.PROCESSHDFSERROR, ex);
 		}
 	}
 
@@ -748,11 +748,11 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 			log.debug("GC Status Sampling task:" + Utils.getGCStats());
 			return timetaken;
 		} catch (IOException ioe) {
-			log.error(MassiveDataPipelineConstants.FILEIOERROR, ioe);
-			throw new PipelineException(MassiveDataPipelineConstants.FILEIOERROR, ioe);
+			log.error(PipelineConstants.FILEIOERROR, ioe);
+			throw new PipelineException(PipelineConstants.FILEIOERROR, ioe);
 		} catch (Exception ex) {
-			log.error(MassiveDataPipelineConstants.PROCESSSAMPLE, ex);
-			throw new PipelineException(MassiveDataPipelineConstants.PROCESSSAMPLE, ex);
+			log.error(PipelineConstants.PROCESSSAMPLE, ex);
+			throw new PipelineException(PipelineConstants.PROCESSSAMPLE, ex);
 		}
 	}
 
@@ -796,11 +796,11 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 			log.debug("GC Status Sampling task:"+Utils.getGCStats());
 			return timetaken;
 		} catch (IOException ioe) {
-			log.error(MassiveDataPipelineConstants.FILEIOERROR, ioe);
-			throw new PipelineException(MassiveDataPipelineConstants.FILEIOERROR, ioe);
+			log.error(PipelineConstants.FILEIOERROR, ioe);
+			throw new PipelineException(PipelineConstants.FILEIOERROR, ioe);
 		} catch (Exception ex) {
-			log.error(MassiveDataPipelineConstants.PROCESSSAMPLE, ex);
-			throw new PipelineException(MassiveDataPipelineConstants.PROCESSSAMPLE, ex);
+			log.error(PipelineConstants.PROCESSSAMPLE, ex);
+			throw new PipelineException(PipelineConstants.PROCESSSAMPLE, ex);
 		}
 	}
 
@@ -853,11 +853,11 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 				timetakenseconds = processJoinLZF(streamfirsttocompute, streamsecondtocompute, jp,task.input[0] instanceof BlocksLocation,
 						task.input[1] instanceof BlocksLocation);
 			} catch (IOException ioe) {
-				log.error(MassiveDataPipelineConstants.FILEIOERROR, ioe);
-				throw new PipelineException(MassiveDataPipelineConstants.FILEIOERROR, ioe);
+				log.error(PipelineConstants.FILEIOERROR, ioe);
+				throw new PipelineException(PipelineConstants.FILEIOERROR, ioe);
 			} catch (Exception ex) {
-				log.error(MassiveDataPipelineConstants.PROCESSJOIN, ex);
-				throw new PipelineException(MassiveDataPipelineConstants.PROCESSJOIN, ex);
+				log.error(PipelineConstants.PROCESSJOIN, ex);
+				throw new PipelineException(PipelineConstants.PROCESSJOIN, ex);
 			}
 
 		} else if ( jobstage.stage.tasks.get(0) instanceof LeftOuterJoinPredicate ljp) {
@@ -879,11 +879,11 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 				timetakenseconds = processLeftOuterJoinLZF(streamfirsttocompute, streamsecondtocompute, ljp,task.input[0] instanceof BlocksLocation,
 						task.input[1] instanceof BlocksLocation);
 			} catch (IOException ioe) {
-				log.error(MassiveDataPipelineConstants.FILEIOERROR, ioe);
-				throw new PipelineException(MassiveDataPipelineConstants.FILEIOERROR, ioe);
+				log.error(PipelineConstants.FILEIOERROR, ioe);
+				throw new PipelineException(PipelineConstants.FILEIOERROR, ioe);
 			} catch (Exception ex) {
-				log.error(MassiveDataPipelineConstants.PROCESSLEFTOUTERJOIN, ex);
-				throw new PipelineException(MassiveDataPipelineConstants.PROCESSLEFTOUTERJOIN, ex);
+				log.error(PipelineConstants.PROCESSLEFTOUTERJOIN, ex);
+				throw new PipelineException(PipelineConstants.PROCESSLEFTOUTERJOIN, ex);
 			}
 		} else if ( jobstage.stage.tasks.get(0) instanceof RightOuterJoinPredicate rjp) {
 			InputStream streamfirst = null;
@@ -905,11 +905,11 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 						rjp,task.input[0] instanceof BlocksLocation,
 						task.input[1] instanceof BlocksLocation);
 			} catch (IOException ioe) {
-				log.error(MassiveDataPipelineConstants.FILEIOERROR, ioe);
-				throw new PipelineException(MassiveDataPipelineConstants.FILEIOERROR, ioe);
+				log.error(PipelineConstants.FILEIOERROR, ioe);
+				throw new PipelineException(PipelineConstants.FILEIOERROR, ioe);
 			} catch (Exception ex) {
-				log.error(MassiveDataPipelineConstants.PROCESSRIGHTOUTERJOIN, ex);
-				throw new PipelineException(MassiveDataPipelineConstants.PROCESSRIGHTOUTERJOIN, ex);
+				log.error(PipelineConstants.PROCESSRIGHTOUTERJOIN, ex);
+				throw new PipelineException(PipelineConstants.PROCESSRIGHTOUTERJOIN, ex);
 			}
 		} else if ( jobstage.stage.tasks.get(0) instanceof IntersectionFunction) {
 
@@ -1038,8 +1038,8 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 						) {
 					joinpairsout.add(seq1.innerJoin(seq2.parallel(), joinpredicate).count());
 				} catch (Exception ex) {
-					log.error(MassiveDataPipelineConstants.PROCESSJOIN, ex);
-					throw new PipelineException(MassiveDataPipelineConstants.PROCESSJOIN, ex);
+					log.error(PipelineConstants.PROCESSJOIN, ex);
+					throw new PipelineException(PipelineConstants.PROCESSJOIN, ex);
 				}
 			} else {
 				// Parallel join pair result.
@@ -1048,8 +1048,8 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 						) {
 					joinpairsout = seq1.innerJoin(seq2.parallel(), joinpredicate).toList();
 				} catch (Exception ex) {
-					log.error(MassiveDataPipelineConstants.PROCESSJOIN, ex);
-					throw new PipelineException(MassiveDataPipelineConstants.PROCESSJOIN, ex);
+					log.error(PipelineConstants.PROCESSJOIN, ex);
+					throw new PipelineException(PipelineConstants.PROCESSJOIN, ex);
 				}
 
 			}
@@ -1062,11 +1062,11 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 			log.debug("GC Status Join task:" + Utils.getGCStats());
 			return timetaken;
 		} catch (IOException ioe) {
-			log.error(MassiveDataPipelineConstants.FILEIOERROR, ioe);
-			throw new PipelineException(MassiveDataPipelineConstants.FILEIOERROR, ioe);
+			log.error(PipelineConstants.FILEIOERROR, ioe);
+			throw new PipelineException(PipelineConstants.FILEIOERROR, ioe);
 		} catch (Exception ex) {
-			log.error(MassiveDataPipelineConstants.PROCESSJOIN, ex);
-			throw new PipelineException(MassiveDataPipelineConstants.PROCESSJOIN, ex);
+			log.error(PipelineConstants.PROCESSJOIN, ex);
+			throw new PipelineException(PipelineConstants.PROCESSJOIN, ex);
 		}
 	}
 
@@ -1113,8 +1113,8 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 						) {
 					joinpairsout.add(seq1.leftOuterJoin(seq2.parallel(), leftouterjoinpredicate).count());
 				} catch (Exception ex) {
-					log.error(MassiveDataPipelineConstants.PROCESSLEFTOUTERJOIN, ex);
-					throw new PipelineException(MassiveDataPipelineConstants.PROCESSLEFTOUTERJOIN, ex);
+					log.error(PipelineConstants.PROCESSLEFTOUTERJOIN, ex);
+					throw new PipelineException(PipelineConstants.PROCESSLEFTOUTERJOIN, ex);
 				}
 			} else {
 				// Parallel join pair result.
@@ -1123,8 +1123,8 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 						) {
 					joinpairsout = seq1.leftOuterJoin(seq2.parallel(), leftouterjoinpredicate).toList();
 				} catch (Exception ex) {
-					log.error(MassiveDataPipelineConstants.PROCESSLEFTOUTERJOIN, ex);
-					throw new PipelineException(MassiveDataPipelineConstants.PROCESSLEFTOUTERJOIN, ex);
+					log.error(PipelineConstants.PROCESSLEFTOUTERJOIN, ex);
+					throw new PipelineException(PipelineConstants.PROCESSLEFTOUTERJOIN, ex);
 				}
 			}
 			kryo.writeClassAndObject(output, joinpairsout);
@@ -1136,11 +1136,11 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 			log.debug("GC Status Left Outer Join task:"+Utils.getGCStats());
 			return timetaken;
 		} catch (IOException ioe) {
-			log.error(MassiveDataPipelineConstants.FILEIOERROR, ioe);
-			throw new PipelineException(MassiveDataPipelineConstants.FILEIOERROR, ioe);
+			log.error(PipelineConstants.FILEIOERROR, ioe);
+			throw new PipelineException(PipelineConstants.FILEIOERROR, ioe);
 		} catch (Exception ex) {
-			log.error(MassiveDataPipelineConstants.PROCESSLEFTOUTERJOIN, ex);
-			throw new PipelineException(MassiveDataPipelineConstants.PROCESSLEFTOUTERJOIN, ex);
+			log.error(PipelineConstants.PROCESSLEFTOUTERJOIN, ex);
+			throw new PipelineException(PipelineConstants.PROCESSLEFTOUTERJOIN, ex);
 		}
 	}
 	@SuppressWarnings("unchecked")
@@ -1186,8 +1186,8 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 						) {
 					joinpairsout.add(seq1.rightOuterJoin(seq2.parallel(), rightouterjoinpredicate).count());
 				} catch (Exception ex) {
-					log.error(MassiveDataPipelineConstants.PROCESSRIGHTOUTERJOIN, ex);
-					throw new PipelineException(MassiveDataPipelineConstants.PROCESSRIGHTOUTERJOIN, ex);
+					log.error(PipelineConstants.PROCESSRIGHTOUTERJOIN, ex);
+					throw new PipelineException(PipelineConstants.PROCESSRIGHTOUTERJOIN, ex);
 				}
 			} else {
 				// Parallel join pair result.
@@ -1196,8 +1196,8 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 						) {
 					joinpairsout = seq1.rightOuterJoin(seq2.parallel(), rightouterjoinpredicate).toList();
 				} catch (Exception ex) {
-					log.error(MassiveDataPipelineConstants.PROCESSRIGHTOUTERJOIN, ex);
-					throw new PipelineException(MassiveDataPipelineConstants.PROCESSRIGHTOUTERJOIN, ex);
+					log.error(PipelineConstants.PROCESSRIGHTOUTERJOIN, ex);
+					throw new PipelineException(PipelineConstants.PROCESSRIGHTOUTERJOIN, ex);
 				}
 			}
 			kryo.writeClassAndObject(output, joinpairsout);
@@ -1209,11 +1209,11 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 			log.debug("GC Status Right Outer Join task:"+Utils.getGCStats());
 			return timetaken;
 		} catch (IOException ioe) {
-			log.error(MassiveDataPipelineConstants.FILEIOERROR, ioe);
-			throw new PipelineException(MassiveDataPipelineConstants.FILEIOERROR, ioe);
+			log.error(PipelineConstants.FILEIOERROR, ioe);
+			throw new PipelineException(PipelineConstants.FILEIOERROR, ioe);
 		} catch (Exception ex) {
-			log.error(MassiveDataPipelineConstants.PROCESSRIGHTOUTERJOIN, ex);
-			throw new PipelineException(MassiveDataPipelineConstants.PROCESSRIGHTOUTERJOIN, ex);
+			log.error(PipelineConstants.PROCESSRIGHTOUTERJOIN, ex);
+			throw new PipelineException(PipelineConstants.PROCESSRIGHTOUTERJOIN, ex);
 		}
 	}
 
@@ -1245,11 +1245,11 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 						}
 					//}
 				} catch (IOException ioe) {
-					log.error(MassiveDataPipelineConstants.FILEIOERROR, ioe);
-					throw new PipelineException(MassiveDataPipelineConstants.FILEIOERROR, ioe);
+					log.error(PipelineConstants.FILEIOERROR, ioe);
+					throw new PipelineException(PipelineConstants.FILEIOERROR, ioe);
 				} catch (Exception ex) {
-					log.error(MassiveDataPipelineConstants.PROCESSGROUPBYKEY, ex);
-					throw new PipelineException(MassiveDataPipelineConstants.PROCESSGROUPBYKEY, ex);
+					log.error(PipelineConstants.PROCESSGROUPBYKEY, ex);
+					throw new PipelineException(PipelineConstants.PROCESSGROUPBYKEY, ex);
 				}
 			}
 			// Parallel processing of group by key operation.
@@ -1276,11 +1276,11 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 			log.debug("GC Status Group By Key task:" + Utils.getGCStats());
 			return timetaken;
 		} catch (IOException ioe) {
-			log.error(MassiveDataPipelineConstants.FILEIOERROR, ioe);
-			throw new PipelineException(MassiveDataPipelineConstants.FILEIOERROR, ioe);
+			log.error(PipelineConstants.FILEIOERROR, ioe);
+			throw new PipelineException(PipelineConstants.FILEIOERROR, ioe);
 		} catch (Exception ex) {
-			log.error(MassiveDataPipelineConstants.PROCESSGROUPBYKEY, ex);
-			throw new PipelineException(MassiveDataPipelineConstants.PROCESSGROUPBYKEY, ex);
+			log.error(PipelineConstants.PROCESSGROUPBYKEY, ex);
+			throw new PipelineException(PipelineConstants.PROCESSGROUPBYKEY, ex);
 		}
 	}
 
@@ -1314,11 +1314,11 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 						}
 					//}
 				} catch (IOException ioe) {
-					log.error(MassiveDataPipelineConstants.FILEIOERROR, ioe);
-					throw new PipelineException(MassiveDataPipelineConstants.FILEIOERROR, ioe);
+					log.error(PipelineConstants.FILEIOERROR, ioe);
+					throw new PipelineException(PipelineConstants.FILEIOERROR, ioe);
 				} catch (Exception ex) {
-					log.error(MassiveDataPipelineConstants.PROCESSGROUPBYKEY, ex);
-					throw new PipelineException(MassiveDataPipelineConstants.PROCESSGROUPBYKEY, ex);
+					log.error(PipelineConstants.PROCESSGROUPBYKEY, ex);
+					throw new PipelineException(PipelineConstants.PROCESSGROUPBYKEY, ex);
 				}
 			}
 			// Parallel processing of fold by key operation.
@@ -1353,11 +1353,11 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 			log.debug("GC Status Fold By Key task:"+Utils.getGCStats());
 			return timetaken;
 		} catch (IOException ioe) {
-			log.error(MassiveDataPipelineConstants.FILEIOERROR, ioe);
-			throw new PipelineException(MassiveDataPipelineConstants.FILEIOERROR, ioe);
+			log.error(PipelineConstants.FILEIOERROR, ioe);
+			throw new PipelineException(PipelineConstants.FILEIOERROR, ioe);
 		} catch (Exception ex) {
-			log.error(MassiveDataPipelineConstants.PROCESSFOLDBYKEY, ex);
-			throw new PipelineException(MassiveDataPipelineConstants.PROCESSFOLDBYKEY, ex);
+			log.error(PipelineConstants.PROCESSFOLDBYKEY, ex);
+			throw new PipelineException(PipelineConstants.PROCESSFOLDBYKEY, ex);
 		}
 	}
 
@@ -1409,11 +1409,11 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 			log.debug("GC Status Count By Key task:"+Utils.getGCStats());
 			return timetaken;
 		} catch (IOException ioe) {
-			log.error(MassiveDataPipelineConstants.FILEIOERROR, ioe);
-			throw new PipelineException(MassiveDataPipelineConstants.FILEIOERROR, ioe);
+			log.error(PipelineConstants.FILEIOERROR, ioe);
+			throw new PipelineException(PipelineConstants.FILEIOERROR, ioe);
 		} catch (Exception ex) {
-			log.error(MassiveDataPipelineConstants.PROCESSCOUNTBYKEY, ex);
-			throw new PipelineException(MassiveDataPipelineConstants.PROCESSCOUNTBYKEY, ex);
+			log.error(PipelineConstants.PROCESSCOUNTBYKEY, ex);
+			throw new PipelineException(PipelineConstants.PROCESSCOUNTBYKEY, ex);
 		}
 	}
 
@@ -1466,11 +1466,11 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 			log.debug("GC Status Count By Value task:"+Utils.getGCStats());
 			return timetaken;
 		} catch (IOException ioe) {
-			log.error(MassiveDataPipelineConstants.FILEIOERROR, ioe);
-			throw new PipelineException(MassiveDataPipelineConstants.FILEIOERROR, ioe);
+			log.error(PipelineConstants.FILEIOERROR, ioe);
+			throw new PipelineException(PipelineConstants.FILEIOERROR, ioe);
 		} catch (Exception ex) {
-			log.error(MassiveDataPipelineConstants.PROCESSCOUNTBYVALUE, ex);
-			throw new PipelineException(MassiveDataPipelineConstants.PROCESSCOUNTBYVALUE, ex);
+			log.error(PipelineConstants.PROCESSCOUNTBYVALUE, ex);
+			throw new PipelineException(PipelineConstants.PROCESSCOUNTBYVALUE, ex);
 		}
 	}
 
@@ -1540,11 +1540,11 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 			log.debug("GC Status Count By Value task:" + Utils.getGCStats());
 			return timetaken;
 		} catch (IOException ioe) {
-			log.error(MassiveDataPipelineConstants.FILEIOERROR, ioe);
-			throw new PipelineException(MassiveDataPipelineConstants.FILEIOERROR, ioe);
+			log.error(PipelineConstants.FILEIOERROR, ioe);
+			throw new PipelineException(PipelineConstants.FILEIOERROR, ioe);
 		} catch (Exception ex) {
-			log.error(MassiveDataPipelineConstants.PROCESSCOALESCE, ex);
-			throw new PipelineException(MassiveDataPipelineConstants.PROCESSCOALESCE, ex);
+			log.error(PipelineConstants.PROCESSCOALESCE, ex);
+			throw new PipelineException(PipelineConstants.PROCESSCOALESCE, ex);
 		}
 	}
 }

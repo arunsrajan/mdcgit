@@ -24,8 +24,6 @@ import java.util.function.ToIntFunction;
 import java.util.stream.Collectors;
 
 import org.apache.commons.csv.CSVRecord;
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.log4j.Logger;
 import org.jgrapht.Graph;
@@ -49,7 +47,7 @@ import com.github.mdc.common.JobMetrics;
 import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.MDCJobMetrics;
 import com.github.mdc.common.MDCProperties;
-import com.github.mdc.common.MassiveDataPipelineConstants;
+import com.github.mdc.common.PipelineConstants;
 import com.github.mdc.common.PipelineConfig;
 import com.github.mdc.common.Stage;
 import com.github.mdc.common.Utils;
@@ -163,7 +161,7 @@ public sealed class StreamPipeline<I1> extends AbstractPipeline permits CsvStrea
 			return mdp;
 		}
 		catch(MalformedURLException use) {
-			throw new PipelineException(MassiveDataPipelineConstants.URISYNTAXNOTPROPER,use); 
+			throw new PipelineException(PipelineConstants.URISYNTAXNOTPROPER,use); 
 		}
 	}
 	
@@ -208,7 +206,7 @@ public sealed class StreamPipeline<I1> extends AbstractPipeline permits CsvStrea
 	@SuppressWarnings("unchecked")
 	public <T> StreamPipeline<T> map(MapFunction<I1 ,? extends T> map) throws PipelineException{
 		if(Objects.isNull(map)) {
-			throw new PipelineException(MassiveDataPipelineConstants.MAPFUNCTIONNULL);
+			throw new PipelineException(PipelineConstants.MAPFUNCTIONNULL);
 		}
 		var mapobj = new StreamPipeline(root,map);
 		this.childs.add(mapobj);
@@ -272,7 +270,7 @@ public sealed class StreamPipeline<I1> extends AbstractPipeline permits CsvStrea
 	 */
 	public StreamPipeline<I1> filter(PredicateSerializable<I1> predicate) throws PipelineException {
 		if(Objects.isNull(predicate)) {
-			throw new PipelineException(MassiveDataPipelineConstants.PREDICATENULL);
+			throw new PipelineException(PipelineConstants.PREDICATENULL);
 		}
 		var filter = new StreamPipeline<>(root,predicate);
 		this.childs.add(filter);
@@ -301,7 +299,7 @@ public sealed class StreamPipeline<I1> extends AbstractPipeline permits CsvStrea
 	 */
 	public StreamPipeline<I1> union(StreamPipeline<I1> union) throws PipelineException {
 		if(Objects.isNull(union)) {
-			throw new PipelineException(MassiveDataPipelineConstants.UNIONNULL);
+			throw new PipelineException(PipelineConstants.UNIONNULL);
 		}
 		var unionfunction = new UnionFunction();
 		var unionchild =new  StreamPipeline(root,unionfunction);
@@ -335,7 +333,7 @@ public sealed class StreamPipeline<I1> extends AbstractPipeline permits CsvStrea
 	 */
 	public StreamPipeline<I1> intersection(StreamPipeline<I1> intersection) throws PipelineException {
 		if(Objects.isNull(intersection)) {
-			throw new PipelineException(MassiveDataPipelineConstants.INTERSECTIONNULL);
+			throw new PipelineException(PipelineConstants.INTERSECTIONNULL);
 		}
 		var intersectionfunction = new IntersectionFunction();
 		var intersectionchild =new  StreamPipeline(root,intersectionfunction);
@@ -359,7 +357,7 @@ public sealed class StreamPipeline<I1> extends AbstractPipeline permits CsvStrea
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public <I3,I4> MapPair<I3,I4> mapToPair(MapToPairFunction<? super I1, ? extends Tuple2<I3,I4>> pf) throws PipelineException {
 		if(Objects.isNull(pf)) {
-			throw new PipelineException(MassiveDataPipelineConstants.MAPPAIRNULL);
+			throw new PipelineException(PipelineConstants.MAPPAIRNULL);
 		}
 		var mappair = new MapPair(root, pf);
 		this.childs.add(mappair);
@@ -388,7 +386,7 @@ public sealed class StreamPipeline<I1> extends AbstractPipeline permits CsvStrea
 	 */
 	public StreamPipeline<I1> sample(Integer numsample) throws PipelineException {
 		if(Objects.isNull(numsample)) {
-			throw new PipelineException(MassiveDataPipelineConstants.SAMPLENULL);
+			throw new PipelineException(PipelineConstants.SAMPLENULL);
 		}
 		var sampleintegersupplier = new SampleSupplierInteger(numsample);
 		var samplesupplier = new StreamPipeline(root,sampleintegersupplier);
@@ -406,10 +404,10 @@ public sealed class StreamPipeline<I1> extends AbstractPipeline permits CsvStrea
 	 */
 	public <I2> StreamPipeline<Tuple2<I1,I2>> rightOuterjoin(StreamPipeline<? extends I2> mappair,RightOuterJoinPredicate<? super I1, ? super I2> conditionrightouterjoin) throws PipelineException {
 		if(Objects.isNull(mappair)) {
-			throw new PipelineException(MassiveDataPipelineConstants.RIGHTOUTERJOIN);
+			throw new PipelineException(PipelineConstants.RIGHTOUTERJOIN);
 		}
 		if(Objects.isNull(conditionrightouterjoin)) {
-			throw new PipelineException(MassiveDataPipelineConstants.RIGHTOUTERJOINCONDITION);
+			throw new PipelineException(PipelineConstants.RIGHTOUTERJOINCONDITION);
 		}
 		var mdp = new StreamPipeline(root, conditionrightouterjoin);
 		this.childs.add(mdp);
@@ -434,10 +432,10 @@ public sealed class StreamPipeline<I1> extends AbstractPipeline permits CsvStrea
 	public <I2> StreamPipeline<Tuple2<I1,I2>> leftOuterjoin(StreamPipeline<I2> mappair,
 			LeftOuterJoinPredicate<I1, I2> conditionleftouterjoin) throws PipelineException {
 		if (Objects.isNull(mappair)) {
-			throw new PipelineException(MassiveDataPipelineConstants.LEFTOUTERJOIN);
+			throw new PipelineException(PipelineConstants.LEFTOUTERJOIN);
 		}
 		if (Objects.isNull(conditionleftouterjoin)) {
-			throw new PipelineException(MassiveDataPipelineConstants.LEFTOUTERJOINCONDITION);
+			throw new PipelineException(PipelineConstants.LEFTOUTERJOINCONDITION);
 		}
 		StreamPipeline<Tuple2<I1, I2>> mdp = new StreamPipeline(root, conditionleftouterjoin);
 		this.childs.add(mdp);
@@ -461,10 +459,10 @@ public sealed class StreamPipeline<I1> extends AbstractPipeline permits CsvStrea
 	 */
 	public <I2> StreamPipeline<Tuple2<I1,I2>> join(StreamPipeline<I2> mappair,JoinPredicate<I1,I2> innerjoin) throws PipelineException {
 		if(Objects.isNull(mappair)) {
-			throw new PipelineException(MassiveDataPipelineConstants.INNERJOIN);
+			throw new PipelineException(PipelineConstants.INNERJOIN);
 		}
 		if(Objects.isNull(innerjoin)) {
-			throw new PipelineException(MassiveDataPipelineConstants.INNERJOINCONDITION);
+			throw new PipelineException(PipelineConstants.INNERJOINCONDITION);
 		}
 		StreamPipeline<Tuple2<I1, I2>> mdp = new StreamPipeline(root, innerjoin);
 		this.childs.add(mdp);
@@ -503,7 +501,7 @@ public sealed class StreamPipeline<I1> extends AbstractPipeline permits CsvStrea
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public <T> StreamPipeline<T> flatMap(FlatMapFunction<I1, ? extends T> fmf) throws PipelineException {
 		if(Objects.isNull(fmf)) {
-			throw new PipelineException(MassiveDataPipelineConstants.FLATMAPNULL);
+			throw new PipelineException(PipelineConstants.FLATMAPNULL);
 		}
 		var mdp = new StreamPipeline(root, fmf);
 		this.childs.add(mdp);
@@ -522,7 +520,7 @@ public sealed class StreamPipeline<I1> extends AbstractPipeline permits CsvStrea
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public <I3,I4> MapPair<I3,I4> flatMapToTuple2(TupleFlatMapFunction<? super I1, ? extends Tuple2<I3,I4>> fmt) throws PipelineException {
 		if(Objects.isNull(fmt)) {
-			throw new PipelineException(MassiveDataPipelineConstants.FLATMAPPAIRNULL);
+			throw new PipelineException(PipelineConstants.FLATMAPPAIRNULL);
 		}
 		var mdp = new MapPair(root, fmt);
 		this.childs.add(mdp);
@@ -539,7 +537,7 @@ public sealed class StreamPipeline<I1> extends AbstractPipeline permits CsvStrea
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public StreamPipeline<Tuple> flatMapToTuple(TupleFlatMapFunction<? super I1, ? extends Tuple> fmt) throws PipelineException {
 		if(Objects.isNull(fmt)) {
-			throw new PipelineException(MassiveDataPipelineConstants.FLATMAPPAIRNULL);
+			throw new PipelineException(PipelineConstants.FLATMAPPAIRNULL);
 		}
 		var mdp = new StreamPipeline(root, fmt);
 		this.childs.add(mdp);
@@ -581,7 +579,7 @@ public sealed class StreamPipeline<I1> extends AbstractPipeline permits CsvStrea
 	 */
 	public StreamPipeline<Long> flatMapToLong(LongFlatMapFunction<I1> lfmf) throws PipelineException {
 		if(Objects.isNull(lfmf)) {
-			throw new PipelineException(MassiveDataPipelineConstants.LONGFLATMAPNULL);
+			throw new PipelineException(PipelineConstants.LONGFLATMAPNULL);
 		}
 		var mdp = new StreamPipeline(root, lfmf);
 		this.childs.add(mdp);
@@ -611,7 +609,7 @@ public sealed class StreamPipeline<I1> extends AbstractPipeline permits CsvStrea
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public StreamPipeline<Double> flatMapToDouble(DoubleFlatMapFunction<I1> dfmf) throws PipelineException {
 		if(Objects.isNull(dfmf)) {
-			throw new PipelineException(MassiveDataPipelineConstants.DOUBLEFLATMAPNULL);
+			throw new PipelineException(PipelineConstants.DOUBLEFLATMAPNULL);
 		}
 		var mdp = new StreamPipeline(root, dfmf);
 		this.childs.add(mdp);
@@ -627,7 +625,7 @@ public sealed class StreamPipeline<I1> extends AbstractPipeline permits CsvStrea
 	 */
 	public StreamPipeline<I1> peek(PeekConsumer<I1> consumer) throws PipelineException  {
 		if(Objects.isNull(consumer)) {
-			throw new PipelineException(MassiveDataPipelineConstants.PEEKNULL);
+			throw new PipelineException(PipelineConstants.PEEKNULL);
 		}
 		var map = new StreamPipeline<>(root,consumer);
 		map.parents.add(this);
@@ -726,7 +724,7 @@ public sealed class StreamPipeline<I1> extends AbstractPipeline permits CsvStrea
 	 */
 	public StreamPipeline<I1> sorted(SortedComparator<I1> sortedcomparator) throws PipelineException  {
 		if(Objects.isNull(sortedcomparator)) {
-			throw new PipelineException(MassiveDataPipelineConstants.SORTEDNULL);
+			throw new PipelineException(PipelineConstants.SORTEDNULL);
 		}
 		var map = new StreamPipeline<>(root,sortedcomparator);
 		map.parents.add(this);
@@ -780,7 +778,7 @@ public sealed class StreamPipeline<I1> extends AbstractPipeline permits CsvStrea
 	 */
 	public PipelineIntStream<I1> mapToInt(SToIntFunction<I1> tointfunction) throws PipelineException  {
 		if(Objects.isNull(tointfunction)) {
-			throw new PipelineException(MassiveDataPipelineConstants.MAPTOINTNULL);
+			throw new PipelineException(PipelineConstants.MAPTOINTNULL);
 		}
 		var map = new PipelineIntStream<>(root, tointfunction);
 		map.parents.add(this);
@@ -809,7 +807,7 @@ public sealed class StreamPipeline<I1> extends AbstractPipeline permits CsvStrea
 	 */
 	public <O> MapPair<O,I1> keyBy(KeyByFunction<I1,O> keybyfunction) throws PipelineException  {
 		if(Objects.isNull(keybyfunction)) {
-			throw new PipelineException(MassiveDataPipelineConstants.KEYBYNULL);
+			throw new PipelineException(PipelineConstants.KEYBYNULL);
 		}
 		var mt = new MapPair(root,keybyfunction);
 		mt.parents.add(this);
@@ -837,7 +835,7 @@ public sealed class StreamPipeline<I1> extends AbstractPipeline permits CsvStrea
 	 */
 	public StreamPipeline<I1> reduce(ReduceFunction<I1> reduce) throws PipelineException  {
 		if(Objects.isNull(reduce)) {
-			throw new PipelineException(MassiveDataPipelineConstants.KEYBYNULL);
+			throw new PipelineException(PipelineConstants.KEYBYNULL);
 		}
 		var mdp = new StreamPipeline<I1>(root,reduce);
 		mdp.parents.add(this);
@@ -1104,8 +1102,8 @@ public sealed class StreamPipeline<I1> extends AbstractPipeline permits CsvStrea
 			stages = null;
 			log.debug("Induce of DAG ended.");
 		} catch (Exception ex) {
-			log.error(MassiveDataPipelineConstants.DAGERROR,ex);
-			throw new PipelineException(MassiveDataPipelineConstants.DAGERROR, ex);
+			log.error(PipelineConstants.DAGERROR,ex);
+			throw new PipelineException(PipelineConstants.DAGERROR, ex);
 		}
 	}
 
@@ -1219,8 +1217,8 @@ public sealed class StreamPipeline<I1> extends AbstractPipeline permits CsvStrea
 			return (List) results;
 		}
 		catch(Exception ex) {
-			log.error(MassiveDataPipelineConstants.CREATEOREXECUTEJOBERROR, ex);
-			throw new PipelineException(MassiveDataPipelineConstants.CREATEOREXECUTEJOBERROR, (Exception)ex);
+			log.error(PipelineConstants.CREATEOREXECUTEJOBERROR, ex);
+			throw new PipelineException(PipelineConstants.CREATEOREXECUTEJOBERROR, (Exception)ex);
 		}
 	}
 
@@ -1264,8 +1262,8 @@ public sealed class StreamPipeline<I1> extends AbstractPipeline permits CsvStrea
 			return result;
 		}
 		catch(Exception ex) {
-			log.error(MassiveDataPipelineConstants.PIPELINECOLLECTERROR, ex);
-			throw new PipelineException(MassiveDataPipelineConstants.PIPELINECOLLECTERROR,ex);
+			log.error(PipelineConstants.PIPELINECOLLECTERROR, ex);
+			throw new PipelineException(PipelineConstants.PIPELINECOLLECTERROR,ex);
 		}
 	}
 	
@@ -1305,8 +1303,8 @@ public sealed class StreamPipeline<I1> extends AbstractPipeline permits CsvStrea
 			return mdscollect.collect(true,Job.TRIGGER.COUNT);
 		}
 		catch(Exception ex) {
-			log.error(MassiveDataPipelineConstants.PIPELINECOUNTERROR, ex);
-			throw new PipelineException(MassiveDataPipelineConstants.PIPELINECOUNTERROR,ex);
+			log.error(PipelineConstants.PIPELINECOUNTERROR, ex);
+			throw new PipelineException(PipelineConstants.PIPELINECOUNTERROR,ex);
 		}
 	}
 	
@@ -1343,8 +1341,8 @@ public sealed class StreamPipeline<I1> extends AbstractPipeline permits CsvStrea
 			results.stream().forEach((Consumer) consumer);
 		}
 		catch(Exception ex) {
-			log.error(MassiveDataPipelineConstants.PIPELINEFOREACHERROR, ex);
-			throw new PipelineException(MassiveDataPipelineConstants.PIPELINEFOREACHERROR,ex);
+			log.error(PipelineConstants.PIPELINEFOREACHERROR, ex);
+			throw new PipelineException(PipelineConstants.PIPELINEFOREACHERROR,ex);
 		}
 	}
 	public String getHdfspath() {

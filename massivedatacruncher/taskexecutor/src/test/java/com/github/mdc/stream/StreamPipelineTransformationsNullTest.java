@@ -9,7 +9,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.github.mdc.common.MDCConstants;
-import com.github.mdc.common.MassiveDataPipelineConstants;
+import com.github.mdc.common.PipelineConstants;
 import com.github.mdc.stream.MapPair;
 import com.github.mdc.stream.StreamPipeline;
 
@@ -51,7 +51,7 @@ public class StreamPipelineTransformationsNullTest extends StreamPipelineBaseTes
 					pipelineconfig);
 			datastream.map(null).collect(toexecute, null);
 		} catch (Exception ex) {
-			assertEquals(MassiveDataPipelineConstants.MAPFUNCTIONNULL, ex.getMessage());
+			assertEquals(PipelineConstants.MAPFUNCTIONNULL, ex.getMessage());
 		}
 		pipelineconfig.setLocal(local);
 		log.info("testMapNull After---------------------------------------");
@@ -68,7 +68,7 @@ public class StreamPipelineTransformationsNullTest extends StreamPipelineBaseTes
 					pipelineconfig);
 			datastream.filter(null).collect(toexecute, null);
 		} catch (Exception ex) {
-			assertEquals(MassiveDataPipelineConstants.PREDICATENULL, ex.getMessage());
+			assertEquals(PipelineConstants.PREDICATENULL, ex.getMessage());
 		}
 		pipelineconfig.setLocal(local);
 		log.info("testFilterNull After---------------------------------------");
@@ -86,7 +86,7 @@ public class StreamPipelineTransformationsNullTest extends StreamPipelineBaseTes
 			datastream.flatMap(null).collect(toexecute, null);
 
 		} catch (Exception ex) {
-			assertEquals(MassiveDataPipelineConstants.FLATMAPNULL, ex.getMessage());
+			assertEquals(PipelineConstants.FLATMAPNULL, ex.getMessage());
 		}
 		pipelineconfig.setLocal(local);
 		log.info("testflatMapNull After---------------------------------------");
@@ -103,7 +103,7 @@ public class StreamPipelineTransformationsNullTest extends StreamPipelineBaseTes
 					pipelineconfig);
 			datastream.flatMapToDouble(null).collect(toexecute, null);
 		} catch (Exception ex) {
-			assertEquals(MassiveDataPipelineConstants.DOUBLEFLATMAPNULL, ex.getMessage());
+			assertEquals(PipelineConstants.DOUBLEFLATMAPNULL, ex.getMessage());
 		}
 		pipelineconfig.setLocal(local);
 		log.info("testflatMapToDoubleNull After---------------------------------------");
@@ -120,7 +120,7 @@ public class StreamPipelineTransformationsNullTest extends StreamPipelineBaseTes
 					pipelineconfig);
 			datastream.flatMapToLong(null).collect(toexecute, null);
 		} catch (Exception ex) {
-			assertEquals(MassiveDataPipelineConstants.LONGFLATMAPNULL, ex.getMessage());
+			assertEquals(PipelineConstants.LONGFLATMAPNULL, ex.getMessage());
 		}
 		pipelineconfig.setLocal(local);
 		log.info("testflatMapToLongNull After---------------------------------------");
@@ -137,7 +137,7 @@ public class StreamPipelineTransformationsNullTest extends StreamPipelineBaseTes
 					pipelineconfig);
 			datastream.flatMapToTuple2(null).collect(toexecute, null);
 		} catch (Exception ex) {
-			assertEquals(MassiveDataPipelineConstants.FLATMAPPAIRNULL, ex.getMessage());
+			assertEquals(PipelineConstants.FLATMAPPAIRNULL, ex.getMessage());
 		}
 		pipelineconfig.setLocal(local);
 		log.info("testflatMapToTuple2Null After---------------------------------------");
@@ -154,7 +154,7 @@ public class StreamPipelineTransformationsNullTest extends StreamPipelineBaseTes
 					pipelineconfig);
 			datastream.flatMapToTuple(null).collect(toexecute, null);
 		} catch (Exception ex) {
-			assertEquals(MassiveDataPipelineConstants.FLATMAPPAIRNULL, ex.getMessage());
+			assertEquals(PipelineConstants.FLATMAPPAIRNULL, ex.getMessage());
 		}
 		pipelineconfig.setLocal(local);
 		log.info("testflatMapToTupleNull After---------------------------------------");
@@ -171,7 +171,7 @@ public class StreamPipelineTransformationsNullTest extends StreamPipelineBaseTes
 					pipelineconfig);
 			datastream.keyBy(null).collect(toexecute, null);
 		} catch (Exception ex) {
-			assertEquals(MassiveDataPipelineConstants.KEYBYNULL, ex.getMessage());
+			assertEquals(PipelineConstants.KEYBYNULL, ex.getMessage());
 		}
 		pipelineconfig.setLocal(local);
 		log.info("testKeyByFunctionNull After---------------------------------------");
@@ -188,7 +188,7 @@ public class StreamPipelineTransformationsNullTest extends StreamPipelineBaseTes
 					pipelineconfig);
 			datastream1.leftOuterjoin(null, (val1, val2) -> val1.equals(val2)).collect(toexecute, null);
 		} catch (Exception ex) {
-			assertEquals(MassiveDataPipelineConstants.LEFTOUTERJOIN, ex.getMessage());
+			assertEquals(PipelineConstants.LEFTOUTERJOIN, ex.getMessage());
 		}
 		pipelineconfig.setLocal(local);
 		log.info("testLeftOuterJoinNull After---------------------------------------");
@@ -205,7 +205,7 @@ public class StreamPipelineTransformationsNullTest extends StreamPipelineBaseTes
 					pipelineconfig);
 			datastream1.leftOuterjoin(datastream1, null).collect(toexecute, null);
 		} catch (Exception ex) {
-			assertEquals(MassiveDataPipelineConstants.LEFTOUTERJOINCONDITION, ex.getMessage());
+			assertEquals(PipelineConstants.LEFTOUTERJOINCONDITION, ex.getMessage());
 		}
 		pipelineconfig.setLocal(local);
 		log.info("testLeftOuterJoinNullCondition After---------------------------------------");
@@ -222,7 +222,7 @@ public class StreamPipelineTransformationsNullTest extends StreamPipelineBaseTes
 					pipelineconfig);
 			datastream1.join(null, (val1, val2) -> val1.equals(val2)).collect(toexecute, null);
 		} catch (Exception ex) {
-			assertEquals(MassiveDataPipelineConstants.INNERJOIN, ex.getMessage());
+			assertEquals(PipelineConstants.INNERJOIN, ex.getMessage());
 		}
 		pipelineconfig.setLocal(local);
 		log.info("testJoinNull After---------------------------------------");
@@ -239,7 +239,7 @@ public class StreamPipelineTransformationsNullTest extends StreamPipelineBaseTes
 					pipelineconfig);
 			datastream1.join(datastream1, null).collect(toexecute, null);
 		} catch (Exception ex) {
-			assertEquals(MassiveDataPipelineConstants.INNERJOINCONDITION, ex.getMessage());
+			assertEquals(PipelineConstants.INNERJOINCONDITION, ex.getMessage());
 		}
 		pipelineconfig.setLocal(local);
 		log.info("testJoinNullCondition After---------------------------------------");
@@ -256,7 +256,7 @@ public class StreamPipelineTransformationsNullTest extends StreamPipelineBaseTes
 					pipelineconfig);
 			datastream1.rightOuterjoin(null, (val1, val2) -> val1.equals(val2)).collect(toexecute, null);
 		} catch (Exception ex) {
-			assertEquals(MassiveDataPipelineConstants.RIGHTOUTERJOIN, ex.getMessage());
+			assertEquals(PipelineConstants.RIGHTOUTERJOIN, ex.getMessage());
 		}
 		pipelineconfig.setLocal(local);
 		log.info("testRightOuterJoinNull After---------------------------------------");
@@ -273,7 +273,7 @@ public class StreamPipelineTransformationsNullTest extends StreamPipelineBaseTes
 					pipelineconfig);
 			datastream1.rightOuterjoin(datastream1, null).collect(toexecute, null);
 		} catch (Exception ex) {
-			assertEquals(MassiveDataPipelineConstants.RIGHTOUTERJOINCONDITION, ex.getMessage());
+			assertEquals(PipelineConstants.RIGHTOUTERJOINCONDITION, ex.getMessage());
 		}
 		pipelineconfig.setLocal(local);
 		log.info("testRightOuterJoinNullCondition After---------------------------------------");
@@ -290,7 +290,7 @@ public class StreamPipelineTransformationsNullTest extends StreamPipelineBaseTes
 					pipelineconfig);
 			datastream1.union(null).collect(toexecute, null);
 		} catch (Exception ex) {
-			assertEquals(MassiveDataPipelineConstants.UNIONNULL, ex.getMessage());
+			assertEquals(PipelineConstants.UNIONNULL, ex.getMessage());
 		}
 		pipelineconfig.setLocal(local);
 		log.info("testUnionNull After---------------------------------------");
@@ -307,7 +307,7 @@ public class StreamPipelineTransformationsNullTest extends StreamPipelineBaseTes
 					pipelineconfig);
 			datastream1.intersection(null).collect(toexecute, null);
 		} catch (Exception ex) {
-			assertEquals(MassiveDataPipelineConstants.INTERSECTIONNULL, ex.getMessage());
+			assertEquals(PipelineConstants.INTERSECTIONNULL, ex.getMessage());
 		}
 		pipelineconfig.setLocal(local);
 		log.info("testIntersectionNull After---------------------------------------");
@@ -324,7 +324,7 @@ public class StreamPipelineTransformationsNullTest extends StreamPipelineBaseTes
 					pipelineconfig);
 			datastream1.peek(null).collect(toexecute, null);
 		} catch (Exception ex) {
-			assertEquals(MassiveDataPipelineConstants.PEEKNULL, ex.getMessage());
+			assertEquals(PipelineConstants.PEEKNULL, ex.getMessage());
 		}
 		pipelineconfig.setLocal(local);
 		log.info("testPeekNull After---------------------------------------");
@@ -342,7 +342,7 @@ public class StreamPipelineTransformationsNullTest extends StreamPipelineBaseTes
 			datastream1.filter(value -> !value.split(MDCConstants.COMMA)[2].equals("DayofMonth")).sorted(null)
 					.collect(toexecute, null);
 		} catch (Exception ex) {
-			assertEquals(MassiveDataPipelineConstants.SORTEDNULL, ex.getMessage());
+			assertEquals(PipelineConstants.SORTEDNULL, ex.getMessage());
 		}
 		pipelineconfig.setLocal(local);
 		log.info("testFilterSortedNull After---------------------------------------");
@@ -359,7 +359,7 @@ public class StreamPipelineTransformationsNullTest extends StreamPipelineBaseTes
 					pipelineconfig);
 			datastream1.mapToPair(null).collect(toexecute, null);
 		} catch (Exception ex) {
-			assertEquals(MassiveDataPipelineConstants.MAPPAIRNULL, ex.getMessage());
+			assertEquals(PipelineConstants.MAPPAIRNULL, ex.getMessage());
 		}
 		pipelineconfig.setLocal(local);
 		log.info("testMapPairNull After---------------------------------------");
@@ -377,7 +377,7 @@ public class StreamPipelineTransformationsNullTest extends StreamPipelineBaseTes
 			datastream1.mapToPair(value -> (Tuple2<String, String>) Tuple.tuple(value.split(MDCConstants.COMMA)[1],
 					value.split(MDCConstants.COMMA)[14])).flatMap(null).collect(toexecute, null);
 		} catch (Exception ex) {
-			assertEquals(MassiveDataPipelineConstants.FLATMAPNULL, ex.getMessage());
+			assertEquals(PipelineConstants.FLATMAPNULL, ex.getMessage());
 		}
 		pipelineconfig.setLocal(local);
 		log.info("testMapPairFlatMapNull After---------------------------------------");
@@ -395,7 +395,7 @@ public class StreamPipelineTransformationsNullTest extends StreamPipelineBaseTes
 			datastream1.mapToPair(value -> (Tuple2<String, String>) Tuple.tuple(value.split(MDCConstants.COMMA)[1],
 					value.split(MDCConstants.COMMA)[14])).flatMapToLong(null).collect(toexecute, null);
 		} catch (Exception ex) {
-			assertEquals(MassiveDataPipelineConstants.LONGFLATMAPNULL, ex.getMessage());
+			assertEquals(PipelineConstants.LONGFLATMAPNULL, ex.getMessage());
 		}
 		pipelineconfig.setLocal(local);
 		log.info("testMapPairFlatMapToLongNull After---------------------------------------");
@@ -413,7 +413,7 @@ public class StreamPipelineTransformationsNullTest extends StreamPipelineBaseTes
 			datastream1.mapToPair(value -> (Tuple2<String, String>) Tuple.tuple(value.split(MDCConstants.COMMA)[1],
 					value.split(MDCConstants.COMMA)[14])).flatMapToDouble(null).collect(toexecute, null);
 		} catch (Exception ex) {
-			assertEquals(MassiveDataPipelineConstants.DOUBLEFLATMAPNULL, ex.getMessage());
+			assertEquals(PipelineConstants.DOUBLEFLATMAPNULL, ex.getMessage());
 		}
 		pipelineconfig.setLocal(local);
 		log.info("testMapPairFlatMapToDoubleNull After---------------------------------------");
@@ -440,7 +440,7 @@ public class StreamPipelineTransformationsNullTest extends StreamPipelineBaseTes
 				}
 			}).coalesce(1, null).collect(toexecute, null);
 		} catch (Exception ex) {
-			assertEquals(MassiveDataPipelineConstants.COALESCENULL, ex.getMessage());
+			assertEquals(PipelineConstants.COALESCENULL, ex.getMessage());
 		}
 		pipelineconfig.setLocal(local);
 		pipelineconfig.setBlocksize(blocksize);
@@ -468,7 +468,7 @@ public class StreamPipelineTransformationsNullTest extends StreamPipelineBaseTes
 				}
 			}).reduceByKey(null).collect(toexecute, null);
 		} catch (Exception ex) {
-			assertEquals(MassiveDataPipelineConstants.REDUCENULL, ex.getMessage());
+			assertEquals(PipelineConstants.REDUCENULL, ex.getMessage());
 		}
 		pipelineconfig.setLocal(local);
 		pipelineconfig.setBlocksize(blocksize);
@@ -494,7 +494,7 @@ public class StreamPipelineTransformationsNullTest extends StreamPipelineBaseTes
 				}
 			}).sample(null).collect(toexecute, null);
 		} catch (Exception ex) {
-			assertEquals(MassiveDataPipelineConstants.SAMPLENULL, ex.getMessage());
+			assertEquals(PipelineConstants.SAMPLENULL, ex.getMessage());
 		}
 		pipelineconfig.setLocal(local);
 		log.info("testMapPairSampleNull After---------------------------------------");
@@ -519,7 +519,7 @@ public class StreamPipelineTransformationsNullTest extends StreamPipelineBaseTes
 				}
 			}).peek(null).collect(toexecute, null);
 		} catch (Exception ex) {
-			assertEquals(MassiveDataPipelineConstants.PEEKNULL, ex.getMessage());
+			assertEquals(PipelineConstants.PEEKNULL, ex.getMessage());
 		}
 		pipelineconfig.setLocal(local);
 		log.info("testMapPairPeekNull After---------------------------------------");
@@ -544,7 +544,7 @@ public class StreamPipelineTransformationsNullTest extends StreamPipelineBaseTes
 				}
 			}).foldLeft(0l, null, 1, (a, b) -> a + b).collect(toexecute, null);
 		} catch (Exception ex) {
-			assertEquals(MassiveDataPipelineConstants.FOLDLEFTREDUCENULL, ex.getMessage());
+			assertEquals(PipelineConstants.FOLDLEFTREDUCENULL, ex.getMessage());
 		}
 		pipelineconfig.setLocal(local);
 		log.info("testMapPairFoldLeftReduceNull After---------------------------------------");
@@ -569,7 +569,7 @@ public class StreamPipelineTransformationsNullTest extends StreamPipelineBaseTes
 				}
 			}).foldLeft(0l, (a, b) -> a + b, 1, null).collect(toexecute, null);
 		} catch (Exception ex) {
-			assertEquals(MassiveDataPipelineConstants.FOLDLEFTCOALESCENULL, ex.getMessage());
+			assertEquals(PipelineConstants.FOLDLEFTCOALESCENULL, ex.getMessage());
 		}
 		pipelineconfig.setLocal(local);
 		log.info("testMapPairFoldLeftCoalesceNull After---------------------------------------");
@@ -594,7 +594,7 @@ public class StreamPipelineTransformationsNullTest extends StreamPipelineBaseTes
 				}
 			}).foldRight(0l, null, 1, (a, b) -> a + b).collect(toexecute, null);
 		} catch (Exception ex) {
-			assertEquals(MassiveDataPipelineConstants.FOLDRIGHTREDUCENULL, ex.getMessage());
+			assertEquals(PipelineConstants.FOLDRIGHTREDUCENULL, ex.getMessage());
 		}
 		pipelineconfig.setLocal(local);
 		log.info("testMapPairFoldRightReduceNull After---------------------------------------");
@@ -619,7 +619,7 @@ public class StreamPipelineTransformationsNullTest extends StreamPipelineBaseTes
 				}
 			}).foldRight(0l, (a, b) -> a + b, 1, null).collect(toexecute, null);
 		} catch (Exception ex) {
-			assertEquals(MassiveDataPipelineConstants.FOLDRIGHTCOALESCENULL, ex.getMessage());
+			assertEquals(PipelineConstants.FOLDRIGHTCOALESCENULL, ex.getMessage());
 		}
 		pipelineconfig.setLocal(local);
 		log.info("testMapPairFoldRightCoalesceNull After---------------------------------------");
@@ -638,7 +638,7 @@ public class StreamPipelineTransformationsNullTest extends StreamPipelineBaseTes
 					.tuple(value.split(MDCConstants.COMMA)[0], value.split(MDCConstants.COMMA)[1]));
 			mtsl1.join(null, (tuple1, tuple2) -> tuple1.v1.equals(tuple2.v1)).collect(toexecute, null);
 		} catch (Exception ex) {
-			assertEquals(MassiveDataPipelineConstants.INNERJOIN, ex.getMessage());
+			assertEquals(PipelineConstants.INNERJOIN, ex.getMessage());
 		}
 
 		pipelineconfig.setLocal(local);
@@ -658,7 +658,7 @@ public class StreamPipelineTransformationsNullTest extends StreamPipelineBaseTes
 					.tuple(value.split(MDCConstants.COMMA)[0], value.split(MDCConstants.COMMA)[1]));
 			mtsl1.join(datastream1, null).collect(toexecute, null);
 		} catch (Exception ex) {
-			assertEquals(MassiveDataPipelineConstants.INNERJOINCONDITION, ex.getMessage());
+			assertEquals(PipelineConstants.INNERJOINCONDITION, ex.getMessage());
 		}
 
 		pipelineconfig.setLocal(local);
@@ -678,7 +678,7 @@ public class StreamPipelineTransformationsNullTest extends StreamPipelineBaseTes
 					.tuple(value.split(MDCConstants.COMMA)[0], value.split(MDCConstants.COMMA)[1]));
 			mtsl1.leftOuterjoin(null, (tuple1, tuple2) -> tuple1.v1.equals(tuple2.v1)).collect(toexecute, null);
 		} catch (Exception ex) {
-			assertEquals(MassiveDataPipelineConstants.LEFTOUTERJOIN, ex.getMessage());
+			assertEquals(PipelineConstants.LEFTOUTERJOIN, ex.getMessage());
 		}
 		pipelineconfig.setLocal(local);
 		log.info("testMapPairLeftOuterJoinNull After---------------------------------------");
@@ -697,7 +697,7 @@ public class StreamPipelineTransformationsNullTest extends StreamPipelineBaseTes
 					.tuple(value.split(MDCConstants.COMMA)[0], value.split(MDCConstants.COMMA)[1]));
 			mtsl1.leftOuterjoin(mtsl1, null).collect(toexecute, null);
 		} catch (Exception ex) {
-			assertEquals(MassiveDataPipelineConstants.LEFTOUTERJOINCONDITION, ex.getMessage());
+			assertEquals(PipelineConstants.LEFTOUTERJOINCONDITION, ex.getMessage());
 		}
 		pipelineconfig.setLocal(local);
 		log.info("testMapPairLeftOuterJoinNullCondition After---------------------------------------");
@@ -716,7 +716,7 @@ public class StreamPipelineTransformationsNullTest extends StreamPipelineBaseTes
 					.tuple(value.split(MDCConstants.COMMA)[0], value.split(MDCConstants.COMMA)[1]));
 			mtsl1.rightOuterjoin(null, (tuple1, tuple2) -> tuple1.v1.equals(tuple2.v1)).collect(toexecute, null);
 		} catch (Exception ex) {
-			assertEquals(MassiveDataPipelineConstants.RIGHTOUTERJOIN, ex.getMessage());
+			assertEquals(PipelineConstants.RIGHTOUTERJOIN, ex.getMessage());
 		}
 		pipelineconfig.setLocal(local);
 		log.info("testMapPairRightOuterJoinNull After---------------------------------------");
@@ -735,7 +735,7 @@ public class StreamPipelineTransformationsNullTest extends StreamPipelineBaseTes
 					.tuple(value.split(MDCConstants.COMMA)[0], value.split(MDCConstants.COMMA)[1]));
 			mtsl1.rightOuterjoin(mtsl1, null).collect(toexecute, null);
 		} catch (Exception ex) {
-			assertEquals(MassiveDataPipelineConstants.RIGHTOUTERJOINCONDITION, ex.getMessage());
+			assertEquals(PipelineConstants.RIGHTOUTERJOINCONDITION, ex.getMessage());
 		}
 		pipelineconfig.setLocal(local);
 		log.info("testMapPairRightOuterJoinNullCondition After---------------------------------------");
@@ -754,7 +754,7 @@ public class StreamPipelineTransformationsNullTest extends StreamPipelineBaseTes
 					.tuple(value.split(MDCConstants.COMMA)[0], value.split(MDCConstants.COMMA)[1]));
 			mtsl1.union(null).collect(toexecute, null);
 		} catch (Exception ex) {
-			assertEquals(MassiveDataPipelineConstants.UNIONNULL, ex.getMessage());
+			assertEquals(PipelineConstants.UNIONNULL, ex.getMessage());
 		}
 		pipelineconfig.setLocal(local);
 		log.info("testMapPairUnionNull After---------------------------------------");
@@ -773,7 +773,7 @@ public class StreamPipelineTransformationsNullTest extends StreamPipelineBaseTes
 					.tuple(value.split(MDCConstants.COMMA)[0], value.split(MDCConstants.COMMA)[1]));
 			mtsl1.intersection(null).collect(toexecute, null);
 		} catch (Exception ex) {
-			assertEquals(MassiveDataPipelineConstants.INTERSECTIONNULL, ex.getMessage());
+			assertEquals(PipelineConstants.INTERSECTIONNULL, ex.getMessage());
 		}
 		pipelineconfig.setLocal(local);
 		log.info("testMapPairIntersectionNull After---------------------------------------");
@@ -791,7 +791,7 @@ public class StreamPipelineTransformationsNullTest extends StreamPipelineBaseTes
 			datastream1.mapToPair(value -> (Tuple2<String, String>) Tuple.tuple(value.split(MDCConstants.COMMA)[0],
 					value.split(MDCConstants.COMMA)[1])).sorted(null).collect(toexecute, null);
 		} catch (Exception ex) {
-			assertEquals(MassiveDataPipelineConstants.SORTEDNULL, ex.getMessage());
+			assertEquals(PipelineConstants.SORTEDNULL, ex.getMessage());
 		}
 		pipelineconfig.setLocal(local);
 		log.info("testMapPairSortedNull After---------------------------------------");

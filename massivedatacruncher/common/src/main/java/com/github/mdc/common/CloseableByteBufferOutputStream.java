@@ -54,7 +54,6 @@ public class CloseableByteBufferOutputStream extends OutputStream {
 				printallocdealloc.acquire();
 				bb.clear();
 				bb.rewind();
-				GlobalByteBufferSemaphore.get().acquire();
 				ByteBufferPool.get().returnObject(bb);
 				log.info("CloseableByteBufferOutputStream returning to pool deallocated: " + bb);
 			} catch(InterruptedException ie) {
@@ -63,7 +62,6 @@ public class CloseableByteBufferOutputStream extends OutputStream {
 			} catch (Exception e) {
 				log.error(MDCConstants.EMPTY,e);
 			} finally {
-				GlobalByteBufferSemaphore.get().release();
 				printallocdealloc.release();
 			}
 			bb = null;			

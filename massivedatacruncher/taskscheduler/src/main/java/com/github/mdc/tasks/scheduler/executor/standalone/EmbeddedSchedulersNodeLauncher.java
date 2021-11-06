@@ -98,7 +98,7 @@ public class EmbeddedSchedulersNodeLauncher {
 			hbss.ping();
 			var server = new ServerSocket(port, 256, InetAddress.getByAddress(new byte[] { 0x00, 0x00, 0x00, 0x00 }));
 			var teport = Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_PORT));
-			var es = Executors.newWorkStealingPool();
+			var es = Executors.newFixedThreadPool(1);
 			var escontainer = Executors.newWorkStealingPool();
 
 			var hdfs = FileSystem.get(new URI(MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL)),
@@ -165,7 +165,7 @@ public class EmbeddedSchedulersNodeLauncher {
 	}
 
 	public static void startTaskSchedulerStream(CuratorFramework cf, CountDownLatch cdl) throws Exception {
-		var esstream = Executors.newWorkStealingPool();
+		var esstream = Executors.newFixedThreadPool(1);
 		var es = Executors.newWorkStealingPool();
 		var su = new ServerUtils();
 		su.init(Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULERSTREAM_WEB_PORT)),

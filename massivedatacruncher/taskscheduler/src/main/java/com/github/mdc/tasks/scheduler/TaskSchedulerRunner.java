@@ -54,7 +54,7 @@ public class TaskSchedulerRunner {
 					MDCConstants.BACKWARD_SLASH +MDCConstants.RESOURCES+MDCConstants.BACKWARD_SLASH+ MDCConstants.ASTERIX);
 			su.start();
 			var es = Executors.newWorkStealingPool();
-			var essingle = Executors.newWorkStealingPool();
+			var essingle = Executors.newFixedThreadPool(1);
 
 			ZookeeperOperations.addconnectionstate.addConnectionStateListener(cf,
 					(CuratorFramework cfclient, ConnectionState cs) -> {

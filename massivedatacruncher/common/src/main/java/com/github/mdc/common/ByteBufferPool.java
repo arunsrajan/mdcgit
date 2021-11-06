@@ -14,7 +14,10 @@ public class ByteBufferPool {
 			config.setMinIdle(1);
 			config.setMaxIdle(maxpoolsize);
 			config.setMaxTotal(maxpoolsize);
-			config.setBlockWhenExhausted(true);
+			config.setBlockWhenExhausted(Boolean.parseBoolean(
+					(String) MDCProperties.get()
+					.getProperty(MDCConstants.BYTEBUFFERPOOL_BLOCK
+							,MDCConstants.BYTEBUFFERPOOL_BLOCK_DEFAULT)));
 			var factory = new ByteBufferFactory(); 
 			ByteBufferPool.pool=new GenericObjectPool<ByteBuffer>(factory, config);
 		}

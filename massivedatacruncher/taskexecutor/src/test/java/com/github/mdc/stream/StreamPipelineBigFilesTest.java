@@ -542,12 +542,12 @@ public class StreamPipelineBigFilesTest extends StreamPipelineBaseTestCommon {
 		pipelineconfig.setMesos("false");
 		pipelineconfig.setYarn("false");
 		pipelineconfig.setJgroups("false");
-		pipelineconfig.setStorage(MDCConstants.STORAGE.INMEMORY_DISK);
+		pipelineconfig.setStorage(MDCConstants.STORAGE.INMEMORY);
 		pipelineconfig.setIsblocksuserdefined("true");
 		pipelineconfig.setBlocksize("128");
 		pipelineconfig.setGctype(MDCConstants.ZGC);
 		pipelineconfig.setMode(MDCConstants.NORMAL);
-		pipelineconfig.setNumberofcontainers("3");
+		pipelineconfig.setNumberofcontainers("5");
 		pipelineconfig.setBatchsize("2");
 		pipelineconfig.setContaineralloc("DIVIDED");
 		log.info(MDCNodesResources.get());

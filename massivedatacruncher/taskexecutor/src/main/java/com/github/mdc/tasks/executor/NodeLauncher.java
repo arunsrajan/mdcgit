@@ -43,8 +43,8 @@ public class NodeLauncher {
 		hbss.ping();
 		hb.ping();		
 		var teport = Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_PORT));
-		var es = Executors.newWorkStealingPool();
-		var escontainer = Executors.newWorkStealingPool();
+		var es = Executors.newFixedThreadPool(1);
+		var escontainer = Executors.newFixedThreadPool(1);
 		
 		var hdfs = FileSystem.get(new URI(MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL)), new Configuration());
 		var containerprocesses = new ConcurrentHashMap<String, Map<String,Process>>();

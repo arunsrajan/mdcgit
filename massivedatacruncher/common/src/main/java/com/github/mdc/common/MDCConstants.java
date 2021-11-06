@@ -128,6 +128,8 @@ public class MDCConstants {
 	public static final String NODE_PORT = "node.port";
 	public static final String CONTAINER_ALLOC = "container.alloc";
 	public static final String CONTAINER_ALLOC_DEFAULT = "COMBINE";
+	public static final String CONTAINER_ALLOC_COMBINE = "COMBINE";
+	public static final String CONTAINER_ALLOC_DIVIDED = "DIVIDED";
 	
 	public static final String ZOOKEEPER_HOSTPORT = "zookeeper.hostport";
 	public static final String ZOOKEEPER_RETRYDELAY = "zookeeper.retrydelay";
@@ -377,6 +379,8 @@ public class MDCConstants {
 	
 	public static final String BYTEBUFFERPOOL_MAX="bytebufferpool.size";
 	public static final String BYTEBUFFERPOOL_MAX_DEFAULT="3";
+	public static final String BYTEBUFFERPOOL_BLOCK = "bytebufferpool.blockwhenexhausted";
+	public static final String BYTEBUFFERPOOL_BLOCK_DEFAULT="true";
 	
 	public enum STORAGE{INMEMORY,DISK,INMEMORY_DISK};
 	public static final String STORAGEPROP = "storage.type";

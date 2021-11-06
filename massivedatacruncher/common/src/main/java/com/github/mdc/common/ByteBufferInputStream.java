@@ -61,7 +61,6 @@ public class ByteBufferInputStream extends InputStream {
 				log.info("ByteBuffer Input Stream returning to pool: "+deallocation++ + bb);
 				bb.clear();
 				bb.rewind();
-				GlobalByteBufferSemaphore.get().acquire();
 				ByteBufferPool.get().returnObject(bb);
 			} catch(InterruptedException ie) {
 				log.error(MDCConstants.EMPTY,ie);
@@ -69,7 +68,6 @@ public class ByteBufferInputStream extends InputStream {
 			} catch (Exception e) {
 				log.error(MDCConstants.EMPTY,e);
 			} finally {
-				GlobalByteBufferSemaphore.get().release();
 				printallocdealloc.release();
 			}
 			bb = null;			

@@ -23,7 +23,7 @@ import com.github.mdc.common.HeartBeatTaskSchedulerStream;
 import com.github.mdc.common.JobStage;
 import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.MDCProperties;
-import com.github.mdc.common.MassiveDataPipelineConstants;
+import com.github.mdc.common.PipelineConstants;
 import com.github.mdc.common.RemoteDataFetch;
 import com.github.mdc.common.RemoteDataFetcher;
 import com.github.mdc.common.Task;
@@ -76,8 +76,8 @@ public final class StreamPipelineTaskExecutorInMemoryDisk extends StreamPipeline
 			log.debug("Exiting MassiveDataStreamTaskExecutorInMemory.createIntermediateDataToFS");
 			return os;
 		} catch (Exception e) {
-			log.error(MassiveDataPipelineConstants.FILEIOERROR, e);
-			throw new PipelineException(MassiveDataPipelineConstants.FILEIOERROR, e);
+			log.error(PipelineConstants.FILEIOERROR, e);
+			throw new PipelineException(PipelineConstants.FILEIOERROR, e);
 		}
 	}
 
