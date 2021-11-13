@@ -2,6 +2,7 @@ package com.github.mdc.common;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Semaphore;
 
@@ -83,6 +84,7 @@ public final class HeartBeatTaskSchedulerStream extends HeartBeatServerStream im
 			public void viewAccepted(View clusterview) {
 				log.debug("Nodes View: "+clusterview.getMembers());
 			}
+			List<String> apptasks = new ArrayList<>();
 			public void receive(Message msg) {
 				try {
 					log.debug("Entered Receiver.receive");
@@ -93,9 +95,13 @@ public final class HeartBeatTaskSchedulerStream extends HeartBeatServerStream im
 						log.info("Task Status: "+task+MDCConstants.SINGLESPACE+task.taskstatus);
 						if(jobid.equals(task.jobid)) {
 							if((task.taskstatus == Task.TaskStatus.COMPLETED ||
-									task.taskstatus == Task.TaskStatus.FAILED)) {
+									task.taskstatus == Task.TaskStatus.FAILED)&&
+									!apptasks.contains(task.taskid)) {
 								log.info("Task adding to queue: "+task);
 								hbo.addToQueue(task);
+								apptasks.add(task.taskid);
+							}else if((task.taskstatus == Task.TaskStatus.COMPLETED ||
+									task.taskstatus == Task.TaskStatus.FAILED)) {
 								var trs = new TaskResponseStatus();
 								trs.jobid = task.jobid;
 								trs.stageid = task.stageid;

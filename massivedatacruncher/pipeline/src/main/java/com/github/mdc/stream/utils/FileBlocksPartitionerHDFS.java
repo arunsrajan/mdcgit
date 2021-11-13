@@ -22,6 +22,7 @@ import java.util.function.IntSupplier;
 import java.util.stream.Collectors;
 
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.FileUtil;
 import org.apache.hadoop.fs.Path;
@@ -55,6 +56,7 @@ import com.github.mdc.common.LaunchContainers;
 import com.github.mdc.common.LoadJar;
 import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.MDCNodesResources;
+import com.github.mdc.common.MDCProperties;
 import com.github.mdc.common.PipelineConstants;
 import com.github.mdc.common.PipelineConfig;
 import com.github.mdc.common.Resources;
@@ -316,8 +318,13 @@ public class FileBlocksPartitionerHDFS {
 	
 	protected List<Path> getFilePaths(String hdfspth,String folder) throws PipelineException {
 		try {
-			var fileStatus = hdfs.listStatus(new Path(hdfspth + folder));
-			var paths = FileUtil.stat2Paths(fileStatus);
+			var fileStatuses = new ArrayList<FileStatus>();
+			var fileStatus = hdfs.listFiles(
+					new Path(hdfspth+folder), true);
+			while(fileStatus.hasNext()) {
+				fileStatuses.add(fileStatus.next());
+			}
+			var paths = FileUtil.stat2Paths(fileStatuses.toArray(new FileStatus[fileStatuses.size()]));
 			return Arrays.asList(paths);
 		} catch (Exception ex) {
 			log.error(PipelineConstants.FILEPATHERROR, ex);
