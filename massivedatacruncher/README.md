@@ -23,7 +23,9 @@ docker push arunsrajan/mdccontainer
 docker build -t arunsrajan/mdctaskschedulerstream .
 docker push arunsrajan/mdctaskschedulerstream
 docker build -t arunsrajan/mdctaskscheduler .
-docker push arunsrajan/mdctaskscheduler.
+docker push arunsrajan/mdctaskscheduler
+docker build -t arunsrajan/mdcstandalone .
+docker push arunsrajan/mdcstandalone
 
 
 To execute all tests only Stream Modulese
@@ -66,6 +68,10 @@ To run task scheduler in network mdc
 -------------------------------------------
 
 docker run --network mdc -v "E:/DEVELOPMENT/dockershare:/opt/dockershare" --name mdctaskscheduler --link mdccontainer:mdccontainer --link namenode:namenode --link zoo:zoo --hostname mdcts --ip 172.30.0.23 -e ZKHOSTPORT=zoo:2181 -e HOST=172.30.0.23 -e PORT=11111 -p 11111:11111 -p 11112:11112 -e DPORT=*:4000 -p 4000:4000 --memory 3g -e MEMCONFIGLOW=-Xms2G -e MEMCONFIGHIGH=-Xmx2G -d arunsrajan/mdctaskscheduler
+
+To run standalone in network mdc
+------------------------------------------- 
+docker run --network mdc -v "C:/DEVELOPMENT/dockershare:/opt/dockershare" --name mdcstandalone --hostname mdcstandalone --ip 172.18.0.10 -e ZKHOSTPORT=mdcstandalone:2181 -e TEHOST=172.18.0.10 -e TEPORT=10101 -e NODEPORT=12121 -e TSSHOST=172.18.0.10 --link namenode:namenode --link datanode:datanode -e TSSPORT=22222 -e TSHOST=172.18.0.10 -e TSPORT=11111 -p 22222:22222 -p 22223:22223 -p 11111:11111 -p 11112:11112 -e DPORT=*:4000 -p 4000:4000 --memory 4g -e MEMCONFIGLOW=-Xms512m -e MEMCONFIGHIGH=-Xmx512m -d arunsrajan/mdcstandalone
 
 To run docker container as separate service in swarm using weave networks to support multicasting
 ----------------------------------------------------
@@ -393,4 +399,6 @@ tasksubmitter.cmd -jar ../modules/examples.jar -args "com.github.mdc.mr.examples
 
 Running Job In Linux
 
-./tasksubmitter.sh -jar ../modules/examples.jar -args  'com.github.mdc.mr.examples.join.MrJobArrivalDelayNormal /airline1989 /carriers /examplesmdc 64'
+./tasksubmitter.sh -jar ../modules/examples.jar -args  'com.github.mdc.mr.examples.join.MrJobArrivalDelayNormal /airline1989 /carriers /examplesmdc 128 10'
+
+./tasksubmitterstream.sh ../modules/examples.jar com.github.mdc.stream.examples.StreamReduceJGroups  hdfs://namenode:9000 /airlines1989 /carriers /examplesmdc
