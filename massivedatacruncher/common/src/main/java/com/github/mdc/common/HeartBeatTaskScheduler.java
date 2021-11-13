@@ -2,6 +2,8 @@ package com.github.mdc.common;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -77,7 +79,7 @@ public final class HeartBeatTaskScheduler extends HeartBeatServer implements Hea
 			public void viewAccepted(View clusterview) {
 				log.debug("View: " + clusterview);
 			}
-
+			List<String> apptasks = new ArrayList<>();
 			public void receive(Message msg) {
 				try {
 					log.debug("Entered Receiver.receive");
@@ -87,13 +89,17 @@ public final class HeartBeatTaskScheduler extends HeartBeatServer implements Hea
 							var input = new Input(bais);) {
 						var apptask = (ApplicationTask) Utils.readKryoInputObjectWithClass(kryo, input);
 						if (applicationid.equals(apptask.applicationid)) {
-							if (apptask.taskstatus == ApplicationTask.TaskStatus.COMPLETED
-									||apptask.taskstatus == ApplicationTask.TaskStatus.FAILED) {
+							if ((apptask.taskstatus == ApplicationTask.TaskStatus.COMPLETED
+									||apptask.taskstatus == ApplicationTask.TaskStatus.FAILED)&&
+							!apptasks.contains(apptask.taskid)) {
 								log.info("AppTask Before adding to queue: " + apptask);
 								hbo.addToQueue(apptask);
+								apptasks.add(apptask.taskid);
+							}else if(apptask.taskstatus == ApplicationTask.TaskStatus.COMPLETED
+									||apptask.taskstatus == ApplicationTask.TaskStatus.FAILED){
 								var mrjr = new MRJobResponse();
 								mrjr.setAppid(apptask.applicationid);
-								mrjr.setTaskid(apptask.taskid);
+								mrjr.setTaskid(apptask.taskid);								
 								try (var baos = new ByteArrayOutputStream();
 										var output = new Output(baos);) {
 									Utils.writeKryoOutputClassObject(kryo, output, mrjr);

@@ -6,19 +6,18 @@ import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.apache.log4j.Logger;
 import org.xerial.snappy.SnappyInputStream;
 
+import com.github.mdc.common.ApplicationTask.TaskStatus;
+import com.github.mdc.common.ApplicationTask.TaskType;
 import com.github.mdc.common.BlocksLocation;
 import com.github.mdc.common.Context;
 import com.github.mdc.common.HeartBeatTaskScheduler;
 import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.RemoteDataFetcher;
-import com.github.mdc.common.ApplicationTask.TaskStatus;
-import com.github.mdc.common.ApplicationTask.TaskType;
 
 public class TaskExecutorMapperCombiner implements Runnable {
 	static Logger log = Logger.getLogger(TaskExecutorMapperCombiner.class);
@@ -33,12 +32,10 @@ public class TaskExecutorMapperCombiner implements Runnable {
 	HeartBeatTaskScheduler hbts;
 	String applicationid;
 	String taskid;
-	ExecutorService taskpool;
 	SnappyInputStream datastream;
 	int port;
 	@SuppressWarnings({ "rawtypes" })
 	public TaskExecutorMapperCombiner(BlocksLocation blockslocation,SnappyInputStream datastream,String applicationid, String taskid,
-			ExecutorService taskpool,
 			ClassLoader cl,int port,
 			HeartBeatTaskScheduler hbts) throws Exception {
 		this.blockslocation = blockslocation;
@@ -67,17 +64,16 @@ public class TaskExecutorMapperCombiner implements Runnable {
 		}
 		this.applicationid = applicationid;
 		this.taskid = taskid;
-		this.taskpool = taskpool;
 		this.hbts = hbts;
 	}
 
 	@Override
 	public void run() {
-		
+		var es = Executors.newSingleThreadExecutor();
 
 		try {
 			hbts.pingOnce(taskid, TaskStatus.SUBMITTED, TaskType.MAPPERCOMBINER, null);
-			var es = Executors.newWorkStealingPool();
+			
 			var mdcmc = new MapperCombinerExecutor(blockslocation, datastream, cm, cc);
 			hbts.pingOnce(taskid, TaskStatus.RUNNING, TaskType.MAPPERCOMBINER, null);
 			var fc = es.submit(mdcmc);
@@ -96,8 +92,8 @@ public class TaskExecutorMapperCombiner implements Runnable {
 			}
 			log.info("Exception in Executing Task: "+blockslocation,ex);
 		} finally {
-			if(taskpool!=null) {
-				taskpool.shutdown();
+			if(es!=null) {
+				es.shutdown();
 			}
 		}
 	}

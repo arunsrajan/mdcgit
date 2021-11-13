@@ -25,14 +25,6 @@ import com.github.mdc.common.ReducerValues;
 import com.github.mdc.common.RemoteDataFetcher;
 import com.github.mdc.common.Utils;
 import com.github.mdc.stream.StreamPipelineBase;
-import com.github.mdc.tasks.executor.Combiner;
-import com.github.mdc.tasks.executor.Mapper;
-import com.github.mdc.tasks.executor.Reducer;
-import com.github.mdc.tasks.executor.CombinerExecutor;
-import com.github.mdc.tasks.executor.MapperExecutor;
-import com.github.mdc.tasks.executor.ReducerExecutor;
-import com.github.mdc.tasks.executor.TaskExecutorMapperCombiner;
-import com.github.mdc.tasks.executor.TaskExecutorReducer;
 
 public class MassiveDataCruncherMRApiTest extends StreamPipelineBase{
 	@BeforeClass
@@ -136,7 +128,7 @@ public class MassiveDataCruncherMRApiTest extends StreamPipelineBase{
 				app,"");
 		hbtsreceiver.start();
 		TaskExecutorMapperCombiner mdtemc = new
-				TaskExecutorMapperCombiner(bls,lzis,app,task,es,Thread.currentThread().getContextClassLoader(),12121,hbts);
+				TaskExecutorMapperCombiner(bls,lzis,app,task,Thread.currentThread().getContextClassLoader(),12121,hbts);
 		mdtemc.run();
 		Context ctx = (Context) RemoteDataFetcher.readIntermediatePhaseOutputFromDFS(app,(app+task + MDCConstants.DATAFILEEXTN), false);
 		hbtsreceiver.stop();
@@ -177,14 +169,14 @@ public class MassiveDataCruncherMRApiTest extends StreamPipelineBase{
 				app,"");
 		hbtsreceiver.start();
 		TaskExecutorMapperCombiner mdtemc = new
-				TaskExecutorMapperCombiner(bls,lzis,app,task,es,Thread.currentThread().getContextClassLoader(),12121,hbts);
+				TaskExecutorMapperCombiner(bls,lzis,app,task,Thread.currentThread().getContextClassLoader(),12121,hbts);
 		mdtemc.run();
 		ReducerValues reducervalues = new ReducerValues();
 		reducervalues.tuples = Arrays.asList(new Tuple2<>("AQ",Arrays.asList(app+task)));
 		reducervalues.appid = app;
 		reducervalues.reducerclass = AirlineDataMapper.class.getName();
 		task = MDCConstants.TASK+"-1";
-		TaskExecutorReducer reducerexec = new TaskExecutorReducer(reducervalues,app,task,es,Thread.currentThread().getContextClassLoader(),12121,hbts);
+		TaskExecutorReducer reducerexec = new TaskExecutorReducer(reducervalues,app,task,Thread.currentThread().getContextClassLoader(),12121,hbts);
 		reducerexec.run();
 		Context ctx = (Context) RemoteDataFetcher.readIntermediatePhaseOutputFromDFS(app,(app+task + MDCConstants.DATAFILEEXTN), false);
 		hbtsreceiver.stop();

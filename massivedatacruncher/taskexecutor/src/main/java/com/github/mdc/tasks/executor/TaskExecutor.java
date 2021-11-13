@@ -12,7 +12,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
@@ -222,7 +221,7 @@ public class TaskExecutor implements Runnable {
 							
 							var hbts = hbtsappid.get(applicationid);
 							mdtemc = new TaskExecutorMapperCombiner(blockslocation,
-									CacheUtils.getBlockData(blockslocation, hdfs), applicationid, taskid, es, cl,
+									CacheUtils.getBlockData(blockslocation, hdfs), applicationid, taskid, cl,
 									port, hbts);
 							}
 							apptaskexecutormap.put(apptaskid, mdtemc);
@@ -237,7 +236,7 @@ public class TaskExecutor implements Runnable {
 								apptaskexecutormap.remove(apptaskid);
 							}
 							var hbts = hbtsappid.get(applicationid);
-							mdter = new TaskExecutorReducer(rv, applicationid, taskid, es, cl, port,
+							mdter = new TaskExecutorReducer(rv, applicationid, taskid, cl, port,
 									hbts);
 							apptaskexecutormap.put(apptaskid, mdter);
 							log.debug("Reducer submission:" + apptaskid);

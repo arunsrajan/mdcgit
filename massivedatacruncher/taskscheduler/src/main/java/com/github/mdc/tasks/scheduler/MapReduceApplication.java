@@ -31,6 +31,7 @@ import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.RetryForever;
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.FileUtil;
 import org.apache.hadoop.fs.Path;
@@ -510,10 +511,14 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 			var folderblocks = new ConcurrentHashMap<String,List<BlocksLocation>>();
 			var allfilebls = new ArrayList<BlocksLocation>();
 			var allfiles = new ArrayList<String>();
+			var fileStatuses = new ArrayList<FileStatus>();
 			for (var hdfsdir : hdfsdirpath) {
-				var fileStatus = hdfs.listStatus(
-						new Path(MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL) + hdfsdir));
-				var paths = FileUtil.stat2Paths(fileStatus);
+				var fileStatus = hdfs.listFiles(
+						new Path(MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL) + hdfsdir), true);
+				while(fileStatus.hasNext()) {
+					fileStatuses.add(fileStatus.next());
+				}
+				var paths = FileUtil.stat2Paths(fileStatuses.toArray(new FileStatus[fileStatuses.size()]));
 				blockpath.addAll(Arrays.asList(paths));
 				bls = new ArrayList<>();
 				if(isblocksuserdefined) {

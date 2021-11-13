@@ -86,7 +86,7 @@ public class MassiveDataMRJobBase {
 	public static void setServerUp() throws Exception {
 		try (InputStream istream = MassiveDataMRJobBase.class.getResourceAsStream("/log4j.properties");) {
 			System.setProperty("HIBCFG", "../config/mdchibernate.cfg.xml");
-			System.setProperty("HADOOP_HOME", "C:\\DEVELOPMENT\\hadoop\\hadoop-3.3.1");
+			System.setProperty("HADOOP_HOME", "C:\\DEVELOPMENT\\hadoop\\hadooplocal\\hadoop-3.3.1");
 			PropertyConfigurator.configure(istream);
 			Utils.loadLog4JSystemPropertiesClassPath("mdctest.properties");
 			ByteBufferPoolDirect.init();
@@ -116,7 +116,7 @@ public class MassiveDataMRJobBase {
 				hdfsLocalCluster.start();
 			}
 			Configuration configuration = new Configuration();
-			hdfs = FileSystem.get(new URI(MDCProperties.get().getProperty("taskexecutor.hdfsnn")),
+			hdfs = FileSystem.get(new URI(MDCProperties.get().getProperty("hdfs.namenode.url")),
 					configuration);
 			log.info("HDFS FileSystem Object: "+hdfs);
 			if (numberofnodes > 0) {
@@ -135,6 +135,7 @@ public class MassiveDataMRJobBase {
 					hb.init(rescheduledelay, port, host, initialdelay, pingdelay, "");
 					hb.ping();
 					hbssl.add(hb);
+					Thread.sleep(3000);
 					int teport = Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_PORT));
 					AtomicInteger portinc = new AtomicInteger(teport);
 					executorpool.execute(() -> {

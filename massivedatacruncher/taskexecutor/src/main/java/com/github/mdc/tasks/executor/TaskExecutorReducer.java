@@ -7,7 +7,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.apache.log4j.Logger;
@@ -17,7 +16,6 @@ import com.github.mdc.common.Context;
 import com.github.mdc.common.DataCruncherContext;
 import com.github.mdc.common.HeartBeatTaskScheduler;
 import com.github.mdc.common.MDCConstants;
-import com.github.mdc.common.MDCExecutorThreadFactory;
 import com.github.mdc.common.ReducerValues;
 import com.github.mdc.common.RemoteDataFetcher;
 import com.github.mdc.common.ApplicationTask.TaskStatus;
@@ -34,11 +32,10 @@ public class TaskExecutorReducer implements Runnable{
 	HeartBeatTaskScheduler hbts;
 	String applicationid;
 	String taskid;
-	ExecutorService taskpool;
 	int port;
 	@SuppressWarnings({ "rawtypes" })
 	public TaskExecutorReducer(ReducerValues rv,String applicationid, String taskid,
-			ExecutorService taskpool,ClassLoader cl,int port,
+			ClassLoader cl,int port,
 			HeartBeatTaskScheduler hbts) throws Exception {
 		this.rv = rv;
 		Class<?> clz = null;
@@ -48,7 +45,6 @@ public class TaskExecutorReducer implements Runnable{
 			cr = (Reducer) clz.newInstance();
 			this.applicationid = applicationid;
 			this.taskid = taskid;
-			this.taskpool = taskpool;
 		}
 		catch(Exception ex) {
 			log.debug("Exception in loading class:",ex);
@@ -62,7 +58,7 @@ public class TaskExecutorReducer implements Runnable{
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
 	public void run() {
-		var es = Executors.newWorkStealingPool();
+		var es = Executors.newSingleThreadExecutor();
 		try {
 			hbts.pingOnce(taskid, TaskStatus.RUNNING, TaskType.REDUCER, null);
 			log.debug("Submitted Reducer:"+applicationid+taskid);
@@ -106,9 +102,6 @@ public class TaskExecutorReducer implements Runnable{
 		} finally {
 			if(es!=null) {
 				es.shutdown();
-			}
-			if(taskpool!=null) {
-				taskpool.shutdown();
 			}
 		}
 	}
