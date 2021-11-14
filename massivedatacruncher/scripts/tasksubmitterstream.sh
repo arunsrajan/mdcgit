@@ -1,5 +1,3 @@
-#!/usr/bin/bash
-
 echo STARTING DataCruncher....
 JMXPORT=33330
 DEBUGPORT=4000

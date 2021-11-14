@@ -55,7 +55,7 @@ To run mdc as separate node lanucher in network mdc
 ----------------------------------------------
 docker network create --driver=bridge --subnet=172.30.0.0/16 --ip-range=172.30.0.0/16 mdc --attachable
 
-docker run --network mdc --name namenode --hostname namenode -v "E:/DEVELOPMENT/dockershare:/opt/dockershare" -e "CORE_CONF_fs_defaultFS=hdfs://namenode:9000" -e "HDFS_CONF_dfs_namenode_datanode_registration_ip___hostname___check=false" -e "CLUSTER_NAME=hadooptest" -p 9870:9870 -p 9000:9000 -d bde2020/hadoop-namenode
+docker run --network mdc --name namenode --hostname namenode -v "E:/DEVELOPMENT/dockershare:/opt/dockershare" -e "CORE_CONF_fs_defaultFS=hdfs://namenode:9000" -e "HDFS_CONF_dfs_namenode_name_dir=file:///opt/dockershare" -e "HDFS_CONF_dfs_namenode_datanode_registration_ip___hostname___check=false" -e "CLUSTER_NAME=hadooptest" -p 9870:9870 -p 9000:9000 -d bde2020/hadoop-namenode
 
 docker run --network mdc -v "E:/DEVELOPMENT/dockershare:/opt/dockershare" --hostname dnte --link namenode:namenode --link zoo:zoo -e "CORE_CONF_fs_defaultFS=hdfs://namenode:9000" -e "HDFS_CONF_dfs_namenode_datanode_registration_ip___hostname___check=false" --name mdccontainer --ip 172.30.0.20 -e ZKHOSTPORT=zoo:2181 -e HOST=172.30.0.20 -e PORT=10101 -e NODEPORT=12121 -p 12121:12121 --memory 4g -e MEMCONFIGLOW=-Xms512M -e MEMCONFIGHIGH=-Xmx512M -d arunsrajan/mdccontainer
 
@@ -71,7 +71,9 @@ docker run --network mdc -v "E:/DEVELOPMENT/dockershare:/opt/dockershare" --name
 
 To run standalone in network mdc
 ------------------------------------------- 
-docker run --network mdc -v "C:/DEVELOPMENT/dockershare:/opt/dockershare" --name mdcstandalone --hostname mdcstandalone --ip 172.18.0.10 -e ZKHOSTPORT=mdcstandalone:2181 -e TEHOST=172.18.0.10 -e TEPORT=10101 -e NODEPORT=12121 -e TSSHOST=172.18.0.10 --link namenode:namenode --link datanode:datanode -e TSSPORT=22222 -e TSHOST=172.18.0.10 -e TSPORT=11111 -p 22222:22222 -p 22223:22223 -p 11111:11111 -p 11112:11112 -e DPORT=*:4000 -p 4000:4000 --memory 4g -e MEMCONFIGLOW=-Xms512m -e MEMCONFIGHIGH=-Xmx512m -d arunsrajan/mdcstandalone
+docker run --network mdc --name namenode --hostname namenode -v "C:/DEVELOPMENT/dockershare:/opt/dockershare" -e "CORE_CONF_fs_defaultFS=hdfs://namenode:9000" -e "HDFS_CONF_dfs_namenode_name_dir=file:///opt/dockershare/name" -e "HDFS_CONF_dfs_namenode_datanode_registration_ip___hostname___check=false" -e "CLUSTER_NAME=hadooptest" -p 9870:9870 -p 9000:9000 -d bde2020/hadoop-namenode
+
+docker run --network mdc -e "HDFS_CONF_dfs_namenode_datanode_registration_ip___hostname___check=false" -v "C:/DEVELOPMENT/dockershare:/opt/dockershare" --name mdcstandalone --hostname mdcstandalone --ip 172.18.0.10 -e ZKHOSTPORT=mdcstandalone:2181 -e TEHOST=172.18.0.10 -e TEPORT=10101 -e NODEPORT=12121 -e TSSHOST=172.18.0.10 --link namenode:namenode -e TSSPORT=22222 -e TSHOST=172.18.0.10 -e TSPORT=11111 -p 22222:22222 -p 22223:22223 -p 11111:11111 -p 11112:11112 -e DPORT=*:4000 -p 4000:4000 --memory 4g -e MEMCONFIGLOW=-Xms512m -e MEMCONFIGHIGH=-Xmx512m -d arunsrajan/mdcstandalone
 
 To run docker container as separate service in swarm using weave networks to support multicasting
 ----------------------------------------------------
@@ -399,6 +401,6 @@ tasksubmitter.cmd -jar ../modules/examples.jar -args "com.github.mdc.mr.examples
 
 Running Job In Linux
 
-./tasksubmitter.sh -jar ../modules/examples.jar -args  'com.github.mdc.mr.examples.join.MrJobArrivalDelayNormal /airline1989 /carriers /examplesmdc 128 10'
+./tasksubmitter.sh -jar ../modules/examples.jar -args  'com.github.mdc.mr.examples.join.MrJobArrivalDelayNormal /airline1989 /carriers /examplesmdc 128 3'
 
 ./tasksubmitterstream.sh ../modules/examples.jar com.github.mdc.stream.examples.StreamReduceJGroups  hdfs://namenode:9000 /airlines1989 /carriers /examplesmdc
