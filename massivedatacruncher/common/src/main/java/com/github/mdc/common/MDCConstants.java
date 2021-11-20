@@ -401,4 +401,6 @@ public class MDCConstants {
 	
 	public static final String CONTAINERALLOCATIONERROR = "Container Allocation Error";
 	
+	public static final String TMPDIR = "java.io.tmpdir";
+	
 }

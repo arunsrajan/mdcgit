@@ -1,6 +1,8 @@
 package com.github.mdc.common;
 
 import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.LinkedHashSet;
@@ -239,6 +241,35 @@ public class RemoteDataFetcher {
 			throw new RemoteDataFetcherException(RemoteDataFetcherException.INTERMEDIATEPHASEREADERROR, ioe);
 		}
 	}
+	
+	
+	/**
+	 * Gets the local file using jobid and filename 
+	 * @param jobid
+	 * @param filename
+	 * @param hdfs
+	 * @return
+	 * @throws Throwable
+	 */
+	public static InputStream readIntermediatePhaseOutputFromFS(
+			String jobid,String filename) throws RemoteDataFetcherException {
+		log.debug("Entered RemoteDataFetcher.readIntermediatePhaseOutputFromDFS");
+		try {
+			var path = MDCConstants.BACKWARD_SLASH+FileSystemSupport.MDS+MDCConstants.BACKWARD_SLASH+jobid+MDCConstants.BACKWARD_SLASH+filename;
+			log.debug("Exiting RemoteDataFetcher.readIntermediatePhaseOutputFromDFS");
+			File file = new File(MDCProperties.get().getProperty(MDCConstants.TMPDIR)+path);
+			if(file.exists()) {
+				return new SnappyInputStream(new BufferedInputStream(new FileInputStream(file)));
+			}
+			return null;
+		}
+		catch (Exception ioe) {
+			log.error(RemoteDataFetcherException.INTERMEDIATEPHASEREADERROR, ioe);
+			throw new RemoteDataFetcherException(RemoteDataFetcherException.INTERMEDIATEPHASEREADERROR, ioe);
+		}
+	}
+	
+	
 	/**
 	 * Delete all the stages outputs of a job
 	 * @param jobid

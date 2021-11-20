@@ -181,6 +181,10 @@ public class TaskExecutor implements Runnable {
 					}else if(task.storage == MDCConstants.STORAGE.INMEMORY_DISK) {
 						var path = Utils.getIntermediateInputStreamRDF(rdf);
 						rdf.data = (byte[]) inmemorycache.get(path);
+					} else {
+						try(var is = mdstde.getIntermediateInputStreamFS(task);){
+							rdf.data = (byte[]) is.readAllBytes();
+						}
 					}
 					Utils.writeObjectByStream(s.getOutputStream(), rdf);
 					s.close();

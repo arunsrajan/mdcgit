@@ -1658,9 +1658,13 @@ public class StreamJobScheduler {
 					// Get final stage results
 					if (mdstt.isCompletedexecution() && mdstt.getTask().storage == MDCConstants.STORAGE.DISK) {
 						Task task = mdstt.getTask();
-						try (var fsstream = RemoteDataFetcher.readIntermediatePhaseOutputFromDFS(task.jobid,
-								getIntermediateDataFSFilePath(task.jobid, task.stageid, task.taskid), hdfs);
-								var input = new Input(fsstream);) {
+						RemoteDataFetch rdf = new RemoteDataFetch();
+						rdf.hp = task.hostport;
+						rdf.jobid = task.jobid;
+						rdf.stageid = task.stageid;
+						rdf.taskid = task.taskid;
+						RemoteDataFetcher.remoteInMemoryDataFetch(rdf);
+						try (var input = new Input(new SnappyInputStream(new ByteArrayInputStream(rdf.data)));) {
 							var obj = kryofinal.readClassAndObject(input);
 							writeOutputToFile(stageoutput.size(),obj);
 							stageoutput.add(obj);

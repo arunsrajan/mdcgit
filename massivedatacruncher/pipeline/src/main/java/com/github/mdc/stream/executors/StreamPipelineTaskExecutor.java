@@ -3,7 +3,11 @@ package com.github.mdc.stream.executors;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -38,7 +42,6 @@ import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
-import org.apache.hadoop.fs.FileUtil;
 import org.apache.hadoop.fs.Path;
 import org.apache.log4j.Logger;
 import org.ehcache.Cache;
@@ -47,6 +50,7 @@ import org.jooq.lambda.tuple.Tuple;
 import org.jooq.lambda.tuple.Tuple2;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import org.xerial.snappy.SnappyInputStream;
 import org.xerial.snappy.SnappyOutputStream;
 
 import com.esotericsoftware.kryo.Kryo;
@@ -69,8 +73,8 @@ import com.github.mdc.common.Utils;
 import com.github.mdc.stream.CsvOptions;
 import com.github.mdc.stream.Json;
 import com.github.mdc.stream.PipelineException;
-import com.github.mdc.stream.PipelineUtils;
 import com.github.mdc.stream.PipelineIntStreamCollect;
+import com.github.mdc.stream.PipelineUtils;
 import com.github.mdc.stream.functions.CalculateCount;
 import com.github.mdc.stream.functions.Coalesce;
 import com.github.mdc.stream.functions.CountByKeyFunction;
@@ -384,8 +388,7 @@ public sealed class StreamPipelineTaskExecutor implements
 	 */
 	public String getIntermediateDataFSFilePath(Task task) {
 		return (MDCConstants.BACKWARD_SLASH + FileSystemSupport.MDS + MDCConstants.BACKWARD_SLASH + jobstage.jobid
-				+ MDCConstants.BACKWARD_SLASH + jobstage.jobid + MDCConstants.HYPHEN + jobstage.stageid
-				+ MDCConstants.HYPHEN + task.taskid + MDCConstants.DATAFILEEXTN);
+				+ MDCConstants.BACKWARD_SLASH + task.taskid);
 	}
 
 	/**
@@ -399,30 +402,9 @@ public sealed class StreamPipelineTaskExecutor implements
 		log.debug("Entered MassiveDataStreamTaskDExecutor.createIntermediateDataToFS");
 		try {
 			var path = getIntermediateDataFSFilePath(task);
-			var hdfspath = new Path(path);
+			new File(MDCProperties.get().getProperty(MDCConstants.TMPDIR)+MDCConstants.BACKWARD_SLASH + FileSystemSupport.MDS + MDCConstants.BACKWARD_SLASH + jobstage.jobid).mkdirs();
 			log.debug("Exiting MassiveDataStreamTaskDExecutor.createIntermediateDataToFS");
-			return hdfs.create(hdfspath, false);
-		} catch (IOException ioe) {
-			log.error(PipelineConstants.FILEIOERROR, ioe);
-			throw new PipelineException(PipelineConstants.FILEIOERROR, ioe);
-		}
-	}
-
-	/**
-	 * Open the already existing file.
-	 * 
-	 * @param hdfs
-	 * @param block
-	 * @return
-	 * @throws Exception
-	 */
-	private InputStream getInputStreamHDFS(FileSystem hdfs, String filename) throws PipelineException {
-		log.debug("Entered MassiveDataStreamTaskDExecutor.getInputStreamHDFS");
-		try {
-			var fileStatus = hdfs.listStatus(new Path(hdfs.getUri().toString() + filename));
-			var paths = FileUtil.stat2Paths(fileStatus);
-			log.debug("Exiting MassiveDataStreamTaskDExecutor.getInputStreamHDFS");
-			return hdfs.open(paths[0]);
+			return new FileOutputStream(MDCProperties.get().getProperty(MDCConstants.TMPDIR)+path);
 		} catch (IOException ioe) {
 			log.error(PipelineConstants.FILEIOERROR, ioe);
 			throw new PipelineException(PipelineConstants.FILEIOERROR, ioe);
@@ -438,7 +420,7 @@ public sealed class StreamPipelineTaskExecutor implements
 	 */
 	public InputStream getIntermediateInputStreamFS(Task task) throws Exception {
 		var path = getIntermediateDataFSFilePath(task);
-		return getInputStreamHDFS(hdfs, path);
+		return new FileInputStream(MDCProperties.get().getProperty(MDCConstants.TMPDIR)+path);
 	}
 
 	/**
@@ -1128,8 +1110,14 @@ public sealed class StreamPipelineTaskExecutor implements
 					var input = task.parentremotedatafetch[inputindex];
 					if (input != null) {
 						var rdf = input;
-						task.input[inputindex] = RemoteDataFetcher.readIntermediatePhaseOutputFromDFS(rdf.jobid,
-								getIntermediateDataFSFilePath(rdf.jobid, rdf.stageid, rdf.taskid), hdfs);
+						InputStream is = RemoteDataFetcher.readIntermediatePhaseOutputFromFS(rdf.jobid,
+								getIntermediateDataFSFilePath(rdf.jobid, rdf.stageid, rdf.taskid));
+						if (Objects.isNull(is)) {
+							RemoteDataFetcher.remoteInMemoryDataFetch(rdf);
+							task.input[inputindex] = new SnappyInputStream(new BufferedInputStream(new ByteArrayInputStream(rdf.data)));
+						} else {
+							task.input[inputindex] = is;
+						}
 					}
 				}
 			}
@@ -2167,7 +2155,7 @@ public sealed class StreamPipelineTaskExecutor implements
 			var kryo = Utils.getKryoNonDeflateSerializer();
 			var keyvaluepairs = new ArrayList<Tuple2>();
 			for (var fs : task.input) {
-				try (var fsos = (InputStream) fs; Input input = new Input(new BufferedInputStream(fsos));) {
+				try (var fsis = (InputStream) fs; Input input = new Input(new BufferedInputStream(fsis));) {
 					keyvaluepairs.addAll((List) kryo.readClassAndObject(input));
 				}
 			}
