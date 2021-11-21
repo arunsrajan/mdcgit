@@ -23,6 +23,7 @@ public class TaskSchedulerReducerSubmitter
 	long reducersubmittedcount;
 	CuratorFramework cf;
 	List<String> containers;
+	boolean iscompleted;
 	public TaskSchedulerReducerSubmitter(String currentexecutor, ReducerValues rv, String applicationid, String taskid2,
 			long reducersubmittedcount, CuratorFramework cf, List<String> containers) {
 		this.rv = rv;
@@ -32,6 +33,7 @@ public class TaskSchedulerReducerSubmitter
 		this.reducersubmittedcount = reducersubmittedcount;
 		this.cf = cf;
 		this.containers = containers;
+		iscompleted = false;
 	}
 
 	public String getTaskExecutorBalanced(long currentexecutor, List<String> taskexecutors) {

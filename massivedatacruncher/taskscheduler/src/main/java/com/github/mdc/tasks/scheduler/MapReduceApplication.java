@@ -45,9 +45,12 @@ import com.github.dexecutor.core.DexecutorConfig;
 import com.github.dexecutor.core.ExecutionConfig;
 import com.github.dexecutor.core.task.ExecutionResult;
 import com.github.dexecutor.core.task.ExecutionResults;
+import com.github.dexecutor.core.task.Task;
 import com.github.dexecutor.core.task.TaskProvider;
 import com.github.mdc.common.AllocateContainers;
 import com.github.mdc.common.ApplicationTask;
+import com.github.mdc.common.ApplicationTask.TaskStatus;
+import com.github.mdc.common.ApplicationTask.TaskType;
 import com.github.mdc.common.Block;
 import com.github.mdc.common.BlockExecutors;
 import com.github.mdc.common.BlocksLocation;
@@ -68,16 +71,14 @@ import com.github.mdc.common.MDCJobMetrics;
 import com.github.mdc.common.MDCNodes;
 import com.github.mdc.common.MDCNodesResources;
 import com.github.mdc.common.MDCProperties;
-import com.github.mdc.common.PipelineConstants;
 import com.github.mdc.common.NetworkUtil;
+import com.github.mdc.common.PipelineConstants;
 import com.github.mdc.common.ReducerValues;
 import com.github.mdc.common.Resources;
 import com.github.mdc.common.RetrieveData;
 import com.github.mdc.common.RetrieveKeys;
 import com.github.mdc.common.Tuple2Serializable;
 import com.github.mdc.common.Utils;
-import com.github.mdc.common.ApplicationTask.TaskStatus;
-import com.github.mdc.common.ApplicationTask.TaskType;
 import com.github.mdc.stream.PipelineException;
 import com.github.mdc.stream.scheduler.StreamPipelineTaskSubmitter;
 import com.google.common.collect.Iterables;
@@ -456,10 +457,8 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 		}
 		containers = hbs.containers;
 	}
-	long numberofreducerexecuted = 0l;
-	long numberofreducersubmitted = 0l;
 	boolean isexception = false;
-	String exceptionmsg = "";
+	String exceptionmsg = MDCConstants.EMPTY;
 	@SuppressWarnings({ "unchecked" })
 	public List<DataCruncherContext> call() {
 		var containerid = MDCConstants.CONTAINER + MDCConstants.HYPHEN + System.currentTimeMillis();
@@ -481,7 +480,7 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 			hbts.init(Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULER_RESCHEDULEDELAY)), 0,
 					NetworkUtil.getNetworkAddress(MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULER_HOST)),
 					Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULER_INITIALDELAY)),
-					Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULER_PINGDELAY)), "",
+					Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULER_PINGDELAY)), MDCConstants.EMPTY,
 					applicationid, MDCConstants.EMPTY);
 			hbts.start();		
 			batchsize = Integer.parseInt(jobconf.getBatchsize());
@@ -666,110 +665,36 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 			var partkeys = Iterables
 					.partition(keyapptasks, (keyapptasks.size()) / numreducers).iterator();
 			log.info("Keys For Shuffling:" + keyapptasks.size());
-			var cdlreducercomplete = new CountDownLatch(1);
-			var semaphorereducerresult = new Semaphore(1);
-			PropertyChangeListener reducercompleteobserver = (evt) -> {
-				var apptask = (ApplicationTask) evt.getNewValue();
-				try {
-					log.debug("Received App And Task Before mutex acquire:" + apptask.applicationid + apptask.taskid);
-					if(!Objects.isNull(jobconf.getOutput())) {
-						Utils.writeKryoOutput(Utils.getKryoNonDeflateSerializer(), jobconf.getOutput(), "Received App And Task Before mutex acquire:" + apptask.applicationid + apptask.taskid);
-					}
-					if (apptask != null && apptask.taskstatus == TaskStatus.COMPLETED
-							&& apptask.tasktype == TaskType.REDUCER) {
-						semaphorereducerresult.acquire();
-						log.debug(
-								"Received App And Task After mutex acquire:" + apptask.applicationid + apptask.taskid);
-						var objects = new ArrayList<>();
-						objects.add(new RetrieveData());
-						objects.add(apptask.applicationid);
-						objects.add(apptask.taskid);
-						log.debug("Received App And Task:" + apptask.applicationid + apptask.taskid);
-						if(!Objects.isNull(jobconf.getOutput())) {
-							Utils.writeKryoOutput(Utils.getKryoNonDeflateSerializer(), jobconf.getOutput(), "Received App And Task:" + apptask.applicationid + apptask.taskid);
-						}
-						try {
-							var ctxreducer = (Context) Utils.getResultObjectByInput(apptask.hp, objects);
-							dccred.add((DataCruncherContext) ctxreducer);
-							if (partkeys.hasNext()) {
-								var currentexecutor = getTaskExecutor(numberofreducersubmitted);
-								var rv = new ReducerValues();
-								rv.appid = applicationid;
-								rv.tuples = new ArrayList<>(partkeys.next());
-								rv.reducerclass = reducers.iterator().next().getName();
-								var taskid = MDCConstants.TASK + MDCConstants.HYPHEN + numberofreducersubmitted;
-								var mdtstr = new TaskSchedulerReducerSubmitter(
-										currentexecutor, rv, applicationid, taskid, redcount, cf, containers);
-								hbts.apptaskmdtstrmap.put(applicationid + taskid, mdtstr);
-								submitReducer(mdtstr);
-								numberofreducersubmitted++;
-								log.debug("Submitting " + numberofreducersubmitted + " App And Task:"
-										+ applicationid + taskid + rv.tuples);
-							}
-							numberofreducerexecuted++;
-							if(jobconf.getOutput()!=null) {
-								Utils.writeKryoOutput(kryo, jobconf.getOutput(), "Reducer Task Status: "+Math.floor(numberofreducerexecuted/(double)numreducers*100.0)+"%");
-							}
-							if (numberofreducerexecuted == numberofreducersubmitted) {
-								cdlreducercomplete.countDown();
-							}
-
-						} catch (Exception ex) {
-							log.debug("Reducer Submitted Failed For Getting Response:" + apptask.taskid, ex);
-						} finally {
-							semaphorereducerresult.release();
-						}
-
-					} else if(apptask != null && apptask.taskstatus == TaskStatus.FAILED
-							&& apptask.tasktype == TaskType.REDUCER) {
-						isexception = true;
-						exceptionmsg = apptask.apperrormessage;
-						cdlreducercomplete.countDown();
-					}
-				} catch (InterruptedException e) {
-					log.warn("Interrupted!", e);
-				    // Restore interrupted state...
-				    Thread.currentThread().interrupt();
-				} catch (Exception ex) {
+			
+			DexecutorConfig<TaskSchedulerReducerSubmitter, Boolean> redconfig = new DexecutorConfig(newExecutor(), new ReducerTaskExecutor(batchsize,applicationid,dccred));
+			DefaultDexecutor<TaskSchedulerReducerSubmitter, Boolean> executorred = new DefaultDexecutor<>(redconfig);
+			for (; partkeys.hasNext();) {
+				mrtaskcount++;
+				var currentexecutor = getTaskExecutor(mrtaskcount);
+				var rv = new ReducerValues();
+				rv.appid = applicationid;
+				rv.tuples = new ArrayList<>(partkeys.next());
+				rv.reducerclass = reducers.iterator().next().getName();
+				var taskid = MDCConstants.TASK + MDCConstants.HYPHEN + mrtaskcount;
+				var mdtstr = new TaskSchedulerReducerSubmitter(
+						currentexecutor, rv, applicationid, taskid, redcount, cf, containers);
+				hbts.apptaskmdtstrmap.put(applicationid + taskid, mdtstr);
+				
+				log.debug("Reducer: Submitting " + mrtaskcount + " App And Task:"
+						+ applicationid + taskid + rv.tuples);
+				if(!Objects.isNull(jobconf.getOutput())) {
+					Utils.writeKryoOutput(Utils.getKryoNonDeflateSerializer(), jobconf.getOutput(), "Initial Reducer: Submitting " + mrtaskcount + " App And Task:"
+							+ applicationid + taskid + rv.tuples+" to "+currentexecutor);
 				}
-			};
-			hbts.getHbo().addPropertyChangeListener(reducercompleteobserver);
-			if (containerscount > 0) {
-				for (; partkeys.hasNext();) {
-					if (numberofreducersubmitted < batchsize) {
-						var currentexecutor = getTaskExecutor(numberofreducersubmitted);
-						var rv = new ReducerValues();
-						rv.appid = applicationid;
-						rv.tuples = new ArrayList<>(partkeys.next());
-						rv.reducerclass = reducers.iterator().next().getName();
-						var taskid = MDCConstants.TASK + MDCConstants.HYPHEN + numberofreducersubmitted;
-						var mdtstr = new TaskSchedulerReducerSubmitter(
-								currentexecutor, rv, applicationid, taskid, redcount, cf, containers);
-						hbts.apptaskmdtstrmap.put(applicationid + taskid, mdtstr);
-						submitReducer(mdtstr);
-						numberofreducersubmitted++;
-						log.debug("Initial Reducer: Submitting " + numberofreducersubmitted + " App And Task:"
-								+ applicationid + taskid + rv.tuples);
-						if(!Objects.isNull(jobconf.getOutput())) {
-							Utils.writeKryoOutput(Utils.getKryoNonDeflateSerializer(), jobconf.getOutput(), "Initial Reducer: Submitting " + numberofreducersubmitted + " App And Task:"
-									+ applicationid + taskid + rv.tuples+" to "+currentexecutor);
-						}
-					} else {
-						break;
-					}
-				}
+				executorred.addIndependent(mdtstr);
 			}
-			log.debug("Waiting for the Reducer to complete------------");
-			if(!Objects.isNull(jobconf.getOutput())) {
-				Utils.writeKryoOutput(Utils.getKryoNonDeflateSerializer(), jobconf.getOutput(), "Waiting for the Reducer to complete------------");
-			}
-			cdlreducercomplete.await();
-			log.debug("Reducer completed------------------------------");
+			executorred.execute(ExecutionConfig.NON_TERMINATING);
+			log.info("Reducer completed------------------------------");
+			log.info("Total Tasks Completed: "+mrtaskcount);
 			if(!isexception) {
 				if(!Objects.isNull(jobconf.getOutput())) {
 					Utils.writeKryoOutput(Utils.getKryoNonDeflateSerializer(), jobconf.getOutput(), "Reducer completed------------------------------");
-				}
-				hbts.getHbo().removePropertyChangeListener(reducercompleteobserver);			
+				}			
 				var sb = new StringBuilder();
 				var partindex = 1;
 				for(var ctxreducerpart:dccred) {
@@ -870,7 +795,101 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 				}
 			}		
 	}
+	
+	
+	protected class ReducerTaskExecutor implements 
+			TaskProvider<TaskSchedulerReducerSubmitter, Boolean> {
 
+		Semaphore semaphorereducerresult;
+		String applicationid;
+		List<DataCruncherContext> dccred;
+		Kryo kryo;
+
+		protected ReducerTaskExecutor(int batchsize, String applicationid, List<DataCruncherContext> dccred) {
+			semaphorereducerresult = new Semaphore(batchsize);
+			this.applicationid = applicationid;
+			this.kryo = Utils.getKryoNonDeflateSerializer();
+			this.dccred = dccred;
+		}
+
+		@Override
+		public Task<TaskSchedulerReducerSubmitter, Boolean> provideTask(TaskSchedulerReducerSubmitter tsrs) {
+			return new Task<TaskSchedulerReducerSubmitter, Boolean>() {
+				private static final long serialVersionUID = 8736901461119181694L;
+
+				@Override
+				public Boolean execute() {
+					try {
+						semaphorereducerresult.acquire();
+						CountDownLatch cdlreducercomplete = new CountDownLatch(1);
+						final PropertyChangeListener reducercompleteobserver = (evt) -> {
+							var apptask = (ApplicationTask) evt.getNewValue();
+							if (apptask != null
+									&& apptask.tasktype == TaskType.REDUCER &&
+									apptask.applicationid.equals(tsrs.applicationid)
+									&&apptask.taskid.equals(tsrs.taskid)) {
+								try {
+									log.debug("Received App And Task Before mutex acquire:" + apptask.applicationid
+											+ apptask.taskid);
+									if (!Objects.isNull(jobconf.getOutput())) {
+										Utils.writeKryoOutput(Utils.getKryoNonDeflateSerializer(), jobconf.getOutput(),
+												"Received App And Task Before mutex acquire:" + apptask.applicationid
+														+ apptask.taskid);
+									}
+									if (apptask != null && apptask.taskstatus == TaskStatus.COMPLETED
+											&& apptask.tasktype == TaskType.REDUCER) {
+										semaphorereducerresult.acquire();
+										log.debug("Received App And Task After mutex acquire:" + apptask.applicationid
+												+ apptask.taskid);
+										var objects = new ArrayList<>();
+										objects.add(new RetrieveData());
+										objects.add(apptask.applicationid);
+										objects.add(apptask.taskid);
+										log.debug("Received App And Task:" + apptask.applicationid + apptask.taskid);
+										if (!Objects.isNull(jobconf.getOutput())) {
+											Utils.writeKryoOutput(Utils.getKryoNonDeflateSerializer(), jobconf.getOutput(),
+													"Received App And Task:" + apptask.applicationid + apptask.taskid);
+										}
+	
+										var ctxreducer = (Context) Utils.getResultObjectByInput(apptask.hp, objects);
+										dccred.add((DataCruncherContext) ctxreducer);
+										tsrs.iscompleted = true;
+									} else if (apptask != null && apptask.taskstatus == TaskStatus.FAILED
+											&& apptask.tasktype == TaskType.REDUCER) {
+										isexception = true;
+										exceptionmsg = apptask.apperrormessage;
+										tsrs.iscompleted = false;
+									}
+									cdlreducercomplete.countDown();
+								} catch (InterruptedException e) {
+									log.warn("Interrupted!", e);
+									// Restore interrupted state...
+									Thread.currentThread().interrupt();
+								} catch (Exception ex) {
+									log.error(MDCConstants.EMPTY,ex);
+								}
+							}
+						};
+						hbts.getHbo().addPropertyChangeListener(reducercompleteobserver);
+						submitReducer(tsrs);
+
+						log.debug("Waiting for the Reducer to complete------------");
+						if (!Objects.isNull(jobconf.getOutput())) {
+							Utils.writeKryoOutput(Utils.getKryoNonDeflateSerializer(), jobconf.getOutput(),
+									"Waiting for the Reducer to complete------------");
+						}
+						cdlreducercomplete.await();
+						hbts.getHbo().removePropertyChangeListener(reducercompleteobserver);
+						semaphorereducerresult.release();
+					} catch (Exception ex) {
+						log.error(MDCConstants.EMPTY,ex);
+					}
+					return tsrs.iscompleted;
+				}
+			};
+		}
+			
+	}
 	private class MapCombinerTaskExecutor implements
 			TaskProvider<TaskSchedulerMapperCombinerSubmitter, Boolean> {
 

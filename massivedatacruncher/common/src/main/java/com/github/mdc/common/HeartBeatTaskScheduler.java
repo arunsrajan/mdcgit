@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Semaphore;
 
 import org.jgroups.Message;
@@ -103,7 +102,9 @@ public final class HeartBeatTaskScheduler extends HeartBeatServer implements Hea
 								try (var baos = new ByteArrayOutputStream();
 										var output = new Output(baos);) {
 									Utils.writeKryoOutputClassObject(kryo, output, mrjr);
-									channel.send(new ObjectMessage(msg.getSrc(), baos.toByteArray()));
+									if(!(channel.isClosed()||!channel.isConnected())) {
+										channel.send(new ObjectMessage(msg.getSrc(), baos.toByteArray()));
+									}
 								} finally {
 
 								}

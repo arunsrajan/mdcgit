@@ -108,7 +108,9 @@ public final class HeartBeatTaskSchedulerStream extends HeartBeatServerStream im
 								trs.taskid = task.taskid;
 								try (var baos = new ByteArrayOutputStream(); var output = new Output(baos);) {
 									Utils.writeKryoOutputClassObject(kryo, output, trs);
-									channel.send(new ObjectMessage(msg.getSrc(), baos.toByteArray()));
+									if(!channel.isClosed()) {
+										channel.send(new ObjectMessage(msg.getSrc(), baos.toByteArray()));
+									}
 								} finally {
 
 								}

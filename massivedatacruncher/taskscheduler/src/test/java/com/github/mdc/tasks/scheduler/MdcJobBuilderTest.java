@@ -35,17 +35,18 @@ public class MdcJobBuilderTest extends MassiveDataMRJobBase{
 	@Test
 	public void testMdcJobCall() {
 		MapReduceApplication mdcjob = (MapReduceApplication) MapReduceApplicationBuilder.newBuilder()
-				.addMapper(AirlineDataMapper.class, "/airlines")				
+				.addMapper(AirlineDataMapper.class, airlines)				
 				.addCombiner(AirlineDataMapper.class)
 				.addReducer(AirlineDataMapper.class)
 				.setOutputfolder("/aircararrivaldelay")
 				.build();
 		assertTrue(mdcjob.mappers.get(0).crunchmapper == AirlineDataMapper.class);
-		assertEquals("/airlines", mdcjob.mappers.get(0).inputfolderpath);
+		assertEquals(airlines, mdcjob.mappers.get(0).inputfolderpath);
 		assertTrue(mdcjob.combiners.get(0) == AirlineDataMapper.class);
 		assertTrue(mdcjob.reducers.get(0) == AirlineDataMapper.class);
 		assertEquals("/aircararrivaldelay",mdcjob.outputfolder);
 		List<DataCruncherContext> dccl = mdcjob.call();
-		assertEquals(-63278l, dccl.get(0).get("AQ").iterator().next());
+		log.info(dccl);
+		assertEquals(4, dccl.size());
 	}
 }
