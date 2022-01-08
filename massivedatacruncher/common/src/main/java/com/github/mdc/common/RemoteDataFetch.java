@@ -15,11 +15,10 @@ public class RemoteDataFetch implements Serializable{
 	public String taskid;
 	public String hp;
 	public byte[] data;
+	public String mode;
 	@Override
 	public String toString() {
 		return "RemoteDataFetch [jobid=" + jobid + ", stageid=" + stageid + ", taskid=" + taskid + ", hp=" + hp
-				+ ", data=" + Arrays.toString(data) + "]";
+				+ ", data=" + Arrays.toString(data) + ", mode=" + mode + "]";
 	}
-	
-	
 }

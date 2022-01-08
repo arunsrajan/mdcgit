@@ -157,7 +157,7 @@ public class FileBlocksPartitionerHDFSMultipleNodesTest extends StreamPipelineBa
 		fbp.job = new Job();
 		fbp.isignite = false;
 		fbp.getDnXref(bls, false);
-		fbp.getTaskExecutors(bls);
+		fbp.allocateContainersByResources(bls);
 		log.info(fbp.job.nodes);
 		log.info(fbp.job.containers);		
 		fbp.destroyContainers();
@@ -178,7 +178,7 @@ public class FileBlocksPartitionerHDFSMultipleNodesTest extends StreamPipelineBa
 		fbp.isblocksuserdefined = false;
 		fbp.hdfs = hdfs;
 		fbp.getDnXref(bls, false);
-		fbp.getTaskExecutors(bls);
+		fbp.allocateContainersByResources(bls);
 		log.info(fbp.job.nodes);
 		log.info(fbp.job.containers);
 		fbp.destroyContainers();

@@ -23,7 +23,6 @@ public class MDCConstants {
 	public static final String SINGLE_QUOTES = "'";
 	public static final String SINGLESPACE = " ";
 	static final String CLASS = "class";
-	public static final String DATAFILEEXTN = ".dat";
 	public static final String NULL = "null";
 	public static final String NULLSTRING = null;
 	
@@ -373,6 +372,7 @@ public class MDCConstants {
 	public static final String MESOS = "Mesos";
 	public static final String JGROUPS = "JGroups";
 	public static final String LOCAL = "Local";
+	public static final String STANDALONE = "Standalone";
 	
 	public static final String TSSHA = "TSSHA";
 	public static final String JARLOADED = "Jar Loaded";

@@ -1049,7 +1049,7 @@ public class Utils {
 	public static String getIntermediateInputStreamRDF(RemoteDataFetch rdf) throws Exception {
 		log.debug("Entered Utils.getIntermediateInputStreamRDF");
 		var path = (rdf.jobid + MDCConstants.HYPHEN + rdf.stageid + MDCConstants.HYPHEN + rdf.taskid
-				+ MDCConstants.DATAFILEEXTN);
+				);
 		log.debug("Returned Utils.getIntermediateInputStreamRDF");
 		return path;
 	}
@@ -1057,7 +1057,7 @@ public class Utils {
 	public static String getIntermediateInputStreamTask(Task task) throws Exception {
 		log.debug("Entered Utils.getIntermediateInputStreamTask");
 		var path = (task.jobid + MDCConstants.HYPHEN + task.stageid + MDCConstants.HYPHEN + task.taskid
-				+ MDCConstants.DATAFILEEXTN);
+				);
 		log.debug("Returned Utils.getIntermediateInputStreamTask");
 		return path;
 	}

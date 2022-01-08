@@ -73,7 +73,7 @@ public class TaskExecutorReducer implements Runnable{
 					}
 					else {
 						currentctx = (Context) RemoteDataFetcher.readIntermediatePhaseOutputFromDFS(rv.appid,
-								(apptaskids + MDCConstants.DATAFILEEXTN), false);
+								(apptaskids), false);
 						apptaskcontextmap.put(apptaskids, currentctx);
 					}
 					ctx.addAll(tuple2.v1, currentctx.get(tuple2.v1));
@@ -85,7 +85,7 @@ public class TaskExecutorReducer implements Runnable{
 				complete.add(results);
 			}
 			RemoteDataFetcher.writerIntermediatePhaseOutputToDFS(complete, applicationid,
-					((applicationid + taskid) + MDCConstants.DATAFILEEXTN));
+					((applicationid + taskid)));
 			ctx = null;
 			hbts.pingOnce(taskid, TaskStatus.COMPLETED, TaskType.REDUCER, null);
 			log.debug("Submitted Reducer Completed:"+applicationid+taskid);

@@ -271,9 +271,7 @@ public class StreamJobScheduler {
 			var partitionnumber = 0;
 			for (var mdstst : mdstts) {
 				mdstst.getTask().finalphase = true;
-				if (job.trigger == Job.TRIGGER.SAVERESULTSTOFILE
-						&& (mdstst.getTask().storage == MDCConstants.STORAGE.INMEMORY
-						|| mdstst.getTask().storage == MDCConstants.STORAGE.INMEMORY_DISK) ) {
+				if (job.trigger == Job.TRIGGER.SAVERESULTSTOFILE) {
 					mdstst.getTask().saveresulttohdfs = true;
 					mdstst.getTask().hdfsurl = job.uri;
 					mdstst.getTask().filepath = job.savepath + MDCConstants.HYPHEN + partitionnumber++;
@@ -1195,7 +1193,7 @@ public class StreamJobScheduler {
 								}
 								double percentagecompleted = Math.floor((counttaskscomp / totaltasks) * 100.0);
 								Object[] input=mdststlocal.getTask().input;
-								Utils.writeKryoOutput(kryo, pipelineconfig.getOutput(), "Task Completed ("+(Objects.isNull(input)?task:input[0])+") "
+								Utils.writeKryoOutput(kryo, pipelineconfig.getOutput(), "Task Completed ("+(mdststlocal.getTask())+") "
 										+ task.timetakenseconds + " seconds\n");
 								log.info("Task Completed ("+(Objects.isNull(input)?task:input[0])+") "
 										+ task.timetakenseconds + " seconds\n");
@@ -1646,8 +1644,7 @@ public class StreamJobScheduler {
 						}
 					}
 				}
-			} else if (Boolean.TRUE.equals(ismesos) || Boolean.TRUE.equals(isyarn) || Boolean.TRUE.equals(isjgroups)
-					&& job.trigger != Job.TRIGGER.SAVERESULTSTOFILE) {
+			} else if (Boolean.TRUE.equals(ismesos) || Boolean.TRUE.equals(isyarn)) {
 				int partition = 0;
 				for (var mdstt : mdstts) {
 					// Get final stage results mesos or yarn
@@ -1656,13 +1653,14 @@ public class StreamJobScheduler {
 			} else {
 				for (var mdstt : mdstts) {
 					// Get final stage results
-					if (mdstt.isCompletedexecution() && mdstt.getTask().storage == MDCConstants.STORAGE.DISK) {
+					if (mdstt.isCompletedexecution() && job.trigger != Job.TRIGGER.SAVERESULTSTOFILE) {
 						Task task = mdstt.getTask();
 						RemoteDataFetch rdf = new RemoteDataFetch();
 						rdf.hp = task.hostport;
 						rdf.jobid = task.jobid;
 						rdf.stageid = task.stageid;
 						rdf.taskid = task.taskid;
+						rdf.mode = Boolean.parseBoolean(pipelineconfig.getJgroups())?MDCConstants.JGROUPS:MDCConstants.STANDALONE;
 						RemoteDataFetcher.remoteInMemoryDataFetch(rdf);
 						try (var input = new Input(new SnappyInputStream(new ByteArrayInputStream(rdf.data)));) {
 							var obj = kryofinal.readClassAndObject(input);
@@ -1754,7 +1752,7 @@ public class StreamJobScheduler {
 		}
 	}
 	public String getIntermediateDataFSFilePath(String jobid, String stageid, String taskid) {
-		return (jobid + MDCConstants.HYPHEN + stageid + MDCConstants.HYPHEN + taskid + MDCConstants.DATAFILEEXTN);
+		return (jobid + MDCConstants.HYPHEN + stageid + MDCConstants.HYPHEN + taskid);
 	}
 
 	/**
@@ -1770,11 +1768,11 @@ public class StreamJobScheduler {
 		try {
 			var path = MDCConstants.BACKWARD_SLASH + FileSystemSupport.MDS + MDCConstants.BACKWARD_SLASH + task.jobid
 					+ MDCConstants.BACKWARD_SLASH + (task.jobid + MDCConstants.HYPHEN + task.stageid
-							+ MDCConstants.HYPHEN + task.taskid + MDCConstants.DATAFILEEXTN);
+							+ MDCConstants.HYPHEN + task.taskid);
 			log.debug("Forming URL Final Stage:" + MDCConstants.BACKWARD_SLASH + FileSystemSupport.MDS
 					+ MDCConstants.BACKWARD_SLASH + task.jobid + MDCConstants.BACKWARD_SLASH
 					+ (task.jobid + MDCConstants.HYPHEN + task.stageid + MDCConstants.HYPHEN + task.taskid
-							+ MDCConstants.DATAFILEEXTN));			
+							));			
 			try (var input = new Input(new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path)))));) {
 				stageoutput.add(kryo.readClassAndObject(input));
 			} catch (Exception ex) {
@@ -1845,7 +1843,7 @@ public class StreamJobScheduler {
 
 	private String getIntermediateResultFS(Task task) throws Exception {
 		return task.jobid + MDCConstants.HYPHEN + task.stageid + MDCConstants.HYPHEN + task.taskid
-				+ MDCConstants.DATAFILEEXTN;
+				;
 	}
 
 	private int partitionindex = 0;
@@ -1897,6 +1895,12 @@ public class StreamJobScheduler {
 							task.parentremotedatafetch[parentcount].stageid = mdstst.getTask().stageid;
 							task.parentremotedatafetch[parentcount].taskid = mdstst.getTask().taskid;
 							task.parentremotedatafetch[parentcount].hp = mdstst.getHostPort();
+							if(Boolean.parseBoolean(pipelineconfig.getJgroups())) {
+								task.parentremotedatafetch[parentcount].mode = MDCConstants.JGROUPS;
+							}
+							else {
+								task.parentremotedatafetch[parentcount].mode = MDCConstants.STANDALONE;
+							}
 							hp = mdstst.getHostPort();
 						} else {
 							task.input[parentcount] = mdstst.getTask();

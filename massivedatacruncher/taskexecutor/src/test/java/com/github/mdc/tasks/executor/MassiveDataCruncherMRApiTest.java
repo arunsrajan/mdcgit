@@ -130,7 +130,7 @@ public class MassiveDataCruncherMRApiTest extends StreamPipelineBase{
 		TaskExecutorMapperCombiner mdtemc = new
 				TaskExecutorMapperCombiner(bls,lzis,app,task,Thread.currentThread().getContextClassLoader(),12121,hbts);
 		mdtemc.run();
-		Context ctx = (Context) RemoteDataFetcher.readIntermediatePhaseOutputFromDFS(app,(app+task + MDCConstants.DATAFILEEXTN), false);
+		Context ctx = (Context) RemoteDataFetcher.readIntermediatePhaseOutputFromDFS(app,(app+task), false);
 		hbtsreceiver.stop();
 		hbtsreceiver.destroy();
 		hbts.stop();
@@ -178,7 +178,7 @@ public class MassiveDataCruncherMRApiTest extends StreamPipelineBase{
 		task = MDCConstants.TASK+"-1";
 		TaskExecutorReducer reducerexec = new TaskExecutorReducer(reducervalues,app,task,Thread.currentThread().getContextClassLoader(),12121,hbts);
 		reducerexec.run();
-		Context ctx = (Context) RemoteDataFetcher.readIntermediatePhaseOutputFromDFS(app,(app+task + MDCConstants.DATAFILEEXTN), false);
+		Context ctx = (Context) RemoteDataFetcher.readIntermediatePhaseOutputFromDFS(app,(app+task), false);
 		hbtsreceiver.stop();
 		hbtsreceiver.destroy();
 		hbts.stop();

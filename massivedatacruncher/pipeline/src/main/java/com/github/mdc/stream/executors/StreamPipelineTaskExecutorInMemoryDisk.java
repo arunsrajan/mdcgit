@@ -56,7 +56,7 @@ public final class StreamPipelineTaskExecutorInMemoryDisk extends StreamPipeline
 	public String getIntermediateDataFSFilePath(Task task) {
 		return (task.jobid + MDCConstants.HYPHEN +
 				task.stageid + MDCConstants.HYPHEN +task.taskid
-						+ MDCConstants.DATAFILEEXTN);
+						);
 	}
 	
 	
@@ -117,7 +117,7 @@ public final class StreamPipelineTaskExecutorInMemoryDisk extends StreamPipeline
 		log.debug("Entered MassiveDataStreamTaskExecutorInMemory.getIntermediateInputStreamRDF");
 		var path = (rdf.jobid + MDCConstants.HYPHEN +
 				rdf.stageid + MDCConstants.HYPHEN +rdf.taskid
-				+ MDCConstants.DATAFILEEXTN);
+				);
 		return (byte[]) cache.get(path);
 	}
 	@Override

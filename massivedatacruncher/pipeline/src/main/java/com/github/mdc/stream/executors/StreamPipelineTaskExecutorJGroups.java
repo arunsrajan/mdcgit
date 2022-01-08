@@ -1,5 +1,8 @@
 package com.github.mdc.stream.executors;
 
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
@@ -12,6 +15,7 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.log4j.Logger;
 import org.ehcache.Cache;
 import org.jgroups.JChannel;
+import org.xerial.snappy.SnappyInputStream;
 
 import com.github.mdc.common.JobStage;
 import com.github.mdc.common.MDCConstants;
@@ -110,10 +114,16 @@ public final class StreamPipelineTaskExecutorJGroups extends StreamPipelineTaskE
 						for (var inputindex = 0; inputindex < numinputs; inputindex++) {
 							var input = task.parentremotedatafetch[inputindex];
 							if (input != null) {
-								var rdf = (RemoteDataFetch) input;
-								task.input[inputindex] = RemoteDataFetcher.readIntermediatePhaseOutputFromDFS(
-										rdf.jobid, getIntermediateDataFSFilePath(rdf.jobid, rdf.stageid, rdf.taskid),
-										hdfs);
+								var rdf = input;
+								InputStream is = RemoteDataFetcher.readIntermediatePhaseOutputFromFS(rdf.jobid,
+										getIntermediateDataRDF(rdf.taskid));
+								if (Objects.isNull(is)) {
+									RemoteDataFetcher.remoteInMemoryDataFetch(rdf);
+									task.input[inputindex] = new SnappyInputStream(
+											new BufferedInputStream(new ByteArrayInputStream(rdf.data)));
+								} else {
+									task.input[inputindex] = is;
+								}
 							}
 						}
 					}
@@ -132,7 +142,7 @@ public final class StreamPipelineTaskExecutorJGroups extends StreamPipelineTaskE
 		    // Restore interrupted state...
 		    Thread.currentThread().interrupt();
 		} catch (Exception ex) {
-			log.debug("Failed Stage " + tasks, ex);
+			log.error("Failed Stage " + tasks, ex);
 		}
 		log.debug("Exiting MassiveDataStreamJGroupsTaskExecutor.call");
 		return this;

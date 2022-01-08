@@ -295,9 +295,9 @@ tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.examples.S
 
 tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.examples.StreamReduceLeftOuterJoinYARN hdfs://127.0.0.1:9000 /airline1989 /carriers /examplesmdc
 
-tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.examples.StreamReduceLeftOuterJoinInMemoryDisk hdfs://127.0.0.1:9000 /airline1989 /carriers /examplesmdc 1024 3 32
+tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.examples.StreamReduceLeftOuterJoinInMemoryDisk hdfs://127.0.0.1:9000 /airline1989 /carriers /examplesmdc 1024 3 64
 
-tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.examples.StreamReduceLeftOuterJoinInMemoryDiskDivided hdfs://127.0.0.1:9000 /airline1989 /carriers /examplesmdc 1024 3 32
+tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.examples.StreamReduceLeftOuterJoinInMemoryDiskDivided hdfs://127.0.0.1:9000 /airline1989 /carriers /examplesmdc 1024 3 128
 
 Stream Reduce ROJ
 -----------------

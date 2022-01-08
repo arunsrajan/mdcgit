@@ -140,7 +140,7 @@ public class FileBlocksPartitionerHDFSTest extends StreamPipelineBase{
 		List<BlocksLocation> bls = fbp.getHDFSParitions();
 		assertEquals(2,bls.size());
 		assertEquals(4270834, fbp.totallength);
-		fbp.getContainersBalanced(bls);
+		fbp.allocateContainersLoadBalanced(bls);
 		assertEquals("127.0.0.1_10101",bls.get(0).executorhp);
 		assertEquals("127.0.0.1_10101",bls.get(1).executorhp);
 	}
@@ -165,7 +165,7 @@ public class FileBlocksPartitionerHDFSTest extends StreamPipelineBase{
 		List<BlocksLocation> bls = fbp.getHDFSParitions();
 		assertEquals(2,bls.size());
 		assertEquals(4270834, fbp.totallength);
-		fbp.getContainersBalanced(bls);
+		fbp.allocateContainersLoadBalanced(bls);
 		assertEquals("127.0.0.1_10101",bls.get(0).executorhp);
 		assertEquals("127.0.0.1_10102",bls.get(1).executorhp);
 	}
@@ -233,7 +233,7 @@ public class FileBlocksPartitionerHDFSTest extends StreamPipelineBase{
 		Resources resources = new Resources();
 		resources.setFreememory(12*1024*1024*1024l);
 		resources.setNumberofprocessors(4);
-		List<ContainerResources> crs = fbp.getNumberOfContainers(MDCConstants.GCCONFIG_DEFAULT,20,resources);
+		List<ContainerResources> crs = fbp.getContainersByNodeResourcesRemainingMemory(MDCConstants.GCCONFIG_DEFAULT,20,resources);
 		assertEquals(1, crs.size());
 		assertEquals(128, crs.get(0).getMaxmemory());
 		assertEquals(128, crs.get(0).getMinmemory());
@@ -263,7 +263,7 @@ public class FileBlocksPartitionerHDFSTest extends StreamPipelineBase{
 		fbp.job = new Job();
 		fbp.isignite = false;
 		fbp.getDnXref(bls, false);
-		fbp.getTaskExecutors(bls);
+		fbp.allocateContainersByResources(bls);
 		assertEquals(1,fbp.job.containers.size());
 		assertEquals(1,fbp.job.nodes.size());
 		fbp.destroyContainers();
@@ -293,7 +293,7 @@ public class FileBlocksPartitionerHDFSTest extends StreamPipelineBase{
 		fbp.hdfs = hdfs;
 		List<BlocksLocation> bls = fbp.getBlocks(fbp.isblocksuserdefined,128);
 		fbp.getDnXref(bls, false);
-		fbp.getTaskExecutors(bls);
+		fbp.allocateContainersByResources(bls);
 		assertEquals(0,fbp.job.containers.size());
 		assertEquals(0,fbp.job.nodes.size());
 		fbp.destroyContainers();
@@ -324,7 +324,7 @@ public class FileBlocksPartitionerHDFSTest extends StreamPipelineBase{
 			fbp.filepaths = Arrays.asList(paths);
 			List<BlocksLocation> bls = fbp.getBlocks(fbp.isblocksuserdefined, 128);
 			fbp.getDnXref(bls, false);
-			fbp.getTaskExecutors(bls);			
+			fbp.allocateContainersByResources(bls);			
 		} catch (Exception ex) {
 			assertEquals(PipelineConstants.MEMORYALLOCATIONERROR, ex.getCause().getMessage());
 			assertNull(fbp.job.containers);
@@ -359,7 +359,7 @@ public class FileBlocksPartitionerHDFSTest extends StreamPipelineBase{
 			fbp.filepaths = Arrays.asList(paths);
 			List<BlocksLocation> bls = fbp.getBlocks(fbp.isblocksuserdefined, 128);
 			fbp.getDnXref(bls, false);
-			fbp.getTaskExecutors(bls);			
+			fbp.allocateContainersByResources(bls);			
 		} catch (Exception ex) {
 			assertEquals(PipelineConstants.INSUFFMEMORYALLOCATIONERROR, ex.getCause().getMessage());
 			assertNull(fbp.job.containers);
@@ -393,7 +393,7 @@ public class FileBlocksPartitionerHDFSTest extends StreamPipelineBase{
 		fbp.filepaths = Arrays.asList(paths);
 		List<BlocksLocation> bls = fbp.getBlocks(fbp.isblocksuserdefined,128*MDCConstants.MB);
 		fbp.getDnXref(bls, false);
-		fbp.getTaskExecutors(bls);
+		fbp.allocateContainersByResources(bls);
 		assertEquals(1,fbp.job.containers.size());
 		assertEquals("127.0.0.1_12122",fbp.job.containers.get(0));
 		assertEquals("127.0.0.1_20000",fbp.job.nodes.iterator().next());

@@ -142,13 +142,11 @@ public sealed class StreamPipelineTaskExecutor implements
 
 	public void setTask(Task task) {
 		this.task = task;
-		if(task.finalphase && task.saveresulttohdfs) {
+		if (task.finalphase && task.saveresulttohdfs) {
 			try {
-				this.hdfs = FileSystem.newInstance(
-						new URI(task.hdfsurl),
-						new Configuration());
+				this.hdfs = FileSystem.newInstance(new URI(task.hdfsurl), new Configuration());
 			} catch (IOException | URISyntaxException e) {
-				log.error("Exception in creating hdfs client connection: ",e);
+				log.error("Exception in creating hdfs client connection: ", e);
 			}
 		}
 	}
@@ -215,8 +213,7 @@ public sealed class StreamPipelineTaskExecutor implements
 					Collectors.toCollection(LinkedHashSet::new), executor, Runtime.getRuntime().availableProcessors()));
 			;
 			var setsecond = (Set) cf.get();
-			if (task.finalphase && task.saveresulttohdfs && (task.storage == MDCConstants.STORAGE.INMEMORY
-					|| task.storage == MDCConstants.STORAGE.INMEMORY_DISK)) {
+			if (task.finalphase && task.saveresulttohdfs) {
 				try (OutputStream os = hdfs.create(new Path(task.hdfsurl + task.filepath),
 						Short.parseShort(MDCProperties.get().getProperty(MDCConstants.DFSOUTPUTFILEREPLICATION,
 								MDCConstants.DFSOUTPUTFILEREPLICATION_DEFAULT)));) {
@@ -281,8 +278,7 @@ public sealed class StreamPipelineTaskExecutor implements
 					Collectors.toCollection(LinkedHashSet::new), executor, Runtime.getRuntime().availableProcessors()));
 			;
 			var setsecond = (Set) cf.get();
-			if (task.finalphase && task.saveresulttohdfs && (task.storage == MDCConstants.STORAGE.INMEMORY
-					|| task.storage == MDCConstants.STORAGE.INMEMORY_DISK)) {
+			if (task.finalphase && task.saveresulttohdfs) {
 				try (OutputStream os = hdfs.create(new Path(task.hdfsurl + task.filepath),
 						Short.parseShort(MDCProperties.get().getProperty(MDCConstants.DFSOUTPUTFILEREPLICATION,
 								MDCConstants.DFSOUTPUTFILEREPLICATION_DEFAULT)));) {
@@ -343,8 +339,7 @@ public sealed class StreamPipelineTaskExecutor implements
 			var kryo = Utils.getKryoNonDeflateSerializer();
 			var datafirst = (List) kryo.readClassAndObject(inputfirst);
 			var datasecond = (List) kryo.readClassAndObject(inputsecond);
-			if (task.finalphase && task.saveresulttohdfs && (task.storage == MDCConstants.STORAGE.INMEMORY
-					|| task.storage == MDCConstants.STORAGE.INMEMORY_DISK)) {
+			if (task.finalphase && task.saveresulttohdfs) {
 				try (OutputStream os = hdfs.create(new Path(task.hdfsurl + task.filepath),
 						Short.parseShort(MDCProperties.get().getProperty(MDCConstants.DFSOUTPUTFILEREPLICATION,
 								MDCConstants.DFSOUTPUTFILEREPLICATION_DEFAULT)));) {
@@ -402,9 +397,10 @@ public sealed class StreamPipelineTaskExecutor implements
 		log.debug("Entered MassiveDataStreamTaskDExecutor.createIntermediateDataToFS");
 		try {
 			var path = getIntermediateDataFSFilePath(task);
-			new File(MDCProperties.get().getProperty(MDCConstants.TMPDIR)+MDCConstants.BACKWARD_SLASH + FileSystemSupport.MDS + MDCConstants.BACKWARD_SLASH + jobstage.jobid).mkdirs();
+			new File(MDCProperties.get().getProperty(MDCConstants.TMPDIR) + MDCConstants.BACKWARD_SLASH
+					+ FileSystemSupport.MDS + MDCConstants.BACKWARD_SLASH + jobstage.jobid).mkdirs();
 			log.debug("Exiting MassiveDataStreamTaskDExecutor.createIntermediateDataToFS");
-			return new FileOutputStream(MDCProperties.get().getProperty(MDCConstants.TMPDIR)+path);
+			return new FileOutputStream(MDCProperties.get().getProperty(MDCConstants.TMPDIR) + path);
 		} catch (IOException ioe) {
 			log.error(PipelineConstants.FILEIOERROR, ioe);
 			throw new PipelineException(PipelineConstants.FILEIOERROR, ioe);
@@ -420,7 +416,7 @@ public sealed class StreamPipelineTaskExecutor implements
 	 */
 	public InputStream getIntermediateInputStreamFS(Task task) throws Exception {
 		var path = getIntermediateDataFSFilePath(task);
-		return new FileInputStream(MDCProperties.get().getProperty(MDCConstants.TMPDIR)+path);
+		return new FileInputStream(MDCProperties.get().getProperty(MDCConstants.TMPDIR) + path);
 	}
 
 	/**
@@ -450,8 +446,7 @@ public sealed class StreamPipelineTaskExecutor implements
 				terminalCount = true;
 			}
 			List result;
-			if (task.finalphase && task.saveresulttohdfs && (task.storage == MDCConstants.STORAGE.INMEMORY
-					|| task.storage == MDCConstants.STORAGE.INMEMORY_DISK)) {
+			if (task.finalphase && task.saveresulttohdfs) {
 				try (OutputStream os = hdfs.create(new Path(task.hdfsurl + task.filepath),
 						Short.parseShort(MDCProperties.get().getProperty(MDCConstants.DFSOUTPUTFILEREPLICATION,
 								MDCConstants.DFSOUTPUTFILEREPLICATION_DEFAULT)));) {
@@ -527,8 +522,7 @@ public sealed class StreamPipelineTaskExecutor implements
 			if (jobstage.stage.tasks.get(0) instanceof CalculateCount) {
 				terminalCount = true;
 			}
-			if (task.finalphase && task.saveresulttohdfs && (task.storage == MDCConstants.STORAGE.INMEMORY
-					|| task.storage == MDCConstants.STORAGE.INMEMORY_DISK)) {
+			if (task.finalphase && task.saveresulttohdfs) {
 				try (OutputStream os = hdfs.create(new Path(task.hdfsurl + task.filepath),
 						Short.parseShort(MDCProperties.get().getProperty(MDCConstants.DFSOUTPUTFILEREPLICATION,
 								MDCConstants.DFSOUTPUTFILEREPLICATION_DEFAULT)));) {
@@ -606,8 +600,7 @@ public sealed class StreamPipelineTaskExecutor implements
 			if (jobstage.stage.tasks.get(0) instanceof CalculateCount) {
 				terminalCount = true;
 			}
-			if (task.finalphase && task.saveresulttohdfs && (task.storage == MDCConstants.STORAGE.INMEMORY
-					|| task.storage == MDCConstants.STORAGE.INMEMORY_DISK)) {
+			if (task.finalphase && task.saveresulttohdfs) {
 				try (OutputStream os = hdfs.create(new Path(task.hdfsurl + task.filepath),
 						Short.parseShort(MDCProperties.get().getProperty(MDCConstants.DFSOUTPUTFILEREPLICATION,
 								MDCConstants.DFSOUTPUTFILEREPLICATION_DEFAULT)));) {
@@ -668,8 +661,7 @@ public sealed class StreamPipelineTaskExecutor implements
 	 * @throws Throwable
 	 */
 	@SuppressWarnings("unchecked")
-	public double processBlockHDFSMap(BlocksLocation blockslocation, FileSystem hdfs)
-			throws PipelineException {
+	public double processBlockHDFSMap(BlocksLocation blockslocation, FileSystem hdfs) throws PipelineException {
 		var starttime = System.currentTimeMillis();
 		log.debug("Entered MassiveDataStreamTaskDExecutor.processBlockHDFSMap");
 		log.info(blockslocation);
@@ -761,8 +753,7 @@ public sealed class StreamPipelineTaskExecutor implements
 					var standardDeviation = Math.sqrt(variance);
 					out.add(standardDeviation);
 
-				} else if (task.finalphase && task.saveresulttohdfs && (task.storage == MDCConstants.STORAGE.INMEMORY
-						|| task.storage == MDCConstants.STORAGE.INMEMORY_DISK)) {
+				} else if (task.finalphase && task.saveresulttohdfs) {
 					try (OutputStream os = hdfs.create(new Path(task.hdfsurl + task.filepath),
 							Short.parseShort(MDCProperties.get().getProperty(MDCConstants.DFSOUTPUTFILEREPLICATION,
 									MDCConstants.DFSOUTPUTFILEREPLICATION_DEFAULT)));) {
@@ -821,16 +812,14 @@ public sealed class StreamPipelineTaskExecutor implements
 	@SuppressWarnings("unchecked")
 	public void cacheAble(OutputStream fsdos) {
 		if (iscacheable) {
-			ByteBuffer buf = ((CloseableByteBufferOutputStream)fsdos).get();
-			byte[] bt =  new byte[buf.position()];
+			ByteBuffer buf = ((CloseableByteBufferOutputStream) fsdos).get();
+			byte[] bt = new byte[buf.position()];
 			buf.flip();
 			buf.get(bt);
-			cache.put(getIntermediateDataFSFilePath(task),
-					bt);
+			cache.put(getIntermediateDataFSFilePath(task), bt);
 		}
 	}
-	
-	
+
 	/**
 	 * Perform map operation to obtain intermediate stage result.
 	 * 
@@ -850,8 +839,8 @@ public sealed class StreamPipelineTaskExecutor implements
 
 			List out = new ArrayList<>();
 			var finaltask = jobstage.stage.tasks.get(jobstage.stage.tasks.size() - 1);
-			for (var InputStream : fsstreamfirst) {
-				try (var input = new Input(InputStream);) {
+			for (var is : fsstreamfirst) {
+				try (var input = new Input(is);) {
 					// while (input.available() > 0) {
 					var inputdatas = (List) kryo.readClassAndObject(input);
 					// Get Streams object from list of map functions.
@@ -900,8 +889,8 @@ public sealed class StreamPipelineTaskExecutor implements
 							out.add(standardDeviation);
 
 						} else if (task.finalphase && task.saveresulttohdfs
-								&& (task.storage == MDCConstants.STORAGE.INMEMORY
-										|| task.storage == MDCConstants.STORAGE.INMEMORY_DISK)) {
+
+						) {
 							try (OutputStream os = hdfs.create(new Path(task.hdfsurl + task.filepath),
 									Short.parseShort(
 											MDCProperties.get().getProperty(MDCConstants.DFSOUTPUTFILEREPLICATION,
@@ -967,8 +956,7 @@ public sealed class StreamPipelineTaskExecutor implements
 			if (jobstage.stage.tasks.get(jobstage.stage.tasks.size() - 1) instanceof CalculateCount) {
 				terminalCount = true;
 			}
-			if (task.finalphase && task.saveresulttohdfs && (task.storage == MDCConstants.STORAGE.INMEMORY
-					|| task.storage == MDCConstants.STORAGE.INMEMORY_DISK)) {
+			if (task.finalphase && task.saveresulttohdfs) {
 				try (OutputStream os = hdfs.create(new Path(task.hdfsurl + task.filepath),
 						Short.parseShort(MDCProperties.get().getProperty(MDCConstants.DFSOUTPUTFILEREPLICATION,
 								MDCConstants.DFSOUTPUTFILEREPLICATION_DEFAULT)));) {
@@ -1036,8 +1024,7 @@ public sealed class StreamPipelineTaskExecutor implements
 			if (jobstage.stage.tasks.get(0) instanceof CalculateCount) {
 				terminalCount = true;
 			}
-			if (task.finalphase && task.saveresulttohdfs && (task.storage == MDCConstants.STORAGE.INMEMORY
-					|| task.storage == MDCConstants.STORAGE.INMEMORY_DISK)) {
+			if (task.finalphase && task.saveresulttohdfs) {
 				try (OutputStream os = hdfs.create(new Path(task.hdfsurl + task.filepath),
 						Short.parseShort(MDCProperties.get().getProperty(MDCConstants.DFSOUTPUTFILEREPLICATION,
 								MDCConstants.DFSOUTPUTFILEREPLICATION_DEFAULT)));) {
@@ -1086,7 +1073,11 @@ public sealed class StreamPipelineTaskExecutor implements
 	}
 
 	public String getIntermediateDataFSFilePath(String jobid, String stageid, String taskid) {
-		return (jobid + MDCConstants.HYPHEN + stageid + MDCConstants.HYPHEN + taskid + MDCConstants.DATAFILEEXTN);
+		return (jobid + MDCConstants.HYPHEN + stageid + MDCConstants.HYPHEN + taskid);
+	}
+
+	public String getIntermediateDataRDF(String taskid) {
+		return (taskid);
 	}
 
 	@Override
@@ -1110,11 +1101,11 @@ public sealed class StreamPipelineTaskExecutor implements
 					var input = task.parentremotedatafetch[inputindex];
 					if (input != null) {
 						var rdf = input;
-						InputStream is = RemoteDataFetcher.readIntermediatePhaseOutputFromFS(rdf.jobid,
-								getIntermediateDataFSFilePath(rdf.jobid, rdf.stageid, rdf.taskid));
+						InputStream is = RemoteDataFetcher.readIntermediatePhaseOutputFromFS(rdf.jobid, rdf.taskid);
 						if (Objects.isNull(is)) {
 							RemoteDataFetcher.remoteInMemoryDataFetch(rdf);
-							task.input[inputindex] = new SnappyInputStream(new BufferedInputStream(new ByteArrayInputStream(rdf.data)));
+							task.input[inputindex] = new SnappyInputStream(
+									new BufferedInputStream(new ByteArrayInputStream(rdf.data)));
 						} else {
 							task.input[inputindex] = is;
 						}
@@ -1358,8 +1349,7 @@ public sealed class StreamPipelineTaskExecutor implements
 			if (jobstage.stage.tasks.get(0) instanceof CalculateCount) {
 				terminalCount = true;
 			}
-			if (task.finalphase && task.saveresulttohdfs && (task.storage == MDCConstants.STORAGE.INMEMORY
-					|| task.storage == MDCConstants.STORAGE.INMEMORY_DISK)) {
+			if (task.finalphase && task.saveresulttohdfs) {
 				try (OutputStream os = hdfs.create(new Path(task.hdfsurl + task.filepath),
 						Short.parseShort(MDCProperties.get().getProperty(MDCConstants.DFSOUTPUTFILEREPLICATION,
 								MDCConstants.DFSOUTPUTFILEREPLICATION_DEFAULT)));
@@ -1493,8 +1483,7 @@ public sealed class StreamPipelineTaskExecutor implements
 			if (jobstage.stage.tasks.get(0) instanceof CalculateCount) {
 				terminalCount = true;
 			}
-			if (task.finalphase && task.saveresulttohdfs && (task.storage == MDCConstants.STORAGE.INMEMORY
-					|| task.storage == MDCConstants.STORAGE.INMEMORY_DISK)) {
+			if (task.finalphase && task.saveresulttohdfs) {
 				try (OutputStream os = hdfs.create(new Path(task.hdfsurl + task.filepath),
 						Short.parseShort(MDCProperties.get().getProperty(MDCConstants.DFSOUTPUTFILEREPLICATION,
 								MDCConstants.DFSOUTPUTFILEREPLICATION_DEFAULT)));
@@ -1627,8 +1616,7 @@ public sealed class StreamPipelineTaskExecutor implements
 			if (jobstage.stage.tasks.get(0) instanceof CalculateCount) {
 				terminalCount = true;
 			}
-			if (task.finalphase && task.saveresulttohdfs && (task.storage == MDCConstants.STORAGE.INMEMORY
-					|| task.storage == MDCConstants.STORAGE.INMEMORY_DISK)) {
+			if (task.finalphase && task.saveresulttohdfs) {
 				try (OutputStream os = hdfs.create(new Path(task.hdfsurl + task.filepath),
 						Short.parseShort(MDCProperties.get().getProperty(MDCConstants.DFSOUTPUTFILEREPLICATION,
 								MDCConstants.DFSOUTPUTFILEREPLICATION_DEFAULT)));
@@ -1759,8 +1747,7 @@ public sealed class StreamPipelineTaskExecutor implements
 					throw new PipelineException(PipelineConstants.PROCESSGROUPBYKEY, ex);
 				}
 			}
-			if (task.finalphase && task.saveresulttohdfs && (task.storage == MDCConstants.STORAGE.INMEMORY
-					|| task.storage == MDCConstants.STORAGE.INMEMORY_DISK)) {
+			if (task.finalphase && task.saveresulttohdfs) {
 				try (OutputStream os = hdfs.create(new Path(task.hdfsurl + task.filepath),
 						Short.parseShort(MDCProperties.get().getProperty(MDCConstants.DFSOUTPUTFILEREPLICATION,
 								MDCConstants.DFSOUTPUTFILEREPLICATION_DEFAULT)));) {
@@ -1867,8 +1854,7 @@ public sealed class StreamPipelineTaskExecutor implements
 			}
 			// Parallel processing of fold by key operation.
 			var foldbykey = (FoldByKey) jobstage.stage.tasks.get(0);
-			if (task.finalphase && task.saveresulttohdfs && (task.storage == MDCConstants.STORAGE.INMEMORY
-					|| task.storage == MDCConstants.STORAGE.INMEMORY_DISK)) {
+			if (task.finalphase && task.saveresulttohdfs) {
 				try (OutputStream os = hdfs.create(new Path(task.hdfsurl + task.filepath),
 						Short.parseShort(MDCProperties.get().getProperty(MDCConstants.DFSOUTPUTFILEREPLICATION,
 								MDCConstants.DFSOUTPUTFILEREPLICATION_DEFAULT)));) {
@@ -1975,8 +1961,7 @@ public sealed class StreamPipelineTaskExecutor implements
 				// }
 				input.close();
 			}
-			if (task.finalphase && task.saveresulttohdfs && (task.storage == MDCConstants.STORAGE.INMEMORY
-					|| task.storage == MDCConstants.STORAGE.INMEMORY_DISK)) {
+			if (task.finalphase && task.saveresulttohdfs) {
 				try (OutputStream os = hdfs.create(new Path(task.hdfsurl + task.filepath),
 						Short.parseShort(MDCProperties.get().getProperty(MDCConstants.DFSOUTPUTFILEREPLICATION,
 								MDCConstants.DFSOUTPUTFILEREPLICATION_DEFAULT)));) {
@@ -2065,8 +2050,7 @@ public sealed class StreamPipelineTaskExecutor implements
 				// }
 				input.close();
 			}
-			if (task.finalphase && task.saveresulttohdfs && (task.storage == MDCConstants.STORAGE.INMEMORY
-					|| task.storage == MDCConstants.STORAGE.INMEMORY_DISK)) {
+			if (task.finalphase && task.saveresulttohdfs) {
 				try (OutputStream os = hdfs.create(new Path(task.hdfsurl + task.filepath),
 						Short.parseShort(MDCProperties.get().getProperty(MDCConstants.DFSOUTPUTFILEREPLICATION,
 								MDCConstants.DFSOUTPUTFILEREPLICATION_DEFAULT)));) {
@@ -2163,8 +2147,7 @@ public sealed class StreamPipelineTaskExecutor implements
 			// Parallel execution of reduce by key stream execution.
 			var out = keyvaluepairs.parallelStream().collect(Collectors.toMap(Tuple2::v1, Tuple2::v2,
 					(input1, input2) -> coalescefunction.get(0).coalescefuncion.apply(input1, input2)));
-			if (task.finalphase && task.saveresulttohdfs && (task.storage == MDCConstants.STORAGE.INMEMORY
-					|| task.storage == MDCConstants.STORAGE.INMEMORY_DISK)) {
+			if (task.finalphase && task.saveresulttohdfs) {
 				try (OutputStream os = hdfs.create(new Path(task.hdfsurl + task.filepath),
 						Short.parseShort(MDCProperties.get().getProperty(MDCConstants.DFSOUTPUTFILEREPLICATION,
 								MDCConstants.DFSOUTPUTFILEREPLICATION_DEFAULT)));) {

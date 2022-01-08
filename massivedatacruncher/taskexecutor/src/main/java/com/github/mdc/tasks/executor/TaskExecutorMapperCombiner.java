@@ -78,7 +78,7 @@ public class TaskExecutorMapperCombiner implements Runnable {
 			hbts.pingOnce(taskid, TaskStatus.RUNNING, TaskType.MAPPERCOMBINER, null);
 			var fc = es.submit(mdcmc);
 			ctx = fc.get();
-			RemoteDataFetcher.writerIntermediatePhaseOutputToDFS(ctx, applicationid, ((applicationid+taskid)+ MDCConstants.DATAFILEEXTN));
+			RemoteDataFetcher.writerIntermediatePhaseOutputToDFS(ctx, applicationid, ((applicationid+taskid)));
 			ctx = null;
 			hbts.pingOnce(taskid, TaskStatus.COMPLETED, TaskType.MAPPERCOMBINER, null);
 		} catch (Throwable ex) {

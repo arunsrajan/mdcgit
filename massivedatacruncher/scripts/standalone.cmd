@@ -1,4 +1,4 @@
-title MDC Task Scheduler Pipeline
+title MDC Standlone
 
 @echo off
 

@@ -48,7 +48,7 @@ public final class StreamPipelineTaskExecutorLocal extends StreamPipelineTaskExe
 		log.debug("Entered MassiveDataStreamTaskExecutorInMemory.getIntermediateInputStreamRDF");
 		var path = (rdf.jobid + MDCConstants.HYPHEN +
 				rdf.stageid + MDCConstants.HYPHEN +rdf.taskid
-				+ MDCConstants.DATAFILEEXTN);
+				);
 		OutputStream os = resultstream.get(path);
 		log.debug("Exiting MassiveDataStreamTaskExecutorInMemory.getIntermediateInputStreamFS");
 		if(Objects.isNull(os)) {
@@ -71,7 +71,7 @@ public final class StreamPipelineTaskExecutorLocal extends StreamPipelineTaskExe
 	public String getIntermediateDataFSFilePath(Task task) {
 		return (task.jobid + MDCConstants.HYPHEN +
 				task.stageid + MDCConstants.HYPHEN +task.taskid
-						+ MDCConstants.DATAFILEEXTN);
+					);
 	}
 	
 	

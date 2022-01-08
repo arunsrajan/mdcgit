@@ -273,7 +273,7 @@ public class MapReduceYarnAppmaster extends StaticEventingAppmaster implements C
 			if (success) {
 				log.info(mc.apptask.applicationid+mc.apptask.taskid+" Updated");
 				var keys = (Set<Object>) RemoteDataFetcher.readIntermediatePhaseOutputFromDFS(mc.apptask.applicationid,
-						(mc.apptask.applicationid + mc.apptask.taskid + MDCConstants.DATAFILEEXTN), true);
+						(mc.apptask.applicationid + mc.apptask.taskid), true);
 				dcc.putAll(keys,mc.apptask.applicationid + mc.apptask.taskid);
 				log.info("dcc: "+dcc);
 				pendingjobs.remove(mc.apptask.applicationid+mc.apptask.taskid);
@@ -305,7 +305,7 @@ public class MapReduceYarnAppmaster extends StaticEventingAppmaster implements C
 						var red = rs.get(redcount);
 						var ctxreducerpart = (Context) RemoteDataFetcher.readIntermediatePhaseOutputFromDFS(
 								red.apptask.applicationid,
-								(red.apptask.applicationid + red.apptask.taskid + MDCConstants.DATAFILEEXTN), false);
+								(red.apptask.applicationid + red.apptask.taskid), false);
 						var keysreducers = ctxreducerpart.keys();
 						sb.append(MDCConstants.NEWLINE);
 						sb.append("Partition "+(redcount+1)+"-------------------------------------------------");
