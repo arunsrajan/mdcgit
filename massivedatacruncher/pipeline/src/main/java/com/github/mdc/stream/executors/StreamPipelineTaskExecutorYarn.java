@@ -2,7 +2,9 @@ package com.github.mdc.stream.executors;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Objects;
@@ -11,11 +13,17 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.Path;
 import org.xerial.snappy.SnappyInputStream;
 
+import com.github.mdc.common.FileSystemSupport;
 import com.github.mdc.common.JobStage;
 import com.github.mdc.common.MDCConstants;
+import com.github.mdc.common.PipelineConstants;
+import com.github.mdc.common.RemoteDataFetch;
 import com.github.mdc.common.RemoteDataFetcher;
+import com.github.mdc.common.Task;
+import com.github.mdc.stream.PipelineException;
 /**
  * 
  * @author Arun
@@ -28,6 +36,37 @@ public final class StreamPipelineTaskExecutorYarn extends StreamPipelineTaskExec
 		super(jobstage, null);
 		this.hdfsnn = hdfsnn;
 	}
+	
+	
+	/**
+	 * Prepare the HDFS file path given task object.
+	 * 
+	 * @return
+	 */
+	public String getIntermediateDataFSFilePath(Task task) {
+		return (MDCConstants.BACKWARD_SLASH + FileSystemSupport.MDS + MDCConstants.BACKWARD_SLASH + jobstage.jobid
+				+ MDCConstants.BACKWARD_SLASH + task.taskid);
+	}
+	/**
+	 * Create a file in HDFS and return the stream.
+	 * 
+	 * @param hdfs
+	 * @return
+	 * @throws Exception
+	 */
+	public OutputStream createIntermediateDataToFS(Task task) throws PipelineException {
+		log.debug("Entered StreamPipelineTaskExecutorYarn.createIntermediateDataToFS");
+		try {
+			var path = getIntermediateDataFSFilePath(task);
+			var hdfspath = new Path(path);
+			log.debug("Exiting StreamPipelineTaskExecutorYarn.createIntermediateDataToFS");
+			return hdfs.create(hdfspath, false);
+		} catch (IOException ioe) {
+			log.error(PipelineConstants.FILEIOERROR, ioe);
+			throw new PipelineException(PipelineConstants.FILEIOERROR, ioe);
+		}
+	}
+	
 	/**
 	 * The runnable method executes the streaming api parallely.
 	 */
@@ -42,15 +81,10 @@ public final class StreamPipelineTaskExecutorYarn extends StreamPipelineTaskExec
 				for (var inputindex = 0; inputindex<numinputs;inputindex++) {
 					var input = task.parentremotedatafetch[inputindex];
 					if(input != null) {
-						var rdf = input;
-						InputStream is = RemoteDataFetcher.readIntermediatePhaseOutputFromFS(rdf.jobid, rdf.taskid);
-						if (Objects.isNull(is)) {
-							RemoteDataFetcher.remoteInMemoryDataFetch(rdf);
-							task.input[inputindex] = new SnappyInputStream(
-									new BufferedInputStream(new ByteArrayInputStream(rdf.data)));
-						} else {
-							task.input[inputindex] = is;
-						}
+						var rdf = (RemoteDataFetch) input;
+						//Intermediate data fetch from HDFS streaming API.
+						task.input[inputindex] = RemoteDataFetcher.readIntermediatePhaseOutputFromDFS(rdf.jobid,
+								rdf.taskid,hdfs);
 					}
 				}
 			}
