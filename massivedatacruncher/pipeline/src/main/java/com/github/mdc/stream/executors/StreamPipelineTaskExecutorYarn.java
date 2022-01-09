@@ -1,5 +1,8 @@
 package com.github.mdc.stream.executors;
 
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Objects;
@@ -8,10 +11,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
+import org.xerial.snappy.SnappyInputStream;
 
 import com.github.mdc.common.JobStage;
 import com.github.mdc.common.MDCConstants;
-import com.github.mdc.common.RemoteDataFetch;
 import com.github.mdc.common.RemoteDataFetcher;
 /**
  * 
@@ -39,10 +42,15 @@ public final class StreamPipelineTaskExecutorYarn extends StreamPipelineTaskExec
 				for (var inputindex = 0; inputindex<numinputs;inputindex++) {
 					var input = task.parentremotedatafetch[inputindex];
 					if(input != null) {
-						var rdf = (RemoteDataFetch) input;
-						//Intermediate data fetch from HDFS streaming API.
-						task.input[inputindex] = RemoteDataFetcher.readIntermediatePhaseOutputFromDFS(rdf.jobid,
-								getIntermediateDataFSFilePath(rdf.jobid, rdf.stageid, rdf.taskid),hdfs);
+						var rdf = input;
+						InputStream is = RemoteDataFetcher.readIntermediatePhaseOutputFromFS(rdf.jobid, rdf.taskid);
+						if (Objects.isNull(is)) {
+							RemoteDataFetcher.remoteInMemoryDataFetch(rdf);
+							task.input[inputindex] = new SnappyInputStream(
+									new BufferedInputStream(new ByteArrayInputStream(rdf.data)));
+						} else {
+							task.input[inputindex] = is;
+						}
 					}
 				}
 			}

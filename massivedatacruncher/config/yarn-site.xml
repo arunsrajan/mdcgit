@@ -43,5 +43,20 @@
 		<name>yarn.resourcemanager.am.max-attempts</name>
 		<value>20</value>
 	</property>
+	<property>
+		<name>yarn.resourcemanager.hostname</name>
+		<value>127.0.0.1</value>
+	</property>
+	<property>
+		<name>yarn.nodemanager.hostname</name>
+		<value>127.0.0.1</value>
+	</property>
+	<property>
+		<name>yarn.resourcemanager.bind-host</name>
+		<value>127.0.0.1</value>
+	</property>
+	<property>
+		<name>yarn.nodemanager.bind-host</name>
+		<value>127.0.0.1</value>
+	</property>
 </configuration>
-

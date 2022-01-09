@@ -50,6 +50,9 @@ public class StreamPipelineYarnContainer extends AbstractIntegrationYarnContaine
 		MindAppmasterServiceClient client = null;
 		executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 		try {
+			var prop = new Properties();
+			prop.putAll(System.getProperties());
+			MDCProperties.put(prop);
 			ByteBufferPoolDirect.init();
 			ByteBufferPool.init(3);
 			while(true) {
@@ -95,7 +98,6 @@ public class StreamPipelineYarnContainer extends AbstractIntegrationYarnContaine
 					var object = kryo.readClassAndObject(input);
 					task = (Task)object;
 					System.setProperty(MDCConstants.HDFSNAMENODEURL, containerprops.get(MDCConstants.HDFSNAMENODEURL));
-					var prop = new Properties();
 					prop.putAll(containerprops);
 					MDCProperties.put(prop);
 					var yarnexecutor = new StreamPipelineTaskExecutorYarn( containerprops.get(MDCConstants.HDFSNAMENODEURL),jsidjsmap.get(task.jobid + task.stageid));

@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Properties;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
@@ -80,6 +81,8 @@ public class StreamPipelineYarnAppmaster extends StaticEventingAppmaster impleme
 	@Override
 	public void submitApplication() {
 		try {
+			var prop = new Properties();
+			MDCProperties.put(prop);
 			ByteBufferPoolDirect.init();
 			ByteBufferPool.init(3);
 			log.debug("Task Id Counter: " + taskidcounter);
@@ -88,6 +91,7 @@ public class StreamPipelineYarnAppmaster extends StaticEventingAppmaster impleme
 					+ getEnvironment().get(MDCConstants.YARNMDCJOBID);
 			log.debug("Yarn Input Folder: " + yarninputfolder);
 			log.debug("AppMaster HDFS: " + getConfiguration().get(MDCConstants.HDFSNAMENODEURL));
+			var namenodeurl = getConfiguration().get(MDCConstants.HDFSNAMENODEURL);
 			var containerallocator = (DefaultContainerAllocator) getAllocator();
 			log.debug("Parameters: " + getParameters());
 			log.debug("Container-Memory: " + getParameters().getProperty("container-memory", "1024"));
@@ -95,15 +99,15 @@ public class StreamPipelineYarnAppmaster extends StaticEventingAppmaster impleme
 			System.setProperty(MDCConstants.HDFSNAMENODEURL, getConfiguration().get(MDCConstants.HDFSNAMENODEURL));
 			// Thread containing the job stage information.
 			mdststs = (List<StreamPipelineTaskSubmitter>) RemoteDataFetcher
-					.readYarnAppmasterServiceDataFromDFS(yarninputfolder, MDCConstants.MASSIVEDATA_YARNINPUT_DATAFILE);
+					.readYarnAppmasterServiceDataFromDFS(namenodeurl, yarninputfolder, MDCConstants.MASSIVEDATA_YARNINPUT_DATAFILE);
 			// Graph containing the nodes and edges.
 			graph = (SimpleDirectedGraph<StreamPipelineTaskSubmitter, DAGEdge>) RemoteDataFetcher
-					.readYarnAppmasterServiceDataFromDFS(yarninputfolder,
+					.readYarnAppmasterServiceDataFromDFS(namenodeurl, yarninputfolder,
 							MDCConstants.MASSIVEDATA_YARNINPUT_GRAPH_FILE);
 			// task map.
 			taskmdsthread = (Map<String, StreamPipelineTaskSubmitter>) RemoteDataFetcher
-					.readYarnAppmasterServiceDataFromDFS(yarninputfolder, MDCConstants.MASSIVEDATA_YARNINPUT_TASK_FILE);
-			jsidjsmap = (Map<String, JobStage>) RemoteDataFetcher.readYarnAppmasterServiceDataFromDFS(yarninputfolder,
+					.readYarnAppmasterServiceDataFromDFS(namenodeurl, yarninputfolder, MDCConstants.MASSIVEDATA_YARNINPUT_TASK_FILE);
+			jsidjsmap = (Map<String, JobStage>) RemoteDataFetcher.readYarnAppmasterServiceDataFromDFS(namenodeurl, yarninputfolder,
 					MDCConstants.MASSIVEDATA_YARNINPUT_JOBSTAGE_FILE);
 			tasks = mdststs.stream().map(StreamPipelineTaskSubmitter::getTask).collect(Collectors.toList());
 			log.debug("tasks size:" + tasks.size());

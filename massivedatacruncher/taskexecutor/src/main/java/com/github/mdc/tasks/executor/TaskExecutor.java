@@ -1,7 +1,6 @@
 package com.github.mdc.tasks.executor;
 
 import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.net.URI;
@@ -95,7 +94,7 @@ public class TaskExecutor implements Runnable {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void run() {
 		log.debug("Started the run------------------------------------------------------");
-		try {
+		try(Socket sock = s) {
 			log.debug("Framework Message: " + deserobj);
 			if (deserobj instanceof JobStage jobstage) {
 				jobidstageidjobstagemap.put(jobstage.jobid + jobstage.stageid, jobstage);
@@ -189,10 +188,17 @@ public class TaskExecutor implements Runnable {
 							}
 						}
 						Utils.writeObjectByStream(s.getOutputStream(), rdf);
-						s.close();
 					}
 				}
 				else if(rdf.mode.equals(MDCConstants.JGROUPS)){
+					if (taskexecutor != null) {
+						try(var is = RemoteDataFetcher
+								.readIntermediatePhaseOutputFromFS(rdf.jobid,
+										mdstde.getIntermediateDataRDF(rdf.taskid));){
+							rdf.data = (byte[]) is.readAllBytes();
+						}
+					}
+				} else {
 					if (taskexecutor != null) {
 						try(var is = RemoteDataFetcher
 								.readIntermediatePhaseOutputFromFS(rdf.jobid,

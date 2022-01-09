@@ -165,11 +165,11 @@ public class RemoteDataFetcher {
 	 * @return
 	 * @throws Throwable
 	 */
-	public static Object readYarnAppmasterServiceDataFromDFS(
+	public static Object readYarnAppmasterServiceDataFromDFS(String namenodeurl,
 			String dirtoread, String filename) throws RemoteDataFetcherException {
 		log.debug("Entered RemoteDataFetcher.readYarnAppmasterServiceDataFromDFS");
 		var configuration = new Configuration();
-		var path = System.getProperty(MDCConstants.HDFSNAMENODEURL) + MDCConstants.BACKWARD_SLASH
+		var path = namenodeurl + MDCConstants.BACKWARD_SLASH
 				+ FileSystemSupport.MDS + MDCConstants.BACKWARD_SLASH + dirtoread + MDCConstants.BACKWARD_SLASH
 				+ filename;
 		try (var hdfs = FileSystem.newInstance(new URI(System.getProperty(MDCConstants.HDFSNAMENODEURL)),

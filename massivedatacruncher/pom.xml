@@ -16,7 +16,7 @@
         <maven.compiler.target>15</maven.compiler.target>
         <maven.compiler.source>15</maven.compiler.source>
         <skip.assemblyxml>true</skip.assemblyxml>
-        <ignite.version>2.9.1</ignite.version>
+        <ignite.version>2.11.1</ignite.version>
         <calcite.version>1.25.0</calcite.version>
     </properties>
 

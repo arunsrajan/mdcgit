@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
@@ -64,6 +65,8 @@ public class MapReduceYarnContainer extends AbstractIntegrationYarnContainer {
 		var containerid = getEnvironment().get(MDCConstants.SHDP_CONTAINERID);
 		MindAppmasterServiceClient client = null;
 		try {
+			var prop = new Properties();
+			MDCProperties.put(prop);
 			ByteBufferPoolDirect.init();
 			ByteBufferPool.init(3);
 			while (true) {
@@ -93,9 +96,7 @@ public class MapReduceYarnContainer extends AbstractIntegrationYarnContainer {
 								containerprops.get(MDCConstants.HDFSNAMENODEURL));
 						var cm = new ArrayList<Mapper>();
 						var cc = new ArrayList<Combiner>();
-						var prop = new Properties();
-						prop.putAll(containerprops);
-						MDCProperties.put(prop);
+						prop.putAll(containerprops);						
 						try (var hdfs = FileSystem.newInstance(
 								new URI(MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL)),
 								new Configuration());) {
@@ -188,7 +189,9 @@ public class MapReduceYarnContainer extends AbstractIntegrationYarnContainer {
 				JobResponse response = (JobResponse) client.doMindRequest(request);
 				log.info("Job Completion Error..." + response.getState() + "..., See cause below \n", ex);
 			}
-			ByteBufferPoolDirect.get().close();
+			if(Objects.isNull(ByteBufferPoolDirect.get())) {
+				ByteBufferPoolDirect.get().close();
+			}
 			System.exit(-1);
 		}
 	}

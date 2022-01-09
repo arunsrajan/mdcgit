@@ -89,85 +89,94 @@ public class MapReduceYarnAppmaster extends StaticEventingAppmaster implements C
 	@Override
 	public void submitApplication() {
 		try {
+			var prop = new Properties();
+			MDCProperties.put(prop);
 			ByteBufferPoolDirect.init();
 			ByteBufferPool.init(3);
-			log.info("Environment: "+getEnvironment());
-			var yarninputfolder = MDCConstants.YARNINPUTFOLDER+MDCConstants.BACKWARD_SLASH+getEnvironment().get(MDCConstants.YARNMDCJOBID);
-			log.info("Yarn Input Folder: "+yarninputfolder);
-			log.info("AppMaster HDFS: "+getConfiguration().get(MDCConstants.HDFSNAMENODEURL));
+			log.info("Environment: " + getEnvironment());
+			var yarninputfolder = MDCConstants.YARNINPUTFOLDER + MDCConstants.BACKWARD_SLASH
+					+ getEnvironment().get(MDCConstants.YARNMDCJOBID);
+			log.info("Yarn Input Folder: " + yarninputfolder);
+			log.info("AppMaster HDFS: " + getConfiguration().get(MDCConstants.HDFSNAMENODEURL));
+			var configuration = getConfiguration().get(MDCConstants.HDFSNAMENODEURL);
 			var containerallocator = (DefaultContainerAllocator) getAllocator();
-			log.info("Parameters: "+getParameters() );
-			log.info("Container-Memory: "+getParameters().getProperty("container-memory", "1024"));
+			log.info("Parameters: " + getParameters());
+			log.info("Container-Memory: " + getParameters().getProperty("container-memory", "1024"));
 			containerallocator.setMemory(Integer.parseInt(getParameters().getProperty("container-memory", "1024")));
 			System.setProperty(MDCConstants.HDFSNAMENODEURL, getConfiguration().get(MDCConstants.HDFSNAMENODEURL));
-			//Thread containing the job stage information.
-			mapclzchunkfile = (Map<String, Set<String>>) RemoteDataFetcher.readYarnAppmasterServiceDataFromDFS( yarninputfolder,
-					MDCConstants.MASSIVEDATA_YARNINPUT_MAPPER);
-			combiner = (Set<String>) RemoteDataFetcher.readYarnAppmasterServiceDataFromDFS( yarninputfolder,
-					MDCConstants.MASSIVEDATA_YARNINPUT_COMBINER);
-			reducer = (Set<String>) RemoteDataFetcher.readYarnAppmasterServiceDataFromDFS(yarninputfolder,
-					MDCConstants.MASSIVEDATA_YARNINPUT_REDUCER);
-			folderfileblocksmap = (Map<String, List<BlocksLocation>>) RemoteDataFetcher.readYarnAppmasterServiceDataFromDFS(yarninputfolder,
-					MDCConstants.MASSIVEDATA_YARNINPUT_FILEBLOCKS);
-			jobconf = (JobConfiguration) RemoteDataFetcher.readYarnAppmasterServiceDataFromDFS(yarninputfolder,
-					MDCConstants.MASSIVEDATA_YARNINPUT_CONFIGURATION);
+			// Thread containing the job stage information.
+			mapclzchunkfile = (Map<String, Set<String>>) RemoteDataFetcher.readYarnAppmasterServiceDataFromDFS(
+					configuration, yarninputfolder, MDCConstants.MASSIVEDATA_YARNINPUT_MAPPER);
+			combiner = (Set<String>) RemoteDataFetcher.readYarnAppmasterServiceDataFromDFS(configuration,
+					yarninputfolder, MDCConstants.MASSIVEDATA_YARNINPUT_COMBINER);
+			reducer = (Set<String>) RemoteDataFetcher.readYarnAppmasterServiceDataFromDFS(configuration,
+					yarninputfolder, MDCConstants.MASSIVEDATA_YARNINPUT_REDUCER);
+			folderfileblocksmap = (Map<String, List<BlocksLocation>>) RemoteDataFetcher
+					.readYarnAppmasterServiceDataFromDFS(configuration, yarninputfolder,
+							MDCConstants.MASSIVEDATA_YARNINPUT_FILEBLOCKS);
+			jobconf = (JobConfiguration) RemoteDataFetcher.readYarnAppmasterServiceDataFromDFS(configuration,
+					yarninputfolder, MDCConstants.MASSIVEDATA_YARNINPUT_CONFIGURATION);
 			numreducers = Integer.parseInt(jobconf.getNumofreducers());
+
+			var appmasterservice = (MapReduceYarnAppmasterService) getAppmasterService();
+			log.info("In SubmitApplication Setting AppMaster Service: " + appmasterservice);
+			if (appmasterservice != null) {
+				// Set the Yarn App master bean to the Yarn App master service object.
+				appmasterservice.setYarnAppMaster(this);
+			}
+			var taskcount = 0;
+			var applicationid = MDCConstants.MDCAPPLICATION + MDCConstants.HYPHEN + System.currentTimeMillis();
+			var bls = folderfileblocksmap.keySet().stream().flatMap(key -> folderfileblocksmap.get(key).stream())
+					.collect(Collectors.toList());
+			List<MapperCombiner> mappercombiners;
+			totalmappersize = bls.size();
+			for (var bl : bls) {
+				var taskid = MDCConstants.TASK + MDCConstants.HYPHEN + MDCConstants.MAPPER + MDCConstants.HYPHEN
+						+ (taskcount + 1);
+				var apptask = new ApplicationTask();
+				apptask.applicationid = applicationid;
+				apptask.taskid = taskid;
+				var mc = (MapperCombiner) getMapperCombiner(mapclzchunkfile, combiner, bl, apptask);
+				var xrefdnaddrs = new ArrayList<>(bl.block[0].dnxref.keySet());
+				var key = xrefdnaddrs.get(taskcount % xrefdnaddrs.size());
+				var dnxrefaddr = new ArrayList<>(bl.block[0].dnxref.get(key));
+				bl.block[0].hp = dnxrefaddr.get(taskcount % dnxrefaddr.size());
+				var host = bl.block[0].hp.split(":")[0];
+				if (Objects.isNull(ipmcs.get(host))) {
+					mappercombiners = new ArrayList<>();
+					ipmcs.put(host, mappercombiners);
+				} else {
+					mappercombiners = ipmcs.get(host);
+				}
+				mappercombiners.add(mc);
+				taskcount++;
+			}
+			log.info(bls);
+			taskcount = 0;
+			while (taskcount < numreducers) {
+				var red = new YarnReducer();
+				red.reducerclasses = reducer;
+				var taskid = MDCConstants.TASK + MDCConstants.HYPHEN + MDCConstants.REDUCER + MDCConstants.HYPHEN
+						+ (taskcount + 1);
+				var apptask = new ApplicationTask();
+				apptask.applicationid = applicationid;
+				apptask.taskid = taskid;
+				red.apptask = apptask;
+				rs.add(red);
+				taskcount++;
+			}
+			log.info(rs);
+
+			prop.put(MDCConstants.HDFSNAMENODEURL, getConfiguration().get(MDCConstants.HDFSNAMENODEURL));
+			MDCProperties.put(prop);
+			super.submitApplication();
 		}
 		catch(Exception ex) {
 			log.info("Submit Application Error, See cause below \n",ex);
-		}
-		var appmasterservice = (MapReduceYarnAppmasterService) getAppmasterService();
-		log.info("In SubmitApplication Setting AppMaster Service: "+appmasterservice);
-		if(appmasterservice!=null) {
-			//Set the Yarn App master bean to the Yarn App master service object. 
-			appmasterservice.setYarnAppMaster(this);
-		}
-		var taskcount = 0;
-		var applicationid = MDCConstants.MDCAPPLICATION + MDCConstants.HYPHEN + System.currentTimeMillis();
-		var bls = folderfileblocksmap.keySet().stream()
-				.flatMap(key -> folderfileblocksmap.get(key).stream()).collect(Collectors.toList());
-		List<MapperCombiner> mappercombiners;
-		totalmappersize = bls.size();
-		for (var bl : bls) {
-			var taskid = MDCConstants.TASK + MDCConstants.HYPHEN + MDCConstants.MAPPER + MDCConstants.HYPHEN
-					+ (taskcount + 1);
-			var apptask = new ApplicationTask();
-			apptask.applicationid = applicationid;
-			apptask.taskid = taskid;
-			var mc = (MapperCombiner) getMapperCombiner(mapclzchunkfile, combiner, bl, apptask);
-			var xrefdnaddrs = new ArrayList<>(bl.block[0].dnxref.keySet());
-			var key = xrefdnaddrs.get(taskcount%xrefdnaddrs.size());
-			var dnxrefaddr = new ArrayList<>(bl.block[0].dnxref.get(key));
-			bl.block[0].hp = dnxrefaddr.get(taskcount%dnxrefaddr.size());
-			var host = bl.block[0].hp.split(":")[0];
-			if(Objects.isNull(ipmcs.get(host))) {
-				mappercombiners = new ArrayList<>();
-				ipmcs.put(host, mappercombiners);
-			}else {
-				mappercombiners = ipmcs.get(host);
+			if(!Objects.isNull(ByteBufferPoolDirect.get())) {
+				ByteBufferPoolDirect.get().close();
 			}
-			mappercombiners.add(mc);
-			taskcount++;
 		}
-		log.info(bls);
-		taskcount = 0;
-		while (taskcount < numreducers) {
-			var red = new YarnReducer();
-			red.reducerclasses = reducer;
-			var taskid =  MDCConstants.TASK + MDCConstants.HYPHEN + MDCConstants.REDUCER + MDCConstants.HYPHEN
-					+ (taskcount + 1);
-			var apptask = new ApplicationTask();
-			apptask.applicationid = applicationid;
-			apptask.taskid = taskid;
-			red.apptask = apptask;
-			rs.add(red);
-			taskcount++;
-		}
-		log.info(rs);
-		var prop = new Properties();
-		prop.put(MDCConstants.HDFSNAMENODEURL, getConfiguration().get(MDCConstants.HDFSNAMENODEURL));
-		MDCProperties.put(prop);
-		super.submitApplication();
 	}
 
 	
