@@ -66,7 +66,7 @@ public class StreamPipelineTestCommon {
 	}
 	@BeforeClass
 	public static void setUp() throws Throwable {
-		System.setProperty("HADOOP_HOME", "E:\\DEVELOPMENT\\hadoop\\hadoop-3.2.1");
+		System.setProperty("HADOOP_HOME", "C:\\DEVELOPMENT\\hadoop\\hadooplocal\\hadoop-3.3.1");
 		Configuration conf = new Configuration();
 		Utils.loadLog4JSystemPropertiesClassPath("mdctest.properties");
 		ByteBufferPoolDirect.init();

@@ -211,7 +211,7 @@ public class FileBlocksPartitionerHDFS {
 				}
 				allocateContainersLoadBalanced(totalblockslocation);
 				job.jm.nodes = nodeschoosen;
-				job.jm.containersallocated = containers.stream().collect(Collectors.toMap(key->key, value->0d));
+				job.jm.containersallocated = new ConcurrentHashMap<>();
 			}else if(islocal||isyarn||ismesos) {
 				getDnXref(totalblockslocation, false);
 			}

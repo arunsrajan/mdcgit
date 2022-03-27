@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.BufferedInputStream;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,13 +32,13 @@ import com.github.mdc.common.HDFSBlockUtils;
 import com.github.mdc.common.JobStage;
 import com.github.mdc.common.MDCCache;
 import com.github.mdc.common.MDCConstants;
+import com.github.mdc.common.MDCProperties;
 import com.github.mdc.common.Stage;
 import com.github.mdc.common.Task;
 import com.github.mdc.common.Utils;
 import com.github.mdc.stream.CsvOptions;
 import com.github.mdc.stream.Json;
 import com.github.mdc.stream.StreamPipelineTestCommon;
-import com.github.mdc.stream.executors.StreamPipelineTaskExecutor;
 import com.github.mdc.stream.functions.CalculateCount;
 import com.github.mdc.stream.functions.Coalesce;
 import com.github.mdc.stream.functions.CountByKeyFunction;
@@ -92,7 +93,7 @@ public class StreamPipelineTaskExecutorTest extends StreamPipelineTestCommon {
 		mdstde.processBlockHDFSIntersection(bls.get(0), bls.get(0), hdfs);
 		Kryo kryo = Utils.getKryoNonDeflateSerializer();
 		String path = mdstde.getIntermediateDataFSFilePath(task);
-		InputStream fsdis = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path))));
+		InputStream fsdis = new SnappyInputStream(new BufferedInputStream(new FileInputStream(MDCProperties.get().getProperty(MDCConstants.TMPDIR) + path )));
 		List<String> intersectiondata = (List<String>) kryo.readClassAndObject(new Input(fsdis));
 		assertEquals(46361, intersectiondata.size());
 		fsdis.close();
@@ -137,7 +138,7 @@ public class StreamPipelineTaskExecutorTest extends StreamPipelineTestCommon {
 		mdstde.processBlockHDFSIntersection(bls1.get(0), bls2.get(0), hdfs);
 		Kryo kryo = Utils.getKryoNonDeflateSerializer();
 		String path = mdstde.getIntermediateDataFSFilePath(task);
-		InputStream fsdis = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path))));
+		InputStream fsdis = new SnappyInputStream(new BufferedInputStream(new FileInputStream(MDCProperties.get().getProperty(MDCConstants.TMPDIR) + path )));
 		List<String> intersectiondata = (List<String>) kryo.readClassAndObject(new Input(fsdis));
 		assertEquals(20, intersectiondata.size());
 		fsdis.close();
@@ -182,7 +183,7 @@ public class StreamPipelineTaskExecutorTest extends StreamPipelineTestCommon {
 		mdstde.processBlockHDFSIntersection(bls1.get(0), bls1.get(0), hdfs);
 		Kryo kryo = Utils.getKryoNonDeflateSerializer();
 		String path = mdstde.getIntermediateDataFSFilePath(task);
-		InputStream fsdis = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path))));
+		InputStream fsdis = new SnappyInputStream(new BufferedInputStream(new FileInputStream(MDCProperties.get().getProperty(MDCConstants.TMPDIR) + path )));
 		Set<InputStream> istreams = new LinkedHashSet<>(Arrays.asList(fsdis));
 		task = new Task();
 		task.jobid = js.jobid;
@@ -195,7 +196,7 @@ public class StreamPipelineTaskExecutorTest extends StreamPipelineTestCommon {
 		fsdis.close();
 		mdstde.setTask(task);
 		path = mdstde.getIntermediateDataFSFilePath(task);
-		fsdis = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path))));
+		fsdis = new SnappyInputStream(new BufferedInputStream(new FileInputStream(MDCProperties.get().getProperty(MDCConstants.TMPDIR) + path )));
 		List<String> intersectiondata = (List<String>) kryo.readClassAndObject(new Input(fsdis));
 		assertEquals(20, intersectiondata.size());
 		fsdis.close();
@@ -246,10 +247,10 @@ public class StreamPipelineTaskExecutorTest extends StreamPipelineTestCommon {
 		mdstde.processBlockHDFSIntersection(bls2.get(0), bls2.get(0), hdfs);
 		Kryo kryo = Utils.getKryoNonDeflateSerializer();
 		String path = mdstde.getIntermediateDataFSFilePath(task1);
-		InputStream fsdis1 = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path))));
+		InputStream fsdis1 = new SnappyInputStream(new BufferedInputStream(new FileInputStream(MDCProperties.get().getProperty(MDCConstants.TMPDIR) + path )));
 		List<InputStream> istreams1 = Arrays.asList(fsdis1);
 		path = mdstde.getIntermediateDataFSFilePath(task2);
-		InputStream fsdis2 = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path))));
+		InputStream fsdis2 = new SnappyInputStream(new BufferedInputStream(new FileInputStream(MDCProperties.get().getProperty(MDCConstants.TMPDIR) + path )));
 		List<InputStream> istreams2 = Arrays.asList(fsdis2);
 
 		Task taskinter = new Task();
@@ -264,7 +265,7 @@ public class StreamPipelineTaskExecutorTest extends StreamPipelineTestCommon {
 		fsdis2.close();
 
 		path = mdstde.getIntermediateDataFSFilePath(taskinter);
-		InputStream fsdis = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path))));
+		InputStream fsdis = new SnappyInputStream(new BufferedInputStream(new FileInputStream(MDCProperties.get().getProperty(MDCConstants.TMPDIR) + path )));
 		List<String> intersectiondata = (List<String>) kryo.readClassAndObject(new Input(fsdis));
 		assertEquals(20, intersectiondata.size());
 		fsdis.close();
@@ -301,7 +302,7 @@ public class StreamPipelineTaskExecutorTest extends StreamPipelineTestCommon {
 		mdstde.processBlockHDFSUnion(bls.get(0), bls.get(0), hdfs);
 		Kryo kryo = Utils.getKryoNonDeflateSerializer();
 		String path = mdstde.getIntermediateDataFSFilePath(task);
-		InputStream fsdis = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path))));
+		InputStream fsdis = new SnappyInputStream(new BufferedInputStream(new FileInputStream(MDCProperties.get().getProperty(MDCConstants.TMPDIR) + path )));
 		List<String> uniondata = (List<String>) kryo.readClassAndObject(new Input(fsdis));
 		assertEquals(46361, uniondata.size());
 		fsdis.close();
@@ -346,7 +347,7 @@ public class StreamPipelineTaskExecutorTest extends StreamPipelineTestCommon {
 		mdstde.processBlockHDFSUnion(bls1.get(0), bls2.get(0), hdfs);
 		Kryo kryo = Utils.getKryoNonDeflateSerializer();
 		String path = mdstde.getIntermediateDataFSFilePath(task);
-		InputStream fsdis = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path))));
+		InputStream fsdis = new SnappyInputStream(new BufferedInputStream(new FileInputStream(MDCProperties.get().getProperty(MDCConstants.TMPDIR) + path )));
 		List<String> uniondata = (List<String>) kryo.readClassAndObject(new Input(fsdis));
 		assertEquals(60, uniondata.size());
 		fsdis.close();
@@ -391,7 +392,7 @@ public class StreamPipelineTaskExecutorTest extends StreamPipelineTestCommon {
 		mdstde.processBlockHDFSUnion(bls1.get(0), bls1.get(0), hdfs);
 		Kryo kryo = Utils.getKryoNonDeflateSerializer();
 		String path = mdstde.getIntermediateDataFSFilePath(task);
-		InputStream fsdis = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path))));
+		InputStream fsdis = new SnappyInputStream(new BufferedInputStream(new FileInputStream(MDCProperties.get().getProperty(MDCConstants.TMPDIR) + path )));
 		Set<InputStream> istreams = new LinkedHashSet<>(Arrays.asList(fsdis));
 		task = new Task();
 		task.jobid = js.jobid;
@@ -403,7 +404,7 @@ public class StreamPipelineTaskExecutorTest extends StreamPipelineTestCommon {
 		mdstde.processBlockHDFSUnion(istreams, Arrays.asList(bls2.get(0)), hdfs);
 		fsdis.close();
 		path = mdstde.getIntermediateDataFSFilePath(task);
-		fsdis = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path))));
+		fsdis = new SnappyInputStream(new BufferedInputStream(new FileInputStream(MDCProperties.get().getProperty(MDCConstants.TMPDIR) + path )));
 		List<String> uniondata = (List<String>) kryo.readClassAndObject(new Input(fsdis));
 		assertEquals(60, uniondata.size());
 		fsdis.close();
@@ -456,11 +457,11 @@ public class StreamPipelineTaskExecutorTest extends StreamPipelineTestCommon {
 		mdstde.processBlockHDFSUnion(bls2.get(0), bls2.get(0), hdfs);
 		Kryo kryo = Utils.getKryoNonDeflateSerializer();
 		String path = mdstde.getIntermediateDataFSFilePath(task1);
-		InputStream fsdis1 = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path))));
+		InputStream fsdis1 = new SnappyInputStream(new BufferedInputStream(new FileInputStream(MDCProperties.get().getProperty(MDCConstants.TMPDIR) + path )));
 		List<InputStream> istreams1 = Arrays.asList(fsdis1);
 
 		path = mdstde.getIntermediateDataFSFilePath(task2);
-		InputStream fsdis2 = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path))));
+		InputStream fsdis2 = new SnappyInputStream(new BufferedInputStream(new FileInputStream(MDCProperties.get().getProperty(MDCConstants.TMPDIR) + path )));
 		List<InputStream> istreams2 = Arrays.asList(fsdis2);
 
 		Task taskunion = new Task();
@@ -475,7 +476,7 @@ public class StreamPipelineTaskExecutorTest extends StreamPipelineTestCommon {
 		fsdis2.close();
 
 		path = mdstde.getIntermediateDataFSFilePath(taskunion);
-		InputStream fsdis = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path))));
+		InputStream fsdis = new SnappyInputStream(new BufferedInputStream(new FileInputStream(MDCProperties.get().getProperty(MDCConstants.TMPDIR) + path )));
 		List<String> uniondata = (List<String>) kryo.readClassAndObject(new Input(fsdis));
 		assertEquals(60, uniondata.size());
 		fsdis.close();
@@ -515,7 +516,7 @@ public class StreamPipelineTaskExecutorTest extends StreamPipelineTestCommon {
 		mdstde.processBlockHDFSMap(bls1.get(0), hdfs);
 		Kryo kryo = Utils.getKryoNonDeflateSerializer();
 		String path = mdstde.getIntermediateDataFSFilePath(filtertask);
-		InputStream fsdis = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path))));
+		InputStream fsdis = new SnappyInputStream(new BufferedInputStream(new FileInputStream(MDCProperties.get().getProperty(MDCConstants.TMPDIR) + path )));
 		List<String[]> mapfilterdata = (List<String[]>) kryo.readClassAndObject(new Input(fsdis));
 		assertEquals(45957, mapfilterdata.size());
 		fsdis.close();
@@ -555,7 +556,7 @@ public class StreamPipelineTaskExecutorTest extends StreamPipelineTestCommon {
 		mdstde.processBlockHDFSMap(bls1.get(0), hdfs);
 		Kryo kryo = Utils.getKryoNonDeflateSerializer();
 		String path = mdstde.getIntermediateDataFSFilePath(calculatecounttask);
-		InputStream fsdis = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path))));
+		InputStream fsdis = new SnappyInputStream(new BufferedInputStream(new FileInputStream(MDCProperties.get().getProperty(MDCConstants.TMPDIR) + path )));
 		List<Long> mapfiltercountdata = (List<Long>) kryo.readClassAndObject(new Input(fsdis));
 		assertEquals(45957l, (long) mapfiltercountdata.get(0));
 		fsdis.close();
@@ -597,7 +598,7 @@ public class StreamPipelineTaskExecutorTest extends StreamPipelineTestCommon {
 		mdstde.processBlockHDFSMap(bls1.get(0), hdfs);
 		Kryo kryo = Utils.getKryoNonDeflateSerializer();
 		String path = mdstde.getIntermediateDataFSFilePath(sstask);
-		InputStream fsdis = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path))));
+		InputStream fsdis = new SnappyInputStream(new BufferedInputStream(new FileInputStream(MDCProperties.get().getProperty(MDCConstants.TMPDIR) + path )));
 		List<IntSummaryStatistics> mapfilterssdata = (List<IntSummaryStatistics>) kryo
 				.readClassAndObject(new Input(fsdis));
 		assertEquals(1, (long) mapfilterssdata.size());
@@ -645,7 +646,7 @@ public class StreamPipelineTaskExecutorTest extends StreamPipelineTestCommon {
 		mdstde.processBlockHDFSMap(bls1.get(0), hdfs);
 		Kryo kryo = Utils.getKryoNonDeflateSerializer();
 		String path = mdstde.getIntermediateDataFSFilePath(maxtask);
-		InputStream fsdis = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path))));
+		InputStream fsdis = new SnappyInputStream(new BufferedInputStream(new FileInputStream(MDCProperties.get().getProperty(MDCConstants.TMPDIR) + path )));
 		List<Integer> mapfiltermaxdata = (List<Integer>) kryo.readClassAndObject(new Input(fsdis));
 		fsdis.close();
 		assertEquals(623, (int) mapfiltermaxdata.get(0));
@@ -687,7 +688,7 @@ public class StreamPipelineTaskExecutorTest extends StreamPipelineTestCommon {
 		mdstde.processBlockHDFSMap(bls1.get(0), hdfs);
 		Kryo kryo = Utils.getKryoNonDeflateSerializer();
 		String path = mdstde.getIntermediateDataFSFilePath(mintask);
-		InputStream fsdis = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path))));
+		InputStream fsdis = new SnappyInputStream(new BufferedInputStream(new FileInputStream(MDCProperties.get().getProperty(MDCConstants.TMPDIR) + path )));
 		List<Integer> mapfiltermaxdata = (List<Integer>) kryo.readClassAndObject(new Input(fsdis));
 		fsdis.close();
 		assertEquals(-89, (int) mapfiltermaxdata.get(0));
@@ -729,7 +730,7 @@ public class StreamPipelineTaskExecutorTest extends StreamPipelineTestCommon {
 		mdstde.processBlockHDFSMap(bls1.get(0), hdfs);
 		Kryo kryo = Utils.getKryoNonDeflateSerializer();
 		String path = mdstde.getIntermediateDataFSFilePath(sumtask);
-		InputStream fsdis = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path))));
+		InputStream fsdis = new SnappyInputStream(new BufferedInputStream(new FileInputStream(MDCProperties.get().getProperty(MDCConstants.TMPDIR) + path )));
 		List<Integer> mapfiltermaxdata = (List<Integer>) kryo.readClassAndObject(new Input(fsdis));
 		fsdis.close();
 		assertEquals(-63278, (int) mapfiltermaxdata.get(0));
@@ -771,7 +772,7 @@ public class StreamPipelineTaskExecutorTest extends StreamPipelineTestCommon {
 		mdstde.processBlockHDFSMap(bls1.get(0), hdfs);
 		Kryo kryo = Utils.getKryoNonDeflateSerializer();
 		String path = mdstde.getIntermediateDataFSFilePath(sdtask);
-		InputStream fsdis = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path))));
+		InputStream fsdis = new SnappyInputStream(new BufferedInputStream(new FileInputStream(MDCProperties.get().getProperty(MDCConstants.TMPDIR) + path )));
 		List<Double> mapfiltermaxdata = (List<Double>) kryo.readClassAndObject(new Input(fsdis));
 		fsdis.close();
 		assertEquals(1, mapfiltermaxdata.size());
@@ -812,7 +813,7 @@ public class StreamPipelineTaskExecutorTest extends StreamPipelineTestCommon {
 		mdstde.processBlockHDFSMap(bls1.get(0), hdfs);
 		Kryo kryo = Utils.getKryoNonDeflateSerializer();
 		String path = mdstde.getIntermediateDataFSFilePath(calcultecounttask);
-		InputStream fsdis = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path))));
+		InputStream fsdis = new SnappyInputStream(new BufferedInputStream(new FileInputStream(MDCProperties.get().getProperty(MDCConstants.TMPDIR) + path )));
 		List<Long> mapfiltercountdata = (List<Long>) kryo.readClassAndObject(new Input(fsdis));
 		assertEquals(45957l, (long) mapfiltercountdata.get(0));
 		fsdis.close();
@@ -852,7 +853,7 @@ public class StreamPipelineTaskExecutorTest extends StreamPipelineTestCommon {
 		mdstde.processBlockHDFSMap(bls1.get(0), hdfs);
 		Kryo kryo = Utils.getKryoNonDeflateSerializer();
 		String path = mdstde.getIntermediateDataFSFilePath(filtertask);
-		InputStream fsdis = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path))));
+		InputStream fsdis = new SnappyInputStream(new BufferedInputStream(new FileInputStream(MDCProperties.get().getProperty(MDCConstants.TMPDIR) + path )));
 		List<CSVRecord> filterdata = (List<CSVRecord>) kryo.readClassAndObject(new Input(fsdis));
 		assertEquals(45957l, (long) filterdata.size());
 		fsdis.close();
@@ -895,7 +896,7 @@ public class StreamPipelineTaskExecutorTest extends StreamPipelineTestCommon {
 		mdstde.processBlockHDFSMap(bls1.get(0), hdfs);
 		Kryo kryo = Utils.getKryoNonDeflateSerializer();
 		String path = mdstde.getIntermediateDataFSFilePath(summarystaticstask);
-		InputStream fsdis = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path))));
+		InputStream fsdis = new SnappyInputStream(new BufferedInputStream(new FileInputStream(MDCProperties.get().getProperty(MDCConstants.TMPDIR) + path )));
 		List<IntSummaryStatistics> mapfilterssdata = (List<IntSummaryStatistics>) kryo
 				.readClassAndObject(new Input(fsdis));
 		assertEquals(1, (long) mapfilterssdata.size());
@@ -943,7 +944,7 @@ public class StreamPipelineTaskExecutorTest extends StreamPipelineTestCommon {
 		mdstde.processBlockHDFSMap(bls1.get(0), hdfs);
 		Kryo kryo = Utils.getKryoNonDeflateSerializer();
 		String path = mdstde.getIntermediateDataFSFilePath(maxtask);
-		InputStream fsdis = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path))));
+		InputStream fsdis = new SnappyInputStream(new BufferedInputStream(new FileInputStream(MDCProperties.get().getProperty(MDCConstants.TMPDIR) + path )));
 		List<Integer> mapfilterssdata = (List<Integer>) kryo.readClassAndObject(new Input(fsdis));
 		assertEquals(623, (long) mapfilterssdata.get(0));
 		fsdis.close();
@@ -986,7 +987,7 @@ public class StreamPipelineTaskExecutorTest extends StreamPipelineTestCommon {
 		mdstde.processBlockHDFSMap(bls1.get(0), hdfs);
 		Kryo kryo = Utils.getKryoNonDeflateSerializer();
 		String path = mdstde.getIntermediateDataFSFilePath(mintask);
-		InputStream fsdis = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path))));
+		InputStream fsdis = new SnappyInputStream(new BufferedInputStream(new FileInputStream(MDCProperties.get().getProperty(MDCConstants.TMPDIR) + path )));
 		List<Integer> mapfilterssdata = (List<Integer>) kryo.readClassAndObject(new Input(fsdis));
 		assertEquals(-89, (long) mapfilterssdata.get(0));
 		fsdis.close();
@@ -1029,7 +1030,7 @@ public class StreamPipelineTaskExecutorTest extends StreamPipelineTestCommon {
 		mdstde.processBlockHDFSMap(bls1.get(0), hdfs);
 		Kryo kryo = Utils.getKryoNonDeflateSerializer();
 		String path = mdstde.getIntermediateDataFSFilePath(sumtask);
-		InputStream fsdis = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path))));
+		InputStream fsdis = new SnappyInputStream(new BufferedInputStream(new FileInputStream(MDCProperties.get().getProperty(MDCConstants.TMPDIR) + path )));
 		List<Integer> mapfilterssdata = (List<Integer>) kryo.readClassAndObject(new Input(fsdis));
 		assertEquals(-63278, (long) mapfilterssdata.get(0));
 		fsdis.close();
@@ -1072,7 +1073,7 @@ public class StreamPipelineTaskExecutorTest extends StreamPipelineTestCommon {
 		mdstde.processBlockHDFSMap(bls1.get(0), hdfs);
 		Kryo kryo = Utils.getKryoNonDeflateSerializer();
 		String path = mdstde.getIntermediateDataFSFilePath(sdtask);
-		InputStream fsdis = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path))));
+		InputStream fsdis = new SnappyInputStream(new BufferedInputStream(new FileInputStream(MDCProperties.get().getProperty(MDCConstants.TMPDIR) + path )));
 		List<Double> mapfiltersddata = (List<Double>) kryo.readClassAndObject(new Input(fsdis));
 		assertEquals(1, (long) mapfiltersddata.size());
 		fsdis.close();
@@ -1112,7 +1113,7 @@ public class StreamPipelineTaskExecutorTest extends StreamPipelineTestCommon {
 		mdstde.setTask(filtertask);
 		mdstde.processBlockHDFSMap(bls1.get(0), hdfs);
 		String path = mdstde.getIntermediateDataFSFilePath(filtertask);
-		InputStream fsdis = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path))));
+		InputStream fsdis = new SnappyInputStream(new BufferedInputStream(new FileInputStream(MDCProperties.get().getProperty(MDCConstants.TMPDIR) + path )));
 		Set<InputStream> inputtocount = new LinkedHashSet<>(Arrays.asList(fsdis));
 		Task calcultecounttask = new Task();
 		calcultecounttask.jobid = js.jobid;
@@ -1124,7 +1125,7 @@ public class StreamPipelineTaskExecutorTest extends StreamPipelineTestCommon {
 		fsdis.close();
 		Kryo kryo = Utils.getKryoNonDeflateSerializer();
 		path = mdstde.getIntermediateDataFSFilePath(calcultecounttask);
-		fsdis = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path))));
+		fsdis = new SnappyInputStream(new BufferedInputStream(new FileInputStream(MDCProperties.get().getProperty(MDCConstants.TMPDIR) + path )));
 		List<Long> csvreccount = (List<Long>) kryo.readClassAndObject(new Input(fsdis));
 		assertEquals(45957l, (long) csvreccount.get(0));
 		fsdis.close();
@@ -1164,7 +1165,7 @@ public class StreamPipelineTaskExecutorTest extends StreamPipelineTestCommon {
 		mdstde.setTask(filtertask);
 		mdstde.processBlockHDFSMap(bls1.get(0), hdfs);
 		String path = mdstde.getIntermediateDataFSFilePath(filtertask);
-		InputStream fsdis = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path))));
+		InputStream fsdis = new SnappyInputStream(new BufferedInputStream(new FileInputStream(MDCProperties.get().getProperty(MDCConstants.TMPDIR) + path )));
 		Set<InputStream> inputtocount = new LinkedHashSet<>(Arrays.asList(fsdis));
 		ToIntFunction<CSVRecord> csvint = (CSVRecord csvrecord) -> Integer.parseInt(csvrecord.get("ArrDelay"));
 		Task summarystaticstask = new Task();
@@ -1178,7 +1179,7 @@ public class StreamPipelineTaskExecutorTest extends StreamPipelineTestCommon {
 		fsdis.close();
 		Kryo kryo = Utils.getKryoNonDeflateSerializer();
 		path = mdstde.getIntermediateDataFSFilePath(summarystaticstask);
-		fsdis = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path))));
+		fsdis = new SnappyInputStream(new BufferedInputStream(new FileInputStream(MDCProperties.get().getProperty(MDCConstants.TMPDIR) + path )));
 		List<IntSummaryStatistics> mapfilterssdata = (List<IntSummaryStatistics>) kryo
 				.readClassAndObject(new Input(fsdis));
 		assertEquals(1, (long) mapfilterssdata.size());
@@ -1223,7 +1224,7 @@ public class StreamPipelineTaskExecutorTest extends StreamPipelineTestCommon {
 		mdstde.setTask(filtertask);
 		mdstde.processBlockHDFSMap(bls1.get(0), hdfs);
 		String path = mdstde.getIntermediateDataFSFilePath(filtertask);
-		InputStream fsdis = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path))));
+		InputStream fsdis = new SnappyInputStream(new BufferedInputStream(new FileInputStream(MDCProperties.get().getProperty(MDCConstants.TMPDIR) + path )));
 		Set<InputStream> inputtocount = new LinkedHashSet<>(Arrays.asList(fsdis));
 		ToIntFunction<CSVRecord> csvint = (CSVRecord csvrecord) -> Integer.parseInt(csvrecord.get("ArrDelay"));
 		Task maxtask = new Task();
@@ -1237,7 +1238,7 @@ public class StreamPipelineTaskExecutorTest extends StreamPipelineTestCommon {
 		fsdis.close();
 		Kryo kryo = Utils.getKryoNonDeflateSerializer();
 		path = mdstde.getIntermediateDataFSFilePath(maxtask);
-		fsdis = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path))));
+		fsdis = new SnappyInputStream(new BufferedInputStream(new FileInputStream(MDCProperties.get().getProperty(MDCConstants.TMPDIR) + path )));
 		List<Integer> mapfiltermaxdata = (List<Integer>) kryo.readClassAndObject(new Input(fsdis));
 		assertEquals(623, (int) mapfiltermaxdata.get(0));
 		fsdis.close();
@@ -1276,7 +1277,7 @@ public class StreamPipelineTaskExecutorTest extends StreamPipelineTestCommon {
 		mdstde.setTask(filtertask);
 		mdstde.processBlockHDFSMap(bls1.get(0), hdfs);
 		String path = mdstde.getIntermediateDataFSFilePath(filtertask);
-		InputStream fsdis = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path))));
+		InputStream fsdis = new SnappyInputStream(new BufferedInputStream(new FileInputStream(MDCProperties.get().getProperty(MDCConstants.TMPDIR) + path )));
 		Set<InputStream> inputtocount = new LinkedHashSet<>(Arrays.asList(fsdis));
 		ToIntFunction<CSVRecord> csvint = (CSVRecord csvrecord) -> Integer.parseInt(csvrecord.get("ArrDelay"));
 		Task mintask = new Task();
@@ -1290,7 +1291,7 @@ public class StreamPipelineTaskExecutorTest extends StreamPipelineTestCommon {
 		fsdis.close();
 		Kryo kryo = Utils.getKryoNonDeflateSerializer();
 		path = mdstde.getIntermediateDataFSFilePath(mintask);
-		fsdis = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path))));
+		fsdis = new SnappyInputStream(new BufferedInputStream(new FileInputStream(MDCProperties.get().getProperty(MDCConstants.TMPDIR) + path )));
 		List<Integer> mapfiltermindata = (List<Integer>) kryo.readClassAndObject(new Input(fsdis));
 		assertEquals(-89, (int) mapfiltermindata.get(0));
 		fsdis.close();
@@ -1330,7 +1331,7 @@ public class StreamPipelineTaskExecutorTest extends StreamPipelineTestCommon {
 		mdstde.setTask(filtertask);
 		mdstde.processBlockHDFSMap(bls1.get(0), hdfs);
 		String path = mdstde.getIntermediateDataFSFilePath(filtertask);
-		InputStream fsdis = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path))));
+		InputStream fsdis = new SnappyInputStream(new BufferedInputStream(new FileInputStream(MDCProperties.get().getProperty(MDCConstants.TMPDIR) + path )));
 		Set<InputStream> inputtocount = new LinkedHashSet<>(Arrays.asList(fsdis));
 		ToIntFunction<CSVRecord> csvint = (CSVRecord csvrecord) -> Integer.parseInt(csvrecord.get("ArrDelay"));
 		Task sumtask = new Task();
@@ -1344,7 +1345,7 @@ public class StreamPipelineTaskExecutorTest extends StreamPipelineTestCommon {
 		fsdis.close();
 		Kryo kryo = Utils.getKryoNonDeflateSerializer();
 		path = mdstde.getIntermediateDataFSFilePath(sumtask);
-		fsdis = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path))));
+		fsdis = new SnappyInputStream(new BufferedInputStream(new FileInputStream(MDCProperties.get().getProperty(MDCConstants.TMPDIR) + path )));
 		List<Integer> mapfiltersumdata = (List<Integer>) kryo.readClassAndObject(new Input(fsdis));
 		assertEquals(-63278, (int) mapfiltersumdata.get(0));
 		fsdis.close();
@@ -1384,7 +1385,7 @@ public class StreamPipelineTaskExecutorTest extends StreamPipelineTestCommon {
 		mdstde.setTask(filtertask);
 		mdstde.processBlockHDFSMap(bls1.get(0), hdfs);
 		String path = mdstde.getIntermediateDataFSFilePath(filtertask);
-		InputStream fsdis = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path))));
+		InputStream fsdis = new SnappyInputStream(new BufferedInputStream(new FileInputStream(MDCProperties.get().getProperty(MDCConstants.TMPDIR) + path )));
 		Set<InputStream> inputtocount = new LinkedHashSet<>(Arrays.asList(fsdis));
 		ToIntFunction<CSVRecord> csvint = (CSVRecord csvrecord) -> Integer.parseInt(csvrecord.get("ArrDelay"));
 		Task sdtask = new Task();
@@ -1398,7 +1399,7 @@ public class StreamPipelineTaskExecutorTest extends StreamPipelineTestCommon {
 		fsdis.close();
 		Kryo kryo = Utils.getKryoNonDeflateSerializer();
 		path = mdstde.getIntermediateDataFSFilePath(sdtask);
-		fsdis = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path))));
+		fsdis = new SnappyInputStream(new BufferedInputStream(new FileInputStream(MDCProperties.get().getProperty(MDCConstants.TMPDIR) + path )));
 		List<Integer> mapfiltersddata = (List<Integer>) kryo.readClassAndObject(new Input(fsdis));
 		assertEquals(1, (int) mapfiltersddata.size());
 		fsdis.close();
@@ -1439,7 +1440,7 @@ public class StreamPipelineTaskExecutorTest extends StreamPipelineTestCommon {
 		mdstde.processSamplesBlocks(100, bls1.get(0), hdfs);
 		String path = mdstde.getIntermediateDataFSFilePath(filtertask);
 		Kryo kryo = Utils.getKryoNonDeflateSerializer();
-		InputStream fsdis = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path))));
+		InputStream fsdis = new SnappyInputStream(new BufferedInputStream(new FileInputStream(MDCProperties.get().getProperty(MDCConstants.TMPDIR) + path )));
 		List<Long> csvreccount = (List<Long>) kryo.readClassAndObject(new Input(fsdis));
 		assertEquals(100, (long) csvreccount.size());
 		fsdis.close();
@@ -1479,7 +1480,7 @@ public class StreamPipelineTaskExecutorTest extends StreamPipelineTestCommon {
 		mdstde.processSamplesBlocks(150, bls1.get(0), hdfs);
 		String path = mdstde.getIntermediateDataFSFilePath(counttask);
 		Kryo kryo = Utils.getKryoNonDeflateSerializer();
-		InputStream fsdis = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path))));
+		InputStream fsdis = new SnappyInputStream(new BufferedInputStream(new FileInputStream(MDCProperties.get().getProperty(MDCConstants.TMPDIR) + path )));
 		List<Long> csvreccount = (List<Long>) kryo.readClassAndObject(new Input(fsdis));
 		assertEquals(150l, (long) csvreccount.get(0));
 		fsdis.close();
@@ -1519,7 +1520,7 @@ public class StreamPipelineTaskExecutorTest extends StreamPipelineTestCommon {
 		mdstde.setTask(filtertask);
 		mdstde.processBlockHDFSMap(bls1.get(0), hdfs);
 		String path = mdstde.getIntermediateDataFSFilePath(filtertask);
-		InputStream fsdis = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path))));
+		InputStream fsdis = new SnappyInputStream(new BufferedInputStream(new FileInputStream(MDCProperties.get().getProperty(MDCConstants.TMPDIR) + path )));
 		List<InputStream> inputtocount = Arrays.asList(fsdis);
 		Task sample = new Task();
 		sample.jobid = js.jobid;
@@ -1532,7 +1533,7 @@ public class StreamPipelineTaskExecutorTest extends StreamPipelineTestCommon {
 		fsdis.close();
 		Kryo kryo = Utils.getKryoNonDeflateSerializer();
 		path = mdstde.getIntermediateDataFSFilePath(sample);
-		fsdis = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path))));
+		fsdis = new SnappyInputStream(new BufferedInputStream(new FileInputStream(MDCProperties.get().getProperty(MDCConstants.TMPDIR) + path )));
 		List<Integer> mapfiltersddata = (List<Integer>) kryo.readClassAndObject(new Input(fsdis));
 		assertEquals(150, (int) mapfiltersddata.size());
 		fsdis.close();
@@ -1572,7 +1573,7 @@ public class StreamPipelineTaskExecutorTest extends StreamPipelineTestCommon {
 		mdstde.setTask(filtertask);
 		mdstde.processBlockHDFSMap(bls1.get(0), hdfs);
 		String path = mdstde.getIntermediateDataFSFilePath(filtertask);
-		InputStream fsdis = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path))));
+		InputStream fsdis = new SnappyInputStream(new BufferedInputStream(new FileInputStream(MDCProperties.get().getProperty(MDCConstants.TMPDIR) + path )));
 		List<InputStream> inputtocount = Arrays.asList(fsdis);
 		Task count = new Task();
 		count.jobid = js.jobid;
@@ -1584,7 +1585,7 @@ public class StreamPipelineTaskExecutorTest extends StreamPipelineTestCommon {
 		fsdis.close();
 		Kryo kryo = Utils.getKryoNonDeflateSerializer();
 		path = mdstde.getIntermediateDataFSFilePath(count);
-		fsdis = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path))));
+		fsdis = new SnappyInputStream(new BufferedInputStream(new FileInputStream(MDCProperties.get().getProperty(MDCConstants.TMPDIR) + path )));
 		List<Long> mapfiltersddata = (List<Long>) kryo.readClassAndObject(new Input(fsdis));
 		assertEquals(150l, (long) mapfiltersddata.get(0));
 		fsdis.close();
@@ -1648,9 +1649,9 @@ public class StreamPipelineTaskExecutorTest extends StreamPipelineTestCommon {
 
 		Kryo kryo = Utils.getKryoNonDeflateSerializer();
 		String path1 = mdstde.getIntermediateDataFSFilePath(reducebykeytask1);
-		InputStream fsdis1 = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path1))));
+		InputStream fsdis1 = new SnappyInputStream(new BufferedInputStream(new FileInputStream(MDCProperties.get().getProperty(MDCConstants.TMPDIR) + path1 )));
 		String path2 = mdstde.getIntermediateDataFSFilePath(reducebykeytask2);
-		InputStream fsdis2 = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path2))));
+		InputStream fsdis2 = new SnappyInputStream(new BufferedInputStream(new FileInputStream(MDCProperties.get().getProperty(MDCConstants.TMPDIR) + path2 )));
 		Task jointask = new Task();
 		jointask.jobid = js.jobid;
 		jointask.stageid = js.stageid;
@@ -1667,7 +1668,7 @@ public class StreamPipelineTaskExecutorTest extends StreamPipelineTestCommon {
 
 		kryo = Utils.getKryoNonDeflateSerializer();
 		String path = mdstde.getIntermediateDataFSFilePath(jointask);
-		InputStream fsdis = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path))));
+		InputStream fsdis = new SnappyInputStream(new BufferedInputStream(new FileInputStream(MDCProperties.get().getProperty(MDCConstants.TMPDIR) + path )));
 		List<Tuple2<Tuple2<String, Integer>, Tuple2<String, Integer>>> mapfiltersddata = (List) kryo
 				.readClassAndObject(new Input(fsdis));
 		assertEquals(1, (long) mapfiltersddata.size());
@@ -1734,9 +1735,9 @@ public class StreamPipelineTaskExecutorTest extends StreamPipelineTestCommon {
 
 		Kryo kryo = Utils.getKryoNonDeflateSerializer();
 		String path1 = mdstde.getIntermediateDataFSFilePath(reducebykeytask1);
-		InputStream fsdis1 = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path1))));
+		InputStream fsdis1 = new SnappyInputStream(new BufferedInputStream(new FileInputStream(MDCProperties.get().getProperty(MDCConstants.TMPDIR) + path1 )));
 		String path2 = mdstde.getIntermediateDataFSFilePath(reducebykeytask2);
-		InputStream fsdis2 = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path2))));
+		InputStream fsdis2 = new SnappyInputStream(new BufferedInputStream(new FileInputStream(MDCProperties.get().getProperty(MDCConstants.TMPDIR) + path2 )));
 		Task jointask = new Task();
 		jointask.jobid = js.jobid;
 		jointask.stageid = js.stageid;
@@ -1754,7 +1755,7 @@ public class StreamPipelineTaskExecutorTest extends StreamPipelineTestCommon {
 
 		kryo = Utils.getKryoNonDeflateSerializer();
 		String path = mdstde.getIntermediateDataFSFilePath(jointask);
-		InputStream fsdis = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path))));
+		InputStream fsdis = new SnappyInputStream(new BufferedInputStream(new FileInputStream(MDCProperties.get().getProperty(MDCConstants.TMPDIR) + path )));
 		List<Tuple2<Tuple2<String, Integer>, Tuple2<String, Integer>>> mapfiltersddata = (List) kryo
 				.readClassAndObject(new Input(fsdis));
 		assertEquals(1, (long) mapfiltersddata.size());
@@ -1825,9 +1826,9 @@ public class StreamPipelineTaskExecutorTest extends StreamPipelineTestCommon {
 
 		Kryo kryo = Utils.getKryoNonDeflateSerializer();
 		String path1 = mdstde.getIntermediateDataFSFilePath(reducebykeytask1);
-		InputStream fsdis1 = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path1))));
+		InputStream fsdis1 = new SnappyInputStream(new BufferedInputStream(new FileInputStream(MDCProperties.get().getProperty(MDCConstants.TMPDIR) + path1 )));
 		String path2 = mdstde.getIntermediateDataFSFilePath(reducebykeytask2);
-		InputStream fsdis2 = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path2))));
+		InputStream fsdis2 = new SnappyInputStream(new BufferedInputStream(new FileInputStream(MDCProperties.get().getProperty(MDCConstants.TMPDIR) + path2 )));
 		Task jointask = new Task();
 		jointask.jobid = js.jobid;
 		jointask.stageid = js.stageid;
@@ -1845,7 +1846,7 @@ public class StreamPipelineTaskExecutorTest extends StreamPipelineTestCommon {
 
 		kryo = Utils.getKryoNonDeflateSerializer();
 		String path = mdstde.getIntermediateDataFSFilePath(jointask);
-		InputStream fsdis = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path))));
+		InputStream fsdis = new SnappyInputStream(new BufferedInputStream(new FileInputStream(MDCProperties.get().getProperty(MDCConstants.TMPDIR) + path )));
 		List<Tuple2<Tuple2<String, Integer>, Tuple2<String, Integer>>> mapfiltersddata = (List) kryo
 				.readClassAndObject(new Input(fsdis));
 		assertEquals(1, (long) mapfiltersddata.size());
@@ -1895,7 +1896,7 @@ public class StreamPipelineTaskExecutorTest extends StreamPipelineTestCommon {
 
 		Kryo kryo = Utils.getKryoNonDeflateSerializer();
 		String path1 = mdstde.getIntermediateDataFSFilePath(mappairtask1);
-		InputStream fsdis1 = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path1))));
+		InputStream fsdis1 = new SnappyInputStream(new BufferedInputStream(new FileInputStream(MDCProperties.get().getProperty(MDCConstants.TMPDIR) + path1 )));
 		Task gbktask = new Task();
 		gbktask.jobid = js.jobid;
 		gbktask.stageid = js.stageid;
@@ -1910,7 +1911,7 @@ public class StreamPipelineTaskExecutorTest extends StreamPipelineTestCommon {
 
 		kryo = Utils.getKryoNonDeflateSerializer();
 		String path = mdstde.getIntermediateDataFSFilePath(gbktask);
-		InputStream fsdis = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path))));
+		InputStream fsdis = new SnappyInputStream(new BufferedInputStream(new FileInputStream(MDCProperties.get().getProperty(MDCConstants.TMPDIR) + path )));
 		List<Tuple2<String, List<Integer>>> mapfiltersddata = (List) kryo.readClassAndObject(new Input(fsdis));
 		assertEquals(1, (long) mapfiltersddata.size());
 		Tuple2<String, List<Integer>> tupleresult = mapfiltersddata.get(0);
@@ -1955,7 +1956,7 @@ public class StreamPipelineTaskExecutorTest extends StreamPipelineTestCommon {
 
 		Kryo kryo = Utils.getKryoNonDeflateSerializer();
 		String path1 = mdstde.getIntermediateDataFSFilePath(mappairtask1);
-		InputStream fsdis1 = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path1))));
+		InputStream fsdis1 = new SnappyInputStream(new BufferedInputStream(new FileInputStream(MDCProperties.get().getProperty(MDCConstants.TMPDIR) + path1 )));
 		Task fbktask = new Task();
 		fbktask.jobid = js.jobid;
 		fbktask.stageid = js.stageid;
@@ -1970,7 +1971,7 @@ public class StreamPipelineTaskExecutorTest extends StreamPipelineTestCommon {
 
 		kryo = Utils.getKryoNonDeflateSerializer();
 		String path = mdstde.getIntermediateDataFSFilePath(fbktask);
-		InputStream fsdis = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path))));
+		InputStream fsdis = new SnappyInputStream(new BufferedInputStream(new FileInputStream(MDCProperties.get().getProperty(MDCConstants.TMPDIR) + path )));
 		List<Tuple2<String, Long>> mapfiltersddata = (List) kryo.readClassAndObject(new Input(fsdis));
 
 		Tuple2<String, Long> tupleresult = mapfiltersddata.get(0);
@@ -2013,7 +2014,7 @@ public class StreamPipelineTaskExecutorTest extends StreamPipelineTestCommon {
 
 		Kryo kryo = Utils.getKryoNonDeflateSerializer();
 		String path1 = mdstde.getIntermediateDataFSFilePath(mappairtask1);
-		InputStream fsdis1 = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path1))));
+		InputStream fsdis1 = new SnappyInputStream(new BufferedInputStream(new FileInputStream(MDCProperties.get().getProperty(MDCConstants.TMPDIR) + path1 )));
 		Task fbktask = new Task();
 		fbktask.jobid = js.jobid;
 		fbktask.stageid = js.stageid;
@@ -2029,7 +2030,7 @@ public class StreamPipelineTaskExecutorTest extends StreamPipelineTestCommon {
 
 		kryo = Utils.getKryoNonDeflateSerializer();
 		String path = mdstde.getIntermediateDataFSFilePath(fbktask);
-		InputStream fsdis = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path))));
+		InputStream fsdis = new SnappyInputStream(new BufferedInputStream(new FileInputStream(MDCProperties.get().getProperty(MDCConstants.TMPDIR) + path )));
 		List<Tuple2<String, Long>> mapfiltersddata = (List) kryo.readClassAndObject(new Input(fsdis));
 
 		Tuple2<String, Long> tupleresult = mapfiltersddata.get(0);
@@ -2072,7 +2073,7 @@ public class StreamPipelineTaskExecutorTest extends StreamPipelineTestCommon {
 
 		Kryo kryo = Utils.getKryoNonDeflateSerializer();
 		String path1 = mdstde.getIntermediateDataFSFilePath(mappairtask1);
-		InputStream fsdis1 = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path1))));
+		InputStream fsdis1 = new SnappyInputStream(new BufferedInputStream(new FileInputStream(MDCProperties.get().getProperty(MDCConstants.TMPDIR) + path1 )));
 		Task cbktask = new Task();
 		cbktask.jobid = js.jobid;
 		cbktask.stageid = js.stageid;
@@ -2085,7 +2086,7 @@ public class StreamPipelineTaskExecutorTest extends StreamPipelineTestCommon {
 
 		kryo = Utils.getKryoNonDeflateSerializer();
 		String path = mdstde.getIntermediateDataFSFilePath(cbktask);
-		InputStream fsdis = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path))));
+		InputStream fsdis = new SnappyInputStream(new BufferedInputStream(new FileInputStream(MDCProperties.get().getProperty(MDCConstants.TMPDIR) + path )));
 		List<Tuple2<String, Long>> mapfiltersddata = (List) kryo.readClassAndObject(new Input(fsdis));
 
 		Tuple2<String, Long> tupleresult = mapfiltersddata.get(0);
@@ -2128,7 +2129,7 @@ public class StreamPipelineTaskExecutorTest extends StreamPipelineTestCommon {
 
 		Kryo kryo = Utils.getKryoNonDeflateSerializer();
 		String path1 = mdstde.getIntermediateDataFSFilePath(mappairtask1);
-		InputStream fsdis1 = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path1))));
+		InputStream fsdis1 = new SnappyInputStream(new BufferedInputStream(new FileInputStream(MDCProperties.get().getProperty(MDCConstants.TMPDIR) + path1 )));
 		Task cbktask = new Task();
 		cbktask.jobid = js.jobid;
 		cbktask.stageid = js.stageid;
@@ -2141,7 +2142,7 @@ public class StreamPipelineTaskExecutorTest extends StreamPipelineTestCommon {
 
 		kryo = Utils.getKryoNonDeflateSerializer();
 		String path = mdstde.getIntermediateDataFSFilePath(cbktask);
-		InputStream fsdis = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path))));
+		InputStream fsdis = new SnappyInputStream(new BufferedInputStream(new FileInputStream(MDCProperties.get().getProperty(MDCConstants.TMPDIR) + path )));
 		List<Tuple2<Tuple2<String, Long>, Long>> mapfiltersddata = (List) kryo.readClassAndObject(new Input(fsdis));
 		int sum = 0;
 		for (Tuple2<Tuple2<String, Long>, Long> tupleresult : mapfiltersddata) {
@@ -2206,9 +2207,9 @@ public class StreamPipelineTaskExecutorTest extends StreamPipelineTestCommon {
 
 		Kryo kryo = Utils.getKryoNonDeflateSerializer();
 		String path1 = mdstde.getIntermediateDataFSFilePath(reducebykeytask1);
-		InputStream fsdis1 = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path1))));
+		InputStream fsdis1 = new SnappyInputStream(new BufferedInputStream(new FileInputStream(MDCProperties.get().getProperty(MDCConstants.TMPDIR) + path1 )));
 		String path2 = mdstde.getIntermediateDataFSFilePath(reducebykeytask2);
-		InputStream fsdis2 = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path2))));
+		InputStream fsdis2 = new SnappyInputStream(new BufferedInputStream(new FileInputStream(MDCProperties.get().getProperty(MDCConstants.TMPDIR) + path2 )));
 		reducebykeytask2.input = new Object[] { fsdis1, fsdis2 };
 		Task coalescetask = new Task();
 		coalescetask.jobid = js.jobid;
@@ -2226,7 +2227,7 @@ public class StreamPipelineTaskExecutorTest extends StreamPipelineTestCommon {
 
 		kryo = Utils.getKryoNonDeflateSerializer();
 		String path = mdstde.getIntermediateDataFSFilePath(coalescetask);
-		InputStream fsdis = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path))));
+		InputStream fsdis = new SnappyInputStream(new BufferedInputStream(new FileInputStream(MDCProperties.get().getProperty(MDCConstants.TMPDIR) + path )));
 		List<Tuple2<String, Integer>> mapfiltersddata = (List) kryo.readClassAndObject(new Input(fsdis));
 		assertEquals(1, (long) mapfiltersddata.size());
 		Tuple2<String, Integer> tupleresult = mapfiltersddata.get(0);
@@ -2271,7 +2272,7 @@ public class StreamPipelineTaskExecutorTest extends StreamPipelineTestCommon {
 		mdstde.processBlockHDFSMap(bls1.get(0), hdfs);
 		Kryo kryo = Utils.getKryoNonDeflateSerializer();
 		String path = mdstde.getIntermediateDataFSFilePath(filtertask);
-		InputStream fsdis = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path))));
+		InputStream fsdis = new SnappyInputStream(new BufferedInputStream(new FileInputStream(MDCProperties.get().getProperty(MDCConstants.TMPDIR) + path )));
 		List<JSONObject> jsonfilterdata = (List<JSONObject>) kryo.readClassAndObject(new Input(fsdis));
 		assertEquals(11l, (long) jsonfilterdata.size());
 		fsdis.close();

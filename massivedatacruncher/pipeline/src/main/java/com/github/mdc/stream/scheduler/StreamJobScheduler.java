@@ -69,6 +69,7 @@ import com.github.mdc.common.ContainerResources;
 import com.github.mdc.common.DAGEdge;
 import com.github.mdc.common.DestroyContainer;
 import com.github.mdc.common.DestroyContainers;
+import com.github.mdc.common.Dummy;
 import com.github.mdc.common.FileSystemSupport;
 import com.github.mdc.common.FreeResourcesCompletedJob;
 import com.github.mdc.common.GlobalContainerAllocDealloc;
@@ -396,15 +397,19 @@ public class StreamJobScheduler {
 								totalcompleted++;
 							}
 						}
+						double percentagecompleted = Math.floor((totalcompleted / totaltasks) * 100.0);
 						if (totalcompleted == totaltasks) {
 							Utils.writeKryoOutput(kryo, pipelineconfig.getOutput(), "\nPercentage Completed "
-									+ Math.floor((totalcompleted / totaltasks) * 100.0) + "% \n");
+									+ percentagecompleted + "% \n");
+							job.jm.containersallocated.put("",percentagecompleted);
+							mdststs.parallelStream().forEach(spts->spts.setCompletedexecution(true));
 							break;
 						} else {
 							log.debug(
 									"Total Percentage Completed: " + Math.floor((totalcompleted / totaltasks) * 100.0));
 							Utils.writeKryoOutput(kryo, pipelineconfig.getOutput(), "\nPercentage Completed "
-									+ Math.floor((totalcompleted / totaltasks) * 100.0) + "% \n");
+									+ percentagecompleted + "% \n");
+							job.jm.containersallocated.put("",percentagecompleted);
 							Thread.sleep(4000);
 						}
 					}
@@ -533,6 +538,8 @@ public class StreamJobScheduler {
 						try (var sock = new Socket(tehost, ports.get(index));) {
 							if (!Objects.isNull(loadjar.mrjar)) {
 								Utils.writeObject(sock, loadjar);
+							}else {
+								Utils.writeObject(sock, new Dummy());
 							}
 							break;
 						} catch (Exception ex) {
@@ -719,6 +726,11 @@ public class StreamJobScheduler {
 		}
 	}
 
+	
+	Map<String, Integer> servertotaltasks = new ConcurrentHashMap<>();
+	Map<String, Double> tetotaltaskscompleted = new ConcurrentHashMap<>();
+	Map<String, Double> tetotaltasksfailed = new ConcurrentHashMap<>();
+	
 	/**
 	 * Creates DExecutor object, executes tasks and reexecutes tasks if fails.
 	 * 
@@ -748,6 +760,11 @@ public class StreamJobScheduler {
 				for (var mdstst : vertices) {
 					var predecessors = Graphs.predecessorListOf(graph, mdstst);
 					if (predecessors.size() > 0) {
+						if(Objects.isNull(servertotaltasks.get(mdststs))) {
+							servertotaltasks.put(mdstst.getHostPort(),predecessors.size());
+						}else {
+							servertotaltasks.put(mdstst.getHostPort(), servertotaltasks.get(mdstst.getHostPort())+predecessors.size());
+						}
 						for (var pred : predecessors) {
 							dexecutor.addDependency(pred, mdstst);
 							log.info(pred + "->" + mdstst);
@@ -773,6 +790,11 @@ public class StreamJobScheduler {
 					var batchsize = cr.getCpu();
 					var configinitialstage = new DexecutorConfig<StreamPipelineTaskSubmitter, Boolean>(
 							newExecutor((int) batchsize), new DAGScheduler(mdststsl.size(),(int) batchsize));
+					if(Objects.isNull(servertotaltasks.get(key))) {
+						servertotaltasks.put(key,mdststsl.size());
+					}else {
+						servertotaltasks.put(key, servertotaltasks.get(key)+mdststsl.size());
+					}
 					var dexecutorinitialstage = new DefaultDexecutor<StreamPipelineTaskSubmitter, Boolean>(
 							configinitialstage);
 					initialstageexecutor.addDependency(dexecutorinitialstage,dexecutorinitialstage);
@@ -782,6 +804,10 @@ public class StreamJobScheduler {
 				});
 				var executionresults = initialstageexecutor.execute(ExecutionConfig.NON_TERMINATING);
 				var erroredresultinitialstage = executionresults.getErrored();
+				temdstdtmap.keySet().stream().forEach(key -> {
+					tetotaltaskscompleted.put(key, 0d);
+					tetotaltasksfailed.put(key, 0d);
+				});
 				if (!erroredresultinitialstage.isEmpty()) {
 					numexecute++;
 					completed = false;
@@ -1147,14 +1173,18 @@ public class StreamJobScheduler {
 					if (mdststlocal.isCompletedexecution()) {
 						try {
 							printresult.acquire();
+							if(Objects.isNull(tetotaltaskscompleted.get(mdststlocal.getHostPort()))){
+								tetotaltaskscompleted.put(mdststlocal.getHostPort(), 0d);
+							}
 							counttaskscomp++;
+							tetotaltaskscompleted.put(mdststlocal.getHostPort(),tetotaltaskscompleted.get(mdststlocal.getHostPort())+1);
 							if (job.trigger != Job.TRIGGER.SAVERESULTSTOFILE && !mdststlocal.isResultobtainedte() 
 									&& mdststlocal.getTask().finalphase && mdststlocal.isCompletedexecution() 
 									&& (mdststlocal.getTask().storage == MDCConstants.STORAGE.INMEMORY
 									||mdststlocal.getTask().storage == MDCConstants.STORAGE.INMEMORY_DISK)) {
 								writeOutputToFileInMemory(mdststlocal,kryo,stageoutput);
 							}
-							double percentagecompleted = Math.floor((counttaskscomp / totaltasks) * 100.0);
+							double percentagecompleted = Math.floor((tetotaltaskscompleted.get(mdststlocal.getHostPort()) / servertotaltasks.get(mdststlocal.getHostPort())) * 100.0);
 							Utils.writeKryoOutput(kryo, pipelineconfig.getOutput(), "\nPercentage Completed TE("
 									+ mdststlocal.getHostPort() + ") " + percentagecompleted + "% \n");
 							job.jm.containersallocated.put(mdststlocal.getHostPort(), percentagecompleted);
@@ -1183,7 +1213,11 @@ public class StreamJobScheduler {
 								jobtimer.remove(task.taskid);
 								mdststlocal.setCompletedexecution(true);
 								printresult.acquire();
+								if(Objects.isNull(tetotaltaskscompleted.get(mdststlocal.getHostPort()))){
+									tetotaltaskscompleted.put(mdststlocal.getHostPort(), 0d);
+								}
 								counttaskscomp++;
+								tetotaltaskscompleted.put(mdststlocal.getHostPort(), tetotaltaskscompleted.get(mdststlocal.getHostPort())+1);
 								if (job.trigger != Job.TRIGGER.SAVERESULTSTOFILE && mdststlocal.getTask().finalphase 
 										&& mdststlocal.isCompletedexecution() 
 										&& (mdststlocal.getTask().storage == MDCConstants.STORAGE.INMEMORY
@@ -1191,7 +1225,7 @@ public class StreamJobScheduler {
 									writeOutputToFileInMemory(mdststlocal,kryo,stageoutput);
 									mdststlocal.setResultobtainedte(true);
 								}
-								double percentagecompleted = Math.floor((counttaskscomp / totaltasks) * 100.0);
+								double percentagecompleted = Math.floor(tetotaltaskscompleted.get(mdststlocal.getHostPort()) / servertotaltasks.get(mdststlocal.getHostPort()) * 100.0);
 								Object[] input=mdststlocal.getTask().input;
 								Utils.writeKryoOutput(kryo, pipelineconfig.getOutput(), "Task Completed ("+(mdststlocal.getTask())+") "
 										+ task.timetakenseconds + " seconds\n");
@@ -1216,11 +1250,16 @@ public class StreamJobScheduler {
 								mdststlocal.setCompletedexecution(false);
 								mdststlocal.getTask().stagefailuremessage = task.stagefailuremessage;
 								printresult.acquire();
+								if(Objects.isNull(tetotaltasksfailed.get(mdststlocal.getHostPort()))){
+									tetotaltasksfailed.put(mdststlocal.getHostPort(), 0d);
+								}
 								counttasksfailed++;
+								tetotaltasksfailed.put(mdststlocal.getHostPort(),tetotaltasksfailed.get(mdststlocal.getHostPort())+1);
+								double percentagefailed = Math.floor(tetotaltasksfailed.get(mdststlocal.getHostPort()) / servertotaltasks.get(mdststlocal.getHostPort()) * 100.0);
 								Utils.writeKryoOutput(kryo, pipelineconfig.getOutput(), "\nPercentage Failed TE("+mdststlocal.getHostPort()+") "
-										+ Math.floor((counttasksfailed / totaltasks) * 100.0) + "% \n");
+										+ percentagefailed + "% \n");
 								log.info("\nPercentage Failed TE("+mdststlocal.getHostPort()+") "
-										+ Math.floor((counttasksfailed / totaltasks) * 100.0) + "% \n");
+										+ percentagefailed + "% \n");
 								printresult.release();
 								cdl.countDown();
 							}

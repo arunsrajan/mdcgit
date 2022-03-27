@@ -1115,6 +1115,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 		mdparr.finaltasks.add(mdparr.task);
 		mdparr.mdsroots.add(mdp);
 		Job job = mdparr.createJob();
+		job.trigger = Job.TRIGGER.COLLECT;
 		StreamJobScheduler js = new StreamJobScheduler();
 		job.pipelineconfig = pc;
 		js.pipelineconfig = pc;

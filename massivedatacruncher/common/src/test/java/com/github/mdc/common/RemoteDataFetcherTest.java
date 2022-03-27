@@ -183,48 +183,6 @@ public class RemoteDataFetcherTest {
 	}
 	
 	@Test
-	public void testWriteReadYarnInterMediateOutputToFromDFS() throws Exception {
-		String filename = "Test.dat";
-		String dirtowrite = "/Dir";
-		RemoteDataFetcher.writerYarnAppmasterServiceDataToDFS(new JobStage(), dirtowrite, filename);
-		JobStage js = (JobStage) RemoteDataFetcher.readYarnAppmasterServiceDataFromDFS(dirtowrite, filename);
-		assertNotNull(js);	
-	}
-	
-	@Test
-	public void testWriteReadYarnInterMediateOutputToFromDFSReadException(){
-		try {
-			String filename = "Test.dat";
-			String dirtowrite = "/Dir";
-			String dirtoread = "/UnknownDir";
-			RemoteDataFetcher.writerYarnAppmasterServiceDataToDFS(new JobStage(), dirtowrite, filename);
-			RemoteDataFetcher.readYarnAppmasterServiceDataFromDFS(dirtoread, filename);
-		}
-		catch(Exception ex) {
-			assertEquals(RemoteDataFetcherException.INTERMEDIATEPHASEREADERROR,ex.getMessage());
-		}
-	}
-	@Test
-	public void testCreateFile() throws Exception{
-			String filename = "TestFile3.dat";
-			String dir = MDCConstants.JOB+MDCConstants.HYPHEN+System.currentTimeMillis();
-			Configuration configuration = new Configuration();
-			configuration.set(MDCConstants.HDFS_DEFAULTFS, MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL));
-			configuration.set(MDCConstants.HDFS_IMPL, org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
-			configuration.set(MDCConstants.HDFS_FILE_IMPL, org.apache.hadoop.fs.LocalFileSystem.class.getName());
-			String jobpath = MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL) + MDCConstants.BACKWARD_SLASH
-					+ FileSystemSupport.MDS + MDCConstants.BACKWARD_SLASH + dir;
-			String filepath = jobpath + MDCConstants.BACKWARD_SLASH + filename;
-			Path filepathurl = new Path(filepath);
-			FileSystem hdfs = FileSystem.newInstance(new URI(MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL)),
-					configuration);
-			JobStage js = new JobStage();
-			RemoteDataFetcher.createFile(hdfs, filepathurl, js);
-			
-			js = (JobStage) RemoteDataFetcher.readYarnAppmasterServiceDataFromDFS(dir, filename);
-			assertNotNull(js);	
-	}
-	@Test
 	public void testCreateFileException() {
 		try {
 			String filename = "TestFile1.dat";

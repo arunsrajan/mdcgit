@@ -8,8 +8,6 @@ import java.util.List;
 import org.junit.Test;
 
 import com.github.mdc.common.DataCruncherContext;
-import com.github.mdc.tasks.scheduler.MapReduceApplication;
-import com.github.mdc.tasks.scheduler.MapReduceApplicationBuilder;
 
 public class MdcJobBuilderTest extends MassiveDataMRJobBase{
 
