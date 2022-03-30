@@ -337,15 +337,83 @@
 
 
     </dependencies>
-    <modules>
-        <module>taskexecutor</module>
-        <module>taskscheduler</module>
-        <module>common</module>
-        <module>pipeline</module>
-        <module>examples</module>
-    </modules>
-    <build>
+    <build>    
         <plugins>
+        	 <plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-clean-plugin</artifactId>
+				<version>3.1.0</version>
+				<configuration>
+				<excludeDefaultDirectories>true</excludeDefaultDirectories>
+				<filesets>
+				  <fileset>
+				    <directory>target</directory>
+				    <followSymlinks>false</followSymlinks>
+				    <useDefaultExcludes>true</useDefaultExcludes>
+				    <excludes>
+				      <exclude>openjdk-15.0.2_linux-x64_bin.tar.gz</exclude>
+				    </excludes>
+				  </fileset>
+				</filesets>
+				</configuration>
+			</plugin>
+	        <plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<version>1.8</version>
+				<executions>
+				    <execution>
+				        <id>prepare</id>
+				        <phase>validate</phase>
+				        <configuration>
+				           <target name="copy files to web project">
+				                <echo message="prepare phase" />			                
+				                <unzip src="target/MassiveDataCruncher-1.0-jdk15.zip" dest="target/unpack/opt/mdc"/>
+				                <mkdir dir="target/unpack/usr/local/java"/>
+				                <gunzip src="target/openjdk-15.0.2_linux-x64_bin.tar.gz" dest="target/"/>
+				                <untar src="target/openjdk-15.0.2_linux-x64_bin.tar" dest="target/unpack/usr/local/java"/>
+				                <copy todir="target/mdcstandalone">
+					                <fileset dir="dockermdcstandalone" includes="entry.sh"/>               
+	                				<fileset dir="dockermdcstandalone" includes="standalone.sh"/> 
+				                </copy>
+				                <copy todir="target/mdccontainer">
+					                <fileset dir="dockermdccontainer" includes="entry.sh"/>               
+	                				<fileset dir="dockermdccontainer" includes="container.sh"/> 
+				                </copy>
+				                <fixcrlf srcdir="target/unpack/usr/local/java" eol="unix" includes="**/*.sh" />
+				                <fixcrlf srcdir="target/unpack/opt/mdc" eol="unix" includes="**/*.sh" />
+				                <fixcrlf srcdir="target/mdcstandalone" eol="unix" includes="*.sh" />
+				                <fixcrlf srcdir="target/mdccontainer" eol="unix" includes="*.sh" />
+				            </target>
+				        </configuration>
+				        <goals>
+				            <goal>run</goal>
+				        </goals>
+				    </execution>
+				</executions>
+			</plugin>
+			<plugin>
+			    <groupId>org.codehaus.mojo</groupId>
+			    <artifactId>exec-maven-plugin</artifactId>
+			    <version>1.2.1</version>
+			    <executions>
+			        <execution>
+			            <goals>
+			                <goal>exec</goal>
+			            </goals>
+			        </execution>
+			    </executions>
+			    <configuration>
+			        <executable>curl</executable>
+			        <arguments>			        	
+			            <argument>https://download.java.net/java/GA/jdk15.0.2/0d1cfde4252546c6931946de8db48ee2/7/GPL/openjdk-15.0.2_linux-x64_bin.tar.gz</argument>
+			            <argument>-z</argument>
+			            <argument>target/openjdk-15.0.2_linux-x64_bin.tar.gz</argument>
+			            <argument>--output</argument>
+			            <argument>target/openjdk-15.0.2_linux-x64_bin.tar.gz</argument>
+			        </arguments>
+			    </configuration>
+			</plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -460,6 +528,24 @@
                             </resources>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>copy-resources-dockermdcstandalone</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${session.executionRootDirectory}/dockermdcstandalone</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${session.executionRootDirectory}/target</directory>
+                                    <includes>
+                                        <include>MassiveDataCruncher-1.0-jdk15.tar.gz</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
         </plugins>
@@ -474,20 +560,184 @@
         </pluginManagement>
     </build>
     <profiles>
+    	<profile>
+    		<id>modules</id>
+    		<modules>
+		        <module>taskexecutor</module>
+		        <module>taskscheduler</module>
+		        <module>common</module>
+		        <module>pipeline</module>
+		        <module>examples</module>
+		    </modules>
+    	</profile>
         <profile>
-            <id>mdccontainer</id>
+            <id>mdcstandalone</id>
             <build>
                 <plugins>
                     <plugin>
-                        <groupId>com.spotify</groupId>
-                        <artifactId>docker-maven-plugin</artifactId>
-                        <version>1.2.2</version>
-                        <configuration>
-                            <imageName>arunsrajan/mdccontainer</imageName>
-                            <baseImage>openjdk:15.0.2-jdk-oraclelinux7</baseImage>
-                            <dockerDirectory>dockermdccontainer</dockerDirectory>
-                        </configuration>
-                    </plugin>
+					  <groupId>com.google.cloud.tools</groupId>
+					  <artifactId>jib-maven-plugin</artifactId>
+					  <version>3.2.0</version>
+					  <executions>
+					    <execution>
+					      <id>buildstandalone</id>
+					      <phase>package</phase>
+					      <goals>
+					        <goal>build</goal>
+					      </goals>
+					      <configuration>
+					  	  <containerizingMode>exploded</containerizingMode>
+						  <from>
+						    <image>bde2020/hadoop-datanode</image>
+						  </from>
+						  <to>
+						    <image>arunsrajan/mdcstandalone</image>
+						    <tags>
+						      <tag>latest</tag>
+						    </tags>
+						  </to>
+						  <extraDirectories>
+						    <paths>
+						      <path>
+						        <from>target/unpack</from>
+						        <into>/</into>
+						      </path>
+						      <path>
+						        <from>dockermdcstandalone</from>
+						        <into>/opt/mdc/config</into>
+						        <includes>mdcstandalone.properties</includes>
+						      </path>
+						      <path>
+						        <from>target/mdcstandalone</from>
+						        <into>/</into>
+						        <includes>entry.sh</includes>
+						      </path>
+						      <path>
+						        <from>target/mdcstandalone</from>						        
+						        <into>/opt/mdc/bin</into>
+						        <includes>standalone.sh</includes>
+						      </path>
+						    </paths>
+						    <permissions>
+						      <permission>
+						        <file>/opt/mdc/bin/*</file>
+						        <mode>777</mode> <!-- Read/write/execute for owner, read/execute for group/other -->
+						      </permission>
+						      <permission>
+						        <file>/entry.sh</file>
+						        <mode>777</mode> <!-- Read/write/execute for owner, read/execute for group/other -->
+						      </permission>
+						      <permission>
+						        <file>/entrypoint.sh</file>
+						        <mode>777</mode> <!-- Read/write/execute for owner, read/execute for group/other -->
+						      </permission>
+						      <permission>
+						        <file>/run.sh</file>
+						        <mode>777</mode> <!-- Read/write/execute for owner, read/execute for group/other -->
+						      </permission>
+						      <permission>
+						        <file>/usr/local/java/jdk-15.0.2/bin/*</file>
+						        <mode>777</mode> <!-- Read/write/execute for owner, read/execute for group/other -->
+						      </permission>
+						  	</permissions>
+						  </extraDirectories>
+						  <container>
+						  	<environment>
+								<CORE_CONF_fs_defaultFS>hdfs://namenode:9000</CORE_CONF_fs_defaultFS>
+								<HDFS_CONF_dfs_datanode_data_dir>file:///opt/dockershare/data</HDFS_CONF_dfs_datanode_data_dir>
+						  	</environment>
+						  	<volumes>
+						  		/opt/dockershare/data
+						  	</volumes>
+						  	<entrypoint>						  	
+              					<arg>/entry.sh</arg>
+              				</entrypoint>
+						  	<format>Docker</format>
+						  </container>
+						</configuration>
+					    </execution>
+					    
+					    
+					    <execution>
+					      <id>buildcontainer</id>
+					      <phase>package</phase>
+					      <goals>
+					        <goal>build</goal>
+					      </goals>
+					      <configuration>
+					  	  <containerizingMode>exploded</containerizingMode>
+						  <from>
+						    <image>bde2020/hadoop-datanode</image>
+						  </from>
+						  <to>
+						    <image>arunsrajan/mdccontainer</image>
+						    <tags>
+						      <tag>latest</tag>
+						    </tags>
+						  </to>
+						  <extraDirectories>
+						    <paths>
+						      <path>
+						        <from>target/unpack</from>
+						        <into>/</into>
+						      </path>
+						      <path>
+						        <from>dockermdccontainer</from>
+						        <into>/opt/mdc/config</into>
+						        <includes>mdctes.properties</includes>
+						      </path>
+						      <path>
+						        <from>target/mdccontainer</from>
+						        <into>/</into>
+						        <includes>entry.sh</includes>
+						      </path>
+						      <path>
+						        <from>target/mdccontainer</from>						        
+						        <into>/opt/mdc/bin</into>
+						        <includes>container.sh</includes>
+						      </path>
+						    </paths>
+						    <permissions>
+						      <permission>
+						        <file>/opt/mdc/bin/*</file>
+						        <mode>777</mode> <!-- Read/write/execute for owner, read/execute for group/other -->
+						      </permission>
+						      <permission>
+						        <file>/entry.sh</file>
+						        <mode>777</mode> <!-- Read/write/execute for owner, read/execute for group/other -->
+						      </permission>
+						      <permission>
+						        <file>/entrypoint.sh</file>
+						        <mode>777</mode> <!-- Read/write/execute for owner, read/execute for group/other -->
+						      </permission>
+						      <permission>
+						        <file>/run.sh</file>
+						        <mode>777</mode> <!-- Read/write/execute for owner, read/execute for group/other -->
+						      </permission>
+						      <permission>
+						        <file>/usr/local/java/jdk-15.0.2/bin/*</file>
+						        <mode>777</mode> <!-- Read/write/execute for owner, read/execute for group/other -->
+						      </permission>
+						  	</permissions>
+						  </extraDirectories>
+						  <container>
+						  	<environment>
+								<CORE_CONF_fs_defaultFS>hdfs://namenode:9000</CORE_CONF_fs_defaultFS>
+								<HDFS_CONF_dfs_datanode_data_dir>file:///opt/dockershare/data</HDFS_CONF_dfs_datanode_data_dir>
+						  	</environment>
+						  	<volumes>
+						  		/opt/dockershare/data
+						  	</volumes>
+						  	<entrypoint>						  	
+              					<arg>/entry.sh</arg>
+              				</entrypoint>
+						  	<format>Docker</format>
+						  </container>
+						</configuration>
+					    </execution>					    
+					  </executions>
+					  
+					</plugin>
                 </plugins>
             </build>
         </profile>
@@ -540,6 +790,11 @@
             <url>http://clojars.org/repo/</url>
         </repository>
     </repositories>
-
+	<pluginRepositories>
+		<pluginRepository>
+            <id>clojars</id>
+            <url>http://clojars.org/repo/</url>
+        </pluginRepository>
+	</pluginRepositories>
 
 </project>
