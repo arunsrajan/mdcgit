@@ -367,7 +367,9 @@
 				        <phase>validate</phase>
 				        <configuration>
 				           <target name="copy files to web project">
-				                <echo message="prepare phase" />			                
+				                <echo message="prepare phase" />
+				                <mkdir dir="target/classes"/>
+				                <delete dir="target/unpack"/>
 				                <unzip src="target/MassiveDataCruncher-1.0-jdk15.zip" dest="target/unpack/opt/mdc"/>
 				                <mkdir dir="target/unpack/usr/local/java"/>
 				                <gunzip src="target/openjdk-15.0.2_linux-x64_bin.tar.gz" dest="target/"/>
@@ -380,7 +382,6 @@
 					                <fileset dir="dockermdccontainer" includes="entry.sh"/>               
 	                				<fileset dir="dockermdccontainer" includes="container.sh"/> 
 				                </copy>
-				                <fixcrlf srcdir="target/unpack/usr/local/java" eol="unix" includes="**/*.sh" />
 				                <fixcrlf srcdir="target/unpack/opt/mdc" eol="unix" includes="**/*.sh" />
 				                <fixcrlf srcdir="target/mdcstandalone" eol="unix" includes="*.sh" />
 				                <fixcrlf srcdir="target/mdccontainer" eol="unix" includes="*.sh" />
@@ -571,7 +572,7 @@
 		    </modules>
     	</profile>
         <profile>
-            <id>mdcstandalone</id>
+            <id>mdc</id>
             <build>
                 <plugins>
                     <plugin>
@@ -583,7 +584,7 @@
 					      <id>buildstandalone</id>
 					      <phase>package</phase>
 					      <goals>
-					        <goal>build</goal>
+					        <goal>dockerBuild</goal>
 					      </goals>
 					      <configuration>
 					  	  <containerizingMode>exploded</containerizingMode>
@@ -605,7 +606,7 @@
 						      <path>
 						        <from>dockermdcstandalone</from>
 						        <into>/opt/mdc/config</into>
-						        <includes>mdcstandalone.properties</includes>
+						        <includes>mdc.properties</includes>
 						      </path>
 						      <path>
 						        <from>target/mdcstandalone</from>
@@ -636,8 +637,8 @@
 						        <mode>777</mode> <!-- Read/write/execute for owner, read/execute for group/other -->
 						      </permission>
 						      <permission>
-						        <file>/usr/local/java/jdk-15.0.2/bin/*</file>
-						        <mode>777</mode> <!-- Read/write/execute for owner, read/execute for group/other -->
+						        <file>/usr/local/java/jdk-15.0.2/**/**</file>
+						        <mode>755</mode> <!-- Read/write/execute for owner, read/execute for group/other -->
 						      </permission>
 						  	</permissions>
 						  </extraDirectories>
@@ -653,6 +654,7 @@
               					<arg>/entry.sh</arg>
               				</entrypoint>
 						  	<format>Docker</format>
+						  	<user>root</user>
 						  </container>
 						</configuration>
 					    </execution>
@@ -662,7 +664,7 @@
 					      <id>buildcontainer</id>
 					      <phase>package</phase>
 					      <goals>
-					        <goal>build</goal>
+					        <goal>dockerBuild</goal>
 					      </goals>
 					      <configuration>
 					  	  <containerizingMode>exploded</containerizingMode>
@@ -684,7 +686,7 @@
 						      <path>
 						        <from>dockermdccontainer</from>
 						        <into>/opt/mdc/config</into>
-						        <includes>mdctes.properties</includes>
+						        <includes>mdc.properties</includes>
 						      </path>
 						      <path>
 						        <from>target/mdccontainer</from>
@@ -715,8 +717,8 @@
 						        <mode>777</mode> <!-- Read/write/execute for owner, read/execute for group/other -->
 						      </permission>
 						      <permission>
-						        <file>/usr/local/java/jdk-15.0.2/bin/*</file>
-						        <mode>777</mode> <!-- Read/write/execute for owner, read/execute for group/other -->
+						        <file>/usr/local/java/jdk-15.0.2/**/**</file>
+						        <mode>755</mode> <!-- Read/write/execute for owner, read/execute for group/other -->
 						      </permission>
 						  	</permissions>
 						  </extraDirectories>
@@ -732,6 +734,7 @@
               					<arg>/entry.sh</arg>
               				</entrypoint>
 						  	<format>Docker</format>
+						  	<user>root</user>
 						  </container>
 						</configuration>
 					    </execution>					    

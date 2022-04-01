@@ -1,11 +1,8 @@
 The MDC can be build using the following maven goals
 
+-Dmaven.antrun.skip=true -Pmodules clean install package assembly:assembly
 
--Dmaven.antrun.skip=true -Pmodules clean package assembly:assembly
-
--Dpack=jar -Pmdcstandalone exec:exec antrun:run@prepare compile jib:dockerBuild@buildstandalone jib:dockerBuild@buildcontainer
-
--Pmodules clean jar:test-jar package assembly:assembly resources:copy-resources@copy-resources-dockermdccontainer resources:copy-resources@copy-resources-dockermdctss resources:copy-resources@copy-resources-dockermdcts
+-f pomjar.xml -Pmdc exec:exec antrun:run@prepare compile jib:dockerBuild@buildstandalone jib:dockerBuild@buildcontainer
 
 In order to skip tests the following needs to be set in MAVEN_OPTS
 
@@ -62,7 +59,7 @@ docker network create --driver=bridge --subnet=172.30.0.0/16 --ip-range=172.30.0
 
 docker run --network mdc --name namenode --hostname namenode -v "E:/DEVELOPMENT/dockershare:/opt/dockershare" -e "CORE_CONF_fs_defaultFS=hdfs://namenode:9000" -e "HDFS_CONF_dfs_namenode_name_dir=file:///opt/dockershare" -e "HDFS_CONF_dfs_namenode_datanode_registration_ip___hostname___check=false" -e "CLUSTER_NAME=hadooptest" -p 9870:9870 -p 9000:9000 -d bde2020/hadoop-namenode
 
-docker run --network mdc -v "C:/DEVELOPMENT/dockershare:/opt/dockershare" --hostname dnte --link namenode:namenode --link zoo:zoo -e "CORE_CONF_fs_defaultFS=hdfs://namenode:9000" -e "HDFS_CONF_dfs_namenode_datanode_registration_ip___hostname___check=false" --name mdccontainer --ip 172.30.0.20 -e ZKHOSTPORT=zoo:2181 -e HOST=172.30.0.20 -e PORT=10101 -e NODEPORT=12121 -p 12121:12121 --memory 4g -e MEMCONFIGLOW=-Xms512M -e MEMCONFIGHIGH=-Xmx512M -d arunsrajan/mdccontainer
+docker run --network mdc -v "C:/DEVELOPMENT/dockershare/container:/opt/dockershare" --hostname dnte --link namenode:namenode --link zoo:zoo -e "CORE_CONF_fs_defaultFS=hdfs://namenode:9000" -e "HDFS_CONF_dfs_namenode_datanode_registration_ip___hostname___check=false" --name mdccontainer --ip 172.30.0.20 -e ZKHOSTPORT=zoo:2181 -e HOST=172.30.0.20 -e PORT=10101 -e NODEPORT=12121 -p 12121:12121 --memory 4g -e MEMCONFIGLOW=-Xms512M -e MEMCONFIGHIGH=-Xmx512M -d arunsrajan/mdccontainer
 
 To run task scheduler stream in network mdc
 -------------------------------------------
@@ -121,6 +118,25 @@ docker service create --network weave --mount source=/dataset,target=/mnt/sftp/d
 docker run --rm -e DAEMONS=namenode,datanode,secondarynamenode -v //d/sftp:/mnt/sftp/dataset --network weave --name=namenode -p 50070:50070 -p 50075:50075 -p 50090:50090 -p 9000:9000 cybermaggedon/hadoop:2.10.0 /start-namenode
 
 docker run --rm -e DAEMONS=datanode --network weave --name=datanode --link namenode:namenode -e NAMENODE_URI=hdfs://namenode:9000 cybermaggedon/hadoop:2.10.0 /start-datanode
+
+
+cd /opt/hadoop-3.2.1/bin
+
+./hadoop dfs -mkdir /airline1989
+
+./hadoop dfs -mkdir /carriers
+
+./hadoop dfs -put /opt/dockershare/1989.csv /airline1989
+
+./hadoop dfs -put /opt/dockershare/carriers.csv /carriers
+
+./hadoop dfs -mkdir /mds
+
+./hadoop dfs -chmod 777 /mds
+
+./hadoop dfs -mkdir /newmapperout
+
+./hadoop dfs -chmod 777 /newmapperout
 
 
 To remove dangling images

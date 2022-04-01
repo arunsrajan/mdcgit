@@ -653,6 +653,7 @@
               					<arg>/entry.sh</arg>
               				</entrypoint>
 						  	<format>Docker</format>
+						  	<user>root</user>
 						  </container>
 						</configuration>
 					    </execution>
@@ -732,6 +733,7 @@
               					<arg>/entry.sh</arg>
               				</entrypoint>
 						  	<format>Docker</format>
+						  	<user>root</user>
 						  </container>
 						</configuration>
 					    </execution>					    
