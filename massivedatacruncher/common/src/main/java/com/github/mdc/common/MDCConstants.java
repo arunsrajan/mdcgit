@@ -129,6 +129,7 @@ public class MDCConstants {
 	public static final String CONTAINER_ALLOC_DEFAULT = "COMBINE";
 	public static final String CONTAINER_ALLOC_COMBINE = "COMBINE";
 	public static final String CONTAINER_ALLOC_DIVIDED = "DIVIDED";
+	public static final String CONTAINER_ALLOC_IMPLICIT = "IMPLICIT";
 	
 	public static final String ZOOKEEPER_HOSTPORT = "zookeeper.hostport";
 	public static final String ZOOKEEPER_RETRYDELAY = "zookeeper.retrydelay";
@@ -402,5 +403,15 @@ public class MDCConstants {
 	public static final String CONTAINERALLOCATIONERROR = "Container Allocation Error";
 	
 	public static final String TMPDIR = "java.io.tmpdir";
+	
+	public static final String IMPLICIT_CONTAINER_ALLOC_NUMBER = "containers.alloc.implicit.number";
+	public static final String IMPLICIT_CONTAINER_ALLOC_NUMBER_DEFAULT = "1";
+	public static final String IMPLICIT_CONTAINER_ALLOC_CPU = "containers.alloc.implicit.cpu";
+	public static final String IMPLICIT_CONTAINER_ALLOC_CPU_DEFAULT = "1";
+	public static final String IMPLICIT_CONTAINER_ALLOC_MEMORY = "containers.alloc.implicit.memory";
+	public static final String IMPLICIT_CONTAINER_ALLOC_MEMORY_DEFAULT = "GB";
+	public static final String IMPLICIT_CONTAINER_ALLOC_MEMORY_SIZE = "containers.alloc.implicit.memory.size";
+	public static final String IMPLICIT_CONTAINER_ALLOC_MEMORY_SIZE_DEFAULT = "1";
+	
 	
 }

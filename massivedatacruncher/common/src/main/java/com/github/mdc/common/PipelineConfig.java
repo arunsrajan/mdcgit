@@ -40,6 +40,11 @@ public class PipelineConfig implements Cloneable{
 	private String jobname;
 	private String heappercent;
 	private Boolean useglobaltaskexecutors;
+	private String implicitcontainerallocanumber;
+	private String implicitcontainercpu;
+	private String implicitcontainermemory;
+	private String implicitcontainermemorysize;
+	
 	public void setKryoOutput(Output output) {
 		this.output = output;
 	}
@@ -239,6 +244,37 @@ public class PipelineConfig implements Cloneable{
 	public Boolean getUseglobaltaskexecutors() {
 		return Objects.isNull(useglobaltaskexecutors)
 				?Boolean.parseBoolean(MDCProperties.get().getProperty(MDCConstants.USEGLOBALTASKEXECUTORS, MDCConstants.USEGLOBALTASKEXECUTORS_DEFAULT)):useglobaltaskexecutors;
+	}
+	
+	
+	
+	public String getImplicitcontainerallocanumber() {
+		return Objects.isNull(implicitcontainerallocanumber)
+				?MDCProperties.get().getProperty(MDCConstants.IMPLICIT_CONTAINER_ALLOC_NUMBER, MDCConstants.IMPLICIT_CONTAINER_ALLOC_NUMBER_DEFAULT):implicitcontainerallocanumber;
+	}
+	public void setImplicitcontainerallocanumber(String implicitcontainerallocanumber) {
+		this.implicitcontainerallocanumber = implicitcontainerallocanumber;
+	}
+	public String getImplicitcontainercpu() {
+		return Objects.isNull(implicitcontainercpu)
+				?MDCProperties.get().getProperty(MDCConstants.IMPLICIT_CONTAINER_ALLOC_CPU, MDCConstants.IMPLICIT_CONTAINER_ALLOC_CPU_DEFAULT):implicitcontainercpu;
+	}
+	public void setImplicitcontainercpu(String implicitcontainercpu) {
+		this.implicitcontainercpu = implicitcontainercpu;
+	}
+	public String getImplicitcontainermemory() {
+		return Objects.isNull(implicitcontainermemory)
+				?MDCProperties.get().getProperty(MDCConstants.IMPLICIT_CONTAINER_ALLOC_MEMORY, MDCConstants.IMPLICIT_CONTAINER_ALLOC_MEMORY_DEFAULT):implicitcontainermemory;
+	}
+	public void setImplicitcontainermemory(String implicitcontainermemory) {
+		this.implicitcontainermemory = implicitcontainermemory;
+	}
+	public String getImplicitcontainermemorysize() {
+		return Objects.isNull(implicitcontainermemorysize)
+				?MDCProperties.get().getProperty(MDCConstants.IMPLICIT_CONTAINER_ALLOC_MEMORY_SIZE, MDCConstants.IMPLICIT_CONTAINER_ALLOC_MEMORY_SIZE_DEFAULT):implicitcontainermemorysize;
+	}
+	public void setImplicitcontainermemorysize(String implicitcontainermemorysize) {
+		this.implicitcontainermemorysize = implicitcontainermemorysize;
 	}
 	public void setUseglobaltaskexecutors(Boolean useglobaltaskexecutors) {
 		this.useglobaltaskexecutors = useglobaltaskexecutors;

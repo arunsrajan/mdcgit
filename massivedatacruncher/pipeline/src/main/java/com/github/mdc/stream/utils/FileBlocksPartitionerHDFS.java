@@ -854,6 +854,30 @@ public class FileBlocksPartitionerHDFS {
 				totalmem -= maxmemory;
 			}
 			return cr;
+		}else if(pipelineconfig.getContaineralloc().equals(MDCConstants.CONTAINER_ALLOC_IMPLICIT)){
+			var actualmemory = (resources.getFreememory()-256*MDCConstants.MB);
+			var numberofimplicitcontainers = Integer.valueOf(pipelineconfig.getImplicitcontainerallocanumber());
+			var numberofimplicitcontainercpu = Integer.valueOf(pipelineconfig.getImplicitcontainercpu());
+			var numberofimplicitcontainermemory = pipelineconfig.getImplicitcontainermemory();
+			var numberofimplicitcontainermemorysize = Long.valueOf(pipelineconfig.getImplicitcontainermemorysize());
+			var memorysize = numberofimplicitcontainermemory.equals("GB")?MDCConstants.GB:MDCConstants.MB;
+			if(actualmemory<numberofimplicitcontainermemorysize*memorysize*numberofimplicitcontainers) {
+				throw new PipelineException(PipelineConstants.INSUFFMEMORYALLOCATIONERROR);
+			}
+			if(cpu<numberofimplicitcontainercpu*numberofimplicitcontainers) {
+				throw new PipelineException(PipelineConstants.INSUFFCPUALLOCATIONERROR);
+			}
+			for(var count=0;count<numberofimplicitcontainers;count++) {
+				var res = new ContainerResources();
+				res.setCpu(numberofimplicitcontainercpu);
+				var heapmem = numberofimplicitcontainermemorysize*Integer.valueOf(pipelineconfig.getHeappercent())/100;
+				res.setMinmemory(heapmem);
+				res.setMaxmemory(heapmem);
+				res.setDirectheap(numberofimplicitcontainermemorysize-heapmem);
+				res.setGctype(gctype);
+				cr.add(res);
+			}
+			return cr;
 		}
 		else {
 			throw new PipelineException(PipelineConstants.UNSUPPORTEDMEMORYALLOCATIONMODE);

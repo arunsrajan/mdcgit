@@ -77,6 +77,7 @@ public class PipelineConstants {
 	public static final String TASKFAILEDEXCEPTION= "Task Failed Exception";
 	public static final String MEMORYALLOCATIONERROR = "Memory allocation error Minimum Required Memory is 128 MB";
 	public static final String INSUFFMEMORYALLOCATIONERROR = "Insufficient memory, required memory is greater than the available memory";
+	public static final String INSUFFCPUALLOCATIONERROR = "Insufficient cpu, required cpu is greater than the available cpu";
 	public static final String INSUFFNODESERROR = "Insufficient computing nodes";
 	public static final String RESOURCESDOWNRESUBMIT = "Resources (TaskExecutor) %s down while manipulating blocks, Please Resubmit";
 	public static final String INSUFFNODESFORDATANODEERROR = "Insufficient computing nodes for datanode %s,available computing nodes are %d";
