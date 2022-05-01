@@ -119,8 +119,8 @@ public final class StreamPipelineTaskExecutorJGroups extends StreamPipelineTaskE
 										getIntermediateDataRDF(rdf.taskid));
 								if (Objects.isNull(is)) {
 									RemoteDataFetcher.remoteInMemoryDataFetch(rdf);
-									task.input[inputindex] = new SnappyInputStream(
-											new BufferedInputStream(new ByteArrayInputStream(rdf.data)));
+									task.input[inputindex] = 
+											new ByteArrayInputStream(rdf.data);
 								} else {
 									task.input[inputindex] = is;
 								}
