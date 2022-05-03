@@ -678,6 +678,33 @@ public sealed class MapPair<I1,I2> extends AbstractPipeline permits MapValues{
 		mappaircoalesce.parents.add(this);
 		return mappaircoalesce;
 	}
+		
+	/**
+	 * MapPair accepts the coalesce partition number.
+	 * @param partition
+	 * @return MapPair object.
+	 * @throws PipelineException
+	 */
+	@SuppressWarnings({ "unchecked" })
+	public MapPair<I1,I2> coalesce(int partition) throws PipelineException  {
+		var mappaircoalesce = new MapPair(root, new Coalesce(partition, null));
+		this.childs.add(mappaircoalesce);
+		mappaircoalesce.parents.add(this);
+		return mappaircoalesce;
+	}
+	
+	/**
+	 * MapPair with single partition number.
+	 * @return MapPair object.
+	 * @throws PipelineException
+	 */
+	@SuppressWarnings({ "unchecked" })
+	public MapPair<I1,I2> coalesce() throws PipelineException  {
+		var mappaircoalesce = new MapPair(root, new Coalesce(1, null));
+		this.childs.add(mappaircoalesce);
+		mappaircoalesce.parents.add(this);
+		return mappaircoalesce;
+	}
 	
 	/**
 	 * MapPair accepts the reducefunction.

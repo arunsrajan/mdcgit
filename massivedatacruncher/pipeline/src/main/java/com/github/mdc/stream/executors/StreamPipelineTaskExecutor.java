@@ -41,6 +41,7 @@ import java.util.stream.StreamSupport;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
+import org.apache.curator.shaded.com.google.common.collect.Iterables;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
@@ -623,7 +624,7 @@ public sealed class StreamPipelineTaskExecutor implements
 						os.write(("" + java.util.stream.Stream.concat(datafirst.stream(), datasecond.stream())
 								.distinct().count()).getBytes());
 					} else {
-						java.util.stream.Stream.concat(datafirst.stream(), datasecond.stream()).forEach(val -> {
+						java.util.stream.Stream.concat(datafirst.stream(), datasecond.stream()).distinct().forEach(val -> {
 							try {
 								os.write(val.toString().getBytes());
 								os.write(ch);
@@ -2186,32 +2187,49 @@ public sealed class StreamPipelineTaskExecutor implements
 			}
 			log.debug("Coalesce Data Size:" + keyvaluepairs.size());
 			// Parallel execution of reduce by key stream execution.
-			var out = keyvaluepairs.parallelStream().collect(Collectors.toMap(Tuple2::v1, Tuple2::v2,
-					(input1, input2) -> coalescefunction.get(0).coalescefuncion.apply(input1, input2)));
+			List out = null;
+			if (Objects.nonNull(coalescefunction.get(0).coalescefuncion)) {
+				out = keyvaluepairs.parallelStream().collect(Collectors.toMap(Tuple2::v1, Tuple2::v2,
+						(input1, input2) -> coalescefunction.get(0).coalescefuncion.apply(input1, input2)))
+						.entrySet()
+						.stream()
+						.map(entry -> Tuple.tuple(((Entry) entry).getKey(), ((Entry) entry).getValue()))
+						.collect(ParallelCollectors.parallel(value -> value, Collectors.toCollection(Vector::new), executor,
+							Runtime.getRuntime().availableProcessors())).get();
+			}else {
+				out = keyvaluepairs;
+			}
 			if (task.finalphase && task.saveresulttohdfs) {
 				try (OutputStream os = hdfs.create(new Path(task.hdfsurl + task.filepath),
 						Short.parseShort(MDCProperties.get().getProperty(MDCConstants.DFSOUTPUTFILEREPLICATION,
 								MDCConstants.DFSOUTPUTFILEREPLICATION_DEFAULT)));) {
 					int ch = (int) '\n';
-					out.entrySet().stream()
-							.map(entry -> Tuple.tuple(((Entry) entry).getKey(), ((Entry) entry).getValue()))
-							.forEach(val -> {
-								try {
-									os.write(val.toString().getBytes());
+					if (out instanceof List list) {
+						list.parallelStream().forEach(obj -> {
+							try {
+								if (obj instanceof List objs) {
+									objs.stream().forEach(object -> {
+										try {
+											os.write(object.toString().getBytes());
+											os.write(ch);
+										} catch (Exception ex) {
+
+										}
+									});
+								} else {
+									os.write(obj.toString().getBytes());
 									os.write(ch);
-								} catch (IOException e) {
 								}
-							});
+							} catch (Exception ex) {
+
+							}
+						});
+					}
 				}
 				var timetaken = (System.currentTimeMillis() - starttime) / 1000.0;
 				return timetaken;
-			}
-
-			CompletableFuture<List> cf = (CompletableFuture) out.entrySet().stream()
-					.map(entry -> Tuple.tuple(((Entry) entry).getKey(), ((Entry) entry).getValue()))
-					.collect(ParallelCollectors.parallel(value -> value, Collectors.toCollection(Vector::new), executor,
-							Runtime.getRuntime().availableProcessors()));
-			var outpairs = cf.get();
+			}			
+			var outpairs = out;
 			var functions = getFunctions();
 			if (functions.size() > 1) {
 				functions.remove(0);
@@ -2230,7 +2248,7 @@ public sealed class StreamPipelineTaskExecutor implements
 							piplineistream.getObjIntConsumer(), piplineistream.getBiConsumer()));
 
 				} else {
-					cf = (CompletableFuture) ((Stream) stream)
+					CompletableFuture<Vector> cf = (CompletableFuture) ((Stream) stream)
 							.collect(ParallelCollectors.parallel(value -> value, Collectors.toCollection(Vector::new),
 									executor, Runtime.getRuntime().availableProcessors()));
 					outpairs = cf.get();
