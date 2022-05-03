@@ -292,7 +292,7 @@ public sealed class StreamPipeline<I1> extends AbstractPipeline permits CsvStrea
 	}
 	
 	/**
-	 * MassiveDataPipeline accepts the union function.
+	 * StreamPipeline accepts the union function.
 	 * @param union
 	 * @return MassiveDataPipeline object
 	 * @throws PipelineException

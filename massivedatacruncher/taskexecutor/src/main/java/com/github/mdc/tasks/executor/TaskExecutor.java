@@ -128,14 +128,16 @@ public class TaskExecutor implements Runnable {
 					hbtss.pingOnce(task.stageid, task.taskid, task.hostport, Task.TaskStatus.COMPLETED, mdste.getHbtss().getTimetakenseconds(), null);
 				}
 			} else if (deserobj instanceof TasksGraphExecutor stagesgraph) {
-				var taskexecutor = jobstageexecutormap.get(stagesgraph.getTasks().get(0).jobid);
+				var key = stagesgraph.getTasks().get(0).jobid;
+				var taskexecutor = jobstageexecutormap.get(key);
 				var mdste = (StreamPipelineTaskExecutorJGroups) taskexecutor;
 				if (taskexecutor == null) {
 					mdste = new StreamPipelineTaskExecutorJGroups(jobidstageidjobstagemap, stagesgraph.getTasks(),
 							port, inmemorycache);
 					mdste.setExecutor(es);
-					var key = stagesgraph.getTasks().get(0).jobid;
-					jobstageexecutormap.put(key, mdste);
+					for(Task task:stagesgraph.getTasks()) {
+						jobstageexecutormap.put(key+task.stageid+task.taskid, mdste);
+					}
 					taskqueue.offer(mdste);
 				}
 			} else if (deserobj instanceof CloseStagesGraphExecutor closestagesgraph) {
@@ -171,6 +173,7 @@ public class TaskExecutor implements Runnable {
 				log.info("Entering RemoteDataFetch: " + deserobj);
 				var taskexecutor = jobstageexecutormap.get(rdf.jobid + rdf.stageid + rdf.taskid);
 				var mdstde = (StreamPipelineTaskExecutor) taskexecutor;
+				log.info("Executor: " + mdstde);
 				if(rdf.mode.equals(MDCConstants.STANDALONE)) {
 					if (taskexecutor != null) {
 						Task task  = mdstde.getTask();
@@ -196,6 +199,7 @@ public class TaskExecutor implements Runnable {
 								.readIntermediatePhaseOutputFromFS(rdf.jobid,
 										mdstde.getIntermediateDataRDF(rdf.taskid));){
 							rdf.data = (byte[]) is.readAllBytes();
+							Utils.writeObjectByStream(s.getOutputStream(), rdf);
 						}
 					}
 				} else {
@@ -204,6 +208,7 @@ public class TaskExecutor implements Runnable {
 								.readIntermediatePhaseOutputFromFS(rdf.jobid,
 										mdstde.getIntermediateDataRDF(rdf.taskid));){
 							rdf.data = (byte[]) is.readAllBytes();
+							Utils.writeObjectByStream(s.getOutputStream(), rdf);
 						}
 					}
 				}
@@ -221,7 +226,6 @@ public class TaskExecutor implements Runnable {
 				}
 				ca.response = true;
 				Utils.writeObjectByStream(s.getOutputStream(), ca);
-				s.close();
 			} else if (deserobj instanceof List objects) {
 				var object = objects.get(0);
 				var applicationid = (String) objects.get(1);
