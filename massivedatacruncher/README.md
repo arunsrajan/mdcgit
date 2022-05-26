@@ -359,6 +359,8 @@ hdfs://127.0.0.1:9000 /airline1989 /1987 /examplesmdc
 
 tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.transformation.examples.StreamReduceIntersection hdfs://127.0.0.1:9000 /airline1989 /1987 /examplesmdc
 
+tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.transformation.examples.StreamReduceCachedIgnite hdfs://127.0.0.1:9000 /airline1989 /examplesmdc
+
 Stream Reduce SQL
 -----------------
 

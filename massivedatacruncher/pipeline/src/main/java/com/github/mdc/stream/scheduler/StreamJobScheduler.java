@@ -1699,9 +1699,10 @@ public class StreamJobScheduler {
 						rdf.jobid = task.jobid;
 						rdf.stageid = task.stageid;
 						rdf.taskid = task.taskid;
-						rdf.mode = Boolean.parseBoolean(pipelineconfig.getJgroups())?MDCConstants.JGROUPS:MDCConstants.STANDALONE;
+						boolean isJGroups = Boolean.parseBoolean(pipelineconfig.getJgroups());
+						rdf.mode = isJGroups?MDCConstants.JGROUPS:MDCConstants.STANDALONE;
 						RemoteDataFetcher.remoteInMemoryDataFetch(rdf);
-						try (var input = new Input(new SnappyInputStream(new ByteArrayInputStream(rdf.data)));) {
+						try (var input = new Input(!isJGroups?new SnappyInputStream(new ByteArrayInputStream(rdf.data)):new ByteArrayInputStream(rdf.data));) {
 							var obj = kryofinal.readClassAndObject(input);
 							writeOutputToFile(stageoutput.size(),obj);
 							stageoutput.add(obj);

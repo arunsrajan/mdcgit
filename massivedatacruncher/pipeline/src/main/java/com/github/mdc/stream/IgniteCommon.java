@@ -148,7 +148,12 @@ public sealed class IgniteCommon extends AbstractPipeline permits IgnitePipeline
 		job.jm.jobstarttime = System.currentTimeMillis();
 		job.jm.jobid = job.id;
 		MDCJobMetrics.put(job.jm);
-		PipelineConfig pipelineconfig = ((IgnitePipeline)root).pipelineconfig;
+		PipelineConfig pipelineconfig = null;
+		if(root instanceof IgnitePipeline ip) {
+			pipelineconfig = ip.pipelineconfig;
+		}else if(root instanceof MapPairIgnite mpi) {
+			pipelineconfig = mpi.pipelineconfig;
+		}
 		job.jm.mode = pipelineconfig.getMode();
 		if(!this.mdsroots.isEmpty()) {
 			for(AbstractPipeline root:this.mdsroots) {
