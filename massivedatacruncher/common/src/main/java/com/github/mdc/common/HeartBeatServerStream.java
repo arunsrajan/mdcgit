@@ -70,7 +70,7 @@ public sealed class HeartBeatServerStream implements HeartBeatServerMBean,HeartB
 			throw new HeartBeatException(MDCConstants.HEARTBEAT_EXCEPTION_SERVER_PORT);
 		}
 		if (config[2] instanceof String na) {
-			networkaddress = na;
+			networkaddress = NetworkUtil.getNetworkAddress(na);
 		} else {
 			throw new HeartBeatException(MDCConstants.HEARTBEAT_EXCEPTION_SERVER_HOST);
 		}

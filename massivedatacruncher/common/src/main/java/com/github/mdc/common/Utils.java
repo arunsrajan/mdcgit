@@ -899,8 +899,9 @@ public class Utils {
 	 * @param bindaddr
 	 * @return jgroups channel object
 	 */
-	public static JChannel getChannelWithPStack(String bindaddr) {
+	public static synchronized JChannel getChannelWithPStack(String bindaddr) {
 		try {
+			System.setProperty(MDCConstants.BINDADDRESS, bindaddr);
 			var channel = new JChannel(System.getProperty(MDCConstants.USERDIR) + MDCConstants.BACKWARD_SLASH
 					+ MDCProperties.get().getProperty(MDCConstants.JGROUPSCONF));
 			return channel;
@@ -910,11 +911,11 @@ public class Utils {
 		return null;
 	}
 
-	public static JChannel getChannelTSSHA(String bindaddress, Receiver receiver) throws Exception {
+	public static synchronized JChannel getChannelTSSHA(String bindaddress, Receiver receiver) throws Exception {		
 		JChannel channel = getChannelWithPStack(
-				NetworkUtil.getNetworkAddress(MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULERSTREAM_HOST)));
+				bindaddress);
 		if(!Objects.isNull(channel)) {
-			channel.setName(bindaddress);
+			channel.setName(bindaddress);			
 			channel.setDiscardOwnMessages(true);
 			if (!Objects.isNull(receiver)) {
 				channel.setReceiver(receiver);

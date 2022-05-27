@@ -68,7 +68,7 @@ public sealed class HeartBeatServer implements HeartBeatServerMBean,HeartBeatClo
 			throw new Exception(MDCConstants.HEARTBEAT_EXCEPTION_SERVER_PORT);
 		}
 		if(config[2] instanceof String na) {
-			networkaddress = na;
+			networkaddress = NetworkUtil.getNetworkAddress(na);
 		}else {
 			throw new Exception(MDCConstants.HEARTBEAT_EXCEPTION_SERVER_HOST);
 		}
