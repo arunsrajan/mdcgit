@@ -103,8 +103,11 @@ import com.github.mdc.stream.executors.StreamPipelineTaskExecutorIgnite;
 import com.github.mdc.stream.functions.AggregateReduceFunction;
 import com.github.mdc.stream.functions.Coalesce;
 import com.github.mdc.stream.functions.IntersectionFunction;
+import com.github.mdc.stream.functions.Join;
 import com.github.mdc.stream.functions.JoinPredicate;
+import com.github.mdc.stream.functions.LeftJoin;
 import com.github.mdc.stream.functions.LeftOuterJoinPredicate;
+import com.github.mdc.stream.functions.RightJoin;
 import com.github.mdc.stream.functions.RightOuterJoinPredicate;
 import com.github.mdc.stream.functions.UnionFunction;
 import com.github.mdc.stream.mesos.scheduler.MesosScheduler;
@@ -1477,7 +1480,10 @@ public class StreamJobScheduler {
 			}
 			// Form the edges and nodes for the JoinPair function.
 			else if (function instanceof JoinPredicate || function instanceof LeftOuterJoinPredicate
-					|| function instanceof RightOuterJoinPredicate) {
+					|| function instanceof RightOuterJoinPredicate
+					|| function instanceof Join 
+					|| function instanceof LeftJoin
+					|| function instanceof RightJoin) {
 				for (var inputparent1 : outputparent1) {
 					for (var inputparent2 : outputparent2) {
 						partitionindex++;

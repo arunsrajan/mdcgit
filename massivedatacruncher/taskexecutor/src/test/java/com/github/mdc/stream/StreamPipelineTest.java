@@ -799,7 +799,118 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 
 		log.info("testJoinCommonMapMultipleReduce After---------------------------------------");
 	}
+	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@Test
+	public void testJoinMapPair() throws Throwable {
+		log.info("testJoinMapPair Before---------------------------------------");
+		StreamPipeline<String> datastream = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesample,
+				pipelineconfig);
+		MapPair<String, Long> mappair1 = (MapPair) datastream.map(dat -> dat.split(","))
+				.filter(dat -> !dat[14].equals("ArrDelay") && !dat[14].equals("NA"))
+				.mapToPair(dat -> Tuple.tuple(dat[8], Long.parseLong(dat[14])));
 
+		MapPair<String, Long> airlinesamples1 = mappair1.reduceByKey((dat1, dat2) -> dat1 + dat2).coalesce(1,
+				(dat1, dat2) -> dat1 + dat2);
+		
+		MapPair<String, Long> airlinesamples2 = mappair1.reduceByKey((dat1, dat2) -> dat1 - dat2).coalesce(1,
+				(dat1, dat2) -> dat1 - dat2);
+
+		StreamPipeline<String> datastream1 = StreamPipeline.newStreamHDFS(hdfsfilepath, carriers,
+				pipelineconfig);
+
+		MapPair<String, Long> carriers = datastream1.map(linetosplit -> linetosplit.split(","))
+				.mapToPair(line -> new Tuple2(line[0].substring(1, line[0].length() - 1),
+						line[1].substring(1, line[1].length() - 1)));
+
+		List<List> result = (List) airlinesamples1
+				.join(carriers).join(airlinesamples2)
+				.collect(toexecute, null);
+		assertTrue(!result.isEmpty());
+		for (List<Tuple2> tuples : result) {
+			for (Tuple2 pair : tuples) {
+				log.info(pair);
+			}
+		}
+
+		log.info("testJoinMapPair After---------------------------------------");
+	}
+	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@Test
+	public void testLeftJoinMapPair() throws Throwable {
+		log.info("testLeftJoinMapPair Before---------------------------------------");
+		StreamPipeline<String> datastream = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesample,
+				pipelineconfig);
+		MapPair<String, Long> mappair1 = (MapPair) datastream.map(dat -> dat.split(","))
+				.filter(dat -> !dat[14].equals("ArrDelay") && !dat[14].equals("NA"))
+				.mapToPair(dat -> Tuple.tuple(dat[8], Long.parseLong(dat[14])));
+
+		MapPair<String, Long> airlinesamples1 = mappair1.reduceByKey((dat1, dat2) -> dat1 + dat2).coalesce(1,
+				(dat1, dat2) -> dat1 + dat2);
+		
+		StreamPipeline<String> datastream1 = StreamPipeline.newStreamHDFS(hdfsfilepath, carriers,
+				pipelineconfig);
+
+		MapPair<String, Long> airlinesamples2 = mappair1.reduceByKey((dat1, dat2) -> dat1 - dat2).coalesce(1,
+				(dat1, dat2) -> dat1 - dat2);
+		
+		MapPair<String, Long> carriers = datastream1.map(linetosplit -> linetosplit.split(","))
+				.mapToPair(line -> new Tuple2(line[0].substring(1, line[0].length() - 1),
+						line[1].substring(1, line[1].length() - 1)));
+
+		List<List> result = (List) carriers
+				.leftJoin(airlinesamples1).leftJoin(airlinesamples2)
+				.collect(toexecute, null);
+		assertTrue(!result.isEmpty());
+		for (List<Tuple2> tuples : result) {
+			for (Tuple2 pair : tuples) {
+				log.info(pair);
+			}
+		}
+
+		log.info("testLeftJoinMapPair After---------------------------------------");
+	}
+
+	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@Test
+	public void testRightJoinMapPair() throws Throwable {
+		log.info("testRightJoinMapPair Before---------------------------------------");
+		StreamPipeline<String> datastream = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesample,
+				pipelineconfig);
+		MapPair<String, Long> mappair1 = (MapPair) datastream.map(dat -> dat.split(","))
+				.filter(dat -> !dat[14].equals("ArrDelay") && !dat[14].equals("NA"))
+				.mapToPair(dat -> Tuple.tuple(dat[8], Long.parseLong(dat[14])));
+
+		MapPair<String, Long> airlinesamples1 = mappair1.reduceByKey((dat1, dat2) -> dat1 + dat2).coalesce(1,
+				(dat1, dat2) -> dat1 + dat2);
+		
+		StreamPipeline<String> datastream1 = StreamPipeline.newStreamHDFS(hdfsfilepath, carriers,
+				pipelineconfig);
+		
+		MapPair<String, Long> carriers = datastream1.map(linetosplit -> linetosplit.split(","))
+				.filter(line->!line[0].substring(1, line[0].length() - 1).equals("AQ"))
+				.mapToPair(line -> new Tuple2(line[0].substring(1, line[0].length() - 1),
+						line[1].substring(1, line[1].length() - 1)));
+		
+		MapPair<String, Long> carriers1 = datastream1.map(linetosplit -> linetosplit.split(","))
+				.mapToPair(line -> new Tuple2(line[0].substring(1, line[0].length() - 1),
+						line[1].substring(1, line[1].length() - 1)));
+
+		List<List> result = (List) carriers
+				.rightJoin(airlinesamples1).leftJoin(carriers1)
+				.collect(toexecute, null);
+		assertTrue(!result.isEmpty());
+		for (List<Tuple2> tuples : result) {
+			for (Tuple2 pair : tuples) {
+				log.info(pair);
+			}
+		}
+
+		log.info("testRightJoinMapPair After---------------------------------------");
+	}
+	
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Test
 	public void testJoinCommonMapMultipleReduceLeftOuterJoin() throws Throwable {
