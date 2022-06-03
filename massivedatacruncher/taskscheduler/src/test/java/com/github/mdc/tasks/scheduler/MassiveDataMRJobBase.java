@@ -27,14 +27,15 @@ import org.apache.log4j.PropertyConfigurator;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 
+import com.github.mdc.common.ByteBufferPool;
+import com.github.mdc.common.ByteBufferPoolDirect;
 import com.github.mdc.common.CacheUtils;
 import com.github.mdc.common.HeartBeatServer;
 import com.github.mdc.common.MDCConstants;
-import com.github.mdc.common.MDCExecutorThreadFactory;
 import com.github.mdc.common.MDCProperties;
 import com.github.mdc.common.NetworkUtil;
 import com.github.mdc.common.Utils;
-import com.github.mdc.tasks.executor.Container;
+import com.github.mdc.tasks.executor.NodeRunner;
 import com.github.sakserv.minicluster.impl.HdfsLocalCluster;
 
 public class MassiveDataMRJobBase {
@@ -85,9 +86,11 @@ public class MassiveDataMRJobBase {
 	public static void setServerUp() throws Exception {
 		try (InputStream istream = MassiveDataMRJobBase.class.getResourceAsStream("/log4j.properties");) {
 			System.setProperty("HIBCFG", "../config/mdchibernate.cfg.xml");
-			System.setProperty("HADOOP_HOME", "E:\\DEVELOPMENT\\hadoop\\hadoop-3.2.1");
+			System.setProperty("HADOOP_HOME", "C:\\DEVELOPMENT\\hadoop\\hadooplocal\\hadoop-3.3.1");
 			PropertyConfigurator.configure(istream);
 			Utils.loadLog4JSystemPropertiesClassPath("mdctest.properties");
+			ByteBufferPoolDirect.init();
+			ByteBufferPool.init(4);
 			CacheUtils.initCache();
 			testingserver = new TestingServer(zookeeperport);
 			testingserver.start();
@@ -113,7 +116,7 @@ public class MassiveDataMRJobBase {
 				hdfsLocalCluster.start();
 			}
 			Configuration configuration = new Configuration();
-			hdfs = FileSystem.get(new URI(MDCProperties.get().getProperty("taskexecutor.hdfsnn")),
+			hdfs = FileSystem.get(new URI(MDCProperties.get().getProperty("hdfs.namenode.url")),
 					configuration);
 			log.info("HDFS FileSystem Object: "+hdfs);
 			if (numberofnodes > 0) {
@@ -132,6 +135,7 @@ public class MassiveDataMRJobBase {
 					hb.init(rescheduledelay, port, host, initialdelay, pingdelay, "");
 					hb.ping();
 					hbssl.add(hb);
+					Thread.sleep(3000);
 					int teport = Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_PORT));
 					AtomicInteger portinc = new AtomicInteger(teport);
 					executorpool.execute(() -> {
@@ -143,7 +147,7 @@ public class MassiveDataMRJobBase {
 							while (true) {
 								Socket client = server.accept();
 								es.submit(
-										new Container(client, portinc, MDCConstants.TEPROPLOADCLASSPATHCONFIG,
+										new NodeRunner(client, portinc, MDCConstants.TEPROPLOADCLASSPATHCONFIG,
 												containerprocesses, hdfs, containeridthreads, containeridports));
 							}
 						} catch (Exception ioe) {

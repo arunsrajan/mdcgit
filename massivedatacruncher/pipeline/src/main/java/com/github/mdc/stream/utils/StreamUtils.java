@@ -3,6 +3,7 @@ package com.github.mdc.stream.utils;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Vector;
 import java.util.function.IntUnaryOperator;
 import java.util.function.ToIntFunction;
@@ -14,6 +15,8 @@ import java.util.stream.Stream;
 import org.jooq.lambda.tuple.Tuple;
 import org.jooq.lambda.tuple.Tuple2;
 
+import com.github.mdc.common.PipelineConstants;
+import com.github.mdc.stream.PipelineException;
 import com.github.mdc.stream.functions.CoalesceFunction;
 import com.github.mdc.stream.functions.Distinct;
 import com.github.mdc.stream.functions.DoubleFlatMapFunction;
@@ -36,7 +39,7 @@ import com.github.mdc.stream.functions.TupleFlatMapFunction;
 public class StreamUtils {
 	private StreamUtils() {}
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public static Object getFunctionsToStream(List functions, BaseStream stream) {
+	public static Object getFunctionsToStream(List functions, BaseStream stream) throws PipelineException {
 		var streamparser = stream;
 		for (var function : functions) {
 			if (function instanceof MapFunction mf) {
@@ -141,8 +144,8 @@ public class StreamUtils {
 	}
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private static Stream map(MapValuesFunction mapvaluesfunction, Stream stream) {
-		return stream.map(tuple2->Tuple.tuple(((Tuple2)tuple2).v1,mapvaluesfunction.apply(((Tuple2)tuple2).v2)));
+	private static Stream map(MapValuesFunction mapvaluesfunction, Stream<Tuple2> stream) {
+		return stream.map(tuple2->Tuple.tuple(tuple2.v1,mapvaluesfunction.apply(tuple2.v2)));
 	}
 	
 	
@@ -167,9 +170,15 @@ public class StreamUtils {
 	}
 	
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private static Stream reduce(ReduceFunction reducefunction, Stream stream) {
-		List out = Arrays.asList(stream.reduce(reducefunction).get());
-		return out.stream();
+	private static Stream reduce(ReduceFunction reducefunction, Stream stream) throws PipelineException {
+		Optional optional = stream.reduce(reducefunction);
+		if(optional.isPresent()) {
+			List out = Arrays.asList(optional.get());
+			return out.stream();
+		}
+		else {
+			throw new PipelineException(PipelineConstants.REDUCEEXECUTIONVALUEEMPTY);
+		}
 	}
 	
 	
@@ -177,20 +186,20 @@ public class StreamUtils {
 	private static Stream reduce(ReduceByKeyFunction reducefunction, Stream<Tuple2> stream) {
 		java.util.Map out = stream.collect(Collectors.toMap(Tuple2::v1, Tuple2::v2,reducefunction::apply));
 		return ((List) out.entrySet().parallelStream()
-				.map(entry->Tuple.tuple(((Entry)entry).getKey(),((Entry)entry).getValue())).collect(Collectors.toCollection(Vector::new))).parallelStream();
+				.map(entry->Tuple.tuple(((Entry)entry).getKey(),((Entry)entry).getValue())).collect(Collectors.toCollection(Vector::new))).stream();
 	}
 	
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private static Stream reduce(ReduceByKeyFunctionValues reducefunctionvalues, Stream<Tuple2> stream) {
 		java.util.Map out = stream.collect(Collectors.toMap(Tuple2::v1, Tuple2::v2,reducefunctionvalues::apply));
 		return ((List) out.entrySet().parallelStream()
-				.map(entry->Tuple.tuple(((Entry)entry).getKey(),((Entry)entry).getValue())).collect(Collectors.toCollection(Vector::new))).parallelStream();
+				.map(entry->Tuple.tuple(((Entry)entry).getKey(),((Entry)entry).getValue())).collect(Collectors.toCollection(Vector::new))).stream();
 	}
 	
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private static Stream coalesce(CoalesceFunction coelescefunction, Stream<Tuple2> stream) {
 		java.util.Map out = stream.collect(Collectors.toMap(Tuple2::v1, Tuple2::v2,coelescefunction::apply));
-		return ((List) out.entrySet().parallelStream()
+		return ((List) out.entrySet().stream()
 				.map(entry->Tuple.tuple(((Entry)entry).getKey(),((Entry)entry).getValue())).collect(Collectors.toCollection(Vector::new))).parallelStream();
 	}
 }

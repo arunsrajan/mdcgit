@@ -32,9 +32,9 @@ set GCCONFIG=-XX:+UseG1GC -XX:+CMSClassUnloadingEnabled -Dsun.rmi.dgc.client.gcI
 
 IF EXIST %JAVA_HOME%\bin\java.exe (
 
-echo "%MDC_JAVA_HOME%\bin\java" %CLASSPATH% %MEMCONFIG% %GCCCONFIG% -Djava.net.preferIPv4Stack=true com.github.mdc.stream.submitter.MassiveDataStreamTaskSubmitter %*
+echo "%MDC_JAVA_HOME%\bin\java" %CLASSPATH% %MEMCONFIG% %GCCCONFIG% -Djava.net.preferIPv4Stack=true com.github.mdc.stream.submitter.StreamPipelineJobSubmitter %*
 
-"%MDC_JAVA_HOME%\bin\java" --enable-preview %CLASSPATH% %MEMCONFIG% %GCCCONFIG% -Djava.net.preferIPv4Stack=true com.github.mdc.stream.submitter.MassiveDataStreamTaskSubmitter %*
+"%MDC_JAVA_HOME%\bin\java" --enable-preview %CLASSPATH% %MEMCONFIG% %GCCCONFIG% -Djava.net.preferIPv4Stack=true com.github.mdc.stream.submitter.StreamPipelineJobSubmitter %*
 pause
 ) ELSE (
  @echo on

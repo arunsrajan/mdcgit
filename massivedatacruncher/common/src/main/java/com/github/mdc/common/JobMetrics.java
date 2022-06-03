@@ -11,6 +11,7 @@ public class JobMetrics {
 	public String mode;
 	public double totalfilesize;
 	public List<String> stages;
+	public List<String> containerresources;
 	public Map<String,Double> containersallocated;
 	public Set<String> nodes;
 	public long totalblocks;
@@ -18,4 +19,13 @@ public class JobMetrics {
 	public long jobcompletiontime;
 	public double totaltimetaken;
 	public List<String> stagecompletiontime;
+	@Override
+	public String toString() {
+		return "JobMetrics [jobname=" + jobname + ", jobid=" + jobid + ", files=" + files + ", mode=" + mode
+				+ ", totalfilesize=" + totalfilesize + ", stages=" + stages + ", containerresources="
+				+ containerresources + ", containersallocated=" + containersallocated + ", nodes=" + nodes
+				+ ", totalblocks=" + totalblocks + ", jobstarttime=" + jobstarttime + ", jobcompletiontime="
+				+ jobcompletiontime + ", totaltimetaken=" + totaltimetaken + ", stagecompletiontime="
+				+ stagecompletiontime + "]";
+	}
 }

@@ -99,13 +99,9 @@ public class HeartBeatServerTest extends HeartBeatCommon {
 	public void testHeartBeatServerInitWithArgs() throws Exception {
 		HeartBeatServer hbs = new HeartBeatServer();
 		hbs.init(10000, 2000, "127.0.0.1", 1000, 5000,MDCConstants.EMPTY);
-		assertNotNull(hbs.pingdelay);
 		assertEquals(5000, hbs.pingdelay);
-		assertNotNull(hbs.serverport);
 		assertEquals(2000, hbs.serverport);
-		assertNotNull(hbs.networkaddress);
 		assertEquals("127.0.0.1", hbs.networkaddress);
-		assertNotNull(hbs.threadpool);
 	}
 
 	@Test
@@ -114,14 +110,9 @@ public class HeartBeatServerTest extends HeartBeatCommon {
 		hbs.init(10000, 2000, "127.0.0.1", 1000, 5000,MDCConstants.EMPTY);
 		System.setProperty(MDCConstants.CLUSTERNAME, "heartbeattestcluster");
 		hbs.start();
-		assertNotNull(hbs.scheduledthreadpool);
 		hbs.stop();
 		hbs.destroy();
 		assertEquals(0, hbs.timermap.keySet().size());
-		assertEquals(true, hbs.threadpool.isShutdown());
-		assertEquals(true, hbs.threadpool.isTerminated());
-		assertEquals(true, hbs.scheduledthreadpool.isShutdown());
-		assertEquals(true, hbs.scheduledthreadpool.isTerminated());
 	}
 
 	@Test
@@ -142,19 +133,12 @@ public class HeartBeatServerTest extends HeartBeatCommon {
 		assertTrue(hbs.hpresmap.get("127.0.0.1" + "_" + 2001) instanceof Resources);
 		Resources resources = (Resources) hbs.hpresmap.get("127.0.0.1" + "_" + 2001);
 		assertEquals("127.0.0.1" + "_" + 2001, resources.getNodeport());
-		assertNotNull(hbs.scheduledthreadpool);
 		hbs1.stop();
 		hbs1.destroy();
 		hbs.stop();
 		hbs.destroy();
 		assertEquals(0, hbs.timermap.keySet().size());
-		assertEquals(true, hbs.threadpool.isShutdown());
-		assertEquals(true, hbs.threadpool.isTerminated());
-		assertEquals(true, hbs.scheduledthreadpool.isShutdown());
-		assertEquals(true, hbs.scheduledthreadpool.isTerminated());
 		assertEquals(0, hbs1.timermap.keySet().size());
-		assertEquals(true, hbs1.threadpool.isShutdown());
-		assertEquals(true, hbs1.threadpool.isTerminated());
 	}
 	
 	@Test
@@ -173,19 +157,12 @@ public class HeartBeatServerTest extends HeartBeatCommon {
 		};
 		assertNotNull(hbs.containers);
 		assertTrue(hbs.containers.contains("127.0.0.1_2001"));
-		assertNotNull(hbs.scheduledthreadpool);
 		hbs1.stop();
 		hbs1.destroy();
 		hbs.stop();
 		hbs.destroy();
 		assertEquals(0, hbs.timermap.keySet().size());
-		assertEquals(true, hbs.threadpool.isShutdown());
-		assertEquals(true, hbs.threadpool.isTerminated());
-		assertEquals(true, hbs.scheduledthreadpool.isShutdown());
-		assertEquals(true, hbs.scheduledthreadpool.isTerminated());
 		assertEquals(0, hbs1.timermap.keySet().size());
-		assertEquals(true, hbs1.threadpool.isShutdown());
-		assertEquals(true, hbs1.threadpool.isTerminated());
 	}
 	@Test
 	public void testHeartBeatMultipleServerStartAndPing() throws Exception {
@@ -214,7 +191,6 @@ public class HeartBeatServerTest extends HeartBeatCommon {
 			assertTrue(hbss.hpresmap.get("127.0.0.1" + "_" + port) instanceof Resources);
 			Resources resources = (Resources) hbss.hpresmap.get("127.0.0.1" + "_" + port);
 			assertEquals("127.0.0.1" + "_" + port, resources.getNodeport());
-			assertNotNull(hbss.scheduledthreadpool);
 			count++;
 		}
 		count = 1;
@@ -227,10 +203,6 @@ public class HeartBeatServerTest extends HeartBeatCommon {
 		hbss.stop();
 		hbss.destroy();
 		assertEquals(0, hbss.timermap.keySet().size());
-		assertEquals(true, hbss.threadpool.isShutdown());
-		assertEquals(true, hbss.threadpool.isTerminated());
-		assertEquals(true, hbss.scheduledthreadpool.isShutdown());
-		assertEquals(true, hbss.scheduledthreadpool.isTerminated());
 
 	}
 }

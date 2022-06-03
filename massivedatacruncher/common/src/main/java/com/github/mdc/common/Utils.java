@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.GregorianCalendar;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -77,6 +78,7 @@ import com.esotericsoftware.kryo.serializers.ClosureSerializer;
 import com.esotericsoftware.kryo.serializers.CompatibleFieldSerializer;
 import com.esotericsoftware.kryo.serializers.CompatibleFieldSerializer.CompatibleFieldSerializerConfig;
 import com.esotericsoftware.kryo.serializers.FieldSerializer;
+import com.esotericsoftware.kryo.serializers.JavaSerializer;
 import com.esotericsoftware.kryo.util.DefaultInstantiatorStrategy;
 
 import de.javakaffee.kryoserializers.ArraysAsListSerializer;
@@ -109,10 +111,9 @@ import de.javakaffee.kryoserializers.guava.UnmodifiableNavigableSetSerializer;
 
 /**
  * 
- * @author arun
- * Utils for adding the shutdown hook and obtaining the shuffled
- * task executors and much more on kryos and jgroups mode task execution
- * utilities and send and receive the objects via socket.
+ * @author arun Utils for adding the shutdown hook and obtaining the shuffled
+ *         task executors and much more on kryos and jgroups mode task execution
+ *         utilities and send and receive the objects via socket.
  */
 public class Utils {
 	private static Logger log = Logger.getLogger(Utils.class);
@@ -129,6 +130,7 @@ public class Utils {
 			}
 		}
 	}
+
 	/**
 	 * Shutdown hook
 	 * 
@@ -141,9 +143,11 @@ public class Utils {
 	}
 
 	private static Semaphore kryowritesem = new Semaphore(1);
-	
+
 	/**
-	 * This method writes object to outputstream via kryo object without class information.
+	 * This method writes object to outputstream via kryo object without class
+	 * information.
+	 * 
 	 * @param kryo
 	 * @param output
 	 * @param outvalue
@@ -157,6 +161,10 @@ public class Utils {
 				output.flush();
 			}
 			log.debug("Exiting Utils.writeKryoOutput");
+		} catch (InterruptedException e) {
+			log.warn("Interrupted!", e);
+			// Restore interrupted state...
+			Thread.currentThread().interrupt();
 		} catch (Exception e) {
 			log.error(MDCConstants.EMPTY, e);
 		} finally {
@@ -165,7 +173,9 @@ public class Utils {
 	}
 
 	/**
-	 * This method writes object to outputstream via kryo object with class information.
+	 * This method writes object to outputstream via kryo object with class
+	 * information.
+	 * 
 	 * @param kryo
 	 * @param output
 	 * @param outvalue
@@ -178,7 +188,9 @@ public class Utils {
 	}
 
 	/**
-	 * This method reads object from inputputstream via kryo object with class information.
+	 * This method reads object from inputputstream via kryo object with class
+	 * information.
+	 * 
 	 * @param kryo
 	 * @param input
 	 * @return
@@ -188,7 +200,9 @@ public class Utils {
 	}
 
 	/**
-	 * This function returns kryo object with the registered classes with serializers.
+	 * This function returns kryo object with the registered classes with
+	 * serializers.
+	 * 
 	 * @return kryo object with the registered classes with serializers.
 	 */
 	public static Kryo getKryoNonDeflateSerializer() {
@@ -200,7 +214,9 @@ public class Utils {
 	}
 
 	/**
-	 * This function returns kryo object with the registered classes with serializers.
+	 * This function returns kryo object with the registered classes with
+	 * serializers.
+	 * 
 	 * @return kryo object
 	 */
 	public static Kryo getKryo() {
@@ -210,7 +226,9 @@ public class Utils {
 	}
 
 	/**
-	 * This method configures kryo object with the registered classes with serializers.
+	 * This method configures kryo object with the registered classes with
+	 * serializers.
+	 * 
 	 * @param kryo
 	 */
 	public static void getKryo(Kryo kryo) {
@@ -228,7 +246,9 @@ public class Utils {
 	}
 
 	/**
-	 * This method configures kryo object with the registered classes with serializers.
+	 * This method configures kryo object with the registered classes with
+	 * serializers.
+	 * 
 	 * @param kryo
 	 */
 	public static void registerKryoNonDeflateSerializer(Kryo kryo) {
@@ -240,7 +260,7 @@ public class Utils {
 		var dis = new com.esotericsoftware.kryo.util.DefaultInstantiatorStrategy(new StdInstantiatorStrategy());
 		kryo.setInstantiatorStrategy(dis);
 		dis.setFallbackInstantiatorStrategy(new StdInstantiatorStrategy());
-		kryo.setDefaultSerializer(FieldSerializer.class);
+		kryo.setDefaultSerializer(CompatibleFieldSerializer.class);
 		kryo.register(Object[].class);
 		kryo.register(Object.class);
 		kryo.register(Class.class);
@@ -249,14 +269,13 @@ public class Utils {
 		kryo.register(ClosureSerializer.Closure.class, new ClosureSerializer());
 		kryo.register(Vector.class);
 		kryo.register(ArrayList.class);
-		kryo.register(Tuple2.class);
+		CompatibleFieldSerializerConfig configtuple2 = new CompatibleFieldSerializerConfig();
+		configtuple2.setFieldsCanBeNull(true);
+		CompatibleFieldSerializer<Tuple2> cfs = new CompatibleFieldSerializer<Tuple2>(kryo, Tuple2.class, configtuple2);
+		kryo.register(Tuple2.class, cfs);
 		kryo.register(LinkedHashSet.class);
 		kryo.register(Tuple2Serializable.class);
-		CompatibleFieldSerializerConfig config = new CompatibleFieldSerializerConfig();
-		config.setSerializeTransient(true);
-		CompatibleFieldSerializer<CSVRecord> withTransient = new CompatibleFieldSerializer<CSVRecord>(kryo,
-				CSVRecord.class, config);
-		kryo.register(BlocksLocation.class);		
+		kryo.register(BlocksLocation.class);
 		kryo.register(RetrieveData.class);
 		kryo.register(RetrieveKeys.class);
 		kryo.register(Block.class);
@@ -275,32 +294,42 @@ public class Utils {
 		kryo.register(JSONObject.class);
 		kryo.register(PipelineConfig.class);
 		kryo.register(SimpleDirectedGraph.class);
-		kryo.register(CSVParser.class);
-		kryo.register(CSVRecord.class, withTransient);
+		CompatibleFieldSerializerConfig config = new CompatibleFieldSerializerConfig();
+		config.setSerializeTransient(false);
+		CompatibleFieldSerializer<CSVParser> transientcsvparser = new CompatibleFieldSerializer<CSVParser>(kryo,
+				CSVParser.class, config);
+		transientcsvparser.removeField("lexer");
+		kryo.register(CSVParser.class, transientcsvparser);
+		config = new CompatibleFieldSerializerConfig();
+		config.setSerializeTransient(true);
+		CompatibleFieldSerializer<CSVRecord> transientcsvser = new CompatibleFieldSerializer<CSVRecord>(kryo,
+				CSVRecord.class, config);
+		kryo.register(CSVRecord.class, transientcsvser);
 		kryo.register(ReducerValues.class);
 		kryo.register(Task.class);
 		kryo.register(SkipToNewLine.class);
 		kryo.register(CloseStagesGraphExecutor.class);
-		kryo.register(CloseStagesGraphExecutor.class, new CompatibleFieldSerializer(kryo,CloseStagesGraphExecutor.class));
+		kryo.register(CloseStagesGraphExecutor.class,
+				new CompatibleFieldSerializer(kryo, CloseStagesGraphExecutor.class));
 		log.debug("Exiting Utils.registerKryoNonDeflateSerializer");
-	}	
-	
+	}
+
 	/**
-	 * This method configures the log4j properties and 
-	 * obtains the properties from the config folder in the
-	 * binary distribution.
+	 * This method configures the log4j properties and obtains the properties from
+	 * the config folder in the binary distribution.
+	 * 
 	 * @param propertyfile
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	public static void loadLog4JSystemProperties(String propertiesfilepath, String propertyfile) throws Exception {
 		log.debug("Entered Utils.loadLog4JSystemProperties");
-		if(Objects.isNull(propertyfile)) {
+		if (Objects.isNull(propertyfile)) {
 			throw new Exception("Property File Name cannot be null");
 		}
-		if(Objects.isNull(propertiesfilepath)) {
+		if (Objects.isNull(propertiesfilepath)) {
 			throw new Exception("Properties File Path cannot be null");
 		}
-		try (var fis = new FileInputStream(propertiesfilepath+propertyfile);) {
+		try (var fis = new FileInputStream(propertiesfilepath + propertyfile);) {
 			PropertyConfigurator.configure(propertiesfilepath + MDCConstants.LOG4J_PROPERTIES);
 			var prop = new Properties();
 			prop.load(fis);
@@ -309,20 +338,22 @@ public class Utils {
 			MDCProperties.put(prop);
 		} catch (Exception ex) {
 			log.error("Problem in loading properties, See the cause below", ex);
-			throw new Exception("Unable To Load Properties",ex);
+			throw new Exception("Unable To Load Properties", ex);
 		}
 		log.debug("Exiting Utils.loadLog4JSystemProperties");
 	}
+
 	/**
-	 * This method configures the log4j properties and 
-	 * obtains the properties from the classpath in the
-	 * binary distribution. This method is for testing purposes.
+	 * This method configures the log4j properties and obtains the properties from
+	 * the classpath in the binary distribution. This method is for testing
+	 * purposes.
+	 * 
 	 * @param propertyfile
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	public static void loadLog4JSystemPropertiesClassPath(String propertyfile) throws Exception {
 		log.debug("Entered Utils.loadLog4JSystemPropertiesClassPath");
-		if(Objects.isNull(propertyfile)) {
+		if (Objects.isNull(propertyfile)) {
 			throw new Exception("Property File Name cannot be null");
 		}
 		PropertyConfigurator.configure(
@@ -336,14 +367,15 @@ public class Utils {
 			MDCProperties.put(prop);
 		} catch (Exception ex) {
 			log.error("Problem in loading properties, See the cause below", ex);
-			throw new Exception("Unable To Load Properties",ex);
+			throw new Exception("Unable To Load Properties", ex);
 		}
 		log.debug("Exiting Utils.loadLog4JSystemPropertiesClassPath");
 	}
+
 	/**
-	 * This method configures the log4j properties and 
-	 * obtains the properties from the classpath in the
-	 * binary distribution for mesos.
+	 * This method configures the log4j properties and obtains the properties from
+	 * the classpath in the binary distribution for mesos.
+	 * 
 	 * @param propertyfile
 	 */
 	public static void loadPropertiesMesos(String propertyfile) {
@@ -377,9 +409,10 @@ public class Utils {
 	}
 
 	/**
-	 * This function creates and configures the jgroups channel object 
-	 * for the given input and returns it. This is used in jgroups 
-	 * mode of autonomous task execution with no scheduler behind it.
+	 * This function creates and configures the jgroups channel object for the given
+	 * input and returns it. This is used in jgroups mode of autonomous task
+	 * execution with no scheduler behind it.
+	 * 
 	 * @param jobid
 	 * @param networkaddress
 	 * @param port
@@ -392,45 +425,47 @@ public class Utils {
 			Map<String, WhoIsResponse.STATUS> mapreq, Map<String, WhoIsResponse.STATUS> mapresp) throws Exception {
 		log.debug("Entered Utils.getChannelTaskExecutor");
 		var channel = Utils.getChannelWithPStack(networkaddress);
-		channel.setName(networkaddress + "_" + port);
-		channel.setReceiver(new Receiver() {
-			String jobidl = jobid;
-			Map<String, WhoIsResponse.STATUS> mapreql = mapreq;
-			Map<String, WhoIsResponse.STATUS> maprespl = mapresp;
+		if (!Objects.isNull(channel)) {
+			channel.setName(networkaddress + "_" + port);
+			channel.setReceiver(new Receiver() {
+				String jobidl = jobid;
+				Map<String, WhoIsResponse.STATUS> mapreql = mapreq;
+				Map<String, WhoIsResponse.STATUS> maprespl = mapresp;
 
-			public void viewAccepted(View clusterview) {
-			}
-
-			public void receive(Message msg) {
-				var rawbuffer = (byte[])((ObjectMessage)msg).getObject();
-				var kryo = getKryo();
-				try (var bais = new ByteArrayInputStream(rawbuffer); var input = new Input(bais);) {
-					var object = readKryoInputObjectWithClass(kryo, input);
-					if (object instanceof WhoIsRequest whoisrequest) {
-						if (mapreql.containsKey(whoisrequest.getStagepartitionid())) {
-							log.debug("Whois: " + whoisrequest.getStagepartitionid() + " Map Status: " + mapreql
-									+ " Map Response Status: " + maprespl);
-							whoisresp(msg, whoisrequest.getStagepartitionid(), jobidl,
-									mapreql.get(whoisrequest.getStagepartitionid()), channel, networkaddress);
-						}
-					} else if (object instanceof WhoIsResponse whoisresponse) {
-						log.debug("WhoisResp: " + whoisresponse.getStagepartitionid() + " Status: "
-								+ whoisresponse.getStatus());
-						maprespl.put(whoisresponse.getStagepartitionid(), whoisresponse.getStatus());
-					} else if (object instanceof WhoAreRequest) {
-						log.debug("WhoAreReq: ");
-						whoareresponse(channel, msg.getSrc(), mapreql);
-					} else if (object instanceof WhoAreResponse whoareresponse) {
-						log.debug("WhoAreResp: ");
-						maprespl.putAll(whoareresponse.getResponsemap());
-					}
-				} catch (Exception ex) {
-
+				public void viewAccepted(View clusterview) {
 				}
-			}
-		});
-		channel.setDiscardOwnMessages(true);
-		channel.connect(jobid);
+
+				public void receive(Message msg) {
+					var rawbuffer = (byte[]) ((ObjectMessage) msg).getObject();
+					var kryo = getKryo();
+					try (var bais = new ByteArrayInputStream(rawbuffer); var input = new Input(bais);) {
+						var object = readKryoInputObjectWithClass(kryo, input);
+						if (object instanceof WhoIsRequest whoisrequest) {
+							if (mapreql.containsKey(whoisrequest.getStagepartitionid())) {
+								log.debug("Whois: " + whoisrequest.getStagepartitionid() + " Map Status: " + mapreql
+										+ " Map Response Status: " + maprespl);
+								whoisresp(msg, whoisrequest.getStagepartitionid(), jobidl,
+										mapreql.get(whoisrequest.getStagepartitionid()), channel, networkaddress);
+							}
+						} else if (object instanceof WhoIsResponse whoisresponse) {
+							log.debug("WhoisResp: " + whoisresponse.getStagepartitionid() + " Status: "
+									+ whoisresponse.getStatus());
+							maprespl.put(whoisresponse.getStagepartitionid(), whoisresponse.getStatus());
+						} else if (object instanceof WhoAreRequest) {
+							log.debug("WhoAreReq: ");
+							whoareresponse(channel, msg.getSrc(), mapreql);
+						} else if (object instanceof WhoAreResponse whoareresponse) {
+							log.debug("WhoAreResp: ");
+							maprespl.putAll(whoareresponse.getResponsemap());
+						}
+					} catch (Exception ex) {
+
+					}
+				}
+			});
+			channel.setDiscardOwnMessages(true);
+			channel.connect(jobid);
+		}
 		log.debug("Exiting Utils.getChannelTaskExecutor");
 		return channel;
 	}
@@ -438,6 +473,7 @@ public class Utils {
 	/**
 	 * Request the status of the stage whoever is the executing the stage tasks.
 	 * This method is used by the task executors.
+	 * 
 	 * @param channel
 	 * @param stagepartitionid
 	 * @throws Exception
@@ -455,10 +491,12 @@ public class Utils {
 		}
 		log.debug("Exiting Utils.whois");
 	}
-	
+
 	/**
-	 * Request the status of the all the stages whoever are the executing the stage tasks.
-	 * This method is used by the job scheduler in jgroups mode of stage task executions.
+	 * Request the status of the all the stages whoever are the executing the stage
+	 * tasks. This method is used by the job scheduler in jgroups mode of stage task
+	 * executions.
+	 * 
 	 * @param channel
 	 * @param stagepartitionid
 	 * @throws Exception
@@ -478,6 +516,7 @@ public class Utils {
 
 	/**
 	 * Response of the whoare request used by the schedulers.
+	 * 
 	 * @param channel
 	 * @param address
 	 * @param maptosend
@@ -499,8 +538,9 @@ public class Utils {
 	}
 
 	/**
-	 * Response of the whois request used by the task executors to 
-	 * execute the next stage tasks.
+	 * Response of the whois request used by the task executors to execute the next
+	 * stage tasks.
+	 * 
 	 * @param msg
 	 * @param stagepartitionid
 	 * @param jobid
@@ -527,6 +567,7 @@ public class Utils {
 
 	/**
 	 * This method stores graph information of stages in file.
+	 * 
 	 * @param graph
 	 * @param writer
 	 * @throws ExportException
@@ -537,6 +578,10 @@ public class Utils {
 
 			try {
 				Thread.sleep(500);
+			} catch (InterruptedException e) {
+				log.warn("Interrupted!", e);
+			    // Restore interrupted state...
+			    Thread.currentThread().interrupt();
 			} catch (Exception ex) {
 				log.error("Delay Error, see cause below \n", ex);
 			}
@@ -560,17 +605,21 @@ public class Utils {
 
 	/**
 	 * This method stores graph information of physical execution plan in file.
+	 * 
 	 * @param graph
 	 * @param writer
 	 * @throws ExportException
 	 */
-	public static void renderGraphPhysicalExecPlan(Graph<Task, DAGEdge> graph, Writer writer)
-			throws ExportException {
+	public static void renderGraphPhysicalExecPlan(Graph<Task, DAGEdge> graph, Writer writer) throws ExportException {
 		log.debug("Entered Utils.renderGraphPhysicalExecPlan");
 		ComponentNameProvider<Task> vertexIdProvider = jobstage -> {
 
 			try {
 				Thread.sleep(500);
+			} catch (InterruptedException e) {
+				log.warn("Interrupted!", e);
+			    // Restore interrupted state...
+			    Thread.currentThread().interrupt();
 			} catch (Exception ex) {
 				log.error("Delay Error, see cause below \n", ex);
 			}
@@ -593,6 +642,7 @@ public class Utils {
 
 	/**
 	 * This function returns the GC status.
+	 * 
 	 * @return garbage collectors status.
 	 */
 	public static String getGCStats() {
@@ -618,8 +668,8 @@ public class Utils {
 	}
 
 	/**
-	 * This function returns the kryo object configured
-	 * for mesos mode execution.
+	 * This function returns the kryo object configured for mesos mode execution.
+	 * 
 	 * @return kryo object
 	 */
 	public static Kryo getKryoMesos() {
@@ -641,8 +691,9 @@ public class Utils {
 	}
 
 	/**
-	 * Configures the kryo object with custom serializers for the collection and 
-	 * guava objects for serialization and deserialization. 
+	 * Configures the kryo object with custom serializers for the collection and
+	 * guava objects for serialization and deserialization.
+	 * 
 	 * @param kryo
 	 */
 	public static void registerKryoResult(Kryo kryo) {
@@ -714,8 +765,9 @@ public class Utils {
 	}
 
 	/**
-	 * This function returns the kryo object after configuring the 
-	 * custom serializers.
+	 * This function returns the kryo object after configuring the custom
+	 * serializers.
+	 * 
 	 * @return kryo
 	 */
 	public static Kryo getKryoResult() {
@@ -727,8 +779,9 @@ public class Utils {
 	}
 
 	/**
-	 * This function returns the object by socket using the 
-	 * host port of the server and the input object to the server.
+	 * This function returns the object by socket using the host port of the server
+	 * and the input object to the server.
+	 * 
 	 * @param hp
 	 * @param inputobj
 	 * @return object
@@ -743,13 +796,14 @@ public class Utils {
 			var obj = kryo.readClassAndObject(input);
 			return obj;
 		} catch (Exception ex) {
-			log.error("Unable to retreive Object: " + inputobj, ex);
+			log.error("Unable to read result Object: " + inputobj + " " + hp, ex);
 		}
 		return null;
 	}
 
 	/**
 	 * This function returns the objects by socket.
+	 * 
 	 * @param socket
 	 * @return object
 	 */
@@ -760,17 +814,19 @@ public class Utils {
 			return kryo.readClassAndObject(input);
 
 		} catch (Exception ex) {
-			log.error("Unable to retreive Object: ", ex);
+			log.error("Unable to read Object: ", ex);
 		}
 		return null;
 	}
+
 	/**
-	 * This function returns the objects by socket and classloader. 
+	 * This function returns the objects by socket and classloader.
+	 * 
 	 * @param socket
 	 * @param cl
 	 * @return object
 	 */
-	public static Object readObject(Socket socket,ClassLoader cl) {
+	public static Object readObject(Socket socket, ClassLoader cl) {
 		try {
 			var input = new Input(socket.getInputStream());
 			var kryo = Utils.getKryoNonDeflateSerializer();
@@ -778,14 +834,14 @@ public class Utils {
 			return kryo.readClassAndObject(input);
 
 		} catch (Exception ex) {
-			log.error("Unable to retreive Object: ", ex);
+			log.error("Unable to read Object: ", ex);
 		}
 		return null;
 	}
-	
-	
+
 	/**
 	 * This method writes the object via socket connection to the server.
+	 * 
 	 * @param socket
 	 * @param object
 	 */
@@ -795,13 +851,14 @@ public class Utils {
 			kryo.writeClassAndObject(output, object);
 			output.flush();
 		} catch (Exception ex) {
-			log.error("Unable to retreive Object: ", ex);
+			log.error("Unable to write Object: ", ex);
 		}
 	}
 
 	/**
-	 * This method writes the object via socket connection 
-	 * to the host and port of server.
+	 * This method writes the object via socket connection to the host and port of
+	 * server.
+	 * 
 	 * @param hp
 	 * @param inputobj
 	 * @throws Exception
@@ -812,16 +869,16 @@ public class Utils {
 
 			writeObjectByStream(socket.getOutputStream(), inputobj);
 		} catch (IOException ex) {
-			log.error("Unable to retreive Object: " + inputobj);
+			log.error("Unable to write Object: " + inputobj);
 			throw ex;
-		}
-		catch (Exception ex) {
-			log.error("Unable to retreive Object: " + inputobj);
+		} catch (Exception ex) {
+			log.error("Unable to write Object: " + inputobj);
 		}
 	}
+
 	/**
-	 * This method writes the object via sockets outputstream 
-	 * of server.
+	 * This method writes the object via sockets outputstream of server.
+	 * 
 	 * @param hp
 	 * @param inputobj
 	 * @throws Exception
@@ -833,44 +890,46 @@ public class Utils {
 			kryo.writeClassAndObject(output, inputobj);
 			output.flush();
 		} catch (Exception ex) {
-			log.error("Unable to retreive Object: " + inputobj);
+			log.error("Unable to write Object Stream: " + inputobj);
 		}
 	}
-	
+
 	/**
 	 * 
 	 * @param bindaddr
 	 * @return jgroups channel object
 	 */
-	public static JChannel getChannelWithPStack(String bindaddr) {
+	public static synchronized JChannel getChannelWithPStack(String bindaddr) {
 		try {
-			var channel = new JChannel(System.getProperty(MDCConstants.USERDIR)+MDCConstants.BACKWARD_SLASH+MDCProperties.get().getProperty(MDCConstants.JGROUPSCONF));
+			System.setProperty(MDCConstants.BINDADDRESS, bindaddr);
+			var channel = new JChannel(System.getProperty(MDCConstants.USERDIR) + MDCConstants.BACKWARD_SLASH
+					+ MDCProperties.get().getProperty(MDCConstants.JGROUPSCONF));
 			return channel;
 		} catch (Exception ex) {
-			log.error("Unable to add Protocol Stack: ",ex);
+			log.error("Unable to add Protocol Stack: ", ex);
 		}
 		return null;
 	}
-	
-	
-	public static JChannel getChannelTSSHA(String bindaddress,Receiver receiver) throws Exception {
+
+	public static synchronized JChannel getChannelTSSHA(String bindaddress, Receiver receiver) throws Exception {		
 		JChannel channel = getChannelWithPStack(
-				NetworkUtil.getNetworkAddress(MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULERSTREAM_HOST)));
-		channel.setName(bindaddress);
-		channel.setDiscardOwnMessages(true);
-		if(!Objects.isNull(receiver)) {
-			channel.setReceiver(receiver);
+				bindaddress);
+		if(!Objects.isNull(channel)) {
+			channel.setName(bindaddress);			
+			channel.setDiscardOwnMessages(true);
+			if (!Objects.isNull(receiver)) {
+				channel.setReceiver(receiver);
+			}
+			channel.connect(MDCConstants.TSSHA);
 		}
-		channel.connect(MDCConstants.TSSHA);
 		return channel;
 	}
-	
-	
-	public static List<String> getAllFilePaths(List<Path> paths){
-		return paths.stream().map(path->path.toUri().toString()).collect(Collectors.toList());
+
+	public static List<String> getAllFilePaths(List<Path> paths) {
+		return paths.stream().map(path -> path.toUri().toString()).collect(Collectors.toList());
 	}
-	
-	public static long getTotalLengthByFiles(FileSystem hdfs ,List<Path> paths) throws IOException {
+
+	public static long getTotalLengthByFiles(FileSystem hdfs, List<Path> paths) throws IOException {
 		long totallength = 0;
 		for (var filepath : paths) {
 			var fs = (DistributedFileSystem) hdfs;
@@ -880,14 +939,14 @@ public class Utils {
 		}
 		return totallength;
 	}
-	
-	public static void createJar(File folder,String outputfolder,String outjarfilename)  {
+
+	public static void createJar(File folder, String outputfolder, String outjarfilename) {
 		var manifest = new Manifest();
 		manifest.getMainAttributes().put(Attributes.Name.MANIFEST_VERSION, "1.0");
-		try(var target = new JarOutputStream(new FileOutputStream(outputfolder+MDCConstants.BACKWARD_SLASH+outjarfilename), manifest);){
+		try (var target = new JarOutputStream(
+				new FileOutputStream(outputfolder + MDCConstants.BACKWARD_SLASH + outjarfilename), manifest);) {
 			add(folder, target);
-		}
-		catch (IOException ioe) {
+		} catch (IOException ioe) {
 			log.error("Unable to create Jar", ioe);
 		}
 	}
@@ -919,12 +978,13 @@ public class Utils {
 				in.close();
 		}
 	}
-	
+
 	public static String getUniqueID() {
 		return UUID.randomUUID().toString();
 	}
-	
-	public static ServerCnxnFactory startZookeeperServer(int clientport,int numconnections,int ticktime) throws Exception {
+
+	public static ServerCnxnFactory startZookeeperServer(int clientport, int numconnections, int ticktime)
+			throws Exception {
 		var dataDirectory = System.getProperty("java.io.tmpdir");
 		var dir = new File(dataDirectory, "zookeeper").getAbsoluteFile();
 		var server = new ZooKeeperServer(dir, dir, ticktime);
@@ -932,41 +992,160 @@ public class Utils {
 		scf.startup(server);
 		return scf;
 	}
-	
-	
+
 	public static boolean getZGCMemUsage(float percentage) {
 		MemoryUsage musage = mpBeanLocalToJVM.getCollectionUsage();
-		float memusage = (float) (musage.getUsed()/(float)musage.getMax()*100.0);
-		return memusage>=percentage;
+		float memusage = (float) (musage.getUsed() / (float) musage.getMax() * 100.0);
+		return memusage >= percentage;
 	}
-	
-	public static void writeResultToHDFS(String hdfsurl,String filepath, InputStream is) throws Exception {
 
+	public static void writeResultToHDFS(String hdfsurl, String filepath, InputStream is) throws Exception {
 		try (var hdfs = FileSystem.get(new URI(hdfsurl), new Configuration());
-				var fsdos = hdfs.create(
-						new Path(hdfsurl + filepath), Short.parseShort(MDCProperties.get()
-						.getProperty(MDCConstants.DFSOUTPUTFILEREPLICATION
-								,MDCConstants.DFSOUTPUTFILEREPLICATION_DEFAULT)
-						));
-				BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(fsdos));
+				BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(hdfs.create(new Path(hdfsurl + filepath),
+						Short.parseShort(MDCProperties.get().getProperty(MDCConstants.DFSOUTPUTFILEREPLICATION,
+								MDCConstants.DFSOUTPUTFILEREPLICATION_DEFAULT)))));
 				Input input = new Input(is)) {
 			Kryo kryo = getKryoNonDeflateSerializer();
-			Object result = kryo.readClassAndObject(input);
-			if(result instanceof List res) {
+			while (input.available() > 0) {
+				Object result = kryo.readClassAndObject(input);
+				if (result instanceof List res) {
+					for (var value : res) {
+						bw.write(value.toString());
+						bw.write(MDCConstants.NEWLINE);
+					}
+				} else {
+					bw.write(result.toString());
+				}
+			}
+			bw.flush();
+		} catch (IOException ioe) {
+		} catch (Exception e) {
+			log.error(PipelineConstants.FILEIOERROR, e);
+			throw new Exception(PipelineConstants.FILEIOERROR, e);
+		}
+
+	}
+
+	public static void writeResultToHDFS(String hdfsurl, String filepath, Object out) throws Exception {
+		try (var hdfs = FileSystem.get(new URI(hdfsurl), new Configuration());
+				BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(hdfs.create(new Path(hdfsurl + filepath),
+						Short.parseShort(MDCProperties.get().getProperty(MDCConstants.DFSOUTPUTFILEREPLICATION,
+								MDCConstants.DFSOUTPUTFILEREPLICATION_DEFAULT)))));) {
+			if (out instanceof List res) {
 				for (var value : res) {
 					bw.write(value.toString());
 					bw.write(MDCConstants.NEWLINE);
 				}
-			}
-			else {
-				bw.write(result.toString());
+			} else {
+				bw.write(out.toString());
 			}
 			bw.flush();
-			fsdos.hflush();
-		} catch (Exception ioe) {
-			log.error(MassiveDataPipelineConstants.FILEIOERROR, ioe);
-			throw new Exception(MassiveDataPipelineConstants.FILEIOERROR, ioe);
+		} catch (IOException ioe) {
+		} catch (Exception e) {
+			log.error(PipelineConstants.FILEIOERROR, e);
+			throw new Exception(PipelineConstants.FILEIOERROR, e);
 		}
-	
 	}
+
+	public static String getIntermediateInputStreamRDF(RemoteDataFetch rdf) throws Exception {
+		log.debug("Entered Utils.getIntermediateInputStreamRDF");
+		var path = (rdf.jobid + MDCConstants.HYPHEN + rdf.stageid + MDCConstants.HYPHEN + rdf.taskid
+				);
+		log.debug("Returned Utils.getIntermediateInputStreamRDF");
+		return path;
+	}
+
+	public static String getIntermediateInputStreamTask(Task task) throws Exception {
+		log.debug("Entered Utils.getIntermediateInputStreamTask");
+		var path = (task.jobid + MDCConstants.HYPHEN + task.stageid + MDCConstants.HYPHEN + task.taskid
+				);
+		log.debug("Returned Utils.getIntermediateInputStreamTask");
+		return path;
+	}
+
+	@SuppressWarnings("unchecked")
+	public static String launchContainers(Integer numberofcontainers) throws Exception {
+		var containerid = MDCConstants.CONTAINER + MDCConstants.HYPHEN + Utils.getUniqueID();
+		var jobid = MDCConstants.JOB + MDCConstants.HYPHEN + Utils.getUniqueID();
+		var ac = new AllocateContainers();
+		ac.setContainerid(containerid);
+		ac.setNumberofcontainers(numberofcontainers);
+		var nrs = MDCNodesResources.get();
+		var resources = nrs.values();
+		int numavailable = Math.min(numberofcontainers, resources.size());
+		Iterator<Resources> res = resources.iterator();
+		var lcs = new ArrayList<LaunchContainers>();
+		for (int container = 0; container < numavailable; container++) {
+			Resources restolaunch = res.next();
+			List<Integer> ports = (List<Integer>) Utils.getResultObjectByInput(restolaunch.getNodeport(), ac);
+			if(Objects.isNull(ports)) {
+				throw new ContainerException("Port Allocation Error From Container");
+			}
+			log.info("Container Allocated In Node: " + restolaunch.getNodeport() + " With Ports: " + ports);
+			var cla = new ContainerLaunchAttributes();
+			var crs = new ContainerResources();
+			crs.setPort(ports.get(0));
+			crs.setCpu(restolaunch.getNumberofprocessors());
+			var meminmb = restolaunch.getFreememory() / MDCConstants.MB;
+			var heapmem = meminmb * 30 / 100;
+			crs.setMinmemory(heapmem);
+			crs.setMaxmemory(heapmem);
+			crs.setDirectheap(meminmb - heapmem);
+			crs.setGctype(MDCConstants.ZGC);
+			cla.setCr(Arrays.asList(crs));
+			cla.setNumberofcontainers(1);
+			LaunchContainers lc = new LaunchContainers();
+			lc.setCla(cla);
+			lc.setNodehostport(restolaunch.getNodeport());
+			lc.setContainerid(containerid);
+			lc.setJobid(jobid);
+			List<Integer> launchedcontainerports = (List<Integer>) Utils.getResultObjectByInput(lc.getNodehostport(),
+					lc);
+			if(Objects.isNull(launchedcontainerports)) {
+				throw new ContainerException("Task Executor Launch Error From Container");
+			}
+			int index = 0;
+			while (index < launchedcontainerports.size()) {
+				while (true) {
+					String tehost = lc.getNodehostport().split("_")[0];
+					try (var sock = new Socket(tehost, launchedcontainerports.get(index));) {
+						break;
+					} catch (Exception ex) {
+						try {
+							log.info("Waiting for container " + tehost + MDCConstants.UNDERSCORE
+									+ launchedcontainerports.get(index) + " to complete launch....");
+							Thread.sleep(1000);
+						} catch (InterruptedException e) {
+							log.warn("Interrupted!", e);
+						    // Restore interrupted state...
+						    Thread.currentThread().interrupt();
+						} catch (Exception e) {
+							log.error(MDCConstants.EMPTY, e);
+						}
+					}
+				}
+				index++;
+			}
+			log.info("Container Launched In Node: " + restolaunch.getNodeport() + " With Ports: "
+					+ launchedcontainerports);
+			lcs.add(lc);
+		}
+		GlobalContainerLaunchers.put(containerid, lcs);
+		return containerid;
+	}
+
+	public static void destroyContainers(String containerid) {
+		var dc = new DestroyContainers();
+		dc.setContainerid(containerid);
+		var lcs = GlobalContainerLaunchers.get(containerid);
+		lcs.stream().forEach(lc -> {
+			try {
+				Utils.writeObject(lc.getNodehostport(), dc);
+			} catch (Exception e) {
+				log.error(MDCConstants.EMPTY, e);
+			}
+		});
+		GlobalContainerLaunchers.remove(containerid);
+	}
+
 }

@@ -23,7 +23,6 @@ public class MDCConstants {
 	public static final String SINGLE_QUOTES = "'";
 	public static final String SINGLESPACE = " ";
 	static final String CLASS = "class";
-	public static final String DATAFILEEXTN = ".dat";
 	public static final String NULL = "null";
 	public static final String NULLSTRING = null;
 	
@@ -49,7 +48,6 @@ public class MDCConstants {
 	public static final String TASKSCHEDULER = "taskscheduler";
 	public static final String TASKSCHEDULER_HOSTPORT = "taskscheduler.hostport";
 	public static final String METAFILEEXTN = ".meta";
-	public static final String MRJARPATH = "mrjarpath";
 	public static final String MDCAPPLICATION = "App";
 	public static final String BLOCK = "Block";
 	public static final String TASK = "Task";
@@ -96,7 +94,6 @@ public class MDCConstants {
 	public static final String TASKSCHEDULER_BLOCKSIZE = "taskscheduler.blocksize";
 	public static final String TASKSCHEDULER_BATCHSIZE = "taskscheduler.batchsize";
 	public static final String TASKSCHEDULER_NUMREDUCERS = "taskscheduler.numreducers";
-	public static final String TASKSCHEDULER_HDFSNN = "taskscheduler.hdfsnn";
 	public static final String TASKSCHEDULER_TMP_DIR = "taskscheduler.temp.dir";
 	public static final String TASKSCHEDULERSTREAM_INITIALDELAY = "taskschedulerstream.initialdelay";
 	public static final String TASKSCHEDULERSTREAM_INITIALDELAY_DEFAULT = "1000";
@@ -121,17 +118,18 @@ public class MDCConstants {
 	public static final String TASKSCHEDULERSTREAM_BLOCKSIZE_DEFAULT = "64";
 	public static final String TASKSCHEDULERSTREAM_HA_ENABLED = "taskschedulerstream.ha.enabled";
 	public static final String TASKSCHEDULERSTREAM_HA_ENABLED_DEFAULT = "false";
-	public static final String TASKEXECUTOR_HDFSNN = "taskexecutor.hdfsnn";
 	public static final String TASKEXECUTOR_PINGDELAY = "taskexecutor.pingdelay";
 	public static final String TASKEXECUTOR_PORT = "taskexecutor.port";
 	public static final String TASKEXECUTOR_HOST = "taskexecutor.host";
-	public static final String TASKSCHEDULERSTREAM_HDFSNN = "taskschedulerstream.hdfsnn";
-	public static final String APPMASTER_HDFSNN = "appmaster.hdfsnn";;
 	public static final String NUMOFTASKSTATUSCOMPLETEDORFAILED = "jgroups.numtaskstatuscompleted";;
 	
 	//Node Properties
 	public static final String NODE_PORT = "node.port";
-	
+	public static final String CONTAINER_ALLOC = "container.alloc";
+	public static final String CONTAINER_ALLOC_DEFAULT = "COMBINE";
+	public static final String CONTAINER_ALLOC_COMBINE = "COMBINE";
+	public static final String CONTAINER_ALLOC_DIVIDED = "DIVIDED";
+	public static final String CONTAINER_ALLOC_IMPLICIT = "IMPLICIT";
 	
 	public static final String ZOOKEEPER_HOSTPORT = "zookeeper.hostport";
 	public static final String ZOOKEEPER_RETRYDELAY = "zookeeper.retrydelay";
@@ -291,12 +289,6 @@ public class MDCConstants {
 	public static final String GRAPHFILEPEPLANNAME = "graph.peplan.file";
 	public static final String GRAPHTASKFILENAME = "graph.task.file";
 	
-	//Task Buffers and timeout
-	public static final String TASKBUFFERSIZE = "task.socketbuffersize";
-	public static final String TASKOBJECTSIZE = "task.objectbuffersize";
-	public static final String TASKSOCKETTIMEOUT = "task.sockettimeout";
-	
-	
 	//Cache Properties
 	public static final String CACHESIZEGB = "cache.size";
 	public static final String CACHEEXPIRY = "cache.expiry";
@@ -381,12 +373,15 @@ public class MDCConstants {
 	public static final String MESOS = "Mesos";
 	public static final String JGROUPS = "JGroups";
 	public static final String LOCAL = "Local";
+	public static final String STANDALONE = "Standalone";
 	
 	public static final String TSSHA = "TSSHA";
 	public static final String JARLOADED = "Jar Loaded";
 	
 	public static final String BYTEBUFFERPOOL_MAX="bytebufferpool.size";
 	public static final String BYTEBUFFERPOOL_MAX_DEFAULT="3";
+	public static final String BYTEBUFFERPOOL_BLOCK = "bytebufferpool.blockwhenexhausted";
+	public static final String BYTEBUFFERPOOL_BLOCK_DEFAULT="true";
 	
 	public enum STORAGE{INMEMORY,DISK,INMEMORY_DISK};
 	public static final String STORAGEPROP = "storage.type";
@@ -394,4 +389,29 @@ public class MDCConstants {
 	
 	public static final String DFSOUTPUTFILEREPLICATION = "dfs.replication";
 	public static final String DFSOUTPUTFILEREPLICATION_DEFAULT = "1";
+	public static final String HDFSNAMENODEURL = "hdfs.namenode.url";
+	
+	
+	public static final String BR = "<BR/>";
+	
+	public static final String HEAP_PERCENTAGE = "heap.percent";
+	public static final String HEAP_PERCENTAGE_DEFAULT = "40";
+	
+	public static final String USEGLOBALTASKEXECUTORS = "taskexecutors.isglobal";
+	public static final String USEGLOBALTASKEXECUTORS_DEFAULT = "false";
+	
+	public static final String CONTAINERALLOCATIONERROR = "Container Allocation Error";
+	
+	public static final String TMPDIR = "java.io.tmpdir";
+	
+	public static final String IMPLICIT_CONTAINER_ALLOC_NUMBER = "containers.alloc.implicit.number";
+	public static final String IMPLICIT_CONTAINER_ALLOC_NUMBER_DEFAULT = "1";
+	public static final String IMPLICIT_CONTAINER_ALLOC_CPU = "containers.alloc.implicit.cpu";
+	public static final String IMPLICIT_CONTAINER_ALLOC_CPU_DEFAULT = "1";
+	public static final String IMPLICIT_CONTAINER_ALLOC_MEMORY = "containers.alloc.implicit.memory";
+	public static final String IMPLICIT_CONTAINER_ALLOC_MEMORY_DEFAULT = "GB";
+	public static final String IMPLICIT_CONTAINER_ALLOC_MEMORY_SIZE = "containers.alloc.implicit.memory.size";
+	public static final String IMPLICIT_CONTAINER_ALLOC_MEMORY_SIZE_DEFAULT = "1";
+	
+	
 }

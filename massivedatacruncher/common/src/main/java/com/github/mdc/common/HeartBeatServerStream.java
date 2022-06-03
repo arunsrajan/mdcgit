@@ -32,8 +32,6 @@ import org.jgroups.View;
  * task executors implemented using jgroups.
  */
 public sealed class HeartBeatServerStream implements HeartBeatServerMBean,HeartBeatCloseable permits HeartBeatTaskSchedulerStream {
-	ExecutorService threadpool;
-	ExecutorService scheduledthreadpool;
 	JChannel channel;
 	int serverport;
 	int rescheduledelay = 5000;
@@ -72,7 +70,7 @@ public sealed class HeartBeatServerStream implements HeartBeatServerMBean,HeartB
 			throw new HeartBeatException(MDCConstants.HEARTBEAT_EXCEPTION_SERVER_PORT);
 		}
 		if (config[2] instanceof String na) {
-			networkaddress = na;
+			networkaddress = NetworkUtil.getNetworkAddress(na);
 		} else {
 			throw new HeartBeatException(MDCConstants.HEARTBEAT_EXCEPTION_SERVER_HOST);
 		}
@@ -91,7 +89,6 @@ public sealed class HeartBeatServerStream implements HeartBeatServerMBean,HeartB
 		}else {
 			throw new HeartBeatException(MDCConstants.HEARTBEAT_EXCEPTION_CONTAINER_ID);
 		}
-		threadpool = Executors.newWorkStealingPool();
 		log.debug("Exiting HeartBeatServerStream.init");
 	}
 	View oldView = null;
@@ -103,13 +100,12 @@ public sealed class HeartBeatServerStream implements HeartBeatServerMBean,HeartB
 	@Override
 	public void start() throws Exception {
 		log.debug("Entered HeartBeatServerStream.start");
-		scheduledthreadpool = Executors.newWorkStealingPool();
 		channel = Utils.getChannelWithPStack(networkaddress);
 		channel.setName(networkaddress + MDCConstants.UNDERSCORE + serverport);
 		channel.setReceiver(new Receiver() {
 			public void viewAccepted(View newView) {
-				log.debug("Entered Receiver.viewAccepted");
-				log.debug("Nodes View: "+newView.getMembers());
+				log.info("Entered Receiver.viewAccepted");
+				log.info("Nodes View: "+newView.getMembers());
 				var addresses = newView.getMembers();
 				
 				var schedulerHostPort = networkaddress + MDCConstants.UNDERSCORE + serverport;
@@ -143,8 +139,7 @@ public sealed class HeartBeatServerStream implements HeartBeatServerMBean,HeartB
 					var timer = new Timer();
 					timermap.put(resources.nodeport, timer);
 					timer.schedule(
-							new LocalTimerTask(resources.nodeport, timer, hpresmap, timermap, jobstagemap,
-									scheduledthreadpool, HeartBeatServerStream.this, semaphore, 0, 5000),
+							new LocalTimerTask(resources.nodeport, hpresmap),
 							initialdelay, rescheduledelay);
 				}
 				if(resources.getNodeport()!=null) {
@@ -156,7 +151,6 @@ public sealed class HeartBeatServerStream implements HeartBeatServerMBean,HeartB
 			}
 		    }
 		});
-		channel.setDiscardOwnMessages(true);
 		if(clusterid!=null && !clusterid.trim().equals(MDCConstants.EMPTY)) {
 			channel.connect(clusterid);
 		}
@@ -174,14 +168,6 @@ public sealed class HeartBeatServerStream implements HeartBeatServerMBean,HeartB
 	public void stop() throws Exception {
 		try {
 			log.debug("Entered HeartBeatServerStream.stop");
-			if (threadpool != null) {
-				threadpool.shutdown();
-				shutdownThreadPool(threadpool);
-			}
-			if (scheduledthreadpool != null) {
-				scheduledthreadpool.shutdown();
-				shutdownThreadPool(scheduledthreadpool);
-			}
 			var keys = timermap.keySet();
 			for (var key : keys) {
 				var timertopurge = timermap.remove(key);
@@ -261,30 +247,31 @@ public sealed class HeartBeatServerStream implements HeartBeatServerMBean,HeartB
 		}
 		else {
 			channel.connect(MDCConstants.TSS +MDCConstants.HYPHEN+MDCProperties.get().getProperty(MDCConstants.CLUSTERNAME));
-		}
-		var runtime = Runtime.getRuntime();
-		var resources = new Resources();
-		pingtimer = new Timer();
+			var runtime = Runtime.getRuntime();
+			var resources = new Resources();
+			pingtimer = new Timer();
 
-		// Timer tasks scheduler to send updates frequently.
-		pingtimer.schedule(new TimerTask() {
+			// Timer tasks scheduler to send updates frequently.
+			pingtimer.schedule(new TimerTask() {
 
-			@Override
-			public void run() {
-				resources.nodeport = networkaddress + MDCConstants.UNDERSCORE + serverport;
-				resources.totalmemory = runtime.totalMemory();
-				resources.freememory = getTotalAvailablePhysicalMemory();
-				resources.numberofprocessors = runtime.availableProcessors();
-				resources.totaldisksize = totaldiskspace();
-				resources.usabledisksize = usablediskspace();
-				resources.physicalmemorysize = getPhysicalMemory();
-				try {
-					channel.send(new ObjectMessage(null, resources));
-				} catch (Exception ex) {
-					log.debug("Heartbeat ping error, See Cause below: \n", ex);
+				@Override
+				public void run() {
+					resources.nodeport = networkaddress + MDCConstants.UNDERSCORE + serverport;
+					resources.totalmemory = runtime.totalMemory();
+					resources.freememory = getTotalAvailablePhysicalMemory();
+					resources.numberofprocessors = runtime.availableProcessors();
+					resources.totaldisksize = totaldiskspace();
+					resources.usabledisksize = usablediskspace();
+					resources.physicalmemorysize = getPhysicalMemory();
+					try {
+						channel.send(new ObjectMessage(null, resources));
+					} catch (Exception ex) {
+						log.debug("Heartbeat ping error, See Cause below: \n", ex);
+					}
 				}
-			}
-		}, pingdelay, pingdelay);
+			}, pingdelay, pingdelay);
+		}
+		
 		log.debug("Exiting HeartBeatServerStream.ping");
 	}
 	
@@ -372,9 +359,7 @@ public sealed class HeartBeatServerStream implements HeartBeatServerMBean,HeartB
 		Map hpresmap;
 		private Resources prevresources = null;
 		@SuppressWarnings({ "rawtypes" }) 
-		LocalTimerTask(String key, Timer timer, Map hpresmap, Map timermap,
-				ConcurrentMap<String, Callable<Object>> jobstagemap, ExecutorService scheduledthreadpool,
-				HeartBeatServerStream hbs, Semaphore semaphore, int rescheduledelayretry, int rescheduledelay) {
+		LocalTimerTask(String key, Map hpresmap) {
 			this.key = key;
 			this.hpresmap = hpresmap;
 		}

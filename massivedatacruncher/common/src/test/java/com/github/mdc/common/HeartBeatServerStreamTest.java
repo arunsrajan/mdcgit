@@ -11,10 +11,6 @@ import java.util.Objects;
 import org.jgroups.util.UUID;
 import org.junit.Test;
 
-import com.github.mdc.common.HeartBeatServerStream;
-import com.github.mdc.common.MDCConstants;
-import com.github.mdc.common.Resources;
-
 public class HeartBeatServerStreamTest extends HeartBeatCommon {
 
 	@Test
@@ -98,13 +94,9 @@ public class HeartBeatServerStreamTest extends HeartBeatCommon {
 	public void testHeartBeatServerStreamInitWithArgs() throws Exception {
 		HeartBeatServerStream hbss = new HeartBeatServerStream();
 		hbss.init(10000, 2000, "127.0.0.1", 1000, 5000,MDCConstants.EMPTY);
-		assertNotNull(hbss.pingdelay);
 		assertEquals(5000, hbss.pingdelay);
-		assertNotNull(hbss.serverport);
 		assertEquals(2000, hbss.serverport);
-		assertNotNull(hbss.networkaddress);
 		assertEquals("127.0.0.1", hbss.networkaddress);
-		assertNotNull(hbss.threadpool);
 	}
 
 	@Test
@@ -113,14 +105,9 @@ public class HeartBeatServerStreamTest extends HeartBeatCommon {
 		hbss.init(10000, 2000, "127.0.0.1", 1000, 5000,MDCConstants.EMPTY);
 		System.setProperty(MDCConstants.CLUSTERNAME, "heartbeattestcluster");
 		hbss.start();
-		assertNotNull(hbss.scheduledthreadpool);
 		hbss.stop();
 		hbss.destroy();
 		assertEquals(0, hbss.timermap.keySet().size());
-		assertEquals(true, hbss.threadpool.isShutdown());
-		assertEquals(true, hbss.threadpool.isTerminated());
-		assertEquals(true, hbss.scheduledthreadpool.isShutdown());
-		assertEquals(true, hbss.scheduledthreadpool.isTerminated());
 	}
 
 	@Test
@@ -140,19 +127,12 @@ public class HeartBeatServerStreamTest extends HeartBeatCommon {
 		assertTrue(hbss.hpresmap.get("127.0.0.1" + "_" + 2000) instanceof Resources);
 		Resources resources = (Resources) hbss.hpresmap.get("127.0.0.1" + "_" + 2000);
 		assertEquals("127.0.0.1" + "_" + 2000, resources.getNodeport());
-		assertNotNull(hbss.scheduledthreadpool);
 		hbs1.stop();
 		hbs1.destroy();
 		hbss.stop();
 		hbss.destroy();
 		assertEquals(0, hbss.timermap.keySet().size());
-		assertEquals(true, hbss.threadpool.isShutdown());
-		assertEquals(true, hbss.threadpool.isTerminated());
-		assertEquals(true, hbss.scheduledthreadpool.isShutdown());
-		assertEquals(true, hbss.scheduledthreadpool.isTerminated());
 		assertEquals(0, hbs1.timermap.keySet().size());
-		assertEquals(true, hbs1.threadpool.isShutdown());
-		assertEquals(true, hbs1.threadpool.isTerminated());
 	}
 	@Test
 	public void testHeartBeatServerStreamStartAndPingContainerId() throws Exception {
@@ -170,19 +150,12 @@ public class HeartBeatServerStreamTest extends HeartBeatCommon {
 		};
 		assertNotNull(hbss.containers);
 		assertTrue(hbss.containers.contains("127.0.0.1_2001"));
-		assertNotNull(hbss.scheduledthreadpool);
 		hbs1.stop();
 		hbs1.destroy();
 		hbss.stop();
 		hbss.destroy();
 		assertEquals(0, hbss.timermap.keySet().size());
-		assertEquals(true, hbss.threadpool.isShutdown());
-		assertEquals(true, hbss.threadpool.isTerminated());
-		assertEquals(true, hbss.scheduledthreadpool.isShutdown());
-		assertEquals(true, hbss.scheduledthreadpool.isTerminated());
 		assertEquals(0, hbs1.timermap.keySet().size());
-		assertEquals(true, hbs1.threadpool.isShutdown());
-		assertEquals(true, hbs1.threadpool.isTerminated());
 	}
 	@Test
 	public void testHeartBeatMultipleServerStartAndPing() throws Exception {
@@ -210,7 +183,6 @@ public class HeartBeatServerStreamTest extends HeartBeatCommon {
 			assertTrue(hbss.hpresmap.get("127.0.0.1" + "_" + port) instanceof Resources);
 			Resources resources = (Resources) hbss.hpresmap.get("127.0.0.1" + "_" + port);
 			assertEquals("127.0.0.1" + "_" + port, resources.getNodeport());
-			assertNotNull(hbss.scheduledthreadpool);
 			count++;
 		}
 		count = 1;
@@ -223,10 +195,6 @@ public class HeartBeatServerStreamTest extends HeartBeatCommon {
 		hbss.stop();
 		hbss.destroy();
 		assertEquals(0, hbss.timermap.keySet().size());
-		assertEquals(true, hbss.threadpool.isShutdown());
-		assertEquals(true, hbss.threadpool.isTerminated());
-		assertEquals(true, hbss.scheduledthreadpool.isShutdown());
-		assertEquals(true, hbss.scheduledthreadpool.isTerminated());
 
 	}
 }

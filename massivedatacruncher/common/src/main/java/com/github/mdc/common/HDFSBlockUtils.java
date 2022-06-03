@@ -40,7 +40,7 @@ public class HDFSBlockUtils {
 		long startoffset = 0;
 		long blocksize;
 		for (var filepath : filepaths) {
-			var hdis = (HdfsDataInputStream) hdfs.open(filepath);
+			try(var hdis = (HdfsDataInputStream) hdfs.open(filepath);){
 			var locatedblocks = hdis.getAllBlocks();
 			for (int lbindex=0;lbindex<locatedblocks.size();lbindex++) {
 				var lb = locatedblocks.get(lbindex);
@@ -115,7 +115,11 @@ public class HDFSBlockUtils {
 					log.debug(blocksize + " " + lb.getStartOffset());
 				}
 			}		
-			hdis.close();
+			}
+			catch(Exception ex) {
+				log.error("Blocks Unavailable due to error",ex);
+				throw ex;
+			}
 		}
 		return blsl;
 	}

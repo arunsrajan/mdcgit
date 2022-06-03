@@ -1,0 +1,1 @@
+jshell --enable-preview --class-path "../lib/*;../modules/*"

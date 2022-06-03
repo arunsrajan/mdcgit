@@ -1,0 +1,37 @@
+import com.github.mdc.common.*;
+import com.github.mdc.stream.*;
+import org.jooq.lambda.tuple.*;
+import java.util.*;
+import java.util.concurrent.*;
+import com.esotericsoftware.kryo.io.Output;
+
+PipelineConfig pc = new PipelineConfig();
+Utils.loadLog4JSystemProperties("../config/","mdcshell.properties");
+pc.setBlocksize("64");
+pc.setNumberofcontainers("1");
+pc.setMaxmem("1024");
+pc.setMinmem("1024");
+pc.setLocal("true")
+pc.setJgroups("false")
+pc.setMesos("false")
+pc.setYarn("false")
+pc.setOutput(new Output(System.out));
+pc.setIsblocksuserdefined("true");
+pc.setBlocksize("64");
+pc.setMode(MDCConstants.MODE_NORMAL);
+Resources resources = new Resources();
+resources.setNumberofprocessors(12);
+resources.setFreememory(4294967296‬l);
+ConcurrentMap<String,Resources> mapres = new ConcurrentHashMap<>();
+mapres.put("127.0.0.1_12121",resources);
+MDCNodesResources.put(mapres);
+MDCNodesResourcesSnapshot.put(mapres);
+ByteBufferPoolDirect.init();
+ByteBufferPool.init(Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.BYTEBUFFERPOOL_MAX, MDCConstants.BYTEBUFFERPOOL_MAX_DEFAULT)));
+StreamPipeline<String> datastream = StreamPipeline.newStreamHDFS("hdfs://127.0.0.1:9000","/airline1989",pc);
+List<List<Tuple2>> joinresult = (List) datastream.map(dat -> dat.split(",")).filter(dat -> dat != null && !dat[14].equals("ArrDelay") && !dat[14].equals("NA")).mapToPair(dat -> (Tuple2<String, Long>) Tuple.tuple(dat[8], Long.parseLong(dat[14]))).mapValues(mv -> new Tuple2<Long, Long>(mv, 1l)).reduceByValues((tuple1, tuple2) -> new Tuple2<Long,Long>(tuple1.v1 + tuple2.v1, tuple1.v2 + tuple2.v2)).coalesce(1, (tuple1, tuple2) -> new Tuple2<Long,Long>(tuple1.v1 + tuple2.v1, tuple1.v2 + tuple2.v2)).collect(true,null);
+joinresult.stream().forEach(System.out::println)
+datastream.map(dat -> dat.split(",")).filter(dat -> dat != null && !dat[14].equals("ArrDelay") && !dat[14].equals("NA")).mapToPair(dat -> (Tuple2<String, Long>) Tuple.tuple(dat[8], Long.parseLong(dat[14]))).mapValues(mv -> new Tuple2<Long, Long>(mv, 1l)).reduceByValues((tuple1, tuple2) -> new Tuple2<Long,Long>(tuple1.v1 + tuple2.v1, tuple1.v2 + tuple2.v2)).coalesce(1, (tuple1, tuple2) -> new Tuple2<Long,Long>(tuple1.v1 + tuple2.v1, tuple1.v2 + tuple2.v2)).saveAsTextFile(new URI("hdfs://127.0.0.1:9000"), "/Coalesce/Coalesce-" + System.currentTimeMillis());
+MapPair<String,Tuple2<Long,Long>> mstll = datastream.map(dat -> dat.split(",")).filter(dat -> dat != null && !dat[14].equals("ArrDelay") && !dat[14].equals("NA")).mapToPair(dat -> (Tuple2<String, Long>) Tuple.tuple(dat[8], Long.parseLong(dat[14]))).mapValues(mv -> new Tuple2<Long, Long>(mv, 1l)).reduceByValues((tuple1, tuple2) -> new Tuple2<Long,Long>(tuple1.v1 + tuple2.v1, tuple1.v2 + tuple2.v2)).coalesce(1, (tuple1, tuple2) -> new Tuple2<Long,Long>(tuple1.v1 + tuple2.v1, tuple1.v2 + tuple2.v2));
+joinresult = mstll.collect(true,null);
+mstll.saveAsTextFile(new URI("hdfs://127.0.0.1:9000"), "/Coalesce/Coalesce-" + System.currentTimeMillis());

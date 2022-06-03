@@ -7,4 +7,4 @@ export JMXCONFIG="-Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.
 export ZOOKEEPERADMINCONFIG="-Dzookeeper.admin.serverPort=$ZOOADMINPORT"
 export CLASSPATH="-cp '.:../lib/*:../modules/*'"
 export DEBUGCONFIG="-Xdebug -Xrunjdwp:server=y,transport=dt_socket,address=$DEBUGPORT,suspend=n -Dorg.singam.debug.port=$DEBUGPORT"
-java --enable-preview --add-opens=java.base/java.nio=ALL-UNNAMED -cp ".:/opt/mdc/lib/*:/opt/mdc/modules/*" "-Dzookeeper.hostport=$ZKHOSTPORT" "-Dtaskscheduler.host=$HOST" "-Dtaskscheduler.port=$PORT" $MEMCONFIGLOW $MEMCONFIGHIGH $GCCCONFIG -Djava.net.preferIPv4Stack=true com.github.mdc.tasks.scheduler.MassiveDataTaskSchedulerDaemon
+java --enable-preview --add-opens=java.base/java.nio=ALL-UNNAMED -cp ".:/opt/mdc/lib/*:/opt/mdc/modules/*" "-Dzookeeper.hostport=$ZKHOSTPORT" "-Dtaskscheduler.host=$HOST" "-Dtaskscheduler.port=$PORT" $MEMCONFIGLOW $MEMCONFIGHIGH $GCCCONFIG -Djava.net.preferIPv4Stack=true com.github.mdc.tasks.scheduler.TaskSchedulerRunner

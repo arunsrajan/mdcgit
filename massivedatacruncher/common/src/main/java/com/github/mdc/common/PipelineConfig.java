@@ -36,6 +36,15 @@ public class PipelineConfig implements Cloneable{
 	private String executioncount;
 	private String tsshaenabled;
 	private STORAGE storage;
+	private String containeralloc;
+	private String jobname;
+	private String heappercent;
+	private Boolean useglobaltaskexecutors;
+	private String implicitcontainerallocanumber;
+	private String implicitcontainercpu;
+	private String implicitcontainermemory;
+	private String implicitcontainermemorysize;
+	
 	public void setKryoOutput(Output output) {
 		this.output = output;
 	}
@@ -217,6 +226,67 @@ public class PipelineConfig implements Cloneable{
 	}
 	public void setStorage(STORAGE storage) {
 		this.storage = storage;
+	}
+	
+	public String getContaineralloc() {
+		return Objects.isNull(containeralloc)
+				?MDCProperties.get().getProperty(MDCConstants.CONTAINER_ALLOC, MDCConstants.CONTAINER_ALLOC_DEFAULT):containeralloc;
+	}
+	public void setContaineralloc(String containeralloc) {
+		this.containeralloc = containeralloc;
+	}
+	
+	public String getHeappercent() {
+		return Objects.isNull(heappercent)
+				?MDCProperties.get().getProperty(MDCConstants.HEAP_PERCENTAGE, MDCConstants.HEAP_PERCENTAGE_DEFAULT):heappercent;
+	}
+	
+	public Boolean getUseglobaltaskexecutors() {
+		return Objects.isNull(useglobaltaskexecutors)
+				?Boolean.parseBoolean(MDCProperties.get().getProperty(MDCConstants.USEGLOBALTASKEXECUTORS, MDCConstants.USEGLOBALTASKEXECUTORS_DEFAULT)):useglobaltaskexecutors;
+	}
+	
+	
+	
+	public String getImplicitcontainerallocanumber() {
+		return Objects.isNull(implicitcontainerallocanumber)
+				?MDCProperties.get().getProperty(MDCConstants.IMPLICIT_CONTAINER_ALLOC_NUMBER, MDCConstants.IMPLICIT_CONTAINER_ALLOC_NUMBER_DEFAULT):implicitcontainerallocanumber;
+	}
+	public void setImplicitcontainerallocanumber(String implicitcontainerallocanumber) {
+		this.implicitcontainerallocanumber = implicitcontainerallocanumber;
+	}
+	public String getImplicitcontainercpu() {
+		return Objects.isNull(implicitcontainercpu)
+				?MDCProperties.get().getProperty(MDCConstants.IMPLICIT_CONTAINER_ALLOC_CPU, MDCConstants.IMPLICIT_CONTAINER_ALLOC_CPU_DEFAULT):implicitcontainercpu;
+	}
+	public void setImplicitcontainercpu(String implicitcontainercpu) {
+		this.implicitcontainercpu = implicitcontainercpu;
+	}
+	public String getImplicitcontainermemory() {
+		return Objects.isNull(implicitcontainermemory)
+				?MDCProperties.get().getProperty(MDCConstants.IMPLICIT_CONTAINER_ALLOC_MEMORY, MDCConstants.IMPLICIT_CONTAINER_ALLOC_MEMORY_DEFAULT):implicitcontainermemory;
+	}
+	public void setImplicitcontainermemory(String implicitcontainermemory) {
+		this.implicitcontainermemory = implicitcontainermemory;
+	}
+	public String getImplicitcontainermemorysize() {
+		return Objects.isNull(implicitcontainermemorysize)
+				?MDCProperties.get().getProperty(MDCConstants.IMPLICIT_CONTAINER_ALLOC_MEMORY_SIZE, MDCConstants.IMPLICIT_CONTAINER_ALLOC_MEMORY_SIZE_DEFAULT):implicitcontainermemorysize;
+	}
+	public void setImplicitcontainermemorysize(String implicitcontainermemorysize) {
+		this.implicitcontainermemorysize = implicitcontainermemorysize;
+	}
+	public void setUseglobaltaskexecutors(Boolean useglobaltaskexecutors) {
+		this.useglobaltaskexecutors = useglobaltaskexecutors;
+	}
+	public void setHeappercent(String heappercent) {
+		this.heappercent = heappercent;
+	}
+	public String getJobname() {
+		return jobname;
+	}
+	public void setJobname(String jobname) {
+		this.jobname = jobname;
 	}
 	@Override
 	public PipelineConfig clone() throws CloneNotSupportedException {

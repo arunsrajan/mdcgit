@@ -110,13 +110,13 @@ public final class PipelineIntStream<I1> extends AbstractPipeline {
 	
 	public <R> List collect(boolean toexecute, AtomicIntegerSupplier<R> supplier,
 			AtomicObjIntConsumer<R> objintconsumer,
-			AtomicBiConsumer<R,R> biconsumer) throws MassiveDataPipelineException  {
+			AtomicBiConsumer<R,R> biconsumer) throws PipelineException  {
 		log.debug("Collect task begin...");
 		var pintstr = new PipelineIntStream(root, new PipelineIntStreamCollect(supplier,
 				objintconsumer,biconsumer));
 		pintstr.parents.add(this);
 		this.childs.add(pintstr);
-		var mdscollect = (MassiveDataPipeline) pintstr.root;
+		var mdscollect = (StreamPipeline) pintstr.root;
 		mdscollect.finaltasks.clear();
 		mdscollect.finaltasks.add(pintstr.task);
 		mdscollect.mdsroots.add(root);
@@ -127,12 +127,12 @@ public final class PipelineIntStream<I1> extends AbstractPipeline {
 	
 	
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public List summaryStatistics() throws MassiveDataPipelineException {
+	public List summaryStatistics() throws PipelineException {
 		log.debug("Summary Statistics task begin...");
 		var map = new PipelineIntStream(root, new SummaryStatistics());
 		map.parents.add(this);
 		this.childs.add(map);
-		var mdscollect = (MassiveDataPipeline) root;
+		var mdscollect = (StreamPipeline) root;
 		mdscollect.finaltasks.clear();
 		mdscollect.finaltasks.add(map.task);
 		mdscollect.mdsroots.add(root);
@@ -142,12 +142,12 @@ public final class PipelineIntStream<I1> extends AbstractPipeline {
 	}
 	
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public List sum() throws MassiveDataPipelineException {
+	public List sum() throws PipelineException {
 		log.debug("Sum task begin...");
 		var map = new PipelineIntStream(root, new Sum());
 		map.parents.add(this);
 		this.childs.add(map);
-		var mdscollect = (MassiveDataPipeline) root;
+		var mdscollect = (StreamPipeline) root;
 		mdscollect.finaltasks.clear();
 		mdscollect.finaltasks.add(map.task);
 		mdscollect.mdsroots.add(root);
@@ -157,12 +157,12 @@ public final class PipelineIntStream<I1> extends AbstractPipeline {
 	}
 	
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public List max() throws MassiveDataPipelineException {
+	public List max() throws PipelineException {
 		log.debug("Max task begin...");
 		var map = new PipelineIntStream(root, new Max());
 		map.parents.add(this);
 		this.childs.add(map);
-		var mdscollect = (MassiveDataPipeline) root;
+		var mdscollect = (StreamPipeline) root;
 		mdscollect.finaltasks.clear();
 		mdscollect.finaltasks.add(map.task);
 		mdscollect.mdsroots.add(root);
@@ -172,12 +172,12 @@ public final class PipelineIntStream<I1> extends AbstractPipeline {
 	}
 	
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public List min() throws MassiveDataPipelineException {
+	public List min() throws PipelineException {
 		log.debug("Min task begin...");
 		var map = new PipelineIntStream(root, new Min());
 		map.parents.add(this);
 		this.childs.add(map);
-		var mdscollect = (MassiveDataPipeline) root;
+		var mdscollect = (StreamPipeline) root;
 		mdscollect.finaltasks.clear();
 		mdscollect.finaltasks.add(map.task);
 		mdscollect.mdsroots.add(root);
@@ -188,12 +188,12 @@ public final class PipelineIntStream<I1> extends AbstractPipeline {
 	
 	
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public List standardDeviation() throws MassiveDataPipelineException {
+	public List standardDeviation() throws PipelineException {
 		log.debug("StandardDeviation task begin...");
 		var map = new PipelineIntStream(root, new StandardDeviation());
 		map.parents.add(this);
 		this.childs.add(map);
-		var mdscollect = (MassiveDataPipeline) root;
+		var mdscollect = (StreamPipeline) root;
 		mdscollect.finaltasks.clear();
 		mdscollect.finaltasks.add(map.task);
 		mdscollect.mdsroots.add(root);

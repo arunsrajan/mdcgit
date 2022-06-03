@@ -11,7 +11,7 @@ import com.github.mdc.common.Dummy;
  * @author arun
  * This class is abstract and base class for pipeline api.
  */
-public sealed class AbstractPipeline permits MassiveDataIgniteCommon,MapPair,MassiveDataPipeline,PipelineIntStream{
+public sealed class AbstractPipeline permits IgniteCommon,MapPair,StreamPipeline,PipelineIntStream{
 	AbstractPipeline root=this;
 	Collection<AbstractPipeline> mdsroots = new LinkedHashSet<>();
 	List<AbstractPipeline> parents = new ArrayList<>();

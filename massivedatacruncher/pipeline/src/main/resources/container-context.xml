@@ -43,12 +43,12 @@
 		host="${SHDP_AMSERVICE_HOST}" port="${SHDP_AMSERVICE_PORT}" />
 
 	<bean id="yarnContainer"
-		class="com.github.mdc.stream.yarn.container.YarnContainer">
+		class="com.github.mdc.stream.yarn.container.StreamPipelineYarnContainer">
 		<property name="integrationServiceClient"
 			ref="yarnAmserviceClient" />
 		<property name="containerprops">
 			<map>
-				<entry key="taskexecutor.hdfsnn" value="${hd.fs}" />
+				<entry key="hdfs.namenode.url" value="${hd.fs}" />
 			</map>
 		</property>
 	</bean>

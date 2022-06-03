@@ -105,14 +105,9 @@ public class HeartBeatTaskSchedulerTest extends HeartBeatCommon{
 		HeartBeatTaskScheduler hbts = new HeartBeatTaskScheduler();
 		hbts.init(2000,1000, "127.0.0.1",1000,5000,MDCConstants.EMPTY,app+"-"+appid.toString(),task+"-"+taskid.toString());
 		hbts.start();
-		assertNotNull(hbts.scheduledthreadpool);
 		hbts.stop();
 		hbts.destroy();
 		assertEquals(0, hbts.timermap.keySet().size());
-		assertEquals(true,hbts.threadpool.isShutdown());
-		assertEquals(true,hbts.threadpool.isTerminated());
-		assertEquals(true,hbts.scheduledthreadpool.isShutdown());
-		assertEquals(true,hbts.scheduledthreadpool.isTerminated());
 	}
 	
 	@Test
@@ -132,13 +127,9 @@ public class HeartBeatTaskSchedulerTest extends HeartBeatCommon{
 		hbts1.stop();
 		hbts1.destroy();
 		assertEquals(0, hbts1.timermap.keySet().size());
-		assertEquals(true,hbts1.threadpool.isShutdown());
-		assertEquals(true,hbts1.threadpool.isTerminated());
 		hbts.stop();
 		hbts.destroy();
 		assertEquals(0, hbts.timermap.keySet().size());
-		assertEquals(true,hbts.threadpool.isShutdown());
-		assertEquals(true,hbts.threadpool.isTerminated());
 	}
 	
 }

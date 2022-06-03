@@ -108,9 +108,6 @@ public class HeartBeatTaskSchedulerStreamTest extends HeartBeatCommon {
 		hbtss.init(2000, 1000, "127.0.0.1", 1000, 5000, MDCConstants.EMPTY, job + jobid.toString());
 		hbtss.start();
 		hbtss.close();		
-		assertEquals(0, hbtss.timermap.keySet().size());
-		assertEquals(true, hbtss.threadpool.isShutdown());
-		assertEquals(true, hbtss.threadpool.isTerminated());
 	}
 
 	@Test
@@ -125,12 +122,6 @@ public class HeartBeatTaskSchedulerStreamTest extends HeartBeatCommon {
 		hbtss1.init(10000, 2001, "127.0.0.1", 1000, 5000, MDCConstants.EMPTY, job + jobid.toString());
 		hbtss1.pingOnce(stage+stageid.toString(), task+taskid.toString(),"127.0.0.1_2001",Task.TaskStatus.SUBMITTED,1.0d, null);
 		hbtss1.close();
-		assertEquals(0, hbtss1.timermap.keySet().size());
-		assertEquals(true, hbtss1.threadpool.isShutdown());
-		assertEquals(true, hbtss1.threadpool.isTerminated());
 		hbtss.close();
-		assertEquals(0, hbtss.timermap.keySet().size());
-		assertEquals(true, hbtss.threadpool.isShutdown());
-		assertEquals(true, hbtss.threadpool.isTerminated());
 	}
 }

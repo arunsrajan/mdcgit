@@ -23,7 +23,7 @@ import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.MDCProperties;
 import com.github.mdc.common.NetworkUtil;
 
-public class HDFSBlockUtilsTest extends MassiveDataPipelineBaseTestClassCommon{
+public class HDFSBlockUtilsTest extends StreamPipelineBaseTestCommon{
 	static Logger log = Logger.getLogger(HDFSBlockUtilsTest.class);
 	
 	public static long TOTAL = 486518821l;

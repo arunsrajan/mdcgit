@@ -42,16 +42,16 @@ import com.github.mdc.common.Job;
 import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.MDCNodesResources;
 import com.github.mdc.common.MDCProperties;
-import com.github.mdc.common.MassiveDataPipelineConstants;
+import com.github.mdc.common.PipelineConstants;
 import com.github.mdc.common.PipelineConfig;
 import com.github.mdc.common.Resources;
 import com.github.mdc.common.Utils;
-import com.github.mdc.stream.MassiveDataPipelineBase;
+import com.github.mdc.stream.StreamPipelineBase;
 import com.github.mdc.stream.utils.FileBlocksPartitionerHDFS;
-import com.github.mdc.tasks.executor.Container;
+import com.github.mdc.tasks.executor.NodeRunner;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class FileBlocksPartitionerHDFSTest extends MassiveDataPipelineBase{
+public class FileBlocksPartitionerHDFSTest extends StreamPipelineBase{
 	private static final int NOOFNODES = 1;
 	static int teport = 12121;
 	static ExecutorService es,escontainer;
@@ -83,7 +83,7 @@ public class FileBlocksPartitionerHDFSTest extends MassiveDataPipelineBase{
 				semaphore.release();
 				while(true) {
 					try(Socket sock = ss.accept();) {
-						var container = new Container(sock, portinc, MDCConstants.PROPLOADERCONFIGFOLDER,
+						var container = new NodeRunner(sock, portinc, MDCConstants.PROPLOADERCONFIGFOLDER,
 								containerprocesses, hdfs, containeridthreads,containeridports);
 						Future<Boolean> containerallocated = escontainer.submit(container);
 						log.info("Containers Allocated: "+containerallocated.get()+" Next Port Allocation:"+portinc.get());
@@ -140,7 +140,7 @@ public class FileBlocksPartitionerHDFSTest extends MassiveDataPipelineBase{
 		List<BlocksLocation> bls = fbp.getHDFSParitions();
 		assertEquals(2,bls.size());
 		assertEquals(4270834, fbp.totallength);
-		fbp.getContainersBalanced(bls);
+		fbp.allocateContainersLoadBalanced(bls);
 		assertEquals("127.0.0.1_10101",bls.get(0).executorhp);
 		assertEquals("127.0.0.1_10101",bls.get(1).executorhp);
 	}
@@ -165,7 +165,7 @@ public class FileBlocksPartitionerHDFSTest extends MassiveDataPipelineBase{
 		List<BlocksLocation> bls = fbp.getHDFSParitions();
 		assertEquals(2,bls.size());
 		assertEquals(4270834, fbp.totallength);
-		fbp.getContainersBalanced(bls);
+		fbp.allocateContainersLoadBalanced(bls);
 		assertEquals("127.0.0.1_10101",bls.get(0).executorhp);
 		assertEquals("127.0.0.1_10102",bls.get(1).executorhp);
 	}
@@ -214,7 +214,7 @@ public class FileBlocksPartitionerHDFSTest extends MassiveDataPipelineBase{
 		MDCNodesResources.put(noderesourcesmap);
 		Map<String,Long> nodestotalblockmem = new ConcurrentHashMap<>();
 		fbp.getDnXref(bls, false);
-		fbp.getNodesResourcesSortedAuto(bls,nodestotalblockmem);
+		fbp.getNodesResourcesSorted(bls,nodestotalblockmem);
 		assertEquals(2,fbp.nodessorted.size());
 		assertEquals("127.0.0.1_20001",fbp.nodessorted.get(0));
 		assertEquals("127.0.0.1_20000",fbp.nodessorted.get(1));
@@ -233,7 +233,7 @@ public class FileBlocksPartitionerHDFSTest extends MassiveDataPipelineBase{
 		Resources resources = new Resources();
 		resources.setFreememory(12*1024*1024*1024l);
 		resources.setNumberofprocessors(4);
-		List<ContainerResources> crs = fbp.getNumberOfContainersAuto(MDCConstants.GCCONFIG_DEFAULT,20,resources);
+		List<ContainerResources> crs = fbp.getContainersByNodeResourcesRemainingMemory(MDCConstants.GCCONFIG_DEFAULT,20,resources);
 		assertEquals(1, crs.size());
 		assertEquals(128, crs.get(0).getMaxmemory());
 		assertEquals(128, crs.get(0).getMinmemory());
@@ -263,7 +263,7 @@ public class FileBlocksPartitionerHDFSTest extends MassiveDataPipelineBase{
 		fbp.job = new Job();
 		fbp.isignite = false;
 		fbp.getDnXref(bls, false);
-		fbp.getTaskExecutorsAuto(bls);
+		fbp.allocateContainersByResources(bls);
 		assertEquals(1,fbp.job.containers.size());
 		assertEquals(1,fbp.job.nodes.size());
 		fbp.destroyContainers();
@@ -293,7 +293,7 @@ public class FileBlocksPartitionerHDFSTest extends MassiveDataPipelineBase{
 		fbp.hdfs = hdfs;
 		List<BlocksLocation> bls = fbp.getBlocks(fbp.isblocksuserdefined,128);
 		fbp.getDnXref(bls, false);
-		fbp.getTaskExecutorsAuto(bls);
+		fbp.allocateContainersByResources(bls);
 		assertEquals(0,fbp.job.containers.size());
 		assertEquals(0,fbp.job.nodes.size());
 		fbp.destroyContainers();
@@ -324,9 +324,9 @@ public class FileBlocksPartitionerHDFSTest extends MassiveDataPipelineBase{
 			fbp.filepaths = Arrays.asList(paths);
 			List<BlocksLocation> bls = fbp.getBlocks(fbp.isblocksuserdefined, 128);
 			fbp.getDnXref(bls, false);
-			fbp.getTaskExecutorsAuto(bls);			
+			fbp.allocateContainersByResources(bls);			
 		} catch (Exception ex) {
-			assertEquals(MassiveDataPipelineConstants.MEMORYALLOCATIONERROR, ex.getCause().getMessage());
+			assertEquals(PipelineConstants.MEMORYALLOCATIONERROR, ex.getCause().getMessage());
 			assertNull(fbp.job.containers);
 			assertNull(fbp.job.nodes);
 		} finally {
@@ -359,9 +359,9 @@ public class FileBlocksPartitionerHDFSTest extends MassiveDataPipelineBase{
 			fbp.filepaths = Arrays.asList(paths);
 			List<BlocksLocation> bls = fbp.getBlocks(fbp.isblocksuserdefined, 128);
 			fbp.getDnXref(bls, false);
-			fbp.getTaskExecutorsAuto(bls);			
+			fbp.allocateContainersByResources(bls);			
 		} catch (Exception ex) {
-			assertEquals(MassiveDataPipelineConstants.INSUFFMEMORYALLOCATIONERROR, ex.getCause().getMessage());
+			assertEquals(PipelineConstants.INSUFFMEMORYALLOCATIONERROR, ex.getCause().getMessage());
 			assertNull(fbp.job.containers);
 			assertNull(fbp.job.nodes);
 		} finally {
@@ -393,7 +393,7 @@ public class FileBlocksPartitionerHDFSTest extends MassiveDataPipelineBase{
 		fbp.filepaths = Arrays.asList(paths);
 		List<BlocksLocation> bls = fbp.getBlocks(fbp.isblocksuserdefined,128*MDCConstants.MB);
 		fbp.getDnXref(bls, false);
-		fbp.getTaskExecutorsAuto(bls);
+		fbp.allocateContainersByResources(bls);
 		assertEquals(1,fbp.job.containers.size());
 		assertEquals("127.0.0.1_12122",fbp.job.containers.get(0));
 		assertEquals("127.0.0.1_20000",fbp.job.nodes.iterator().next());

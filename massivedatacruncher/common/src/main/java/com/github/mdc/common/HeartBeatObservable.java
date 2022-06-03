@@ -27,7 +27,7 @@ public class HeartBeatObservable<T> {
 	 * This method adds multiple property change listener implementation to the observer.
 	 * @param listener
 	 */
-	public void addPropertyChangeListener(PropertyChangeListener listener) {
+	public synchronized void addPropertyChangeListener(PropertyChangeListener listener) {
 		log.debug("Entered HeartBeatObservable.addPropertyChangeListener");
 		propchangesupport.addPropertyChangeListener(listener);
 		log.debug("Exiting HeartBeatObservable.addPropertyChangeListener");
@@ -37,14 +37,14 @@ public class HeartBeatObservable<T> {
 	 * This function removes the property change listener from the observer.
 	 * @param listener
 	 */
-	public void removePropertyChangeListener(PropertyChangeListener listener) {
+	public synchronized void removePropertyChangeListener(PropertyChangeListener listener) {
 		log.debug("Entered HeartBeatObservable.removePropertyChangeListener");
 		propchangesupport.removePropertyChangeListener(listener);
 		log.debug("Exiting HeartBeatObservable.removePropertyChangeListener");
 	}
 
 	private LinkedBlockingQueue<T> objectqueue = new LinkedBlockingQueue<>();
-	private ExecutorService thrpool = Executors.newWorkStealingPool();
+	private ExecutorService thrpool = Executors.newFixedThreadPool(1);
 
 	private CancellableRunnable throbject;
 
@@ -53,7 +53,7 @@ public class HeartBeatObservable<T> {
 	 * @param object
 	 * @throws InterruptedException
 	 */
-	void addToQueue(T object) throws InterruptedException {
+	public synchronized void addToQueue(T object) throws InterruptedException {
 		log.debug("Entered HeartBeatObservable.addToQueue");
 		objectqueue.put(object);
 		log.debug("Exiting HeartBeatObservable.addToQueue");
@@ -62,7 +62,7 @@ public class HeartBeatObservable<T> {
 	/**
 	 * This method clears all the object from the queue.
 	 */
-	public void clearQueue() {
+	public synchronized void clearQueue() {
 		log.debug("Entered HeartBeatObservable.clearQueue");
 		objectqueue.clear();
 		log.debug("Exiting HeartBeatObservable.clearQueue");
@@ -71,7 +71,7 @@ public class HeartBeatObservable<T> {
 	/**
 	 * This method removes all the typed parameter objects from the queue.
 	 */
-	public void removePropertyChangeListeners() {
+	public synchronized void removePropertyChangeListeners() {
 		log.debug("Entered HeartBeatObservable.removePropertyChangeListeners");
 		var propchangelisten = propchangesupport.getPropertyChangeListeners();
 		for(var proplisten:propchangelisten) {
@@ -85,7 +85,7 @@ public class HeartBeatObservable<T> {
 	 * property change listeners.  
 	 * @param object
 	 */
-	public void triggerNotification(T object) {
+	public synchronized void triggerNotification(T object) {
 		log.debug("Entered HeartBeatObservable.triggerNotification");
 		propchangesupport.firePropertyChange("stageid", null, object);
 		log.debug("Exiting HeartBeatObservable.triggerNotification");
@@ -111,7 +111,11 @@ public class HeartBeatObservable<T> {
 							log.info("Object Queued will be triggered: " + objecttotrigger);
 							triggerNotification(objecttotrigger);
 						}
-
+						catch (InterruptedException e) {
+							log.warn("Interrupted!", e);
+						    // Restore interrupted state...
+						    Thread.currentThread().interrupt();
+						}
 						catch (Exception e) {
 							log.error("Exiting HeartBeatObservable.stop");
 						}

@@ -27,10 +27,10 @@ import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.MDCProperties;
 import com.github.mdc.common.PipelineConfig;
 import com.github.mdc.common.Utils;
-import com.github.mdc.stream.MassiveDataPipelineException;
-import com.github.mdc.stream.MassiveDataPipelineIgnite;
+import com.github.mdc.stream.PipelineException;
+import com.github.mdc.stream.IgnitePipeline;
 
-public class FileBlocksPartitionerTest extends MDCPipelineTestsCommon{
+public class FileBlocksPartitionerTest extends StreamPipelineTestCommon{
 	static Ignite server;
 	@SuppressWarnings("rawtypes")
 	@BeforeClass
@@ -59,14 +59,14 @@ public class FileBlocksPartitionerTest extends MDCPipelineTestsCommon{
 	}
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Test
-	public void testgetJobStageBlocks() throws MassiveDataPipelineException {
+	public void testgetJobStageBlocks() throws PipelineException {
 		Job job = new Job();
 		job.jm = new JobMetrics();
 		PipelineConfig pc = new PipelineConfig();
-		MassiveDataPipelineIgnite mdpi = MassiveDataPipelineIgnite.newStreamFILE(System.getProperty("user.dir")+MDCConstants.BACKWARD_SLASH+"src/test/resources/ignite", pc).map(val->val.split(MDCConstants.COMMA));
-		((MassiveDataPipelineIgnite)mdpi.root).mdsroots.add(mdpi.root);
-		((MassiveDataPipelineIgnite)mdpi.root).finaltasks = new HashSet<>(Arrays.asList(mdpi.root.finaltask));
-		((MassiveDataPipelineIgnite)mdpi.root).getDAG(job);
+		IgnitePipeline mdpi = IgnitePipeline.newStreamFILE(System.getProperty("user.dir")+MDCConstants.BACKWARD_SLASH+"src/test/resources/ignite", pc).map(val->val.split(MDCConstants.COMMA));
+		((IgnitePipeline)mdpi.root).mdsroots.add(mdpi.root);
+		((IgnitePipeline)mdpi.root).finaltasks = new HashSet<>(Arrays.asList(mdpi.root.finaltask));
+		((IgnitePipeline)mdpi.root).getDAG(job);
 		List<BlocksLocation> bls = (List<BlocksLocation>) job.stageoutputmap.get(job.stageoutputmap.keySet().iterator().next());
 		assertEquals(1,bls.size());
 		assertEquals(2,bls.get(0).block.length);
@@ -76,15 +76,15 @@ public class FileBlocksPartitionerTest extends MDCPipelineTestsCommon{
 	}
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Test
-	public void testgetJobStageBlocks32MBBlockSize() throws MassiveDataPipelineException {
+	public void testgetJobStageBlocks32MBBlockSize() throws PipelineException {
 		Job job = new Job();
 		job.jm = new JobMetrics();
 		PipelineConfig pc = new PipelineConfig();
 		pc.setBlocksize("32");
-		MassiveDataPipelineIgnite mdpi = MassiveDataPipelineIgnite.newStreamFILE("E:\\DEVELOPMENT\\dataset\\airline\\1987", pc).map(val->val.split(MDCConstants.COMMA));
-		((MassiveDataPipelineIgnite)mdpi.root).mdsroots.add(mdpi.root);
-		((MassiveDataPipelineIgnite)mdpi.root).finaltasks = new HashSet<>(Arrays.asList(mdpi.root.finaltask));
-		((MassiveDataPipelineIgnite)mdpi.root).getDAG(job);
+		IgnitePipeline mdpi = IgnitePipeline.newStreamFILE("C:\\DEVELOPMENT\\dataset\\airline\\1987", pc).map(val->val.split(MDCConstants.COMMA));
+		((IgnitePipeline)mdpi.root).mdsroots.add(mdpi.root);
+		((IgnitePipeline)mdpi.root).finaltasks = new HashSet<>(Arrays.asList(mdpi.root.finaltask));
+		((IgnitePipeline)mdpi.root).getDAG(job);
 		List<BlocksLocation> bls = (List<BlocksLocation>) job.stageoutputmap.get(job.stageoutputmap.keySet().iterator().next());
 		assertEquals(4,bls.size());
 		var sum = 0;
@@ -98,15 +98,15 @@ public class FileBlocksPartitionerTest extends MDCPipelineTestsCommon{
 	}
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Test
-	public void testgetJobStageBlocks64MBBlockSize() throws MassiveDataPipelineException {
+	public void testgetJobStageBlocks64MBBlockSize() throws PipelineException {
 		Job job = new Job();
 		job.jm = new JobMetrics();
 		PipelineConfig pc = new PipelineConfig();
 		pc.setBlocksize("64");
-		MassiveDataPipelineIgnite mdpi = MassiveDataPipelineIgnite.newStreamFILE("E:\\DEVELOPMENT\\dataset\\airline\\1989", pc).map(val->val.split(MDCConstants.COMMA));
-		((MassiveDataPipelineIgnite)mdpi.root).mdsroots.add(mdpi.root);
-		((MassiveDataPipelineIgnite)mdpi.root).finaltasks = new HashSet<>(Arrays.asList(mdpi.root.finaltask));
-		((MassiveDataPipelineIgnite)mdpi.root).getDAG(job);
+		IgnitePipeline mdpi = IgnitePipeline.newStreamFILE("C:\\DEVELOPMENT\\dataset\\airline\\1989", pc).map(val->val.split(MDCConstants.COMMA));
+		((IgnitePipeline)mdpi.root).mdsroots.add(mdpi.root);
+		((IgnitePipeline)mdpi.root).finaltasks = new HashSet<>(Arrays.asList(mdpi.root.finaltask));
+		((IgnitePipeline)mdpi.root).getDAG(job);
 		List<BlocksLocation> bls = (List<BlocksLocation>) job.stageoutputmap.get(job.stageoutputmap.keySet().iterator().next());
 		assertEquals(8,bls.size());
 		var sum = 0;

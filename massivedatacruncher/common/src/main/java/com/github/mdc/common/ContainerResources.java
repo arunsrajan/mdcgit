@@ -7,6 +7,7 @@ package com.github.mdc.common;
 public class ContainerResources {
 	private long minmemory;
 	private long maxmemory;
+	private long directheap;
 	private String gctype;
 	private long cpu;
 	private int port;
@@ -46,6 +47,12 @@ public class ContainerResources {
 	}
 	public void setIslaunched(boolean islaunched) {
 		this.islaunched = islaunched;
+	}
+	public long getDirectheap() {
+		return directheap;
+	}
+	public void setDirectheap(long directheap) {
+		this.directheap = directheap;
 	}
 	
 	

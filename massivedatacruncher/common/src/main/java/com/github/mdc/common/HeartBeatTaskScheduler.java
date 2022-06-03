@@ -2,13 +2,13 @@ package com.github.mdc.common;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Semaphore;
 
-import org.jgroups.BytesMessage;
 import org.jgroups.Message;
 import org.jgroups.ObjectMessage;
 import org.jgroups.Receiver;
@@ -72,43 +72,50 @@ public final class HeartBeatTaskScheduler extends HeartBeatServer implements Hea
 	public void start() throws Exception {
 		log.debug("Entered HeartBeatTaskScheduler.start");
 		hbo = new HeartBeatObservable<>();
-		scheduledthreadpool = Executors.newWorkStealingPool();
 		channel = Utils.getChannelWithPStack(networkaddress);
 		channel.setName(applicationid + taskid);
 		channel.setReceiver(new Receiver() {
 			public void viewAccepted(View clusterview) {
 				log.debug("View: " + clusterview);
 			}
-
+			List<String> apptasks = new ArrayList<>();
 			public void receive(Message msg) {
 				try {
 					log.debug("Entered Receiver.receive");
 					var kryo = Utils.getKryoNonDeflateSerializer();
-					var rawbuffer = (byte[])((BytesMessage)msg).getArray();
+					var rawbuffer = (byte[])((ObjectMessage)msg).getObject();
 					try (var bais = new ByteArrayInputStream(rawbuffer);
 							var input = new Input(bais);) {
 						var apptask = (ApplicationTask) Utils.readKryoInputObjectWithClass(kryo, input);
 						if (applicationid.equals(apptask.applicationid)) {
-							if (apptask.taskstatus == ApplicationTask.TaskStatus.COMPLETED
-									||apptask.taskstatus == ApplicationTask.TaskStatus.FAILED) {
+							if ((apptask.taskstatus == ApplicationTask.TaskStatus.COMPLETED
+									||apptask.taskstatus == ApplicationTask.TaskStatus.FAILED)&&
+							!apptasks.contains(apptask.taskid)) {
 								log.info("AppTask Before adding to queue: " + apptask);
 								hbo.addToQueue(apptask);
+								apptasks.add(apptask.taskid);
+							}else if(apptask.taskstatus == ApplicationTask.TaskStatus.COMPLETED
+									||apptask.taskstatus == ApplicationTask.TaskStatus.FAILED){
 								var mrjr = new MRJobResponse();
 								mrjr.setAppid(apptask.applicationid);
-								mrjr.setTaskid(apptask.taskid);
+								mrjr.setTaskid(apptask.taskid);								
 								try (var baos = new ByteArrayOutputStream();
 										var output = new Output(baos);) {
 									Utils.writeKryoOutputClassObject(kryo, output, mrjr);
-									channel.send(new BytesMessage(msg.getSrc(), baos.toByteArray()));
+									if(!(channel.isClosed()||!channel.isConnected())) {
+										channel.send(new ObjectMessage(msg.getSrc(), baos.toByteArray()));
+									}
 								} finally {
 
 								}
 							}
 						}
 						log.debug("Exiting Receiver.receive");
-					} catch (Exception ex) {
-						log.error("Heartbeat Receive Updates error, See Cause below: \n", ex);
-					}
+					} 
+				} catch (InterruptedException e) {
+					log.warn("Interrupted!", e);
+				    // Restore interrupted state...
+				    Thread.currentThread().interrupt();
 				} catch (Exception ex) {
 					log.error("Heartbeat Receive Updates error, See Cause below: \n", ex);
 				}
@@ -150,7 +157,7 @@ public final class HeartBeatTaskScheduler extends HeartBeatServer implements Hea
 						}
 
 						public void receive(Message msg) {
-							var rawbuffer = (byte[])((BytesMessage)msg).getArray();
+							var rawbuffer = (byte[])((ObjectMessage)msg).getObject();
 							var kryo = Utils.getKryoNonDeflateSerializer();
 							try (var bais = new ByteArrayInputStream(rawbuffer);
 									var input = new Input(bais);) {
@@ -165,17 +172,23 @@ public final class HeartBeatTaskScheduler extends HeartBeatServer implements Hea
 							}
 						}
 					});
-					while (!responsereceived) {
-						channel.send(new BytesMessage(null, baos.toByteArray()));
-						Thread.sleep(500);
+					while (true) {
+						channel.send(new ObjectMessage(null, baos.toByteArray()));
+						if(responsereceived) {
+							break;
+						}
 					}
 				} else {
-					channel.send(new BytesMessage(null, baos.toByteArray()));
+					channel.send(new ObjectMessage(null, baos.toByteArray()));
 				}
 			} finally {
 
 			}
-		} catch (Exception ex) {
+		} catch (InterruptedException e) {
+			log.warn("Interrupted!", e);
+		    // Restore interrupted state...
+		    Thread.currentThread().interrupt();
+		  } catch (Exception ex) {
 			log.info("Heartbeat ping once error, See Cause below: \n", ex);
 		}
 		log.debug("Exiting HeartBeatTaskScheduler.pingOnce");
@@ -221,9 +234,11 @@ public final class HeartBeatTaskScheduler extends HeartBeatServer implements Hea
 							}
 						}
 					});
-					while (!responsereceived) {
+					while (true) {
 						channel.send(new ObjectMessage(null, baos.toByteArray()));
-						Thread.sleep(500);
+						if(responsereceived) {
+							break;
+						}
 					}
 				} else {
 					channel.send(new ObjectMessage(null, baos.toByteArray()));
@@ -231,7 +246,11 @@ public final class HeartBeatTaskScheduler extends HeartBeatServer implements Hea
 			} finally {
 
 			}
-		} catch (Exception ex) {
+		} catch (InterruptedException e) {
+			log.warn("Interrupted!", e);
+		    // Restore interrupted state...
+		    Thread.currentThread().interrupt();
+		  } catch (Exception ex) {
 			log.info("Heartbeat ping once error, See Cause below: \n", ex);
 		}
 		log.debug("Exiting HeartBeatTaskScheduler.pingOnce");

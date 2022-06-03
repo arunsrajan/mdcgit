@@ -36,10 +36,10 @@ import net.sf.jsqlparser.util.deparser.ExpressionDeParser;
  * @param <I1>
  * @param <I2>
  */
-public final class CsvStream<I1,I2> extends MassiveDataPipeline<I1> {
+public final class CsvStream<I1,I2> extends StreamPipeline<I1> {
 
 	@SuppressWarnings({ "rawtypes" })
-	public CsvStream(MassiveDataPipeline root,CsvOptions csvOptions) {
+	public CsvStream(StreamPipeline root,CsvOptions csvOptions) {
 		this.root = root;
 		this.task = csvOptions;
 		root.childs.add(this);
@@ -48,7 +48,7 @@ public final class CsvStream<I1,I2> extends MassiveDataPipeline<I1> {
 	}
 	
 	@SuppressWarnings({ "rawtypes" })
-	public CsvStream(MassiveDataPipeline root,PeekConsumer peekconsumer) {
+	public CsvStream(StreamPipeline root,PeekConsumer peekconsumer) {
 		this.root = root;
 		this.task = peekconsumer;
 		root.childs.add(this);

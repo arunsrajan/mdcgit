@@ -11,7 +11,7 @@ import org.jooq.lambda.tuple.Tuple;
 import org.jooq.lambda.tuple.Tuple2;
 
 import com.github.mdc.common.Job;
-import com.github.mdc.common.MassiveDataPipelineConstants;
+import com.github.mdc.common.PipelineConstants;
 import com.github.mdc.stream.functions.CalculateCount;
 import com.github.mdc.stream.functions.Coalesce;
 import com.github.mdc.stream.functions.CoalesceFunction;
@@ -23,8 +23,10 @@ import com.github.mdc.stream.functions.FlatMapFunction;
 import com.github.mdc.stream.functions.FoldByKey;
 import com.github.mdc.stream.functions.GroupByKeyFunction;
 import com.github.mdc.stream.functions.IntersectionFunction;
+import com.github.mdc.stream.functions.Join;
 import com.github.mdc.stream.functions.JoinPredicate;
 import com.github.mdc.stream.functions.KeyByFunction;
+import com.github.mdc.stream.functions.LeftJoin;
 import com.github.mdc.stream.functions.LeftOuterJoinPredicate;
 import com.github.mdc.stream.functions.LongTupleFlatMapFunction;
 import com.github.mdc.stream.functions.MapToPairFunction;
@@ -32,6 +34,7 @@ import com.github.mdc.stream.functions.MapValuesFunction;
 import com.github.mdc.stream.functions.PeekConsumer;
 import com.github.mdc.stream.functions.PredicateSerializable;
 import com.github.mdc.stream.functions.ReduceByKeyFunction;
+import com.github.mdc.stream.functions.RightJoin;
 import com.github.mdc.stream.functions.RightOuterJoinPredicate;
 import com.github.mdc.stream.functions.SortedComparator;
 import com.github.mdc.stream.functions.TupleFlatMapFunction;
@@ -46,7 +49,7 @@ import com.github.mdc.stream.functions.UnionFunction;
  * @param <I2>
  */
 @SuppressWarnings("rawtypes")
-public sealed class MapPairIgnite<I1, I2> extends MassiveDataIgniteCommon permits MapValuesIgnite {
+public sealed class MapPairIgnite<I1, I2> extends IgniteCommon permits MapValuesIgnite {
 	private static Logger log = Logger.getLogger(MapPairIgnite.class);
 
 	public MapPairIgnite() {
@@ -105,13 +108,13 @@ public sealed class MapPairIgnite<I1, I2> extends MassiveDataIgniteCommon permit
 	 * @param <I4>
 	 * @param mvf
 	 * @return MapPairIgnite object.
-	 * @throws MassiveDataPipelineException
+	 * @throws PipelineException
 	 */
 	@SuppressWarnings({ "unchecked" })
 	public <I3, I4> MapValuesIgnite<I1, Tuple2<I3, I4>> mapValues(MapValuesFunction<? super I2, ? extends Tuple2<I3, I4>> mvf)
-			throws MassiveDataPipelineException {
+			throws PipelineException {
 		if (Objects.isNull(mvf)) {
-			throw new MassiveDataPipelineException(MassiveDataPipelineConstants.MAPVALUESNULL);
+			throw new PipelineException(PipelineConstants.MAPVALUESNULL);
 		}
 		var mapvalues = new MapValuesIgnite(root, mvf);
 		this.childs.add(mapvalues);
@@ -139,13 +142,13 @@ public sealed class MapPairIgnite<I1, I2> extends MassiveDataIgniteCommon permit
 	 * @param <T>
 	 * @param map
 	 * @return MapPairIgnite object.
-	 * @throws MassiveDataPipelineException
+	 * @throws PipelineException
 	 */
 	@SuppressWarnings({ "unchecked" })
 	public <T> MapPairIgnite<T, T> map(MapToPairFunction<? super Tuple2<I1, I2>, ? extends T> map)
-			throws MassiveDataPipelineException {
+			throws PipelineException {
 		if (Objects.isNull(map)) {
-			throw new MassiveDataPipelineException(MassiveDataPipelineConstants.MAPFUNCTIONNULL);
+			throw new PipelineException(PipelineConstants.MAPFUNCTIONNULL);
 		}
 		var mapobj = new MapPairIgnite(root, map);
 		this.childs.add(mapobj);
@@ -202,18 +205,122 @@ public sealed class MapPairIgnite<I1, I2> extends MassiveDataIgniteCommon permit
 	 * @param mapright
 	 * @param conditioninnerjoin
 	 * @return MapPairIgnite object.
-	 * @throws MassiveDataPipelineException
+	 * @throws PipelineException
 	 */
 	@SuppressWarnings({ "unchecked" })
 	public <T> MapPairIgnite<T, T> join(AbstractPipeline mapright,
-			JoinPredicate<Tuple2<I1, I2>, Tuple2<I1, I2>> conditioninnerjoin) throws MassiveDataPipelineException {
+			JoinPredicate<Tuple2<I1, I2>, Tuple2<I1, I2>> conditioninnerjoin) throws PipelineException {
 		if (Objects.isNull(mapright)) {
-			throw new MassiveDataPipelineException(MassiveDataPipelineConstants.INNERJOIN);
+			throw new PipelineException(PipelineConstants.INNERJOIN);
 		}
 		if (Objects.isNull(conditioninnerjoin)) {
-			throw new MassiveDataPipelineException(MassiveDataPipelineConstants.INNERJOINCONDITION);
+			throw new PipelineException(PipelineConstants.INNERJOINCONDITION);
 		}
 		var mp = new MapPairIgnite(root, conditioninnerjoin);
+		this.childs.add(mp);
+		mp.parents.add(this);
+		mapright.childs.add(mp);
+		mp.parents.add(mapright);
+		root.mdsroots.add(mapright.root);
+		return mp;
+	}
+	
+	/**
+	 * MapPairIgnite constructor for Join
+	 * @param root
+	 * @param join
+	 */
+	protected MapPairIgnite(AbstractPipeline root,
+			Join join)  {
+		this.task = join;
+		this.root = root;
+		root.mdsroots.add(root);
+		root.finaltask=task;
+	}
+	
+	/**
+	 * MapPairIgnite accepts Join
+	 * @param <I3>
+	 * @param mapright
+	 * @return
+	 * @throws PipelineException
+	 */
+	@SuppressWarnings({ "unchecked" })
+	public <I3> MapPairIgnite<I1,Tuple2<I2,I3>> join(MapPairIgnite<I1,I3> mapright) throws PipelineException  {
+		if(Objects.isNull(mapright)) {
+			throw new PipelineException(PipelineConstants.INNERJOIN);
+		}
+		var mp = new MapPairIgnite(root, new Join());
+		this.childs.add(mp);
+		mp.parents.add(this);
+		mapright.childs.add(mp);
+		mp.parents.add(mapright);
+		root.mdsroots.add(mapright.root);
+		return mp;
+	}
+	
+	
+	/**
+	 * MapPairIgnite constructor for Left Join
+	 * @param root
+	 * @param join
+	 */
+	protected MapPairIgnite(AbstractPipeline root,
+			LeftJoin join)  {
+		this.task = join;
+		this.root = root;
+		root.mdsroots.add(root);
+		root.finaltask=task;
+	}
+	
+	/**
+	 * MapPairIgnite accepts Right Join
+	 * @param <I3>
+	 * @param mapright
+	 * @return
+	 * @throws PipelineException
+	 */
+	@SuppressWarnings({ "unchecked" })
+	public <I3> MapPairIgnite<I1,Tuple2<I2,I3>> leftJoin(MapPairIgnite<I1,I3> mapright) throws PipelineException  {
+		if(Objects.isNull(mapright)) {
+			throw new PipelineException(PipelineConstants.INNERJOIN);
+		}
+		var mp = new MapPairIgnite(root, new LeftJoin());
+		this.childs.add(mp);
+		mp.parents.add(this);
+		mapright.childs.add(mp);
+		mp.parents.add(mapright);
+		root.mdsroots.add(mapright.root);
+		return mp;
+	}
+	
+	
+	/**
+	 * MapPairIgnite constructor for Left Join
+	 * @param root
+	 * @param join
+	 */
+	protected MapPairIgnite(AbstractPipeline root,
+			RightJoin join)  {
+		this.task = join;
+		this.root = root;
+		root.mdsroots.add(root);
+		root.finaltask=task;
+	}
+	
+	/**
+	 * MapPairIgnite accepts Right Join
+	 * @param <I3>
+	 * @param mapright
+	 * @return
+	 * @throws PipelineException
+	 */
+	@SuppressWarnings({ "unchecked" })
+	public <I3> MapPairIgnite<I1,Tuple2<I2,I3>> rightJoin(MapPairIgnite<I1,I3> mapright) throws PipelineException  {
+		if(Objects.isNull(mapright)) {
+			throw new PipelineException(PipelineConstants.INNERJOIN);
+		}
+		var mp = new MapPairIgnite(root, new RightJoin());
 		this.childs.add(mp);
 		mp.parents.add(this);
 		mapright.childs.add(mp);
@@ -262,13 +369,13 @@ public sealed class MapPairIgnite<I1, I2> extends MassiveDataIgniteCommon permit
 	 * MapPairIgnite accepts the Predicate for filter.
 	 * @param predicate
 	 * @return MapPairIgnite object
-	 * @throws MassiveDataPipelineException
+	 * @throws PipelineException
 	 */
 	@SuppressWarnings({ "unchecked" })
 	public MapPairIgnite<I1, I1> filter(PredicateSerializable<? super Tuple2> predicate)
-			throws MassiveDataPipelineException {
+			throws PipelineException {
 		if (Objects.isNull(predicate)) {
-			throw new MassiveDataPipelineException(MassiveDataPipelineConstants.PREDICATENULL);
+			throw new PipelineException(PipelineConstants.PREDICATENULL);
 		}
 		var filter = new MapPairIgnite(root, predicate);
 		this.childs.add(filter);
@@ -292,12 +399,12 @@ public sealed class MapPairIgnite<I1, I2> extends MassiveDataIgniteCommon permit
 	 * MapPairIgnite accepts the union mappair object.
 	 * @param union
 	 * @return MapPairIgnite object.
-	 * @throws MassiveDataPipelineException
+	 * @throws PipelineException
 	 */
 	@SuppressWarnings({ "unchecked" })
-	public MapPairIgnite<I1, I1> union(MapPairIgnite union) throws MassiveDataPipelineException {
+	public MapPairIgnite<I1, I1> union(MapPairIgnite union) throws PipelineException {
 		if (Objects.isNull(union)) {
-			throw new MassiveDataPipelineException(MassiveDataPipelineConstants.UNIONNULL);
+			throw new PipelineException(PipelineConstants.UNIONNULL);
 		}
 		var unionfunction = new UnionFunction();
 		var unionchild = new MapPairIgnite(root, unionfunction);
@@ -325,12 +432,12 @@ public sealed class MapPairIgnite<I1, I2> extends MassiveDataIgniteCommon permit
 	 * MapPairIgnite accept the intersection mappair object.
 	 * @param intersection
 	 * @return MapPairIgnite object.
-	 * @throws MassiveDataPipelineException
+	 * @throws PipelineException
 	 */
 	@SuppressWarnings({ "unchecked" })
-	public MapPairIgnite<I1, I1> intersection(MapPairIgnite intersection) throws MassiveDataPipelineException {
+	public MapPairIgnite<I1, I1> intersection(MapPairIgnite intersection) throws PipelineException {
 		if (Objects.isNull(intersection)) {
-			throw new MassiveDataPipelineException(MassiveDataPipelineConstants.INTERSECTIONNULL);
+			throw new PipelineException(PipelineConstants.INTERSECTIONNULL);
 		}
 		var intersectionfunction = new IntersectionFunction();
 		var intersectionchild = new MapPairIgnite(root, intersectionfunction);
@@ -348,13 +455,13 @@ public sealed class MapPairIgnite<I1, I2> extends MassiveDataIgniteCommon permit
 	 * @param <I4>
 	 * @param pf
 	 * @return MapPairIgnite object.
-	 * @throws MassiveDataPipelineException
+	 * @throws PipelineException
 	 */
 	@SuppressWarnings({ "unchecked" })
 	public <I3, I4> MapPairIgnite<I3, I4> mapToPair(MapToPairFunction<? super Tuple2<I1, I2>, Tuple2<I3, I4>> pf)
-			throws MassiveDataPipelineException {
+			throws PipelineException {
 		if (Objects.isNull(pf)) {
-			throw new MassiveDataPipelineException(MassiveDataPipelineConstants.MAPPAIRNULL);
+			throw new PipelineException(PipelineConstants.MAPPAIRNULL);
 		}
 		var mappair = new MapPairIgnite(root, pf);
 		this.childs.add(mappair);
@@ -378,12 +485,12 @@ public sealed class MapPairIgnite<I1, I2> extends MassiveDataIgniteCommon permit
 	 * MapPairIgnite accepts the sample. 
 	 * @param numsample
 	 * @return MapPairIgnite object.
-	 * @throws MassiveDataPipelineException
+	 * @throws PipelineException
 	 */
 	@SuppressWarnings({ "unchecked" })
-	public MapPairIgnite<I1, I2> sample(Integer numsample) throws MassiveDataPipelineException {
+	public MapPairIgnite<I1, I2> sample(Integer numsample) throws PipelineException {
 		if (Objects.isNull(numsample)) {
-			throw new MassiveDataPipelineException(MassiveDataPipelineConstants.SAMPLENULL);
+			throw new PipelineException(PipelineConstants.SAMPLENULL);
 		}
 		var sampleintegersupplier = new SampleSupplierInteger(numsample);
 		var samplesupplier = new MapPairIgnite(root, sampleintegersupplier);
@@ -397,17 +504,17 @@ public sealed class MapPairIgnite<I1, I2> extends MassiveDataIgniteCommon permit
 	 * @param mappair
 	 * @param conditionrightouterjoin
 	 * @return MapPairIgnite object.
-	 * @throws MassiveDataPipelineException
+	 * @throws PipelineException
 	 */
 	@SuppressWarnings({ "unchecked" })
 	public MapPairIgnite<I1, I2> rightOuterjoin(AbstractPipeline mappair,
 			RightOuterJoinPredicate<Tuple2<I1, I2>, Tuple2<I1, I2>> conditionrightouterjoin)
-			throws MassiveDataPipelineException {
+			throws PipelineException {
 		if (Objects.isNull(mappair)) {
-			throw new MassiveDataPipelineException(MassiveDataPipelineConstants.RIGHTOUTERJOIN);
+			throw new PipelineException(PipelineConstants.RIGHTOUTERJOIN);
 		}
 		if (Objects.isNull(conditionrightouterjoin)) {
-			throw new MassiveDataPipelineException(MassiveDataPipelineConstants.RIGHTOUTERJOINCONDITION);
+			throw new PipelineException(PipelineConstants.RIGHTOUTERJOINCONDITION);
 		}
 		var mdp = new MapPairIgnite(root, conditionrightouterjoin);
 		this.childs.add(mdp);
@@ -423,17 +530,17 @@ public sealed class MapPairIgnite<I1, I2> extends MassiveDataIgniteCommon permit
 	 * @param mappair
 	 * @param conditionleftouterjoin
 	 * @return MapPairIgnite object.
-	 * @throws MassiveDataPipelineException
+	 * @throws PipelineException
 	 */
 	@SuppressWarnings({ "unchecked" })
 	public MapPairIgnite<I1, I2> leftOuterjoin(AbstractPipeline mappair,
 			LeftOuterJoinPredicate<Tuple2<I1, I2>, Tuple2<I1, I2>> conditionleftouterjoin)
-			throws MassiveDataPipelineException {
+			throws PipelineException {
 		if (Objects.isNull(mappair)) {
-			throw new MassiveDataPipelineException(MassiveDataPipelineConstants.LEFTOUTERJOIN);
+			throw new PipelineException(PipelineConstants.LEFTOUTERJOIN);
 		}
 		if (Objects.isNull(conditionleftouterjoin)) {
-			throw new MassiveDataPipelineException(MassiveDataPipelineConstants.LEFTOUTERJOINCONDITION);
+			throw new PipelineException(PipelineConstants.LEFTOUTERJOINCONDITION);
 		}
 		var mdp = new MapPairIgnite(root, conditionleftouterjoin);
 		this.childs.add(mdp);
@@ -461,13 +568,13 @@ public sealed class MapPairIgnite<I1, I2> extends MassiveDataIgniteCommon permit
 	 * @param <T>
 	 * @param fmf
 	 * @return MapPairIgnite object.
-	 * @throws MassiveDataPipelineException
+	 * @throws PipelineException
 	 */
 	@SuppressWarnings({ "unchecked" })
 	public <T> MapPairIgnite<T, T> flatMap(FlatMapFunction<? super Tuple2<I1, I2>, ? extends T> fmf)
-			throws MassiveDataPipelineException {
+			throws PipelineException {
 		if (Objects.isNull(fmf)) {
-			throw new MassiveDataPipelineException(MassiveDataPipelineConstants.FLATMAPNULL);
+			throw new PipelineException(PipelineConstants.FLATMAPNULL);
 		}
 		var mdp = new MapPairIgnite(root, fmf);
 		this.childs.add(mdp);
@@ -481,13 +588,13 @@ public sealed class MapPairIgnite<I1, I2> extends MassiveDataIgniteCommon permit
 	 * @param <I4>
 	 * @param pfmf
 	 * @return MapPairIgnite object.
-	 * @throws MassiveDataPipelineException
+	 * @throws PipelineException
 	 */
 	@SuppressWarnings({ "unchecked" })
 	public <I3, I4> MapPairIgnite<I3, I4> flatMapToTuple(
-			TupleFlatMapFunction<? super I1, ? extends Tuple2<I3, I4>> pfmf) throws MassiveDataPipelineException {
+			TupleFlatMapFunction<? super I1, ? extends Tuple2<I3, I4>> pfmf) throws PipelineException {
 		if (Objects.isNull(pfmf)) {
-			throw new MassiveDataPipelineException(MassiveDataPipelineConstants.FLATMAPPAIRNULL);
+			throw new PipelineException(PipelineConstants.FLATMAPPAIRNULL);
 		}
 		var mdp = new MapPairIgnite(root, pfmf);
 		this.childs.add(mdp);
@@ -511,13 +618,13 @@ public sealed class MapPairIgnite<I1, I2> extends MassiveDataIgniteCommon permit
 	 * MapPairIgnite accepts the LongTupleFlatMap function.
 	 * @param lfmf
 	 * @return MapPairIgnite object.
-	 * @throws MassiveDataPipelineException
+	 * @throws PipelineException
 	 */
 	@SuppressWarnings({ "unchecked" })
 	public MapPairIgnite<Long, Long> flatMapToLong(LongTupleFlatMapFunction<Tuple2<I1, I2>> lfmf)
-			throws MassiveDataPipelineException {
+			throws PipelineException {
 		if (Objects.isNull(lfmf)) {
-			throw new MassiveDataPipelineException(MassiveDataPipelineConstants.LONGFLATMAPNULL);
+			throw new PipelineException(PipelineConstants.LONGFLATMAPNULL);
 		}
 		var mdp = new MapPairIgnite(root, lfmf);
 		this.childs.add(mdp);
@@ -541,13 +648,13 @@ public sealed class MapPairIgnite<I1, I2> extends MassiveDataIgniteCommon permit
 	 * MapPairIgnite accepts the DoubleTupleFlatMap function.
 	 * @param dfmf
 	 * @return MapPairIgnite object.
-	 * @throws MassiveDataPipelineException
+	 * @throws PipelineException
 	 */
 	@SuppressWarnings({ "unchecked" })
 	public MapPairIgnite<Double, Double> flatMapToDouble(DoubleTupleFlatMapFunction<Tuple2<I1, I2>> dfmf)
-			throws MassiveDataPipelineException {
+			throws PipelineException {
 		if (Objects.isNull(dfmf)) {
-			throw new MassiveDataPipelineException(MassiveDataPipelineConstants.DOUBLEFLATMAPNULL);
+			throw new PipelineException(PipelineConstants.DOUBLEFLATMAPNULL);
 		}
 		var mdp = new MapPairIgnite(root, dfmf);
 		this.childs.add(mdp);
@@ -559,12 +666,12 @@ public sealed class MapPairIgnite<I1, I2> extends MassiveDataIgniteCommon permit
 	 * MapPairIgnite accepts the peek function.
 	 * @param consumer
 	 * @return MapPairIgnite object.
-	 * @throws MassiveDataPipelineException
+	 * @throws PipelineException
 	 */
 	@SuppressWarnings({ "unchecked" })
-	public MapPairIgnite<I1, I1> peek(PeekConsumer consumer) throws MassiveDataPipelineException {
+	public MapPairIgnite<I1, I1> peek(PeekConsumer consumer) throws PipelineException {
 		if (Objects.isNull(consumer)) {
-			throw new MassiveDataPipelineException(MassiveDataPipelineConstants.PEEKNULL);
+			throw new PipelineException(PipelineConstants.PEEKNULL);
 		}
 		var map = new MapPairIgnite(root, consumer);
 		map.parents.add(this);
@@ -620,13 +727,13 @@ public sealed class MapPairIgnite<I1, I2> extends MassiveDataIgniteCommon permit
 	 * MapPairIgnite accepts the sort function.
 	 * @param sortedcomparator
 	 * @return MapPairIgnite object
-	 * @throws MassiveDataPipelineException
+	 * @throws PipelineException
 	 */
 	@SuppressWarnings({ "unchecked" })
 	public MapPairIgnite<I1, I2> sorted(SortedComparator<? super Tuple2> sortedcomparator)
-			throws MassiveDataPipelineException {
+			throws PipelineException {
 		if (Objects.isNull(sortedcomparator)) {
-			throw new MassiveDataPipelineException(MassiveDataPipelineConstants.SORTEDNULL);
+			throw new PipelineException(PipelineConstants.SORTEDNULL);
 		}
 		var map = new MapPairIgnite(root, sortedcomparator);
 		map.parents.add(this);
@@ -665,12 +772,12 @@ public sealed class MapPairIgnite<I1, I2> extends MassiveDataIgniteCommon permit
 	 * @param partition
 	 * @param cf
 	 * @return MapPairIgnite object.
-	 * @throws MassiveDataPipelineException
+	 * @throws PipelineException
 	 */
 	@SuppressWarnings({ "unchecked" })
-	public MapPairIgnite<I1, I2> coalesce(int partition, CoalesceFunction<I2> cf) throws MassiveDataPipelineException {
+	public MapPairIgnite<I1, I2> coalesce(int partition, CoalesceFunction<I2> cf) throws PipelineException {
 		if (Objects.isNull(cf)) {
-			throw new MassiveDataPipelineException(MassiveDataPipelineConstants.COALESCENULL);
+			throw new PipelineException(PipelineConstants.COALESCENULL);
 		}
 		var mappaircoalesce = new MapPairIgnite(root, new Coalesce(partition, cf));
 		this.childs.add(mappaircoalesce);
@@ -682,12 +789,12 @@ public sealed class MapPairIgnite<I1, I2> extends MassiveDataIgniteCommon permit
 	 * MapPairIgnite accepts the reducefunction.
 	 * @param rf
 	 * @return MapPairIgnite object.
-	 * @throws MassiveDataPipelineException
+	 * @throws PipelineException
 	 */
 	@SuppressWarnings({ "unchecked" })
-	public MapPairIgnite<I1, I2> reduceByKey(ReduceByKeyFunction<I2> rf) throws MassiveDataPipelineException {
+	public MapPairIgnite<I1, I2> reduceByKey(ReduceByKeyFunction<I2> rf) throws PipelineException {
 		if (Objects.isNull(rf)) {
-			throw new MassiveDataPipelineException(MassiveDataPipelineConstants.REDUCENULL);
+			throw new PipelineException(PipelineConstants.REDUCENULL);
 		}
 		var mappair = new MapPairIgnite(root, rf);
 		this.childs.add(mappair);
@@ -715,16 +822,16 @@ public sealed class MapPairIgnite<I1, I2> extends MassiveDataIgniteCommon permit
 	 * @param partition
 	 * @param cf
 	 * @return MapPairIgnite object.
-	 * @throws MassiveDataPipelineException
+	 * @throws PipelineException
 	 */
 	@SuppressWarnings({ "unchecked" })
 	public MapPairIgnite<I1, I2> foldLeft(Object value, ReduceByKeyFunction<I2> rf, int partition, CoalesceFunction<I2> cf)
-			throws MassiveDataPipelineException {
+			throws PipelineException {
 		if (Objects.isNull(rf)) {
-			throw new MassiveDataPipelineException(MassiveDataPipelineConstants.FOLDLEFTREDUCENULL);
+			throw new PipelineException(PipelineConstants.FOLDLEFTREDUCENULL);
 		}
 		if (Objects.isNull(cf)) {
-			throw new MassiveDataPipelineException(MassiveDataPipelineConstants.FOLDLEFTCOALESCENULL);
+			throw new PipelineException(PipelineConstants.FOLDLEFTCOALESCENULL);
 		}
 		var mappair = new MapPairIgnite(root, new FoldByKey(value, rf, true));
 		this.childs.add(mappair);
@@ -745,15 +852,15 @@ public sealed class MapPairIgnite<I1, I2> extends MassiveDataIgniteCommon permit
 	 * @param partition
 	 * @param cf
 	 * @return MapPairIgnite object.
-	 * @throws MassiveDataPipelineException
+	 * @throws PipelineException
 	 */
 	public MapPairIgnite<I1, I2> foldRight(Object value, ReduceByKeyFunction<I2> rf, int partition, CoalesceFunction<I2> cf)
-			throws MassiveDataPipelineException {
+			throws PipelineException {
 		if (Objects.isNull(rf)) {
-			throw new MassiveDataPipelineException(MassiveDataPipelineConstants.FOLDRIGHTREDUCENULL);
+			throw new PipelineException(PipelineConstants.FOLDRIGHTREDUCENULL);
 		}
 		if (Objects.isNull(cf)) {
-			throw new MassiveDataPipelineException(MassiveDataPipelineConstants.FOLDRIGHTCOALESCENULL);
+			throw new PipelineException(PipelineConstants.FOLDRIGHTCOALESCENULL);
 		}
 		var mappair = new MapPairIgnite(root, new FoldByKey(value, rf, false));
 		this.childs.add(mappair);
@@ -889,14 +996,14 @@ public sealed class MapPairIgnite<I1, I2> extends MassiveDataIgniteCommon permit
 	 * This function caches the data and returns MapPairIgnite object.
 	 * @param isresultsneeded
 	 * @return MapPairIgnite object.
-	 * @throws MassiveDataPipelineException
+	 * @throws PipelineException
 	 */
-	public MapPairIgnite<I1, I2> cache(boolean isresultsneeded) throws MassiveDataPipelineException {
+	public MapPairIgnite<I1, I2> cache(boolean isresultsneeded) throws PipelineException {
 		try {
 			log.debug("Caching...");
 			var mdpcached = new MapPairIgnite<I1, I2>();
 			Job job = null;
-			if (root instanceof MassiveDataPipelineIgnite mdpi) {
+			if (root instanceof IgnitePipeline mdpi) {
 				mdpi.finaltasks.clear();
 				mdpi.finaltasks.add(mdpi.finaltask);
 				mdpi.mdsroots.add(root);
@@ -915,8 +1022,8 @@ public sealed class MapPairIgnite<I1, I2> extends MassiveDataIgniteCommon permit
 			mdpcached.job = job;
 			return mdpcached;
 		} catch (Exception ex) {
-			log.error(MassiveDataPipelineConstants.PIPELINECOLLECTERROR, ex);
-			throw new MassiveDataPipelineException(MassiveDataPipelineConstants.PIPELINECOLLECTERROR, ex);
+			log.error(PipelineConstants.PIPELINECOLLECTERROR, ex);
+			throw new PipelineException(PipelineConstants.PIPELINECOLLECTERROR, ex);
 		}
 	}
 
@@ -924,12 +1031,12 @@ public sealed class MapPairIgnite<I1, I2> extends MassiveDataIgniteCommon permit
 	 * This method saves the result to the hdfs. 
 	 * @param uri
 	 * @param path
-	 * @throws MassiveDataPipelineException
+	 * @throws PipelineException
 	 */
 	@SuppressWarnings("unchecked")
-	public void saveAsTextFile(URI uri, String path) throws MassiveDataPipelineException {
+	public void saveAsTextFile(URI uri, String path) throws PipelineException {
 		
-			if (root instanceof MassiveDataPipelineIgnite mdpi) {
+			if (root instanceof IgnitePipeline mdpi) {
 				mdpi.finaltasks.clear();
 				mdpi.finaltasks.add(mdpi.finaltask);
 				mdpi.mdsroots.add(root);
@@ -950,13 +1057,13 @@ public sealed class MapPairIgnite<I1, I2> extends MassiveDataIgniteCommon permit
 	 * This function executes the forEach tasks.
 	 * @param consumer
 	 * @param supplier
-	 * @throws MassiveDataPipelineException
+	 * @throws PipelineException
 	 */
 	@SuppressWarnings("unchecked")
-	public void forEach(Consumer<List<Tuple2>> consumer, IntSupplier supplier) throws MassiveDataPipelineException {
+	public void forEach(Consumer<List<Tuple2>> consumer, IntSupplier supplier) throws PipelineException {
 		try {
 			Job job = null;
-			if (root instanceof MassiveDataPipelineIgnite mdpi) {
+			if (root instanceof IgnitePipeline mdpi) {
 				mdpi.finaltasks.clear();
 				mdpi.finaltasks.add(mdpi.finaltask);
 				mdpi.mdsroots.add(root);
@@ -973,8 +1080,8 @@ public sealed class MapPairIgnite<I1, I2> extends MassiveDataIgniteCommon permit
 			results.stream().forEach((Consumer) consumer);
 
 		} catch (Exception e) {
-			log.error(MassiveDataPipelineConstants.PIPELINEFOREACHERROR, e);
-			throw new MassiveDataPipelineException(MassiveDataPipelineConstants.PIPELINEFOREACHERROR, e);
+			log.error(PipelineConstants.PIPELINEFOREACHERROR, e);
+			throw new PipelineException(PipelineConstants.PIPELINEFOREACHERROR, e);
 		}
 	}
 
@@ -982,12 +1089,12 @@ public sealed class MapPairIgnite<I1, I2> extends MassiveDataIgniteCommon permit
 	 * This function executes the count tasks.
 	 * @param supplier
 	 * @return object
-	 * @throws MassiveDataPipelineException
+	 * @throws PipelineException
 	 */
-	public Object count(NumPartitions supplier) throws MassiveDataPipelineException {
+	public Object count(NumPartitions supplier) throws PipelineException {
 		try {
-			if (root instanceof MassiveDataPipelineIgnite mdpi) {
-				var mdp = new MassiveDataPipelineIgnite(root, new CalculateCount());
+			if (root instanceof IgnitePipeline mdpi) {
+				var mdp = new IgnitePipeline(root, new CalculateCount());
 				mdp.parents.add(this);
 				this.childs.add(mdp);
 				mdpi.finaltasks.clear();
@@ -1007,8 +1114,8 @@ public sealed class MapPairIgnite<I1, I2> extends MassiveDataIgniteCommon permit
 			}
 			return (List) job.results;
 		} catch (Exception ex) {
-			log.error(MassiveDataPipelineConstants.PIPELINECOUNTERROR, ex);
-			throw new MassiveDataPipelineException(MassiveDataPipelineConstants.PIPELINECOUNTERROR, ex);
+			log.error(PipelineConstants.PIPELINECOUNTERROR, ex);
+			throw new PipelineException(PipelineConstants.PIPELINECOUNTERROR, ex);
 		}
 	}
 	
@@ -1017,18 +1124,18 @@ public sealed class MapPairIgnite<I1, I2> extends MassiveDataIgniteCommon permit
 	 * @param toexecute
 	 * @param supplier
 	 * @return list
-	 * @throws MassiveDataPipelineException
+	 * @throws PipelineException
 	 */
-	public Object collect(boolean toexecute, IntSupplier supplier) throws MassiveDataPipelineException {
+	public Object collect(boolean toexecute, IntSupplier supplier) throws PipelineException {
 		try {
-			if (root instanceof MassiveDataPipelineIgnite mdpi) {
+			if (root instanceof IgnitePipeline mdpi) {
 				mdpi.finaltasks.clear();
 				mdpi.finaltasks.add(mdpi.finaltask);
 				mdpi.mdsroots.add(root);
 				job = mdpi.cacheInternal(true,null,null);
 				log.debug("Cached....");
 			} else if (root instanceof MapPairIgnite mti) {
-				var mdp = new MassiveDataPipelineIgnite(root, new CalculateCount());
+				var mdp = new IgnitePipeline(root, new CalculateCount());
 				mdp.parents.add(this);
 				this.childs.add(mdp);
 				mti.finaltasks.clear();
@@ -1039,8 +1146,8 @@ public sealed class MapPairIgnite<I1, I2> extends MassiveDataIgniteCommon permit
 			}
 			return (List) job.results;
 		} catch (Exception ex) {
-			log.error(MassiveDataPipelineConstants.PIPELINECOUNTERROR, ex);
-			throw new MassiveDataPipelineException(MassiveDataPipelineConstants.PIPELINECOUNTERROR, ex);
+			log.error(PipelineConstants.PIPELINECOUNTERROR, ex);
+			throw new PipelineException(PipelineConstants.PIPELINECOUNTERROR, ex);
 		}
 	}
 	@Override

@@ -1,1 +1,0 @@
-jshell --class-path "../lib/*;../modules/*"

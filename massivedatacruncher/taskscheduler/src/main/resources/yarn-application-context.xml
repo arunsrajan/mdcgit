@@ -35,7 +35,7 @@
 
 	<util:properties id="applicationArguments">
 		<prop key="container-count">${containercount}</prop>
-		<prop key="appmaster.hdfsnn">${hd.fs}</prop>
+		<prop key="hdfs.namenode.url">${hd.fs}</prop>
 		<prop key="job-count">${jobcount}</prop>
 		<prop key="container-memory">${containermemory}</prop>
 	</util:properties>
