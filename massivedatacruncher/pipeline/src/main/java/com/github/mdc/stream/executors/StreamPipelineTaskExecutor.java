@@ -41,7 +41,6 @@ import java.util.stream.StreamSupport;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
-import org.apache.curator.shaded.com.google.common.collect.Iterables;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
@@ -84,10 +83,13 @@ import com.github.mdc.stream.functions.CountByValueFunction;
 import com.github.mdc.stream.functions.FoldByKey;
 import com.github.mdc.stream.functions.GroupByKeyFunction;
 import com.github.mdc.stream.functions.IntersectionFunction;
+import com.github.mdc.stream.functions.Join;
 import com.github.mdc.stream.functions.JoinPredicate;
+import com.github.mdc.stream.functions.LeftJoin;
 import com.github.mdc.stream.functions.LeftOuterJoinPredicate;
 import com.github.mdc.stream.functions.Max;
 import com.github.mdc.stream.functions.Min;
+import com.github.mdc.stream.functions.RightJoin;
 import com.github.mdc.stream.functions.RightOuterJoinPredicate;
 import com.github.mdc.stream.functions.StandardDeviation;
 import com.github.mdc.stream.functions.Sum;
@@ -1254,6 +1256,97 @@ public sealed class StreamPipelineTaskExecutor implements
 				log.error(PipelineConstants.PROCESSRIGHTOUTERJOIN, ex);
 				throw new PipelineException(PipelineConstants.PROCESSRIGHTOUTERJOIN, ex);
 			}
+		} else if (jobstage.stage.tasks.get(0) instanceof Join jp) {
+			InputStream streamfirst = null;
+			InputStream streamsecond = null;
+			if ((task.input[0] instanceof BlocksLocation blfirst)
+					&& (task.input[1] instanceof BlocksLocation blsecond)) {
+				streamfirst = HdfsBlockReader.getBlockDataSnappyStream(blfirst, hdfs);
+				streamsecond = HdfsBlockReader.getBlockDataSnappyStream(blsecond, hdfs);
+			} else if (((task.input[0] instanceof BlocksLocation) && task.input[1] instanceof InputStream)
+					|| ((task.input[0] instanceof InputStream) && task.input[1] instanceof BlocksLocation)) {
+				streamfirst = task.input[0] instanceof BlocksLocation
+						? HdfsBlockReader.getBlockDataSnappyStream((BlocksLocation) task.input[0], hdfs)
+						: (InputStream) task.input[0];
+				streamsecond = task.input[1] instanceof BlocksLocation
+						? HdfsBlockReader.getBlockDataSnappyStream((BlocksLocation) task.input[1], hdfs)
+						: (InputStream) task.input[1];
+			} else {
+				streamfirst = (InputStream) task.input[0];
+				streamsecond = (InputStream) task.input[1];
+			}
+			try (var streamfirsttocompute = ((InputStream) streamfirst);
+					var streamsecondtocompute = ((InputStream) streamsecond);) {
+				timetakenseconds = processJoin(streamfirsttocompute, streamsecondtocompute,
+						task.input[0] instanceof BlocksLocation, task.input[1] instanceof BlocksLocation);
+			} catch (IOException ioe) {
+				log.error(PipelineConstants.FILEIOERROR, ioe);
+				throw new PipelineException(PipelineConstants.FILEIOERROR, ioe);
+			} catch (Exception ex) {
+				log.error(PipelineConstants.PROCESSJOIN, ex);
+				throw new PipelineException(PipelineConstants.PROCESSJOIN, ex);
+			}
+
+		} else if (jobstage.stage.tasks.get(0) instanceof LeftJoin ljp) {
+			InputStream streamfirst = null;
+			InputStream streamsecond = null;
+			if ((task.input[0] instanceof BlocksLocation blfirst)
+					&& (task.input[1] instanceof BlocksLocation blsecond)) {
+				streamfirst = HdfsBlockReader.getBlockDataSnappyStream(blfirst, hdfs);
+				streamsecond = HdfsBlockReader.getBlockDataSnappyStream(blsecond, hdfs);
+			} else if (((task.input[0] instanceof BlocksLocation) && task.input[1] instanceof InputStream)
+					|| ((task.input[0] instanceof InputStream) && task.input[1] instanceof BlocksLocation)) {
+				streamfirst = task.input[0] instanceof BlocksLocation
+						? HdfsBlockReader.getBlockDataSnappyStream((BlocksLocation) task.input[0], hdfs)
+						: (InputStream) task.input[0];
+				streamsecond = task.input[1] instanceof BlocksLocation
+						? HdfsBlockReader.getBlockDataSnappyStream((BlocksLocation) task.input[1], hdfs)
+						: (InputStream) task.input[1];
+			} else {
+				streamfirst = (InputStream) task.input[0];
+				streamsecond = (InputStream) task.input[1];
+			}
+			try (var streamfirsttocompute = ((InputStream) streamfirst);
+					var streamsecondtocompute = ((InputStream) streamsecond);) {
+				timetakenseconds = processLeftJoin(streamfirsttocompute, streamsecondtocompute,
+						task.input[0] instanceof BlocksLocation, task.input[1] instanceof BlocksLocation);
+			} catch (IOException ioe) {
+				log.error(PipelineConstants.FILEIOERROR, ioe);
+				throw new PipelineException(PipelineConstants.FILEIOERROR, ioe);
+			} catch (Exception ex) {
+				log.error(PipelineConstants.PROCESSLEFTOUTERJOIN, ex);
+				throw new PipelineException(PipelineConstants.PROCESSLEFTOUTERJOIN, ex);
+			}
+		} else if (jobstage.stage.tasks.get(0) instanceof RightJoin rjp) {
+			InputStream streamfirst = null;
+			InputStream streamsecond = null;
+			if ((task.input[0] instanceof BlocksLocation blfirst)
+					&& (task.input[1] instanceof BlocksLocation blsecond)) {
+				streamfirst = HdfsBlockReader.getBlockDataSnappyStream(blfirst, hdfs);
+				streamsecond = HdfsBlockReader.getBlockDataSnappyStream(blsecond, hdfs);
+			} else if (((task.input[0] instanceof BlocksLocation) && task.input[1] instanceof InputStream)
+					|| ((task.input[0] instanceof InputStream) && task.input[1] instanceof BlocksLocation)) {
+				streamfirst = task.input[0] instanceof BlocksLocation
+						? HdfsBlockReader.getBlockDataSnappyStream((BlocksLocation) task.input[0], hdfs)
+						: (InputStream) task.input[0];
+				streamsecond = task.input[1] instanceof BlocksLocation
+						? HdfsBlockReader.getBlockDataSnappyStream((BlocksLocation) task.input[1], hdfs)
+						: (InputStream) task.input[1];
+			} else {
+				streamfirst = (InputStream) task.input[0];
+				streamsecond = (InputStream) task.input[1];
+			}
+			try (var streamfirsttocompute = ((InputStream) streamfirst);
+					var streamsecondtocompute = ((InputStream) streamsecond);) {
+				timetakenseconds = processRightJoin(streamfirsttocompute, streamsecondtocompute,
+						task.input[0] instanceof BlocksLocation, task.input[1] instanceof BlocksLocation);
+			} catch (IOException ioe) {
+				log.error(PipelineConstants.FILEIOERROR, ioe);
+				throw new PipelineException(PipelineConstants.FILEIOERROR, ioe);
+			} catch (Exception ex) {
+				log.error(PipelineConstants.PROCESSRIGHTOUTERJOIN, ex);
+				throw new PipelineException(PipelineConstants.PROCESSRIGHTOUTERJOIN, ex);
+			}
 		} else if (jobstage.stage.tasks.get(0) instanceof IntersectionFunction) {
 
 			if ((task.input[0] instanceof BlocksLocation blfirst)
@@ -1330,6 +1423,331 @@ public sealed class StreamPipelineTaskExecutor implements
 		return timetakenseconds;
 	}
 
+	/**
+	 * Join pair operation.
+	 * 
+	 * @param streamfirst
+	 * @param streamsecond
+	 * @param isinputfirstblocks
+	 * @param isinputsecondblocks
+	 * @return timetaken in milliseconds
+	 * @throws PipelineException
+	 */
+	@SuppressWarnings("unchecked")
+	public double processJoin(InputStream streamfirst, InputStream streamsecond,
+			boolean isinputfirstblocks, boolean isinputsecondblocks) throws PipelineException {
+		log.debug("Entered MassiveDataStreamTaskDExecutor.processJoin");
+		var starttime = System.currentTimeMillis();
+
+		try (var fsdos = createIntermediateDataToFS(task);
+				var output = new Output(new SnappyOutputStream(new BufferedOutputStream(fsdos)));
+				var inputfirst = isinputfirstblocks ? null : new Input(streamfirst);
+				var inputsecond = isinputsecondblocks ? null : new Input(streamsecond);
+				var buffreader1 = isinputfirstblocks ? new BufferedReader(new InputStreamReader(streamfirst)) : null;
+				var buffreader2 = isinputsecondblocks ? new BufferedReader(new InputStreamReader(streamsecond)) : null;
+
+		) {
+
+			var kryo = Utils.getKryoNonDeflateSerializer();
+			final List<Tuple2> inputs1, inputs2;
+			;
+			if (Objects.isNull(buffreader1)) {
+				inputs1 = (List) kryo.readClassAndObject(inputfirst);
+			} else {
+				CompletableFuture<List> cf = buffreader1.lines().collect(ParallelCollectors.parallel(value -> value,
+						Collectors.toCollection(Vector::new), executor, Runtime.getRuntime().availableProcessors()));
+				inputs1 = cf.get();
+			}
+			if (Objects.isNull(buffreader2)) {
+				inputs2 = (List) kryo.readClassAndObject(inputsecond);
+			} else {
+				CompletableFuture<List> cf = buffreader2.lines().collect(ParallelCollectors.parallel(value -> value,
+						Collectors.toCollection(Vector::new), executor, Runtime.getRuntime().availableProcessors()));
+				inputs2 = cf.get();
+			}
+			var terminalCount = false;
+			if (jobstage.stage.tasks.get(0) instanceof CalculateCount) {
+				terminalCount = true;
+			}
+			
+			
+			Stream<Tuple2> joinpairs = inputs1.parallelStream().flatMap(tup1->{
+				return inputs2.parallelStream().filter(tup2->tup1.v1.equals(tup2.v1))
+				.map(tup2->new Tuple2(tup2.v1,new Tuple2(tup1.v2,tup2.v2))).collect(Collectors.toList()).stream();
+			});
+			
+			if (task.finalphase && task.saveresulttohdfs) {
+				try (OutputStream os = hdfs.create(new Path(task.hdfsurl + task.filepath),
+						Short.parseShort(MDCProperties.get().getProperty(MDCConstants.DFSOUTPUTFILEREPLICATION,
+								MDCConstants.DFSOUTPUTFILEREPLICATION_DEFAULT)));) {					
+					int ch = (int) '\n';
+					if (terminalCount) {
+						os.write(("" + joinpairs.count()).getBytes());
+					} else {
+						joinpairs.forEach(val -> {
+							try {
+								os.write(val.toString().getBytes());
+								os.write(ch);
+							} catch (IOException e) {
+							}
+						});
+					}
+				}
+				var timetaken = (System.currentTimeMillis() - starttime) / 1000.0;
+				return timetaken;
+			}
+			List joinpairsout;
+			if (terminalCount) {
+				joinpairsout = new Vector<>();
+				try {
+					joinpairsout.add(joinpairs.count());
+				} catch (Exception ex) {
+					log.error(PipelineConstants.PROCESSJOIN, ex);
+					throw new PipelineException(PipelineConstants.PROCESSJOIN, ex);
+				}
+			} else {
+				joinpairsout=joinpairs.collect(Collectors.toList());
+
+			}
+			kryo.writeClassAndObject(output, joinpairsout);
+			output.flush();
+			cacheAble(fsdos);
+			var wr = new WeakReference<List>(joinpairsout);
+			joinpairsout = null;
+			log.debug("Exiting MassiveDataStreamTaskDExecutor.processJoin");
+			var timetaken = (System.currentTimeMillis() - starttime) / 1000.0;
+			log.debug("Time taken to compute the Join task is " + timetaken + " seconds");
+			log.debug("GC Status Join task:" + Utils.getGCStats());
+			return timetaken;
+		} catch (IOException ioe) {
+			log.error(PipelineConstants.FILEIOERROR, ioe);
+			throw new PipelineException(PipelineConstants.FILEIOERROR, ioe);
+		} catch (Exception ex) {
+			log.error(PipelineConstants.PROCESSJOIN, ex);
+			throw new PipelineException(PipelineConstants.PROCESSJOIN, ex);
+		}
+	}
+	
+	
+	/**
+	 * Left Join pair operation.
+	 * 
+	 * @param streamfirst
+	 * @param streamsecond
+	 * @param isinputfirstblocks
+	 * @param isinputsecondblocks
+	 * @return timetaken in milliseconds
+	 * @throws PipelineException
+	 */
+	@SuppressWarnings("unchecked")
+	public double processLeftJoin(InputStream streamfirst, InputStream streamsecond,
+			boolean isinputfirstblocks, boolean isinputsecondblocks) throws PipelineException {
+		log.debug("Entered MassiveDataStreamTaskDExecutor.processLeftJoin");
+		var starttime = System.currentTimeMillis();
+
+		try (var fsdos = createIntermediateDataToFS(task);
+				var output = new Output(new SnappyOutputStream(new BufferedOutputStream(fsdos)));
+				var inputfirst = isinputfirstblocks ? null : new Input(streamfirst);
+				var inputsecond = isinputsecondblocks ? null : new Input(streamsecond);
+				var buffreader1 = isinputfirstblocks ? new BufferedReader(new InputStreamReader(streamfirst)) : null;
+				var buffreader2 = isinputsecondblocks ? new BufferedReader(new InputStreamReader(streamsecond)) : null;
+
+		) {
+
+			var kryo = Utils.getKryoNonDeflateSerializer();
+			final List<Tuple2> inputs1, inputs2;
+			;
+			if (Objects.isNull(buffreader1)) {
+				inputs1 = (List) kryo.readClassAndObject(inputfirst);
+			} else {
+				CompletableFuture<List> cf = buffreader1.lines().collect(ParallelCollectors.parallel(value -> value,
+						Collectors.toCollection(Vector::new), executor, Runtime.getRuntime().availableProcessors()));
+				inputs1 = cf.get();
+			}
+			if (Objects.isNull(buffreader2)) {
+				inputs2 = (List) kryo.readClassAndObject(inputsecond);
+			} else {
+				CompletableFuture<List> cf = buffreader2.lines().collect(ParallelCollectors.parallel(value -> value,
+						Collectors.toCollection(Vector::new), executor, Runtime.getRuntime().availableProcessors()));
+				inputs2 = cf.get();
+			}
+			var terminalCount = false;
+			if (jobstage.stage.tasks.get(0) instanceof CalculateCount) {
+				terminalCount = true;
+			}
+			
+			
+			Stream<Tuple2> joinpairs = inputs1.parallelStream().flatMap(tup1->{
+				List<Tuple2> joinlist = inputs2.parallelStream().filter(tup2->tup1.v1.equals(tup2.v1))
+				.map(tup2->new Tuple2(tup2.v1,new Tuple2(tup1.v2,tup2.v2))).collect(Collectors.toList());
+				if(joinlist.isEmpty()) {
+					return Arrays.asList(new Tuple2(tup1.v1,new Tuple2(tup1.v2,null))).stream();
+				}				
+				return joinlist.stream();
+			});
+			
+			if (task.finalphase && task.saveresulttohdfs) {
+				try (OutputStream os = hdfs.create(new Path(task.hdfsurl + task.filepath),
+						Short.parseShort(MDCProperties.get().getProperty(MDCConstants.DFSOUTPUTFILEREPLICATION,
+								MDCConstants.DFSOUTPUTFILEREPLICATION_DEFAULT)));) {					
+					int ch = (int) '\n';
+					if (terminalCount) {
+						os.write(("" + joinpairs.count()).getBytes());
+					} else {
+						joinpairs.forEach(val -> {
+							try {
+								os.write(val.toString().getBytes());
+								os.write(ch);
+							} catch (IOException e) {
+							}
+						});
+					}
+				}
+				var timetaken = (System.currentTimeMillis() - starttime) / 1000.0;
+				return timetaken;
+			}
+			List joinpairsout;
+			if (terminalCount) {
+				joinpairsout = new Vector<>();
+				try {
+					joinpairsout.add(joinpairs.count());
+				} catch (Exception ex) {
+					log.error(PipelineConstants.PROCESSJOIN, ex);
+					throw new PipelineException(PipelineConstants.PROCESSJOIN, ex);
+				}
+			} else {
+				joinpairsout=joinpairs.collect(Collectors.toList());
+
+			}
+			kryo.writeClassAndObject(output, joinpairsout);
+			output.flush();
+			cacheAble(fsdos);
+			var wr = new WeakReference<List>(joinpairsout);
+			joinpairsout = null;
+			log.debug("Exiting MassiveDataStreamTaskDExecutor.processLeftJoin");
+			var timetaken = (System.currentTimeMillis() - starttime) / 1000.0;
+			log.debug("Time taken to compute the Join task is " + timetaken + " seconds");
+			log.debug("GC Status Join task:" + Utils.getGCStats());
+			return timetaken;
+		} catch (IOException ioe) {
+			log.error(PipelineConstants.FILEIOERROR, ioe);
+			throw new PipelineException(PipelineConstants.FILEIOERROR, ioe);
+		} catch (Exception ex) {
+			log.error(PipelineConstants.PROCESSJOIN, ex);
+			throw new PipelineException(PipelineConstants.PROCESSJOIN, ex);
+		}
+	}
+	
+	/**
+	 * Left Join pair operation.
+	 * 
+	 * @param streamfirst
+	 * @param streamsecond
+	 * @param isinputfirstblocks
+	 * @param isinputsecondblocks
+	 * @return timetaken in milliseconds
+	 * @throws PipelineException
+	 */
+	@SuppressWarnings("unchecked")
+	public double processRightJoin(InputStream streamfirst, InputStream streamsecond,
+			boolean isinputfirstblocks, boolean isinputsecondblocks) throws PipelineException {
+		log.debug("Entered MassiveDataStreamTaskDExecutor.processRightJoin");
+		var starttime = System.currentTimeMillis();
+
+		try (var fsdos = createIntermediateDataToFS(task);
+				var output = new Output(new SnappyOutputStream(new BufferedOutputStream(fsdos)));
+				var inputfirst = isinputfirstblocks ? null : new Input(streamfirst);
+				var inputsecond = isinputsecondblocks ? null : new Input(streamsecond);
+				var buffreader1 = isinputfirstblocks ? new BufferedReader(new InputStreamReader(streamfirst)) : null;
+				var buffreader2 = isinputsecondblocks ? new BufferedReader(new InputStreamReader(streamsecond)) : null;
+
+		) {
+
+			var kryo = Utils.getKryoNonDeflateSerializer();
+			final List<Tuple2> inputs1, inputs2;
+			;
+			if (Objects.isNull(buffreader1)) {
+				inputs1 = (List) kryo.readClassAndObject(inputfirst);
+			} else {
+				CompletableFuture<List> cf = buffreader1.lines().collect(ParallelCollectors.parallel(value -> value,
+						Collectors.toCollection(Vector::new), executor, Runtime.getRuntime().availableProcessors()));
+				inputs1 = cf.get();
+			}
+			if (Objects.isNull(buffreader2)) {
+				inputs2 = (List) kryo.readClassAndObject(inputsecond);
+			} else {
+				CompletableFuture<List> cf = buffreader2.lines().collect(ParallelCollectors.parallel(value -> value,
+						Collectors.toCollection(Vector::new), executor, Runtime.getRuntime().availableProcessors()));
+				inputs2 = cf.get();
+			}
+			var terminalCount = false;
+			if (jobstage.stage.tasks.get(0) instanceof CalculateCount) {
+				terminalCount = true;
+			}
+			
+			
+			Stream<Tuple2> joinpairs = inputs2.parallelStream().flatMap(tup1->{
+				List<Tuple2> joinlist = inputs1.parallelStream().filter(tup2->tup1.v1.equals(tup2.v1))
+				.map(tup2->new Tuple2(tup2.v1,new Tuple2(tup2.v2,tup1.v2))).collect(Collectors.toList());
+				if(joinlist.isEmpty()) {
+					return Arrays.asList(new Tuple2(tup1.v1,new Tuple2(null,tup1.v2))).stream();
+				}				
+				return joinlist.stream();
+			});
+			
+			if (task.finalphase && task.saveresulttohdfs) {
+				try (OutputStream os = hdfs.create(new Path(task.hdfsurl + task.filepath),
+						Short.parseShort(MDCProperties.get().getProperty(MDCConstants.DFSOUTPUTFILEREPLICATION,
+								MDCConstants.DFSOUTPUTFILEREPLICATION_DEFAULT)));) {					
+					int ch = (int) '\n';
+					if (terminalCount) {
+						os.write(("" + joinpairs.count()).getBytes());
+					} else {
+						joinpairs.forEach(val -> {
+							try {
+								os.write(val.toString().getBytes());
+								os.write(ch);
+							} catch (IOException e) {
+							}
+						});
+					}
+				}
+				var timetaken = (System.currentTimeMillis() - starttime) / 1000.0;
+				return timetaken;
+			}
+			List joinpairsout;
+			if (terminalCount) {
+				joinpairsout = new Vector<>();
+				try {
+					joinpairsout.add(joinpairs.count());
+				} catch (Exception ex) {
+					log.error(PipelineConstants.PROCESSJOIN, ex);
+					throw new PipelineException(PipelineConstants.PROCESSJOIN, ex);
+				}
+			} else {
+				joinpairsout=joinpairs.collect(Collectors.toList());
+
+			}
+			kryo.writeClassAndObject(output, joinpairsout);
+			output.flush();
+			cacheAble(fsdos);
+			var wr = new WeakReference<List>(joinpairsout);
+			joinpairsout = null;
+			log.debug("Exiting MassiveDataStreamTaskDExecutor.processRightJoin");
+			var timetaken = (System.currentTimeMillis() - starttime) / 1000.0;
+			log.debug("Time taken to compute the Join task is " + timetaken + " seconds");
+			log.debug("GC Status Join task:" + Utils.getGCStats());
+			return timetaken;
+		} catch (IOException ioe) {
+			log.error(PipelineConstants.FILEIOERROR, ioe);
+			throw new PipelineException(PipelineConstants.FILEIOERROR, ioe);
+		} catch (Exception ex) {
+			log.error(PipelineConstants.PROCESSJOIN, ex);
+			throw new PipelineException(PipelineConstants.PROCESSJOIN, ex);
+		}
+	}
+	
+	
 	/**
 	 * Join pair operation.
 	 * 
