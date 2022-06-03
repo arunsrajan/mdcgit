@@ -22,8 +22,10 @@ import com.github.mdc.stream.functions.FlatMapFunction;
 import com.github.mdc.stream.functions.FoldByKey;
 import com.github.mdc.stream.functions.GroupByKeyFunction;
 import com.github.mdc.stream.functions.IntersectionFunction;
+import com.github.mdc.stream.functions.Join;
 import com.github.mdc.stream.functions.JoinPredicate;
 import com.github.mdc.stream.functions.KeyByFunction;
+import com.github.mdc.stream.functions.LeftJoin;
 import com.github.mdc.stream.functions.LeftOuterJoinPredicate;
 import com.github.mdc.stream.functions.LongTupleFlatMapFunction;
 import com.github.mdc.stream.functions.MapFunction;
@@ -32,6 +34,7 @@ import com.github.mdc.stream.functions.MapValuesFunction;
 import com.github.mdc.stream.functions.PeekConsumer;
 import com.github.mdc.stream.functions.PredicateSerializable;
 import com.github.mdc.stream.functions.ReduceByKeyFunction;
+import com.github.mdc.stream.functions.RightJoin;
 import com.github.mdc.stream.functions.RightOuterJoinPredicate;
 import com.github.mdc.stream.functions.SortedComparator;
 import com.github.mdc.stream.functions.TupleFlatMapFunction;
@@ -213,6 +216,111 @@ public sealed class MapPair<I1,I2> extends AbstractPipeline permits MapValues{
 			throw new PipelineException(PipelineConstants.INNERJOINCONDITION);
 		}
 		var mp = new MapPair(root, conditioninnerjoin);
+		this.childs.add(mp);
+		mp.parents.add(this);
+		mapright.childs.add(mp);
+		mp.parents.add(mapright);
+		root.mdsroots.add(mapright.root);
+		return mp;
+	}
+	
+
+	/**
+	 * MapPair constructor for Join
+	 * @param root
+	 * @param join
+	 */
+	protected MapPair(AbstractPipeline root,
+			Join join)  {
+		this.task = join;
+		this.root = root;
+		root.mdsroots.add(root);
+		root.finaltask=task;
+	}
+	
+	/**
+	 * MapPair accepts Join
+	 * @param <I3>
+	 * @param mapright
+	 * @return
+	 * @throws PipelineException
+	 */
+	@SuppressWarnings({ "unchecked" })
+	public <I3> MapPair<I1,Tuple2<I2,I3>> join(MapPair<I1,I3> mapright) throws PipelineException  {
+		if(Objects.isNull(mapright)) {
+			throw new PipelineException(PipelineConstants.INNERJOIN);
+		}
+		var mp = new MapPair(root, new Join());
+		this.childs.add(mp);
+		mp.parents.add(this);
+		mapright.childs.add(mp);
+		mp.parents.add(mapright);
+		root.mdsroots.add(mapright.root);
+		return mp;
+	}
+	
+	
+	/**
+	 * MapPair constructor for Left Join
+	 * @param root
+	 * @param join
+	 */
+	protected MapPair(AbstractPipeline root,
+			LeftJoin join)  {
+		this.task = join;
+		this.root = root;
+		root.mdsroots.add(root);
+		root.finaltask=task;
+	}
+	
+	/**
+	 * MapPair accepts Right Join
+	 * @param <I3>
+	 * @param mapright
+	 * @return
+	 * @throws PipelineException
+	 */
+	@SuppressWarnings({ "unchecked" })
+	public <I3> MapPair<I1,Tuple2<I2,I3>> leftJoin(MapPair<I1,I3> mapright) throws PipelineException  {
+		if(Objects.isNull(mapright)) {
+			throw new PipelineException(PipelineConstants.INNERJOIN);
+		}
+		var mp = new MapPair(root, new LeftJoin());
+		this.childs.add(mp);
+		mp.parents.add(this);
+		mapright.childs.add(mp);
+		mp.parents.add(mapright);
+		root.mdsroots.add(mapright.root);
+		return mp;
+	}
+	
+	
+	/**
+	 * MapPair constructor for Left Join
+	 * @param root
+	 * @param join
+	 */
+	protected MapPair(AbstractPipeline root,
+			RightJoin join)  {
+		this.task = join;
+		this.root = root;
+		root.mdsroots.add(root);
+		root.finaltask=task;
+	}
+	
+	/**
+	 * MapPair accepts Right Join
+	 * @param <I3>
+	 * @param mapright
+	 * @return
+	 * @throws PipelineException
+	 */
+	@SuppressWarnings({ "unchecked" })
+	public <I3> MapPair<I1,Tuple2<I2,I3>> rightJoin(MapPair<I1,I3> mapright) throws PipelineException  {
+		if(Objects.isNull(mapright)) {
+			throw new PipelineException(PipelineConstants.INNERJOIN);
+		}
+		var mp = new MapPair(root, new RightJoin());
 		this.childs.add(mp);
 		mp.parents.add(this);
 		mapright.childs.add(mp);
@@ -674,6 +782,33 @@ public sealed class MapPair<I1,I2> extends AbstractPipeline permits MapValues{
 			throw new PipelineException(PipelineConstants.COALESCENULL);
 		}
 		var mappaircoalesce = new MapPair(root, new Coalesce(partition, cf));
+		this.childs.add(mappaircoalesce);
+		mappaircoalesce.parents.add(this);
+		return mappaircoalesce;
+	}
+		
+	/**
+	 * MapPair accepts the coalesce partition number.
+	 * @param partition
+	 * @return MapPair object.
+	 * @throws PipelineException
+	 */
+	@SuppressWarnings({ "unchecked" })
+	public MapPair<I1,I2> coalesce(int partition) throws PipelineException  {
+		var mappaircoalesce = new MapPair(root, new Coalesce(partition, null));
+		this.childs.add(mappaircoalesce);
+		mappaircoalesce.parents.add(this);
+		return mappaircoalesce;
+	}
+	
+	/**
+	 * MapPair with single partition number.
+	 * @return MapPair object.
+	 * @throws PipelineException
+	 */
+	@SuppressWarnings({ "unchecked" })
+	public MapPair<I1,I2> coalesce() throws PipelineException  {
+		var mappaircoalesce = new MapPair(root, new Coalesce(1, null));
 		this.childs.add(mappaircoalesce);
 		mappaircoalesce.parents.add(this);
 		return mappaircoalesce;

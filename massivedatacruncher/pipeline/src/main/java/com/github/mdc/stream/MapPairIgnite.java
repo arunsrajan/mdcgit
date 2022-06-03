@@ -23,8 +23,10 @@ import com.github.mdc.stream.functions.FlatMapFunction;
 import com.github.mdc.stream.functions.FoldByKey;
 import com.github.mdc.stream.functions.GroupByKeyFunction;
 import com.github.mdc.stream.functions.IntersectionFunction;
+import com.github.mdc.stream.functions.Join;
 import com.github.mdc.stream.functions.JoinPredicate;
 import com.github.mdc.stream.functions.KeyByFunction;
+import com.github.mdc.stream.functions.LeftJoin;
 import com.github.mdc.stream.functions.LeftOuterJoinPredicate;
 import com.github.mdc.stream.functions.LongTupleFlatMapFunction;
 import com.github.mdc.stream.functions.MapToPairFunction;
@@ -32,6 +34,7 @@ import com.github.mdc.stream.functions.MapValuesFunction;
 import com.github.mdc.stream.functions.PeekConsumer;
 import com.github.mdc.stream.functions.PredicateSerializable;
 import com.github.mdc.stream.functions.ReduceByKeyFunction;
+import com.github.mdc.stream.functions.RightJoin;
 import com.github.mdc.stream.functions.RightOuterJoinPredicate;
 import com.github.mdc.stream.functions.SortedComparator;
 import com.github.mdc.stream.functions.TupleFlatMapFunction;
@@ -214,6 +217,110 @@ public sealed class MapPairIgnite<I1, I2> extends IgniteCommon permits MapValues
 			throw new PipelineException(PipelineConstants.INNERJOINCONDITION);
 		}
 		var mp = new MapPairIgnite(root, conditioninnerjoin);
+		this.childs.add(mp);
+		mp.parents.add(this);
+		mapright.childs.add(mp);
+		mp.parents.add(mapright);
+		root.mdsroots.add(mapright.root);
+		return mp;
+	}
+	
+	/**
+	 * MapPairIgnite constructor for Join
+	 * @param root
+	 * @param join
+	 */
+	protected MapPairIgnite(AbstractPipeline root,
+			Join join)  {
+		this.task = join;
+		this.root = root;
+		root.mdsroots.add(root);
+		root.finaltask=task;
+	}
+	
+	/**
+	 * MapPairIgnite accepts Join
+	 * @param <I3>
+	 * @param mapright
+	 * @return
+	 * @throws PipelineException
+	 */
+	@SuppressWarnings({ "unchecked" })
+	public <I3> MapPairIgnite<I1,Tuple2<I2,I3>> join(MapPairIgnite<I1,I3> mapright) throws PipelineException  {
+		if(Objects.isNull(mapright)) {
+			throw new PipelineException(PipelineConstants.INNERJOIN);
+		}
+		var mp = new MapPairIgnite(root, new Join());
+		this.childs.add(mp);
+		mp.parents.add(this);
+		mapright.childs.add(mp);
+		mp.parents.add(mapright);
+		root.mdsroots.add(mapright.root);
+		return mp;
+	}
+	
+	
+	/**
+	 * MapPairIgnite constructor for Left Join
+	 * @param root
+	 * @param join
+	 */
+	protected MapPairIgnite(AbstractPipeline root,
+			LeftJoin join)  {
+		this.task = join;
+		this.root = root;
+		root.mdsroots.add(root);
+		root.finaltask=task;
+	}
+	
+	/**
+	 * MapPairIgnite accepts Right Join
+	 * @param <I3>
+	 * @param mapright
+	 * @return
+	 * @throws PipelineException
+	 */
+	@SuppressWarnings({ "unchecked" })
+	public <I3> MapPairIgnite<I1,Tuple2<I2,I3>> leftJoin(MapPairIgnite<I1,I3> mapright) throws PipelineException  {
+		if(Objects.isNull(mapright)) {
+			throw new PipelineException(PipelineConstants.INNERJOIN);
+		}
+		var mp = new MapPairIgnite(root, new LeftJoin());
+		this.childs.add(mp);
+		mp.parents.add(this);
+		mapright.childs.add(mp);
+		mp.parents.add(mapright);
+		root.mdsroots.add(mapright.root);
+		return mp;
+	}
+	
+	
+	/**
+	 * MapPairIgnite constructor for Left Join
+	 * @param root
+	 * @param join
+	 */
+	protected MapPairIgnite(AbstractPipeline root,
+			RightJoin join)  {
+		this.task = join;
+		this.root = root;
+		root.mdsroots.add(root);
+		root.finaltask=task;
+	}
+	
+	/**
+	 * MapPairIgnite accepts Right Join
+	 * @param <I3>
+	 * @param mapright
+	 * @return
+	 * @throws PipelineException
+	 */
+	@SuppressWarnings({ "unchecked" })
+	public <I3> MapPairIgnite<I1,Tuple2<I2,I3>> rightJoin(MapPairIgnite<I1,I3> mapright) throws PipelineException  {
+		if(Objects.isNull(mapright)) {
+			throw new PipelineException(PipelineConstants.INNERJOIN);
+		}
+		var mp = new MapPairIgnite(root, new RightJoin());
 		this.childs.add(mp);
 		mp.parents.add(this);
 		mapright.childs.add(mp);

@@ -103,8 +103,11 @@ import com.github.mdc.stream.executors.StreamPipelineTaskExecutorIgnite;
 import com.github.mdc.stream.functions.AggregateReduceFunction;
 import com.github.mdc.stream.functions.Coalesce;
 import com.github.mdc.stream.functions.IntersectionFunction;
+import com.github.mdc.stream.functions.Join;
 import com.github.mdc.stream.functions.JoinPredicate;
+import com.github.mdc.stream.functions.LeftJoin;
 import com.github.mdc.stream.functions.LeftOuterJoinPredicate;
+import com.github.mdc.stream.functions.RightJoin;
 import com.github.mdc.stream.functions.RightOuterJoinPredicate;
 import com.github.mdc.stream.functions.UnionFunction;
 import com.github.mdc.stream.mesos.scheduler.MesosScheduler;
@@ -1477,7 +1480,10 @@ public class StreamJobScheduler {
 			}
 			// Form the edges and nodes for the JoinPair function.
 			else if (function instanceof JoinPredicate || function instanceof LeftOuterJoinPredicate
-					|| function instanceof RightOuterJoinPredicate) {
+					|| function instanceof RightOuterJoinPredicate
+					|| function instanceof Join 
+					|| function instanceof LeftJoin
+					|| function instanceof RightJoin) {
 				for (var inputparent1 : outputparent1) {
 					for (var inputparent2 : outputparent2) {
 						partitionindex++;
@@ -1699,9 +1705,10 @@ public class StreamJobScheduler {
 						rdf.jobid = task.jobid;
 						rdf.stageid = task.stageid;
 						rdf.taskid = task.taskid;
-						rdf.mode = Boolean.parseBoolean(pipelineconfig.getJgroups())?MDCConstants.JGROUPS:MDCConstants.STANDALONE;
+						boolean isJGroups = Boolean.parseBoolean(pipelineconfig.getJgroups());
+						rdf.mode = isJGroups?MDCConstants.JGROUPS:MDCConstants.STANDALONE;
 						RemoteDataFetcher.remoteInMemoryDataFetch(rdf);
-						try (var input = new Input(new SnappyInputStream(new ByteArrayInputStream(rdf.data)));) {
+						try (var input = new Input(!isJGroups?new SnappyInputStream(new ByteArrayInputStream(rdf.data)):new ByteArrayInputStream(rdf.data));) {
 							var obj = kryofinal.readClassAndObject(input);
 							writeOutputToFile(stageoutput.size(),obj);
 							stageoutput.add(obj);

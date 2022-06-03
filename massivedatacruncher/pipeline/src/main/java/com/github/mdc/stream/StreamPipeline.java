@@ -63,8 +63,10 @@ import com.github.mdc.stream.functions.FlatMapFunction;
 import com.github.mdc.stream.functions.FoldByKey;
 import com.github.mdc.stream.functions.GroupByKeyFunction;
 import com.github.mdc.stream.functions.IntersectionFunction;
+import com.github.mdc.stream.functions.Join;
 import com.github.mdc.stream.functions.JoinPredicate;
 import com.github.mdc.stream.functions.KeyByFunction;
+import com.github.mdc.stream.functions.LeftJoin;
 import com.github.mdc.stream.functions.LeftOuterJoinPredicate;
 import com.github.mdc.stream.functions.LongFlatMapFunction;
 import com.github.mdc.stream.functions.MapFunction;
@@ -72,6 +74,7 @@ import com.github.mdc.stream.functions.MapToPairFunction;
 import com.github.mdc.stream.functions.PeekConsumer;
 import com.github.mdc.stream.functions.PredicateSerializable;
 import com.github.mdc.stream.functions.ReduceFunction;
+import com.github.mdc.stream.functions.RightJoin;
 import com.github.mdc.stream.functions.RightOuterJoinPredicate;
 import com.github.mdc.stream.functions.SToIntFunction;
 import com.github.mdc.stream.functions.SortedComparator;
@@ -292,7 +295,7 @@ public sealed class StreamPipeline<I1> extends AbstractPipeline permits CsvStrea
 	}
 	
 	/**
-	 * MassiveDataPipeline accepts the union function.
+	 * StreamPipeline accepts the union function.
 	 * @param union
 	 * @return MassiveDataPipeline object
 	 * @throws PipelineException
@@ -1011,6 +1014,9 @@ public sealed class StreamPipeline<I1> extends AbstractPipeline permits CsvStrea
 							|| af.task instanceof CountByKeyFunction
 							|| af.task instanceof CountByValueFunction
 							|| af.task instanceof JoinPredicate
+							|| af.task instanceof Join
+							|| af.task instanceof LeftJoin
+							|| af.task instanceof RightJoin
 							|| af.task instanceof LeftOuterJoinPredicate
 							|| af.task instanceof RightOuterJoinPredicate
 							|| af.task instanceof AggregateFunction
@@ -1035,7 +1041,10 @@ public sealed class StreamPipeline<I1> extends AbstractPipeline permits CsvStrea
 									|| af.parents.get(0).task instanceof SampleSupplierPartition
 									|| af.parents.get(0).task instanceof UnionFunction
 									|| af.parents.get(0).task instanceof FoldByKey
-									|| af.parents.get(0).task instanceof IntersectionFunction)) {
+									|| af.parents.get(0).task instanceof IntersectionFunction
+									|| af.parents.get(0).task instanceof Join
+									|| af.parents.get(0).task instanceof LeftJoin
+									|| af.parents.get(0).task instanceof RightJoin)) {
 						var parentstage = taskstagemap.get(af.parents.get(0).task);
 						parentstage.tasks.add(af.task);
 						taskstagemap.put(af.task, parentstage);

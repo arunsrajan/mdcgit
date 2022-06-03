@@ -16,7 +16,7 @@
         <maven.compiler.target>15</maven.compiler.target>
         <maven.compiler.source>15</maven.compiler.source>
         <skip.assemblyxml>true</skip.assemblyxml>
-        <ignite.version>2.11.1</ignite.version>
+        <ignite.version>2.13.0</ignite.version>
         <calcite.version>1.25.0</calcite.version>
     </properties>
 
@@ -288,7 +288,7 @@
         <dependency>
             <groupId>org.xerial.snappy</groupId>
             <artifactId>snappy-java</artifactId>
-            <version>1.1.8.1</version>
+            <version>1.1.8.4</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>

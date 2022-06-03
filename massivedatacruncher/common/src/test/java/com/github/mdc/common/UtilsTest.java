@@ -74,6 +74,6 @@ public class UtilsTest {
 	}
 	@Test
 	public void testloadLog4JSystemPropertiesClassPathProperInput() throws Exception {
-		Utils.loadLog4JSystemPropertiesClassPath(MDCConstants.MDC_PROPERTIES);
+		Utils.loadLog4JSystemPropertiesClassPath(MDCConstants.MDC_TEST_PROPERTIES);
 	}
 }
