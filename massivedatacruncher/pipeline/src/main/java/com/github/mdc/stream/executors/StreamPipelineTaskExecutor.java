@@ -1113,7 +1113,7 @@ public sealed class StreamPipelineTaskExecutor implements
 		var stageTasks = getStagesTask();
 		var stagePartition = jobstage.stageid;
 		var timetakenseconds = 0.0;
-		var hdfsfilepath = MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL);
+		var hdfsfilepath = MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL, MDCConstants.HDFSNAMENODEURL);
 		try (var hdfs = FileSystem.newInstance(new URI(hdfsfilepath), new Configuration());) {
 			this.hdfs = hdfs;
 

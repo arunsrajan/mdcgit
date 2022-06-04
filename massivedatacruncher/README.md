@@ -344,7 +344,6 @@ tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.examples.S
 
 tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.examples.StreamReduceRightOuterJoinInMemoryDiskDivided hdfs://127.0.0.1:9000 /airline1989 /carriers /examplesmdc 1024 3 128
 
-
 Stream Reduce Transformations
 -----------------------------
 tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.transformation.examples.StreamReduceSample hdfs://127.0.0.1:9000 /airline1989 /carriers /examplesmdc
@@ -360,6 +359,20 @@ hdfs://127.0.0.1:9000 /airline1989 /1987 /examplesmdc
 tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.transformation.examples.StreamReduceIntersection hdfs://127.0.0.1:9000 /airline1989 /1987 /examplesmdc
 
 tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.transformation.examples.StreamReduceCachedIgnite hdfs://127.0.0.1:9000 /airline1989 /examplesmdc
+
+tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.transformation.examples.StreamReducePairJoin hdfs://127.0.0.1:9000 /airline1989 /carriers /examplesmdc
+
+tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.transformation.examples.StreamReducePairLeftJoin hdfs://127.0.0.1:9000 /airline1989 /carriers /examplesmdc
+
+tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.transformation.examples.StreamReducePairRightJoin hdfs://127.0.0.1:9000 /airline1989 /carriers /examplesmdc
+
+tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.transformation.examples.StreamReducePairJoinCoalesceReduction hdfs://127.0.0.1:9000 /airline1989 /carriers /examplesmdc
+
+tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.transformation.examples.StreamReducePairLeftJoinCoalesceReduction hdfs://127.0.0.1:9000 /airline1989 /carriers /examplesmdc
+
+tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.transformation.examples.StreamReducePairRightJoinCoalesceReduction hdfs://127.0.0.1:9000 /airline1989 /carriers /examplesmdc
+
+tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.transformation.examples.StreamReducePairMultipleJoinsCoalesceReduction hdfs://127.0.0.1:9000 /airline1989 /carriers /examplesmdc
 
 Stream Reduce SQL
 -----------------

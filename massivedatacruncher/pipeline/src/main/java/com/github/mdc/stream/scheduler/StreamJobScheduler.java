@@ -140,7 +140,7 @@ public class StreamJobScheduler {
 	String hdfsfilepath = null;
 	FileSystem hdfs = null;
 	public StreamJobScheduler() {
-		hdfsfilepath = MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL);
+		hdfsfilepath = MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL, MDCConstants.HDFSNAMENODEURL_DEFAULT);
 	}
 
 	ExecutorService jobping = Executors.newWorkStealingPool();

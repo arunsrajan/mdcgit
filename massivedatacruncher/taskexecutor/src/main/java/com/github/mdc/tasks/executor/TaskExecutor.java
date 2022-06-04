@@ -242,7 +242,7 @@ public class TaskExecutor implements Runnable {
 								apptaskexecutormap.remove(apptaskid);
 							}
 							try(var hdfs = FileSystem.newInstance(
-									new URI(MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL)),
+									new URI(MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL, MDCConstants.HDFSNAMENODEURL)),
 									configuration)){
 							log.debug("Application Submitted:" + applicationid + "-" + taskid);
 							
