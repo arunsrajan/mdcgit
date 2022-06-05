@@ -1104,7 +1104,7 @@ public sealed class StreamPipelineTaskExecutor implements
 	}
 
 	public String getIntermediateDataRDF(String taskid) {
-		return (taskid);
+		return taskid;
 	}
 
 	@Override

@@ -51,19 +51,22 @@ public final class StreamPipelineTaskExecutorJGroups extends StreamPipelineTaskE
 	@Override
 	public StreamPipelineTaskExecutorJGroups call() {
 		log.debug("Entered MassiveDataStreamJGroupsTaskExecutor.call");
-		var stagepartidstatusmap = tasks.parallelStream()
+		var taskstatusmap = tasks.parallelStream()
 				.map(task -> task.taskid)
 				.collect(Collectors.toMap(key -> key, value -> WhoIsResponse.STATUS.YETTOSTART));
-		var stagepartidstatusconcmapreq = new ConcurrentHashMap<>(
-				stagepartidstatusmap);
-		var stagepartidstatusconcmapresp = new ConcurrentHashMap<String, WhoIsResponse.STATUS>();
+		var taskstatusconcmapreq = new ConcurrentHashMap<>(
+				taskstatusmap);
+		var taskstatusconcmapresp = new ConcurrentHashMap<String, WhoIsResponse.STATUS>();
 		var hdfsfilepath = MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL, MDCConstants.HDFSNAMENODEURL);
+		String host = NetworkUtil.getNetworkAddress(MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_HOST));
 		try(var hdfs = FileSystem.newInstance(new URI(hdfsfilepath), new Configuration());) {
 			this.hdfs = hdfs;
 			channel = Utils.getChannelTaskExecutor(jobstage.jobid,
-					NetworkUtil.getNetworkAddress(MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_HOST)),
-					port, stagepartidstatusconcmapreq, stagepartidstatusconcmapresp);
+					host,
+					port, taskstatusconcmapreq, taskstatusconcmapresp);
+			log.info("Tasks In Jgroups executor: "+tasks +" in host: "+host+" port: "+port);
 			for (var task : tasks) {
+				log.info("Task In Jgroups executor: "+task+" in host: "+host+" port: "+port+" with task hostport: "+task.hostport);
 				this.task = task;
 				this.jobstage = jsidjsmap.get(task.jobid + task.stageid);
 				var stageTasks = getStagesTask();
@@ -71,31 +74,31 @@ public final class StreamPipelineTaskExecutorJGroups extends StreamPipelineTaskE
 				try {
 					var taskspredecessor = task.taskspredecessor;
 					if (!taskspredecessor.isEmpty()) {
-						var stagepartitionids = taskspredecessor.parallelStream()
+						var taskids = taskspredecessor.parallelStream()
 								.map(tk -> tk.taskid)
 								.collect(Collectors.toList());
 						var breakloop = false;
 						while (true) {
-							var stagepartidstatusconcmap = new ConcurrentHashMap<String, WhoIsResponse.STATUS>(
-									stagepartidstatusconcmapreq);
-							stagepartidstatusconcmap.putAll(stagepartidstatusconcmapresp);
+							var tasktatusconcmap = new ConcurrentHashMap<String, WhoIsResponse.STATUS>(
+									taskstatusconcmapreq);
+							tasktatusconcmap.putAll(taskstatusconcmapresp);
 							breakloop = true;
-							for (var stagepartitionid : stagepartitionids) {
-								if (stagepartidstatusconcmapresp.get(stagepartitionid) != null
-										&& stagepartidstatusconcmapresp
-												.get(stagepartitionid) != WhoIsResponse.STATUS.COMPLETED) {
-									Utils.whois(channel, stagepartitionid);
+							for (var taskid : taskids) {
+								if (taskstatusconcmapresp.get(taskid) != null
+										&& taskstatusconcmapresp
+												.get(taskid) != WhoIsResponse.STATUS.COMPLETED) {
+									Utils.whois(channel, taskid);
 									breakloop = false;
 									continue;
-								} else if (stagepartidstatusconcmap.get(stagepartitionid) != null) {
-									if (stagepartidstatusconcmap
-											.get(stagepartitionid) != WhoIsResponse.STATUS.COMPLETED) {
+								} else if (tasktatusconcmap.get(taskid) != null) {
+									if (tasktatusconcmap
+											.get(taskid) != WhoIsResponse.STATUS.COMPLETED) {
 										breakloop = false;
 										continue;
 									}
 
 								} else {
-									Utils.whois(channel, stagepartitionid);
+									Utils.whois(channel, taskid);
 									breakloop = false;
 									continue;
 								}
@@ -108,7 +111,7 @@ public final class StreamPipelineTaskExecutorJGroups extends StreamPipelineTaskE
 					log.debug("Submitted Stage " + stagePartition);					
 					log.debug("Running Stage " + stageTasks);
 					
-					stagepartidstatusconcmapreq.put(stagePartition, WhoIsResponse.STATUS.RUNNING);
+					taskstatusconcmapreq.put(stagePartition, WhoIsResponse.STATUS.RUNNING);
 					if (task.input != null && task.parentremotedatafetch != null) {
 						var numinputs = task.parentremotedatafetch.length;
 						for (var inputindex = 0; inputindex < numinputs; inputindex++) {
@@ -130,13 +133,13 @@ public final class StreamPipelineTaskExecutorJGroups extends StreamPipelineTaskE
 
 					var timetakenseconds = computeTasks(task, hdfs);
 					log.debug("Completed Stage " + stagePartition+" in "+timetakenseconds);
-					stagepartidstatusconcmapreq.put(stagePartition, WhoIsResponse.STATUS.COMPLETED);
+					taskstatusconcmapreq.put(stagePartition, WhoIsResponse.STATUS.COMPLETED);
 				} finally {
 					
 				}
 			}
-			log.debug("StagePartitionId with Stage Statuses: " + stagepartidstatusconcmapreq
-					+ " WhoIs Response stauses: " + stagepartidstatusconcmapresp);
+			log.debug("StagePartitionId with Stage Statuses: " + taskstatusconcmapreq
+					+ " WhoIs Response stauses: " + taskstatusconcmapresp);
 		} catch (InterruptedException e) {
 			log.warn("Interrupted!", e);
 		    // Restore interrupted state...

@@ -644,7 +644,7 @@ public class StreamJobScheduler {
 		for (var taskgraphexecutor : tasksgraphexecutor) {
 			if (!taskgraphexecutor.getTasks().isEmpty()) {
 				var hp = taskgraphexecutor.getHostport();
-				Utils.writeObject(hp, new CloseStagesGraphExecutor(taskgraphexecutor.getTasks().get(0).jobid));
+				Utils.writeObject(hp, new CloseStagesGraphExecutor(taskgraphexecutor.getTasks()));
 			}
 		}
 	}
