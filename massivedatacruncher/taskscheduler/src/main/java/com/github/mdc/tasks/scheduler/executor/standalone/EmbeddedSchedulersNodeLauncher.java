@@ -16,6 +16,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
+import com.github.mdc.common.*;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.state.ConnectionState;
@@ -26,18 +27,6 @@ import org.apache.log4j.Logger;
 import org.apache.zookeeper.server.ServerCnxnFactory;
 
 import com.esotericsoftware.kryo.io.Input;
-import com.github.mdc.common.ByteBufferPool;
-import com.github.mdc.common.ByteBufferPoolDirect;
-import com.github.mdc.common.HeartBeatServer;
-import com.github.mdc.common.HeartBeatServerStream;
-import com.github.mdc.common.MDCConstants;
-import com.github.mdc.common.MDCProperties;
-import com.github.mdc.common.NetworkUtil;
-import com.github.mdc.common.ServerUtils;
-import com.github.mdc.common.TaskSchedulerWebServlet;
-import com.github.mdc.common.Utils;
-import com.github.mdc.common.WebResourcesServlet;
-import com.github.mdc.common.ZookeeperOperations;
 import com.github.mdc.stream.scheduler.StreamPipelineTaskScheduler;
 import com.github.mdc.tasks.executor.NodeRunner;
 import com.github.mdc.tasks.executor.web.NodeWebServlet;
@@ -48,6 +37,7 @@ public class EmbeddedSchedulersNodeLauncher {
 	static Logger log = Logger.getLogger(EmbeddedSchedulersNodeLauncher.class);
 
 	public static void main(String[] args) throws Exception {
+		log.info(MDCScalaConstants.SCALA_VERSION());
 		Utils.loadLog4JSystemProperties(MDCConstants.PREV_FOLDER + MDCConstants.BACKWARD_SLASH
 				+ MDCConstants.DIST_CONFIG_FOLDER + MDCConstants.BACKWARD_SLASH, MDCConstants.MDC_PROPERTIES);
 		var cdl = new CountDownLatch(3);
