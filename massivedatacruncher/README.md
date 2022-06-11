@@ -1,6 +1,6 @@
 The MDC can be build using the following maven goals
 
--Dmaven.antrun.skip=true -Pmodules clean install package assembly:assembly
+-Dmaven.antrun.skip=true -Dmaven.test.skip=true -Pmodules clean install package assembly:assembly
 
 -f pomjar.xml -Pmdc exec:exec antrun:run@prepare compile jib:dockerBuild@buildstandalone jib:dockerBuild@buildcontainer
 
@@ -459,3 +459,8 @@ Running Job In Linux
 ./tasksubmitter.sh -jar ../modules/examples.jar -args  'com.github.mdc.mr.examples.join.MrJobArrivalDelayNormal /airline1989 /carriers /examplesmdc 128 3'
 
 ./tasksubmitterstream.sh ../modules/examples.jar com.github.mdc.stream.examples.StreamReduceJGroups  hdfs://namenode:9000 /airlines1989 /carriers /examplesmdc
+
+
+Sonar
+------
+mvn org.sonarsource.scanner.maven:sonar-maven-plugin:3.4.0.905:sonar -Dsonar.login=38757a39a941623a4ef3b3cfb78bbe09181dfb5a -Dsonar.host.url=http://localhost:8082 -Dsonar.scm.disabled=true -Dsonar.language=Java,Scala
