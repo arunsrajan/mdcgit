@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>com.github.mdc</groupId>
 		<artifactId>MassiveDataCruncher</artifactId>
-		<version>1.0</version>
+		<version>1.1</version>
 	</parent>
 	<artifactId>coverage</artifactId>
 	<name>coverage</name>
@@ -27,21 +27,21 @@
 		<dependency>
 			<groupId>com.github.mdc</groupId>
 			<artifactId>pipeline</artifactId>
-			<version>1.0</version>
+			<version>${project.version}</version>
 			<type>test-jar</type>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.github.mdc</groupId>
 			<artifactId>common</artifactId>
-			<version>1.0</version>
+			<version>${project.version}</version>
 			<type>test-jar</type>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.github.mdc</groupId>
 			<artifactId>taskexecutor</artifactId>
-			<version>1.0</version>
+			<version>${project.version}</version>
 			<type>test-jar</type>
 			<scope>test</scope>
 		</dependency>

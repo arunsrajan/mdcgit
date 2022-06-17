@@ -46,7 +46,7 @@ public class NodeLauncher {
 		var es = Executors.newFixedThreadPool(1);
 		var escontainer = Executors.newFixedThreadPool(1);
 		
-		var hdfs = FileSystem.get(new URI(MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL)), new Configuration());
+		var hdfs = FileSystem.get(new URI(MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL, MDCConstants.HDFSNAMENODEURL)), new Configuration());
 		var containerprocesses = new ConcurrentHashMap<String, Map<String,Process>>();
 		var containeridthreads = new ConcurrentHashMap<String, Map<String,List<Thread>>>();
 		var containeridports = new ConcurrentHashMap<String, List<Integer>>();
