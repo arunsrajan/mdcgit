@@ -344,51 +344,6 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>net.alchim31.maven</groupId>
-                <artifactId>scala-maven-plugin</artifactId>
-                <version>4.6.2</version>
-                <configuration>
-                    <scalaCompatVersion>2.12.16</scalaCompatVersion>
-                    <scalaVersion>2.12.16</scalaVersion>
-                    <includes>**/*.scala</includes>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>scala-compile</id>
-                        <phase>compile</phase>
-                        <goals>
-                            <goal>add-source</goal>
-                            <goal>compile</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>scala-test-compile</id>
-                        <phase>test-compile</phase>
-                        <goals>
-                            <goal>testCompile</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-clean-plugin</artifactId>
-                <version>3.1.0</version>
-                <configuration>
-                    <excludeDefaultDirectories>true</excludeDefaultDirectories>
-                    <filesets>
-                        <fileset>
-                            <directory>target</directory>
-                            <followSymlinks>false</followSymlinks>
-                            <useDefaultExcludes>true</useDefaultExcludes>
-                            <excludes>
-                                <exclude>openjdk-15.0.2_linux-x64_bin.tar.gz</exclude>
-                            </excludes>
-                        </fileset>
-                    </filesets>
-                </configuration>
-            </plugin>
-            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-antrun-plugin</artifactId>
                 <version>1.8</version>
@@ -399,12 +354,12 @@
                         <configuration>
                             <target name="copy files to web project">
                                 <echo message="prepare phase"/>
-                                <unzip src="target/MassiveDataCruncher-1.0-jdk15.zip"
+                                <unzip src="target/MassiveDataCruncher-${project.version}-jdk17.zip"
                                        dest="target/unpack/opt/mdc"/>
                                 <mkdir dir="target/unpack/usr/local/java"/>
-                                <gunzip src="target/openjdk-15.0.2_linux-x64_bin.tar.gz"
+                                <gunzip src="target/openjdk-17.0.2_linux-x64_bin.tar.gz"
                                         dest="target/"/>
-                                <untar src="target/openjdk-15.0.2_linux-x64_bin.tar"
+                                <untar src="target/openjdk-17.0.2_linux-x64_bin.tar"
                                        dest="target/unpack/usr/local/java"/>
                                 <copy todir="target/mdcstandalone">
                                     <fileset dir="dockermdcstandalone" includes="entry.sh"/>
@@ -447,170 +402,218 @@
                     <executable>curl</executable>
                     <arguments>
                         <argument>
-                            https://download.java.net/java/GA/jdk15.0.2/0d1cfde4252546c6931946de8db48ee2/7/GPL/openjdk-15.0.2_linux-x64_bin.tar.gz
+                            https://download.java.net/java/GA/jdk17.0.2/dfd4a8d0985749f896bed50d7138ee7f/8/GPL/openjdk-17.0.2_linux-x64_bin.tar.gz
                         </argument>
-                        <argument>-z</argument>
-                        <argument>target/openjdk-15.0.2_linux-x64_bin.tar.gz</argument>
+                        <argument>target/openjdk-17.0.2_linux-x64_bin.tar.gz</argument>
                         <argument>--output</argument>
-                        <argument>target/openjdk-15.0.2_linux-x64_bin.tar.gz</argument>
+                        <argument>target/openjdk-17.0.2_linux-x64_bin.tar.gz</argument>
                     </arguments>
                 </configuration>
             </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
-                <configuration>
-                    <release>17</release>
-                    <source>17</source>
-                    <target>17</target>
-                    <forceJavacCompilerUse>true</forceJavacCompilerUse>
-                </configuration>
-                <executions>
-                    <execution>
-                        <phase>compile</phase>
-                        <goals>
-                            <goal>compile</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.0.0-M4</version>
-                <configuration>
-                    <testFailureIgnore>true</testFailureIgnore>
-                    <forkCount>3</forkCount>
-                    <reuseForks>true</reuseForks>
-                    <argLine>@{jacocoArgLine} --enable-preview</argLine>
-                    <excludes>
-                        <exclude>**/*Test.java</exclude>
-                        <exclude>**/*TestSuite2.java</exclude>
-                        <exclude>**/StreamPipelineBase.java</exclude>
-                        <exclude>**/StreamPipelineBiggerFileTest.java</exclude>
-                    </excludes>
-                    <includes>
-                        <include>**/CommonsTestSuite.java</include>
-                        <include>**/PipelineExecutorsTestSuite.java</include>
-                        <include>**/StreamPipelineTestSuite.java</include>
-                    </includes>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <version>2.4</version><!--$NO-MVN-MAN-VER$ -->
-                <configuration>
-                    <descriptors>
-                        <descriptor>assembly/assembly.xml</descriptor>
-                    </descriptors>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>distro-assembly</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                        <configuration>
-                            <skipAssembly>${skip.assemblyxml}</skipAssembly>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <artifactId>maven-resources-plugin</artifactId>
-                <version>3.1.0</version>
-                <executions>
-                    <execution>
-                        <id>copy-resources-dockermdccontainer</id>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${session.executionRootDirectory}/dockermdccontainer</outputDirectory>
-                            <resources>
-                                <resource>
-                                    <directory>${session.executionRootDirectory}/target</directory>
-                                    <includes>
-                                        <include>MassiveDataCruncher-1.0-jdk15.tar.gz</include>
-                                    </includes>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>copy-resources-dockermdctss</id>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${session.executionRootDirectory}/dockermdctss</outputDirectory>
-                            <resources>
-                                <resource>
-                                    <directory>${session.executionRootDirectory}/target</directory>
-                                    <includes>
-                                        <include>MassiveDataCruncher-1.0-jdk15.tar.gz</include>
-                                    </includes>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>copy-resources-dockermdcts</id>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${session.executionRootDirectory}/dockermdcts</outputDirectory>
-                            <resources>
-                                <resource>
-                                    <directory>${session.executionRootDirectory}/target</directory>
-                                    <includes>
-                                        <include>MassiveDataCruncher-1.0-jdk15.tar.gz</include>
-                                    </includes>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>copy-resources-dockermdcstandalone</id>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${session.executionRootDirectory}/dockermdcstandalone</outputDirectory>
-                            <resources>
-                                <resource>
-                                    <directory>${session.executionRootDirectory}/target</directory>
-                                    <includes>
-                                        <include>MassiveDataCruncher-1.0-jdk15.tar.gz</include>
-                                    </includes>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
         </plugins>
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>org.sonarsource.scanner.maven</groupId>
-                    <artifactId>sonar-maven-plugin</artifactId>
-                    <version>3.4.0.905</version>
-                </plugin>
-            </plugins>
-        </pluginManagement>
     </build>
     <profiles>
         <profile>
             <id>modules</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>net.alchim31.maven</groupId>
+                        <artifactId>scala-maven-plugin</artifactId>
+                        <version>4.6.2</version>
+                        <configuration>
+                            <scalaCompatVersion>2.12.16</scalaCompatVersion>
+                            <scalaVersion>2.12.16</scalaVersion>
+                            <includes>**/*.scala</includes>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>scala-compile</id>
+                                <phase>compile</phase>
+                                <goals>
+                                    <goal>add-source</goal>
+                                    <goal>compile</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>scala-test-compile</id>
+                                <phase>test-compile</phase>
+                                <goals>
+                                    <goal>testCompile</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-clean-plugin</artifactId>
+                        <version>3.1.0</version>
+                        <configuration>
+                            <excludeDefaultDirectories>true</excludeDefaultDirectories>
+                            <filesets>
+                                <fileset>
+                                    <directory>target</directory>
+                                    <followSymlinks>false</followSymlinks>
+                                    <useDefaultExcludes>true</useDefaultExcludes>
+                                    <excludes>
+                                        <exclude>openjdk-17.0.2_linux-x64_bin.tar.gz</exclude>
+                                    </excludes>
+                                </fileset>
+                            </filesets>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-compiler-plugin</artifactId>
+                        <version>3.8.1</version>
+                        <configuration>
+                            <release>17</release>
+                            <source>17</source>
+                            <target>17</target>
+                            <forceJavacCompilerUse>true</forceJavacCompilerUse>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <phase>compile</phase>
+                                <goals>
+                                    <goal>compile</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <version>3.0.0-M4</version>
+                        <configuration>
+                            <testFailureIgnore>true</testFailureIgnore>
+                            <forkCount>3</forkCount>
+                            <reuseForks>true</reuseForks>
+                            <argLine>@{jacocoArgLine} --enable-preview</argLine>
+                            <excludes>
+                                <exclude>**/*Test.java</exclude>
+                                <exclude>**/*TestSuite2.java</exclude>
+                                <exclude>**/StreamPipelineBase.java</exclude>
+                                <exclude>**/StreamPipelineBiggerFileTest.java</exclude>
+                            </excludes>
+                            <includes>
+                                <include>**/CommonsTestSuite.java</include>
+                                <include>**/PipelineExecutorsTestSuite.java</include>
+                                <include>**/StreamPipelineTestSuite.java</include>
+                            </includes>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-assembly-plugin</artifactId>
+                        <version>2.6</version>
+                        <configuration>
+                            <descriptors>
+                                <descriptor>assembly/assembly.xml</descriptor>
+                            </descriptors>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>distro-assembly</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>single</goal>
+                                </goals>
+                                <configuration>
+                                    <skipAssembly>${skip.assemblyxml}</skipAssembly>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <artifactId>maven-resources-plugin</artifactId>
+                        <version>3.1.0</version>
+                        <executions>
+                            <execution>
+                                <id>copy-resources-dockermdccontainer</id>
+                                <phase>validate</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>${session.executionRootDirectory}/dockermdccontainer</outputDirectory>
+                                    <resources>
+                                        <resource>
+                                            <directory>${session.executionRootDirectory}/target</directory>
+                                            <includes>
+                                                <include>MassiveDataCruncher-${project.version}-jdk17.tar.gz</include>
+                                            </includes>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>copy-resources-dockermdctss</id>
+                                <phase>validate</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>${session.executionRootDirectory}/dockermdctss</outputDirectory>
+                                    <resources>
+                                        <resource>
+                                            <directory>${session.executionRootDirectory}/target</directory>
+                                            <includes>
+                                                <include>MassiveDataCruncher-${project.version}-jdk17.tar.gz</include>
+                                            </includes>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>copy-resources-dockermdcts</id>
+                                <phase>validate</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>${session.executionRootDirectory}/dockermdcts</outputDirectory>
+                                    <resources>
+                                        <resource>
+                                            <directory>${session.executionRootDirectory}/target</directory>
+                                            <includes>
+                                                <include>MassiveDataCruncher-${project.version}-jdk17.tar.gz</include>
+                                            </includes>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>copy-resources-dockermdcstandalone</id>
+                                <phase>validate</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>${session.executionRootDirectory}/dockermdcstandalone</outputDirectory>
+                                    <resources>
+                                        <resource>
+                                            <directory>${session.executionRootDirectory}/target</directory>
+                                            <includes>
+                                                <include>MassiveDataCruncher-${project.version}-jdk17.tar.gz</include>
+                                            </includes>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+                <pluginManagement>
+                    <plugins>
+                        <plugin>
+                            <groupId>org.sonarsource.scanner.maven</groupId>
+                            <artifactId>sonar-maven-plugin</artifactId>
+                            <version>3.4.0.905</version>
+                        </plugin>
+                    </plugins>
+                </pluginManagement>
+            </build>
             <modules>
                 <module>taskexecutor</module>
                 <module>taskscheduler</module>
@@ -689,7 +692,7 @@
                                                 </mode> <!-- Read/write/execute for owner, read/execute for group/other -->
                                             </permission>
                                             <permission>
-                                                <file>/usr/local/java/jdk-15.0.2/bin/*</file>
+                                                <file>/usr/local/java/jdk-17.0.2/bin/*</file>
                                                 <mode>777
                                                 </mode> <!-- Read/write/execute for owner, read/execute for group/other -->
                                             </permission>
@@ -775,7 +778,7 @@
                                                 </mode> <!-- Read/write/execute for owner, read/execute for group/other -->
                                             </permission>
                                             <permission>
-                                                <file>/usr/local/java/jdk-15.0.2/bin/*</file>
+                                                <file>/usr/local/java/jdk-17.0.2/bin/*</file>
                                                 <mode>777
                                                 </mode> <!-- Read/write/execute for owner, read/execute for group/other -->
                                             </permission>
@@ -799,41 +802,6 @@
                                 </configuration>
                             </execution>
                         </executions>
-
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-        <profile>
-            <id>mdctaskschedulerstream</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>com.spotify</groupId>
-                        <artifactId>docker-maven-plugin</artifactId>
-                        <version>1.2.2</version>
-                        <configuration>
-                            <imageName>arunsrajan/mdctaskschedulerstream</imageName>
-                            <baseImage>openjdk:15.0.2-jdk-oraclelinux7</baseImage>
-                            <dockerDirectory>dockermdctss</dockerDirectory>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-        <profile>
-            <id>mdctaskscheduler</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>com.spotify</groupId>
-                        <artifactId>docker-maven-plugin</artifactId>
-                        <version>1.2.2</version>
-                        <configuration>
-                            <imageName>arunsrajan/mdctaskscheduler</imageName>
-                            <baseImage>openjdk:15.0.2-jdk-oraclelinux7</baseImage>
-                            <dockerDirectory>dockermdcts</dockerDirectory>
-                        </configuration>
                     </plugin>
                 </plugins>
             </build>
