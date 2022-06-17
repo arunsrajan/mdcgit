@@ -26,12 +26,12 @@
 		<dependency>
 			<groupId>com.github.mdc</groupId>
 			<artifactId>taskexecutor</artifactId>
-			<version>1.0</version>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.github.mdc</groupId>
 			<artifactId>common</artifactId>
-			<version>1.0</version>
+			<version>${project.version}</version>
 		</dependency>
 	</dependencies>
 	<build>
