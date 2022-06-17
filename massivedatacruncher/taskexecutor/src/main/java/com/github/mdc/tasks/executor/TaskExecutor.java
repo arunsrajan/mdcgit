@@ -127,8 +127,9 @@ public class TaskExecutor implements Runnable {
 					hbtss.setTimetakenseconds(mdste.getHbtss().getTimetakenseconds());
 					hbtss.pingOnce(task.stageid, task.taskid, task.hostport, Task.TaskStatus.COMPLETED, mdste.getHbtss().getTimetakenseconds(), null);
 				}
-			} else if (deserobj instanceof TasksGraphExecutor stagesgraph) {
-				var key = stagesgraph.getTasks().get(0).jobid;
+			} else if (deserobj instanceof TasksGraphExecutor stagesgraph) {				
+				int numoftasks = stagesgraph.getTasks().size();
+				var key = stagesgraph.getTasks().get(numoftasks-1).jobid+stagesgraph.getTasks().get(numoftasks-1).stageid+stagesgraph.getTasks().get(numoftasks-1).taskid;
 				var taskexecutor = jobstageexecutormap.get(key);
 				var mdste = (StreamPipelineTaskExecutorJGroups) taskexecutor;
 				if (taskexecutor == null) {
@@ -136,16 +137,19 @@ public class TaskExecutor implements Runnable {
 							port, inmemorycache);
 					mdste.setExecutor(es);
 					for(Task task:stagesgraph.getTasks()) {
-						jobstageexecutormap.put(key+task.stageid+task.taskid, mdste);
+						jobstageexecutormap.put(task.jobid+task.stageid+task.taskid, mdste);
 					}
 					taskqueue.offer(mdste);
 				}
 			} else if (deserobj instanceof CloseStagesGraphExecutor closestagesgraph) {
-				var taskexecutor = jobstageexecutormap.get(closestagesgraph.getJobid());
+				var key = closestagesgraph.getTasks().get(0).jobid + closestagesgraph.getTasks().get(0).stageid + closestagesgraph.getTasks().get(0).taskid;
+				var taskexecutor = jobstageexecutormap.get(key);
 				var mdste = (StreamPipelineTaskExecutorJGroups) taskexecutor;
 				if (taskexecutor != null) {
 					mdste.channel.close();
-					jobstageexecutormap.remove(closestagesgraph.getJobid());
+					for(Task task:closestagesgraph.getTasks()) {
+						jobstageexecutormap.remove(task.jobid+task.stageid+task.taskid);
+					}
 				}
 			} else if (deserobj instanceof FreeResourcesCompletedJob cce) {
 				var jsem = jobidstageidexecutormap.remove(cce.jobid);
@@ -193,14 +197,10 @@ public class TaskExecutor implements Runnable {
 						Utils.writeObjectByStream(s.getOutputStream(), rdf);
 					}
 				}
-				else if(rdf.mode.equals(MDCConstants.JGROUPS)){
-					if (taskexecutor != null) {
-						try(var is = RemoteDataFetcher
-								.readIntermediatePhaseOutputFromFS(rdf.jobid,
-										mdstde.getIntermediateDataRDF(rdf.taskid));){
-							rdf.data = (byte[]) is.readAllBytes();
-							Utils.writeObjectByStream(s.getOutputStream(), rdf);
-						}
+				else if (rdf.mode.equals(MDCConstants.JGROUPS)) {
+					try (var is = RemoteDataFetcher.readIntermediatePhaseOutputFromFS(rdf.jobid, rdf.taskid);) {
+						rdf.data = (byte[]) is.readAllBytes();
+						Utils.writeObjectByStream(s.getOutputStream(), rdf);
 					}
 				} else {
 					if (taskexecutor != null) {
@@ -242,7 +242,7 @@ public class TaskExecutor implements Runnable {
 								apptaskexecutormap.remove(apptaskid);
 							}
 							try(var hdfs = FileSystem.newInstance(
-									new URI(MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL)),
+									new URI(MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL, MDCConstants.HDFSNAMENODEURL)),
 									configuration)){
 							log.debug("Application Submitted:" + applicationid + "-" + taskid);
 							

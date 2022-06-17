@@ -1036,7 +1036,7 @@ public class StreamPipelineSqlBuilder {
 
 		@Override
 		public Object visitInputRef(RexInputRef inputRef) {
-			if (!Objects.isNull(inputRef) && inputRef instanceof RexInputRef rinrefright) {
+			if (!Objects.isNull(inputRef)) {
 				tablescancolumns.add(inputRef.getName());
 			}
 			return null;

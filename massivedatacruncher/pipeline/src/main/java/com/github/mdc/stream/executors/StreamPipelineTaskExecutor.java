@@ -1104,7 +1104,7 @@ public sealed class StreamPipelineTaskExecutor implements
 	}
 
 	public String getIntermediateDataRDF(String taskid) {
-		return (taskid);
+		return taskid;
 	}
 
 	@Override
@@ -1113,7 +1113,7 @@ public sealed class StreamPipelineTaskExecutor implements
 		var stageTasks = getStagesTask();
 		var stagePartition = jobstage.stageid;
 		var timetakenseconds = 0.0;
-		var hdfsfilepath = MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL);
+		var hdfsfilepath = MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL, MDCConstants.HDFSNAMENODEURL);
 		try (var hdfs = FileSystem.newInstance(new URI(hdfsfilepath), new Configuration());) {
 			this.hdfs = hdfs;
 
@@ -2622,8 +2622,8 @@ public sealed class StreamPipelineTaskExecutor implements
 						Short.parseShort(MDCProperties.get().getProperty(MDCConstants.DFSOUTPUTFILEREPLICATION,
 								MDCConstants.DFSOUTPUTFILEREPLICATION_DEFAULT)));) {
 					int ch = (int) '\n';
-					if (out instanceof List list) {
-						list.parallelStream().forEach(obj -> {
+					if (out instanceof List) {
+						out.parallelStream().forEach(obj -> {
 							try {
 								if (obj instanceof List objs) {
 									objs.stream().forEach(object -> {

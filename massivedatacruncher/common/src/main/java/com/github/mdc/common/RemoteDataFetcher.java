@@ -39,16 +39,16 @@ public class RemoteDataFetcher {
 			String jobid, String filename) throws RemoteDataFetcherException {
 		log.debug("Entered RemoteDataFetcher.writerIntermediatePhaseOutputToDFS");
 		var configuration = new Configuration();
-		configuration.set(MDCConstants.HDFS_DEFAULTFS, MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL));
+		configuration.set(MDCConstants.HDFS_DEFAULTFS, MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL, MDCConstants.HDFSNAMENODEURL_DEFAULT));
 		configuration.set(MDCConstants.HDFS_IMPL, org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
 		configuration.set(MDCConstants.HDFS_FILE_IMPL, org.apache.hadoop.fs.LocalFileSystem.class.getName());
-		var jobpath = MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL) + MDCConstants.BACKWARD_SLASH
+		var jobpath = MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL, MDCConstants.HDFSNAMENODEURL_DEFAULT) + MDCConstants.BACKWARD_SLASH
 				+ FileSystemSupport.MDS + MDCConstants.BACKWARD_SLASH + jobid;
 		var filepath = jobpath + MDCConstants.BACKWARD_SLASH + filename;
 		var jobpathurl = new Path(jobpath);
 		// Create folders if not already created.
 		var filepathurl = new Path(filepath);
-		try (var hdfs = FileSystem.newInstance(new URI(MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL)),
+		try (var hdfs = FileSystem.newInstance(new URI(MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL, MDCConstants.HDFSNAMENODEURL_DEFAULT)),
 				configuration);) {
 			if (!hdfs.exists(jobpathurl)) {
 				hdfs.mkdirs(jobpathurl);
@@ -136,15 +136,15 @@ public class RemoteDataFetcher {
 			String dirtowrite,String filename) throws RemoteDataFetcherException {
 		log.debug("Entered RemoteDataFetcher.writerYarnAppmasterServiceDataToDFS");
 		var configuration = new Configuration();
-		configuration.set(MDCConstants.HDFS_DEFAULTFS, MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL));
+		configuration.set(MDCConstants.HDFS_DEFAULTFS, MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL, MDCConstants.HDFSNAMENODEURL_DEFAULT));
 		configuration.set(MDCConstants.HDFS_IMPL, org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
 		configuration.set(MDCConstants.HDFS_FILE_IMPL, org.apache.hadoop.fs.LocalFileSystem.class.getName());
 		
-		var jobpath = MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL)+MDCConstants.BACKWARD_SLASH+FileSystemSupport.MDS+MDCConstants.BACKWARD_SLASH+dirtowrite;
+		var jobpath = MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL, MDCConstants.HDFSNAMENODEURL_DEFAULT)+MDCConstants.BACKWARD_SLASH+FileSystemSupport.MDS+MDCConstants.BACKWARD_SLASH+dirtowrite;
 		var filepath = jobpath+MDCConstants.BACKWARD_SLASH+filename;
 		var jobpathurl = new Path(jobpath);
 		var filepathurl = new Path(filepath);
-		try (var hdfs = FileSystem.newInstance(new URI(MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL)), configuration);) {
+		try (var hdfs = FileSystem.newInstance(new URI(MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL, MDCConstants.HDFSNAMENODEURL_DEFAULT)), configuration);) {
 			if (!hdfs.exists(jobpathurl)) {
 				hdfs.mkdirs(jobpathurl);
 			}
@@ -201,7 +201,7 @@ public class RemoteDataFetcher {
 		var configuration = new Configuration();
 		var path = MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL) + MDCConstants.BACKWARD_SLASH + FileSystemSupport.MDS
 				+ MDCConstants.BACKWARD_SLASH + jobid + MDCConstants.BACKWARD_SLASH + filename;
-		try (var hdfs = FileSystem.newInstance(new URI(MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL)),
+		try (var hdfs = FileSystem.newInstance(new URI(MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL, MDCConstants.HDFSNAMENODEURL_DEFAULT)),
 				configuration);
 				var fs = (DistributedFileSystem) hdfs;
 				var dis = fs.getClient().open(new Path(path).toUri().getPath());
@@ -279,7 +279,7 @@ public class RemoteDataFetcher {
 			String jobid) throws RemoteDataFetcherException {
 		log.debug("Entered RemoteDataFetcher.deleteIntermediatePhaseOutputFromDFS");
 		var configuration = new Configuration();
-		try (var hdfs = FileSystem.newInstance(new URI(MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL)), configuration)){			
+		try (var hdfs = FileSystem.newInstance(new URI(MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL, MDCConstants.HDFSNAMENODEURL_DEFAULT)), configuration)){			
 			hdfs.delete(new Path(MDCConstants.BACKWARD_SLASH+FileSystemSupport.MDS+MDCConstants.BACKWARD_SLASH+jobid), true);
 		}
 		catch (Exception ioe) {

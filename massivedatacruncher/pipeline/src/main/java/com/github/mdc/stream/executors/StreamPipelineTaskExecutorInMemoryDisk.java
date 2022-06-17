@@ -124,7 +124,7 @@ public final class StreamPipelineTaskExecutorInMemoryDisk extends StreamPipeline
 	public StreamPipelineTaskExecutorInMemoryDisk call() {
 		log.debug("Entered MassiveDataStreamTaskExecutorInMemory.call");
 		var stageTasks = getStagesTask();
-		var hdfsfilepath = MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL);
+		var hdfsfilepath = MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL, MDCConstants.HDFSNAMENODEURL);
 		var configuration = new Configuration();
 		var timetakenseconds = 0.0;
 		try(var hdfs = FileSystem.newInstance(new URI(hdfsfilepath), configuration);) {
