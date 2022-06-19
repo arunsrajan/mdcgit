@@ -72,6 +72,7 @@ import com.github.mdc.stream.functions.Sum;
 import com.github.mdc.stream.functions.SummaryStatistics;
 import com.github.mdc.stream.functions.UnionFunction;
 import com.github.mdc.stream.utils.FileBlocksPartitionerHDFS;
+import com.github.mdc.stream.utils.MDCIgniteServer;
 
 public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestCommon {
 	ConcurrentMap<String, ByteArrayOutputStream> resultstream = new ConcurrentHashMap<>();
@@ -81,26 +82,9 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 	@BeforeClass
 	public static void launchNodes() throws Exception {
 		Utils.loadLog4JSystemPropertiesClassPath("mdctest.properties");
-		Ignition.setClientMode(false);
-		var cfg = new IgniteConfiguration();
-		cfg.setIgniteInstanceName("Server");
-		// The node will be started as a server node.
-		cfg.setClientMode(false);
-		cfg.setDeploymentMode(DeploymentMode.CONTINUOUS);
-		// Classes of custom Java logic will be transferred over the wire from
-		// this app.
-		cfg.setPeerClassLoadingEnabled(true);
-		// Setting up an IP Finder to ensure the client can locate the servers.
-		var ipFinder = new TcpDiscoveryMulticastIpFinder();
-		ipFinder.setMulticastGroup(MDCProperties.get().getProperty(MDCConstants.IGNITEMULTICASTGROUP));
-		cfg.setDiscoverySpi(new TcpDiscoverySpi().setIpFinder(ipFinder));
-		var cc = new CacheConfiguration<Object, byte[]>(MDCConstants.MDCCACHE);
-		cc.setCacheMode(CacheMode.PARTITIONED);
-		cc.setAtomicityMode(CacheAtomicityMode.ATOMIC);
-		cc.setBackups(Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.IGNITEBACKUP)));
-		cfg.setCacheConfiguration(cc);
+		
 		// Starting the node
-		igniteserver = Ignition.start(cfg);
+		igniteserver = MDCIgniteServer.instance();
 		ignitecache = igniteserver.getOrCreateCache(MDCConstants.MDCCACHE);
 	}
 
@@ -2458,10 +2442,4 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 	}
 
 	// JSON Test cases End
-	@AfterClass
-	public static void shutdownNodes() throws Exception {
-		if (!Objects.isNull(igniteserver)) {
-			igniteserver.close();
-		}
-	}
 }

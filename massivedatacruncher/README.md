@@ -5,8 +5,16 @@ The MDC can be build using the following maven goals
 -f pomjar.xml -Pmdc exec:exec antrun:run@prepare compile jib:dockerBuild@buildstandalone jib:dockerBuild@buildcontainer
 
 In order to skip tests the following needs to be set in MAVEN_OPTS
-
+------------------------------------------------------------------
 -Dmaven.test.skip.exec=true
+
+To run tests
+------------
+mvn -Dmaven.antrun.skip=true  -f pom.xml -Pmodules clean test
+
+To run specific test cases to specific module
+----------------------------------------------------------
+mvn -Dmaven.antrun.skip=true -pl pipeline -Dtest="FileBlocksPartitionerTest"  -f pom.xml -Pmodules clean test
 
 In order to build docker images please execute the following maven goals
 ------------------------------------------------------------------------
