@@ -13,25 +13,18 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import org.apache.ignite.IgniteCache;
-import org.apache.ignite.Ignition;
-import org.apache.ignite.cache.CacheAtomicityMode;
-import org.apache.ignite.cache.CacheMode;
-import org.apache.ignite.configuration.CacheConfiguration;
-import org.apache.ignite.configuration.DeploymentMode;
-import org.apache.ignite.configuration.IgniteConfiguration;
-import org.apache.ignite.spi.discovery.tcp.TcpDiscoverySpi;
-import org.apache.ignite.spi.discovery.tcp.ipfinder.multicast.TcpDiscoveryMulticastIpFinder;
 import org.xerial.snappy.SnappyOutputStream;
 
 import com.github.mdc.common.Block;
 import com.github.mdc.common.BlocksLocation;
 import com.github.mdc.common.Job;
 import com.github.mdc.common.MDCConstants;
+import com.github.mdc.common.MDCIgniteClient;
 import com.github.mdc.common.PipelineConfig;
 import com.github.mdc.common.Stage;
 import com.github.mdc.stream.AbstractPipeline;
-import com.github.mdc.stream.PipelineException;
 import com.github.mdc.stream.IgnitePipeline;
+import com.github.mdc.stream.PipelineException;
 
 public class FileBlocksPartitioner {
 	
@@ -42,24 +35,8 @@ public class FileBlocksPartitioner {
 		pc = pipelineconfig;
 		this.job = job;
 		var roots = mdsroots.iterator();
-		var cfg = new IgniteConfiguration();
-		// The node will be started as a client node.
-		cfg.setClientMode(true);
-		cfg.setDeploymentMode(DeploymentMode.CONTINUOUS);
-		// Classes of custom Java logic will be transferred over the wire from
-		// this app.
-		cfg.setPeerClassLoadingEnabled(true);
-		// Setting up an IP Finder to ensure the client can locate the servers.
-		var ipFinder = new TcpDiscoveryMulticastIpFinder();
-		ipFinder.setMulticastGroup(pipelineconfig.getIgnitemulticastgroup());
-		cfg.setDiscoverySpi(new TcpDiscoverySpi().setIpFinder(ipFinder));
-		var cc = new CacheConfiguration(MDCConstants.MDCCACHE);
-		cc.setCacheMode(CacheMode.PARTITIONED);
-		cc.setAtomicityMode(CacheAtomicityMode.ATOMIC);
-		cc.setBackups(Integer.parseInt(pipelineconfig.getIgnitebackup()));
-		cfg.setCacheConfiguration(cc);
-		// Starting the node
-		var ignite = Ignition.start(cfg);
+		// Getting the ignite client
+		var ignite = MDCIgniteClient.instance(pc);
 		IgniteCache<Object, byte[]> ignitecache = ignite.cache(MDCConstants.MDCCACHE);
 		job.ignite = ignite;
 		var computeservers = job.ignite.cluster().forServers();

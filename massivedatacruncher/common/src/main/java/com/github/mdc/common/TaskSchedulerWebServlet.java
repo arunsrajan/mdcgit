@@ -166,9 +166,9 @@ public class TaskSchedulerWebServlet extends HttpServlet {
 	public String getColor(int i) {
 		{
 			if (i % 2 == 0) {
-				return "#6E5CDB";
+				return MDCProperties.get().getProperty(MDCConstants.COLOR_PICKER_PRIMARY, MDCConstants.COLOR_PICKER_PRIMARY_DEFAULT);
 			} else {
-				return "#ddddddd";
+				return MDCProperties.get().getProperty(MDCConstants.COLOR_PICKER_ALTERNATE, MDCConstants.COLOR_PICKER_ALTERNATE_DEFAULT);
 			}
 		}
 	}
