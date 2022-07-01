@@ -338,8 +338,22 @@
         <dependency>
             <groupId>org.scala-lang</groupId>
             <artifactId>scala-library</artifactId>
-            <version>2.12.16</version>
+            <version>2.11.12</version>
         </dependency>
+
+		<dependency>
+			<groupId>sh.den</groupId>
+			<artifactId>scala-offheap_2.11</artifactId>
+			<version>0.1</version>
+		</dependency>
+
+        <dependency>
+            <groupId>sh.den</groupId>
+            <artifactId>scala-offheap-macros_2.11</artifactId>
+            <version>0.1</version>
+        </dependency>
+
+
 
 
     </dependencies>
@@ -424,9 +438,18 @@
                         <artifactId>scala-maven-plugin</artifactId>
                         <version>4.6.2</version>
                         <configuration>
-                            <scalaCompatVersion>2.12.16</scalaCompatVersion>
-                            <scalaVersion>2.12.16</scalaVersion>
+                            <scalaCompatVersion>2.11.12</scalaCompatVersion>
+                            <scalaVersion>2.11.12</scalaVersion>
                             <includes>**/*.scala</includes>
+                            <source>1.8</source>
+                            <target>1.8</target>
+                            <compilerPlugins>
+                                <compilerPlugin>
+                                    <groupId>org.scalamacros</groupId>
+                                    <artifactId>paradise_2.11.12</artifactId>
+                                    <version>2.1.1</version>
+                                </compilerPlugin>
+                            </compilerPlugins>
                         </configuration>
                         <executions>
                             <execution>
