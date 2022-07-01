@@ -465,9 +465,6 @@ public class StreamJobScheduler {
 			if (!Objects.isNull(job.igcache)) {
 				job.igcache.close();
 			}
-			if (!Objects.isNull(job.ignite)) {
-				job.ignite.close();
-			}
 			if ((Boolean.FALSE.equals(ismesos) && Boolean.FALSE.equals(isyarn) && Boolean.FALSE.equals(islocal)
 					|| Boolean.TRUE.equals(isjgroups)) && !isignite) {
 				if(!pipelineconfig.getUseglobaltaskexecutors()) {

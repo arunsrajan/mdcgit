@@ -55,6 +55,7 @@ import com.github.mdc.common.Job;
 import com.github.mdc.common.LaunchContainers;
 import com.github.mdc.common.LoadJar;
 import com.github.mdc.common.MDCConstants;
+import com.github.mdc.common.MDCIgniteClient;
 import com.github.mdc.common.MDCNodesResources;
 import com.github.mdc.common.PipelineConfig;
 import com.github.mdc.common.PipelineConstants;
@@ -238,25 +239,8 @@ public class FileBlocksPartitionerHDFS {
 	 */
 	@SuppressWarnings("rawtypes")
 	protected void sendDataToIgniteServer(List<BlocksLocation> totalblockslocation, String hdfspath) throws Exception {
-		var cfg = new IgniteConfiguration();
-
-		// The node will be started as a client node.
-		cfg.setClientMode(true);
-		cfg.setDeploymentMode(DeploymentMode.CONTINUOUS);
-		// Classes of custom Java logic will be transferred over the wire from
-		// this app.
-		cfg.setPeerClassLoadingEnabled(true);
-		// Setting up an IP Finder to ensure the client can locate the servers.
-		var ipFinder = new TcpDiscoveryMulticastIpFinder();
-		ipFinder.setAddresses(Arrays.asList(pipelineconfig.getIgnitehp()));
-		cfg.setDiscoverySpi(new TcpDiscoverySpi().setIpFinder(ipFinder));
-		var cc = new CacheConfiguration(MDCConstants.MDCCACHE);
-		cc.setCacheMode(CacheMode.PARTITIONED);
-		cc.setAtomicityMode(CacheAtomicityMode.ATOMIC);
-		cc.setBackups(Integer.parseInt(pipelineconfig.getIgnitebackup()));
-		cfg.setCacheConfiguration(cc);
 		// Starting the node
-		var ignite = Ignition.start(cfg);
+		var ignite = MDCIgniteClient.instance(pipelineconfig);
 		IgniteCache<Object, byte[]> ignitecache = ignite.getOrCreateCache(MDCConstants.MDCCACHE);
 		try (var hdfs = FileSystem.newInstance(new URI(hdfspath), new Configuration());) {
 			for (var bsl : totalblockslocation) {
