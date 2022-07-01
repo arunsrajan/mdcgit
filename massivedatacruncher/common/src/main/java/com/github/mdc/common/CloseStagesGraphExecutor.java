@@ -1,5 +1,7 @@
 package com.github.mdc.common;
 
+import java.util.List;
+
 /**
  * 
  * @author Arun
@@ -8,18 +10,18 @@ package com.github.mdc.common;
  */
 public class CloseStagesGraphExecutor {
 	
-	public CloseStagesGraphExecutor(String jobid) {
-		this.jobid = jobid;
+	public CloseStagesGraphExecutor(List<Task> tasks) {
+		this.tasks = tasks;
 	}
 	
-	private String jobid;
+	private List<Task> tasks;
 
-	public String getJobid() {
-		return jobid;
+	public List<Task> getTasks() {
+		return tasks;
 	}
 
-	public void setJobid(String jobid) {
-		this.jobid = jobid;
+	public void setTasks(List<Task> tasks) {
+		this.tasks = tasks;
 	}
 	
 }

@@ -1,12 +1,20 @@
 The MDC can be build using the following maven goals
 
--Dmaven.antrun.skip=true -Pmodules clean install package assembly:assembly
+-Dmaven.antrun.skip=true -Dmaven.test.skip=true -Pmodules clean install package assembly:assembly
 
 -f pomjar.xml -Pmdc exec:exec antrun:run@prepare compile jib:dockerBuild@buildstandalone jib:dockerBuild@buildcontainer
 
 In order to skip tests the following needs to be set in MAVEN_OPTS
-
+------------------------------------------------------------------
 -Dmaven.test.skip.exec=true
+
+To run tests
+------------
+mvn -Dmaven.antrun.skip=true  -f pom.xml -Pmodules clean test
+
+To run specific test cases to specific module
+----------------------------------------------------------
+mvn -Dmaven.antrun.skip=true -pl pipeline -Dtest="FileBlocksPartitionerTest"  -f pom.xml -Pmodules clean test
 
 In order to build docker images please execute the following maven goals
 ------------------------------------------------------------------------
@@ -344,7 +352,6 @@ tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.examples.S
 
 tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.examples.StreamReduceRightOuterJoinInMemoryDiskDivided hdfs://127.0.0.1:9000 /airline1989 /carriers /examplesmdc 1024 3 128
 
-
 Stream Reduce Transformations
 -----------------------------
 tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.transformation.examples.StreamReduceSample hdfs://127.0.0.1:9000 /airline1989 /carriers /examplesmdc
@@ -360,6 +367,20 @@ hdfs://127.0.0.1:9000 /airline1989 /1987 /examplesmdc
 tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.transformation.examples.StreamReduceIntersection hdfs://127.0.0.1:9000 /airline1989 /1987 /examplesmdc
 
 tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.transformation.examples.StreamReduceCachedIgnite hdfs://127.0.0.1:9000 /airline1989 /examplesmdc
+
+tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.transformation.examples.StreamReducePairJoin hdfs://127.0.0.1:9000 /airline1989 /carriers /examplesmdc
+
+tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.transformation.examples.StreamReducePairLeftJoin hdfs://127.0.0.1:9000 /airline1989 /carriers /examplesmdc
+
+tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.transformation.examples.StreamReducePairRightJoin hdfs://127.0.0.1:9000 /airline1989 /carriers /examplesmdc
+
+tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.transformation.examples.StreamReducePairJoinCoalesceReduction hdfs://127.0.0.1:9000 /airline1989 /carriers /examplesmdc
+
+tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.transformation.examples.StreamReducePairLeftJoinCoalesceReduction hdfs://127.0.0.1:9000 /airline1989 /carriers /examplesmdc
+
+tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.transformation.examples.StreamReducePairRightJoinCoalesceReduction hdfs://127.0.0.1:9000 /airline1989 /carriers /examplesmdc
+
+tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.transformation.examples.StreamReducePairMultipleJoinsCoalesceReduction hdfs://127.0.0.1:9000 /airline1989 /carriers /examplesmdc
 
 Stream Reduce SQL
 -----------------
@@ -446,3 +467,8 @@ Running Job In Linux
 ./tasksubmitter.sh -jar ../modules/examples.jar -args  'com.github.mdc.mr.examples.join.MrJobArrivalDelayNormal /airline1989 /carriers /examplesmdc 128 3'
 
 ./tasksubmitterstream.sh ../modules/examples.jar com.github.mdc.stream.examples.StreamReduceJGroups  hdfs://namenode:9000 /airlines1989 /carriers /examplesmdc
+
+
+Sonar
+------
+mvn org.sonarsource.scanner.maven:sonar-maven-plugin:3.4.0.905:sonar -Dsonar.login=38757a39a941623a4ef3b3cfb78bbe09181dfb5a -Dsonar.host.url=http://localhost:8082 -Dsonar.scm.disabled=true -Dsonar.language=Java,Scala

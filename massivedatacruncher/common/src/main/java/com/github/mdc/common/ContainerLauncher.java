@@ -30,6 +30,8 @@ public class ContainerLauncher {
 			argumentsForSpawn.add("-XX:+HeapDumpOnOutOfMemoryError");
 			argumentsForSpawn.add("--enable-preview");
 			argumentsForSpawn.add("--add-opens=java.base/java.nio=ALL-UNNAMED");
+			argumentsForSpawn.add("--add-opens=java.base/java.util=ALL-UNNAMED");
+			argumentsForSpawn.add("--add-opens=java.base/java.lang.invoke=ALL-UNNAMED");
 			argumentsForSpawn.add("-Xrunjdwp:server=y,transport=dt_socket,address="+(Integer.parseInt(port)+100)+",suspend=n");
 			argumentsForSpawn.add("-Djava.net.preferIPv4Stack=true");
 			argumentsForSpawn.add(cr.getGctype());

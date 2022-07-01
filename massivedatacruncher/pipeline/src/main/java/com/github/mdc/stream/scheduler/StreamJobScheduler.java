@@ -140,7 +140,7 @@ public class StreamJobScheduler {
 	String hdfsfilepath = null;
 	FileSystem hdfs = null;
 	public StreamJobScheduler() {
-		hdfsfilepath = MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL);
+		hdfsfilepath = MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL, MDCConstants.HDFSNAMENODEURL_DEFAULT);
 	}
 
 	ExecutorService jobping = Executors.newWorkStealingPool();
@@ -465,9 +465,6 @@ public class StreamJobScheduler {
 			if (!Objects.isNull(job.igcache)) {
 				job.igcache.close();
 			}
-			if (!Objects.isNull(job.ignite)) {
-				job.ignite.close();
-			}
 			if ((Boolean.FALSE.equals(ismesos) && Boolean.FALSE.equals(isyarn) && Boolean.FALSE.equals(islocal)
 					|| Boolean.TRUE.equals(isjgroups)) && !isignite) {
 				if(!pipelineconfig.getUseglobaltaskexecutors()) {
@@ -644,7 +641,7 @@ public class StreamJobScheduler {
 		for (var taskgraphexecutor : tasksgraphexecutor) {
 			if (!taskgraphexecutor.getTasks().isEmpty()) {
 				var hp = taskgraphexecutor.getHostport();
-				Utils.writeObject(hp, new CloseStagesGraphExecutor(taskgraphexecutor.getTasks().get(0).jobid));
+				Utils.writeObject(hp, new CloseStagesGraphExecutor(taskgraphexecutor.getTasks()));
 			}
 		}
 	}

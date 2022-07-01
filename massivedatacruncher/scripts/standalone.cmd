@@ -36,7 +36,7 @@ IF EXIST %MDC_JAVA_HOME%\bin\java.exe (
 
 "%MDC_JAVA_HOME%\bin\java" -version
 
-"%MDC_JAVA_HOME%\bin\java" --enable-preview -Xms2G -Xmx2G %GCCONFIG% %DEBUGCONFIG% %CLASSPATH% -Djava.net.preferIPv4Stack=true com.github.mdc.tasks.scheduler.executor.standalone.EmbeddedSchedulersNodeLauncher
+"%MDC_JAVA_HOME%\bin\java" --enable-preview --add-opens java.base/java.util=ALL-UNNAMED --add-opens java.base/java.lang.invoke=ALL-UNNAMED -Xms2G -Xmx2G %GCCONFIG% %DEBUGCONFIG% %CLASSPATH% -Djava.net.preferIPv4Stack=true com.github.mdc.tasks.scheduler.executor.standalone.EmbeddedSchedulersNodeLauncher
 
 ) ELSE (
  @echo on

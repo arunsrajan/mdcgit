@@ -36,7 +36,7 @@ IF EXIST %MDC_JAVA_HOME%\bin\java.exe (
 
 "%MDC_JAVA_HOME%\bin\java" -version
 
-"%MDC_JAVA_HOME%\bin\java" --enable-preview -Xms128m -Xmx128m %GCCONFIG% %DEBUGCONFIG% %CLASSPATH% -Djava.net.preferIPv4Stack=true com.github.mdc.stream.scheduler.StreamPipelineTaskSchedulerRunner
+"%MDC_JAVA_HOME%\bin\java" --add-opens java.base/java.util=ALL-UNNAMED --enable-preview -Xms128m -Xmx128m %GCCONFIG% %DEBUGCONFIG% %CLASSPATH% -Djava.net.preferIPv4Stack=true com.github.mdc.stream.scheduler.StreamPipelineTaskSchedulerRunner
 
 ) ELSE (
  @echo on

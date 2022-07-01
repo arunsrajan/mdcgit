@@ -390,6 +390,7 @@ public class MDCConstants {
 	public static final String DFSOUTPUTFILEREPLICATION = "dfs.replication";
 	public static final String DFSOUTPUTFILEREPLICATION_DEFAULT = "1";
 	public static final String HDFSNAMENODEURL = "hdfs.namenode.url";
+	public static final String HDFSNAMENODEURL_DEFAULT = "hdfs://localhost:9000";
 	
 	
 	public static final String BR = "<BR/>";
@@ -413,5 +414,9 @@ public class MDCConstants {
 	public static final String IMPLICIT_CONTAINER_ALLOC_MEMORY_SIZE = "containers.alloc.implicit.memory.size";
 	public static final String IMPLICIT_CONTAINER_ALLOC_MEMORY_SIZE_DEFAULT = "1";
 	
+	public static final String COLOR_PICKER_PRIMARY = "ui.color.primary";
+	public static final String COLOR_PICKER_PRIMARY_DEFAULT = "#6E5CDB";
+	public static final String COLOR_PICKER_ALTERNATE = "ui.color.alternate";
+	public static final String COLOR_PICKER_ALTERNATE_DEFAULT = "#ddddddd";
 	
 }

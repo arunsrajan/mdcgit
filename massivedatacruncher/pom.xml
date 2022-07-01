@@ -6,18 +6,18 @@
 
     <groupId>com.github.mdc</groupId>
     <artifactId>MassiveDataCruncher</artifactId>
-    <version>1.0</version>
+    <version>1.1</version>
     <packaging>pom</packaging>
 
     <name>MassiveDataCruncher</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.target>15</maven.compiler.target>
-        <maven.compiler.source>15</maven.compiler.source>
         <skip.assemblyxml>true</skip.assemblyxml>
         <ignite.version>2.13.0</ignite.version>
         <calcite.version>1.25.0</calcite.version>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
     </properties>
 
     <dependencies>
@@ -335,444 +335,507 @@
             <version>2.5.0</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.scala-lang</groupId>
+            <artifactId>scala-library</artifactId>
+            <version>2.11.12</version>
+        </dependency>
+
+		<dependency>
+			<groupId>sh.den</groupId>
+			<artifactId>scala-offheap_2.11</artifactId>
+			<version>0.1</version>
+		</dependency>
+
+        <dependency>
+            <groupId>sh.den</groupId>
+            <artifactId>scala-offheap-macros_2.11</artifactId>
+            <version>0.1</version>
+        </dependency>
+
+
+
 
     </dependencies>
-    <build>    
+    <build>
         <plugins>
-        	 <plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-clean-plugin</artifactId>
-				<version>3.1.0</version>
-				<configuration>
-				<excludeDefaultDirectories>true</excludeDefaultDirectories>
-				<filesets>
-				  <fileset>
-				    <directory>target</directory>
-				    <followSymlinks>false</followSymlinks>
-				    <useDefaultExcludes>true</useDefaultExcludes>
-				    <excludes>
-				      <exclude>openjdk-15.0.2_linux-x64_bin.tar.gz</exclude>
-				    </excludes>
-				  </fileset>
-				</filesets>
-				</configuration>
-			</plugin>
-	        <plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-antrun-plugin</artifactId>
-				<version>1.8</version>
-				<executions>
-				    <execution>
-				        <id>prepare</id>
-				        <phase>validate</phase>
-				        <configuration>
-				           <target name="copy files to web project">
-				                <echo message="prepare phase" />			                
-				                <unzip src="target/MassiveDataCruncher-1.0-jdk15.zip" dest="target/unpack/opt/mdc"/>
-				                <mkdir dir="target/unpack/usr/local/java"/>
-				                <gunzip src="target/openjdk-15.0.2_linux-x64_bin.tar.gz" dest="target/"/>
-				                <untar src="target/openjdk-15.0.2_linux-x64_bin.tar" dest="target/unpack/usr/local/java"/>
-				                <copy todir="target/mdcstandalone">
-					                <fileset dir="dockermdcstandalone" includes="entry.sh"/>               
-	                				<fileset dir="dockermdcstandalone" includes="standalone.sh"/> 
-				                </copy>
-				                <copy todir="target/mdccontainer">
-					                <fileset dir="dockermdccontainer" includes="entry.sh"/>               
-	                				<fileset dir="dockermdccontainer" includes="container.sh"/> 
-				                </copy>
-				                <fixcrlf srcdir="target/unpack/usr/local/java" eol="unix" includes="**/*.sh" />
-				                <fixcrlf srcdir="target/unpack/opt/mdc" eol="unix" includes="**/*.sh" />
-				                <fixcrlf srcdir="target/mdcstandalone" eol="unix" includes="*.sh" />
-				                <fixcrlf srcdir="target/mdccontainer" eol="unix" includes="*.sh" />
-				            </target>
-				        </configuration>
-				        <goals>
-				            <goal>run</goal>
-				        </goals>
-				    </execution>
-				</executions>
-			</plugin>
-			<plugin>
-			    <groupId>org.codehaus.mojo</groupId>
-			    <artifactId>exec-maven-plugin</artifactId>
-			    <version>1.2.1</version>
-			    <executions>
-			        <execution>
-			            <goals>
-			                <goal>exec</goal>
-			            </goals>
-			        </execution>
-			    </executions>
-			    <configuration>
-			        <executable>curl</executable>
-			        <arguments>			        	
-			            <argument>https://download.java.net/java/GA/jdk15.0.2/0d1cfde4252546c6931946de8db48ee2/7/GPL/openjdk-15.0.2_linux-x64_bin.tar.gz</argument>
-			            <argument>-z</argument>
-			            <argument>target/openjdk-15.0.2_linux-x64_bin.tar.gz</argument>
-			            <argument>--output</argument>
-			            <argument>target/openjdk-15.0.2_linux-x64_bin.tar.gz</argument>
-			        </arguments>
-			    </configuration>
-			</plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.0</version>
-                <configuration>
-                    <release>15</release>
-                    <compilerArgs>
-                        <arg>--enable-preview</arg>
-                    </compilerArgs>
-                    <forceJavacCompilerUse>true</forceJavacCompilerUse>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.0.0-M4</version>
-                <configuration>
-                    <testFailureIgnore>true</testFailureIgnore>
-                    <forkCount>3</forkCount>
-                    <reuseForks>true</reuseForks>
-                    <argLine>@{jacocoArgLine} --enable-preview</argLine>
-                    <excludes>
-                        <exclude>**/*Test.java</exclude>
-                        <exclude>**/*TestSuite2.java</exclude>
-                        <exclude>**/StreamPipelineBase.java</exclude>
-                        <exclude>**/StreamPipelineBiggerFileTest.java</exclude>
-                    </excludes>
-                    <includes>
-                        <include>**/CommonsTestSuite.java</include>
-                        <include>**/PipelineExecutorsTestSuite.java</include>
-                        <include>**/StreamPipelineTestSuite.java</include>
-                    </includes>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <version>2.4</version><!--$NO-MVN-MAN-VER$ -->
-                <configuration>
-                    <descriptors>
-                        <descriptor>assembly/assembly.xml</descriptor>
-                    </descriptors>
-                </configuration>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.8</version>
                 <executions>
                     <execution>
-                        <id>distro-assembly</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
+                        <id>prepare</id>
+                        <phase>validate</phase>
                         <configuration>
-                            <skipAssembly>${skip.assemblyxml}</skipAssembly>
+                            <target name="copy files to web project">
+                                <echo message="prepare phase"/>
+                                <unzip src="target/MassiveDataCruncher-${project.version}-jdk17.zip"
+                                       dest="target/unpack/opt/mdc"/>
+                                <mkdir dir="target/unpack/usr/local/java"/>
+                                <gunzip src="target/openjdk-17.0.2_linux-x64_bin.tar.gz"
+                                        dest="target/"/>
+                                <untar src="target/openjdk-17.0.2_linux-x64_bin.tar"
+                                       dest="target/unpack/usr/local/java"/>
+                                <copy todir="target/mdcstandalone">
+                                    <fileset dir="dockermdcstandalone" includes="entry.sh"/>
+                                    <fileset dir="dockermdcstandalone"
+                                             includes="standalone.sh"/>
+                                </copy>
+                                <copy todir="target/mdccontainer">
+                                    <fileset dir="dockermdccontainer" includes="entry.sh"/>
+                                    <fileset dir="dockermdccontainer"
+                                             includes="container.sh"/>
+                                </copy>
+                                <fixcrlf srcdir="target/unpack/usr/local/java"
+                                         eol="unix" includes="**/*.sh"/>
+                                <fixcrlf srcdir="target/unpack/opt/mdc" eol="unix"
+                                         includes="**/*.sh"/>
+                                <fixcrlf srcdir="target/mdcstandalone" eol="unix"
+                                         includes="*.sh"/>
+                                <fixcrlf srcdir="target/mdccontainer" eol="unix"
+                                         includes="*.sh"/>
+                            </target>
                         </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
                     </execution>
                 </executions>
             </plugin>
             <plugin>
-                <artifactId>maven-resources-plugin</artifactId>
-                <version>3.1.0</version>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.2.1</version>
                 <executions>
                     <execution>
-                        <id>copy-resources-dockermdccontainer</id>
-                        <phase>validate</phase>
                         <goals>
-                            <goal>copy-resources</goal>
+                            <goal>exec</goal>
                         </goals>
-                        <configuration>
-                            <outputDirectory>${session.executionRootDirectory}/dockermdccontainer</outputDirectory>
-                            <resources>
-                                <resource>
-                                    <directory>${session.executionRootDirectory}/target</directory>
-                                    <includes>
-                                        <include>MassiveDataCruncher-1.0-jdk15.tar.gz</include>
-                                    </includes>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>copy-resources-dockermdctss</id>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${session.executionRootDirectory}/dockermdctss</outputDirectory>
-                            <resources>
-                                <resource>
-                                    <directory>${session.executionRootDirectory}/target</directory>
-                                    <includes>
-                                        <include>MassiveDataCruncher-1.0-jdk15.tar.gz</include>
-                                    </includes>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>copy-resources-dockermdcts</id>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${session.executionRootDirectory}/dockermdcts</outputDirectory>
-                            <resources>
-                                <resource>
-                                    <directory>${session.executionRootDirectory}/target</directory>
-                                    <includes>
-                                        <include>MassiveDataCruncher-1.0-jdk15.tar.gz</include>
-                                    </includes>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>copy-resources-dockermdcstandalone</id>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${session.executionRootDirectory}/dockermdcstandalone</outputDirectory>
-                            <resources>
-                                <resource>
-                                    <directory>${session.executionRootDirectory}/target</directory>
-                                    <includes>
-                                        <include>MassiveDataCruncher-1.0-jdk15.tar.gz</include>
-                                    </includes>
-                                </resource>
-                            </resources>
-                        </configuration>
                     </execution>
                 </executions>
+                <configuration>
+                    <executable>curl</executable>
+                    <arguments>
+                        <argument>
+                            https://download.java.net/java/GA/jdk17.0.2/dfd4a8d0985749f896bed50d7138ee7f/8/GPL/openjdk-17.0.2_linux-x64_bin.tar.gz
+                        </argument>
+                        <argument>target/openjdk-17.0.2_linux-x64_bin.tar.gz</argument>
+                        <argument>--output</argument>
+                        <argument>target/openjdk-17.0.2_linux-x64_bin.tar.gz</argument>
+                    </arguments>
+                </configuration>
             </plugin>
         </plugins>
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>org.sonarsource.scanner.maven</groupId>
-                    <artifactId>sonar-maven-plugin</artifactId>
-                    <version>3.4.0.905</version>
-                </plugin>
-            </plugins>
-        </pluginManagement>
     </build>
     <profiles>
-    	<profile>
-    		<id>modules</id>
-    		<modules>
-		        <module>taskexecutor</module>
-		        <module>taskscheduler</module>
-		        <module>common</module>
-		        <module>pipeline</module>
-		        <module>examples</module>
-		    </modules>
-    	</profile>
+        <profile>
+            <id>modules</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>net.alchim31.maven</groupId>
+                        <artifactId>scala-maven-plugin</artifactId>
+                        <version>4.6.2</version>
+                        <configuration>
+                            <scalaCompatVersion>2.11.12</scalaCompatVersion>
+                            <scalaVersion>2.11.12</scalaVersion>
+                            <includes>**/*.scala</includes>
+                            <source>1.8</source>
+                            <target>1.8</target>
+                            <compilerPlugins>
+                                <compilerPlugin>
+                                    <groupId>org.scalamacros</groupId>
+                                    <artifactId>paradise_2.11.12</artifactId>
+                                    <version>2.1.1</version>
+                                </compilerPlugin>
+                            </compilerPlugins>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>scala-compile</id>
+                                <phase>compile</phase>
+                                <goals>
+                                    <goal>add-source</goal>
+                                    <goal>compile</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>scala-test-compile</id>
+                                <phase>test-compile</phase>
+                                <goals>
+                                    <goal>testCompile</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-clean-plugin</artifactId>
+                        <version>3.1.0</version>
+                        <configuration>
+                            <excludeDefaultDirectories>true</excludeDefaultDirectories>
+                            <filesets>
+                                <fileset>
+                                    <directory>target</directory>
+                                    <followSymlinks>false</followSymlinks>
+                                    <useDefaultExcludes>true</useDefaultExcludes>
+                                    <excludes>
+                                        <exclude>openjdk-17.0.2_linux-x64_bin.tar.gz</exclude>
+                                    </excludes>
+                                </fileset>
+                            </filesets>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-compiler-plugin</artifactId>
+                        <version>3.8.1</version>
+                        <configuration>
+                            <release>17</release>
+                            <source>17</source>
+                            <target>17</target>
+                            <forceJavacCompilerUse>false</forceJavacCompilerUse>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <phase>compile</phase>
+                                <goals>
+                                    <goal>compile</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <version>3.0.0-M4</version>
+                        <configuration>
+                            <testFailureIgnore>true</testFailureIgnore>
+                            <forkCount>3</forkCount>
+                            <reuseForks>true</reuseForks>
+                            <argLine>
+                            	-Xms4g -Xmx4g
+                                --add-opens java.base/java.util=ALL-UNNAMED
+                                --add-opens java.base/java.lang.invoke=ALL-UNNAMED
+                                --add-opens java.base/java.nio=ALL-UNNAMED
+                                --add-opens java.base/java.lang=ALL-UNNAMED
+                                --add-opens java.base/java.util.concurrent.atomic=ALL-UNNAMED
+                                -Djava.net.preferIPv4Stack=true
+                                -Dcom.sun.management.jmxremote=false
+                            </argLine>
+                            <excludes>
+                                <exclude>**/*Test.java</exclude>
+                                <exclude>**/*TestSuite2.java</exclude>
+                                <exclude>**/StreamPipelineBase.java</exclude>
+                                <exclude>**/StreamPipelineBiggerFileTest.java</exclude>
+                            </excludes>
+                            <includes>
+                                <include>**/CommonsTestSuite.java</include>
+                                <include>**/PipelineExecutorsTestSuite.java</include>
+                                <include>**/StreamPipelineTestSuite.java</include>
+                            </includes>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-assembly-plugin</artifactId>
+                        <version>2.6</version>
+                        <configuration>
+                            <descriptors>
+                                <descriptor>assembly/assembly.xml</descriptor>
+                            </descriptors>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>distro-assembly</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>single</goal>
+                                </goals>
+                                <configuration>
+                                    <skipAssembly>${skip.assemblyxml}</skipAssembly>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <artifactId>maven-resources-plugin</artifactId>
+                        <version>3.1.0</version>
+                        <executions>
+                            <execution>
+                                <id>copy-resources-dockermdccontainer</id>
+                                <phase>validate</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>${session.executionRootDirectory}/dockermdccontainer</outputDirectory>
+                                    <resources>
+                                        <resource>
+                                            <directory>${session.executionRootDirectory}/target</directory>
+                                            <includes>
+                                                <include>MassiveDataCruncher-${project.version}-jdk17.tar.gz</include>
+                                            </includes>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>copy-resources-dockermdctss</id>
+                                <phase>validate</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>${session.executionRootDirectory}/dockermdctss</outputDirectory>
+                                    <resources>
+                                        <resource>
+                                            <directory>${session.executionRootDirectory}/target</directory>
+                                            <includes>
+                                                <include>MassiveDataCruncher-${project.version}-jdk17.tar.gz</include>
+                                            </includes>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>copy-resources-dockermdcts</id>
+                                <phase>validate</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>${session.executionRootDirectory}/dockermdcts</outputDirectory>
+                                    <resources>
+                                        <resource>
+                                            <directory>${session.executionRootDirectory}/target</directory>
+                                            <includes>
+                                                <include>MassiveDataCruncher-${project.version}-jdk17.tar.gz</include>
+                                            </includes>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>copy-resources-dockermdcstandalone</id>
+                                <phase>validate</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>${session.executionRootDirectory}/dockermdcstandalone</outputDirectory>
+                                    <resources>
+                                        <resource>
+                                            <directory>${session.executionRootDirectory}/target</directory>
+                                            <includes>
+                                                <include>MassiveDataCruncher-${project.version}-jdk17.tar.gz</include>
+                                            </includes>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+                <pluginManagement>
+                    <plugins>
+                        <plugin>
+                            <groupId>org.sonarsource.scanner.maven</groupId>
+                            <artifactId>sonar-maven-plugin</artifactId>
+                            <version>3.4.0.905</version>
+                        </plugin>
+                    </plugins>
+                </pluginManagement>
+            </build>
+            <modules>
+                <module>taskexecutor</module>
+                <module>taskscheduler</module>
+                <module>common</module>
+                <module>pipeline</module>
+                <module>examples</module>
+            </modules>
+        </profile>
         <profile>
             <id>mdcstandalone</id>
             <build>
                 <plugins>
                     <plugin>
-					  <groupId>com.google.cloud.tools</groupId>
-					  <artifactId>jib-maven-plugin</artifactId>
-					  <version>3.2.0</version>
-					  <executions>
-					    <execution>
-					      <id>buildstandalone</id>
-					      <phase>package</phase>
-					      <goals>
-					        <goal>build</goal>
-					      </goals>
-					      <configuration>
-					  	  <containerizingMode>exploded</containerizingMode>
-						  <from>
-						    <image>bde2020/hadoop-datanode</image>
-						  </from>
-						  <to>
-						    <image>arunsrajan/mdcstandalone</image>
-						    <tags>
-						      <tag>latest</tag>
-						    </tags>
-						  </to>
-						  <extraDirectories>
-						    <paths>
-						      <path>
-						        <from>target/unpack</from>
-						        <into>/</into>
-						      </path>
-						      <path>
-						        <from>dockermdcstandalone</from>
-						        <into>/opt/mdc/config</into>
-						        <includes>mdcstandalone.properties</includes>
-						      </path>
-						      <path>
-						        <from>target/mdcstandalone</from>
-						        <into>/</into>
-						        <includes>entry.sh</includes>
-						      </path>
-						      <path>
-						        <from>target/mdcstandalone</from>						        
-						        <into>/opt/mdc/bin</into>
-						        <includes>standalone.sh</includes>
-						      </path>
-						    </paths>
-						    <permissions>
-						      <permission>
-						        <file>/opt/mdc/bin/*</file>
-						        <mode>777</mode> <!-- Read/write/execute for owner, read/execute for group/other -->
-						      </permission>
-						      <permission>
-						        <file>/entry.sh</file>
-						        <mode>777</mode> <!-- Read/write/execute for owner, read/execute for group/other -->
-						      </permission>
-						      <permission>
-						        <file>/entrypoint.sh</file>
-						        <mode>777</mode> <!-- Read/write/execute for owner, read/execute for group/other -->
-						      </permission>
-						      <permission>
-						        <file>/run.sh</file>
-						        <mode>777</mode> <!-- Read/write/execute for owner, read/execute for group/other -->
-						      </permission>
-						      <permission>
-						        <file>/usr/local/java/jdk-15.0.2/bin/*</file>
-						        <mode>777</mode> <!-- Read/write/execute for owner, read/execute for group/other -->
-						      </permission>
-						  	</permissions>
-						  </extraDirectories>
-						  <container>
-						  	<environment>
-								<CORE_CONF_fs_defaultFS>hdfs://namenode:9000</CORE_CONF_fs_defaultFS>
-								<HDFS_CONF_dfs_datanode_data_dir>file:///opt/dockershare/data</HDFS_CONF_dfs_datanode_data_dir>
-						  	</environment>
-						  	<volumes>
-						  		/opt/dockershare/data
-						  	</volumes>
-						  	<entrypoint>						  	
-              					<arg>/entry.sh</arg>
-              				</entrypoint>
-						  	<format>Docker</format>
-						  	<user>root</user>
-						  </container>
-						</configuration>
-					    </execution>
-					    
-					    
-					    <execution>
-					      <id>buildcontainer</id>
-					      <phase>package</phase>
-					      <goals>
-					        <goal>build</goal>
-					      </goals>
-					      <configuration>
-					  	  <containerizingMode>exploded</containerizingMode>
-						  <from>
-						    <image>bde2020/hadoop-datanode</image>
-						  </from>
-						  <to>
-						    <image>arunsrajan/mdccontainer</image>
-						    <tags>
-						      <tag>latest</tag>
-						    </tags>
-						  </to>
-						  <extraDirectories>
-						    <paths>
-						      <path>
-						        <from>target/unpack</from>
-						        <into>/</into>
-						      </path>
-						      <path>
-						        <from>dockermdccontainer</from>
-						        <into>/opt/mdc/config</into>
-						        <includes>mdctes.properties</includes>
-						      </path>
-						      <path>
-						        <from>target/mdccontainer</from>
-						        <into>/</into>
-						        <includes>entry.sh</includes>
-						      </path>
-						      <path>
-						        <from>target/mdccontainer</from>						        
-						        <into>/opt/mdc/bin</into>
-						        <includes>container.sh</includes>
-						      </path>
-						    </paths>
-						    <permissions>
-						      <permission>
-						        <file>/opt/mdc/bin/*</file>
-						        <mode>777</mode> <!-- Read/write/execute for owner, read/execute for group/other -->
-						      </permission>
-						      <permission>
-						        <file>/entry.sh</file>
-						        <mode>777</mode> <!-- Read/write/execute for owner, read/execute for group/other -->
-						      </permission>
-						      <permission>
-						        <file>/entrypoint.sh</file>
-						        <mode>777</mode> <!-- Read/write/execute for owner, read/execute for group/other -->
-						      </permission>
-						      <permission>
-						        <file>/run.sh</file>
-						        <mode>777</mode> <!-- Read/write/execute for owner, read/execute for group/other -->
-						      </permission>
-						      <permission>
-						        <file>/usr/local/java/jdk-15.0.2/bin/*</file>
-						        <mode>777</mode> <!-- Read/write/execute for owner, read/execute for group/other -->
-						      </permission>
-						  	</permissions>
-						  </extraDirectories>
-						  <container>
-						  	<environment>
-								<CORE_CONF_fs_defaultFS>hdfs://namenode:9000</CORE_CONF_fs_defaultFS>
-								<HDFS_CONF_dfs_datanode_data_dir>file:///opt/dockershare/data</HDFS_CONF_dfs_datanode_data_dir>
-						  	</environment>
-						  	<volumes>
-						  		/opt/dockershare/data
-						  	</volumes>
-						  	<entrypoint>						  	
-              					<arg>/entry.sh</arg>
-              				</entrypoint>
-						  	<format>Docker</format>
-						  	<user>root</user>
-						  </container>
-						</configuration>
-					    </execution>					    
-					  </executions>
-					  
-					</plugin>
-                </plugins>
-            </build>
-        </profile>
-        <profile>
-            <id>mdctaskschedulerstream</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>com.spotify</groupId>
-                        <artifactId>docker-maven-plugin</artifactId>
-                        <version>1.2.2</version>
-                        <configuration>
-                            <imageName>arunsrajan/mdctaskschedulerstream</imageName>
-                            <baseImage>openjdk:15.0.2-jdk-oraclelinux7</baseImage>
-                            <dockerDirectory>dockermdctss</dockerDirectory>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-        <profile>
-            <id>mdctaskscheduler</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>com.spotify</groupId>
-                        <artifactId>docker-maven-plugin</artifactId>
-                        <version>1.2.2</version>
-                        <configuration>
-                            <imageName>arunsrajan/mdctaskscheduler</imageName>
-                            <baseImage>openjdk:15.0.2-jdk-oraclelinux7</baseImage>
-                            <dockerDirectory>dockermdcts</dockerDirectory>
-                        </configuration>
+                        <groupId>com.google.cloud.tools</groupId>
+                        <artifactId>jib-maven-plugin</artifactId>
+                        <version>3.2.0</version>
+                        <executions>
+                            <execution>
+                                <id>buildstandalone</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>build</goal>
+                                </goals>
+                                <configuration>
+                                    <containerizingMode>exploded</containerizingMode>
+                                    <from>
+                                        <image>bde2020/hadoop-datanode</image>
+                                    </from>
+                                    <to>
+                                        <image>arunsrajan/mdcstandalone</image>
+                                        <tags>
+                                            <tag>latest</tag>
+                                        </tags>
+                                    </to>
+                                    <extraDirectories>
+                                        <paths>
+                                            <path>
+                                                <from>target/unpack</from>
+                                                <into>/</into>
+                                            </path>
+                                            <path>
+                                                <from>dockermdcstandalone</from>
+                                                <into>/opt/mdc/config</into>
+                                                <includes>mdcstandalone.properties</includes>
+                                            </path>
+                                            <path>
+                                                <from>target/mdcstandalone</from>
+                                                <into>/</into>
+                                                <includes>entry.sh</includes>
+                                            </path>
+                                            <path>
+                                                <from>target/mdcstandalone</from>
+                                                <into>/opt/mdc/bin</into>
+                                                <includes>standalone.sh</includes>
+                                            </path>
+                                        </paths>
+                                        <permissions>
+                                            <permission>
+                                                <file>/opt/mdc/bin/*</file>
+                                                <mode>777
+                                                </mode> <!-- Read/write/execute for owner, read/execute for group/other -->
+                                            </permission>
+                                            <permission>
+                                                <file>/entry.sh</file>
+                                                <mode>777
+                                                </mode> <!-- Read/write/execute for owner, read/execute for group/other -->
+                                            </permission>
+                                            <permission>
+                                                <file>/entrypoint.sh</file>
+                                                <mode>777
+                                                </mode> <!-- Read/write/execute for owner, read/execute for group/other -->
+                                            </permission>
+                                            <permission>
+                                                <file>/run.sh</file>
+                                                <mode>777
+                                                </mode> <!-- Read/write/execute for owner, read/execute for group/other -->
+                                            </permission>
+                                            <permission>
+                                                <file>/usr/local/java/jdk-17.0.2/bin/*</file>
+                                                <mode>777
+                                                </mode> <!-- Read/write/execute for owner, read/execute for group/other -->
+                                            </permission>
+                                        </permissions>
+                                    </extraDirectories>
+                                    <container>
+                                        <environment>
+                                            <CORE_CONF_fs_defaultFS>hdfs://namenode:9000</CORE_CONF_fs_defaultFS>
+                                            <HDFS_CONF_dfs_datanode_data_dir>file:///opt/dockershare/data
+                                            </HDFS_CONF_dfs_datanode_data_dir>
+                                        </environment>
+                                        <volumes>
+                                            /opt/dockershare/data
+                                        </volumes>
+                                        <entrypoint>
+                                            <arg>/entry.sh</arg>
+                                        </entrypoint>
+                                        <format>Docker</format>
+                                        <user>root</user>
+                                    </container>
+                                </configuration>
+                            </execution>
+
+
+                            <execution>
+                                <id>buildcontainer</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>build</goal>
+                                </goals>
+                                <configuration>
+                                    <containerizingMode>exploded</containerizingMode>
+                                    <from>
+                                        <image>bde2020/hadoop-datanode</image>
+                                    </from>
+                                    <to>
+                                        <image>arunsrajan/mdccontainer</image>
+                                        <tags>
+                                            <tag>latest</tag>
+                                        </tags>
+                                    </to>
+                                    <extraDirectories>
+                                        <paths>
+                                            <path>
+                                                <from>target/unpack</from>
+                                                <into>/</into>
+                                            </path>
+                                            <path>
+                                                <from>dockermdccontainer</from>
+                                                <into>/opt/mdc/config</into>
+                                                <includes>mdctes.properties</includes>
+                                            </path>
+                                            <path>
+                                                <from>target/mdccontainer</from>
+                                                <into>/</into>
+                                                <includes>entry.sh</includes>
+                                            </path>
+                                            <path>
+                                                <from>target/mdccontainer</from>
+                                                <into>/opt/mdc/bin</into>
+                                                <includes>container.sh</includes>
+                                            </path>
+                                        </paths>
+                                        <permissions>
+                                            <permission>
+                                                <file>/opt/mdc/bin/*</file>
+                                                <mode>777
+                                                </mode> <!-- Read/write/execute for owner, read/execute for group/other -->
+                                            </permission>
+                                            <permission>
+                                                <file>/entry.sh</file>
+                                                <mode>777
+                                                </mode> <!-- Read/write/execute for owner, read/execute for group/other -->
+                                            </permission>
+                                            <permission>
+                                                <file>/entrypoint.sh</file>
+                                                <mode>777
+                                                </mode> <!-- Read/write/execute for owner, read/execute for group/other -->
+                                            </permission>
+                                            <permission>
+                                                <file>/run.sh</file>
+                                                <mode>777
+                                                </mode> <!-- Read/write/execute for owner, read/execute for group/other -->
+                                            </permission>
+                                            <permission>
+                                                <file>/usr/local/java/jdk-17.0.2/bin/*</file>
+                                                <mode>777
+                                                </mode> <!-- Read/write/execute for owner, read/execute for group/other -->
+                                            </permission>
+                                        </permissions>
+                                    </extraDirectories>
+                                    <container>
+                                        <environment>
+                                            <CORE_CONF_fs_defaultFS>hdfs://namenode:9000</CORE_CONF_fs_defaultFS>
+                                            <HDFS_CONF_dfs_datanode_data_dir>file:///opt/dockershare/data
+                                            </HDFS_CONF_dfs_datanode_data_dir>
+                                        </environment>
+                                        <volumes>
+                                            /opt/dockershare/data
+                                        </volumes>
+                                        <entrypoint>
+                                            <arg>/entry.sh</arg>
+                                        </entrypoint>
+                                        <format>Docker</format>
+                                        <user>root</user>
+                                    </container>
+                                </configuration>
+                            </execution>
+                        </executions>
                     </plugin>
                 </plugins>
             </build>
@@ -792,11 +855,11 @@
             <url>http://clojars.org/repo/</url>
         </repository>
     </repositories>
-	<pluginRepositories>
-		<pluginRepository>
+    <pluginRepositories>
+        <pluginRepository>
             <id>clojars</id>
             <url>http://clojars.org/repo/</url>
         </pluginRepository>
-	</pluginRepositories>
+    </pluginRepositories>
 
 </project>
