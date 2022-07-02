@@ -32,7 +32,7 @@ set GCCONFIG=-XX:+UseG1GC -XX:+CMSClassUnloadingEnabled -Dsun.rmi.dgc.client.gcI
 
 IF EXIST %MDC_JAVA_HOME%\bin\java.exe (
 
-"%MDC_JAVA_HOME%\bin\java" --enable-preview %CLASSPATH% %MEMCONFIG% %GCCCONFIG% -Djava.net.preferIPv4Stack=true com.github.mdc.tasks.scheduler.ApplicationSubmitter %*
+"%MDC_JAVA_HOME%\bin\java" --add-opens java.base/java.util=ALL-UNNAMED --add-opens java.base/java.lang.invoke=ALL-UNNAMED %CLASSPATH% %MEMCONFIG% %GCCCONFIG% -Djava.net.preferIPv4Stack=true com.github.mdc.tasks.scheduler.ApplicationSubmitter %*
 
 ) ELSE (
  @echo on

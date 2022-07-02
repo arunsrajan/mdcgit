@@ -1,4 +1,5 @@
-echo STARTING DataCruncher....
+#!/usr/bin/bash
+echo STARTING Zookeeper....
 export JMXPORT=33330
 export DEBUGPORT=4000
 export PORTOFFexport=0
@@ -6,6 +7,6 @@ export JMXCONFIG="-Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.
 export ZOOKEEPERADMINCONFIG="-Dzookeeper.admin.serverPort=$ZOOADMINPORT"
 export CLASSPATH="-cp '.:../lib/*:../modules/*'"
 export DEBUGCONFIG="-Xdebug -Xrunjdwp:server=y,transport=dt_socket,address=$DEBUGPORT,suspend=n -Dorg.singam.debug.port=$DEBUGPORT"
-export MEMCONFIG="-Xms256m -Xmx256m"
-export GCCONFIG="-XX:+UseG1GC -XX:+CMSClassUnloadingEnabled -Dsun.rmi.dgc.client.gcInterval=3600000"
-java --add-opens java.base/java.util=ALL-UNNAMED --add-opens java.base/java.lang.invoke=ALL-UNNAMED -classpath ".:../lib/*:../modules/*" -Xms256M -Xmx256M $GCCCONFIG -Djava.net.preferIPv4Stack=true com.github.mdc.tasks.scheduler.ApplicationSubmitter "$@"
+export CLASSNAME=com.github.mdc.common.utils.ZookeeperMain
+java --add-opens java.base/java.util=ALL-UNNAMED --add-opens java.base/java.lang.invoke=ALL-UNNAMED "-Dzookeeper.hostport=$ZKHOSTPORT" "-Dtaskexecutor.host=$HOST" "-Dtaskexecutor.port=$PORT" "-Dnode.port=$NODEPORT" -classpath ".:../lib/*:../modules/*" $MEMCONFIGLOW $MEMCONFIGHIGH $GCCCONFIG -Djava.net.preferIPv4Stack=true $CLASSNAME
+
