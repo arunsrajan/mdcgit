@@ -61,13 +61,13 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 	 * @param pipelineconfig
 	 * @throws PipelineException
 	 */
-	private IgnitePipeline(String hdfspath, String folder,PipelineConfig pipelineconfig,
+	private IgnitePipeline(String hdfspath, String folder, PipelineConfig pipelineconfig,
 			String protocol) throws PipelineException {
 		var validator = new PipelineConfigValidator();
 		var errormessages = validator.validate(pipelineconfig);
-		if(!errormessages.isEmpty()) {
+		if (!errormessages.isEmpty()) {
 			var errors = new StringBuilder();
-			errormessages.stream().forEach(error->errors.append(error+MDCConstants.NEWLINE));
+			errormessages.stream().forEach(error -> errors.append(error + MDCConstants.NEWLINE));
 			throw new PipelineException(errors.toString());
 		}
 		this.pipelineconfig = pipelineconfig;
@@ -88,8 +88,8 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 	 * @return MassiveDataPipelineIgnite object
 	 * @throws PipelineException
 	 */
-	public static IgnitePipeline<String> newStreamHDFS(String hdfspath, String folder,PipelineConfig pipelineconfig) throws PipelineException {
-		return new IgnitePipeline<String>(hdfspath,folder,pipelineconfig,FileSystemSupport.HDFS);
+	public static IgnitePipeline<String> newStreamHDFS(String hdfspath, String folder, PipelineConfig pipelineconfig) throws PipelineException {
+		return new IgnitePipeline<String>(hdfspath, folder, pipelineconfig, FileSystemSupport.HDFS);
 	}
 	
 	
@@ -103,8 +103,8 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 	 * @return MassiveDataPipelineIgnite object
 	 * @throws PipelineException
 	 */
-	public static IgnitePipeline<String> newStreamFILE(String folder,PipelineConfig pipelineconfig) throws PipelineException {
-		return new IgnitePipeline<String>(MDCConstants.NULLSTRING,folder,pipelineconfig,FileSystemSupport.FILE);
+	public static IgnitePipeline<String> newStreamFILE(String folder, PipelineConfig pipelineconfig) throws PipelineException {
+		return new IgnitePipeline<String>(MDCConstants.NULLSTRING, folder, pipelineconfig, FileSystemSupport.FILE);
 	}
 	
 	public static IgnitePipeline<String> newStream(String filepathwithscheme, PipelineConfig pipelineconfig) throws PipelineException {
@@ -113,9 +113,9 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 		try {
 			url = new URL(filepathwithscheme);
 			if (url.getProtocol().equals(FileSystemSupport.HDFS)) {
-				mdp = newStreamHDFS(url.getProtocol() + MDCConstants.COLON+MDCConstants.BACKWARD_SLASH+MDCConstants.BACKWARD_SLASH+ url.getHost() + MDCConstants.COLON + url.getPort(), url.getPath(), pipelineconfig);
+				mdp = newStreamHDFS(url.getProtocol() + MDCConstants.COLON + MDCConstants.BACKWARD_SLASH + MDCConstants.BACKWARD_SLASH + url.getHost() + MDCConstants.COLON + url.getPort(), url.getPath(), pipelineconfig);
 			} 
-			else if(url.getProtocol().equals(FileSystemSupport.FILE)) {
+			else if (url.getProtocol().equals(FileSystemSupport.FILE)) {
 				mdp = newStreamFILE(url.getPath(), pipelineconfig);
 			}
 			else {
@@ -123,8 +123,8 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 			}
 			return mdp;
 		}
-		catch(Exception e) {
-			throw new PipelineException(PipelineConstants.URISYNTAXNOTPROPER,e); 
+		catch (Exception e) {
+			throw new PipelineException(PipelineConstants.URISYNTAXNOTPROPER, e); 
 		}
 	}
 	
@@ -134,11 +134,11 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 	 * @param root
 	 * @param map
 	 */
-	@SuppressWarnings({ "unchecked" })
+	@SuppressWarnings({"unchecked"})
 	private <T> IgnitePipeline(AbstractPipeline root,
 			MapFunction<I1, ? extends T> map) {
 		this.task = map;
-		root.finaltask=task;
+		root.finaltask = task;
 		this.root = root;
 	}
 
@@ -150,11 +150,11 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 	 * @throws PipelineException
 	 */
 	@SuppressWarnings("unchecked")
-	public <T> IgnitePipeline<T> map(MapFunction<I1 ,? extends T> map) throws PipelineException{
-		if(Objects.isNull(map)) {
+	public <T> IgnitePipeline<T> map(MapFunction<I1 , ? extends T> map) throws PipelineException {
+		if (Objects.isNull(map)) {
 			throw new PipelineException(PipelineConstants.MAPFUNCTIONNULL);
 		}
-		var mapobj = new IgnitePipeline(root,map);
+		var mapobj = new IgnitePipeline(root, map);
 		this.childs.add(mapobj);
 		mapobj.parents.add(this);
 		return mapobj;
@@ -172,12 +172,12 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 	 * @param root
 	 * @param peekConsumer
 	 */
-	@SuppressWarnings({ "unchecked" })
+	@SuppressWarnings({"unchecked"})
 	private IgnitePipeline(AbstractPipeline root,
 			PeekConsumer<I1> peekConsumer) {
 		this.task = peekConsumer;
 		this.root = root;
-		root.finaltask=task;
+		root.finaltask = task;
 		mdsroots.add(root);
 	}
 	
@@ -186,13 +186,13 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 	 * @param root
 	 * @param calculatecount
 	 */
-	@SuppressWarnings({ "unchecked" })
+	@SuppressWarnings({"unchecked"})
 	protected IgnitePipeline(AbstractPipeline root,
 			CalculateCount calculatecount) {
 		this.task = calculatecount;
 		this.root = root;
 		mdsroots.add(root);
-		root.finaltask=task;
+		root.finaltask = task;
 	}
 
 	/**
@@ -200,12 +200,12 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 	 * @param root
 	 * @param predicate
 	 */
-	@SuppressWarnings({ "unchecked" })
+	@SuppressWarnings({"unchecked"})
 	private IgnitePipeline(AbstractPipeline root,
 			PredicateSerializable<I1> predicate) {
 		this.task = predicate;
 		this.root = root;
-		root.finaltask=task;
+		root.finaltask = task;
 	}
 	
 	/**
@@ -215,10 +215,10 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 	 * @throws PipelineException
 	 */
 	public IgnitePipeline<I1> filter(PredicateSerializable<I1> predicate) throws PipelineException {
-		if(Objects.isNull(predicate)) {
+		if (Objects.isNull(predicate)) {
 			throw new PipelineException(PipelineConstants.PREDICATENULL);
 		}
-		var filter = new IgnitePipeline<>(root,predicate);
+		var filter = new IgnitePipeline<>(root, predicate);
 		this.childs.add(filter);
 		filter.parents.add(this);
 		return filter;
@@ -229,12 +229,12 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 	 * @param root
 	 * @param unionfunction
 	 */
-	@SuppressWarnings({ "unchecked" })
+	@SuppressWarnings({"unchecked"})
 	private IgnitePipeline(AbstractPipeline root,
 			UnionFunction unionfunction) {
 		this.task = unionfunction;
 		this.root = root;
-		root.finaltask=task;
+		root.finaltask = task;
 	}
 	
 	/**
@@ -244,11 +244,11 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 	 * @throws PipelineException
 	 */
 	public IgnitePipeline<I1> union(IgnitePipeline<I1> union) throws PipelineException {
-		if(Objects.isNull(union)) {
+		if (Objects.isNull(union)) {
 			throw new PipelineException(PipelineConstants.UNIONNULL);
 		}
 		var unionfunction = new UnionFunction();
-		var unionchild =new  IgnitePipeline(root,unionfunction);
+		var unionchild = new  IgnitePipeline(root, unionfunction);
 		this.childs.add(unionchild);
 		unionchild.parents.add(this);
 		union.childs.add(unionchild);
@@ -263,12 +263,12 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 	 * @param root
 	 * @param intersectionfunction
 	 */
-	@SuppressWarnings({ "unchecked" })
+	@SuppressWarnings({"unchecked"})
 	private IgnitePipeline(AbstractPipeline root,
 			IntersectionFunction intersectionfunction) {
 		this.task = intersectionfunction;
 		this.root = root;
-		root.finaltask=task;
+		root.finaltask = task;
 	}
 	
 	/**
@@ -278,11 +278,11 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 	 * @throws PipelineException
 	 */
 	public IgnitePipeline<I1> intersection(IgnitePipeline<I1> intersection) throws PipelineException {
-		if(Objects.isNull(intersection)) {
+		if (Objects.isNull(intersection)) {
 			throw new PipelineException(PipelineConstants.INTERSECTIONNULL);
 		}
 		var intersectionfunction = new IntersectionFunction();
-		var intersectionchild =new  IgnitePipeline(root,intersectionfunction);
+		var intersectionchild = new  IgnitePipeline(root, intersectionfunction);
 		this.childs.add(intersectionchild);
 		intersectionchild.parents.add(this);
 		intersection.childs.add(intersectionchild);
@@ -300,9 +300,9 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 	 * @return MapPairIgnite object.
 	 * @throws PipelineException
 	 */
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public <I3,I4> MapPairIgnite<I3,I4> mapToPair(MapToPairFunction<? super I1, ? extends Tuple2<I3,I4>> pf) throws PipelineException {
-		if(Objects.isNull(pf)) {
+	@SuppressWarnings({"unchecked", "rawtypes"})
+	public <I3, I4> MapPairIgnite<I3, I4> mapToPair(MapToPairFunction<? super I1, ? extends Tuple2<I3, I4>> pf) throws PipelineException {
+		if (Objects.isNull(pf)) {
 			throw new PipelineException(PipelineConstants.MAPPAIRNULL);
 		}
 		var mappairignite = new MapPairIgnite(root, pf);
@@ -316,12 +316,12 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 	 * @param root
 	 * @param sampleintegersupplier
 	 */
-	@SuppressWarnings({ "unchecked" })
+	@SuppressWarnings({"unchecked"})
 	private IgnitePipeline(AbstractPipeline root,
 			SampleSupplierInteger sampleintegersupplier) {
 		this.task = sampleintegersupplier;
 		this.root = root;
-		root.finaltask=task;
+		root.finaltask = task;
 	}
 	
 	/**
@@ -331,11 +331,11 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 	 * @throws PipelineException
 	 */
 	public IgnitePipeline<I1> sample(Integer numsample) throws PipelineException {
-		if(Objects.isNull(numsample)) {
+		if (Objects.isNull(numsample)) {
 			throw new PipelineException(PipelineConstants.SAMPLENULL);
 		}
 		var sampleintegersupplier = new SampleSupplierInteger(numsample);
-		var samplesupplier = new IgnitePipeline(root,sampleintegersupplier);
+		var samplesupplier = new IgnitePipeline(root, sampleintegersupplier);
 		this.childs.add(samplesupplier);
 		samplesupplier.parents.add(this);
 		return samplesupplier;
@@ -348,11 +348,11 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 	 * @return MassiveDataPipelineIgnite object.
 	 * @throws PipelineException
 	 */
-	public IgnitePipeline<I1> rightOuterjoin(IgnitePipeline<? extends I1> mappairignite,RightOuterJoinPredicate<? super I1,? super I1> conditionrightouterjoin) throws PipelineException {
-		if(Objects.isNull(mappairignite)) {
+	public IgnitePipeline<I1> rightOuterjoin(IgnitePipeline<? extends I1> mappairignite, RightOuterJoinPredicate<? super I1, ? super I1> conditionrightouterjoin) throws PipelineException {
+		if (Objects.isNull(mappairignite)) {
 			throw new PipelineException(PipelineConstants.RIGHTOUTERJOIN);
 		}
-		if(Objects.isNull(conditionrightouterjoin)) {
+		if (Objects.isNull(conditionrightouterjoin)) {
 			throw new PipelineException(PipelineConstants.RIGHTOUTERJOINCONDITION);
 		}
 		var mdp = new IgnitePipeline(root, conditionrightouterjoin);
@@ -371,11 +371,11 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 	 * @return MassiveDataPipelineIgnite object.
 	 * @throws PipelineException
 	 */
-	public IgnitePipeline<I1> leftOuterjoin(IgnitePipeline<I1> mappairignite,LeftOuterJoinPredicate<I1,I1> conditionleftouterjoin) throws PipelineException {
-		if(Objects.isNull(mappairignite)) {
+	public IgnitePipeline<I1> leftOuterjoin(IgnitePipeline<I1> mappairignite, LeftOuterJoinPredicate<I1, I1> conditionleftouterjoin) throws PipelineException {
+		if (Objects.isNull(mappairignite)) {
 			throw new PipelineException(PipelineConstants.LEFTOUTERJOIN);
 		}
-		if(Objects.isNull(conditionleftouterjoin)) {
+		if (Objects.isNull(conditionleftouterjoin)) {
 			throw new PipelineException(PipelineConstants.LEFTOUTERJOINCONDITION);
 		}
 		var mdp = new IgnitePipeline(root, conditionleftouterjoin);
@@ -395,11 +395,11 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 	 * @return MassiveDataPipelineIgnite object.
 	 * @throws PipelineException
 	 */
-	public IgnitePipeline<I1> join(IgnitePipeline<I1> mappairignite,JoinPredicate<I1,I1> innerjoin) throws PipelineException {
-		if(Objects.isNull(mappairignite)) {
+	public IgnitePipeline<I1> join(IgnitePipeline<I1> mappairignite, JoinPredicate<I1, I1> innerjoin) throws PipelineException {
+		if (Objects.isNull(mappairignite)) {
 			throw new PipelineException(PipelineConstants.INNERJOIN);
 		}
-		if(Objects.isNull(innerjoin)) {
+		if (Objects.isNull(innerjoin)) {
 			throw new PipelineException(PipelineConstants.INNERJOINCONDITION);
 		}
 		var mdp = new IgnitePipeline(root, innerjoin);
@@ -418,12 +418,12 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 	 * @param root
 	 * @param fmf
 	 */
-	@SuppressWarnings({ "unchecked" })
+	@SuppressWarnings({"unchecked"})
 	private <T> IgnitePipeline(AbstractPipeline root,
 			FlatMapFunction<I1, ? extends T> fmf) {
 		this.task = fmf;
 		this.root = root;
-		root.finaltask=task;
+		root.finaltask = task;
 	}
 	
 	/**
@@ -433,9 +433,9 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 	 * @return MassiveDataPipelineIgnite object.
 	 * @throws PipelineException
 	 */
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	public <T> IgnitePipeline<T> flatMap(FlatMapFunction<I1, ? extends T> fmf) throws PipelineException {
-		if(Objects.isNull(fmf)) {
+		if (Objects.isNull(fmf)) {
 			throw new PipelineException(PipelineConstants.FLATMAPNULL);
 		}
 		var mdp = new IgnitePipeline(root, fmf);
@@ -452,9 +452,9 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 	 * @return MapPairIgnite object. 
 	 * @throws PipelineException
 	 */
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public <I3,I4> MapPairIgnite<I3,I4> flatMapToTuple2(TupleFlatMapFunction<? super I1, ? extends Tuple2<I3,I4>> fmt) throws PipelineException {
-		if(Objects.isNull(fmt)) {
+	@SuppressWarnings({"rawtypes", "unchecked"})
+	public <I3, I4> MapPairIgnite<I3, I4> flatMapToTuple2(TupleFlatMapFunction<? super I1, ? extends Tuple2<I3, I4>> fmt) throws PipelineException {
+		if (Objects.isNull(fmt)) {
 			throw new PipelineException(PipelineConstants.FLATMAPPAIRNULL);
 		}
 		var mdp = new MapPairIgnite(root, fmt);
@@ -469,9 +469,9 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 	 * @return MassiveDataPipelineIgnite object. 
 	 * @throws PipelineException
 	 */
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	public IgnitePipeline<Tuple> flatMapToTuple(TupleFlatMapFunction<? super I1, ? extends Tuple> fmt) throws PipelineException {
-		if(Objects.isNull(fmt)) {
+		if (Objects.isNull(fmt)) {
 			throw new PipelineException(PipelineConstants.FLATMAPPAIRNULL);
 		}
 		var mdp = new IgnitePipeline(root, fmt);
@@ -485,12 +485,12 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 	 * @param root
 	 * @param lfmf
 	 */
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	private IgnitePipeline(AbstractPipeline root,
 			TupleFlatMapFunction lfmf) {
 		this.task = lfmf;
 		this.root = root;
-		root.finaltask=task;
+		root.finaltask = task;
 	}
 	
 	/**
@@ -498,12 +498,12 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 	 * @param root
 	 * @param lfmf
 	 */
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	private IgnitePipeline(AbstractPipeline root,
 			LongFlatMapFunction lfmf) {
 		this.task = lfmf;
 		this.root = root;
-		root.finaltask=task;
+		root.finaltask = task;
 	}
 	
 	/**
@@ -513,7 +513,7 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 	 * @throws PipelineException
 	 */
 	public IgnitePipeline<Long> flatMapToLong(LongFlatMapFunction<I1> lfmf) throws PipelineException {
-		if(Objects.isNull(lfmf)) {
+		if (Objects.isNull(lfmf)) {
 			throw new PipelineException(PipelineConstants.LONGFLATMAPNULL);
 		}
 		var mdp = new IgnitePipeline<Long>(root, lfmf);
@@ -527,12 +527,12 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 	 * @param root
 	 * @param dfmf
 	 */
-	@SuppressWarnings({ "unchecked" })
+	@SuppressWarnings({"unchecked"})
 	private IgnitePipeline(AbstractPipeline root,
 			DoubleFlatMapFunction<I1> dfmf) {
 		this.task = dfmf;
 		this.root = root;
-		root.finaltask=task;
+		root.finaltask = task;
 	}
 
 	/**
@@ -541,9 +541,9 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 	 * @return MassiveDataPipelineIgnite object.
 	 * @throws PipelineException
 	 */
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	public IgnitePipeline<Double> flatMapToDouble(DoubleFlatMapFunction<I1> dfmf) throws PipelineException {
-		if(Objects.isNull(dfmf)) {
+		if (Objects.isNull(dfmf)) {
 			throw new PipelineException(PipelineConstants.DOUBLEFLATMAPNULL);
 		}
 		var mdp = new IgnitePipeline(root, dfmf);
@@ -559,10 +559,10 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 	 * @throws PipelineException
 	 */
 	public IgnitePipeline<I1> peek(PeekConsumer<I1> consumer) throws PipelineException  {
-		if(Objects.isNull(consumer)) {
+		if (Objects.isNull(consumer)) {
 			throw new PipelineException(PipelineConstants.PEEKNULL);
 		}
-		var map = new IgnitePipeline<>(root,consumer);
+		var map = new IgnitePipeline<>(root, consumer);
 		map.parents.add(this);
 		this.childs.add(map);
 		return map;
@@ -573,12 +573,12 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 	 * @param root
 	 * @param sortedcomparator
 	 */
-	@SuppressWarnings({ "unchecked" })
+	@SuppressWarnings({"unchecked"})
 	private IgnitePipeline(AbstractPipeline root,
 			SortedComparator<I1> sortedcomparator) {
 		this.task = sortedcomparator;
 		this.root = root;
-		root.finaltask=task;
+		root.finaltask = task;
 	}
 	
 	/**
@@ -588,11 +588,11 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 	 */
 	@SuppressWarnings("unchecked")
 	protected IgnitePipeline(IgnitePipeline<I1> mdp,
-			RightOuterJoinPredicate<I1,I1> rightouterjoinpredicate) {
+			RightOuterJoinPredicate<I1, I1> rightouterjoinpredicate) {
 		this.task = rightouterjoinpredicate;
 		this.root = mdp.root;
 		mdsroots.add(mdp.root);
-		root.finaltask=task;
+		root.finaltask = task;
 	}
 	
 	/**
@@ -603,13 +603,13 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 	 * @param mdp
 	 * @param leftouterjoinpredicate
 	 */
-	@SuppressWarnings({ "unchecked" })
+	@SuppressWarnings({"unchecked"})
 	protected <T, O1, O2> IgnitePipeline(IgnitePipeline<I1> mdp,
-			LeftOuterJoinPredicate<I1,I1> leftouterjoinpredicate) {
+			LeftOuterJoinPredicate<I1, I1> leftouterjoinpredicate) {
 		this.task = leftouterjoinpredicate;
 		this.root = mdp.root;
 		mdsroots.add(mdp.root);
-		root.finaltask=task;
+		root.finaltask = task;
 	}
 	
 	/**
@@ -617,12 +617,12 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 	 * @param root
 	 * @param conditionrightouterjoin
 	 */
-	@SuppressWarnings({ "unchecked" })
+	@SuppressWarnings({"unchecked"})
 	private IgnitePipeline(AbstractPipeline root,
 			RightOuterJoinPredicate<? super I1, ? super I1> conditionrightouterjoin) {
 		this.task = conditionrightouterjoin;
 		this.root = root;
-		root.finaltask=task;
+		root.finaltask = task;
 	}
 	
 	/**
@@ -635,7 +635,7 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 			LeftOuterJoinPredicate<? super I1, ? super I1> conditionleftouterjoin) {
 		this.task = conditionleftouterjoin;
 		this.root = root;
-		root.finaltask=task;
+		root.finaltask = task;
 	}
 	
 	/**
@@ -648,7 +648,7 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 			JoinPredicate<? super I1, ? super I1> join) {
 		this.task = join;
 		this.root = root;
-		root.finaltask=task;
+		root.finaltask = task;
 	}
 	
 	/**
@@ -658,10 +658,10 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 	 * @throws PipelineException
 	 */
 	public IgnitePipeline<I1> sorted(SortedComparator<I1> sortedcomparator) throws PipelineException  {
-		if(Objects.isNull(sortedcomparator)) {
+		if (Objects.isNull(sortedcomparator)) {
 			throw new PipelineException(PipelineConstants.SORTEDNULL);
 		}
-		var map = new IgnitePipeline<>(root,sortedcomparator);
+		var map = new IgnitePipeline<>(root, sortedcomparator);
 		map.parents.add(this);
 		this.childs.add(map);
 		return map;
@@ -672,12 +672,12 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 	 * @param root
 	 * @param distinct
 	 */
-	@SuppressWarnings({ "unchecked" })
+	@SuppressWarnings({"unchecked"})
 	private IgnitePipeline(AbstractPipeline root,
 			Distinct distinct) {
 		this.task = distinct;
 		this.root = root;
-		root.finaltask=task;
+		root.finaltask = task;
 	}
 	
 	/**
@@ -686,7 +686,7 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 	 */
 	public IgnitePipeline<I1> distinct()  {
 		var distinct = new Distinct();
-		var map = new IgnitePipeline(root,distinct);
+		var map = new IgnitePipeline(root, distinct);
 		map.parents.add(this);
 		this.childs.add(map);
 		return map;
@@ -697,12 +697,12 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 	 * @param root
 	 * @param tointfunction
 	 */
-	@SuppressWarnings({ "unchecked" })
+	@SuppressWarnings({"unchecked"})
 	protected IgnitePipeline(AbstractPipeline root,
 			ToIntFunction<I1> tointfunction) {
 		this.task = tointfunction;
 		this.root = root;
-		root.finaltask=task;
+		root.finaltask = task;
 	}
 	
 	/**
@@ -712,7 +712,7 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 	 * @throws PipelineException
 	 */
 	public PipelineIntStream<I1> mapToInt(SToIntFunction<I1> tointfunction) throws PipelineException  {
-		if(Objects.isNull(tointfunction)) {
+		if (Objects.isNull(tointfunction)) {
 			throw new PipelineException(PipelineConstants.MAPTOINTNULL);
 		}
 		var map = new PipelineIntStream<>(root, tointfunction);
@@ -726,12 +726,12 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 	 * @param root
 	 * @param keybyfunction
 	 */
-	@SuppressWarnings({ "unchecked" })
+	@SuppressWarnings({"unchecked"})
 	protected IgnitePipeline(AbstractPipeline root,
-			KeyByFunction<I1,I1> keybyfunction) {
+			KeyByFunction<I1, I1> keybyfunction) {
 		this.task = keybyfunction;
 		this.root = root;
-		root.finaltask=task;
+		root.finaltask = task;
 	}
 	
 	/**
@@ -741,11 +741,11 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 	 * @return MapPair object.
 	 * @throws PipelineException
 	 */
-	public <O> MapPair<O,I1> keyBy(KeyByFunction<I1,O> keybyfunction) throws PipelineException  {
-		if(Objects.isNull(keybyfunction)) {
+	public <O> MapPair<O, I1> keyBy(KeyByFunction<I1, O> keybyfunction) throws PipelineException  {
+		if (Objects.isNull(keybyfunction)) {
 			throw new PipelineException(PipelineConstants.KEYBYNULL);
 		}
-		var mt = new MapPair(root,keybyfunction);
+		var mt = new MapPair(root, keybyfunction);
 		mt.parents.add(this);
 		this.childs.add(mt);
 		return mt;
@@ -757,17 +757,17 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 	 * @throws Throwable 
 	 * @
 	 */
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	public void saveAsTextFile(URI uri, String path) throws PipelineException  {
 			log.debug("Caching...");
 			var kryo = Utils.getKryoNonDeflateSerializer();
-			var mdp = (IgnitePipeline)root;
+			var mdp = (IgnitePipeline) root;
 			Utils.writeKryoOutput(kryo, mdp.pipelineconfig.getOutput(), "Caching...");
 			var mdscollect = (IgnitePipeline) root;
 			mdscollect.finaltasks.clear();
 			mdscollect.finaltasks.add(mdscollect.finaltask);
 			mdscollect.mdsroots.add(root);
-			mdscollect.cacheInternal(true,uri,path);
+			mdscollect.cacheInternal(true, uri, path);
 			log.debug("Cached....");
 			Utils.writeKryoOutput(kryo, mdp.pipelineconfig.getOutput(), "Cached...");
 	}
@@ -783,18 +783,18 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 	 * @throws PipelineException 
 	 * @
 	 */
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	public IgnitePipeline<I1> cache(boolean isresults) throws PipelineException  {
 		try {
 			log.debug("Caching...");
 			var kryo = Utils.getKryoNonDeflateSerializer();
-			var mdp = (IgnitePipeline)root;
+			var mdp = (IgnitePipeline) root;
 			Utils.writeKryoOutput(kryo, mdp.pipelineconfig.getOutput(), "Caching...");
 			var mdscollect = (IgnitePipeline) root;
 			mdscollect.finaltasks.clear();
 			mdscollect.finaltasks.add(mdscollect.finaltask);
 			mdscollect.mdsroots.add(root);
-			var job = mdscollect.cacheInternal(isresults,null,null);
+			var job = mdscollect.cacheInternal(isresults, null, null);
 			log.debug("Cached....");
 			Utils.writeKryoOutput(kryo, mdp.pipelineconfig.getOutput(), "Cached...");
 			var mdpcached = new IgnitePipeline();
@@ -802,9 +802,9 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 			mdpcached.pipelineconfig = mdp.pipelineconfig;
 			return mdpcached;
 		}
-		catch(Exception ex) {
+		catch (Exception ex) {
 			log.error(PipelineConstants.PIPELINECOLLECTERROR, ex);
-			throw new PipelineException(PipelineConstants.PIPELINECOLLECTERROR,ex);
+			throw new PipelineException(PipelineConstants.PIPELINECOLLECTERROR, ex);
 		}
 	}
 	
@@ -816,7 +816,7 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 	 * @return list
 	 * @throws PipelineException
 	 */
-	@SuppressWarnings({ "rawtypes" })
+	@SuppressWarnings({"rawtypes"})
 	public List collect(boolean toexecute, IntSupplier supplier) throws PipelineException {
 		try {
 			log.debug("Caching...");
@@ -827,7 +827,7 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 			mdscollect.finaltasks.clear();
 			mdscollect.finaltasks.add(mdscollect.finaltask);
 			mdscollect.mdsroots.add(root);
-			var job = mdscollect.cacheInternal(true,null,null);
+			var job = mdscollect.cacheInternal(true, null, null);
 			return (List) job.results;
 		} catch (Exception ex) {
 			log.error(PipelineConstants.PIPELINECOLLECTERROR, ex);
@@ -851,12 +851,12 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 			mdscollect.finaltasks.clear();
 			mdscollect.finaltasks.add(mdp.task);
 			mdscollect.mdsroots.add(root);
-			var job = mdscollect.cacheInternal(true,null,null);
+			var job = mdscollect.cacheInternal(true, null, null);
 			return (List) job.results;
 		}
-		catch(Exception ex) {
+		catch (Exception ex) {
 			log.error(PipelineConstants.PIPELINECOUNTERROR, ex);
-			throw new PipelineException(PipelineConstants.PIPELINECOUNTERROR,ex);
+			throw new PipelineException(PipelineConstants.PIPELINECOUNTERROR, ex);
 		}
 	}
 	
@@ -866,7 +866,7 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 	 * @param supplier
 	 * @throws PipelineException
 	 */
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	public void forEach(Consumer<?> consumer, IntSupplier supplier) throws PipelineException  {
 		try {
 			var mdscollect = (IgnitePipeline) root;
@@ -874,13 +874,13 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 			mdscollect.finaltasks.add(mdscollect.finaltask);
 	
 			mdscollect.mdsroots.add(root);
-			var job = mdscollect.cacheInternal(true,null,null);
+			var job = mdscollect.cacheInternal(true, null, null);
 			var results = (List<?>) job.results;
 			results.stream().forEach((Consumer) consumer);
 		}
-		catch(Exception ex) {
+		catch (Exception ex) {
 			log.error(PipelineConstants.PIPELINEFOREACHERROR, ex);
-			throw new PipelineException(PipelineConstants.PIPELINEFOREACHERROR,ex);
+			throw new PipelineException(PipelineConstants.PIPELINEFOREACHERROR, ex);
 		}
 	}
 	

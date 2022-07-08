@@ -31,10 +31,10 @@ public class HttpRequestHandler extends AbstractHandler {
 	public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response)
 			throws IOException, ServletException {
 		var relativePath = request.getPathInfo();
-		var filePath = dir+relativePath;
+		var filePath = dir + relativePath;
 		var downloadFile = new File(filePath);
-		try(var inStream = new FileInputStream(downloadFile);
-				var outStream = response.getOutputStream();){
+		try (var inStream = new FileInputStream(downloadFile);
+				var outStream = response.getOutputStream();) {
 			
 	
 			// if you want to use a relative path to context root:
@@ -69,8 +69,8 @@ public class HttpRequestHandler extends AbstractHandler {
 	
 			baseRequest.setHandled(true);
 		}
-		catch(Exception ex) {
-			log.error("Not able to upload file: ",ex);
+		catch (Exception ex) {
+			log.error("Not able to upload file: ", ex);
 		}
 	}
 }

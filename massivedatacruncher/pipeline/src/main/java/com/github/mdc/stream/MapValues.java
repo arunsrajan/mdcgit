@@ -13,12 +13,12 @@ import com.github.mdc.stream.functions.ReduceByKeyFunctionValues;
  * @param <I2>
  */
 public final class MapValues<I1,I2> extends MapPair<I1,I2> {
-	@SuppressWarnings({ "unchecked" })
+	@SuppressWarnings({"unchecked"})
 	private MapValues(AbstractPipeline root,
 			ReduceByKeyFunctionValues<I2> rfv)  {
 		this.task = rfv;
 		this.root = root;
-		root.finaltask=task;
+		root.finaltask = task;
 	}
 	
 	/**
@@ -29,10 +29,10 @@ public final class MapValues<I1,I2> extends MapPair<I1,I2> {
 	 * @param mvf
 	 */
 	@SuppressWarnings("unchecked")
-	public <I3,I4> MapValues(AbstractPipeline root, MapValuesFunction<? super I2, ? extends Tuple2<I3,I4>> mvf) {
+	public <I3, I4> MapValues(AbstractPipeline root, MapValuesFunction<? super I2, ? extends Tuple2<I3, I4>> mvf) {
 		this.task = mvf;
 		this.root = root;
-		root.finaltask=task;
+		root.finaltask = task;
 	}
 	
 	/**
@@ -40,8 +40,8 @@ public final class MapValues<I1,I2> extends MapPair<I1,I2> {
 	 * @param rfv
 	 * @return
 	 */
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public MapValues<I1,I2> reduceByValues(ReduceByKeyFunctionValues<I2> rfv)  {
+	@SuppressWarnings({"unchecked", "rawtypes"})
+	public MapValues<I1, I2> reduceByValues(ReduceByKeyFunctionValues<I2> rfv)  {
 		var mapvalues = new MapValues(root, rfv);
 		this.childs.add(mapvalues);
 		mapvalues.parents.add(this);

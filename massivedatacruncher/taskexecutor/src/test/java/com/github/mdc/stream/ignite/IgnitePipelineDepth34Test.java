@@ -13,12 +13,12 @@ import org.junit.runners.MethodSorters;
 
 import com.github.mdc.stream.IgnitePipeline;
 
-@SuppressWarnings({ "unchecked", "serial", "rawtypes" })
+@SuppressWarnings({"unchecked", "serial", "rawtypes"})
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 
 	boolean toexecute = true;
-	int sum = 0;
+	int sum;
 
 	@Test
 	public void testSampleMapPairReduceByKeyFilterForEach() throws Throwable {
@@ -404,7 +404,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
-				}).reduceByKey((a, b) -> a + b).peek(val->System.out.println(val)).collect(toexecute, null);
+				}).reduceByKey((a, b) -> a + b).peek(val -> System.out.println(val)).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -425,7 +425,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
-				}).reduceByKey((a, b) -> a + b).peek(val->System.out.println(val)).count(null);
+				}).reduceByKey((a, b) -> a + b).peek(val -> System.out.println(val)).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -449,7 +449,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
-				}).reduceByKey((a, b) -> a + b).peek(val->System.out.println(val)).forEach(lis -> {
+				}).reduceByKey((a, b) -> a + b).peek(val -> System.out.println(val)).forEach(lis -> {
 					sum += ((List) lis).size();
 				}, null);
 
@@ -746,10 +746,10 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 		log.info("testSamplePeekFilter Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List> data = (List) datapipeline.sample(46361).peek(val->System.out.println(val))
+		List<List> data = (List) datapipeline.sample(46361).peek(val -> System.out.println(val))
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).collect(toexecute, null);
 		int sum = 0;
@@ -767,10 +767,10 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 		log.info("testSamplePeekFilterCount Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List<Long>> data = (List) datapipeline.sample(46361).peek(val->System.out.println(val))
+		List<List<Long>> data = (List) datapipeline.sample(46361).peek(val -> System.out.println(val))
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).count(null);
 		long sum = 0;
@@ -791,10 +791,10 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.sample(46361).peek(val->System.out.println(val))
+		datapipeline.sample(46361).peek(val -> System.out.println(val))
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).forEach(lis -> {
 					sum += ((List) lis).size();
@@ -810,7 +810,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 		log.info("testSamplePeekFlatMap Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List> data = (List) datapipeline.sample(46361).peek(val->System.out.println(val))
+		List<List> data = (List) datapipeline.sample(46361).peek(val -> System.out.println(val))
 				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
@@ -831,7 +831,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 		log.info("testSamplePeekFlatMapCount Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List<Long>> data = (List) datapipeline.sample(46361).peek(val->System.out.println(val))
+		List<List<Long>> data = (List) datapipeline.sample(46361).peek(val -> System.out.println(val))
 				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
@@ -855,7 +855,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.sample(46361).peek(val->System.out.println(val))
+		datapipeline.sample(46361).peek(val -> System.out.println(val))
 				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
@@ -874,7 +874,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 		log.info("testSamplePeekMap Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List> data = (List) datapipeline.sample(46361).peek(val->System.out.println(val))
+		List<List> data = (List) datapipeline.sample(46361).peek(val -> System.out.println(val))
 				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
@@ -895,7 +895,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 		log.info("testSamplePeekMapCount Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List<Long>> data = (List) datapipeline.sample(46361).peek(val->System.out.println(val))
+		List<List<Long>> data = (List) datapipeline.sample(46361).peek(val -> System.out.println(val))
 				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
@@ -919,7 +919,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.sample(46361).peek(val->System.out.println(val))
+		datapipeline.sample(46361).peek(val -> System.out.println(val))
 				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
@@ -938,7 +938,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 		log.info("testSamplePeekMapPair Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List> data = (List) datapipeline.sample(46361).peek(val->System.out.println(val)).mapToPair(
+		List<List> data = (List) datapipeline.sample(46361).peek(val -> System.out.println(val)).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -959,7 +959,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 		log.info("testSamplePeekMapPairCount Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List<Long>> data = (List) datapipeline.sample(46361).peek(val->System.out.println(val)).mapToPair(
+		List<List<Long>> data = (List) datapipeline.sample(46361).peek(val -> System.out.println(val)).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -983,7 +983,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.sample(46361).peek(val->System.out.println(val)).mapToPair(
+		datapipeline.sample(46361).peek(val -> System.out.println(val)).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -1002,7 +1002,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 		log.info("testSamplePeekMapPairGroupByKey Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List<Tuple2>> data = (List) datapipeline.sample(46361).peek(val->System.out.println(val)).mapToPair(
+		List<List<Tuple2>> data = (List) datapipeline.sample(46361).peek(val -> System.out.println(val)).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -1025,7 +1025,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.sample(46361).peek(val->System.out.println(val)).mapToPair(
+		datapipeline.sample(46361).peek(val -> System.out.println(val)).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -1047,7 +1047,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 		log.info("testSamplePeekMapPairReduceByKey Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List> data = (List) datapipeline.sample(46361).peek(val->System.out.println(val)).mapToPair(
+		List<List> data = (List) datapipeline.sample(46361).peek(val -> System.out.println(val)).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -1068,7 +1068,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 		log.info("testSamplePeekMapPairReduceByKeyCount Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List<Long>> data = (List) datapipeline.sample(46361).peek(val->System.out.println(val)).mapToPair(
+		List<List<Long>> data = (List) datapipeline.sample(46361).peek(val -> System.out.println(val)).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -1092,7 +1092,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.sample(46361).peek(val->System.out.println(val)).mapToPair(
+		datapipeline.sample(46361).peek(val -> System.out.println(val)).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -1111,7 +1111,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 		log.info("testSamplePeekPeek Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List> data = (List) datapipeline.sample(46361).peek(val->System.out.println(val)).peek(val->System.out.println(val))
+		List<List> data = (List) datapipeline.sample(46361).peek(val -> System.out.println(val)).peek(val -> System.out.println(val))
 				.collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
@@ -1128,7 +1128,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 		log.info("testSamplePeekPeekCount Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List<Long>> data = (List) datapipeline.sample(46361).peek(val->System.out.println(val)).peek(val->System.out.println(val))
+		List<List<Long>> data = (List) datapipeline.sample(46361).peek(val -> System.out.println(val)).peek(val -> System.out.println(val))
 				.count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
@@ -1148,7 +1148,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.sample(46361).peek(val->System.out.println(val)).peek(val->System.out.println(val)).forEach(lis -> {
+		datapipeline.sample(46361).peek(val -> System.out.println(val)).peek(val -> System.out.println(val)).forEach(lis -> {
 			sum += ((List) lis).size();
 		}, null);
 
@@ -1162,7 +1162,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 		log.info("testSamplePeekSample Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List> data = (List) datapipeline.sample(46361).peek(val->System.out.println(val)).sample(46361).collect(toexecute,
+		List<List> data = (List) datapipeline.sample(46361).peek(val -> System.out.println(val)).sample(46361).collect(toexecute,
 				null);
 		int sum = 0;
 		for (List partitioneddata : data) {
@@ -1179,7 +1179,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 		log.info("testSamplePeekSampleCount Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List<Long>> data = (List) datapipeline.sample(46361).peek(val->System.out.println(val)).sample(46361).count(null);
+		List<List<Long>> data = (List) datapipeline.sample(46361).peek(val -> System.out.println(val)).sample(46361).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -1198,7 +1198,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.sample(46361).peek(val->System.out.println(val)).sample(46361).forEach(lis -> {
+		datapipeline.sample(46361).peek(val -> System.out.println(val)).sample(46361).forEach(lis -> {
 			sum += ((List) lis).size();
 		}, null);
 
@@ -1212,7 +1212,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 		log.info("testSamplePeekSorted Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List> data = (List) datapipeline.sample(46361).peek(val->System.out.println(val))
+		List<List> data = (List) datapipeline.sample(46361).peek(val -> System.out.println(val))
 				.sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
 					public int compare(java.lang.String value1, java.lang.String value2) {
 						return value1.compareTo(value2);
@@ -1233,7 +1233,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 		log.info("testSamplePeekSortedCount Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List<Long>> data = (List) datapipeline.sample(46361).peek(val->System.out.println(val))
+		List<List<Long>> data = (List) datapipeline.sample(46361).peek(val -> System.out.println(val))
 				.sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
 					public int compare(java.lang.String value1, java.lang.String value2) {
 						return value1.compareTo(value2);
@@ -1257,7 +1257,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.sample(46361).peek(val->System.out.println(val))
+		datapipeline.sample(46361).peek(val -> System.out.println(val))
 				.sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
 					public int compare(java.lang.String value1, java.lang.String value2) {
 						return value1.compareTo(value2);
@@ -1279,7 +1279,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 		List<List> data = (List) datapipeline.sample(46361).sample(46361)
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).collect(toexecute, null);
 		int sum = 0;
@@ -1300,7 +1300,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 		List<List<Long>> data = (List) datapipeline.sample(46361).sample(46361)
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).count(null);
 		long sum = 0;
@@ -1324,7 +1324,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 		datapipeline.sample(46361).sample(46361)
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).forEach(lis -> {
 					sum += ((List) lis).size();
@@ -1641,7 +1641,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 		log.info("testSampleSamplePeek Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List> data = (List) datapipeline.sample(46361).sample(46361).peek(val->System.out.println(val)).collect(toexecute,
+		List<List> data = (List) datapipeline.sample(46361).sample(46361).peek(val -> System.out.println(val)).collect(toexecute,
 				null);
 		int sum = 0;
 		for (List partitioneddata : data) {
@@ -1658,7 +1658,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 		log.info("testSampleSamplePeekCount Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List<Long>> data = (List) datapipeline.sample(46361).sample(46361).peek(val->System.out.println(val)).count(null);
+		List<List<Long>> data = (List) datapipeline.sample(46361).sample(46361).peek(val -> System.out.println(val)).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -1677,7 +1677,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.sample(46361).sample(46361).peek(val->System.out.println(val)).forEach(lis -> {
+		datapipeline.sample(46361).sample(46361).peek(val -> System.out.println(val)).forEach(lis -> {
 			sum += ((List) lis).size();
 		}, null);
 
@@ -1811,7 +1811,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).collect(toexecute, null);
 		int sum = 0;
@@ -1836,7 +1836,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).count(null);
 		long sum = 0;
@@ -1863,7 +1863,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 			}
 		}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).forEach(lis -> {
 			sum += ((List) lis).size();
@@ -2249,7 +2249,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 					public int compare(java.lang.String value1, java.lang.String value2) {
 						return value1.compareTo(value2);
 					}
-				}).peek(val->System.out.println(val)).collect(toexecute, null);
+				}).peek(val -> System.out.println(val)).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -2270,7 +2270,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 					public int compare(java.lang.String value1, java.lang.String value2) {
 						return value1.compareTo(value2);
 					}
-				}).peek(val->System.out.println(val)).count(null);
+				}).peek(val -> System.out.println(val)).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -2293,7 +2293,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 			public int compare(java.lang.String value1, java.lang.String value2) {
 				return value1.compareTo(value2);
 			}
-		}).peek(val->System.out.println(val)).forEach(lis -> {
+		}).peek(val -> System.out.println(val)).forEach(lis -> {
 			sum += ((List) lis).size();
 		}, null);
 
@@ -2451,11 +2451,11 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 			}
 		}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).collect(toexecute, null);
 		int sum = 0;
@@ -2480,11 +2480,11 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).count(null);
 		long sum = 0;
@@ -2511,11 +2511,11 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 			}
 		}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).forEach(lis -> {
 			sum += ((List) lis).size();
@@ -2537,7 +2537,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 			}
 		}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
@@ -2566,7 +2566,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
@@ -2597,7 +2597,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 			}
 		}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
@@ -2623,7 +2623,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 			}
 		}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 			public java.lang.String[] apply(java.lang.String value) {
@@ -2652,7 +2652,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
@@ -2683,7 +2683,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 			}
 		}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 			public java.lang.String[] apply(java.lang.String value) {
@@ -2709,7 +2709,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 			}
 		}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -2739,7 +2739,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
 						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -2772,7 +2772,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 			}
 		}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -2800,7 +2800,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
 						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -2832,7 +2832,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 			}
 		}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -2862,7 +2862,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 			}
 		}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -2892,7 +2892,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
 						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -2925,7 +2925,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 			}
 		}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -2952,9 +2952,9 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 			}
 		}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
-		}).peek(val->System.out.println(val)).collect(toexecute, null);
+		}).peek(val -> System.out.println(val)).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -2977,9 +2977,9 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).peek(val->System.out.println(val)).count(null);
+				}).peek(val -> System.out.println(val)).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -3004,9 +3004,9 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 			}
 		}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
-		}).peek(val->System.out.println(val)).forEach(lis -> {
+		}).peek(val -> System.out.println(val)).forEach(lis -> {
 			sum += ((List) lis).size();
 		}, null);
 
@@ -3026,7 +3026,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 			}
 		}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).sample(46361).collect(toexecute, null);
 		int sum = 0;
@@ -3051,7 +3051,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).sample(46361).count(null);
 		long sum = 0;
@@ -3078,7 +3078,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 			}
 		}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).sample(46361).forEach(lis -> {
 			sum += ((List) lis).size();
@@ -3100,7 +3100,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 			}
 		}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
 			public int compare(java.lang.String value1, java.lang.String value2) {
@@ -3129,7 +3129,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
 					public int compare(java.lang.String value1, java.lang.String value2) {
@@ -3160,7 +3160,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 			}
 		}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
 			public int compare(java.lang.String value1, java.lang.String value2) {
@@ -3190,7 +3190,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 			}
 		}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).collect(toexecute, null);
 		int sum = 0;
@@ -3219,7 +3219,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).count(null);
 		long sum = 0;
@@ -3250,7 +3250,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 			}
 		}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).forEach(lis -> {
 			sum += ((List) lis).size();
@@ -3689,7 +3689,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
-		}).peek(val->System.out.println(val)).collect(toexecute, null);
+		}).peek(val -> System.out.println(val)).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -3714,7 +3714,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).peek(val->System.out.println(val)).count(null);
+				}).peek(val -> System.out.println(val)).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -3741,7 +3741,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
-		}).peek(val->System.out.println(val)).forEach(lis -> {
+		}).peek(val -> System.out.println(val)).forEach(lis -> {
 			sum += ((List) lis).size();
 		}, null);
 
@@ -3925,7 +3925,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 			}
 		}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String[]>() {
 			public boolean test(java.lang.String[] value) {
-				return !value[14].equals("NA") && !value[14].equals("ArrDelay");
+				return !"NA".equals(value[14]) && !"ArrDelay".equals(value[14]);
 			}
 		}).collect(toexecute, null);
 		int sum = 0;
@@ -3954,7 +3954,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String[]>() {
 					public boolean test(java.lang.String[] value) {
-						return !value[14].equals("NA") && !value[14].equals("ArrDelay");
+						return !"NA".equals(value[14]) && !"ArrDelay".equals(value[14]);
 					}
 				}).count(null);
 		long sum = 0;
@@ -3985,7 +3985,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 			}
 		}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String[]>() {
 			public boolean test(java.lang.String[] value) {
-				return !value[14].equals("NA") && !value[14].equals("ArrDelay");
+				return !"NA".equals(value[14]) && !"ArrDelay".equals(value[14]);
 			}
 		}).forEach(lis -> {
 			sum += ((List) lis).size();
@@ -4424,7 +4424,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 			public java.lang.String[] apply(java.lang.String value) {
 				return value.split(",");
 			}
-		}).peek(val->System.out.println(val)).collect(toexecute, null);
+		}).peek(val -> System.out.println(val)).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -4449,7 +4449,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
-				}).peek(val->System.out.println(val)).count(null);
+				}).peek(val -> System.out.println(val)).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -4476,7 +4476,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 			public java.lang.String[] apply(java.lang.String value) {
 				return value.split(",");
 			}
-		}).peek(val->System.out.println(val)).forEach(lis -> {
+		}).peek(val -> System.out.println(val)).forEach(lis -> {
 			sum += ((List) lis).size();
 		}, null);
 
@@ -5204,7 +5204,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 							}
 						})
-				.groupByKey().peek(val->System.out.println(val)).collect(toexecute, null);
+				.groupByKey().peek(val -> System.out.println(val)).collect(toexecute, null);
 		int sum = 0;
 		for (List<Tuple2> lsttuples : data) {
 			for (Tuple2 tuple2 : lsttuples) {
@@ -5231,7 +5231,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
-				}).groupByKey().peek(val->System.out.println(val)).forEach(lsttuples -> {
+				}).groupByKey().peek(val -> System.out.println(val)).forEach(lsttuples -> {
 					for (Tuple2 tuple2 : lsttuples) {
 						sum += ((List) tuple2.v2).size();
 					}
@@ -5712,7 +5712,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
-				}).peek(val->System.out.println(val)).collect(toexecute, null);
+				}).peek(val -> System.out.println(val)).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -5739,7 +5739,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 							}
 						})
-				.peek(val->System.out.println(val)).count(null);
+				.peek(val -> System.out.println(val)).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -5767,7 +5767,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
-				}).peek(val->System.out.println(val)).forEach(lis -> {
+				}).peek(val -> System.out.println(val)).forEach(lis -> {
 					sum += ((List) lis).size();
 				}, null);
 
@@ -6298,7 +6298,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
-				}).reduceByKey((a, b) -> a + b).peek(val->System.out.println(val)).collect(toexecute, null);
+				}).reduceByKey((a, b) -> a + b).peek(val -> System.out.println(val)).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -6325,7 +6325,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 							}
 						})
-				.reduceByKey((a, b) -> a + b).peek(val->System.out.println(val)).count(null);
+				.reduceByKey((a, b) -> a + b).peek(val -> System.out.println(val)).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -6353,7 +6353,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
-				}).reduceByKey((a, b) -> a + b).peek(val->System.out.println(val)).forEach(lis -> {
+				}).reduceByKey((a, b) -> a + b).peek(val -> System.out.println(val)).forEach(lis -> {
 					sum += ((List) lis).size();
 				}, null);
 
@@ -6710,9 +6710,9 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 			public int compare(java.lang.String value1, java.lang.String value2) {
 				return value1.compareTo(value2);
 			}
-		}).peek(val->System.out.println(val)).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		}).peek(val -> System.out.println(val)).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).collect(toexecute, null);
 		int sum = 0;
@@ -6735,10 +6735,10 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 					public int compare(java.lang.String value1, java.lang.String value2) {
 						return value1.compareTo(value2);
 					}
-				}).peek(val->System.out.println(val))
+				}).peek(val -> System.out.println(val))
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).count(null);
 		long sum = 0;
@@ -6763,9 +6763,9 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 			public int compare(java.lang.String value1, java.lang.String value2) {
 				return value1.compareTo(value2);
 			}
-		}).peek(val->System.out.println(val)).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		}).peek(val -> System.out.println(val)).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).forEach(lis -> {
 			sum += ((List) lis).size();
@@ -6785,7 +6785,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 			public int compare(java.lang.String value1, java.lang.String value2) {
 				return value1.compareTo(value2);
 			}
-		}).peek(val->System.out.println(val))
+		}).peek(val -> System.out.println(val))
 				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
@@ -6811,7 +6811,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 					public int compare(java.lang.String value1, java.lang.String value2) {
 						return value1.compareTo(value2);
 					}
-				}).peek(val->System.out.println(val))
+				}).peek(val -> System.out.println(val))
 				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
@@ -6839,7 +6839,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 			public int compare(java.lang.String value1, java.lang.String value2) {
 				return value1.compareTo(value2);
 			}
-		}).peek(val->System.out.println(val))
+		}).peek(val -> System.out.println(val))
 				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
@@ -6862,7 +6862,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 			public int compare(java.lang.String value1, java.lang.String value2) {
 				return value1.compareTo(value2);
 			}
-		}).peek(val->System.out.println(val))
+		}).peek(val -> System.out.println(val))
 				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
@@ -6888,7 +6888,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 					public int compare(java.lang.String value1, java.lang.String value2) {
 						return value1.compareTo(value2);
 					}
-				}).peek(val->System.out.println(val))
+				}).peek(val -> System.out.println(val))
 				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
@@ -6916,7 +6916,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 			public int compare(java.lang.String value1, java.lang.String value2) {
 				return value1.compareTo(value2);
 			}
-		}).peek(val->System.out.println(val))
+		}).peek(val -> System.out.println(val))
 				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
@@ -6939,7 +6939,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 			public int compare(java.lang.String value1, java.lang.String value2) {
 				return value1.compareTo(value2);
 			}
-		}).peek(val->System.out.println(val)).mapToPair(
+		}).peek(val -> System.out.println(val)).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -6965,7 +6965,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 					public int compare(java.lang.String value1, java.lang.String value2) {
 						return value1.compareTo(value2);
 					}
-				}).peek(val->System.out.println(val)).mapToPair(
+				}).peek(val -> System.out.println(val)).mapToPair(
 						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -6994,7 +6994,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 			public int compare(java.lang.String value1, java.lang.String value2) {
 				return value1.compareTo(value2);
 			}
-		}).peek(val->System.out.println(val)).mapToPair(
+		}).peek(val -> System.out.println(val)).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -7018,7 +7018,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 					public int compare(java.lang.String value1, java.lang.String value2) {
 						return value1.compareTo(value2);
 					}
-				}).peek(val->System.out.println(val)).mapToPair(
+				}).peek(val -> System.out.println(val)).mapToPair(
 						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -7046,7 +7046,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 			public int compare(java.lang.String value1, java.lang.String value2) {
 				return value1.compareTo(value2);
 			}
-		}).peek(val->System.out.println(val)).mapToPair(
+		}).peek(val -> System.out.println(val)).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -7072,7 +7072,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 			public int compare(java.lang.String value1, java.lang.String value2) {
 				return value1.compareTo(value2);
 			}
-		}).peek(val->System.out.println(val)).mapToPair(
+		}).peek(val -> System.out.println(val)).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -7098,7 +7098,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 					public int compare(java.lang.String value1, java.lang.String value2) {
 						return value1.compareTo(value2);
 					}
-				}).peek(val->System.out.println(val)).mapToPair(
+				}).peek(val -> System.out.println(val)).mapToPair(
 						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -7127,7 +7127,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 			public int compare(java.lang.String value1, java.lang.String value2) {
 				return value1.compareTo(value2);
 			}
-		}).peek(val->System.out.println(val)).mapToPair(
+		}).peek(val -> System.out.println(val)).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -7150,7 +7150,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 			public int compare(java.lang.String value1, java.lang.String value2) {
 				return value1.compareTo(value2);
 			}
-		}).peek(val->System.out.println(val)).peek(val->System.out.println(val)).collect(toexecute, null);
+		}).peek(val -> System.out.println(val)).peek(val -> System.out.println(val)).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -7171,7 +7171,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 					public int compare(java.lang.String value1, java.lang.String value2) {
 						return value1.compareTo(value2);
 					}
-				}).peek(val->System.out.println(val)).peek(val->System.out.println(val)).count(null);
+				}).peek(val -> System.out.println(val)).peek(val -> System.out.println(val)).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -7194,7 +7194,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 			public int compare(java.lang.String value1, java.lang.String value2) {
 				return value1.compareTo(value2);
 			}
-		}).peek(val->System.out.println(val)).peek(val->System.out.println(val)).forEach(lis -> {
+		}).peek(val -> System.out.println(val)).peek(val -> System.out.println(val)).forEach(lis -> {
 			sum += ((List) lis).size();
 		}, null);
 
@@ -7212,7 +7212,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 			public int compare(java.lang.String value1, java.lang.String value2) {
 				return value1.compareTo(value2);
 			}
-		}).peek(val->System.out.println(val)).sample(46361).collect(toexecute, null);
+		}).peek(val -> System.out.println(val)).sample(46361).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -7233,7 +7233,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 					public int compare(java.lang.String value1, java.lang.String value2) {
 						return value1.compareTo(value2);
 					}
-				}).peek(val->System.out.println(val)).sample(46361).count(null);
+				}).peek(val -> System.out.println(val)).sample(46361).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -7256,7 +7256,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 			public int compare(java.lang.String value1, java.lang.String value2) {
 				return value1.compareTo(value2);
 			}
-		}).peek(val->System.out.println(val)).sample(46361).forEach(lis -> {
+		}).peek(val -> System.out.println(val)).sample(46361).forEach(lis -> {
 			sum += ((List) lis).size();
 		}, null);
 
@@ -7274,7 +7274,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 			public int compare(java.lang.String value1, java.lang.String value2) {
 				return value1.compareTo(value2);
 			}
-		}).peek(val->System.out.println(val)).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
+		}).peek(val -> System.out.println(val)).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
 			public int compare(java.lang.String value1, java.lang.String value2) {
 				return value1.compareTo(value2);
 			}
@@ -7299,7 +7299,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 					public int compare(java.lang.String value1, java.lang.String value2) {
 						return value1.compareTo(value2);
 					}
-				}).peek(val->System.out.println(val)).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
+				}).peek(val -> System.out.println(val)).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
 					public int compare(java.lang.String value1, java.lang.String value2) {
 						return value1.compareTo(value2);
 					}
@@ -7326,7 +7326,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 			public int compare(java.lang.String value1, java.lang.String value2) {
 				return value1.compareTo(value2);
 			}
-		}).peek(val->System.out.println(val)).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
+		}).peek(val -> System.out.println(val)).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
 			public int compare(java.lang.String value1, java.lang.String value2) {
 				return value1.compareTo(value2);
 			}
@@ -7350,7 +7350,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 			}
 		}).sample(46361).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).collect(toexecute, null);
 		int sum = 0;
@@ -7375,7 +7375,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 					}
 				}).sample(46361).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).count(null);
 		long sum = 0;
@@ -7402,7 +7402,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 			}
 		}).sample(46361).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).forEach(lis -> {
 			sum += ((List) lis).size();
@@ -7782,7 +7782,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 			public int compare(java.lang.String value1, java.lang.String value2) {
 				return value1.compareTo(value2);
 			}
-		}).sample(46361).peek(val->System.out.println(val)).collect(toexecute, null);
+		}).sample(46361).peek(val -> System.out.println(val)).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -7803,7 +7803,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 					public int compare(java.lang.String value1, java.lang.String value2) {
 						return value1.compareTo(value2);
 					}
-				}).sample(46361).peek(val->System.out.println(val)).count(null);
+				}).sample(46361).peek(val -> System.out.println(val)).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -7826,7 +7826,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 			public int compare(java.lang.String value1, java.lang.String value2) {
 				return value1.compareTo(value2);
 			}
-		}).sample(46361).peek(val->System.out.println(val)).forEach(lis -> {
+		}).sample(46361).peek(val -> System.out.println(val)).forEach(lis -> {
 			sum += ((List) lis).size();
 		}, null);
 
@@ -7986,7 +7986,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 			}
 		}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).collect(toexecute, null);
 		int sum = 0;
@@ -8015,7 +8015,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).count(null);
 		long sum = 0;
@@ -8046,7 +8046,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 			}
 		}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).forEach(lis -> {
 			sum += ((List) lis).size();
@@ -8485,7 +8485,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 			public int compare(java.lang.String value1, java.lang.String value2) {
 				return value1.compareTo(value2);
 			}
-		}).peek(val->System.out.println(val)).collect(toexecute, null);
+		}).peek(val -> System.out.println(val)).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -8510,7 +8510,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 					public int compare(java.lang.String value1, java.lang.String value2) {
 						return value1.compareTo(value2);
 					}
-				}).peek(val->System.out.println(val)).count(null);
+				}).peek(val -> System.out.println(val)).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -8537,7 +8537,7 @@ public class IgnitePipelineDepth34Test extends StreamPipelineIgniteBase {
 			public int compare(java.lang.String value1, java.lang.String value2) {
 				return value1.compareTo(value2);
 			}
-		}).peek(val->System.out.println(val)).forEach(lis -> {
+		}).peek(val -> System.out.println(val)).forEach(lis -> {
 			sum += ((List) lis).size();
 		}, null);
 

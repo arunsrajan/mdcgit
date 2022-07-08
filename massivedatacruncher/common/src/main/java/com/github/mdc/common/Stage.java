@@ -11,7 +11,7 @@ import java.util.Set;
  * @author Arun
  * Stage information of the streaming MR api.
  */
-public class Stage implements Serializable,Cloneable{
+public class Stage implements Serializable,Cloneable {
 
 	private static final long serialVersionUID = 2272815602378403537L;
 	public String id;
@@ -19,16 +19,16 @@ public class Stage implements Serializable,Cloneable{
 	public Integer number;
 	public List<Object> tasks = new ArrayList<>();
 	public Set<Stage> parent = new LinkedHashSet<>(),child = new LinkedHashSet<>();
-	public Boolean isstagecompleted=false;
+	public Boolean isstagecompleted = false;
 	public Boolean tovisit = true;
-	public String tasksdescription="";
+	public String tasksdescription = "";
 	@Override
 	public Stage clone() throws CloneNotSupportedException {
 		return (Stage) super.clone();
 	}
 	@Override
 	public String toString() {
-		return stageid+tasksdescription;
+		return stageid + tasksdescription;
 	}
 	public String getStageid() {
 		return stageid;

@@ -22,7 +22,7 @@ public class StreamPipelineTaskSubmitter implements StreamPipelineTaskSubmitterM
 	private String hp;
 	private boolean completedexecution;
 	private boolean resultobtainedte;
-	public StreamPipelineTaskSubmitter(){}
+	public StreamPipelineTaskSubmitter() {}
 
 	
 	
@@ -38,8 +38,8 @@ public class StreamPipelineTaskSubmitter implements StreamPipelineTaskSubmitterM
 
 
 
-	public StreamPipelineTaskSubmitter(Task task,String hp) {
-		this.task= task;
+	public StreamPipelineTaskSubmitter(Task task, String hp) {
+		this.task = task;
 		this.hp = hp;
 	}
 	
@@ -58,10 +58,10 @@ public class StreamPipelineTaskSubmitter implements StreamPipelineTaskSubmitterM
 	@Override
 	public Context call() throws Exception {
 		try {
-			Utils.writeObject(hp,task);
+			Utils.writeObject(hp, task);
 
 		} catch (Exception ex) {
-			log.error("Unable to connect and submit tasks to executor: ",ex);
+			log.error("Unable to connect and submit tasks to executor: ", ex);
 			throw ex;
 		}
 		return null;
@@ -81,23 +81,30 @@ public class StreamPipelineTaskSubmitter implements StreamPipelineTaskSubmitterM
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
+		if (this == obj) {
 			return true;
-		if (obj == null)
+		}
+		if (obj == null) {
 			return false;
-		if (getClass() != obj.getClass())
+		}
+		if (getClass() != obj.getClass()) {
 			return false;
+		}
 		StreamPipelineTaskSubmitter other = (StreamPipelineTaskSubmitter) obj;
 		if (hp == null) {
-			if (other.hp != null)
+			if (other.hp != null) {
 				return false;
-		} else if (!hp.equals(other.hp))
+			}
+		} else if (!hp.equals(other.hp)) {
 			return false;
+		}
 		if (task == null) {
-			if (other.task != null)
+			if (other.task != null) {
 				return false;
-		} else if (!task.equals(other.task))
+			}
+		} else if (!task.equals(other.task)) {
 			return false;
+		}
 		return true;
 	}
 

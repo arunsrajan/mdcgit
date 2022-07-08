@@ -32,7 +32,7 @@ public class TaskScheduler implements Runnable {
 	public void run() {
 		final ClassLoader loader = Thread.currentThread().getContextClassLoader();
 		new File(MDCConstants.LOCAL_FS_APPJRPATH).mkdirs();
-		try (var fos = new FileOutputStream(MDCConstants.LOCAL_FS_APPJRPATH+filename);) {	
+		try (var fos = new FileOutputStream(MDCConstants.LOCAL_FS_APPJRPATH + filename);) {	
 			fos.write(mrjar);
 			var clsloader = MDCMapReducePhaseClassLoader.newInstance(mrjar, loader);
 			Thread.currentThread().setContextClassLoader(clsloader);
@@ -40,15 +40,15 @@ public class TaskScheduler implements Runnable {
 			String[] argscopy;
 			//Get the main class to execute.
 			String mainclass;
-			if(args==null) {
-				argscopy = new String[] {};
+			if (args == null) {
+				argscopy = new String[]{};
 				mainclass = "";
 			} else {
 				mainclass = args[0];
 				argscopy = Arrays.copyOfRange(args, 1, args.length);
 			}
 			
-			var main = Class.forName(mainclass,true,clsloader);
+			var main = Class.forName(mainclass, true, clsloader);
 			var jc = JobConfigurationBuilder.newBuilder().build();
 			jc.setMrjar(mrjar);
 			var tssos = tss.getOutputStream();

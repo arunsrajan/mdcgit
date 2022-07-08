@@ -39,7 +39,7 @@ public class StreamPipelineJobSubmitter {
 						20000, 50000, new RetryForever(2000));) {
 			cf.start();
 			var hostport = MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULERSTREAM_HOSTPORT);
-			var taskscheduler = (String)ZookeeperOperations.nodedata.invoke(cf,
+			var taskscheduler = (String) ZookeeperOperations.nodedata.invoke(cf,
 					MDCConstants.BACKWARD_SLASH + MDCProperties.get().getProperty(
 							MDCConstants.CLUSTERNAME) + MDCConstants.BACKWARD_SLASH + MDCConstants.TSS,
 					MDCConstants.LEADER,
@@ -47,8 +47,9 @@ public class StreamPipelineJobSubmitter {
 			if (hostport != null || !Objects.isNull(taskscheduler)) {
 				String currenttaskscheduler;
 				// For docker container or kubernetes pods.
-				if (hostport != null)
+				if (hostport != null) {
 					currenttaskscheduler = hostport;
+				}
 				// If not, obtain schedulers host port from zookeeper.
 				else {
 					var rand = new Random(System.currentTimeMillis());
@@ -57,15 +58,15 @@ public class StreamPipelineJobSubmitter {
 				log.info("Using TaskScheduler host port: " + currenttaskscheduler);
 				var mrjarpath = args[0];
 				var ts = currenttaskscheduler.split(MDCConstants.UNDERSCORE);
-				writeToTaskScheduler(ts,mrjarpath,args);
+				writeToTaskScheduler(ts, mrjarpath, args);
 			}
-		}catch (Exception ex) {
+		} catch (Exception ex) {
 			log.error("Exception in submit Jar to Task Scheduler", ex);
 		}
 	}
 
 	
-	public static void writeToTaskScheduler(String[] ts,String mrjarpath,String[] args) {
+	public static void writeToTaskScheduler(String[] ts, String mrjarpath, String[] args) {
 		try (var s = new Socket(ts[0], Integer.parseInt(ts[1]));
 				var is = s.getInputStream();
 				var os = s.getOutputStream();
@@ -91,10 +92,11 @@ public class StreamPipelineJobSubmitter {
 			var kryo = Utils.getKryoNonDeflateSerializer();
 			// Wait for tasks to get completed.
 			while (true) {
-				var messagetasksscheduler = (String) kryo.readObject(input,String.class);
+				var messagetasksscheduler = (String) kryo.readObject(input, String.class);
 				log.info(messagetasksscheduler);
-				if (messagetasksscheduler.trim().equals("quit"))
+				if ("quit".equals(messagetasksscheduler.trim())) {
 					break;
+				}
 			}
 		} catch (Exception ex) {
 			log.error("Exception in submit Jar to Task Scheduler", ex);
@@ -107,7 +109,7 @@ public class StreamPipelineJobSubmitter {
 	 * @param value
 	 * @throws Exception
 	 */
-	public static void writeInt(OutputStream os,Integer value){
+	public static void writeInt(OutputStream os, Integer value) {
 		var kryo = Utils.getKryoNonDeflateSerializer();
 		var output = new Output(os);
 		kryo.writeClassAndObject(output, value);
@@ -120,7 +122,7 @@ public class StreamPipelineJobSubmitter {
 	 * @param outbyt
 	 * @throws Exception
 	 */
-	public static void writeDataStream(OutputStream os,byte[] outbyt){
+	public static void writeDataStream(OutputStream os, byte[] outbyt) {
 		var kryo = Utils.getKryoNonDeflateSerializer();
 		var output = new Output(os);
 		kryo.writeClassAndObject(output, outbyt);

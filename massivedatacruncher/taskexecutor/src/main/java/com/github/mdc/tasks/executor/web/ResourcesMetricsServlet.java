@@ -38,10 +38,10 @@ public class ResourcesMetricsServlet extends HttpServlet {
 			MemoryMXBean membean = ManagementFactory.getMemoryMXBean() ;
 			double systemloadaverage = getProcessCpuLoad();
 			MemoryUsage heap = membean.getHeapMemoryUsage();
-			double heapusage = heap.getUsed()/(double)heap.getMax()*100.0;
+			double heapusage = heap.getUsed() / (double) heap.getMax() * 100.0;
 			MemoryUsage nonheap = membean.getNonHeapMemoryUsage();
-			double nonheapusage = nonheap.getUsed()/(double)nonheap.getMax()*100.0;
-			String[] cpuheap  = {systemloadaverage+MDCConstants.EMPTY,heapusage+MDCConstants.EMPTY,nonheapusage+MDCConstants.EMPTY};
+			double nonheapusage = nonheap.getUsed() / (double) nonheap.getMax() * 100.0;
+			String[] cpuheap  = {systemloadaverage + MDCConstants.EMPTY, heapusage + MDCConstants.EMPTY, nonheapusage + MDCConstants.EMPTY};
 			
 			writer.write(new ObjectMapper().writeValueAsString(cpuheap));
 			writer.flush();
@@ -53,11 +53,15 @@ public class ResourcesMetricsServlet extends HttpServlet {
 
 	    MBeanServer mbs    = ManagementFactory.getPlatformMBeanServer();
 	    ObjectName name    = ObjectName.getInstance("java.lang:type=OperatingSystem");
-	    AttributeList list = mbs.getAttributes(name, new String[]{ "ProcessCpuLoad" });
-	    if (list.isEmpty())     return Double.NaN;
-	    Attribute att = (Attribute)list.get(0);
-	    Double value  = (Double)att.getValue();
-	    if (value == -1.0)      return Double.NaN;
-	    return ((int)(value * 1000) / 10.0);
+	    AttributeList list = mbs.getAttributes(name, new String[]{"ProcessCpuLoad"});
+		if (list.isEmpty()) {
+			return Double.NaN;
+		}
+	    Attribute att = (Attribute) list.get(0);
+	    Double value  = (Double) att.getValue();
+		if (value == -1.0) {
+			return Double.NaN;
+		}
+	    return (int) (value * 1000) / 10.0;
 	}
 }

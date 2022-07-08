@@ -27,12 +27,12 @@ public class StreamReduceJGroupsDivided implements Serializable, Pipeline {
 		testReduce(args, pipelineconfig);
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	public void testReduce(String[] args, PipelineConfig pipelineconfig) throws Exception {
 		log.info("StreamReduceJGroups.testReduce Before---------------------------------------");
 		var datastream = StreamPipeline.newStreamHDFS(args[0], args[1], pipelineconfig);
 		var mappair1 = datastream.map(dat -> dat.split(","))
-				.filter(dat -> !dat[14].equals("ArrDelay") && !dat[14].equals("NA"))
+				.filter(dat -> !"ArrDelay".equals(dat[14]) && !"NA".equals(dat[14]))
 				.mapToPair(dat -> Tuple.tuple(dat[8], Long.parseLong(dat[14])));
 
 		var airlinesamples = mappair1.reduceByKey((dat1, dat2) -> dat1 + dat2).coalesce(1,

@@ -15,19 +15,19 @@ public class MapperCombinerExecutor extends MapperExecutor{
 	@SuppressWarnings("rawtypes")
 	List<Combiner> crunchcombiners;
 	@SuppressWarnings("rawtypes")
-	public MapperCombinerExecutor(BlocksLocation blockslocation,SnappyInputStream datastream,List<Mapper> crunchmappers,
+	public MapperCombinerExecutor(BlocksLocation blockslocation, SnappyInputStream datastream, List<Mapper> crunchmappers,
 			List<Combiner> crunchcombiners) {
-		super(blockslocation,datastream,crunchmappers);
+		super(blockslocation, datastream, crunchmappers);
 		this.crunchcombiners = crunchcombiners;
 	}
 	
-	@SuppressWarnings({"rawtypes" })
+	@SuppressWarnings({"rawtypes"})
 	@Override
 	public Context call() throws Exception {
 		var starttime = System.currentTimeMillis();
 		var ctx = super.call();
-		if(crunchcombiners!=null && crunchcombiners.size()>0) {
-			var mdcc = new CombinerExecutor(ctx,crunchcombiners.get(0));
+		if (crunchcombiners != null && crunchcombiners.size() > 0) {
+			var mdcc = new CombinerExecutor(ctx, crunchcombiners.get(0));
 			ctx = mdcc.call();
 			return ctx;
 		}

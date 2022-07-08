@@ -77,7 +77,7 @@ public class FileBlocksPartitionerHDFS {
 	protected IntSupplier supplier;
 	protected Job job;
 	protected PipelineConfig pipelineconfig;
-	CacheAvailability cacheavailableresponse = null;
+	CacheAvailability cacheavailableresponse;
 	protected List<String> nodessorted;
 	ConcurrentMap<String, Resources> resources;
 	CountDownLatch cdl;
@@ -89,12 +89,12 @@ public class FileBlocksPartitionerHDFS {
 	public List<ContainerResources> getTotalMemoryContainersReuseAllocation(String nodehp, int containerstoallocate) {
 		var containers = GlobalContainerAllocDealloc.getNodecontainers().get(nodehp);
 		var cres = new ArrayList<ContainerResources>();
-		if(!Objects.isNull(containers)&&!containers.isEmpty()) {
+		if (!Objects.isNull(containers) && !containers.isEmpty()) {
 			int contcount = 0;
-			for(String container:containers) {
+			for (String container :containers) {
 				cres.add(GlobalContainerAllocDealloc.getHportcrs().get(container));
 				contcount++;
-				if(contcount>=containerstoallocate) {
+				if (contcount >= containerstoallocate) {
 					break;
 				}
 			}
@@ -114,9 +114,9 @@ public class FileBlocksPartitionerHDFS {
 		totallength = 0;
 		try {
 			totallength = Utils.getTotalLengthByFiles(hdfs, filepaths);
-			var blocksize = (totallength / numpartition);
+			var blocksize = totallength / numpartition;
 
-			return getBlocks(true,blocksize);
+			return getBlocks(true, blocksize);
 		} catch (Exception ex) {
 			log.error(PipelineConstants.FILEIOERROR, ex);
 			throw new PipelineException(PipelineConstants.FILEIOERROR, ex);
@@ -135,7 +135,7 @@ public class FileBlocksPartitionerHDFS {
 	 * @throws IOException
 	 * @throws Exception
 	 */
-	@SuppressWarnings({ "rawtypes" })
+	@SuppressWarnings({"rawtypes"})
 	public void getJobStageBlocks(Job job, IntSupplier supplier, String protocol, Set<Stage> rootstages,
 			Collection<AbstractPipeline> mdsroots, int blocksize, PipelineConfig pc)
 			throws PipelineException, IOException, URISyntaxException {
@@ -150,7 +150,7 @@ public class FileBlocksPartitionerHDFS {
 			islocal = Boolean.parseBoolean(pc.getLocal());
 			isjgroups = Boolean.parseBoolean(pc.getJgroups());
 			isblocksuserdefined = Boolean.parseBoolean(pc.getIsblocksusedefined()) || supplier != null;
-			isignite = Objects.isNull(pc.getMode())?false:pc.getMode().equals(MDCConstants.MODE_DEFAULT)?true:false;
+			isignite = Objects.isNull(pc.getMode()) ? false : pc.getMode().equals(MDCConstants.MODE_DEFAULT) ? true : false;
 			if (Boolean.TRUE.equals(islocal) || Boolean.TRUE.equals(ismesos) || Boolean.TRUE.equals(isyarn)
 					|| Boolean.TRUE.equals(isignite)) {
 				nodeschoosen = new HashSet<>(Arrays.asList(MDCConstants.DUMMYNODE));
@@ -163,10 +163,10 @@ public class FileBlocksPartitionerHDFS {
 			job.jm.totalfilesize = 0;
 			for (var rootstage : rootstages) {
 				var obj = roots.next();
-				if(obj instanceof StreamPipeline mdp) {
+				if (obj instanceof StreamPipeline mdp) {
 					hdfspath = mdp.getHdfspath();
 					folder = mdp.getFolder();
-				} else if(obj instanceof IgnitePipeline mdp) {
+				} else if (obj instanceof IgnitePipeline mdp) {
 					hdfspath = mdp.getHdfspath();
 					folder = mdp.getFolder();
 				}
@@ -198,22 +198,22 @@ public class FileBlocksPartitionerHDFS {
 				}
 			}
 			job.jm.files = Utils.getAllFilePaths(metricsfilepath);
-			job.jm.totalfilesize = job.jm.totalfilesize/MDCConstants.MB;
+			job.jm.totalfilesize = job.jm.totalfilesize / MDCConstants.MB;
 			job.jm.totalblocks = totalblockslocation.size();
-			if(isignite) {
+			if (isignite) {
 				getDnXref(totalblockslocation, false);
-				sendDataToIgniteServer(totalblockslocation,((IgnitePipeline)mdsroots.iterator().next()).getHdfspath());
-			}else if(isjgroups||!islocal&&!isyarn&&!ismesos){
+				sendDataToIgniteServer(totalblockslocation, ((IgnitePipeline) mdsroots.iterator().next()).getHdfspath());
+			} else if (isjgroups || !islocal && !isyarn && !ismesos) {
 				getDnXref(totalblockslocation, true);
-				if(!pc.getUseglobaltaskexecutors()) {
+				if (!pc.getUseglobaltaskexecutors()) {
 					allocateContainersByResources(totalblockslocation);
-				}else {
+				} else {
 					getContainersGlobal();
 				}
 				allocateContainersLoadBalanced(totalblockslocation);
 				job.jm.nodes = nodeschoosen;
 				job.jm.containersallocated = new ConcurrentHashMap<>();
-			}else if(islocal||isyarn||ismesos) {
+			} else if (islocal || isyarn || ismesos) {
 				getDnXref(totalblockslocation, false);
 			}
 			job.noofpartitions = noofpartition;
@@ -258,7 +258,7 @@ public class FileBlocksPartitionerHDFS {
 		job.igcache = ignitecache;
 		job.ignite = ignite;
 		var computeservers = job.ignite.cluster().forServers();
-		job.jm.containersallocated = computeservers.hostNames().stream().collect(Collectors.toMap(key->key, value->0d));
+		job.jm.containersallocated = computeservers.hostNames().stream().collect(Collectors.toMap(key -> key, value -> 0d));
 	}
 	
 	/**
@@ -310,7 +310,7 @@ public class FileBlocksPartitionerHDFS {
 		catch (Exception ex) {
 			log.error(PipelineConstants.DESTROYCONTAINERERROR, ex);
 			throw new PipelineException(PipelineConstants.DESTROYCONTAINERERROR, ex);
-		}finally {
+		} finally {
 			GlobalContainerAllocDealloc.getGlobalcontainerallocdeallocsem().release();
 		}
 	}
@@ -322,12 +322,12 @@ public class FileBlocksPartitionerHDFS {
 	 * @return List of file paths
 	 * @throws PipelineException
 	 */
-	protected List<Path> getFilePaths(String hdfspth,String folder) throws PipelineException {
+	protected List<Path> getFilePaths(String hdfspth, String folder) throws PipelineException {
 		try {
 			var fileStatuses = new ArrayList<FileStatus>();
 			var fileStatus = hdfs.listFiles(
-					new Path(hdfspth+folder), true);
-			while(fileStatus.hasNext()) {
+					new Path(hdfspth + folder), true);
+			while (fileStatus.hasNext()) {
 				fileStatuses.add(fileStatus.next());
 			}
 			var paths = FileUtil.stat2Paths(fileStatuses.toArray(new FileStatus[fileStatuses.size()]));
@@ -345,14 +345,14 @@ public class FileBlocksPartitionerHDFS {
 	 * @return
 	 * @throws PipelineException
 	 */
-	protected List<BlocksLocation> getBlocks(boolean isblocksuserdefined,long blocksize) throws PipelineException {
+	protected List<BlocksLocation> getBlocks(boolean isblocksuserdefined, long blocksize) throws PipelineException {
 		try {
 			List<BlocksLocation> bls = null;
 			//Fetch the location of blocks for user defined block size.
-			if(isblocksuserdefined) {		
-				bls = HDFSBlockUtils.getBlocksLocationByFixedBlockSizeAuto(hdfs, filepaths,isblocksuserdefined, blocksize);
+			if (isblocksuserdefined) {		
+				bls = HDFSBlockUtils.getBlocksLocationByFixedBlockSizeAuto(hdfs, filepaths, isblocksuserdefined, blocksize);
 			} else {
-				bls = HDFSBlockUtils.getBlocksLocationByFixedBlockSizeAuto(hdfs, filepaths,false,128*MDCConstants.MB);
+				bls = HDFSBlockUtils.getBlocksLocationByFixedBlockSizeAuto(hdfs, filepaths, false, 128 * MDCConstants.MB);
 			}
 			return bls;
 		} catch (Exception ex) {
@@ -369,27 +369,27 @@ public class FileBlocksPartitionerHDFS {
 	protected void allocateContainersLoadBalanced(List<BlocksLocation> bls) throws PipelineException {
 		log.debug("Entered FileBlocksPartitionerHDFS.getContainersBalanced");
 		var hostcontainermap = containers.stream()
-				.collect(Collectors.groupingBy(key->key.split(MDCConstants.UNDERSCORE)[0],
-						Collectors.mapping(container->container, 
+				.collect(Collectors.groupingBy(key -> key.split(MDCConstants.UNDERSCORE)[0],
+						Collectors.mapping(container -> container, 
 								Collectors.toCollection(ArrayList::new))));
 		var containerallocatecount = (Map<String, Long>) containers.stream().parallel().collect(Collectors.toMap(container -> container, container -> 0l));
 		List<String> hostportcontainer;
 		//Iterate over the blocks location 
 		for (var b : bls) {
 			hostportcontainer = hostcontainermap.get(b.block[0].hp.split(MDCConstants.COLON)[0]);
-			if(Objects.isNull(hostportcontainer)) {
+			if (Objects.isNull(hostportcontainer)) {
 				throw new PipelineException(PipelineConstants.INSUFFNODESFORDATANODEERROR.replace("%s", b.block[0].hp).replace("%d", hostcontainermap.toString()));
 			}
 			//Find the container from minimum to maximum in ascending sorted order.
 			var optional = hostportcontainer.stream().sorted((xref1, xref2) -> {
 						return containerallocatecount.get(xref1).compareTo(containerallocatecount.get(xref2));
 					}).findFirst();
-			if(optional.isPresent()) {
+			if (optional.isPresent()) {
 				var container = optional.get();
 				//Assign the minimal allocated container host port to blocks location.
 				b.executorhp = container;
-				containerallocatecount.put(container, containerallocatecount.get(container)+1);
-			}else {
+				containerallocatecount.put(container, containerallocatecount.get(container) + 1);
+			} else {
 				throw new PipelineException(PipelineConstants.CONTAINERALLOCATIONERROR);
 			}
 		}
@@ -408,12 +408,12 @@ public class FileBlocksPartitionerHDFS {
 		var dnxrefs = bls.stream().parallel().flatMap(bl -> {
 			var xrefs = new LinkedHashSet<String>();
 			Iterator<Set<String>> xref = bl.block[0].dnxref.values().iterator();
-			for (; xref.hasNext();) {
+			for (; xref.hasNext(); ) {
 				xrefs.addAll(xref.next());
 			}
 			if (bl.block.length > 1 && !Objects.isNull(bl.block[1])) {
 				xref = bl.block[0].dnxref.values().iterator();
-				for (; xref.hasNext();) {
+				for (; xref.hasNext(); ) {
 					xrefs.addAll(xref.next());
 				}
 			}
@@ -503,17 +503,17 @@ public class FileBlocksPartitionerHDFS {
 	public List<ContainerResources> getTotalMemoryContainersReuseAllocation(String nodehp, long totalmemorytoalloc, AtomicLong totalallocated) {
 		var containers = GlobalContainerAllocDealloc.getNodecontainers().get(nodehp);
 		var cres = new ArrayList<ContainerResources>();
-		if(!Objects.isNull(containers)) {
+		if (!Objects.isNull(containers)) {
 			long memtotal = 0;
 			//Iterate containers and allocate all the containers till the total memory allocated
 			// is less than the memory to allocate.
-			for(String container:containers) {
+			for (String container :containers) {
 				ContainerResources crs = GlobalContainerAllocDealloc.getHportcrs().get(container);
-				if(!Objects.isNull(crs)) {
+				if (!Objects.isNull(crs)) {
 					cres.add(crs);
-					memtotal+=crs.getMaxmemory();
+					memtotal += crs.getMaxmemory();
 				}
-				if(memtotal>=totalmemorytoalloc) {
+				if (memtotal >= totalmemorytoalloc) {
 					break;
 				}
 			}
@@ -530,16 +530,16 @@ public class FileBlocksPartitionerHDFS {
 	protected void allocateContainersByResources(List<BlocksLocation> bls) throws PipelineException {
 		try {
 			GlobalContainerAllocDealloc.getGlobalcontainerallocdeallocsem().acquire();
-			var containerid = MDCConstants.CONTAINER+MDCConstants.HYPHEN+Utils.getUniqueID();
+			var containerid = MDCConstants.CONTAINER + MDCConstants.HYPHEN + Utils.getUniqueID();
 			job.containerid = containerid;
 			containers = new ArrayList<>();
 			nodeschoosen = new HashSet<>();
 			var loadjar = new LoadJar();
 			loadjar.mrjar = pipelineconfig.getJar();
 			var totalcontainersallocated = 0;
-			var nodestotalblockmem = new ConcurrentHashMap<String,Long>();
+			var nodestotalblockmem = new ConcurrentHashMap<String, Long>();
 			//Get all the nodes in sort by processor and then by memory.
-			getNodesResourcesSorted(bls,nodestotalblockmem);
+			getNodesResourcesSorted(bls, nodestotalblockmem);
 			job.lcs = new ArrayList<>();
 			//Iterate over the sorted nodes.
 			for (var node : nodessorted) {
@@ -548,25 +548,25 @@ public class FileBlocksPartitionerHDFS {
 				lc.setNodehostport(node);
 				lc.setContainerid(containerid);
 				lc.setJobid(job.id);
-				lc.setMode(isignite?LaunchContainers.MODE.IGNITE:LaunchContainers.MODE.NORMAL);
+				lc.setMode(isignite ? LaunchContainers.MODE.IGNITE : LaunchContainers.MODE.NORMAL);
 				var cla = new ContainerLaunchAttributes();
 				AtomicLong totalallocated =  new AtomicLong();
 				//Get Reused containers to be allocated by current job.
-				var cr = getTotalMemoryContainersReuseAllocation(node, nodestotalblockmem.get(host),totalallocated);
+				var cr = getTotalMemoryContainersReuseAllocation(node, nodestotalblockmem.get(host), totalallocated);
 				//Calculate the remaining to allocate. 
 				long totalallocatedremaining = nodestotalblockmem.get(host) - totalallocated.get();
 				List<ContainerResources> contres = null;
-				if(totalallocatedremaining > 0 && cr.isEmpty()) {
-					if(Objects.isNull(resources.get(node))) {
+				if (totalallocatedremaining > 0 && cr.isEmpty()) {
+					if (Objects.isNull(resources.get(node))) {
 						throw new PipelineException(PipelineConstants.RESOURCESDOWNRESUBMIT.replace("%s", node));
 					}
 					//Allocate the remaining memory from total allocated on the host.
-					contres=getContainersByNodeResourcesRemainingMemory(pipelineconfig.getGctype(),nodestotalblockmem.get(host),
+					contres = getContainersByNodeResourcesRemainingMemory(pipelineconfig.getGctype(), nodestotalblockmem.get(host),
 							resources.get(node));
 				}
 				job.lcs.add(lc);
 				ports = null;
-				if(!Objects.isNull(contres)&&!contres.isEmpty()) {
+				if (!Objects.isNull(contres) && !contres.isEmpty()) {
 					cla.setNumberofcontainers(contres.size());
 					cla.setCr(contres);
 					lc.setCla(cla);
@@ -576,21 +576,21 @@ public class FileBlocksPartitionerHDFS {
 					//Allocate the containers via node and return the allocated port.
 					ports = (List<Integer>) Utils.getResultObjectByInput(node, ac);					
 				}
-				if(!Objects.isNull(cr)) {
-					if(Objects.isNull(ports)) {
+				if (!Objects.isNull(cr)) {
+					if (Objects.isNull(ports)) {
 						ports = new ArrayList<>();
 					}
 					//Add all the remaining container ports that already allocated
 					//from another job
-					for(ContainerResources r:cr) {						
+					for (ContainerResources r :cr) {						
 						ports.add(r.getPort());
 					}
-					if(!Objects.isNull(contres)) {
+					if (!Objects.isNull(contres)) {
 						contres.addAll(cr);
 						cla.setNumberofcontainers(contres.size());
 						cla.setCr(contres);
 						lc.setCla(cla);
-					}else {
+					} else {
 						contres = cr;
 						cla.setNumberofcontainers(cr.size());
 						cla.setCr(cr);
@@ -598,17 +598,17 @@ public class FileBlocksPartitionerHDFS {
 					
 					}
 				}
-				if(Objects.isNull(ports)||ports.isEmpty()) {
+				if (Objects.isNull(ports) || ports.isEmpty()) {
 					continue;
 				}
 				//Iterate containers to add the containers to global allocation.
-				for(int containercount=0;containercount<ports.size();containercount++) {
+				for (int containercount = 0; containercount < ports.size(); containercount++) {
 					ContainerResources crs = contres.get(containercount);
 					crs.setPort(ports.get(containercount));
 					String conthp = host + MDCConstants.UNDERSCORE + ports.get(containercount);
 					containers.add(conthp);
 					var containerids = GlobalContainerAllocDealloc.getContainercontainerids().get(conthp);
-					if(Objects.isNull(containerids)) {
+					if (Objects.isNull(containerids)) {
 						containerids = new ArrayList<>();
 						GlobalContainerAllocDealloc.getContainercontainerids().put(conthp, containerids);
 					}
@@ -617,7 +617,7 @@ public class FileBlocksPartitionerHDFS {
 					GlobalContainerAllocDealloc.getContainernode().put(conthp, node);
 				}
 				Set<String> contallocated = GlobalContainerAllocDealloc.getNodecontainers().get(node);
-				if(Objects.isNull(contallocated)) {
+				if (Objects.isNull(contallocated)) {
 					contallocated = new LinkedHashSet<>();
 					GlobalContainerAllocDealloc.getNodecontainers().put(node, contallocated);
 				}
@@ -645,7 +645,7 @@ public class FileBlocksPartitionerHDFS {
 		} catch (Exception ex) {
 			log.error(PipelineConstants.TASKEXECUTORSALLOCATIONERROR, ex);
 			throw new PipelineException(PipelineConstants.TASKEXECUTORSALLOCATIONERROR, ex);
-		}finally {
+		} finally {
 			GlobalContainerAllocDealloc.getGlobalcontainerallocdeallocsem().release();
 		}
 	}
@@ -657,15 +657,15 @@ public class FileBlocksPartitionerHDFS {
 		job.lcs = GlobalContainerLaunchers.getAll();
 		job.containerid = job.lcs.get(0).getContainerid();
 		//Get containers
-		containers = job.containers = job.lcs.stream().flatMap(lc->{
+		containers = job.containers = job.lcs.stream().flatMap(lc -> {
 			var host = lc.getNodehostport().split(MDCConstants.UNDERSCORE);
-			return lc.getCla().getCr().stream().map(cr->{
-				return host[0]+MDCConstants.UNDERSCORE+cr.getPort();
+			return lc.getCla().getCr().stream().map(cr -> {
+				return host[0] + MDCConstants.UNDERSCORE + cr.getPort();
 			}
 			).collect(Collectors.toList()).stream();
 		}).collect(Collectors.toList());
 		//Get nodes
-		job.nodes = job.lcs.stream().map(lc->lc.getNodehostport()).collect(Collectors.toSet());
+		job.nodes = job.lcs.stream().map(lc -> lc.getNodehostport()).collect(Collectors.toSet());
 	}
 	
 	
@@ -674,32 +674,32 @@ public class FileBlocksPartitionerHDFS {
 	 * @param bls
 	 * @param nodestotalblockmem
 	 */
-	protected void getNodesResourcesSorted(List<BlocksLocation> bls,Map<String,Long> nodestotalblockmem) {
+	protected void getNodesResourcesSorted(List<BlocksLocation> bls, Map<String, Long> nodestotalblockmem) {
 		resources = MDCNodesResources.get();
 		
 		var nodeswithhostonly = bls.stream().flatMap(bl -> {
 			var block1 = bl.block[0];
 			Block block2 = null;
-			if(bl.block.length>1) {
+			if (bl.block.length > 1) {
 				block2 = bl.block[1];
 			}
 			var xref = new HashSet<String>();
 			if (!Objects.isNull(block1)) {
 				xref.add(block1.hp.split(MDCConstants.COLON)[0]);
 				var value = nodestotalblockmem.get(block1.hp.split(MDCConstants.COLON)[0]);
-				if(value!=null){
-					nodestotalblockmem.put(block1.hp.split(MDCConstants.COLON)[0],value+(block1.blockend-block1.blockstart));
-				}else {
-					nodestotalblockmem.put(block1.hp.split(MDCConstants.COLON)[0],block1.blockend-block1.blockstart);
+				if (value != null) {
+					nodestotalblockmem.put(block1.hp.split(MDCConstants.COLON)[0], value + (block1.blockend - block1.blockstart));
+				} else {
+					nodestotalblockmem.put(block1.hp.split(MDCConstants.COLON)[0], block1.blockend - block1.blockstart);
 				}
 			}
 			if (!Objects.isNull(block2)) {
 				xref.add(block2.hp.split(MDCConstants.COLON)[0]);
 				var value = nodestotalblockmem.get(block2.hp.split(MDCConstants.COLON)[0]);
-				if(value!=null){
-					nodestotalblockmem.put(block2.hp.split(MDCConstants.COLON)[0],value+(block2.blockend-block2.blockstart));
-				}else {
-					nodestotalblockmem.put(block2.hp.split(MDCConstants.COLON)[0],block2.blockend-block2.blockstart);
+				if (value != null) {
+					nodestotalblockmem.put(block2.hp.split(MDCConstants.COLON)[0], value + (block2.blockend - block2.blockstart));
+				} else {
+					nodestotalblockmem.put(block2.hp.split(MDCConstants.COLON)[0], block2.blockend - block2.blockstart);
 				}
 			}
 			return xref.stream();
@@ -709,20 +709,20 @@ public class FileBlocksPartitionerHDFS {
 			var r2 = entry2.getValue();
 			if (r1.getNumberofprocessors() < r2.getNumberofprocessors()) {
 				return -1;
-			} else if(r1.getNumberofprocessors() == r2.getNumberofprocessors()) {
+			} else if (r1.getNumberofprocessors() == r2.getNumberofprocessors()) {
 				if (r1.getFreememory() < r2.getFreememory()) {
 					return -1;
-				} else if(r1.getFreememory() == r2.getFreememory()) {
+				} else if (r1.getFreememory() == r2.getFreememory()) {
 					return 0;
 				}
 				else {
 					return 1;
 				}
-			}else {
+			} else {
 				return 1;
 			}
 		}).map(entry -> entry.getKey())
-				.filter(key->nodeswithhostonly.contains(key.split(MDCConstants.UNDERSCORE)[0]))
+				.filter(key -> nodeswithhostonly.contains(key.split(MDCConstants.UNDERSCORE)[0]))
 				.collect(Collectors.toList());
 	}
 
@@ -738,19 +738,19 @@ public class FileBlocksPartitionerHDFS {
 			throws PipelineException {
 		var cpu = resources.getNumberofprocessors() - 1;
 		var cr = new ArrayList<ContainerResources>();
-		if(pipelineconfig.getContaineralloc().equals(MDCConstants.CONTAINER_ALLOC_DEFAULT)) {
+		if (pipelineconfig.getContaineralloc().equals(MDCConstants.CONTAINER_ALLOC_DEFAULT)) {
 			var res = new ContainerResources();
-			var actualmemory = (resources.getFreememory()-256*MDCConstants.MB);
+			var actualmemory = resources.getFreememory() - 256 * MDCConstants.MB;
 			if (actualmemory < (128 * MDCConstants.MB)) {
 				throw new PipelineException(PipelineConstants.MEMORYALLOCATIONERROR);
 			}
-			if (totalmem < (512 * MDCConstants.MB) && totalmem > (0) && cpu >= 1) {
+			if (totalmem < (512 * MDCConstants.MB) && totalmem > 0 && cpu >= 1) {
 				if (actualmemory >= totalmem) {
 					res.setCpu(1);
-					var heapmem = 1024*Integer.valueOf(pipelineconfig.getHeappercent())/100;
+					var heapmem = 1024 * Integer.valueOf(pipelineconfig.getHeappercent()) / 100;
 					res.setMinmemory(heapmem);
 					res.setMaxmemory(heapmem);
-					res.setDirectheap(1024-heapmem);
+					res.setDirectheap(1024 - heapmem);
 					res.setGctype(gctype);
 					cr.add(res);
 					return cr;
@@ -759,28 +759,28 @@ public class FileBlocksPartitionerHDFS {
 				}
 			}
 			res.setCpu(cpu);
-			var memoryrequire = totalmem < actualmemory?totalmem:actualmemory;
-			var meminmb = memoryrequire/MDCConstants.MB;
-			var heapmem = meminmb*Integer.valueOf(pipelineconfig.getHeappercent())/100;
+			var memoryrequire = totalmem < actualmemory ? totalmem : actualmemory;
+			var meminmb = memoryrequire / MDCConstants.MB;
+			var heapmem = meminmb * Integer.valueOf(pipelineconfig.getHeappercent()) / 100;
 			res.setMinmemory(heapmem);
 			res.setMaxmemory(heapmem);
-			res.setDirectheap(meminmb-heapmem);
+			res.setDirectheap(meminmb - heapmem);
 			res.setGctype(gctype);
 			cr.add(res);
 			return cr;
-		}else if(pipelineconfig.getContaineralloc().equals(MDCConstants.CONTAINER_ALLOC_DIVIDED)){
-			var actualmemory = (resources.getFreememory()-256*MDCConstants.MB);
+		} else if (pipelineconfig.getContaineralloc().equals(MDCConstants.CONTAINER_ALLOC_DIVIDED)) {
+			var actualmemory = resources.getFreememory() - 256 * MDCConstants.MB;
 			if (actualmemory < (128 * MDCConstants.MB)) {
 				throw new PipelineException(PipelineConstants.MEMORYALLOCATIONERROR);
 			}
-			if (totalmem < (512 * MDCConstants.MB) && totalmem > (0) && cpu >= 1) {
+			if (totalmem < (512 * MDCConstants.MB) && totalmem > 0 && cpu >= 1) {
 				if (actualmemory >= totalmem) {
 					var res = new ContainerResources();
 					res.setCpu(1);
-					var heapmem = 1024*Integer.valueOf(pipelineconfig.getHeappercent())/100;
+					var heapmem = 1024 * Integer.valueOf(pipelineconfig.getHeappercent()) / 100;
 					res.setMinmemory(heapmem);
 					res.setMaxmemory(heapmem);
-					res.setDirectheap(1024-heapmem);
+					res.setDirectheap(1024 - heapmem);
 					res.setGctype(gctype);
 					cr.add(res);
 					return cr;
@@ -788,23 +788,24 @@ public class FileBlocksPartitionerHDFS {
 					throw new PipelineException(PipelineConstants.INSUFFMEMORYALLOCATIONERROR);
 				}
 			}
-			if (cpu == 0)
+			if (cpu == 0) {
 				return cr;
+			}
 			var numofcontainerspermachine = Integer.parseInt(pipelineconfig.getNumberofcontainers());
-			var dividedcpus = cpu/numofcontainerspermachine;
+			var dividedcpus = cpu / numofcontainerspermachine;
 			var maxmemory = actualmemory / numofcontainerspermachine;
 			var maxmemmb = maxmemory / MDCConstants.MB;
 			var totalmemmb = totalmem / MDCConstants.MB;
-			if(dividedcpus==0 && cpu>=1) {
+			if (dividedcpus == 0 && cpu >= 1) {
 				dividedcpus = 1;
 			}
 			if (totalmem < maxmemory && dividedcpus >= 1) {
 				var res = new ContainerResources();
 				res.setCpu(dividedcpus);
-				var heapmem = totalmemmb*Integer.valueOf(pipelineconfig.getHeappercent())/100;
+				var heapmem = totalmemmb * Integer.valueOf(pipelineconfig.getHeappercent()) / 100;
 				res.setMinmemory(heapmem);
 				res.setMaxmemory(heapmem);
-				res.setDirectheap(totalmemmb-heapmem);
+				res.setDirectheap(totalmemmb - heapmem);
 				res.setGctype(gctype);
 				cr.add(res);
 				return cr;
@@ -814,50 +815,52 @@ public class FileBlocksPartitionerHDFS {
 				if (cpu >= dividedcpus && totalmem >= 0) {
 					var res = new ContainerResources();
 					res.setCpu(dividedcpus);
-					var heapmem = maxmemmb*Integer.valueOf(pipelineconfig.getHeappercent())/100;
+					var heapmem = maxmemmb * Integer.valueOf(pipelineconfig.getHeappercent()) / 100;
 					res.setMinmemory(heapmem);
 					res.setMaxmemory(heapmem);
-					res.setDirectheap(maxmemmb-heapmem);
+					res.setDirectheap(maxmemmb - heapmem);
 					res.setGctype(gctype);
 					cr.add(res);
 				} else if (cpu >= 1 && totalmem >= 0) {
 					var res = new ContainerResources();
 					res.setCpu(cpu);
-					var heapmem = maxmemmb*Integer.valueOf(pipelineconfig.getHeappercent())/100;
+					var heapmem = maxmemmb * Integer.valueOf(pipelineconfig.getHeappercent()) / 100;
 					res.setMinmemory(heapmem);
 					res.setMaxmemory(heapmem);
-					res.setDirectheap(maxmemmb-heapmem);
+					res.setDirectheap(maxmemmb - heapmem);
 					res.setGctype(gctype);
 					cr.add(res);
-				}else {
+				} else {
 					break;
 				}
 				numberofcontainer++;
-				if(numofcontainerspermachine==numberofcontainer)break;
-				cpu-=dividedcpus;
+				if (numofcontainerspermachine == numberofcontainer) {
+					break;
+				}
+				cpu -= dividedcpus;
 				totalmem -= maxmemory;
 			}
 			return cr;
-		}else if(pipelineconfig.getContaineralloc().equals(MDCConstants.CONTAINER_ALLOC_IMPLICIT)){
-			var actualmemory = (resources.getFreememory()-256*MDCConstants.MB);
+		} else if (pipelineconfig.getContaineralloc().equals(MDCConstants.CONTAINER_ALLOC_IMPLICIT)) {
+			var actualmemory = resources.getFreememory() - 256 * MDCConstants.MB;
 			var numberofimplicitcontainers = Integer.valueOf(pipelineconfig.getImplicitcontainerallocanumber());
 			var numberofimplicitcontainercpu = Integer.valueOf(pipelineconfig.getImplicitcontainercpu());
 			var numberofimplicitcontainermemory = pipelineconfig.getImplicitcontainermemory();
 			var numberofimplicitcontainermemorysize = Long.valueOf(pipelineconfig.getImplicitcontainermemorysize());
-			var memorysize = numberofimplicitcontainermemory.equals("GB")?MDCConstants.GB:MDCConstants.MB;
-			if(actualmemory<numberofimplicitcontainermemorysize*memorysize*numberofimplicitcontainers) {
+			var memorysize = "GB".equals(numberofimplicitcontainermemory) ? MDCConstants.GB : MDCConstants.MB;
+			if (actualmemory < numberofimplicitcontainermemorysize * memorysize * numberofimplicitcontainers) {
 				throw new PipelineException(PipelineConstants.INSUFFMEMORYALLOCATIONERROR);
 			}
-			if(cpu<numberofimplicitcontainercpu*numberofimplicitcontainers) {
+			if (cpu < numberofimplicitcontainercpu * numberofimplicitcontainers) {
 				throw new PipelineException(PipelineConstants.INSUFFCPUALLOCATIONERROR);
 			}
-			for(var count=0;count<numberofimplicitcontainers;count++) {
+			for (var count = 0; count < numberofimplicitcontainers; count++) {
 				var res = new ContainerResources();
 				res.setCpu(numberofimplicitcontainercpu);
-				var heapmem = numberofimplicitcontainermemorysize*Integer.valueOf(pipelineconfig.getHeappercent())/100;
+				var heapmem = numberofimplicitcontainermemorysize * Integer.valueOf(pipelineconfig.getHeappercent()) / 100;
 				res.setMinmemory(heapmem);
 				res.setMaxmemory(heapmem);
-				res.setDirectheap(numberofimplicitcontainermemorysize-heapmem);
+				res.setDirectheap(numberofimplicitcontainermemorysize - heapmem);
 				res.setGctype(gctype);
 				cr.add(res);
 			}

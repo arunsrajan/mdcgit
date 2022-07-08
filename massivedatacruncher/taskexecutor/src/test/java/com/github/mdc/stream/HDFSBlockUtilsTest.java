@@ -31,34 +31,35 @@ public class HDFSBlockUtilsTest extends StreamPipelineBaseTestCommon{
 	public static long AIRSAMPLETOTAL = 4270834l;
 	public String hdfsurl = "hdfs://localhost:9000";
 	String[] hdfsdirpaths = {"/airline1989"};
-	String[] hdfsdir_1989_1987 = {"/airline1989","/1987"};
+	String[] hdfsdir_1989_1987 = {"/airline1989", "/1987"};
 	String[] airlinesample = {"/airlinesample"};
 	String host = NetworkUtil.getNetworkAddress(MDCProperties.get().getProperty("taskexecutor.host"));
 	int port =  Integer.parseInt(MDCProperties.get().getProperty("node.port"));
 	@Test
-	public void testBlocksDefinedBlocksize128MB() throws Exception{
-		Configuration conf  =new Configuration();
-		FileSystem hdfs = FileSystem.newInstance(new URI(hdfsurl),conf);
+	public void testBlocksDefinedBlocksize128MB() throws Exception {
+		Configuration conf  = new Configuration();
+		FileSystem hdfs = FileSystem.newInstance(new URI(hdfsurl), conf);
 		
-		List<Path> blockpath  =new ArrayList<>();
-		for (String hdfsdir : hdfsdirpaths ) {
+		List<Path> blockpath  = new ArrayList<>();
+		for (String hdfsdir : hdfsdirpaths) {
 			FileStatus[] fileStatus = hdfs.listStatus(
 					new Path(hdfsurl + hdfsdir));
 			Path[] paths = FileUtil.stat2Paths(fileStatus);
 			blockpath.addAll(Arrays.asList(paths));
 		}
-		List<BlocksLocation> bls = HDFSBlockUtils.getBlocksLocationByFixedBlockSizeAuto(hdfs, blockpath,true,128*MDCConstants.MB);
+		List<BlocksLocation> bls = HDFSBlockUtils.getBlocksLocationByFixedBlockSizeAuto(hdfs, blockpath, true, 128 * MDCConstants.MB);
 		long totalbytes = 0;
-		for(BlocksLocation bl:bls) {
+		for (BlocksLocation bl :bls) {
 			int sum = 0;
 			log.info(bl);
-			for(Block b:bl.block) {
-				if(!Objects.isNull(b))
-				sum+=b.blockend-b.blockstart;
+			for (Block b :bl.block) {
+				if (!Objects.isNull(b)) {
+					sum += b.blockend - b.blockstart;
+				}
 			}
-			totalbytes+=sum;
+			totalbytes += sum;
 		}
-		assertEquals(TOTAL,totalbytes);
+		assertEquals(TOTAL, totalbytes);
 		hdfs.close();
 	}
 	
@@ -73,13 +74,13 @@ public class HDFSBlockUtilsTest extends StreamPipelineBaseTestCommon{
 			Path[] paths = FileUtil.stat2Paths(fileStatus);
 			blockpath.addAll(Arrays.asList(paths));
 		}
-		List<BlocksLocation> bls = HDFSBlockUtils.getBlocksLocationByFixedBlockSizeAuto(hdfs, blockpath,true, 64 * MDCConstants.MB);
+		List<BlocksLocation> bls = HDFSBlockUtils.getBlocksLocationByFixedBlockSizeAuto(hdfs, blockpath, true, 64 * MDCConstants.MB);
 		long totalbytes = 0;
 		for (BlocksLocation bl : bls) {
 			int sum = 0;
 			log.info(bl);
 			for (Block b : bl.block) {
-				if(!Objects.isNull(b)) {
+				if (!Objects.isNull(b)) {
 					sum += b.blockend - b.blockstart;
 				}
 			}
@@ -99,14 +100,15 @@ public class HDFSBlockUtilsTest extends StreamPipelineBaseTestCommon{
 			Path[] paths = FileUtil.stat2Paths(fileStatus);
 			blockpath.addAll(Arrays.asList(paths));
 		}
-		List<BlocksLocation> bls = HDFSBlockUtils.getBlocksLocationByFixedBlockSizeAuto(hdfs, blockpath,true, 96 * MDCConstants.MB);
+		List<BlocksLocation> bls = HDFSBlockUtils.getBlocksLocationByFixedBlockSizeAuto(hdfs, blockpath, true, 96 * MDCConstants.MB);
 		long totalbytes = 0;
 		for (BlocksLocation bl : bls) {
 			int sum = 0;
 			log.info(bl);
 			for (Block b : bl.block) {
-				if(!Objects.isNull(b))
-				sum += b.blockend - b.blockstart;
+				if (!Objects.isNull(b)) {
+					sum += b.blockend - b.blockstart;
+				}
 			}
 			totalbytes += sum;
 		}
@@ -124,13 +126,13 @@ public class HDFSBlockUtilsTest extends StreamPipelineBaseTestCommon{
 			Path[] paths = FileUtil.stat2Paths(fileStatus);
 			blockpath.addAll(Arrays.asList(paths));
 		}
-		List<BlocksLocation> bls = HDFSBlockUtils.getBlocksLocationByFixedBlockSizeAuto(hdfs, blockpath,true, 48 * MDCConstants.MB);
+		List<BlocksLocation> bls = HDFSBlockUtils.getBlocksLocationByFixedBlockSizeAuto(hdfs, blockpath, true, 48 * MDCConstants.MB);
 		long totalbytes = 0;
 		for (BlocksLocation bl : bls) {
 			int sum = 0;
 			log.info(bl);
 			for (Block b : bl.block) {
-				if(!Objects.isNull(b)) {					
+				if (!Objects.isNull(b)) {					
 					sum += b.blockend - b.blockstart;
 				}
 			}
@@ -152,13 +154,13 @@ public class HDFSBlockUtilsTest extends StreamPipelineBaseTestCommon{
 			Path[] paths = FileUtil.stat2Paths(fileStatus);
 			blockpath.addAll(Arrays.asList(paths));
 		}
-		List<BlocksLocation> bls = HDFSBlockUtils.getBlocksLocationByFixedBlockSizeAuto(hdfs, blockpath,true, 32 * MDCConstants.MB);
+		List<BlocksLocation> bls = HDFSBlockUtils.getBlocksLocationByFixedBlockSizeAuto(hdfs, blockpath, true, 32 * MDCConstants.MB);
 		long totalbytes = 0;
 		for (BlocksLocation bl : bls) {
 			int sum = 0;
 			log.info(bl);
 			for (Block b : bl.block) {
-				if(!Objects.isNull(b)) {					
+				if (!Objects.isNull(b)) {					
 					sum += b.blockend - b.blockstart;
 				}
 			}
@@ -178,13 +180,13 @@ public class HDFSBlockUtilsTest extends StreamPipelineBaseTestCommon{
 			Path[] paths = FileUtil.stat2Paths(fileStatus);
 			blockpath.addAll(Arrays.asList(paths));
 		}
-		List<BlocksLocation> bls = HDFSBlockUtils.getBlocksLocationByFixedBlockSizeAuto(hdfs, blockpath,true, 32 * MDCConstants.MB);
+		List<BlocksLocation> bls = HDFSBlockUtils.getBlocksLocationByFixedBlockSizeAuto(hdfs, blockpath, true, 32 * MDCConstants.MB);
 		long totalbytes = 0;
 		for (BlocksLocation bl : bls) {
 			int sum = 0;
 			log.info(bl);
 			for (Block b : bl.block) {
-				if(!Objects.isNull(b)) {					
+				if (!Objects.isNull(b)) {					
 					sum += b.blockend - b.blockstart;
 				}
 			}
@@ -204,13 +206,13 @@ public class HDFSBlockUtilsTest extends StreamPipelineBaseTestCommon{
 			Path[] paths = FileUtil.stat2Paths(fileStatus);
 			blockpath.addAll(Arrays.asList(paths));
 		}
-		List<BlocksLocation> bls = HDFSBlockUtils.getBlocksLocationByFixedBlockSizeAuto(hdfs, blockpath,true, 8 * MDCConstants.MB);
+		List<BlocksLocation> bls = HDFSBlockUtils.getBlocksLocationByFixedBlockSizeAuto(hdfs, blockpath, true, 8 * MDCConstants.MB);
 		long totalbytes = 0;
 		for (BlocksLocation bl : bls) {
 			int sum = 0;
 			log.info(bl);
 			for (Block b : bl.block) {
-				if(!Objects.isNull(b)) {					
+				if (!Objects.isNull(b)) {					
 					sum += b.blockend - b.blockstart;
 				}
 			}
@@ -230,13 +232,13 @@ public class HDFSBlockUtilsTest extends StreamPipelineBaseTestCommon{
 			Path[] paths = FileUtil.stat2Paths(fileStatus);
 			blockpath.addAll(Arrays.asList(paths));
 		}
-		List<BlocksLocation> bls = HDFSBlockUtils.getBlocksLocationByFixedBlockSizeAuto(hdfs, blockpath,true, 4 * MDCConstants.MB);
+		List<BlocksLocation> bls = HDFSBlockUtils.getBlocksLocationByFixedBlockSizeAuto(hdfs, blockpath, true, 4 * MDCConstants.MB);
 		long totalbytes = 0;
 		for (BlocksLocation bl : bls) {
 			int sum = 0;
 			log.info(bl);
 			for (Block b : bl.block) {
-				if(!Objects.isNull(b)) {					
+				if (!Objects.isNull(b)) {					
 					sum += b.blockend - b.blockstart;
 				}
 			}
@@ -256,13 +258,13 @@ public class HDFSBlockUtilsTest extends StreamPipelineBaseTestCommon{
 			Path[] paths = FileUtil.stat2Paths(fileStatus);
 			blockpath.addAll(Arrays.asList(paths));
 		}
-		List<BlocksLocation> bls = HDFSBlockUtils.getBlocksLocationByFixedBlockSizeAuto(hdfs, blockpath,true, 2 * MDCConstants.MB);
+		List<BlocksLocation> bls = HDFSBlockUtils.getBlocksLocationByFixedBlockSizeAuto(hdfs, blockpath, true, 2 * MDCConstants.MB);
 		long totalbytes = 0;
 		for (BlocksLocation bl : bls) {
 			int sum = 0;
 			log.info(bl);
 			for (Block b : bl.block) {
-				if(!Objects.isNull(b)) {					
+				if (!Objects.isNull(b)) {					
 					sum += b.blockend - b.blockstart;
 				}
 			}
@@ -282,14 +284,15 @@ public class HDFSBlockUtilsTest extends StreamPipelineBaseTestCommon{
 			Path[] paths = FileUtil.stat2Paths(fileStatus);
 			blockpath.addAll(Arrays.asList(paths));
 		}
-		List<BlocksLocation> bls = HDFSBlockUtils.getBlocksLocationByFixedBlockSizeAuto(hdfs, blockpath,true,1*MDCConstants.MB);
+		List<BlocksLocation> bls = HDFSBlockUtils.getBlocksLocationByFixedBlockSizeAuto(hdfs, blockpath, true, 1 * MDCConstants.MB);
 		long totalbytes = 0;
 		for (BlocksLocation bl : bls) {
 			int sum = 0;
 			log.info(bl);
 			for (Block b : bl.block) {
-				if(!Objects.isNull(b))
-				sum += b.blockend - b.blockstart;
+				if (!Objects.isNull(b)) {
+					sum += b.blockend - b.blockstart;
+				}
 			}
 			totalbytes += sum;
 		}
@@ -298,83 +301,86 @@ public class HDFSBlockUtilsTest extends StreamPipelineBaseTestCommon{
 	}
 	
 	@Test
-	public void testBlocks128MB() throws Exception{
-		Configuration conf  =new Configuration();
-		FileSystem hdfs = FileSystem.newInstance(new URI(hdfsurl),conf);
+	public void testBlocks128MB() throws Exception {
+		Configuration conf  = new Configuration();
+		FileSystem hdfs = FileSystem.newInstance(new URI(hdfsurl), conf);
 		
-		List<Path> blockpath  =new ArrayList<>();
-		for (String hdfsdir : hdfsdirpaths ) {
+		List<Path> blockpath  = new ArrayList<>();
+		for (String hdfsdir : hdfsdirpaths) {
 			FileStatus[] fileStatus = hdfs.listStatus(
 					new Path(hdfsurl + hdfsdir));
 			Path[] paths = FileUtil.stat2Paths(fileStatus);
 			blockpath.addAll(Arrays.asList(paths));
 		}
-		List<BlocksLocation> bls = HDFSBlockUtils.getBlocksLocationByFixedBlockSizeAuto(hdfs, blockpath,false,128*MDCConstants.MB);
+		List<BlocksLocation> bls = HDFSBlockUtils.getBlocksLocationByFixedBlockSizeAuto(hdfs, blockpath, false, 128 * MDCConstants.MB);
 		long totalbytes = 0;
-		for(BlocksLocation bl:bls) {
+		for (BlocksLocation bl :bls) {
 			int sum = 0;
 			log.info(bl);
-			for(Block b:bl.block) {
-				if(!Objects.isNull(b))
-				sum+=b.blockend-b.blockstart;
+			for (Block b :bl.block) {
+				if (!Objects.isNull(b)) {
+					sum += b.blockend - b.blockstart;
+				}
 			}
-			totalbytes+=sum;
+			totalbytes += sum;
 		}
-		assertEquals(TOTAL,totalbytes);
+		assertEquals(TOTAL, totalbytes);
 		hdfs.close();
 	}
 	
 	
 	@Test
-	public void testBlocks1987_1989_UserDefinedBlock_128MB() throws Exception{
-		Configuration conf  =new Configuration();
-		FileSystem hdfs = FileSystem.newInstance(new URI(hdfsurl),conf);
+	public void testBlocks1987_1989_UserDefinedBlock_128MB() throws Exception {
+		Configuration conf  = new Configuration();
+		FileSystem hdfs = FileSystem.newInstance(new URI(hdfsurl), conf);
 		
-		List<Path> blockpath  =new ArrayList<>();
-		for (String hdfsdir : hdfsdir_1989_1987 ) {
+		List<Path> blockpath  = new ArrayList<>();
+		for (String hdfsdir : hdfsdir_1989_1987) {
 			FileStatus[] fileStatus = hdfs.listStatus(
 					new Path(hdfsurl + hdfsdir));
 			Path[] paths = FileUtil.stat2Paths(fileStatus);
 			blockpath.addAll(Arrays.asList(paths));
 		}
-		List<BlocksLocation> bls = HDFSBlockUtils.getBlocksLocationByFixedBlockSizeAuto(hdfs, blockpath,true,128*MDCConstants.MB);
+		List<BlocksLocation> bls = HDFSBlockUtils.getBlocksLocationByFixedBlockSizeAuto(hdfs, blockpath, true, 128 * MDCConstants.MB);
 		long totalbytes = 0;
-		for(BlocksLocation bl:bls) {
+		for (BlocksLocation bl :bls) {
 			int sum = 0;
 			log.info(bl);
-			for(Block b:bl.block) {
-				if(!Objects.isNull(b))
-				sum+=b.blockend-b.blockstart;
+			for (Block b :bl.block) {
+				if (!Objects.isNull(b)) {
+					sum += b.blockend - b.blockstart;
+				}
 			}
-			totalbytes+=sum;
+			totalbytes += sum;
 		}
-		assertEquals(TOTAL_1987_1989,totalbytes);
+		assertEquals(TOTAL_1987_1989, totalbytes);
 		hdfs.close();
 	}
 	@Test
-	public void testBlocks1987_1989_128MB() throws Exception{
-		Configuration conf  =new Configuration();
-		FileSystem hdfs = FileSystem.newInstance(new URI(hdfsurl),conf);
+	public void testBlocks1987_1989_128MB() throws Exception {
+		Configuration conf  = new Configuration();
+		FileSystem hdfs = FileSystem.newInstance(new URI(hdfsurl), conf);
 		
-		List<Path> blockpath  =new ArrayList<>();
-		for (String hdfsdir : hdfsdir_1989_1987 ) {
+		List<Path> blockpath  = new ArrayList<>();
+		for (String hdfsdir : hdfsdir_1989_1987) {
 			FileStatus[] fileStatus = hdfs.listStatus(
 					new Path(hdfsurl + hdfsdir));
 			Path[] paths = FileUtil.stat2Paths(fileStatus);
 			blockpath.addAll(Arrays.asList(paths));
 		}
-		List<BlocksLocation> bls = HDFSBlockUtils.getBlocksLocationByFixedBlockSizeAuto(hdfs, blockpath,false,128*MDCConstants.MB);
+		List<BlocksLocation> bls = HDFSBlockUtils.getBlocksLocationByFixedBlockSizeAuto(hdfs, blockpath, false, 128 * MDCConstants.MB);
 		long totalbytes = 0;
-		for(BlocksLocation bl:bls) {
+		for (BlocksLocation bl :bls) {
 			int sum = 0;
 			log.info(bl);
-			for(Block b:bl.block) {
-				if(!Objects.isNull(b))
-				sum+=b.blockend-b.blockstart;
+			for (Block b :bl.block) {
+				if (!Objects.isNull(b)) {
+					sum += b.blockend - b.blockstart;
+				}
 			}
-			totalbytes+=sum;
+			totalbytes += sum;
 		}
-		assertEquals(TOTAL_1987_1989,totalbytes);
+		assertEquals(TOTAL_1987_1989, totalbytes);
 		hdfs.close();
 	}
 }

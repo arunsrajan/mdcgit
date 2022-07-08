@@ -6,55 +6,55 @@ import com.github.mdc.common.Resources;
 
 import junit.framework.TestCase;
 
-public class ResourcesTest extends TestCase{
+public class ResourcesTest extends TestCase {
 
 	public static final String nodeport = "127.0.0.1:3000";
-	public static final Long totalmemory = (long) (1024*1024*1024);
-	public static final Long freememory = (long) (1024*1024*1024);
+	public static final Long totalmemory = (long) (1024 * 1024 * 1024);
+	public static final Long freememory = (long) (1024 * 1024 * 1024);
 	public static final Integer numberofprocessors = 4;
-	public static final Double totaldisksize = 1024*1024*1024*1024d;
-	public static final Double usabledisksize = 1024*1024*1024*1024d;
-	public static final Long physicalmemorysize = (long) (8*1024*1024*1024d);
+	public static final Double totaldisksize = 1024 * 1024 * 1024 * 1024d;
+	public static final Double usabledisksize = 1024 * 1024 * 1024 * 1024d;
+	public static final Long physicalmemorysize = (long) (8 * 1024 * 1024 * 1024d);
 	@Test
 	public void testNodeport() {
 		Resources resources = new Resources();
 		resources.setNodeport(nodeport);
-		assertEquals(nodeport,resources.getNodeport());
+		assertEquals(nodeport, resources.getNodeport());
 	}
 	
 	@Test
 	public void testNodeportNull() {
 		Resources resources = new Resources();
 		resources.setNodeport(null);
-		assertEquals(null,resources.getNodeport());
+		assertEquals(null, resources.getNodeport());
 	}
 	
 	@Test
 	public void testTotalMemory() {
 		Resources resources = new Resources();
 		resources.setTotalmemory(totalmemory);
-		assertEquals(totalmemory,resources.getTotalmemory());
+		assertEquals(totalmemory, resources.getTotalmemory());
 	}
 	
 	@Test
 	public void testTotalMemoryNull() {
 		Resources resources = new Resources();
 		resources.setTotalmemory(null);
-		assertEquals(null,resources.getTotalmemory());
+		assertEquals(null, resources.getTotalmemory());
 	}
 	
 	@Test
 	public void testFreeMemory() {
 		Resources resources = new Resources();
 		resources.setFreememory(freememory);
-		assertEquals(freememory,resources.getFreememory());
+		assertEquals(freememory, resources.getFreememory());
 	}
 	
 	@Test
 	public void testFreeMemoryNull() {
 		Resources resources = new Resources();
 		resources.setFreememory(null);
-		assertEquals(null,resources.getFreememory());
+		assertEquals(null, resources.getFreememory());
 	}
 	
 	@Test

@@ -19,8 +19,8 @@ public class CsvOptions implements Serializable{
 	private ConcurrentMap<String, Integer> headerindexmap = new ConcurrentHashMap<>();
 	public CsvOptions(String[] header) {
 		this.header = header;
-		int count=0;
-		for(String head:header) {
+		int count = 0;
+		for (String head :header) {
 			headerindexmap.put(head, count);
 			count++;
 		}

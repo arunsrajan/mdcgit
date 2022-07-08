@@ -48,14 +48,14 @@ import com.github.mdc.tasks.executor.web.ResourcesMetricsServlet;
 public class TaskExecutorRunner implements TaskExecutorRunnerMBean {
 
 	static Logger log = Logger.getLogger(TaskExecutorRunner.class);
-	Map<String,Object> apptaskexecutormap = new ConcurrentHashMap<>();
-	Map<String,Object> jobstageexecutormap = new ConcurrentHashMap<>();
+	Map<String, Object> apptaskexecutormap = new ConcurrentHashMap<>();
+	Map<String, Object> jobstageexecutormap = new ConcurrentHashMap<>();
 	ConcurrentMap<String, OutputStream> resultstream = new ConcurrentHashMap<>();
 	Map<String, HeartBeatTaskScheduler> hbtsappid = new ConcurrentHashMap<>();
 	Map<String, HeartBeatTaskSchedulerStream> hbtssjobid = new ConcurrentHashMap<>();
 	Map<String, HeartBeatServerStream> containeridhbss = new ConcurrentHashMap<>();
-	Map<String,Map<String,Object>> jobidstageidexecutormap = new ConcurrentHashMap<>();
-	Map<String,JobStage> jobidstageidjobstagemap = new ConcurrentHashMap<>();
+	Map<String, Map<String, Object>> jobidstageidexecutormap = new ConcurrentHashMap<>();
+	Map<String, JobStage> jobidstageidjobstagemap = new ConcurrentHashMap<>();
 	Queue<Object> taskqueue = new LinkedBlockingQueue<Object>();
 	CuratorFramework cf;
 	ServerSocket server;
@@ -86,9 +86,9 @@ public class TaskExecutorRunner implements TaskExecutorRunnerMBean {
 			Utils.loadLog4JSystemPropertiesClassPath(MDCConstants.MDC_TEST_EXCEPTION_PROPERTIES);
 		}
 		ByteBufferPoolDirect.init();
-		log.info("Direct Memory Allocated: "+args[1]);
-		int directmemory = Integer.valueOf(args[1])/(128);
-		log.info("Number Of 128 MB directmemory: "+directmemory);
+		log.info("Direct Memory Allocated: " + args[1]);
+		int directmemory = Integer.valueOf(args[1]) / 128;
+		log.info("Number Of 128 MB directmemory: " + directmemory);
 		ByteBufferPool.init(directmemory);
 		CacheUtils.initCache();
 		es = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
@@ -143,22 +143,22 @@ public class TaskExecutorRunner implements TaskExecutorRunnerMBean {
 		
 	}	
 	ClassLoader cl;
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Override
 	public void start() throws Exception {
 		var threadpool = Executors.newSingleThreadExecutor();
 		var launchtaskpool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 		var taskpool = Executors.newFixedThreadPool(2);
 		var port = Integer.parseInt(System.getProperty(MDCConstants.TASKEXECUTOR_PORT));
-		log.info("TaskExecutor Port: "+port);
+		log.info("TaskExecutor Port: " + port);
 		var su = new ServerUtils();
-		su.init(port+50,
-				new NodeWebServlet(new ConcurrentHashMap<String, Map<String,Process>>()), MDCConstants.BACKWARD_SLASH + MDCConstants.ASTERIX,
-				new WebResourcesServlet(), MDCConstants.BACKWARD_SLASH +MDCConstants.RESOURCES+MDCConstants.BACKWARD_SLASH+ MDCConstants.ASTERIX,
-				new ResourcesMetricsServlet(), MDCConstants.BACKWARD_SLASH +MDCConstants.DATA+MDCConstants.BACKWARD_SLASH+ MDCConstants.ASTERIX
+		su.init(port + 50,
+				new NodeWebServlet(new ConcurrentHashMap<String, Map<String, Process>>()), MDCConstants.BACKWARD_SLASH + MDCConstants.ASTERIX,
+				new WebResourcesServlet(), MDCConstants.BACKWARD_SLASH + MDCConstants.RESOURCES + MDCConstants.BACKWARD_SLASH + MDCConstants.ASTERIX,
+				new ResourcesMetricsServlet(), MDCConstants.BACKWARD_SLASH + MDCConstants.DATA + MDCConstants.BACKWARD_SLASH + MDCConstants.ASTERIX
 				);
 		su.start();
-		server = new ServerSocket(port,256,InetAddress.getByAddress(new byte[] { 0x00, 0x00, 0x00, 0x00 }));
+		server = new ServerSocket(port, 256, InetAddress.getByAddress(new byte[]{0x00, 0x00, 0x00, 0x00}));
 		var configuration = new Configuration();
 		
 		var inmemorycache = MDCCache.get();
@@ -178,21 +178,21 @@ public class TaskExecutorRunner implements TaskExecutorRunnerMBean {
 						}
 						log.info("Loaded the Required jars");
 						socket.close();
-					} else if (deserobj instanceof JobApp jobapp){
+					} else if (deserobj instanceof JobApp jobapp) {
 						semaphore.acquire();
-						if(jobapp.getJobtype() == JobApp.JOBAPP.MR) {							
-							if(!Objects.isNull(jobapp.getJobappid())&&Objects.isNull(hbtsappid.get(jobapp.getJobappid()))) {
+						if (jobapp.getJobtype() == JobApp.JOBAPP.MR) {							
+							if (!Objects.isNull(jobapp.getJobappid()) && Objects.isNull(hbtsappid.get(jobapp.getJobappid()))) {
 								var hbts = new HeartBeatTaskScheduler();
 								hbts.init(0,
 										port,
 										NetworkUtil.getNetworkAddress(MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_HOST)),
 										0,
-										Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_PINGDELAY)),"",
-										jobapp.getJobappid(),"");
+										Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_PINGDELAY)), "",
+										jobapp.getJobappid(), "");
 								hbtsappid.put(jobapp.getJobappid(), hbts);
 							}							
-						}	else if(jobapp.getJobtype() == JobApp.JOBAPP.STREAM){							
-							if(!Objects.isNull(jobapp.getJobappid())&&Objects.isNull(hbtssjobid.get(jobapp.getJobappid()))) {
+						}	else if (jobapp.getJobtype() == JobApp.JOBAPP.STREAM) {							
+							if (!Objects.isNull(jobapp.getJobappid()) && Objects.isNull(hbtssjobid.get(jobapp.getJobappid()))) {
 								var hbtss = new HeartBeatTaskSchedulerStream();
 								hbtss.init(0, Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_PORT)),
 										NetworkUtil.getNetworkAddress(MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_HOST)), 0,
@@ -217,7 +217,7 @@ public class TaskExecutorRunner implements TaskExecutorRunnerMBean {
 							containeridhbss.put(containerid, hbss);
 						}
 						semaphore.release();
-					} else if(!Objects.isNull(deserobj)) {
+					} else if (!Objects.isNull(deserobj)) {
 						launchtaskpool.execute(new TaskExecutor(socket, cl, port, es, configuration,
 								apptaskexecutormap, jobstageexecutormap, resultstream, inmemorycache, deserobj,
 								hbtsappid, hbtssjobid, containeridhbss,
@@ -243,7 +243,7 @@ public class TaskExecutorRunner implements TaskExecutorRunnerMBean {
 						ExecutorsFutureTask eft = new ExecutorsFutureTask();
 						eft.future = future;
 						eft.estask = estask;
-						if(!taskresultqueue.offer(eft)) {
+						if (!taskresultqueue.offer(eft)) {
 							log.info("Task Exceution Queue Full");
 						}
 					}
@@ -253,7 +253,6 @@ public class TaskExecutorRunner implements TaskExecutorRunnerMBean {
 				    // Restore interrupted state...
 				    Thread.currentThread().interrupt();
 				} catch (Exception e) {
-				} finally {
 				}
 			}
 		});
@@ -280,24 +279,24 @@ public class TaskExecutorRunner implements TaskExecutorRunnerMBean {
 	@Override
 	public void destroy() throws Exception {
 		hbtsappid.keySet().stream()
-		.filter(key->!Objects.isNull(hbtsappid.get(key)))
-		.forEach(key->{
+		.filter(key -> !Objects.isNull(hbtsappid.get(key)))
+		.forEach(key -> {
 			try {
 				hbtsappid.remove(key).close();
 			} catch (Exception e2) {
 			}
 		});
 		hbtssjobid.keySet().stream()
-		.filter(key->!Objects.isNull(hbtssjobid.get(key)))
-		.forEach(key->{
+		.filter(key -> !Objects.isNull(hbtssjobid.get(key)))
+		.forEach(key -> {
 			try {
 				hbtssjobid.remove(key).close();
 			} catch (Exception e1) {			
 			}
 		});
 		containeridhbss.keySet().stream()
-		.filter(key->!Objects.isNull(containeridhbss.get(key)))
-		.forEach(key->{
+		.filter(key -> !Objects.isNull(containeridhbss.get(key)))
+		.forEach(key -> {
 			try {
 				containeridhbss.remove(key).close();
 			} catch (Exception e) {				
@@ -306,7 +305,7 @@ public class TaskExecutorRunner implements TaskExecutorRunnerMBean {
 		if (cf != null) {
 			cf.close();
 		}
-		if(es!=null) {
+		if (es != null) {
 			es.shutdownNow();
 			es.awaitTermination(1, TimeUnit.SECONDS);
 		}

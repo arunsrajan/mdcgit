@@ -18,7 +18,7 @@ import com.github.mdc.common.MDCProperties;
 
 public class MDCIgniteServer {
 
-	private static Ignite ignite = null;
+	private static Ignite ignite;
 
 	private MDCIgniteServer() {}
 	

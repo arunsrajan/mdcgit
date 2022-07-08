@@ -8,7 +8,7 @@ import com.github.mdc.tasks.scheduler.JobConfiguration;
 import com.github.mdc.tasks.scheduler.MapReduceApplicationBuilder;
 import com.github.mdc.tasks.scheduler.MapReduceApplicationIgnite;
 
-public class MrJobArrivalDelayIGNITE implements com.github.mdc.tasks.scheduler.Application{
+public class MrJobArrivalDelayIGNITE implements com.github.mdc.tasks.scheduler.Application {
 	static Logger log = Logger.getLogger(MrJobArrivalDelayIGNITE.class);
 	@Override
 	public void runMRJob(String[] args, JobConfiguration jobconfiguration) {
@@ -19,7 +19,7 @@ public class MrJobArrivalDelayIGNITE implements com.github.mdc.tasks.scheduler.A
 		jobconfiguration.setExecmode(MDCConstants.EXECMODE_IGNITE);
 		var mdcjob = (MapReduceApplicationIgnite) MapReduceApplicationBuilder.newBuilder()
 				.addMapper(CarriersDataMapper.class, args[1])
-				.addMapper(AirlineArrDelayDataMapper.class,args[0])
+				.addMapper(AirlineArrDelayDataMapper.class, args[0])
 				.addMapper(AirlineDepDelayDataMapper.class, args[0])
 				.addCombiner(CarriersDataMapper.class)
 				.addReducer(CarriersDataMapper.class)

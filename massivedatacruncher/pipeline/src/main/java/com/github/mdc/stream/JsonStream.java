@@ -7,7 +7,7 @@ package com.github.mdc.stream;
  * @param <I1>
  */
 public final class JsonStream<I1> extends StreamPipeline<I1> {
-	@SuppressWarnings({ "rawtypes" })
+	@SuppressWarnings({"rawtypes"})
 	public JsonStream(StreamPipeline root) {
 		this.root = root;
 		this.task = new Json();

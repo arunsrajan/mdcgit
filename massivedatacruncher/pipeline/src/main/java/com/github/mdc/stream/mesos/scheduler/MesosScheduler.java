@@ -45,19 +45,19 @@ public class MesosScheduler implements Scheduler {
 	private static Logger log = Logger.getLogger(MesosScheduler.class);
 	private List<StreamPipelineTaskSubmitter> mdststs;
 	private SimpleDirectedGraph<StreamPipelineTaskSubmitter, DAGEdge> graph;
-	private int taskIdCounter = 0;
+	private int taskIdCounter;
 	 
-    private Protos.Credential credential=null;
+    private Protos.Credential credential;
     private ExecutorInfo executorinfo;
-	private int finishedTasks=0;
+	private int finishedTasks;
 	private MesosThirdPartyLibraryDistributor mtpld;
 	private Map<String,StreamPipelineTaskSubmitter> jobstagemdsthread;
 	int port;
 	byte[] mrjar;
 	private MesosScheduler(List<StreamPipelineTaskSubmitter> mdststs,
 			SimpleDirectedGraph<StreamPipelineTaskSubmitter, DAGEdge> graph,
-			Map<String,StreamPipelineTaskSubmitter> jobstagemdsthread,
-			byte[] mrjar){
+			Map<String, StreamPipelineTaskSubmitter> jobstagemdsthread,
+			byte[] mrjar) {
 		this.mdststs = mdststs;
 		this.graph = graph;
 		this.jobstagemdsthread = jobstagemdsthread;
@@ -65,9 +65,9 @@ public class MesosScheduler implements Scheduler {
 		mtpld =  new MesosThirdPartyLibraryDistributor(MDCConstants.MESOS_CONFIGDIR);
 		try {
 			port = mtpld.start();
-			log.debug("Properties server started:"+port);
+			log.debug("Properties server started:" + port);
 		} catch (Throwable ex) {
-			log.debug("Unable to start properties server:",ex);
+			log.debug("Unable to start properties server:", ex);
 		}
 	}
 	
@@ -108,7 +108,7 @@ public class MesosScheduler implements Scheduler {
 			var remainingMem = offerMem;
 			var kryo = Utils.getKryoMesos();
 			//Check whether the current offers is suitable to execute the tasks. 
-			if (taskIdCounter<mdststs.size() && remainingCpus >= CPUS_PER_TASK && remainingMem >= MEM_PER_TASK) {
+			if (taskIdCounter < mdststs.size() && remainingCpus >= CPUS_PER_TASK && remainingMem >= MEM_PER_TASK) {
 				try {
 					var task = mdststs.get(taskIdCounter).getTask();
 					//Get the task id of the job and stage.
@@ -147,11 +147,11 @@ public class MesosScheduler implements Scheduler {
 								.setData(ByteString.copyFrom(finalbaos.toByteArray()))
 								.setExecutor(Protos.ExecutorInfo.newBuilder(executorinfo)).build();
 						//Launch the task to be executed by the executor fo the offer.
-						log.debug("Launching Stage Tasks: "+task.jobid + task.stageid);
+						log.debug("Launching Stage Tasks: " + task.jobid + task.stageid);
 						launchTask(driver, offer, taskprotos);
 					}
 				} catch (Exception ex) {
-					log.error("Launching tasks failed: See cause below \n",ex);
+					log.error("Launching tasks failed: See cause below \n", ex);
 				}
 
 			}
@@ -166,7 +166,7 @@ public class MesosScheduler implements Scheduler {
 	 */
 	private Protos.TaskID buildNewTaskID(Task task) {
 		return Protos.TaskID.newBuilder()
-				.setValue(task.jobid+task.stageid).build();
+				.setValue(task.jobid + task.stageid).build();
 	}
 	
 	/**
@@ -223,23 +223,23 @@ public class MesosScheduler implements Scheduler {
 	        	try {
 					mtpld.stop();
 				} catch (Throwable ex) {
-					log.debug("Mesos Property Server stop error, See Cause below \n",ex);
+					log.debug("Mesos Property Server stop error, See Cause below \n", ex);
 				}
 	        	driver.stop();
 	        }
 	      }
 		//Check for the task is lost, killed or failed.
-	      if (status.getState() == TaskState.TASK_LOST ||
-	          status.getState() == TaskState.TASK_KILLED ||
-	          status.getState() == TaskState.TASK_FAILED) {
-	        log.debug("Aborting because task " + status.getTaskId().getValue() +
-	                           " is in unexpected state " +
-	                           status.getState().getValueDescriptor().getName() +
-	                           " with reason '" +
-	                           status.getReason().getValueDescriptor().getName() + MDCConstants.SINGLE_QUOTES +
-	                           " from source '" +
-	                           status.getSource().getValueDescriptor().getName() + MDCConstants.SINGLE_QUOTES +
-	                           " with message '" + status.getMessage() + MDCConstants.SINGLE_QUOTES);
+	      if (status.getState() == TaskState.TASK_LOST
+	          || status.getState() == TaskState.TASK_KILLED
+	          || status.getState() == TaskState.TASK_FAILED) {
+	        log.debug("Aborting because task " + status.getTaskId().getValue()
+	                           + " is in unexpected state "
+	                           + status.getState().getValueDescriptor().getName()
+	                           + " with reason '"
+	                           + status.getReason().getValueDescriptor().getName() + MDCConstants.SINGLE_QUOTES
+	                           + " from source '"
+	                           + status.getSource().getValueDescriptor().getName() + MDCConstants.SINGLE_QUOTES
+	                           + " with message '" + status.getMessage() + MDCConstants.SINGLE_QUOTES);
 	        driver.abort();
 	      }
 
@@ -324,7 +324,7 @@ public class MesosScheduler implements Scheduler {
 
     public String[] getProperties() {
     	var file = new File(MDCConstants.MESOS_CONFIGDIR);
-    	return file.list((File dir, String name)->
+    	return file.list((File dir, String name) ->
 				name.endsWith(MDCConstants.PROPERTIESEXTN)
     	);
     }
@@ -348,13 +348,13 @@ public class MesosScheduler implements Scheduler {
         cmdInfoBuilder.addUris(getUri());
         var stb = new StringBuilder();
         var props = getProperties();
-        for(var prop:props) {
+        for (var prop :props) {
         	stb.append(prop);
         	stb.append(MDCConstants.COMMA);
         }
         var commasepprops = stb.toString();
-        cmdInfoBuilder.setValue(MDCConstants.MESOS_FRAMEWORK_TASK_EXECUTOR_COMMAND+MDCConstants.SINGLESPACE+MDCConstants.HTTP+InetAddress.getLocalHost().getHostAddress()+MDCConstants.COLON+port+MDCConstants.SINGLESPACE+commasepprops.substring(0,commasepprops.length()-1));
-        log.debug(MDCConstants.MESOS_FRAMEWORK_TASK_EXECUTOR_COMMAND+MDCConstants.SINGLESPACE+MDCConstants.HTTP+InetAddress.getLocalHost().getHostAddress()+MDCConstants.COLON+port+MDCConstants.SINGLESPACE+commasepprops.substring(0,commasepprops.length()-1));
+        cmdInfoBuilder.setValue(MDCConstants.MESOS_FRAMEWORK_TASK_EXECUTOR_COMMAND + MDCConstants.SINGLESPACE + MDCConstants.HTTP + InetAddress.getLocalHost().getHostAddress() + MDCConstants.COLON + port + MDCConstants.SINGLESPACE + commasepprops.substring(0, commasepprops.length() - 1));
+        log.debug(MDCConstants.MESOS_FRAMEWORK_TASK_EXECUTOR_COMMAND + MDCConstants.SINGLESPACE + MDCConstants.HTTP + InetAddress.getLocalHost().getHostAddress() + MDCConstants.COLON + port + MDCConstants.SINGLESPACE + commasepprops.substring(0, commasepprops.length() - 1));
         return cmdInfoBuilder.build();
     }
 	/**
@@ -380,16 +380,16 @@ public class MesosScheduler implements Scheduler {
      * @throws Throwable
      */
     public static void runFramework(List<StreamPipelineTaskSubmitter> mdststs,
-			SimpleDirectedGraph<StreamPipelineTaskSubmitter, DAGEdge> graph,String mesosMaster,
-			Map<String,StreamPipelineTaskSubmitter> jobstagemdsthread,
+			SimpleDirectedGraph<StreamPipelineTaskSubmitter, DAGEdge> graph, String mesosMaster,
+			Map<String, StreamPipelineTaskSubmitter> jobstagemdsthread,
 			byte[] mrjar) throws UnknownHostException {
-    	var scheduler = new MesosScheduler(mdststs,graph,jobstagemdsthread,mrjar);
+    	var scheduler = new MesosScheduler(mdststs, graph, jobstagemdsthread, mrjar);
     	scheduler.setExecutorinfo(scheduler.getExecutorInfos());
         MesosSchedulerDriver driver;
         var frameworkinfo = scheduler.getFrameworkInfo();
         //Initialize the mesos framework via driver with credentials.
-        if(scheduler.credential!=null) {
-        driver = new MesosSchedulerDriver(scheduler, frameworkinfo, mesosMaster,scheduler.credential);
+        if (scheduler.credential != null) {
+        driver = new MesosSchedulerDriver(scheduler, frameworkinfo, mesosMaster, scheduler.credential);
         }
         //Initialize the mesos framework if otherwise.
         else {

@@ -23,19 +23,19 @@ public class MapReduceApplicationBuilder {
 		return new MapReduceApplicationBuilder();
 	}
 
-	@SuppressWarnings({ "rawtypes" })
+	@SuppressWarnings({"rawtypes"})
 	public MapReduceApplicationBuilder addMapper(Class crunchmapper, String inputfolderpath) {
 		mappers.add(new MapperInput(crunchmapper, inputfolderpath));
 		return this;
 	}
 
-	@SuppressWarnings({ "rawtypes" })
+	@SuppressWarnings({"rawtypes"})
 	public MapReduceApplicationBuilder addCombiner(Class crunchcombiner) {
 		combiners.add(crunchcombiner);
 		return this;
 	}
 
-	@SuppressWarnings({ "rawtypes" })
+	@SuppressWarnings({"rawtypes"})
 	public MapReduceApplicationBuilder addReducer(Class crunchreducer) {
 		reducers.add(crunchreducer);
 		return this;
@@ -56,10 +56,10 @@ public class MapReduceApplicationBuilder {
 		if (jobconf == null) {
 			jobconf = JobConfigurationBuilder.newBuilder().build();
 		}
-		if(jobconf.getExecmode().equals(MDCConstants.EXECMODE_IGNITE)) {
+		if (jobconf.getExecmode().equals(MDCConstants.EXECMODE_IGNITE)) {
 			return new MapReduceApplicationIgnite(jobname, jobconf, mappers, combiners, reducers, outputfolder);
 		}
-		else if(jobconf.getExecmode().equals(MDCConstants.EXECMODE_YARN)) {
+		else if (jobconf.getExecmode().equals(MDCConstants.EXECMODE_YARN)) {
 			return new MapReduceApplicationYarn(jobname, jobconf, mappers, combiners, reducers, outputfolder);
 		}
 		return new MapReduceApplication(jobname, jobconf, mappers, combiners, reducers, outputfolder);

@@ -47,36 +47,39 @@ public class RegisterKyroSerializers {
 	 * @param kryo
 	 */
 	static void register(Kryo kryo) {
-		kryo.register( Arrays.asList().getClass(), new ArraysAsListSerializer());
-		kryo.register( Collections.EMPTY_LIST.getClass(), new CollectionsEmptyListSerializer() );
-		kryo.register( Collections.EMPTY_MAP.getClass(), new CollectionsEmptyMapSerializer() );
-		kryo.register( Collections.EMPTY_SET.getClass(), new CollectionsEmptySetSerializer() );
-		kryo.register( Collections.singletonList( MDCConstants.EMPTY ).getClass(), new CollectionsSingletonListSerializer() );
-		kryo.register( Collections.singleton(MDCConstants.EMPTY).getClass(), new CollectionsSingletonSetSerializer() );
-		kryo.register( Collections.singletonMap( MDCConstants.EMPTY, MDCConstants.EMPTY ).getClass(), new CollectionsSingletonMapSerializer() );
-		kryo.register( GregorianCalendar.class, new GregorianCalendarSerializer() );
-		kryo.register( InvocationHandler.class, new JdkProxySerializer() );
-		UnmodifiableCollectionsSerializer.registerSerializers( kryo );
-		SynchronizedCollectionsSerializer.registerSerializers( kryo );
+		kryo.register(Arrays.asList().getClass(), new ArraysAsListSerializer());
+		kryo.register(Collections.EMPTY_LIST.getClass(), new CollectionsEmptyListSerializer());
+		kryo.register(Collections.EMPTY_MAP.getClass(), new CollectionsEmptyMapSerializer());
+		kryo.register(Collections.EMPTY_SET.getClass(), new CollectionsEmptySetSerializer());
+		kryo.register(Collections.singletonList(MDCConstants.EMPTY).getClass(), new CollectionsSingletonListSerializer());
+		kryo.register(Collections.singleton(MDCConstants.EMPTY).getClass(), new CollectionsSingletonSetSerializer());
+		kryo.register(Collections.singletonMap(MDCConstants.EMPTY, MDCConstants.EMPTY).getClass(), new CollectionsSingletonMapSerializer());
+		kryo.register(GregorianCalendar.class, new GregorianCalendarSerializer());
+		kryo.register(InvocationHandler.class, new JdkProxySerializer());
+		UnmodifiableCollectionsSerializer.registerSerializers(kryo);
+		SynchronizedCollectionsSerializer.registerSerializers(kryo);
 
-		kryo.register( CGLibProxySerializer.CGLibProxyMarker.class, new CGLibProxySerializer( ) );
+		kryo.register(CGLibProxySerializer.CGLibProxyMarker.class, new CGLibProxySerializer( ));
 		// guava ImmutableList, ImmutableSet, ImmutableMap, ImmutableMultimap, ImmutableTable, ReverseList, UnmodifiableNavigableSet
-		ImmutableListSerializer.registerSerializers( kryo );
-		ImmutableSetSerializer.registerSerializers( kryo );
-		ImmutableMapSerializer.registerSerializers( kryo );
-		ImmutableMultimapSerializer.registerSerializers( kryo );
-		ImmutableTableSerializer.registerSerializers( kryo );
-		ReverseListSerializer.registerSerializers( kryo );
-		UnmodifiableNavigableSetSerializer.registerSerializers( kryo );
+		ImmutableListSerializer.registerSerializers(kryo);
+		ImmutableSetSerializer.registerSerializers(kryo);
+		ImmutableMapSerializer.registerSerializers(kryo);
+		ImmutableMultimapSerializer.registerSerializers(kryo);
+		ImmutableTableSerializer.registerSerializers(kryo);
+		ReverseListSerializer.registerSerializers(kryo);
+		UnmodifiableNavigableSetSerializer.registerSerializers(kryo);
 		// guava ArrayListMultimap, HashMultimap, LinkedHashMultimap, LinkedListMultimap, TreeMultimap, ArrayTable, HashBasedTable, TreeBasedTable
-		ArrayListMultimapSerializer.registerSerializers( kryo );
-		HashMultimapSerializer.registerSerializers( kryo );
-		LinkedHashMultimapSerializer.registerSerializers( kryo );
-		LinkedListMultimapSerializer.registerSerializers( kryo );
-		TreeMultimapSerializer.registerSerializers( kryo );
-		ArrayTableSerializer.registerSerializers( kryo );
-		HashBasedTableSerializer.registerSerializers( kryo );
-		TreeBasedTableSerializer.registerSerializers( kryo );
+		ArrayListMultimapSerializer.registerSerializers(kryo);
+		HashMultimapSerializer.registerSerializers(kryo);
+		LinkedHashMultimapSerializer.registerSerializers(kryo);
+		LinkedListMultimapSerializer.registerSerializers(kryo);
+		TreeMultimapSerializer.registerSerializers(kryo);
+		ArrayTableSerializer.registerSerializers(kryo);
+		HashBasedTableSerializer.registerSerializers(kryo);
+		TreeBasedTableSerializer.registerSerializers(kryo);
+	}
+
+	private RegisterKyroSerializers() {
 	}
 
 }

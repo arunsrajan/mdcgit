@@ -28,8 +28,8 @@ public class IgniteCombiner implements IgniteCallable<Context> {
 	public Context call() throws Exception {
 		Set<Object> keys = dcc.keys();
 		var ctx = new DataCruncherContext();
-		keys.stream().parallel().forEach(key->{
-			cc.combine(key, (List)dcc.get(key), ctx);
+		keys.stream().parallel().forEach(key -> {
+			cc.combine(key, (List) dcc.get(key), ctx);
 			
 		});
 		return ctx;

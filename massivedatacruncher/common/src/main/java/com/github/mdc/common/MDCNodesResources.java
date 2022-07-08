@@ -12,11 +12,11 @@ import java.util.concurrent.ConcurrentMap;
  */
 public class MDCNodesResources {
 	private MDCNodesResources() {}
-	private static ConcurrentMap<String,Resources> resources = null;
-	public static void put(ConcurrentMap<String,Resources> resources) {
+	private static ConcurrentMap<String,Resources> resources;
+	public static void put(ConcurrentMap<String, Resources> resources) {
 		MDCNodesResources.resources = resources;
 	}
-	public static ConcurrentMap<String,Resources> get() {
+	public static ConcurrentMap<String, Resources> get() {
 		return MDCNodesResources.resources;
 	}
 }

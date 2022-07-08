@@ -15,7 +15,7 @@ import java.util.Vector;
  * @param <K>
  * @param <V>
  */
-@SuppressWarnings({ "serial" })
+@SuppressWarnings({"serial"})
 public class DataCruncherContext<K, V> implements Context<K, V>, Serializable {
 
 	private Map<K, Collection<V>> htkv = new Hashtable<>();
@@ -63,7 +63,7 @@ public class DataCruncherContext<K, V> implements Context<K, V>, Serializable {
 	@Override
 	public void add(Context<K, V> ctx) {
 		ctx.keys().stream().forEach(key -> {
-			addAll(key,ctx.get(key));
+			addAll(key, ctx.get(key));
 		});
 		
 	}
@@ -78,18 +78,23 @@ public class DataCruncherContext<K, V> implements Context<K, V>, Serializable {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
+		if (this == obj) {
 			return true;
-		if (obj == null)
+		}
+		if (obj == null) {
 			return false;
-		if (getClass() != obj.getClass())
+		}
+		if (getClass() != obj.getClass()) {
 			return false;
+		}
 		DataCruncherContext other = (DataCruncherContext) obj;
 		if (htkv == null) {
-			if (other.htkv != null)
+			if (other.htkv != null) {
 				return false;
-		} else if (!htkv.equals(other.htkv))
+			}
+		} else if (!htkv.equals(other.htkv)) {
 			return false;
+		}
 		return true;
 	}
 

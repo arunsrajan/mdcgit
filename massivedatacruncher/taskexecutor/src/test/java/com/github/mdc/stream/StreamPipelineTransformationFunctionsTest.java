@@ -192,7 +192,7 @@ public class StreamPipelineTransformationFunctionsTest extends StreamPipelineBas
 	@Test
 	public void testMassiveDataPipelineMapPair() throws Exception {
 		StreamPipeline<String> mdp = new StreamPipeline<String>();
-		MapToPairFunction<String, Tuple2<String, String>> mappairfunction = (data) -> new Tuple2<>(data, data);
+		MapToPairFunction<String, Tuple2<String, String>> mappairfunction = data -> new Tuple2<>(data, data);
 		MapPair<String, String> mappair = mdp.mapToPair(mappairfunction);
 		assertTrue(mappair.parents.get(0) == mdp);
 		assertTrue(mdp.childs.get(0) == mappair);
@@ -202,7 +202,7 @@ public class StreamPipelineTransformationFunctionsTest extends StreamPipelineBas
 	@Test
 	public void testMassiveDataPipelineMapPairFormDAGAbsFunc() throws Exception {
 		StreamPipeline<String> mdp = new StreamPipeline<String>();
-		MapToPairFunction<String, Tuple2<String, String>> mappairfunction = (data) -> new Tuple2<>(data, data);
+		MapToPairFunction<String, Tuple2<String, String>> mappairfunction = data -> new Tuple2<>(data, data);
 		MapPair<String, String> mdpchild = mdp.mapToPair(mappairfunction);
 		mdp.graph.addVertex(mdp);
 		mdp.formDAGAbstractFunction(mdp, mdp.childs);
@@ -379,7 +379,7 @@ public class StreamPipelineTransformationFunctionsTest extends StreamPipelineBas
 	@Test
 	public void testMassiveDataPipelineMaptoInt() throws Exception {
 		StreamPipeline<String> mdp = new StreamPipeline<String>();
-		SToIntFunction<String> tointfunction = (dat) -> Integer.parseInt(dat);
+		SToIntFunction<String> tointfunction = dat -> Integer.parseInt(dat);
 		PipelineIntStream<String> mdpchild = mdp.mapToInt(tointfunction);
 		assertTrue(mdpchild.parents.get(0) == mdp);
 		assertTrue(mdp.childs.get(0) == mdpchild);
@@ -390,7 +390,7 @@ public class StreamPipelineTransformationFunctionsTest extends StreamPipelineBas
 	@Test
 	public void testMassiveDataPipelineMaptoIntFormDAGAbsFunc() throws Exception {
 		StreamPipeline<String> mdp = new StreamPipeline<String>();
-		SToIntFunction<String> tointfunction = (dat) -> Integer.parseInt(dat);
+		SToIntFunction<String> tointfunction = dat -> Integer.parseInt(dat);
 		PipelineIntStream<String> mdpchild = mdp.mapToInt(tointfunction);
 		mdp.graph.addVertex(mdp);
 		mdp.formDAGAbstractFunction(mdp, mdp.childs);
@@ -406,7 +406,7 @@ public class StreamPipelineTransformationFunctionsTest extends StreamPipelineBas
 	@Test
 	public void testMassiveDataPipelineKeyBy() throws Exception {
 		StreamPipeline<String> mdp = new StreamPipeline<String>();
-		KeyByFunction<String, String> keybyfunction = (dat) -> dat;
+		KeyByFunction<String, String> keybyfunction = dat -> dat;
 		MapPair<String, String> mdpchild = mdp.keyBy(keybyfunction);
 		assertTrue(mdpchild.parents.get(0) == mdp);
 		assertTrue(mdp.childs.get(0) == mdpchild);
@@ -417,7 +417,7 @@ public class StreamPipelineTransformationFunctionsTest extends StreamPipelineBas
 	@Test
 	public void testMassiveDataPipelineKeyByFormDAGAbsFunc() throws Exception {
 		StreamPipeline<String> mdp = new StreamPipeline<String>();
-		KeyByFunction<String, String> keybyfunction = (dat) -> dat;
+		KeyByFunction<String, String> keybyfunction = dat -> dat;
 		MapPair<String, String> mdpchild = mdp.keyBy(keybyfunction);
 		mdp.graph.addVertex(mdp);
 		mdp.formDAGAbstractFunction(mdp, mdp.childs);

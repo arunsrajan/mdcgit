@@ -23,25 +23,28 @@ public class NetworkUtil {
 		log.debug("Entered NetworkUtil.getNetworkAddress()");
 		try {
 			var netinfs = NetworkInterface.getNetworkInterfaces();
-			for(var netinf:Collections.list(netinfs)) {
+			for (var netinf :Collections.list(netinfs)) {
 				var inetAddresses = netinf.getInetAddresses();
 		        for (var inetAddress : Collections.list(inetAddresses)) {
-		            if(inetAddress.getHostAddress().equals(host)) {
+		            if (inetAddress.getHostAddress().equals(host)) {
 		            	return host;
 		            }
 		        }
 			}
 			var hostia = InetAddress.getByName(host);
-			if(hostia==null) {
-				log.debug("Host Address Is Null: "+host);
+			if (hostia == null) {
+				log.debug("Host Address Is Null: " + host);
 				hostia = InetAddress.getLocalHost();
 			}
-			log.debug("Exiting NetworkUtil getNetworkAddress() method with host: "+hostia.getHostAddress());
+			log.debug("Exiting NetworkUtil getNetworkAddress() method with host: " + hostia.getHostAddress());
 	        return (hostia.getHostAddress()).trim(); 
 		} catch (Exception ex) {
 			log.error("Exception in NetworkUtil getNetworkAddress() method", ex);
 		}
 		log.debug("Exiting NetworkUtil.getNetworkAddress()");
 		return MDCConstants.LOCALHOST;
+	}
+
+	private NetworkUtil() {
 	}
 }

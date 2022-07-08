@@ -28,10 +28,10 @@ public class Job {
 	public List<Object> input = new Vector<>();
 	public List<Object> output = new Vector<>();
 	public Object results;
-	public boolean isresultrequired = false;
+	public boolean isresultrequired;
 	public JobMetrics jm;
 	public PipelineConfig pipelineconfig;
-	public boolean iscompleted = false;
+	public boolean iscompleted;
 	public Set vertices;
 	public Set<DAGEdge> edges;
 	public TRIGGER trigger;

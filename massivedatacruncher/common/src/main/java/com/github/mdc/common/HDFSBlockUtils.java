@@ -32,33 +32,33 @@ public class HDFSBlockUtils {
 	 * @return list of blocks information with multiple location from HDFS.
 	 * @throws Exception
 	 */
-	public static List<BlocksLocation> getBlocksLocationByFixedBlockSizeAuto(FileSystem hdfs, List<Path> filepaths,boolean isuserdefinedblocksize, long userdefinedblocksize)
+	public static List<BlocksLocation> getBlocksLocationByFixedBlockSizeAuto(FileSystem hdfs, List<Path> filepaths, boolean isuserdefinedblocksize, long userdefinedblocksize)
 			throws Exception {
 		var skipbytes = 0l;
 		var blsl = new ArrayList<BlocksLocation>();
-		var datanodeinfos = new ConcurrentHashMap<String,DatanodeXfefNumAllocated>();
+		var datanodeinfos = new ConcurrentHashMap<String, DatanodeXfefNumAllocated>();
 		long startoffset = 0;
 		long blocksize;
 		for (var filepath : filepaths) {
-			try(var hdis = (HdfsDataInputStream) hdfs.open(filepath);){
+			try (var hdis = (HdfsDataInputStream) hdfs.open(filepath);) {
 			var locatedblocks = hdis.getAllBlocks();
-			for (int lbindex=0;lbindex<locatedblocks.size();lbindex++) {
+			for (int lbindex = 0; lbindex < locatedblocks.size(); lbindex++) {
 				var lb = locatedblocks.get(lbindex);
-				blocksize = isuserdefinedblocksize?lb.getBlockSize()<userdefinedblocksize?lb.getBlockSize():userdefinedblocksize:lb.getBlockSize();
+				blocksize = isuserdefinedblocksize ? lb.getBlockSize() < userdefinedblocksize ? lb.getBlockSize() : userdefinedblocksize : lb.getBlockSize();
 				var dinfoa = lb.getLocations();
 				var dninfos = Arrays.asList(dinfoa);
-				for(var dinfo:dinfoa) {
+				for (var dinfo :dinfoa) {
 					var dncna = new DatanodeXfefNumAllocated();
 					dncna.ref = dinfo.getXferAddr();
 					dncna.numallocated = 0;
-					datanodeinfos.put(dncna.ref,dncna);
+					datanodeinfos.put(dncna.ref, dncna);
 				}
 				while (true) {
 					var bls = new BlocksLocation();
 					var block = new Block[2];
 					block[0] = new Block();
 					block[0].blockstart = startoffset;
-					startoffset = blocksize + startoffset < lb.getBlockSize() ? startoffset+blocksize : lb.getBlockSize();
+					startoffset = blocksize + startoffset < lb.getBlockSize() ? startoffset + blocksize : lb.getBlockSize();
 					block[0].blockend = startoffset;
 					block[0].blockOffset = lb.getStartOffset();
 					block[0].filename = filepath.toUri().toString();
@@ -69,10 +69,10 @@ public class HDFSBlockUtils {
 					bls.block = block;
 					blsl.add(bls);
 					skipbytes = 0;
-					boolean isnewline = isNewLineAtEnd(hdfs, lb, lb.getStartOffset()+startoffset-1, dninfos.get(0).getXferAddr());
+					boolean isnewline = isNewLineAtEnd(hdfs, lb, lb.getStartOffset() + startoffset - 1, dninfos.get(0).getXferAddr());
 					if (!isnewline) {
-						if(startoffset<lb.getBlockSize()) {
-							skipbytes = skipBlockToNewLine(hdfs, lb, lb.getStartOffset()+startoffset, dninfos.get(0).getXferAddr());
+						if (startoffset < lb.getBlockSize()) {
+							skipbytes = skipBlockToNewLine(hdfs, lb, lb.getStartOffset() + startoffset, dninfos.get(0).getXferAddr());
 							if (skipbytes > 0) {
 								bls = blsl.get(blsl.size() - 1);
 								bls.block[1] = new Block();
@@ -86,11 +86,11 @@ public class HDFSBlockUtils {
 														Collectors.toCollection(LinkedHashSet::new))));
 								startoffset += skipbytes;
 							}
-						}else if(lbindex<locatedblocks.size()-1) {
+						} else if (lbindex < locatedblocks.size() - 1) {
 							lbindex++;
 							lb = locatedblocks.get(lbindex);
 							startoffset = 0;
-							skipbytes = skipBlockToNewLine(hdfs, lb, lb.getStartOffset()+startoffset, dninfos.get(0).getXferAddr());
+							skipbytes = skipBlockToNewLine(hdfs, lb, lb.getStartOffset() + startoffset, dninfos.get(0).getXferAddr());
 							if (skipbytes > 0) {
 								bls = blsl.get(blsl.size() - 1);
 								bls.block[1] = new Block();
@@ -104,11 +104,11 @@ public class HDFSBlockUtils {
 														Collectors.toCollection(LinkedHashSet::new))));
 								startoffset += skipbytes;
 							}
-						}else {
+						} else {
 							startoffset = 0;
 							break;
 						}
-					}else if(startoffset==lb.getBlockSize()) {
+					} else if (startoffset == lb.getBlockSize()) {
 						startoffset = 0;
 						break;
 					}
@@ -116,8 +116,8 @@ public class HDFSBlockUtils {
 				}
 			}		
 			}
-			catch(Exception ex) {
-				log.error("Blocks Unavailable due to error",ex);
+			catch (Exception ex) {
+				log.error("Blocks Unavailable due to error", ex);
 				throw ex;
 			}
 		}
@@ -133,16 +133,16 @@ public class HDFSBlockUtils {
 	 * @return offset to skip bytes to new line. 
 	 * @throws Exception
 	 */
-	public static long skipToNewLine(LocatedBlock lblock, long l, String xrefaddress,String hp) throws Exception {
+	public static long skipToNewLine(LocatedBlock lblock, long l, String xrefaddress, String hp) throws Exception {
 		log.debug("Entered HDFSBlockUtils.skipToNewLine");
 		var stnl = new SkipToNewLine();
 		stnl.l = l;
 		stnl.lblock = lblock;
 		stnl.xrefaddress = xrefaddress;
-		log.debug("In SkipToNewLine client SkipToNewLineObject: "+stnl);
+		log.debug("In SkipToNewLine client SkipToNewLineObject: " + stnl);
 		
 		log.debug("Exiting HDFSBlockUtils.skipToNewLine");
-		return (long) Utils.getResultObjectByInput(hp,stnl);
+		return (long) Utils.getResultObjectByInput(hp, stnl);
 	}
 	
 	/**
@@ -164,9 +164,10 @@ public class HDFSBlockUtils {
 			read1byt[0] = 0;
 			while (blockReader.available() > 0) {
 				var bytesread = blockReader.read(read1byt, 0, 1);
-				builder.append((char)read1byt[0]);
-				if (bytesread == 0 || bytesread == -1)
+				builder.append((char) read1byt[0]);
+				if (bytesread == 0 || bytesread == -1) {
 					break;
+				}
 				if (read1byt[0] == '\n') {
 					skipbytes += 1;
 					break;
@@ -174,7 +175,7 @@ public class HDFSBlockUtils {
 				skipbytes += 1;
 			}
 		}
-		log.debug("Skip Bytes Read: "+builder.toString());
+		log.debug("Skip Bytes Read: " + builder.toString());
 		log.debug("Exiting HDFSBlockUtils.skipBlockToNewLine");
 		return skipbytes;
 	}
@@ -188,13 +189,16 @@ public class HDFSBlockUtils {
 			read1byt[0] = 0;
 			while (blockReader.available() > 0) {
 				var bytesread = blockReader.read(read1byt, 0, 1);
-				builder.append((char)read1byt[0]);
-				if (bytesread == 0 || bytesread == -1)
+				builder.append((char) read1byt[0]);
+				if (bytesread == 0 || bytesread == -1) {
 					break;
+				}
 				if (read1byt[0] == '\n') {
 					return true;
 				}
-				else return false;
+				else {
+					return false;
+				}
 			}
 		}
 		return false;

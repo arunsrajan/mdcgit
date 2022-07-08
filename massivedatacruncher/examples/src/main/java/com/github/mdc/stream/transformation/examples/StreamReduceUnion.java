@@ -25,12 +25,12 @@ public class StreamReduceUnion implements Serializable, Pipeline {
 		testReduce(args, pipelineconfig);
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	public void testReduce(String[] args, PipelineConfig pipelineconfig) throws Exception {
 		log.info("StreamReduceUnion.testReduce Before---------------------------------------");
 		var datastream1 = StreamPipeline.newStreamHDFS(args[0], args[1], pipelineconfig);
 		var mappair1 = datastream1.map(dat -> dat.split(","))
-				.filter(dat -> !dat[14].equals("ArrDelay") && !dat[14].equals("NA"))
+				.filter(dat -> !"ArrDelay".equals(dat[14]) && !"NA".equals(dat[14]))
 				.mapToPair(dat -> Tuple.tuple(dat[8], Long.parseLong(dat[14])));
 
 		var airlinesample1 = mappair1.reduceByKey((dat1, dat2) -> dat1 + dat2).coalesce(1,
@@ -38,7 +38,7 @@ public class StreamReduceUnion implements Serializable, Pipeline {
 
 		var datastream2 = StreamPipeline.newStreamHDFS(args[0], args[2], pipelineconfig);
 		var mappair2 = datastream2.map(dat -> dat.split(","))
-				.filter(dat -> !dat[14].equals("ArrDelay") && !dat[14].equals("NA"))
+				.filter(dat -> !"ArrDelay".equals(dat[14]) && !"NA".equals(dat[14]))
 				.mapToPair(dat -> Tuple.tuple(dat[8], Long.parseLong(dat[14])));
 
 		var airlinesample2 = mappair2.reduceByKey((dat1, dat2) -> dat1 + dat2).coalesce(1,

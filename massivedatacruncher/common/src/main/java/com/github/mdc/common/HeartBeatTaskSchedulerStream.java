@@ -22,7 +22,7 @@ import com.github.mdc.common.Task.TaskStatus;
  * The heart beat server for MR streaming api which 
  * receives the task status updates from streaming task executors.
  */
-public final class HeartBeatTaskSchedulerStream extends HeartBeatServerStream implements HeartBeatCloseable{
+public final class HeartBeatTaskSchedulerStream extends HeartBeatServerStream implements HeartBeatCloseable {
 	private static Logger log = Logger.getLogger(HeartBeatTaskSchedulerStream.class);
 	private String jobid;
 	private TaskStatus taskstatus = TaskStatus.SUBMITTED;
@@ -54,10 +54,10 @@ public final class HeartBeatTaskSchedulerStream extends HeartBeatServerStream im
 	public void init(Object... config) throws Exception {
 		log.debug("Entered HeartBeatTaskSchedulerStream.init");
 		super.init(config);
-		if(config.length!=7) {
+		if (config.length != 7) {
 			throw new HeartBeatException(MDCConstants.HEARTBEAT_TASK_SCHEDULER_STREAM_EXCEPTON_MESSAGE);
 		}
-		if(config[6] instanceof String jid) {
+		if (config[6] instanceof String jid) {
 			jobid = jid;			
 		}
 		else {
@@ -82,37 +82,35 @@ public final class HeartBeatTaskSchedulerStream extends HeartBeatServerStream im
 			
 			@Override
 			public void viewAccepted(View clusterview) {
-				log.debug("Nodes View: "+clusterview.getMembers());
+				log.debug("Nodes View: " + clusterview.getMembers());
 			}
 			List<String> apptasks = new ArrayList<>();
 			public void receive(Message msg) {
 				try {
 					log.debug("Entered Receiver.receive");
-					var rawbuffer = (byte[])((ObjectMessage)msg).getObject();
+					var rawbuffer = (byte[]) ((ObjectMessage) msg).getObject();
 					var kryo = Utils.getKryoNonDeflateSerializer();
 					try (var bais = new ByteArrayInputStream(rawbuffer); var input = new Input(bais);) {
 						var task = (Task) Utils.readKryoInputObjectWithClass(kryo, input);
-						log.info("Task Status: "+task+MDCConstants.SINGLESPACE+task.taskstatus);
-						if(jobid.equals(task.jobid)) {
-							if((task.taskstatus == Task.TaskStatus.COMPLETED ||
-									task.taskstatus == Task.TaskStatus.FAILED)&&
-									!apptasks.contains(task.taskid)) {
-								log.info("Task adding to queue: "+task);
+						log.info("Task Status: " + task + MDCConstants.SINGLESPACE + task.taskstatus);
+						if (jobid.equals(task.jobid)) {
+							if ((task.taskstatus == Task.TaskStatus.COMPLETED
+									|| task.taskstatus == Task.TaskStatus.FAILED)
+									&& !apptasks.contains(task.taskid)) {
+								log.info("Task adding to queue: " + task);
 								hbo.addToQueue(task);
 								apptasks.add(task.taskid);
-							}else if((task.taskstatus == Task.TaskStatus.COMPLETED ||
-									task.taskstatus == Task.TaskStatus.FAILED)) {
+							} else if ((task.taskstatus == Task.TaskStatus.COMPLETED
+									|| task.taskstatus == Task.TaskStatus.FAILED)) {
 								var trs = new TaskResponseStatus();
 								trs.jobid = task.jobid;
 								trs.stageid = task.stageid;
 								trs.taskid = task.taskid;
 								try (var baos = new ByteArrayOutputStream(); var output = new Output(baos);) {
 									Utils.writeKryoOutputClassObject(kryo, output, trs);
-									if(!channel.isClosed()) {
+									if (!channel.isClosed()) {
 										channel.send(new ObjectMessage(msg.getSrc(), baos.toByteArray()));
 									}
-								} finally {
-
 								}
 							}
 						}
@@ -123,7 +121,7 @@ public final class HeartBeatTaskSchedulerStream extends HeartBeatServerStream im
 				    // Restore interrupted state...
 				    Thread.currentThread().interrupt();
 				} catch (Exception ex) {
-					log.info("Heartbeat Receive Updates error, See Cause below: \n",ex);
+					log.info("Heartbeat Receive Updates error, See Cause below: \n", ex);
 				}
 			}
 		});
@@ -137,7 +135,7 @@ public final class HeartBeatTaskSchedulerStream extends HeartBeatServerStream im
 	}
 	
 	Semaphore pingmutex = new Semaphore(1);
-	boolean responsereceived = false;
+	boolean responsereceived;
 	
 	/**
 	 * This method pings the status of the tasks executed by the task executors.
@@ -178,7 +176,7 @@ public final class HeartBeatTaskSchedulerStream extends HeartBeatServerStream im
 						}
 
 						public void receive(Message msg) {
-							var rawbuffer = (byte[])((ObjectMessage)msg).getObject();
+							var rawbuffer = (byte[]) ((ObjectMessage) msg).getObject();
 							var kryo = Utils.getKryoNonDeflateSerializer();
 							try (var bais = new ByteArrayInputStream(rawbuffer);
 									var input = new Input(bais);) {
@@ -201,8 +199,6 @@ public final class HeartBeatTaskSchedulerStream extends HeartBeatServerStream im
 				} else {
 					channel.send(new ObjectMessage(null, baos.toByteArray()));
 				}
-			} finally {
-
 			}
 
 			log.info("Exiting Pinging Message: " + jobid + MDCConstants.SINGLESPACE + stageid + MDCConstants.SINGLESPACE

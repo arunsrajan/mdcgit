@@ -56,7 +56,7 @@ public class TaskSchedulerMapperSubmitter implements TaskSchedulerMapperSubmitte
 			objects.add(apptask.taskid);
 			Utils.writeObject(blockslocation.executorhp, objects);
 		}
-		catch(IOException ex) {
+		catch (IOException ex) {
 			var baos = new ByteArrayOutputStream();
 			var failuremessage = new PrintWriter(baos, true, StandardCharsets.UTF_8);
 			ex.printStackTrace(failuremessage);

@@ -7,7 +7,7 @@ import com.github.mdc.tasks.scheduler.JobConfiguration;
 import com.github.mdc.tasks.scheduler.MapReduceApplication;
 import com.github.mdc.tasks.scheduler.MapReduceApplicationBuilder;
 
-public class MrJobArrivalDelayNormal implements com.github.mdc.tasks.scheduler.Application{
+public class MrJobArrivalDelayNormal implements com.github.mdc.tasks.scheduler.Application {
 	static Logger log = Logger.getLogger(MrJobArrivalDelayNormal.class);
 	@Override
 	public void runMRJob(String[] args, JobConfiguration jobconfiguration) {

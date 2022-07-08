@@ -12,15 +12,15 @@ import com.github.mdc.stream.sql.StreamPipelineSql;
 import com.github.mdc.stream.sql.StreamPipelineSqlBuilder;
 
 public class StreamPipelineSqlBiggerFilesTest extends StreamPipelineBaseTestCommon {
-	String[] airlineheader = new String[] { "AirlineYear", "MonthOfYear", "DayofMonth", "DayOfWeek", "DepTime",
+	String[] airlineheader = new String[]{"AirlineYear", "MonthOfYear", "DayofMonth", "DayOfWeek", "DepTime",
 			"CRSDepTime", "ArrTime", "CRSArrTime", "UniqueCarrier", "FlightNum", "TailNum", "ActualElapsedTime",
 			"CRSElapsedTime", "AirTime", "ArrDelay", "DepDelay", "Origin", "Dest", "Distance", "TaxiIn", "TaxiOut",
 			"Cancelled", "CancellationCode", "Diverted", "CarrierDelay", "WeatherDelay", "NASDelay", "SecurityDelay",
-			"LateAircraftDelay" };
-	String[] carrierheader = { "Code", "Description" };
+			"LateAircraftDelay"};
+	String[] carrierheader = {"Code", "Description"};
 	Logger log = Logger.getLogger(StreamPipelineSqlBiggerFilesTest.class);
 
-	@SuppressWarnings({ "unchecked" })
+	@SuppressWarnings({"unchecked"})
 	@Test
 	public void testMDPSqlBuilderSumArrivalDelayInMemory() throws Exception {
 		pipelineconfig.setLocal("false");
@@ -47,7 +47,7 @@ public class StreamPipelineSqlBiggerFilesTest extends StreamPipelineBaseTestComm
 	}
 	
 	
-	@SuppressWarnings({ "unchecked" })
+	@SuppressWarnings({"unchecked"})
 	@Test
 	public void testMDPSqlBuilderSumArrivalDelayInMemoryLocal() throws Exception {
 		pipelineconfig.setLocal("true");
@@ -73,7 +73,7 @@ public class StreamPipelineSqlBiggerFilesTest extends StreamPipelineBaseTestComm
 	}
 	
 	
-	@SuppressWarnings({ "unchecked" })
+	@SuppressWarnings({"unchecked"})
 	@Test
 	public void testMDPSqlBuilderCountArrivalDelayBiggerFiles() throws Exception {
 		pipelineconfig.setLocal("false");
@@ -100,7 +100,7 @@ public class StreamPipelineSqlBiggerFilesTest extends StreamPipelineBaseTestComm
 	}
 	
 	
-	@SuppressWarnings({ "unchecked" })
+	@SuppressWarnings({"unchecked"})
 	@Test
 	public void testMDPSqlBuilderSumArrivalDelayDisk() throws Exception {
 		pipelineconfig.setLocal("false");

@@ -52,13 +52,13 @@ public class MapReduceYarnAppmaster extends StaticEventingAppmaster implements C
 
 	private static final Log log = LogFactory.getLog(MapReduceYarnAppmaster.class);
 	
-	private Map<String,Object> pendingjobs = new ConcurrentHashMap<>();
+	private Map<String, Object> pendingjobs = new ConcurrentHashMap<>();
 	private final Semaphore lock = new Semaphore(1);
 	@SuppressWarnings("rawtypes")
 	private DataCruncherContext dcc = new DataCruncherContext();
-	private long taskcompleted = 0, redtaskcompleted = 0;
-	private int tasksubmitted = 0;
-	private int redtasksubmitted = 0;
+	private long taskcompleted, redtaskcompleted;
+	private int tasksubmitted;
+	private int redtasksubmitted;
 	private int numreducers;
 	/**
 	 * Container initialization.
@@ -66,7 +66,7 @@ public class MapReduceYarnAppmaster extends StaticEventingAppmaster implements C
 	@Override
 	protected void onInit() throws Exception {
 		super.onInit();
-		if(getLauncher() instanceof AbstractLauncher launcher) {
+		if (getLauncher() instanceof AbstractLauncher launcher) {
 			launcher.addInterceptor(this);
 		}
 	}
@@ -76,10 +76,10 @@ public class MapReduceYarnAppmaster extends StaticEventingAppmaster implements C
 	Map<String, List<BlocksLocation>> folderfileblocksmap;
 	List<YarnReducer> rs = new ArrayList<>();
 	JobConfiguration jobconf;
-	Map<String,List<MapperCombiner>> ipmcs = new ConcurrentHashMap<>();
+	Map<String, List<MapperCombiner>> ipmcs = new ConcurrentHashMap<>();
 	int totalmappersize;
-	Map<String,String> containeridipmap = new ConcurrentHashMap<>();
-	Map<String,Integer> iptasksubmittedmap = new ConcurrentHashMap<>();
+	Map<String, String> containeridipmap = new ConcurrentHashMap<>();
+	Map<String, Integer> iptasksubmittedmap = new ConcurrentHashMap<>();
 	/**
 	 * Submit the user application. The various parameters obtained from
 	 * HDFS are graph with node and edges, job stage map, job stage with 
@@ -171,9 +171,9 @@ public class MapReduceYarnAppmaster extends StaticEventingAppmaster implements C
 			MDCProperties.put(prop);
 			super.submitApplication();
 		}
-		catch(Exception ex) {
-			log.info("Submit Application Error, See cause below \n",ex);
-			if(!Objects.isNull(ByteBufferPoolDirect.get())) {
+		catch (Exception ex) {
+			log.info("Submit Application Error, See cause below \n", ex);
+			if (!Objects.isNull(ByteBufferPoolDirect.get())) {
 				ByteBufferPoolDirect.get().close();
 			}
 		}
@@ -183,7 +183,7 @@ public class MapReduceYarnAppmaster extends StaticEventingAppmaster implements C
 	
 	public MapperCombiner getMapperCombiner(
 			Map<String, Set<String>> mapclzchunkfile,
-			Set<String> combiners, BlocksLocation blockslocation,ApplicationTask apptask){
+			Set<String> combiners, BlocksLocation blockslocation, ApplicationTask apptask) {
 		var rawpath = blockslocation.block[0].filename.split(MDCConstants.BACKWARD_SLASH);
 		var mapcombiner = new MapperCombiner(blockslocation, mapclzchunkfile.get(MDCConstants.BACKWARD_SLASH + rawpath[3]), apptask,
 				combiners);
@@ -202,10 +202,10 @@ public class MapReduceYarnAppmaster extends StaticEventingAppmaster implements C
 				containeridipmap.put(container.getId().toString().trim(), container.getNodeId().getHost());
 				var port = service.getPort();
 				var address = InetAddress.getLocalHost().getHostAddress();
-				log.info("preLaunch Container Id Ip Map:"+containeridipmap);
-				log.info("App Master Service Ip Address: "+address);
-				log.info("App Master Service Port: "+port);
-				log.info("Container Id: "+container.getId().toString()+" Ip: "+service.getHost());
+				log.info("preLaunch Container Id Ip Map:" + containeridipmap);
+				log.info("App Master Service Ip Address: " + address);
+				log.info("App Master Service Port: " + port);
+				log.info("Container Id: " + container.getId().toString() + " Ip: " + service.getHost());
 				env = new HashMap<>(context.getEnvironment());
 				//Set the service port to the environment object.
 				env.put(YarnSystemConstants.AMSERVICE_PORT, Integer.toString(port));
@@ -213,7 +213,7 @@ public class MapReduceYarnAppmaster extends StaticEventingAppmaster implements C
 				//Set the service host to the environment object.
 				env.put(YarnSystemConstants.AMSERVICE_HOST, address);
 			} catch (Exception ex) {
-				log.info("Container Prelaunch error, See cause below \n",ex);
+				log.info("Container Prelaunch error, See cause below \n", ex);
 			}
 			context.setEnvironment(env);
 			return context;
@@ -230,14 +230,14 @@ public class MapReduceYarnAppmaster extends StaticEventingAppmaster implements C
 		try {
 			lock.acquire();
 			super.onContainerCompleted(status);
-			log.info("Container completed: "+status.getContainerId());
+			log.info("Container completed: " + status.getContainerId());
 		}
 		catch (InterruptedException e) {
 			log.warn("Interrupted!", e);
 		    // Restore interrupted state...
 		    Thread.currentThread().interrupt();
-		}catch(Exception ex) {
-			log.info("Container Completion fails",ex);
+		} catch (Exception ex) {
+			log.info("Container Completion fails", ex);
 		}
 		finally {
 			lock.release();
@@ -252,7 +252,7 @@ public class MapReduceYarnAppmaster extends StaticEventingAppmaster implements C
 	protected boolean onContainerFailed(ContainerStatus status) {
 		try {
 			lock.acquire();
-			log.info("Container failed: "+status.getContainerId());
+			log.info("Container failed: " + status.getContainerId());
 			return true;
 		}
 		catch (InterruptedException e) {
@@ -260,8 +260,8 @@ public class MapReduceYarnAppmaster extends StaticEventingAppmaster implements C
 		    // Restore interrupted state...
 		    Thread.currentThread().interrupt();
 		    return false;
-		} catch(Exception ex) {
-			log.info("Container allocation fails",ex);
+		} catch (Exception ex) {
+			log.info("Container allocation fails", ex);
 			return false;
 		}
 		finally {
@@ -276,27 +276,27 @@ public class MapReduceYarnAppmaster extends StaticEventingAppmaster implements C
 	 * @param success
 	 */
 	@SuppressWarnings("unchecked")
-	public void reportJobStatus(MapperCombiner mc, boolean success,String containerid) {
+	public void reportJobStatus(MapperCombiner mc, boolean success, String containerid) {
 		try {
 			lock.acquire();
 			if (success) {
-				log.info(mc.apptask.applicationid+mc.apptask.taskid+" Updated");
+				log.info(mc.apptask.applicationid + mc.apptask.taskid + " Updated");
 				var keys = (Set<Object>) RemoteDataFetcher.readIntermediatePhaseOutputFromDFS(mc.apptask.applicationid,
 						(mc.apptask.applicationid + mc.apptask.taskid), true);
-				dcc.putAll(keys,mc.apptask.applicationid + mc.apptask.taskid);
-				log.info("dcc: "+dcc);
-				pendingjobs.remove(mc.apptask.applicationid+mc.apptask.taskid);
+				dcc.putAll(keys, mc.apptask.applicationid + mc.apptask.taskid);
+				log.info("dcc: " + dcc);
+				pendingjobs.remove(mc.apptask.applicationid + mc.apptask.taskid);
 				taskcompleted++;
 			} else {
-				pendingjobs.put(mc.apptask.applicationid+mc.apptask.taskid,mc);
+				pendingjobs.put(mc.apptask.applicationid + mc.apptask.taskid, mc);
 			}
 		}
 		catch (InterruptedException e) {
 			log.warn("Interrupted!", e);
 		    // Restore interrupted state...
 		    Thread.currentThread().interrupt();
-		} catch(Exception ex) {
-			log.info("reportJobStatus fails",ex);
+		} catch (Exception ex) {
+			log.info("reportJobStatus fails", ex);
 		}
 		finally {
 			lock.release();
@@ -304,11 +304,11 @@ public class MapReduceYarnAppmaster extends StaticEventingAppmaster implements C
 	}
 	
 	
-	public void reportJobStatus(YarnReducer r, boolean success,String containerid) {
+	public void reportJobStatus(YarnReducer r, boolean success, String containerid) {
 		try {
 			lock.acquire();
 			if (success) {
-				if(redtaskcompleted+1==rs.size()) {
+				if (redtaskcompleted + 1 == rs.size()) {
 					var sb = new StringBuilder();
 					for (var redcount = 0; redcount < numreducers; redcount++) {
 						var red = rs.get(redcount);
@@ -317,7 +317,7 @@ public class MapReduceYarnAppmaster extends StaticEventingAppmaster implements C
 								(red.apptask.applicationid + red.apptask.taskid), false);
 						var keysreducers = ctxreducerpart.keys();
 						sb.append(MDCConstants.NEWLINE);
-						sb.append("Partition "+(redcount+1)+"-------------------------------------------------");
+						sb.append("Partition " + (redcount + 1) + "-------------------------------------------------");
 						sb.append(MDCConstants.NEWLINE);
 						for (var key : keysreducers) {
 							sb.append(key + MDCConstants.SINGLESPACE + ctxreducerpart.get(key));
@@ -338,11 +338,11 @@ public class MapReduceYarnAppmaster extends StaticEventingAppmaster implements C
 						log.error(MDCConstants.EMPTY, ex);
 					}
 				}
-				log.info(r.apptask.applicationid+r.apptask.taskid+" Updated");
-				pendingjobs.remove(r.apptask.applicationid+r.apptask.taskid);
+				log.info(r.apptask.applicationid + r.apptask.taskid + " Updated");
+				pendingjobs.remove(r.apptask.applicationid + r.apptask.taskid);
 				redtaskcompleted++;
 			} else {
-				pendingjobs.put(r.apptask.applicationid+r.apptask.taskid,r);
+				pendingjobs.put(r.apptask.applicationid + r.apptask.taskid, r);
 			}
 		}
 		catch (InterruptedException e) {
@@ -350,8 +350,8 @@ public class MapReduceYarnAppmaster extends StaticEventingAppmaster implements C
 		    // Restore interrupted state...
 		    Thread.currentThread().interrupt();
 		}
-		catch(Exception ex) {
-			log.info("reportJobStatus fails",ex);
+		catch (Exception ex) {
+			log.info("reportJobStatus fails", ex);
 		}
 		finally {
 			lock.release();
@@ -363,28 +363,28 @@ public class MapReduceYarnAppmaster extends StaticEventingAppmaster implements C
 	 * Obtain the job to execute
 	 * @return
 	 */
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	public Object getJob(String containerid) {
 		try {
 			lock.acquire();
 			if (!pendingjobs.keySet().isEmpty()) {
 				return pendingjobs.remove(pendingjobs.keySet().iterator().next());
 			} else if (tasksubmitted < totalmappersize) {
-				log.info("getJob Container Id Ip Map:"+containeridipmap);
+				log.info("getJob Container Id Ip Map:" + containeridipmap);
 				var ip = containeridipmap.get(containerid.trim());
-				var iptasksubmitted = iptasksubmittedmap.get(ip)==null?0:iptasksubmittedmap.get(ip);
+				var iptasksubmitted = iptasksubmittedmap.get(ip) == null ? 0 : iptasksubmittedmap.get(ip);
 				var mcs = ipmcs.get(ip);
-				if(Objects.isNull(mcs)) {
+				if (Objects.isNull(mcs)) {
 					return null;
 				}
-				if(iptasksubmitted<mcs.size()) {
+				if (iptasksubmitted < mcs.size()) {
 					var mc = ipmcs.get(ip).get(iptasksubmitted++);
 					iptasksubmittedmap.put(ip, iptasksubmitted);
 					tasksubmitted++;
 					return mc;
 				}
 			} else if (redtasksubmitted < rs.size() && taskcompleted >= totalmappersize) {
-				if(redtasksubmitted==0) {
+				if (redtasksubmitted == 0) {
 					var keyapptasks = (List<Tuple2Serializable>) dcc.keys().parallelStream()
 							.map(key -> new Tuple2Serializable(key, dcc.get(key)))
 							.collect(Collectors.toCollection(ArrayList::new));
@@ -392,7 +392,7 @@ public class MapReduceYarnAppmaster extends StaticEventingAppmaster implements C
 							.partition(keyapptasks, (keyapptasks.size()) / numreducers).iterator();
 				}
 				rs.get(redtasksubmitted).tuples = partkeys.next();
-				log.info("Tuples: "+rs.get(redtasksubmitted).tuples);
+				log.info("Tuples: " + rs.get(redtasksubmitted).tuples);
 				return rs.get(redtasksubmitted++);
 			}
 			return null;
@@ -416,15 +416,15 @@ public class MapReduceYarnAppmaster extends StaticEventingAppmaster implements C
 	public boolean hasJobs() {
 		try {
 			lock.acquire();
-			return (pendingjobs.size()>0||taskcompleted<totalmappersize||redtaskcompleted<rs.size());
+			return pendingjobs.size() > 0 || taskcompleted < totalmappersize || redtaskcompleted < rs.size();
 		}
 		catch (InterruptedException e) {
 			log.warn("Interrupted!", e);
 		    // Restore interrupted state...
 		    Thread.currentThread().interrupt();
 		    return false;
-		} catch(Exception ex) {
-			log.info("hasJobs fails",ex);
+		} catch (Exception ex) {
+			log.info("hasJobs fails", ex);
 			return false;
 		}
 		finally {
@@ -435,6 +435,6 @@ public class MapReduceYarnAppmaster extends StaticEventingAppmaster implements C
 	
 	@Override
 	public String toString() {
-		return MDCConstants.PENDINGJOBS+MDCConstants.EQUAL + pendingjobs.size() + MDCConstants.SINGLESPACE+MDCConstants.RUNNINGJOBS+MDCConstants.EQUAL+ pendingjobs.size();
+		return MDCConstants.PENDINGJOBS + MDCConstants.EQUAL + pendingjobs.size() + MDCConstants.SINGLESPACE + MDCConstants.RUNNINGJOBS + MDCConstants.EQUAL + pendingjobs.size();
 	}
 }

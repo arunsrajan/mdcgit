@@ -18,7 +18,7 @@ public class Tuple2Serializable<V1, V2> extends Tuple2<V1, V2> implements Serial
 	
 	
 	public Tuple2Serializable() {
-		super(null,null);
+		super(null, null);
 	}
 
 

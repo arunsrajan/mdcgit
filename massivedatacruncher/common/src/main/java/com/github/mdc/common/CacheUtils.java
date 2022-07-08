@@ -65,7 +65,7 @@ public class CacheUtils {
 									: Duration.ofSeconds(expiry))).build();
 			cacheManager = CacheManagerBuilder.newCacheManagerBuilder()
 					.with(CacheManagerBuilder.persistence(cachedatapath)) 
-					.withCache(cachename,ccb).build();
+					.withCache(cachename, ccb).build();
 			log.debug("Cache Manager Object Built");
 			cacheManager.init();
 			MDCCacheManager.put(cacheManager);
@@ -88,7 +88,7 @@ public class CacheUtils {
 				Integer.parseInt((String) MDCProperties.get().get(MDCConstants.CACHEEXPIRY)),
 				CacheUtils.CacheExpiry.valueOf(cacheduration),
 				Integer.parseInt((String) MDCProperties.get().get(MDCConstants.CACHEDISKSIZEGB)),
-				(String) MDCProperties.get().getProperty(MDCConstants.CACHEDISKPATH,MDCConstants.CACHEDISKPATH_DEFAULT)+MDCConstants.BACKWARD_SLASH+Utils.getUniqueID()));
+				(String) MDCProperties.get().getProperty(MDCConstants.CACHEDISKPATH, MDCConstants.CACHEDISKPATH_DEFAULT) + MDCConstants.BACKWARD_SLASH + Utils.getUniqueID()));
 		log.debug("Exiting CacheUtils.initCache");
 	}
 	

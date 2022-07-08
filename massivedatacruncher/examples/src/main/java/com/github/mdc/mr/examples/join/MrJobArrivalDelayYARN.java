@@ -8,7 +8,7 @@ import com.github.mdc.tasks.scheduler.JobConfiguration;
 import com.github.mdc.tasks.scheduler.MapReduceApplicationBuilder;
 import com.github.mdc.tasks.scheduler.MapReduceApplicationYarn;
 
-public class MrJobArrivalDelayYARN implements com.github.mdc.tasks.scheduler.Application{
+public class MrJobArrivalDelayYARN implements com.github.mdc.tasks.scheduler.Application {
 	static String heapsize = "1024";
 	static Logger log = Logger.getLogger(MrJobArrivalDelayYARN.class);
 	@Override

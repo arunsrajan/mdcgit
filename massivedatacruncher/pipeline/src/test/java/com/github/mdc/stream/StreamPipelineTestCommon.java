@@ -1,7 +1,6 @@
 package com.github.mdc.stream;
 
 import java.io.InputStream;
-import java.net.Socket;
 import java.net.URI;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
@@ -28,7 +27,7 @@ import com.github.mdc.common.Utils;
 import com.github.sakserv.minicluster.impl.HdfsLocalCluster;
 
 public class StreamPipelineTestCommon {
-	public static Cache<String,byte[]> cache = null;
+	public static Cache<String, byte[]> cache;
 	protected static String STAR = "*";
 	protected static int namenodeport = 9000;
 	protected static int namenodehttpport = 50070;
@@ -47,11 +46,11 @@ public class StreamPipelineTestCommon {
 	protected String[] githubevents1 = {"/githubevents"};
 	protected static String jsonfileextn = ".json";
 	protected  static String hdfsurl = "hdfs://127.0.0.1:9000";
-	protected String[] airlineheader = new String[] { "Year", "Month", "DayofMonth", "DayOfWeek", "DepTime", "CRSDepTime",
+	protected String[] airlineheader = new String[]{"Year", "Month", "DayofMonth", "DayOfWeek", "DepTime", "CRSDepTime",
 			"ArrTime", "CRSArrTime", "UniqueCarrier", "FlightNum", "TailNum", "ActualElapsedTime", "CRSElapsedTime",
 			"AirTime", "ArrDelay", "DepDelay", "Origin", "Dest", "Distance", "TaxiIn", "TaxiOut", "Cancelled",
 			"CancellationCode", "Diverted", "CarrierDelay", "WeatherDelay", "NASDelay", "SecurityDelay",
-			"LateAircraftDelay" };
+			"LateAircraftDelay"};
 	static Logger log = Logger.getLogger(StreamPipelineTestCommon.class);
 	protected static ExecutorService es;
 
@@ -73,17 +72,6 @@ public class StreamPipelineTestCommon {
 		CacheUtils.initCache();
 		ByteBufferPool.init(Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.BYTEBUFFERPOOL_MAX, MDCConstants.BYTEBUFFERPOOL_MAX_DEFAULT)));
 		cache = (Cache<String, byte[]>) MDCCache.get();
-		try(Socket sock = new Socket("localhost",9000);){}
-		catch(Exception ex) {
-			conf.set("fs.hdfs.impl.disable.cache", "false");
-			conf.set("dfs.block.access.token.enable", "true");
-			hdfsLocalCluster = new HdfsLocalCluster.Builder().setHdfsNamenodePort(namenodeport)
-					.setHdfsNamenodeHttpPort(namenodehttpport).setHdfsTempDir("./target/embedded_hdfs")
-					.setHdfsNumDatanodes(1).setHdfsEnablePermissions(false).setHdfsFormat(true)
-					.setHdfsEnableRunningUserAsProxyUser(true).setHdfsConfig(conf).build();
-
-			hdfsLocalCluster.start();
-		}
 		hdfs = FileSystem.newInstance(new URI(hdfsurl),
 				conf);
 		uploadfile(hdfs, airlinesample, airlinesample + csvfileextn);
@@ -110,10 +98,10 @@ public class StreamPipelineTestCommon {
 	}
 	@AfterClass
 	public static void closeResources() throws Throwable {
-		if(!Objects.isNull(hdfsLocalCluster)) {
+		if (!Objects.isNull(hdfsLocalCluster)) {
 			hdfsLocalCluster.stop(true);
 		}
-		if(!Objects.isNull(hdfs)) {
+		if (!Objects.isNull(hdfs)) {
 			hdfs.close();
 		}
 		ByteBufferPoolDirect.get().close();

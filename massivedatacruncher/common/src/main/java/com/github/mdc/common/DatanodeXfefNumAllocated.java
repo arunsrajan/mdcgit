@@ -19,20 +19,26 @@ public class DatanodeXfefNumAllocated {
 	}
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
+		if (this == obj) {
 			return true;
-		if (obj == null)
+		}
+		if (obj == null) {
 			return false;
-		if (getClass() != obj.getClass())
+		}
+		if (getClass() != obj.getClass()) {
 			return false;
+		}
 		DatanodeXfefNumAllocated other = (DatanodeXfefNumAllocated) obj;
-		if (numallocated != other.numallocated)
+		if (numallocated != other.numallocated) {
 			return false;
+		}
 		if (ref == null) {
-			if (other.ref != null)
+			if (other.ref != null) {
 				return false;
-		} else if (!ref.equals(other.ref))
+			}
+		} else if (!ref.equals(other.ref)) {
 			return false;
+		}
 		return true;
 	}
 	

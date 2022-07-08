@@ -18,10 +18,10 @@ public class MDCIgniteClient {
 	
 	private MDCIgniteClient() {}
 	
-	private static Ignite ignite = null;
+	private static Ignite ignite;
 	
 	public synchronized static Ignite instance(PipelineConfig pipelineconfig) {
-		if(isNull(ignite) || nonNull(ignite) && !ignite.active()) {
+		if (isNull(ignite) || nonNull(ignite) && !ignite.active()) {
 			var cfg = new IgniteConfiguration();
 			TcpCommunicationSpi commspi = new TcpCommunicationSpi();
 			commspi.setMessageQueueLimit(20);

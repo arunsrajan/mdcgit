@@ -1,12 +1,18 @@
 The MDC can be build using the following maven goals
 
--Dmaven.antrun.skip=true -Dmaven.test.skip=true -Pmodules clean install package assembly:assembly
+mvn -Dmaven.antrun.skip=true -Dmaven.test.skip=true -Pmodules clean rewrite:run
 
--f pomjar.xml -Pmdc exec:exec antrun:run@prepare compile jib:dockerBuild@buildstandalone jib:dockerBuild@buildcontainer
+mvn -Dmaven.antrun.skip=true -Dmaven.test.skip=true -Pmodules clean package assembly:assembly
+
+mvn -f pomjar.xml -Pmdc exec:exec antrun:run@prepare compile jib:dockerBuild@buildstandalone jib:dockerBuild@buildcontainer
 
 In order to skip tests the following needs to be set in MAVEN_OPTS
 ------------------------------------------------------------------
 -Dmaven.test.skip.exec=true
+
+To compile only tests
+---------------------------------------------------------------
+mvn -Dmaven.antrun.skip=true -Pmodules clean test-compile
 
 To run tests
 ------------

@@ -31,7 +31,7 @@ public class ServerUtilsTest extends TestCase{
 			ServerUtils serverutils = new ServerUtils();
 			serverutils.init(1000);
 		}
-		catch(Exception ex) {
+		catch (Exception ex) {
 			assertEquals(message, ex.getMessage());
 		}
 	}
@@ -41,7 +41,7 @@ public class ServerUtilsTest extends TestCase{
 			ServerUtils serverutils = new ServerUtils();
 			serverutils.init();
 		}
-		catch(Exception ex) {
+		catch (Exception ex) {
 			assertEquals(message, ex.getMessage());
 		}
 	}
@@ -49,9 +49,9 @@ public class ServerUtilsTest extends TestCase{
 	public void testServerInitWithImproperPortType() throws Exception {
 		try {
 			ServerUtils serverutils = new ServerUtils();
-			serverutils.init("1000",new TestServlet(),"/test");
+			serverutils.init("1000", new TestServlet(), "/test");
 		}
-		catch(Exception ex) {
+		catch (Exception ex) {
 			assertEquals(integerportmessage, ex.getMessage());
 		}
 	}
@@ -59,9 +59,9 @@ public class ServerUtilsTest extends TestCase{
 	public void testServerInitWithServletNoPath() throws Exception {
 		try {
 			ServerUtils serverutils = new ServerUtils();
-			serverutils.init(1000,new TestServlet());
+			serverutils.init(1000, new TestServlet());
 		}
-		catch(Exception ex) {
+		catch (Exception ex) {
 			assertEquals(message, ex.getMessage());
 		}
 	}
@@ -70,9 +70,9 @@ public class ServerUtilsTest extends TestCase{
 	public void testServerInitWithNoServletWithPath() throws Exception {
 		try {
 			ServerUtils serverutils = new ServerUtils();
-			serverutils.init(1000,"test","/test");
+			serverutils.init(1000, "test", "/test");
 		}
-		catch(Exception ex) {
+		catch (Exception ex) {
 			assertEquals(instanceservletmessage, ex.getMessage());
 		}
 	}
@@ -81,9 +81,9 @@ public class ServerUtilsTest extends TestCase{
 	public void testServerInitWithServletWithNoProperPath() throws Exception {
 		try {
 			ServerUtils serverutils = new ServerUtils();
-			serverutils.init(1000,new TestServlet(),new TestServlet());
+			serverutils.init(1000, new TestServlet(), new TestServlet());
 		}
-		catch(Exception ex) {
+		catch (Exception ex) {
 			assertEquals(instanceservletmessagewithnoproperpath, ex.getMessage());
 		}
 	}
@@ -91,13 +91,13 @@ public class ServerUtilsTest extends TestCase{
 	@Test
 	public void testServerHttpServlet() throws Exception {
 		ServerUtils serverutils = new ServerUtils();
-		serverutils.init(1000,new TestServlet(),"/test/*");
+		serverutils.init(1000, new TestServlet(), "/test/*");
 		serverutils.start();
 		URL url = new URL("http://localhost:1000/test");
 		InputStream is = url.openStream();
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		IOUtils.copy(is, baos);
-		assertEquals(testhtml,new String(baos.toByteArray()));
+		assertEquals(testhtml, new String(baos.toByteArray()));
 		serverutils.stop();
 		assertEquals(true, serverutils.server.isStopped());
 		is.close();
@@ -120,7 +120,7 @@ public class ServerUtilsTest extends TestCase{
 
 		@Override
 		protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-			doGet(req,resp);
+			doGet(req, resp);
 		}
 
 	}

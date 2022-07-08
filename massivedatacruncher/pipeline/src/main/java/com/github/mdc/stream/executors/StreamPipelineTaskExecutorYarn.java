@@ -32,7 +32,7 @@ import com.github.mdc.stream.PipelineException;
 public final class StreamPipelineTaskExecutorYarn extends StreamPipelineTaskExecutor {
 	private static final Log log = LogFactory.getLog(StreamPipelineTaskExecutorYarn.class);
 	private String hdfsnn;
-	public StreamPipelineTaskExecutorYarn(String hdfsnn,JobStage jobstage) {
+	public StreamPipelineTaskExecutorYarn(String hdfsnn, JobStage jobstage) {
 		super(jobstage, null);
 		this.hdfsnn = hdfsnn;
 	}
@@ -44,8 +44,8 @@ public final class StreamPipelineTaskExecutorYarn extends StreamPipelineTaskExec
 	 * @return
 	 */
 	public String getIntermediateDataFSFilePath(Task task) {
-		return (MDCConstants.BACKWARD_SLASH + FileSystemSupport.MDS + MDCConstants.BACKWARD_SLASH + jobstage.jobid
-				+ MDCConstants.BACKWARD_SLASH + task.taskid);
+		return MDCConstants.BACKWARD_SLASH + FileSystemSupport.MDS + MDCConstants.BACKWARD_SLASH + jobstage.jobid
+				+ MDCConstants.BACKWARD_SLASH + task.taskid;
 	}
 	/**
 	 * Create a file in HDFS and return the stream.
@@ -72,19 +72,19 @@ public final class StreamPipelineTaskExecutorYarn extends StreamPipelineTaskExec
 	 */
 	@Override
 	public StreamPipelineTaskExecutor call() {
-		try(var hdfs = FileSystem.newInstance(new URI(hdfsnn), new Configuration());) {
+		try (var hdfs = FileSystem.newInstance(new URI(hdfsnn), new Configuration());) {
 			this.hdfs = hdfs;
 			var output = new ArrayList<>();
 			
 			if (task.input != null && task.parentremotedatafetch != null) {
 				var numinputs = task.parentremotedatafetch.length;
-				for (var inputindex = 0; inputindex<numinputs;inputindex++) {
+				for (var inputindex = 0; inputindex < numinputs; inputindex++) {
 					var input = task.parentremotedatafetch[inputindex];
-					if(input != null) {
+					if (input != null) {
 						var rdf = (RemoteDataFetch) input;
 						//Intermediate data fetch from HDFS streaming API.
 						task.input[inputindex] = RemoteDataFetcher.readIntermediatePhaseOutputFromDFS(rdf.jobid,
-								rdf.taskid,hdfs);
+								rdf.taskid, hdfs);
 					}
 				}
 			}
@@ -92,7 +92,7 @@ public final class StreamPipelineTaskExecutorYarn extends StreamPipelineTaskExec
 			double timetakenseconds = computeTasks(task, hdfs);
 			output.clear();
 		} catch (Exception ex) {
-			log.error( "Stage " + task.jobid + MDCConstants.SINGLESPACE + task.stageid + " failed, See cause below \n",
+			log.error("Stage " + task.jobid + MDCConstants.SINGLESPACE + task.stageid + " failed, See cause below \n",
 					ex);
 		}
 		return this;

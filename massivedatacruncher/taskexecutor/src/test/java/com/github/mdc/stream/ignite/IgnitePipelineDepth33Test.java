@@ -12,12 +12,12 @@ import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
 import com.github.mdc.stream.IgnitePipeline;
-@SuppressWarnings({ "unchecked", "serial", "rawtypes" })
+@SuppressWarnings({"unchecked", "serial", "rawtypes"})
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 
 	boolean toexecute = true;
-	int sum = 0;
+	int sum;
 
 	@Test
 	public void testMapPairSortedMapPairCount() throws Throwable {
@@ -255,7 +255,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 					public int compare(org.jooq.lambda.tuple.Tuple2 value1, org.jooq.lambda.tuple.Tuple2 value2) {
 						return value1.compareTo(value2);
 					}
-				}).peek(val->System.out.println(val)).collect(toexecute, null);
+				}).peek(val -> System.out.println(val)).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -280,7 +280,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 					public int compare(org.jooq.lambda.tuple.Tuple2 value1, org.jooq.lambda.tuple.Tuple2 value2) {
 						return value1.compareTo(value2);
 					}
-				}).peek(val->System.out.println(val)).count(null);
+				}).peek(val -> System.out.println(val)).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -308,7 +308,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 					public int compare(org.jooq.lambda.tuple.Tuple2 value1, org.jooq.lambda.tuple.Tuple2 value2) {
 						return value1.compareTo(value2);
 					}
-				}).peek(val->System.out.println(val)).forEach(lis -> {
+				}).peek(val -> System.out.println(val)).forEach(lis -> {
 					sum += ((List) lis).size();
 				}, null);
 
@@ -486,14 +486,14 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekFilterFilter Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List> data = (List) datapipeline.peek(val->System.out.println(val))
+		List<List> data = (List) datapipeline.peek(val -> System.out.println(val))
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).collect(toexecute, null);
 		int sum = 0;
@@ -511,14 +511,14 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekFilterFilterCount Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List<Long>> data = (List) datapipeline.peek(val->System.out.println(val))
+		List<List<Long>> data = (List) datapipeline.peek(val -> System.out.println(val))
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).count(null);
 		long sum = 0;
@@ -539,14 +539,14 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.peek(val->System.out.println(val))
+		datapipeline.peek(val -> System.out.println(val))
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).forEach(lis -> {
 					sum += ((List) lis).size();
@@ -562,10 +562,10 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekFilterFlatMap Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List> data = (List) datapipeline.peek(val->System.out.println(val))
+		List<List> data = (List) datapipeline.peek(val -> System.out.println(val))
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
@@ -587,10 +587,10 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekFilterFlatMapCount Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List<Long>> data = (List) datapipeline.peek(val->System.out.println(val))
+		List<List<Long>> data = (List) datapipeline.peek(val -> System.out.println(val))
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
@@ -615,10 +615,10 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.peek(val->System.out.println(val))
+		datapipeline.peek(val -> System.out.println(val))
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
@@ -638,10 +638,10 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekFilterMap Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List> data = (List) datapipeline.peek(val->System.out.println(val))
+		List<List> data = (List) datapipeline.peek(val -> System.out.println(val))
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
@@ -663,10 +663,10 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekFilterMapCount Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List<Long>> data = (List) datapipeline.peek(val->System.out.println(val))
+		List<List<Long>> data = (List) datapipeline.peek(val -> System.out.println(val))
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
@@ -691,10 +691,10 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.peek(val->System.out.println(val))
+		datapipeline.peek(val -> System.out.println(val))
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
@@ -714,10 +714,10 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekFilterMapPair Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List> data = (List) datapipeline.peek(val->System.out.println(val))
+		List<List> data = (List) datapipeline.peek(val -> System.out.println(val))
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
 						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -741,10 +741,10 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekFilterMapPairCount Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List<Long>> data = (List) datapipeline.peek(val->System.out.println(val))
+		List<List<Long>> data = (List) datapipeline.peek(val -> System.out.println(val))
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
 						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -771,10 +771,10 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.peek(val->System.out.println(val))
+		datapipeline.peek(val -> System.out.println(val))
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
 						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -796,10 +796,10 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekFilterMapPairGroupByKey Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List<Tuple2>> data = (List) datapipeline.peek(val->System.out.println(val))
+		List<List<Tuple2>> data = (List) datapipeline.peek(val -> System.out.println(val))
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
 						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -825,10 +825,10 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.peek(val->System.out.println(val))
+		datapipeline.peek(val -> System.out.println(val))
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
 						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -853,10 +853,10 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekFilterMapPairReduceByKey Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List> data = (List) datapipeline.peek(val->System.out.println(val))
+		List<List> data = (List) datapipeline.peek(val -> System.out.println(val))
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
 						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -880,10 +880,10 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekFilterMapPairReduceByKeyCount Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List<Long>> data = (List) datapipeline.peek(val->System.out.println(val))
+		List<List<Long>> data = (List) datapipeline.peek(val -> System.out.println(val))
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
 						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -910,10 +910,10 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.peek(val->System.out.println(val))
+		datapipeline.peek(val -> System.out.println(val))
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
 						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -935,12 +935,12 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekFilterPeek Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List> data = (List) datapipeline.peek(val->System.out.println(val))
+		List<List> data = (List) datapipeline.peek(val -> System.out.println(val))
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).peek(val->System.out.println(val)).collect(toexecute, null);
+				}).peek(val -> System.out.println(val)).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -956,12 +956,12 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekFilterPeekCount Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List<Long>> data = (List) datapipeline.peek(val->System.out.println(val))
+		List<List<Long>> data = (List) datapipeline.peek(val -> System.out.println(val))
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).peek(val->System.out.println(val)).count(null);
+				}).peek(val -> System.out.println(val)).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -980,12 +980,12 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.peek(val->System.out.println(val))
+		datapipeline.peek(val -> System.out.println(val))
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).peek(val->System.out.println(val)).forEach(lis -> {
+				}).peek(val -> System.out.println(val)).forEach(lis -> {
 					sum += ((List) lis).size();
 				}, null);
 
@@ -999,10 +999,10 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekFilterSample Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List> data = (List) datapipeline.peek(val->System.out.println(val))
+		List<List> data = (List) datapipeline.peek(val -> System.out.println(val))
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).sample(46361).collect(toexecute, null);
 		int sum = 0;
@@ -1020,10 +1020,10 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekFilterSampleCount Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List<Long>> data = (List) datapipeline.peek(val->System.out.println(val))
+		List<List<Long>> data = (List) datapipeline.peek(val -> System.out.println(val))
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).sample(46361).count(null);
 		long sum = 0;
@@ -1044,10 +1044,10 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.peek(val->System.out.println(val))
+		datapipeline.peek(val -> System.out.println(val))
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).sample(46361).forEach(lis -> {
 					sum += ((List) lis).size();
@@ -1063,10 +1063,10 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekFilterSorted Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List> data = (List) datapipeline.peek(val->System.out.println(val))
+		List<List> data = (List) datapipeline.peek(val -> System.out.println(val))
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
 					public int compare(java.lang.String value1, java.lang.String value2) {
@@ -1088,10 +1088,10 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekFilterSortedCount Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List<Long>> data = (List) datapipeline.peek(val->System.out.println(val))
+		List<List<Long>> data = (List) datapipeline.peek(val -> System.out.println(val))
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
 					public int compare(java.lang.String value1, java.lang.String value2) {
@@ -1116,10 +1116,10 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.peek(val->System.out.println(val))
+		datapipeline.peek(val -> System.out.println(val))
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
 					public int compare(java.lang.String value1, java.lang.String value2) {
@@ -1139,14 +1139,14 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekFlatMapFilter Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List> data = (List) datapipeline.peek(val->System.out.println(val))
+		List<List> data = (List) datapipeline.peek(val -> System.out.println(val))
 				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).collect(toexecute, null);
 		int sum = 0;
@@ -1164,14 +1164,14 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekFlatMapFilterCount Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List<Long>> data = (List) datapipeline.peek(val->System.out.println(val))
+		List<List<Long>> data = (List) datapipeline.peek(val -> System.out.println(val))
 				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).count(null);
 		long sum = 0;
@@ -1192,14 +1192,14 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.peek(val->System.out.println(val))
+		datapipeline.peek(val -> System.out.println(val))
 				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).forEach(lis -> {
 					sum += ((List) lis).size();
@@ -1215,7 +1215,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekFlatMapFlatMap Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List> data = (List) datapipeline.peek(val->System.out.println(val))
+		List<List> data = (List) datapipeline.peek(val -> System.out.println(val))
 				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
@@ -1240,7 +1240,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekFlatMapFlatMapCount Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List<Long>> data = (List) datapipeline.peek(val->System.out.println(val))
+		List<List<Long>> data = (List) datapipeline.peek(val -> System.out.println(val))
 				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
@@ -1268,7 +1268,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.peek(val->System.out.println(val))
+		datapipeline.peek(val -> System.out.println(val))
 				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
@@ -1291,7 +1291,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekFlatMapMap Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List> data = (List) datapipeline.peek(val->System.out.println(val))
+		List<List> data = (List) datapipeline.peek(val -> System.out.println(val))
 				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
@@ -1316,7 +1316,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekFlatMapMapCount Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List<Long>> data = (List) datapipeline.peek(val->System.out.println(val))
+		List<List<Long>> data = (List) datapipeline.peek(val -> System.out.println(val))
 				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
@@ -1344,7 +1344,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.peek(val->System.out.println(val))
+		datapipeline.peek(val -> System.out.println(val))
 				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
@@ -1367,7 +1367,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekFlatMapMapPair Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List> data = (List) datapipeline.peek(val->System.out.println(val))
+		List<List> data = (List) datapipeline.peek(val -> System.out.println(val))
 				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
@@ -1394,7 +1394,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekFlatMapMapPairCount Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List<Long>> data = (List) datapipeline.peek(val->System.out.println(val))
+		List<List<Long>> data = (List) datapipeline.peek(val -> System.out.println(val))
 				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
@@ -1424,7 +1424,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.peek(val->System.out.println(val))
+		datapipeline.peek(val -> System.out.println(val))
 				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
@@ -1449,7 +1449,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekFlatMapMapPairGroupByKey Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List<Tuple2>> data = (List) datapipeline.peek(val->System.out.println(val))
+		List<List<Tuple2>> data = (List) datapipeline.peek(val -> System.out.println(val))
 				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
@@ -1478,7 +1478,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.peek(val->System.out.println(val))
+		datapipeline.peek(val -> System.out.println(val))
 				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
@@ -1506,7 +1506,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekFlatMapMapPairReduceByKey Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List> data = (List) datapipeline.peek(val->System.out.println(val))
+		List<List> data = (List) datapipeline.peek(val -> System.out.println(val))
 				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
@@ -1533,7 +1533,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekFlatMapMapPairReduceByKeyCount Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List<Long>> data = (List) datapipeline.peek(val->System.out.println(val))
+		List<List<Long>> data = (List) datapipeline.peek(val -> System.out.println(val))
 				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
@@ -1563,7 +1563,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.peek(val->System.out.println(val))
+		datapipeline.peek(val -> System.out.println(val))
 				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
@@ -1588,12 +1588,12 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekFlatMapPeek Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List> data = (List) datapipeline.peek(val->System.out.println(val))
+		List<List> data = (List) datapipeline.peek(val -> System.out.println(val))
 				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).peek(val->System.out.println(val)).collect(toexecute, null);
+				}).peek(val -> System.out.println(val)).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -1609,12 +1609,12 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekFlatMapPeekCount Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List<Long>> data = (List) datapipeline.peek(val->System.out.println(val))
+		List<List<Long>> data = (List) datapipeline.peek(val -> System.out.println(val))
 				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).peek(val->System.out.println(val)).count(null);
+				}).peek(val -> System.out.println(val)).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -1633,12 +1633,12 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.peek(val->System.out.println(val))
+		datapipeline.peek(val -> System.out.println(val))
 				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).peek(val->System.out.println(val)).forEach(lis -> {
+				}).peek(val -> System.out.println(val)).forEach(lis -> {
 					sum += ((List) lis).size();
 				}, null);
 
@@ -1652,7 +1652,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekFlatMapSample Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List> data = (List) datapipeline.peek(val->System.out.println(val))
+		List<List> data = (List) datapipeline.peek(val -> System.out.println(val))
 				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
@@ -1673,7 +1673,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekFlatMapSampleCount Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List<Long>> data = (List) datapipeline.peek(val->System.out.println(val))
+		List<List<Long>> data = (List) datapipeline.peek(val -> System.out.println(val))
 				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
@@ -1697,7 +1697,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.peek(val->System.out.println(val))
+		datapipeline.peek(val -> System.out.println(val))
 				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
@@ -1716,7 +1716,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekFlatMapSorted Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List> data = (List) datapipeline.peek(val->System.out.println(val))
+		List<List> data = (List) datapipeline.peek(val -> System.out.println(val))
 				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
@@ -1741,7 +1741,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekFlatMapSortedCount Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List<Long>> data = (List) datapipeline.peek(val->System.out.println(val))
+		List<List<Long>> data = (List) datapipeline.peek(val -> System.out.println(val))
 				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
@@ -1769,7 +1769,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.peek(val->System.out.println(val))
+		datapipeline.peek(val -> System.out.println(val))
 				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
@@ -1792,14 +1792,14 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekMapFilter Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List> data = (List) datapipeline.peek(val->System.out.println(val))
+		List<List> data = (List) datapipeline.peek(val -> System.out.println(val))
 				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String[]>() {
 					public boolean test(java.lang.String[] value) {
-						return !value[14].equals("NA") && !value[14].equals("ArrDelay");
+						return !"NA".equals(value[14]) && !"ArrDelay".equals(value[14]);
 					}
 				}).collect(toexecute, null);
 		int sum = 0;
@@ -1817,14 +1817,14 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekMapFilterCount Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List<Long>> data = (List) datapipeline.peek(val->System.out.println(val))
+		List<List<Long>> data = (List) datapipeline.peek(val -> System.out.println(val))
 				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String[]>() {
 					public boolean test(java.lang.String[] value) {
-						return !value[14].equals("NA") && !value[14].equals("ArrDelay");
+						return !"NA".equals(value[14]) && !"ArrDelay".equals(value[14]);
 					}
 				}).count(null);
 		long sum = 0;
@@ -1845,14 +1845,14 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.peek(val->System.out.println(val))
+		datapipeline.peek(val -> System.out.println(val))
 				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String[]>() {
 					public boolean test(java.lang.String[] value) {
-						return !value[14].equals("NA") && !value[14].equals("ArrDelay");
+						return !"NA".equals(value[14]) && !"ArrDelay".equals(value[14]);
 					}
 				}).forEach(lis -> {
 					sum += ((List) lis).size();
@@ -1868,7 +1868,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekMapFlatMap Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List> data = (List) datapipeline.peek(val->System.out.println(val))
+		List<List> data = (List) datapipeline.peek(val -> System.out.println(val))
 				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
@@ -1893,7 +1893,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekMapFlatMapCount Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List<Long>> data = (List) datapipeline.peek(val->System.out.println(val))
+		List<List<Long>> data = (List) datapipeline.peek(val -> System.out.println(val))
 				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
@@ -1921,7 +1921,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.peek(val->System.out.println(val))
+		datapipeline.peek(val -> System.out.println(val))
 				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
@@ -1944,7 +1944,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekMapMap Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List> data = (List) datapipeline.peek(val->System.out.println(val))
+		List<List> data = (List) datapipeline.peek(val -> System.out.println(val))
 				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
@@ -1969,7 +1969,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekMapMapCount Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List<Long>> data = (List) datapipeline.peek(val->System.out.println(val))
+		List<List<Long>> data = (List) datapipeline.peek(val -> System.out.println(val))
 				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
@@ -1997,7 +1997,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.peek(val->System.out.println(val))
+		datapipeline.peek(val -> System.out.println(val))
 				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
@@ -2020,7 +2020,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekMapMapPair Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List> data = (List) datapipeline.peek(val->System.out.println(val))
+		List<List> data = (List) datapipeline.peek(val -> System.out.println(val))
 				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
@@ -2047,7 +2047,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekMapMapPairCount Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List<Long>> data = (List) datapipeline.peek(val->System.out.println(val))
+		List<List<Long>> data = (List) datapipeline.peek(val -> System.out.println(val))
 				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
@@ -2077,7 +2077,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.peek(val->System.out.println(val))
+		datapipeline.peek(val -> System.out.println(val))
 				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
@@ -2102,7 +2102,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekMapMapPairGroupByKey Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List<Tuple2>> data = (List) datapipeline.peek(val->System.out.println(val))
+		List<List<Tuple2>> data = (List) datapipeline.peek(val -> System.out.println(val))
 				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
@@ -2131,7 +2131,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.peek(val->System.out.println(val))
+		datapipeline.peek(val -> System.out.println(val))
 				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
@@ -2159,7 +2159,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekMapMapPairReduceByKey Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List> data = (List) datapipeline.peek(val->System.out.println(val))
+		List<List> data = (List) datapipeline.peek(val -> System.out.println(val))
 				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
@@ -2186,7 +2186,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekMapMapPairReduceByKeyCount Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List<Long>> data = (List) datapipeline.peek(val->System.out.println(val))
+		List<List<Long>> data = (List) datapipeline.peek(val -> System.out.println(val))
 				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
@@ -2216,7 +2216,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.peek(val->System.out.println(val))
+		datapipeline.peek(val -> System.out.println(val))
 				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
@@ -2241,12 +2241,12 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekMapPeek Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List> data = (List) datapipeline.peek(val->System.out.println(val))
+		List<List> data = (List) datapipeline.peek(val -> System.out.println(val))
 				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
-				}).peek(val->System.out.println(val)).collect(toexecute, null);
+				}).peek(val -> System.out.println(val)).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -2262,12 +2262,12 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekMapPeekCount Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List<Long>> data = (List) datapipeline.peek(val->System.out.println(val))
+		List<List<Long>> data = (List) datapipeline.peek(val -> System.out.println(val))
 				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
-				}).peek(val->System.out.println(val)).count(null);
+				}).peek(val -> System.out.println(val)).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -2286,12 +2286,12 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.peek(val->System.out.println(val))
+		datapipeline.peek(val -> System.out.println(val))
 				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
-				}).peek(val->System.out.println(val)).forEach(lis -> {
+				}).peek(val -> System.out.println(val)).forEach(lis -> {
 					sum += ((List) lis).size();
 				}, null);
 
@@ -2305,7 +2305,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekMapSample Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List> data = (List) datapipeline.peek(val->System.out.println(val))
+		List<List> data = (List) datapipeline.peek(val -> System.out.println(val))
 				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
@@ -2326,7 +2326,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekMapSampleCount Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List<Long>> data = (List) datapipeline.peek(val->System.out.println(val))
+		List<List<Long>> data = (List) datapipeline.peek(val -> System.out.println(val))
 				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
@@ -2350,7 +2350,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.peek(val->System.out.println(val))
+		datapipeline.peek(val -> System.out.println(val))
 				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
@@ -2369,7 +2369,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekMapSorted Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List> data = (List) datapipeline.peek(val->System.out.println(val))
+		List<List> data = (List) datapipeline.peek(val -> System.out.println(val))
 				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
@@ -2394,7 +2394,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekMapSortedCount Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List<Long>> data = (List) datapipeline.peek(val->System.out.println(val))
+		List<List<Long>> data = (List) datapipeline.peek(val -> System.out.println(val))
 				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
@@ -2422,7 +2422,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.peek(val->System.out.println(val))
+		datapipeline.peek(val -> System.out.println(val))
 				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
@@ -2445,7 +2445,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekMapPairFilter Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List> data = (List) datapipeline.peek(val->System.out.println(val)).mapToPair(
+		List<List> data = (List) datapipeline.peek(val -> System.out.println(val)).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -2470,7 +2470,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekMapPairFilterCount Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List<Long>> data = (List) datapipeline.peek(val->System.out.println(val)).mapToPair(
+		List<List<Long>> data = (List) datapipeline.peek(val -> System.out.println(val)).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -2498,7 +2498,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.peek(val->System.out.println(val)).mapToPair(
+		datapipeline.peek(val -> System.out.println(val)).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -2521,7 +2521,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekMapPairFlatMap Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List> data = (List) datapipeline.peek(val->System.out.println(val)).mapToPair(
+		List<List> data = (List) datapipeline.peek(val -> System.out.println(val)).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -2542,7 +2542,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekMapPairFlatMapCount Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List<Long>> data = (List) datapipeline.peek(val->System.out.println(val)).mapToPair(
+		List<List<Long>> data = (List) datapipeline.peek(val -> System.out.println(val)).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -2566,7 +2566,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.peek(val->System.out.println(val)).mapToPair(
+		datapipeline.peek(val -> System.out.println(val)).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -2585,7 +2585,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekMapPairGroupByKeyFilter Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List<Tuple2>> data = (List) datapipeline.peek(val->System.out.println(val)).mapToPair(
+		List<List<Tuple2>> data = (List) datapipeline.peek(val -> System.out.println(val)).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -2613,7 +2613,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.peek(val->System.out.println(val)).mapToPair(
+		datapipeline.peek(val -> System.out.println(val)).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -2640,7 +2640,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekMapPairGroupByKeyFlatMap Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List<Tuple2>> data = (List) datapipeline.peek(val->System.out.println(val)).mapToPair(
+		List<List<Tuple2>> data = (List) datapipeline.peek(val -> System.out.println(val)).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -2663,7 +2663,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.peek(val->System.out.println(val)).mapToPair(
+		datapipeline.peek(val -> System.out.println(val)).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -2685,7 +2685,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekMapPairGroupByKeyMap Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List<Tuple2>> data = (List) datapipeline.peek(val->System.out.println(val)).mapToPair(
+		List<List<Tuple2>> data = (List) datapipeline.peek(val -> System.out.println(val)).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -2708,7 +2708,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.peek(val->System.out.println(val)).mapToPair(
+		datapipeline.peek(val -> System.out.println(val)).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -2730,7 +2730,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekMapPairGroupByKeyMapPair Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List<Tuple2>> data = (List) datapipeline.peek(val->System.out.println(val)).mapToPair(
+		List<List<Tuple2>> data = (List) datapipeline.peek(val -> System.out.println(val)).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -2759,7 +2759,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.peek(val->System.out.println(val)).mapToPair(
+		datapipeline.peek(val -> System.out.println(val)).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -2787,7 +2787,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekMapPairGroupByKeyMapPairGroupByKey Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List<Tuple2>> data = (List) datapipeline.peek(val->System.out.println(val)).mapToPair(
+		List<List<Tuple2>> data = (List) datapipeline.peek(val -> System.out.println(val)).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -2816,7 +2816,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.peek(val->System.out.println(val)).mapToPair(
+		datapipeline.peek(val -> System.out.println(val)).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -2844,7 +2844,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekMapPairGroupByKeyMapPairReduceByKey Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List<Tuple2>> data = (List) datapipeline.peek(val->System.out.println(val)).mapToPair(
+		List<List<Tuple2>> data = (List) datapipeline.peek(val -> System.out.println(val)).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -2873,7 +2873,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.peek(val->System.out.println(val)).mapToPair(
+		datapipeline.peek(val -> System.out.println(val)).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -2901,12 +2901,12 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekMapPairGroupByKeyPeek Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List<Tuple2>> data = (List) datapipeline.peek(val->System.out.println(val)).mapToPair(
+		List<List<Tuple2>> data = (List) datapipeline.peek(val -> System.out.println(val)).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
-				}).groupByKey().peek(val->System.out.println(val)).collect(toexecute, null);
+				}).groupByKey().peek(val -> System.out.println(val)).collect(toexecute, null);
 		int sum = 0;
 		for (List<Tuple2> lsttuples : data) {
 			for (Tuple2 tuple2 : lsttuples) {
@@ -2924,12 +2924,12 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.peek(val->System.out.println(val)).mapToPair(
+		datapipeline.peek(val -> System.out.println(val)).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
-				}).groupByKey().peek(val->System.out.println(val)).forEach(lsttuples -> {
+				}).groupByKey().peek(val -> System.out.println(val)).forEach(lsttuples -> {
 					for (Tuple2 tuple2 : lsttuples) {
 						sum += ((List) tuple2.v2).size();
 					}
@@ -2946,7 +2946,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekMapPairGroupByKeySample Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List<Tuple2>> data = (List) datapipeline.peek(val->System.out.println(val)).mapToPair(
+		List<List<Tuple2>> data = (List) datapipeline.peek(val -> System.out.println(val)).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -2969,7 +2969,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.peek(val->System.out.println(val)).mapToPair(
+		datapipeline.peek(val -> System.out.println(val)).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -2991,7 +2991,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekMapPairGroupByKeySorted Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List<Tuple2>> data = (List) datapipeline.peek(val->System.out.println(val)).mapToPair(
+		List<List<Tuple2>> data = (List) datapipeline.peek(val -> System.out.println(val)).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -3018,7 +3018,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.peek(val->System.out.println(val)).mapToPair(
+		datapipeline.peek(val -> System.out.println(val)).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -3044,7 +3044,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekMapPairMap Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List> data = (List) datapipeline.peek(val->System.out.println(val)).mapToPair(
+		List<List> data = (List) datapipeline.peek(val -> System.out.println(val)).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -3065,7 +3065,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekMapPairMapCount Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List<Long>> data = (List) datapipeline.peek(val->System.out.println(val)).mapToPair(
+		List<List<Long>> data = (List) datapipeline.peek(val -> System.out.println(val)).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -3089,7 +3089,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.peek(val->System.out.println(val)).mapToPair(
+		datapipeline.peek(val -> System.out.println(val)).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -3108,7 +3108,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekMapPairMapPair Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List> data = (List) datapipeline.peek(val->System.out.println(val)).mapToPair(
+		List<List> data = (List) datapipeline.peek(val -> System.out.println(val)).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -3135,7 +3135,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekMapPairMapPairCount Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List<Long>> data = (List) datapipeline.peek(val->System.out.println(val)).mapToPair(
+		List<List<Long>> data = (List) datapipeline.peek(val -> System.out.println(val)).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -3165,7 +3165,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.peek(val->System.out.println(val)).mapToPair(
+		datapipeline.peek(val -> System.out.println(val)).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -3190,7 +3190,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekMapPairMapPairGroupByKey Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List<Tuple2>> data = (List) datapipeline.peek(val->System.out.println(val)).mapToPair(
+		List<List<Tuple2>> data = (List) datapipeline.peek(val -> System.out.println(val)).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -3219,7 +3219,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.peek(val->System.out.println(val)).mapToPair(
+		datapipeline.peek(val -> System.out.println(val)).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -3247,7 +3247,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekMapPairMapPairReduceByKey Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List> data = (List) datapipeline.peek(val->System.out.println(val)).mapToPair(
+		List<List> data = (List) datapipeline.peek(val -> System.out.println(val)).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -3274,7 +3274,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekMapPairMapPairReduceByKeyCount Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List<Long>> data = (List) datapipeline.peek(val->System.out.println(val)).mapToPair(
+		List<List<Long>> data = (List) datapipeline.peek(val -> System.out.println(val)).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -3304,7 +3304,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.peek(val->System.out.println(val)).mapToPair(
+		datapipeline.peek(val -> System.out.println(val)).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -3329,12 +3329,12 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekMapPairPeek Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List> data = (List) datapipeline.peek(val->System.out.println(val)).mapToPair(
+		List<List> data = (List) datapipeline.peek(val -> System.out.println(val)).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
-				}).peek(val->System.out.println(val)).collect(toexecute, null);
+				}).peek(val -> System.out.println(val)).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -3350,12 +3350,12 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekMapPairPeekCount Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List<Long>> data = (List) datapipeline.peek(val->System.out.println(val)).mapToPair(
+		List<List<Long>> data = (List) datapipeline.peek(val -> System.out.println(val)).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
-				}).peek(val->System.out.println(val)).count(null);
+				}).peek(val -> System.out.println(val)).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -3374,12 +3374,12 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.peek(val->System.out.println(val)).mapToPair(
+		datapipeline.peek(val -> System.out.println(val)).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
-				}).peek(val->System.out.println(val)).forEach(lis -> {
+				}).peek(val -> System.out.println(val)).forEach(lis -> {
 					sum += ((List) lis).size();
 				}, null);
 
@@ -3393,7 +3393,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekMapPairReduceByKeyFilter Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List> data = (List) datapipeline.peek(val->System.out.println(val)).mapToPair(
+		List<List> data = (List) datapipeline.peek(val -> System.out.println(val)).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -3419,7 +3419,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekMapPairReduceByKeyFilterCount Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List<Long>> data = (List) datapipeline.peek(val->System.out.println(val)).mapToPair(
+		List<List<Long>> data = (List) datapipeline.peek(val -> System.out.println(val)).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -3448,7 +3448,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.peek(val->System.out.println(val)).mapToPair(
+		datapipeline.peek(val -> System.out.println(val)).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -3472,7 +3472,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekMapPairReduceByKeyFlatMap Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List> data = (List) datapipeline.peek(val->System.out.println(val)).mapToPair(
+		List<List> data = (List) datapipeline.peek(val -> System.out.println(val)).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -3493,7 +3493,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekMapPairReduceByKeyFlatMapCount Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List<Long>> data = (List) datapipeline.peek(val->System.out.println(val)).mapToPair(
+		List<List<Long>> data = (List) datapipeline.peek(val -> System.out.println(val)).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -3517,7 +3517,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.peek(val->System.out.println(val)).mapToPair(
+		datapipeline.peek(val -> System.out.println(val)).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -3536,7 +3536,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekMapPairReduceByKeyMap Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List> data = (List) datapipeline.peek(val->System.out.println(val)).mapToPair(
+		List<List> data = (List) datapipeline.peek(val -> System.out.println(val)).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -3557,7 +3557,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekMapPairReduceByKeyMapCount Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List<Long>> data = (List) datapipeline.peek(val->System.out.println(val)).mapToPair(
+		List<List<Long>> data = (List) datapipeline.peek(val -> System.out.println(val)).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -3581,7 +3581,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.peek(val->System.out.println(val)).mapToPair(
+		datapipeline.peek(val -> System.out.println(val)).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -3600,7 +3600,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekMapPairReduceByKeyMapPair Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List> data = (List) datapipeline.peek(val->System.out.println(val)).mapToPair(
+		List<List> data = (List) datapipeline.peek(val -> System.out.println(val)).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -3627,7 +3627,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekMapPairReduceByKeyMapPairCount Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List<Long>> data = (List) datapipeline.peek(val->System.out.println(val)).mapToPair(
+		List<List<Long>> data = (List) datapipeline.peek(val -> System.out.println(val)).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -3657,7 +3657,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.peek(val->System.out.println(val)).mapToPair(
+		datapipeline.peek(val -> System.out.println(val)).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -3682,7 +3682,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekMapPairReduceByKeyMapPairGroupByKey Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List<Tuple2>> data = (List) datapipeline.peek(val->System.out.println(val)).mapToPair(
+		List<List<Tuple2>> data = (List) datapipeline.peek(val -> System.out.println(val)).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -3711,7 +3711,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.peek(val->System.out.println(val)).mapToPair(
+		datapipeline.peek(val -> System.out.println(val)).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -3739,7 +3739,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekMapPairReduceByKeyMapPairReduceByKey Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List> data = (List) datapipeline.peek(val->System.out.println(val)).mapToPair(
+		List<List> data = (List) datapipeline.peek(val -> System.out.println(val)).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -3766,7 +3766,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekMapPairReduceByKeyMapPairReduceByKeyCount Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List<Long>> data = (List) datapipeline.peek(val->System.out.println(val)).mapToPair(
+		List<List<Long>> data = (List) datapipeline.peek(val -> System.out.println(val)).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -3796,7 +3796,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.peek(val->System.out.println(val)).mapToPair(
+		datapipeline.peek(val -> System.out.println(val)).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -3821,12 +3821,12 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekMapPairReduceByKeyPeek Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List> data = (List) datapipeline.peek(val->System.out.println(val)).mapToPair(
+		List<List> data = (List) datapipeline.peek(val -> System.out.println(val)).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
-				}).reduceByKey((a, b) -> a + b).peek(val->System.out.println(val)).collect(toexecute, null);
+				}).reduceByKey((a, b) -> a + b).peek(val -> System.out.println(val)).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -3842,12 +3842,12 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekMapPairReduceByKeyPeekCount Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List<Long>> data = (List) datapipeline.peek(val->System.out.println(val)).mapToPair(
+		List<List<Long>> data = (List) datapipeline.peek(val -> System.out.println(val)).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
-				}).reduceByKey((a, b) -> a + b).peek(val->System.out.println(val)).count(null);
+				}).reduceByKey((a, b) -> a + b).peek(val -> System.out.println(val)).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -3866,12 +3866,12 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.peek(val->System.out.println(val)).mapToPair(
+		datapipeline.peek(val -> System.out.println(val)).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
-				}).reduceByKey((a, b) -> a + b).peek(val->System.out.println(val)).forEach(lis -> {
+				}).reduceByKey((a, b) -> a + b).peek(val -> System.out.println(val)).forEach(lis -> {
 					sum += ((List) lis).size();
 				}, null);
 
@@ -3885,7 +3885,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekMapPairReduceByKeySample Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List> data = (List) datapipeline.peek(val->System.out.println(val)).mapToPair(
+		List<List> data = (List) datapipeline.peek(val -> System.out.println(val)).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -3906,7 +3906,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekMapPairReduceByKeySampleCount Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List<Long>> data = (List) datapipeline.peek(val->System.out.println(val)).mapToPair(
+		List<List<Long>> data = (List) datapipeline.peek(val -> System.out.println(val)).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -3930,7 +3930,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.peek(val->System.out.println(val)).mapToPair(
+		datapipeline.peek(val -> System.out.println(val)).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -3949,7 +3949,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekMapPairReduceByKeySorted Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List> data = (List) datapipeline.peek(val->System.out.println(val)).mapToPair(
+		List<List> data = (List) datapipeline.peek(val -> System.out.println(val)).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -3975,7 +3975,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekMapPairReduceByKeySortedCount Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List<Long>> data = (List) datapipeline.peek(val->System.out.println(val)).mapToPair(
+		List<List<Long>> data = (List) datapipeline.peek(val -> System.out.println(val)).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -4004,7 +4004,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.peek(val->System.out.println(val)).mapToPair(
+		datapipeline.peek(val -> System.out.println(val)).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -4028,7 +4028,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekMapPairSample Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List> data = (List) datapipeline.peek(val->System.out.println(val)).mapToPair(
+		List<List> data = (List) datapipeline.peek(val -> System.out.println(val)).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -4049,7 +4049,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekMapPairSampleCount Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List<Long>> data = (List) datapipeline.peek(val->System.out.println(val)).mapToPair(
+		List<List<Long>> data = (List) datapipeline.peek(val -> System.out.println(val)).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -4073,7 +4073,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.peek(val->System.out.println(val)).mapToPair(
+		datapipeline.peek(val -> System.out.println(val)).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -4092,7 +4092,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekMapPairSorted Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List> data = (List) datapipeline.peek(val->System.out.println(val)).mapToPair(
+		List<List> data = (List) datapipeline.peek(val -> System.out.println(val)).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -4117,7 +4117,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekMapPairSortedCount Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List<Long>> data = (List) datapipeline.peek(val->System.out.println(val)).mapToPair(
+		List<List<Long>> data = (List) datapipeline.peek(val -> System.out.println(val)).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -4145,7 +4145,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.peek(val->System.out.println(val)).mapToPair(
+		datapipeline.peek(val -> System.out.println(val)).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -4168,10 +4168,10 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekPeekFilter Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List> data = (List) datapipeline.peek(val->System.out.println(val)).peek(val->System.out.println(val))
+		List<List> data = (List) datapipeline.peek(val -> System.out.println(val)).peek(val -> System.out.println(val))
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).collect(toexecute, null);
 		int sum = 0;
@@ -4189,10 +4189,10 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekPeekFilterCount Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List<Long>> data = (List) datapipeline.peek(val->System.out.println(val)).peek(val->System.out.println(val))
+		List<List<Long>> data = (List) datapipeline.peek(val -> System.out.println(val)).peek(val -> System.out.println(val))
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).count(null);
 		long sum = 0;
@@ -4213,10 +4213,10 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.peek(val->System.out.println(val)).peek(val->System.out.println(val))
+		datapipeline.peek(val -> System.out.println(val)).peek(val -> System.out.println(val))
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).forEach(lis -> {
 					sum += ((List) lis).size();
@@ -4232,7 +4232,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekPeekFlatMap Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List> data = (List) datapipeline.peek(val->System.out.println(val)).peek(val->System.out.println(val))
+		List<List> data = (List) datapipeline.peek(val -> System.out.println(val)).peek(val -> System.out.println(val))
 				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
@@ -4253,7 +4253,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekPeekFlatMapCount Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List<Long>> data = (List) datapipeline.peek(val->System.out.println(val)).peek(val->System.out.println(val))
+		List<List<Long>> data = (List) datapipeline.peek(val -> System.out.println(val)).peek(val -> System.out.println(val))
 				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
@@ -4277,7 +4277,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.peek(val->System.out.println(val)).peek(val->System.out.println(val))
+		datapipeline.peek(val -> System.out.println(val)).peek(val -> System.out.println(val))
 				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
@@ -4296,7 +4296,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekPeekMap Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List> data = (List) datapipeline.peek(val->System.out.println(val)).peek(val->System.out.println(val))
+		List<List> data = (List) datapipeline.peek(val -> System.out.println(val)).peek(val -> System.out.println(val))
 				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
@@ -4317,7 +4317,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekPeekMapCount Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List<Long>> data = (List) datapipeline.peek(val->System.out.println(val)).peek(val->System.out.println(val))
+		List<List<Long>> data = (List) datapipeline.peek(val -> System.out.println(val)).peek(val -> System.out.println(val))
 				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
@@ -4341,7 +4341,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.peek(val->System.out.println(val)).peek(val->System.out.println(val))
+		datapipeline.peek(val -> System.out.println(val)).peek(val -> System.out.println(val))
 				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
@@ -4360,7 +4360,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekPeekMapPair Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List> data = (List) datapipeline.peek(val->System.out.println(val)).peek(val->System.out.println(val)).mapToPair(
+		List<List> data = (List) datapipeline.peek(val -> System.out.println(val)).peek(val -> System.out.println(val)).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -4381,7 +4381,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekPeekMapPairCount Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List<Long>> data = (List) datapipeline.peek(val->System.out.println(val)).peek(val->System.out.println(val)).mapToPair(
+		List<List<Long>> data = (List) datapipeline.peek(val -> System.out.println(val)).peek(val -> System.out.println(val)).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -4405,7 +4405,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.peek(val->System.out.println(val)).peek(val->System.out.println(val)).mapToPair(
+		datapipeline.peek(val -> System.out.println(val)).peek(val -> System.out.println(val)).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -4424,7 +4424,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekPeekMapPairGroupByKey Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List<Tuple2>> data = (List) datapipeline.peek(val->System.out.println(val)).peek(val->System.out.println(val)).mapToPair(
+		List<List<Tuple2>> data = (List) datapipeline.peek(val -> System.out.println(val)).peek(val -> System.out.println(val)).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -4433,7 +4433,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		int sum = 0;
 		for (List<Tuple2> lsttuples : data) {
 			for (Tuple2 tuple2 : lsttuples) {
-				if(tuple2.v2!=null) {
+				if (tuple2.v2 != null) {
 					sum += ((List) tuple2.v2).size();
 				}
 			}
@@ -4449,7 +4449,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.peek(val->System.out.println(val)).peek(val->System.out.println(val)).mapToPair(
+		datapipeline.peek(val -> System.out.println(val)).peek(val -> System.out.println(val)).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -4471,7 +4471,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekPeekMapPairReduceByKey Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List> data = (List) datapipeline.peek(val->System.out.println(val)).peek(val->System.out.println(val)).mapToPair(
+		List<List> data = (List) datapipeline.peek(val -> System.out.println(val)).peek(val -> System.out.println(val)).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -4492,7 +4492,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekPeekMapPairReduceByKeyCount Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List<Long>> data = (List) datapipeline.peek(val->System.out.println(val)).peek(val->System.out.println(val)).mapToPair(
+		List<List<Long>> data = (List) datapipeline.peek(val -> System.out.println(val)).peek(val -> System.out.println(val)).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -4516,7 +4516,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.peek(val->System.out.println(val)).peek(val->System.out.println(val)).mapToPair(
+		datapipeline.peek(val -> System.out.println(val)).peek(val -> System.out.println(val)).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -4535,8 +4535,8 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekPeekPeek Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List> data = (List) datapipeline.peek(val->System.out.println(val)).peek(val->System.out.println(val))
-				.peek(val->System.out.println(val)).collect(toexecute, null);
+		List<List> data = (List) datapipeline.peek(val -> System.out.println(val)).peek(val -> System.out.println(val))
+				.peek(val -> System.out.println(val)).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -4552,8 +4552,8 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekPeekPeekCount Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List<Long>> data = (List) datapipeline.peek(val->System.out.println(val)).peek(val->System.out.println(val))
-				.peek(val->System.out.println(val)).count(null);
+		List<List<Long>> data = (List) datapipeline.peek(val -> System.out.println(val)).peek(val -> System.out.println(val))
+				.peek(val -> System.out.println(val)).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -4572,7 +4572,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.peek(val->System.out.println(val)).peek(val->System.out.println(val)).peek(val->System.out.println(val)).forEach(lis -> {
+		datapipeline.peek(val -> System.out.println(val)).peek(val -> System.out.println(val)).peek(val -> System.out.println(val)).forEach(lis -> {
 			sum += ((List) lis).size();
 		}, null);
 
@@ -4586,7 +4586,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekPeekSample Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List> data = (List) datapipeline.peek(val->System.out.println(val)).peek(val->System.out.println(val)).sample(46361)
+		List<List> data = (List) datapipeline.peek(val -> System.out.println(val)).peek(val -> System.out.println(val)).sample(46361)
 				.collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
@@ -4603,7 +4603,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekPeekSampleCount Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List<Long>> data = (List) datapipeline.peek(val->System.out.println(val)).peek(val->System.out.println(val)).sample(46361)
+		List<List<Long>> data = (List) datapipeline.peek(val -> System.out.println(val)).peek(val -> System.out.println(val)).sample(46361)
 				.count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
@@ -4623,7 +4623,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.peek(val->System.out.println(val)).peek(val->System.out.println(val)).sample(46361).forEach(lis -> {
+		datapipeline.peek(val -> System.out.println(val)).peek(val -> System.out.println(val)).sample(46361).forEach(lis -> {
 			sum += ((List) lis).size();
 		}, null);
 
@@ -4637,7 +4637,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekPeekSorted Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List> data = (List) datapipeline.peek(val->System.out.println(val)).peek(val->System.out.println(val))
+		List<List> data = (List) datapipeline.peek(val -> System.out.println(val)).peek(val -> System.out.println(val))
 				.sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
 					public int compare(java.lang.String value1, java.lang.String value2) {
 						return value1.compareTo(value2);
@@ -4658,7 +4658,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekPeekSortedCount Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List<Long>> data = (List) datapipeline.peek(val->System.out.println(val)).peek(val->System.out.println(val))
+		List<List<Long>> data = (List) datapipeline.peek(val -> System.out.println(val)).peek(val -> System.out.println(val))
 				.sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
 					public int compare(java.lang.String value1, java.lang.String value2) {
 						return value1.compareTo(value2);
@@ -4682,7 +4682,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.peek(val->System.out.println(val)).peek(val->System.out.println(val))
+		datapipeline.peek(val -> System.out.println(val)).peek(val -> System.out.println(val))
 				.sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
 					public int compare(java.lang.String value1, java.lang.String value2) {
 						return value1.compareTo(value2);
@@ -4701,10 +4701,10 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekSampleFilter Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List> data = (List) datapipeline.peek(val->System.out.println(val)).sample(46361)
+		List<List> data = (List) datapipeline.peek(val -> System.out.println(val)).sample(46361)
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).collect(toexecute, null);
 		int sum = 0;
@@ -4722,10 +4722,10 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekSampleFilterCount Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List<Long>> data = (List) datapipeline.peek(val->System.out.println(val)).sample(46361)
+		List<List<Long>> data = (List) datapipeline.peek(val -> System.out.println(val)).sample(46361)
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).count(null);
 		long sum = 0;
@@ -4746,10 +4746,10 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.peek(val->System.out.println(val)).sample(46361)
+		datapipeline.peek(val -> System.out.println(val)).sample(46361)
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).forEach(lis -> {
 					sum += ((List) lis).size();
@@ -4765,7 +4765,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekSampleFlatMap Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List> data = (List) datapipeline.peek(val->System.out.println(val)).sample(46361)
+		List<List> data = (List) datapipeline.peek(val -> System.out.println(val)).sample(46361)
 				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
@@ -4786,7 +4786,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekSampleFlatMapCount Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List<Long>> data = (List) datapipeline.peek(val->System.out.println(val)).sample(46361)
+		List<List<Long>> data = (List) datapipeline.peek(val -> System.out.println(val)).sample(46361)
 				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
@@ -4810,7 +4810,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.peek(val->System.out.println(val)).sample(46361)
+		datapipeline.peek(val -> System.out.println(val)).sample(46361)
 				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
@@ -4829,7 +4829,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekSampleMap Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List> data = (List) datapipeline.peek(val->System.out.println(val)).sample(46361)
+		List<List> data = (List) datapipeline.peek(val -> System.out.println(val)).sample(46361)
 				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
@@ -4850,7 +4850,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekSampleMapCount Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List<Long>> data = (List) datapipeline.peek(val->System.out.println(val)).sample(46361)
+		List<List<Long>> data = (List) datapipeline.peek(val -> System.out.println(val)).sample(46361)
 				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
@@ -4874,7 +4874,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.peek(val->System.out.println(val)).sample(46361)
+		datapipeline.peek(val -> System.out.println(val)).sample(46361)
 				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
@@ -4893,7 +4893,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekSampleMapPair Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List> data = (List) datapipeline.peek(val->System.out.println(val)).sample(46361).mapToPair(
+		List<List> data = (List) datapipeline.peek(val -> System.out.println(val)).sample(46361).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -4914,7 +4914,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekSampleMapPairCount Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List<Long>> data = (List) datapipeline.peek(val->System.out.println(val)).sample(46361).mapToPair(
+		List<List<Long>> data = (List) datapipeline.peek(val -> System.out.println(val)).sample(46361).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -4938,7 +4938,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.peek(val->System.out.println(val)).sample(46361).mapToPair(
+		datapipeline.peek(val -> System.out.println(val)).sample(46361).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -4957,7 +4957,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekSampleMapPairGroupByKey Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List<Tuple2>> data = (List) datapipeline.peek(val->System.out.println(val)).sample(46361).mapToPair(
+		List<List<Tuple2>> data = (List) datapipeline.peek(val -> System.out.println(val)).sample(46361).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -4980,7 +4980,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.peek(val->System.out.println(val)).sample(46361).mapToPair(
+		datapipeline.peek(val -> System.out.println(val)).sample(46361).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -5002,7 +5002,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekSampleMapPairReduceByKey Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List> data = (List) datapipeline.peek(val->System.out.println(val)).sample(46361).mapToPair(
+		List<List> data = (List) datapipeline.peek(val -> System.out.println(val)).sample(46361).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -5023,7 +5023,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekSampleMapPairReduceByKeyCount Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List<Long>> data = (List) datapipeline.peek(val->System.out.println(val)).sample(46361).mapToPair(
+		List<List<Long>> data = (List) datapipeline.peek(val -> System.out.println(val)).sample(46361).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -5047,7 +5047,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.peek(val->System.out.println(val)).sample(46361).mapToPair(
+		datapipeline.peek(val -> System.out.println(val)).sample(46361).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -5066,7 +5066,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekSamplePeek Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List> data = (List) datapipeline.peek(val->System.out.println(val)).sample(46361).peek(val->System.out.println(val))
+		List<List> data = (List) datapipeline.peek(val -> System.out.println(val)).sample(46361).peek(val -> System.out.println(val))
 				.collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
@@ -5083,7 +5083,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekSamplePeekCount Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List<Long>> data = (List) datapipeline.peek(val->System.out.println(val)).sample(46361).peek(val->System.out.println(val))
+		List<List<Long>> data = (List) datapipeline.peek(val -> System.out.println(val)).sample(46361).peek(val -> System.out.println(val))
 				.count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
@@ -5103,7 +5103,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.peek(val->System.out.println(val)).sample(46361).peek(val->System.out.println(val)).forEach(lis -> {
+		datapipeline.peek(val -> System.out.println(val)).sample(46361).peek(val -> System.out.println(val)).forEach(lis -> {
 			sum += ((List) lis).size();
 		}, null);
 
@@ -5117,7 +5117,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekSampleSample Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List> data = (List) datapipeline.peek(val->System.out.println(val)).sample(46361).sample(46361).collect(toexecute,
+		List<List> data = (List) datapipeline.peek(val -> System.out.println(val)).sample(46361).sample(46361).collect(toexecute,
 				null);
 		int sum = 0;
 		for (List partitioneddata : data) {
@@ -5134,7 +5134,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekSampleSampleCount Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List<Long>> data = (List) datapipeline.peek(val->System.out.println(val)).sample(46361).sample(46361).count(null);
+		List<List<Long>> data = (List) datapipeline.peek(val -> System.out.println(val)).sample(46361).sample(46361).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -5153,7 +5153,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.peek(val->System.out.println(val)).sample(46361).sample(46361).forEach(lis -> {
+		datapipeline.peek(val -> System.out.println(val)).sample(46361).sample(46361).forEach(lis -> {
 			sum += ((List) lis).size();
 		}, null);
 
@@ -5167,7 +5167,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekSampleSorted Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List> data = (List) datapipeline.peek(val->System.out.println(val)).sample(46361)
+		List<List> data = (List) datapipeline.peek(val -> System.out.println(val)).sample(46361)
 				.sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
 					public int compare(java.lang.String value1, java.lang.String value2) {
 						return value1.compareTo(value2);
@@ -5188,7 +5188,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekSampleSortedCount Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List<Long>> data = (List) datapipeline.peek(val->System.out.println(val)).sample(46361)
+		List<List<Long>> data = (List) datapipeline.peek(val -> System.out.println(val)).sample(46361)
 				.sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
 					public int compare(java.lang.String value1, java.lang.String value2) {
 						return value1.compareTo(value2);
@@ -5212,7 +5212,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.peek(val->System.out.println(val)).sample(46361)
+		datapipeline.peek(val -> System.out.println(val)).sample(46361)
 				.sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
 					public int compare(java.lang.String value1, java.lang.String value2) {
 						return value1.compareTo(value2);
@@ -5231,14 +5231,14 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekSortedFilter Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List> data = (List) datapipeline.peek(val->System.out.println(val))
+		List<List> data = (List) datapipeline.peek(val -> System.out.println(val))
 				.sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
 					public int compare(java.lang.String value1, java.lang.String value2) {
 						return value1.compareTo(value2);
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).collect(toexecute, null);
 		int sum = 0;
@@ -5256,14 +5256,14 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekSortedFilterCount Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List<Long>> data = (List) datapipeline.peek(val->System.out.println(val))
+		List<List<Long>> data = (List) datapipeline.peek(val -> System.out.println(val))
 				.sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
 					public int compare(java.lang.String value1, java.lang.String value2) {
 						return value1.compareTo(value2);
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).count(null);
 		long sum = 0;
@@ -5284,13 +5284,13 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.peek(val->System.out.println(val)).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
+		datapipeline.peek(val -> System.out.println(val)).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
 			public int compare(java.lang.String value1, java.lang.String value2) {
 				return value1.compareTo(value2);
 			}
 		}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).forEach(lis -> {
 			sum += ((List) lis).size();
@@ -5306,7 +5306,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekSortedFlatMap Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List> data = (List) datapipeline.peek(val->System.out.println(val))
+		List<List> data = (List) datapipeline.peek(val -> System.out.println(val))
 				.sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
 					public int compare(java.lang.String value1, java.lang.String value2) {
 						return value1.compareTo(value2);
@@ -5331,7 +5331,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekSortedFlatMapCount Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List<Long>> data = (List) datapipeline.peek(val->System.out.println(val))
+		List<List<Long>> data = (List) datapipeline.peek(val -> System.out.println(val))
 				.sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
 					public int compare(java.lang.String value1, java.lang.String value2) {
 						return value1.compareTo(value2);
@@ -5359,7 +5359,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.peek(val->System.out.println(val)).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
+		datapipeline.peek(val -> System.out.println(val)).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
 			public int compare(java.lang.String value1, java.lang.String value2) {
 				return value1.compareTo(value2);
 			}
@@ -5381,7 +5381,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekSortedMap Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List> data = (List) datapipeline.peek(val->System.out.println(val))
+		List<List> data = (List) datapipeline.peek(val -> System.out.println(val))
 				.sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
 					public int compare(java.lang.String value1, java.lang.String value2) {
 						return value1.compareTo(value2);
@@ -5406,7 +5406,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekSortedMapCount Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List<Long>> data = (List) datapipeline.peek(val->System.out.println(val))
+		List<List<Long>> data = (List) datapipeline.peek(val -> System.out.println(val))
 				.sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
 					public int compare(java.lang.String value1, java.lang.String value2) {
 						return value1.compareTo(value2);
@@ -5434,7 +5434,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.peek(val->System.out.println(val)).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
+		datapipeline.peek(val -> System.out.println(val)).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
 			public int compare(java.lang.String value1, java.lang.String value2) {
 				return value1.compareTo(value2);
 			}
@@ -5456,7 +5456,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekSortedMapPair Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List> data = (List) datapipeline.peek(val->System.out.println(val))
+		List<List> data = (List) datapipeline.peek(val -> System.out.println(val))
 				.sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
 					public int compare(java.lang.String value1, java.lang.String value2) {
 						return value1.compareTo(value2);
@@ -5483,7 +5483,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekSortedMapPairCount Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List<Long>> data = (List) datapipeline.peek(val->System.out.println(val))
+		List<List<Long>> data = (List) datapipeline.peek(val -> System.out.println(val))
 				.sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
 					public int compare(java.lang.String value1, java.lang.String value2) {
 						return value1.compareTo(value2);
@@ -5513,7 +5513,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.peek(val->System.out.println(val)).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
+		datapipeline.peek(val -> System.out.println(val)).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
 			public int compare(java.lang.String value1, java.lang.String value2) {
 				return value1.compareTo(value2);
 			}
@@ -5536,7 +5536,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekSortedMapPairGroupByKey Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List<Tuple2>> data = (List) datapipeline.peek(val->System.out.println(val))
+		List<List<Tuple2>> data = (List) datapipeline.peek(val -> System.out.println(val))
 				.sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
 					public int compare(java.lang.String value1, java.lang.String value2) {
 						return value1.compareTo(value2);
@@ -5565,7 +5565,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.peek(val->System.out.println(val)).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
+		datapipeline.peek(val -> System.out.println(val)).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
 			public int compare(java.lang.String value1, java.lang.String value2) {
 				return value1.compareTo(value2);
 			}
@@ -5591,7 +5591,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekSortedMapPairReduceByKey Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List> data = (List) datapipeline.peek(val->System.out.println(val))
+		List<List> data = (List) datapipeline.peek(val -> System.out.println(val))
 				.sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
 					public int compare(java.lang.String value1, java.lang.String value2) {
 						return value1.compareTo(value2);
@@ -5618,7 +5618,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekSortedMapPairReduceByKeyCount Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List<Long>> data = (List) datapipeline.peek(val->System.out.println(val))
+		List<List<Long>> data = (List) datapipeline.peek(val -> System.out.println(val))
 				.sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
 					public int compare(java.lang.String value1, java.lang.String value2) {
 						return value1.compareTo(value2);
@@ -5648,7 +5648,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.peek(val->System.out.println(val)).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
+		datapipeline.peek(val -> System.out.println(val)).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
 			public int compare(java.lang.String value1, java.lang.String value2) {
 				return value1.compareTo(value2);
 			}
@@ -5671,12 +5671,12 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekSortedPeek Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List> data = (List) datapipeline.peek(val->System.out.println(val))
+		List<List> data = (List) datapipeline.peek(val -> System.out.println(val))
 				.sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
 					public int compare(java.lang.String value1, java.lang.String value2) {
 						return value1.compareTo(value2);
 					}
-				}).peek(val->System.out.println(val)).collect(toexecute, null);
+				}).peek(val -> System.out.println(val)).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -5692,12 +5692,12 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekSortedPeekCount Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List<Long>> data = (List) datapipeline.peek(val->System.out.println(val))
+		List<List<Long>> data = (List) datapipeline.peek(val -> System.out.println(val))
 				.sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
 					public int compare(java.lang.String value1, java.lang.String value2) {
 						return value1.compareTo(value2);
 					}
-				}).peek(val->System.out.println(val)).count(null);
+				}).peek(val -> System.out.println(val)).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -5716,11 +5716,11 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.peek(val->System.out.println(val)).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
+		datapipeline.peek(val -> System.out.println(val)).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
 			public int compare(java.lang.String value1, java.lang.String value2) {
 				return value1.compareTo(value2);
 			}
-		}).peek(val->System.out.println(val)).forEach(lis -> {
+		}).peek(val -> System.out.println(val)).forEach(lis -> {
 			sum += ((List) lis).size();
 		}, null);
 
@@ -5734,7 +5734,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekSortedSample Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List> data = (List) datapipeline.peek(val->System.out.println(val))
+		List<List> data = (List) datapipeline.peek(val -> System.out.println(val))
 				.sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
 					public int compare(java.lang.String value1, java.lang.String value2) {
 						return value1.compareTo(value2);
@@ -5755,7 +5755,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekSortedSampleCount Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List<Long>> data = (List) datapipeline.peek(val->System.out.println(val))
+		List<List<Long>> data = (List) datapipeline.peek(val -> System.out.println(val))
 				.sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
 					public int compare(java.lang.String value1, java.lang.String value2) {
 						return value1.compareTo(value2);
@@ -5779,7 +5779,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.peek(val->System.out.println(val)).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
+		datapipeline.peek(val -> System.out.println(val)).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
 			public int compare(java.lang.String value1, java.lang.String value2) {
 				return value1.compareTo(value2);
 			}
@@ -5797,7 +5797,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekSortedSorted Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List> data = (List) datapipeline.peek(val->System.out.println(val))
+		List<List> data = (List) datapipeline.peek(val -> System.out.println(val))
 				.sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
 					public int compare(java.lang.String value1, java.lang.String value2) {
 						return value1.compareTo(value2);
@@ -5822,7 +5822,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		log.info("testPeekSortedSortedCount Before---------------------------------------");
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List<Long>> data = (List) datapipeline.peek(val->System.out.println(val))
+		List<List<Long>> data = (List) datapipeline.peek(val -> System.out.println(val))
 				.sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
 					public int compare(java.lang.String value1, java.lang.String value2) {
 						return value1.compareTo(value2);
@@ -5850,7 +5850,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		IgnitePipeline<String> datapipeline = IgnitePipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.peek(val->System.out.println(val)).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
+		datapipeline.peek(val -> System.out.println(val)).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
 			public int compare(java.lang.String value1, java.lang.String value2) {
 				return value1.compareTo(value2);
 			}
@@ -5875,11 +5875,11 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		List<List> data = (List) datapipeline.sample(46361)
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).collect(toexecute, null);
 		int sum = 0;
@@ -5900,11 +5900,11 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		List<List<Long>> data = (List) datapipeline.sample(46361)
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).count(null);
 		long sum = 0;
@@ -5927,11 +5927,11 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		sum = 0;
 		datapipeline.sample(46361).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).forEach(lis -> {
 			sum += ((List) lis).size();
@@ -5950,7 +5950,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		List<List> data = (List) datapipeline.sample(46361)
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
@@ -5975,7 +5975,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		List<List<Long>> data = (List) datapipeline.sample(46361)
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
@@ -6002,7 +6002,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		sum = 0;
 		datapipeline.sample(46361).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
@@ -6025,7 +6025,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		List<List> data = (List) datapipeline.sample(46361)
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
@@ -6050,7 +6050,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		List<List<Long>> data = (List) datapipeline.sample(46361)
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
@@ -6077,7 +6077,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		sum = 0;
 		datapipeline.sample(46361).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 			public java.lang.String[] apply(java.lang.String value) {
@@ -6100,7 +6100,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		List<List> data = (List) datapipeline.sample(46361)
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
 						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -6127,7 +6127,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		List<List<Long>> data = (List) datapipeline.sample(46361)
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
 						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -6156,7 +6156,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		sum = 0;
 		datapipeline.sample(46361).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -6180,7 +6180,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		List<List<Tuple2>> data = (List) datapipeline.sample(46361)
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
 						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -6208,7 +6208,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		sum = 0;
 		datapipeline.sample(46361).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -6235,7 +6235,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		List<List> data = (List) datapipeline.sample(46361)
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
 						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -6262,7 +6262,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		List<List<Long>> data = (List) datapipeline.sample(46361)
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
 						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -6291,7 +6291,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		sum = 0;
 		datapipeline.sample(46361).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -6315,9 +6315,9 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		List<List> data = (List) datapipeline.sample(46361)
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).peek(val->System.out.println(val)).collect(toexecute, null);
+				}).peek(val -> System.out.println(val)).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -6336,9 +6336,9 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		List<List<Long>> data = (List) datapipeline.sample(46361)
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).peek(val->System.out.println(val)).count(null);
+				}).peek(val -> System.out.println(val)).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -6359,9 +6359,9 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		sum = 0;
 		datapipeline.sample(46361).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
-		}).peek(val->System.out.println(val)).forEach(lis -> {
+		}).peek(val -> System.out.println(val)).forEach(lis -> {
 			sum += ((List) lis).size();
 		}, null);
 
@@ -6378,7 +6378,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		List<List> data = (List) datapipeline.sample(46361)
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).sample(46361).collect(toexecute, null);
 		int sum = 0;
@@ -6399,7 +6399,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		List<List<Long>> data = (List) datapipeline.sample(46361)
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).sample(46361).count(null);
 		long sum = 0;
@@ -6422,7 +6422,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		sum = 0;
 		datapipeline.sample(46361).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).sample(46361).forEach(lis -> {
 			sum += ((List) lis).size();
@@ -6441,7 +6441,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		List<List> data = (List) datapipeline.sample(46361)
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
 					public int compare(java.lang.String value1, java.lang.String value2) {
@@ -6466,7 +6466,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		List<List<Long>> data = (List) datapipeline.sample(46361)
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
 					public int compare(java.lang.String value1, java.lang.String value2) {
@@ -6493,7 +6493,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 		sum = 0;
 		datapipeline.sample(46361).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
 			public int compare(java.lang.String value1, java.lang.String value2) {
@@ -6520,7 +6520,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).collect(toexecute, null);
 		int sum = 0;
@@ -6545,7 +6545,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).count(null);
 		long sum = 0;
@@ -6573,7 +6573,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).forEach(lis -> {
 					sum += ((List) lis).size();
@@ -6967,7 +6967,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).peek(val->System.out.println(val)).collect(toexecute, null);
+				}).peek(val -> System.out.println(val)).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -6988,7 +6988,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).peek(val->System.out.println(val)).count(null);
+				}).peek(val -> System.out.println(val)).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -7012,7 +7012,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).peek(val->System.out.println(val)).forEach(lis -> {
+				}).peek(val -> System.out.println(val)).forEach(lis -> {
 					sum += ((List) lis).size();
 				}, null);
 
@@ -7173,7 +7173,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String[]>() {
 					public boolean test(java.lang.String[] value) {
-						return !value[14].equals("NA") && !value[14].equals("ArrDelay");
+						return !"NA".equals(value[14]) && !"ArrDelay".equals(value[14]);
 					}
 				}).collect(toexecute, null);
 		int sum = 0;
@@ -7198,7 +7198,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String[]>() {
 					public boolean test(java.lang.String[] value) {
-						return !value[14].equals("NA") && !value[14].equals("ArrDelay");
+						return !"NA".equals(value[14]) && !"ArrDelay".equals(value[14]);
 					}
 				}).count(null);
 		long sum = 0;
@@ -7225,7 +7225,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 			}
 		}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String[]>() {
 			public boolean test(java.lang.String[] value) {
-				return !value[14].equals("NA") && !value[14].equals("ArrDelay");
+				return !"NA".equals(value[14]) && !"ArrDelay".equals(value[14]);
 			}
 		}).forEach(lis -> {
 			sum += ((List) lis).size();
@@ -7611,7 +7611,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
-				}).peek(val->System.out.println(val)).collect(toexecute, null);
+				}).peek(val -> System.out.println(val)).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -7632,7 +7632,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
-				}).peek(val->System.out.println(val)).count(null);
+				}).peek(val -> System.out.println(val)).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -7655,7 +7655,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 			public java.lang.String[] apply(java.lang.String value) {
 				return value.split(",");
 			}
-		}).peek(val->System.out.println(val)).forEach(lis -> {
+		}).peek(val -> System.out.println(val)).forEach(lis -> {
 			sum += ((List) lis).size();
 		}, null);
 
@@ -8268,7 +8268,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
-				}).groupByKey().peek(val->System.out.println(val)).collect(toexecute, null);
+				}).groupByKey().peek(val -> System.out.println(val)).collect(toexecute, null);
 		int sum = 0;
 		for (List<Tuple2> lsttuples : data) {
 			for (Tuple2 tuple2 : lsttuples) {
@@ -8291,7 +8291,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
-				}).groupByKey().peek(val->System.out.println(val)).forEach(lsttuples -> {
+				}).groupByKey().peek(val -> System.out.println(val)).forEach(lsttuples -> {
 					for (Tuple2 tuple2 : lsttuples) {
 						sum += ((List) tuple2.v2).size();
 					}
@@ -8696,7 +8696,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
-				}).peek(val->System.out.println(val)).collect(toexecute, null);
+				}).peek(val -> System.out.println(val)).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -8717,7 +8717,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
-				}).peek(val->System.out.println(val)).count(null);
+				}).peek(val -> System.out.println(val)).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -8741,7 +8741,7 @@ public class IgnitePipelineDepth33Test extends StreamPipelineIgniteBase {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
-				}).peek(val->System.out.println(val)).forEach(lis -> {
+				}).peek(val -> System.out.println(val)).forEach(lis -> {
 					sum += ((List) lis).size();
 				}, null);
 

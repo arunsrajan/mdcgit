@@ -15,7 +15,7 @@ public class CarriersDataMapper implements Mapper<Long, String, Context<String, 
 	@Override
 	public void map(Long chunkid, String line, Context<String, Map> ctx) {
 		var contents = line.split(",");
-		if (contents[0] != null && !contents[0].equals("Code")) {
+		if (contents[0] != null && !"Code".equals(contents[0])) {
 			if (contents != null && contents.length > 1) {
 				var map = new HashMap<String, String>();
 				map.put("CARRIERS", contents[1].substring(1, contents[1].length() - 1));
@@ -41,7 +41,7 @@ public class CarriersDataMapper implements Mapper<Long, String, Context<String, 
 			}
 		}
 		var map1 = new HashMap<>();
-		if(!(arrdelaysum==0&&depdelaysum == 0)) {
+		if (!(arrdelaysum == 0 && depdelaysum == 0)) {
 			context.put(key, carrierName + "," + (arrdelaysum == 0 ? "" : arrdelaysum) + ","
 				+ (depdelaysum == 0 ? "" : depdelaysum));
 		}

@@ -24,7 +24,7 @@ public class MDCExecutorThreadFactory implements ThreadFactory {
 	   public MDCExecutorThreadFactory(int priority, boolean daemon) {
 	      this.priority = priority;
 	      this.daemon = daemon;
-	      namePrefix = MDCConstants.JOBPOOL+MDCConstants.HYPHEN +poolNumber.getAndIncrement() + MDCConstants.HYPHEN + MDCConstants.THREAD + MDCConstants.HYPHEN;
+	      namePrefix = MDCConstants.JOBPOOL + MDCConstants.HYPHEN + poolNumber.getAndIncrement() + MDCConstants.HYPHEN + MDCConstants.THREAD + MDCConstants.HYPHEN;
 	   }
 
 	   /**

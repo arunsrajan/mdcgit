@@ -34,33 +34,30 @@ public class TaskExecutorMapperCombiner implements Runnable {
 	String taskid;
 	SnappyInputStream datastream;
 	int port;
-	@SuppressWarnings({ "rawtypes" })
-	public TaskExecutorMapperCombiner(BlocksLocation blockslocation,SnappyInputStream datastream,String applicationid, String taskid,
-			ClassLoader cl,int port,
+	@SuppressWarnings({"rawtypes"})
+	public TaskExecutorMapperCombiner(BlocksLocation blockslocation, SnappyInputStream datastream, String applicationid, String taskid,
+			ClassLoader cl, int port,
 			HeartBeatTaskScheduler hbts) throws Exception {
 		this.blockslocation = blockslocation;
 		this.datastream = datastream;
 		this.port = port;
 		Class<?> clz = null;
 		try {
-			if(blockslocation.mapperclasses!=null) {
-				for(var mapperclass:blockslocation.mapperclasses) {
+			if (blockslocation.mapperclasses != null) {
+				for (var mapperclass :blockslocation.mapperclasses) {
 					clz = cl.loadClass(mapperclass);
 					cm.add((Mapper) clz.newInstance());
 				}
 			}
-			if(blockslocation.combinerclasses!=null) {
-				for(var combinerclass:blockslocation.combinerclasses) {
+			if (blockslocation.combinerclasses != null) {
+				for (var combinerclass :blockslocation.combinerclasses) {
 					clz = cl.loadClass(combinerclass);
 					cc.add((Combiner) clz.newInstance());
 				}
 			}
 		}
-		catch(Throwable ex) {
-			log.debug("Exception in loading class:",ex);
-		}
-		finally {
-			
+		catch (Throwable ex) {
+			log.debug("Exception in loading class:", ex);
 		}
 		this.applicationid = applicationid;
 		this.taskid = taskid;
@@ -78,7 +75,7 @@ public class TaskExecutorMapperCombiner implements Runnable {
 			hbts.pingOnce(taskid, TaskStatus.RUNNING, TaskType.MAPPERCOMBINER, null);
 			var fc = es.submit(mdcmc);
 			ctx = fc.get();
-			RemoteDataFetcher.writerIntermediatePhaseOutputToDFS(ctx, applicationid, ((applicationid+taskid)));
+			RemoteDataFetcher.writerIntermediatePhaseOutputToDFS(ctx, applicationid, (applicationid + taskid));
 			ctx = null;
 			hbts.pingOnce(taskid, TaskStatus.COMPLETED, TaskType.MAPPERCOMBINER, null);
 		} catch (Throwable ex) {
@@ -88,11 +85,11 @@ public class TaskExecutorMapperCombiner implements Runnable {
 				ex.printStackTrace(failuremessage);
 				hbts.pingOnce(taskid, TaskStatus.FAILED, TaskType.MAPPERCOMBINER, new String(baos.toByteArray()));
 			} catch (Exception e) {
-				log.info("Exception in Sending message to Failed Task: "+blockslocation,ex);
+				log.info("Exception in Sending message to Failed Task: " + blockslocation, ex);
 			}
-			log.info("Exception in Executing Task: "+blockslocation,ex);
+			log.info("Exception in Executing Task: " + blockslocation, ex);
 		} finally {
-			if(es!=null) {
+			if (es != null) {
 				es.shutdown();
 			}
 		}

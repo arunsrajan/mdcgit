@@ -11,9 +11,9 @@ import org.junit.Test;
 
 public class StreamPipelineUserDefinedObjectsTest extends StreamPipelineBaseTestCommon {
 	boolean toexecute = true;
-	int sum = 0;
+	int sum;
 	static Logger log = Logger.getLogger(StreamPipelineUserDefinedObjectsTest.class);
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testMapCollect() throws Throwable {
 		log.info("testMapCollect Before---------------------------------------");
@@ -21,11 +21,11 @@ public class StreamPipelineUserDefinedObjectsTest extends StreamPipelineBaseTest
 		pipelineconfig.setLocal("true");
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List<Map>> data = (List<List<Map>>) datapipeline.map(value->value.split(","))
-				.map(val->{
-					Map<String,String> map= new HashMap<>();
-					int index=0;
-					for(String header:airlineheader) {
+		List<List<Map>> data = (List<List<Map>>) datapipeline.map(value -> value.split(","))
+				.map(val -> {
+					Map<String, String> map = new HashMap<>();
+					int index = 0;
+					for (String header :airlineheader) {
 						map.put(header, val[index]);
 						index++;
 					}
@@ -34,14 +34,14 @@ public class StreamPipelineUserDefinedObjectsTest extends StreamPipelineBaseTest
 				}).collect(toexecute, null);
 		int sum = 0;
 		for (List<Map> partitioneddata : data) {
-			sum+=partitioneddata.size();
+			sum += partitioneddata.size();
 		}
 		assertEquals(46361, sum);
 		pipelineconfig.setLocal(local);
 		log.info("testMapCollect After---------------------------------------");
 	}
 	
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testMapContainerExecuteCollect() throws Throwable {
 		log.info("testMapContainerExecuteCollect Before---------------------------------------");
@@ -49,11 +49,11 @@ public class StreamPipelineUserDefinedObjectsTest extends StreamPipelineBaseTest
 		pipelineconfig.setLocal("true");
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
-		List<List<Map>> data = (List<List<Map>>) datapipeline.map(value->value.split(","))
-				.map(val->{
-					Map<String,String> map= new HashMap<>();
-					int index=0;
-					for(String header:airlineheader) {
+		List<List<Map>> data = (List<List<Map>>) datapipeline.map(value -> value.split(","))
+				.map(val -> {
+					Map<String, String> map = new HashMap<>();
+					int index = 0;
+					for (String header :airlineheader) {
 						map.put(header, val[index]);
 						index++;
 					}
@@ -62,7 +62,7 @@ public class StreamPipelineUserDefinedObjectsTest extends StreamPipelineBaseTest
 				}).collect(toexecute, null);
 		int sum = 0;
 		for (List<Map> partitioneddata : data) {
-			sum+=partitioneddata.size();
+			sum += partitioneddata.size();
 		}
 		assertEquals(46361, sum);
 		pipelineconfig.setLocal(localmode);

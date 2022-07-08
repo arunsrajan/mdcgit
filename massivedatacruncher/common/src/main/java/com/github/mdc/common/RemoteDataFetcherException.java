@@ -13,8 +13,8 @@ public class RemoteDataFetcherException extends Exception {
 	public RemoteDataFetcherException(String message) {
 		super(message);
 	}
-	RemoteDataFetcherException(String message,Exception ex) {
-		super(message,ex);
+	RemoteDataFetcherException(String message, Exception ex) {
+		super(message, ex);
 	}
 	
 	static final String INTERMEDIATEPHASEWRITEERROR="Write Intermediate Phase Output to DFS";

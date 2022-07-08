@@ -126,7 +126,7 @@ public class NodeWebServlet extends HttpServlet {
 					</div>""" + getIframe() + """
 					</body>
 					</html>
-										""", contextpath, contextpath, contextpath, contextpath, contextpath,request.getServerName() + MDCConstants.COLON
+										""", contextpath, contextpath, contextpath, contextpath, contextpath, request.getServerName() + MDCConstants.COLON
 				+ request.getLocalPort()));
 		} catch (Exception ex) {
 			log.debug("TaskScheduler Web servlet error, See cause below \n", ex);
@@ -143,7 +143,7 @@ public class NodeWebServlet extends HttpServlet {
 				""");
 		containersipport.keySet().stream().flatMap(container -> containersipport.get(container).keySet().stream())
 				.map(port -> (MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_HOST)
-						+ MDCConstants.UNDERSCORE + (Integer.parseInt(port) + 50))+"<BR/><iframe src=\"http://" + MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_HOST)
+						+ MDCConstants.UNDERSCORE + (Integer.parseInt(port) + 50)) + "<BR/><iframe src=\"http://" + MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_HOST)
 						+ MDCConstants.COLON + (Integer.parseInt(port) + 50)
 						+ "\" width=\"900px\" height=\"800px\" style=\"border:1px solid black;\">\r\n" + "</iframe>")
 				.forEach(iframe -> {

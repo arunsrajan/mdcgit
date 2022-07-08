@@ -36,11 +36,11 @@ public class StreamPipelineYarnAppmasterService extends MindAppmasterService {
 	@Override
 	protected MindRpcMessageHolder handleMindMessageInternal(MindRpcMessageHolder message) {
 		var request = getConversionService().convert(message, BaseObject.class);
-		var jobrequest = (JobRequest)request;
-		log.debug("Request from container: "+jobrequest.getContainerid()+" "+jobrequest.getTimerequested());
+		var jobrequest = (JobRequest) request;
+		log.debug("Request from container: " + jobrequest.getContainerid() + " " + jobrequest.getTimerequested());
 		var response = handleJob(jobrequest);
 		var mindrpcmessageholder = getConversionService().convert(response, MindRpcMessageHolder.class);
-		log.debug("Response to container: "+response.getContainerid()+" :"+mindrpcmessageholder);
+		log.debug("Response to container: " + response.getContainerid() + " :" + mindrpcmessageholder);
 		return mindrpcmessageholder;
 	}
 
@@ -60,7 +60,7 @@ public class StreamPipelineYarnAppmasterService extends MindAppmasterService {
 	private JobResponse handleJob(JobRequest request) {
 		var response = new JobResponse(JobResponse.State.STANDBY, null);
 		response.setResstate(JobResponse.State.STANDBY.name());
-		response.setResmsg(""+request.getTimerequested());
+		response.setResmsg("" + request.getTimerequested());
 		response.setContainerid(request.getContainerid());
 		try {
 			//Kryo for object serialization and deserialization.
@@ -87,7 +87,7 @@ public class StreamPipelineYarnAppmasterService extends MindAppmasterService {
 			}
 			
 			var job = yarnAppMaster.getTask(request.getContainerid());
-			log.debug(request.getContainerid()+": "+job);
+			log.debug(request.getContainerid() + ": " + job);
 			//Job is available
 			if (job != null) {
 				var baos = new ByteArrayOutputStream();
@@ -96,10 +96,10 @@ public class StreamPipelineYarnAppmasterService extends MindAppmasterService {
 				output.flush();
 				output.close();
 				response.setJob(baos.toByteArray());
-				if(job instanceof Map) {
+				if (job instanceof Map) {
 					response.setState(JobResponse.State.STOREJOBSTAGE);
 					response.setResstate(JobResponse.State.STOREJOBSTAGE.name());
-				}else {
+				} else {
 					response.setState(JobResponse.State.RUNJOB);
 					response.setResstate(JobResponse.State.RUNJOB.name());
 				}
@@ -111,7 +111,7 @@ public class StreamPipelineYarnAppmasterService extends MindAppmasterService {
 				response.setResstate(JobResponse.State.DIE.name());
 			}
 		}
-		catch(Exception ex) {
+		catch (Exception ex) {
 			log.error("Handle job request error, See cause below \n", ex);
 		}
 		finally {

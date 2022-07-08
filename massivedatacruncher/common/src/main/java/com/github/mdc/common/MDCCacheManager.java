@@ -8,11 +8,14 @@ import org.ehcache.CacheManager;
  * This class holds the CacheMaganer object for whole JVM.
  */
 public class MDCCacheManager {
-	private static CacheManager cachemanager = null;
+	private static CacheManager cachemanager;
 	public static void put(CacheManager cachemanager) {
 		MDCCacheManager.cachemanager = cachemanager;
 	}
 	public static CacheManager get() {
 		return MDCCacheManager.cachemanager;
+	}
+
+	private MDCCacheManager() {
 	}
 }

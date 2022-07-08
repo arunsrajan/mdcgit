@@ -20,10 +20,14 @@ public class LineSplitUtil {
 	 */
 	public static Long splitcount(byte[] byt) throws Exception {
 		var count = 0l;
-		for(var bt:byt) {
-			if(bt=='\n')count++;
+		for (var bt :byt) {
+			if (bt == '\n') {
+				count++;
+			}
 		}
-		if(byt[byt.length-1]!='\n')count++;
+		if (byt[byt.length - 1] != '\n') {
+			count++;
+		}
 		return count;
 	}
 	
@@ -37,7 +41,7 @@ public class LineSplitUtil {
 		var reader = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(byt)));
 		String line;
 		var strings = new ArrayList<>();
-		while((line = getNextLine(reader))!=null) {
+		while ((line = getNextLine(reader)) != null) {
 			strings.add(line);
 		}
 		reader.close();
@@ -45,5 +49,8 @@ public class LineSplitUtil {
 	}
 	public static String getNextLine(BufferedReader reader) throws Exception {
 		return reader.readLine();
+	}
+
+	private LineSplitUtil() {
 	}
 }

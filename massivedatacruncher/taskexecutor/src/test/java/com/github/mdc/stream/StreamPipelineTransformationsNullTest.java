@@ -339,7 +339,7 @@ public class StreamPipelineTransformationsNullTest extends StreamPipelineBaseTes
 		try {
 			StreamPipeline<String> datastream1 = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesamplejoin,
 					pipelineconfig);
-			datastream1.filter(value -> !value.split(MDCConstants.COMMA)[2].equals("DayofMonth")).sorted(null)
+			datastream1.filter(value -> !"DayofMonth".equals(value.split(MDCConstants.COMMA)[2])).sorted(null)
 					.collect(toexecute, null);
 		} catch (Exception ex) {
 			assertEquals(PipelineConstants.SORTEDNULL, ex.getMessage());
@@ -432,7 +432,7 @@ public class StreamPipelineTransformationsNullTest extends StreamPipelineBaseTes
 					pipelineconfig);
 			datastream1.mapToPair(value -> {
 				String arrdelay = value.split(MDCConstants.COMMA)[14];
-				if (!arrdelay.equals("ArrDelay") && !arrdelay.equals("NA")) {
+				if (!"ArrDelay".equals(arrdelay) && !"NA".equals(arrdelay)) {
 					return (Tuple2<String, Long>) Tuple.tuple(value.split(MDCConstants.COMMA)[1],
 							Long.parseLong(arrdelay));
 				} else {
@@ -460,7 +460,7 @@ public class StreamPipelineTransformationsNullTest extends StreamPipelineBaseTes
 					pipelineconfig);
 			datastream1.mapToPair(value -> {
 				String arrdelay = value.split(MDCConstants.COMMA)[14];
-				if (!arrdelay.equals("ArrDelay") && !arrdelay.equals("NA")) {
+				if (!"ArrDelay".equals(arrdelay) && !"NA".equals(arrdelay)) {
 					return (Tuple2<String, Long>) Tuple.tuple(value.split(MDCConstants.COMMA)[1],
 							Long.parseLong(arrdelay));
 				} else {
@@ -486,7 +486,7 @@ public class StreamPipelineTransformationsNullTest extends StreamPipelineBaseTes
 					pipelineconfig);
 			datastream1.mapToPair(value -> {
 				String arrdelay = value.split(MDCConstants.COMMA)[14];
-				if (!arrdelay.equals("ArrDelay") && !arrdelay.equals("NA")) {
+				if (!"ArrDelay".equals(arrdelay) && !"NA".equals(arrdelay)) {
 					return (Tuple2<String, Long>) Tuple.tuple(value.split(MDCConstants.COMMA)[1],
 							Long.parseLong(arrdelay));
 				} else {
@@ -511,7 +511,7 @@ public class StreamPipelineTransformationsNullTest extends StreamPipelineBaseTes
 					pipelineconfig);
 			datastream1.mapToPair(value -> {
 				String arrdelay = value.split(MDCConstants.COMMA)[14];
-				if (!arrdelay.equals("ArrDelay") && !arrdelay.equals("NA")) {
+				if (!"ArrDelay".equals(arrdelay) && !"NA".equals(arrdelay)) {
 					return (Tuple2<String, Long>) Tuple.tuple(value.split(MDCConstants.COMMA)[1],
 							Long.parseLong(arrdelay));
 				} else {
@@ -536,7 +536,7 @@ public class StreamPipelineTransformationsNullTest extends StreamPipelineBaseTes
 					pipelineconfig);
 			datastream1.mapToPair(value -> {
 				String arrdelay = value.split(MDCConstants.COMMA)[14];
-				if (!arrdelay.equals("ArrDelay") && !arrdelay.equals("NA")) {
+				if (!"ArrDelay".equals(arrdelay) && !"NA".equals(arrdelay)) {
 					return (Tuple2<String, Long>) Tuple.tuple(value.split(MDCConstants.COMMA)[1],
 							Long.parseLong(arrdelay));
 				} else {
@@ -561,7 +561,7 @@ public class StreamPipelineTransformationsNullTest extends StreamPipelineBaseTes
 					pipelineconfig);
 			datastream1.mapToPair(value -> {
 				String arrdelay = value.split(MDCConstants.COMMA)[14];
-				if (!arrdelay.equals("ArrDelay") && !arrdelay.equals("NA")) {
+				if (!"ArrDelay".equals(arrdelay) && !"NA".equals(arrdelay)) {
 					return (Tuple2<String, Long>) Tuple.tuple(value.split(MDCConstants.COMMA)[1],
 							Long.parseLong(arrdelay));
 				} else {
@@ -586,7 +586,7 @@ public class StreamPipelineTransformationsNullTest extends StreamPipelineBaseTes
 					pipelineconfig);
 			datastream1.mapToPair(value -> {
 				String arrdelay = value.split(MDCConstants.COMMA)[14];
-				if (!arrdelay.equals("ArrDelay") && !arrdelay.equals("NA")) {
+				if (!"ArrDelay".equals(arrdelay) && !"NA".equals(arrdelay)) {
 					return (Tuple2<String, Long>) Tuple.tuple(value.split(MDCConstants.COMMA)[1],
 							Long.parseLong(arrdelay));
 				} else {
@@ -611,7 +611,7 @@ public class StreamPipelineTransformationsNullTest extends StreamPipelineBaseTes
 					pipelineconfig);
 			datastream1.mapToPair(value -> {
 				String arrdelay = value.split(MDCConstants.COMMA)[14];
-				if (!arrdelay.equals("ArrDelay") && !arrdelay.equals("NA")) {
+				if (!"ArrDelay".equals(arrdelay) && !"NA".equals(arrdelay)) {
 					return (Tuple2<String, Long>) Tuple.tuple(value.split(MDCConstants.COMMA)[1],
 							Long.parseLong(arrdelay));
 				} else {

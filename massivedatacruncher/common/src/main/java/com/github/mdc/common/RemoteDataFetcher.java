@@ -53,10 +53,10 @@ public class RemoteDataFetcher {
 			if (!hdfs.exists(jobpathurl)) {
 				hdfs.mkdirs(jobpathurl);
 			}
-			if(hdfs.exists(filepathurl)) {
+			if (hdfs.exists(filepathurl)) {
 				hdfs.delete(filepathurl, false);
 			}
-			createFileMR(hdfs,filepathurl, serobj);
+			createFileMR(hdfs, filepathurl, serobj);
 			
 		} catch (Exception ioe) {
 			log.error(RemoteDataFetcherException.INTERMEDIATEPHASEWRITEERROR, ioe);
@@ -72,8 +72,8 @@ public class RemoteDataFetcher {
 	 * @param serobj
 	 * @throws RemoteDataFetcherException
 	 */
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	protected static void createFileMR(FileSystem hdfs,Path filepathurl, Context serobj) throws RemoteDataFetcherException {
+	@SuppressWarnings({"rawtypes", "unchecked"})
+	protected static void createFileMR(FileSystem hdfs, Path filepathurl, Context serobj) throws RemoteDataFetcherException {
 		log.debug("Entered RemoteDataFetcher.createFileMR");
 		
 		try (var fsdos = hdfs.create(filepathurl); 
@@ -105,7 +105,7 @@ public class RemoteDataFetcher {
 	 * @param serobj
 	 * @throws RemoteDataFetcherException
 	 */
-	protected static void createFile(FileSystem hdfs,Path filepathurl, Object serobj) throws RemoteDataFetcherException {
+	protected static void createFile(FileSystem hdfs, Path filepathurl, Object serobj) throws RemoteDataFetcherException {
 		log.debug("Entered RemoteDataFetcher.createFile");
 		try (var fsdos = hdfs.create(filepathurl); 
 				var output = new Output(fsdos);) {
@@ -133,22 +133,22 @@ public class RemoteDataFetcher {
 	 * @throws Throwable
 	 */
 	public static void writerYarnAppmasterServiceDataToDFS(Object serobj,
-			String dirtowrite,String filename) throws RemoteDataFetcherException {
+			String dirtowrite, String filename) throws RemoteDataFetcherException {
 		log.debug("Entered RemoteDataFetcher.writerYarnAppmasterServiceDataToDFS");
 		var configuration = new Configuration();
 		configuration.set(MDCConstants.HDFS_DEFAULTFS, MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL, MDCConstants.HDFSNAMENODEURL_DEFAULT));
 		configuration.set(MDCConstants.HDFS_IMPL, org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
 		configuration.set(MDCConstants.HDFS_FILE_IMPL, org.apache.hadoop.fs.LocalFileSystem.class.getName());
 		
-		var jobpath = MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL, MDCConstants.HDFSNAMENODEURL_DEFAULT)+MDCConstants.BACKWARD_SLASH+FileSystemSupport.MDS+MDCConstants.BACKWARD_SLASH+dirtowrite;
-		var filepath = jobpath+MDCConstants.BACKWARD_SLASH+filename;
+		var jobpath = MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL, MDCConstants.HDFSNAMENODEURL_DEFAULT) + MDCConstants.BACKWARD_SLASH + FileSystemSupport.MDS + MDCConstants.BACKWARD_SLASH + dirtowrite;
+		var filepath = jobpath + MDCConstants.BACKWARD_SLASH + filename;
 		var jobpathurl = new Path(jobpath);
 		var filepathurl = new Path(filepath);
 		try (var hdfs = FileSystem.newInstance(new URI(MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL, MDCConstants.HDFSNAMENODEURL_DEFAULT)), configuration);) {
 			if (!hdfs.exists(jobpathurl)) {
 				hdfs.mkdirs(jobpathurl);
 			}
-			createFile(hdfs,filepathurl, serobj);
+			createFile(hdfs, filepathurl, serobj);
 			
 		} catch (Exception ioe) {
 			log.error(RemoteDataFetcherException.INTERMEDIATEPHASEWRITEERROR, ioe);
@@ -196,7 +196,7 @@ public class RemoteDataFetcher {
 	 * @throws Throwable
 	 */
 	public static Object readIntermediatePhaseOutputFromDFS(
-			String jobid, String filename,boolean keys) throws RemoteDataFetcherException {
+			String jobid, String filename, boolean keys) throws RemoteDataFetcherException {
 		log.debug("Entered RemoteDataFetcher.readIntermediatePhaseOutputFromDFS");
 		var configuration = new Configuration();
 		var path = MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL) + MDCConstants.BACKWARD_SLASH + FileSystemSupport.MDS
@@ -208,7 +208,7 @@ public class RemoteDataFetcher {
 				var input = new Input(dis);) {
 			var kryo = Utils.getKryoNonDeflateSerializer();
 			var keysobj = kryo.readObject(input, LinkedHashSet.class);
-			if(keys) {
+			if (keys) {
 				return keysobj;
 			}
 			log.debug("Exiting RemoteDataFetcher.readIntermediatePhaseOutputFromDFS");
@@ -229,10 +229,10 @@ public class RemoteDataFetcher {
 	 * @throws Throwable
 	 */
 	public static InputStream readIntermediatePhaseOutputFromDFS(
-			String jobid,String filename, FileSystem hdfs) throws RemoteDataFetcherException {
+			String jobid, String filename, FileSystem hdfs) throws RemoteDataFetcherException {
 		log.debug("Entered RemoteDataFetcher.readIntermediatePhaseOutputFromDFS");
 		try {
-			var path = MDCConstants.BACKWARD_SLASH+FileSystemSupport.MDS+MDCConstants.BACKWARD_SLASH+jobid+MDCConstants.BACKWARD_SLASH+filename;
+			var path = MDCConstants.BACKWARD_SLASH + FileSystemSupport.MDS + MDCConstants.BACKWARD_SLASH + jobid + MDCConstants.BACKWARD_SLASH + filename;
 			log.debug("Exiting RemoteDataFetcher.readIntermediatePhaseOutputFromDFS");
 			return new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path))));
 		}
@@ -252,13 +252,13 @@ public class RemoteDataFetcher {
 	 * @throws Throwable
 	 */
 	public static InputStream readIntermediatePhaseOutputFromFS(
-			String jobid,String filename) throws RemoteDataFetcherException {
+			String jobid, String filename) throws RemoteDataFetcherException {
 		log.debug("Entered RemoteDataFetcher.readIntermediatePhaseOutputFromDFS");
 		try {
-			var path = MDCConstants.BACKWARD_SLASH+FileSystemSupport.MDS+MDCConstants.BACKWARD_SLASH+jobid+MDCConstants.BACKWARD_SLASH+filename;
+			var path = MDCConstants.BACKWARD_SLASH + FileSystemSupport.MDS + MDCConstants.BACKWARD_SLASH + jobid + MDCConstants.BACKWARD_SLASH + filename;
 			log.debug("Exiting RemoteDataFetcher.readIntermediatePhaseOutputFromDFS");
-			File file = new File(MDCProperties.get().getProperty(MDCConstants.TMPDIR)+path);
-			if(file.exists()) {
+			File file = new File(MDCProperties.get().getProperty(MDCConstants.TMPDIR) + path);
+			if (file.exists()) {
 				return new SnappyInputStream(new BufferedInputStream(new FileInputStream(file)));
 			}
 			return null;
@@ -279,8 +279,8 @@ public class RemoteDataFetcher {
 			String jobid) throws RemoteDataFetcherException {
 		log.debug("Entered RemoteDataFetcher.deleteIntermediatePhaseOutputFromDFS");
 		var configuration = new Configuration();
-		try (var hdfs = FileSystem.newInstance(new URI(MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL, MDCConstants.HDFSNAMENODEURL_DEFAULT)), configuration)){			
-			hdfs.delete(new Path(MDCConstants.BACKWARD_SLASH+FileSystemSupport.MDS+MDCConstants.BACKWARD_SLASH+jobid), true);
+		try (var hdfs = FileSystem.newInstance(new URI(MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL, MDCConstants.HDFSNAMENODEURL_DEFAULT)), configuration)) {			
+			hdfs.delete(new Path(MDCConstants.BACKWARD_SLASH + FileSystemSupport.MDS + MDCConstants.BACKWARD_SLASH + jobid), true);
 		}
 		catch (Exception ioe) {
 			log.error(RemoteDataFetcherException.INTERMEDIATEPHASEDELETEERROR, ioe);
@@ -297,7 +297,7 @@ public class RemoteDataFetcher {
 	 */
 	public static void remoteInMemoryDataFetch(RemoteDataFetch rdf) throws Exception {
 		log.debug("Entered RemoteDataFetcher.remoteInMemoryDataFetch");
-		log.info("Remote Data Fetch with hp: "+rdf.hp);
+		log.info("Remote Data Fetch with hp: " + rdf.hp);
 		var rdfwithdata = (RemoteDataFetch) Utils.getResultObjectByInput(rdf.hp, rdf);
 		rdf.data = rdfwithdata.data;
 		log.debug("Exiting RemoteDataFetcher.remoteInMemoryDataFetch");

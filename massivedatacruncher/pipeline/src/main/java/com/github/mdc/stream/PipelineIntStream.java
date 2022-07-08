@@ -23,7 +23,7 @@ public final class PipelineIntStream<I1> extends AbstractPipeline {
 			SToIntFunction<I1> tointfunction)  {
 		this.task = tointfunction;
 		this.root = root;
-		root.finaltask=task;
+		root.finaltask = task;
 	}
 	
 	
@@ -32,7 +32,7 @@ public final class PipelineIntStream<I1> extends AbstractPipeline {
 			IntUnaryOperator intunaryoperator)  {
 		this.task = intunaryoperator;
 		this.root = root;
-		root.finaltask=task;
+		root.finaltask = task;
 	}
 	
 	
@@ -40,7 +40,7 @@ public final class PipelineIntStream<I1> extends AbstractPipeline {
 			SummaryStatistics summarystatistics)  {
 		this.task = summarystatistics;
 		this.root = root;
-		root.finaltask=task;
+		root.finaltask = task;
 	}
 	
 	
@@ -48,7 +48,7 @@ public final class PipelineIntStream<I1> extends AbstractPipeline {
 			Sum sum)  {
 		this.task = sum;
 		this.root = root;
-		root.finaltask=task;
+		root.finaltask = task;
 	}
 	
 	
@@ -56,7 +56,7 @@ public final class PipelineIntStream<I1> extends AbstractPipeline {
 			Max max)  {
 		this.task = max;
 		this.root = root;
-		root.finaltask=task;
+		root.finaltask = task;
 	}
 	
 	
@@ -64,16 +64,16 @@ public final class PipelineIntStream<I1> extends AbstractPipeline {
 			Min min)  {
 		this.task = min;
 		this.root = root;
-		root.finaltask=task;
+		root.finaltask = task;
 	}
 	
 	private PipelineIntStream(AbstractPipeline root,
 			StandardDeviation stddev)  {
 		this.task = stddev;
 		this.root = root;
-		root.finaltask=task;
+		root.finaltask = task;
 	}
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	public PipelineIntStream<I1> map(IntUnaryOperator intunaryoperator)  {
 		var map = new PipelineIntStream(root, intunaryoperator);
 		map.parents.add(this);
@@ -87,13 +87,13 @@ public final class PipelineIntStream<I1> extends AbstractPipeline {
 			Distinct distinct) {
 		this.task = distinct;
 		this.root = root;
-		root.finaltask=task;
+		root.finaltask = task;
 	}
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	
 	public PipelineIntStream<I1> distinct()  {
 		var distinct = new Distinct();
-		var map = new PipelineIntStream(root,distinct);
+		var map = new PipelineIntStream(root, distinct);
 		map.parents.add(this);
 		this.childs.add(map);
 		return map;
@@ -104,16 +104,16 @@ public final class PipelineIntStream<I1> extends AbstractPipeline {
 			PipelineIntStreamCollect piplinint)  {
 		this.task = piplinint;
 		this.root = root;
-		root.finaltask=task;
+		root.finaltask = task;
 	}
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	
 	public <R> List collect(boolean toexecute, AtomicIntegerSupplier<R> supplier,
 			AtomicObjIntConsumer<R> objintconsumer,
-			AtomicBiConsumer<R,R> biconsumer) throws PipelineException  {
+			AtomicBiConsumer<R, R> biconsumer) throws PipelineException  {
 		log.debug("Collect task begin...");
 		var pintstr = new PipelineIntStream(root, new PipelineIntStreamCollect(supplier,
-				objintconsumer,biconsumer));
+				objintconsumer, biconsumer));
 		pintstr.parents.add(this);
 		this.childs.add(pintstr);
 		var mdscollect = (StreamPipeline) pintstr.root;
@@ -126,7 +126,7 @@ public final class PipelineIntStream<I1> extends AbstractPipeline {
 	}
 	
 	
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	public List summaryStatistics() throws PipelineException {
 		log.debug("Summary Statistics task begin...");
 		var map = new PipelineIntStream(root, new SummaryStatistics());
@@ -141,7 +141,7 @@ public final class PipelineIntStream<I1> extends AbstractPipeline {
 		return result;
 	}
 	
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	public List sum() throws PipelineException {
 		log.debug("Sum task begin...");
 		var map = new PipelineIntStream(root, new Sum());
@@ -156,7 +156,7 @@ public final class PipelineIntStream<I1> extends AbstractPipeline {
 		return result;
 	}
 	
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	public List max() throws PipelineException {
 		log.debug("Max task begin...");
 		var map = new PipelineIntStream(root, new Max());
@@ -171,7 +171,7 @@ public final class PipelineIntStream<I1> extends AbstractPipeline {
 		return result;
 	}
 	
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	public List min() throws PipelineException {
 		log.debug("Min task begin...");
 		var map = new PipelineIntStream(root, new Min());
@@ -187,7 +187,7 @@ public final class PipelineIntStream<I1> extends AbstractPipeline {
 	}
 	
 	
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	public List standardDeviation() throws PipelineException {
 		log.debug("StandardDeviation task begin...");
 		var map = new PipelineIntStream(root, new StandardDeviation());

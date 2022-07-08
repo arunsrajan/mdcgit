@@ -34,14 +34,14 @@ public class NodeRunner implements Callable<Boolean> {
 	Socket sock;
 	AtomicInteger portinc;
 	String proploaderpath;
-	ConcurrentMap<String, Map<String,Process>> containerprocesses;
+	ConcurrentMap<String, Map<String, Process>> containerprocesses;
 	FileSystem hdfs;
-	ConcurrentMap<String, Map<String,List<Thread>>> containeridcontainerthreads;
+	ConcurrentMap<String, Map<String, List<Thread>>> containeridcontainerthreads;
 	ConcurrentMap<String, List<Integer>> containeridports;
 
 	public NodeRunner(Socket sock, AtomicInteger portinc, String proploaderpath,
-			ConcurrentMap<String, Map<String,Process>> containerprocesses, FileSystem hdfs,
-			ConcurrentMap<String, Map<String,List<Thread>>> containeridcontainerthreads,
+			ConcurrentMap<String, Map<String, Process>> containerprocesses, FileSystem hdfs,
+			ConcurrentMap<String, Map<String, List<Thread>>> containeridcontainerthreads,
 			ConcurrentMap<String, List<Integer>> containeridports) {
 		this.sock = sock;
 		this.portinc = portinc;
@@ -75,7 +75,7 @@ public class NodeRunner implements Callable<Boolean> {
 					var cr = lc.getCla().getCr().get(port);
 					log.info("Launching Container " + (cr.getPort()));
 					proc = processes.get((cr.getPort()) + MDCConstants.EMPTY);
-					if(Objects.isNull(proc)) {
+					if (Objects.isNull(proc)) {
 						proc = ContainerLauncher.spawnMDCContainer((cr.getPort()) + MDCConstants.EMPTY,
 								(String) MDCProperties.get().get(MDCConstants.CACHEDISKPATH),
 								TaskExecutorRunner.class, proploaderpath, cr);
@@ -162,7 +162,7 @@ public class NodeRunner implements Callable<Boolean> {
 					containerprocesses.keySet().stream().forEach(key -> {
 						containerprocesses.get(key).keySet().stream().filter(port -> port.equals(dc.getContainerhp().split(MDCConstants.UNDERSCORE)[1]))
 						.map(port -> containerprocesses.get(key).get(port))
-						.filter(proc->!Objects.isNull(proc)).forEach(proc -> {
+						.filter(proc -> !Objects.isNull(proc)).forEach(proc -> {
 							log.debug("Destroying the Container Process: " + proc);
 							proc.destroy();
 						});;

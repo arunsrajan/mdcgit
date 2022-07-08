@@ -24,7 +24,7 @@ import com.github.mdc.common.Utils;
 import com.github.mdc.stream.utils.MDCIgniteServer;
 
 public class FileBlocksPartitionerTest extends StreamPipelineTestCommon {
-	static Ignite server = null;
+	static Ignite server;
 
 	@BeforeClass
 	public static void launchNodes() throws Exception {
@@ -35,7 +35,7 @@ public class FileBlocksPartitionerTest extends StreamPipelineTestCommon {
 		}
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	@Test
 	public void testgetJobStageBlocks() throws PipelineException, MalformedObjectNameException, MBeanRegistrationException, InstanceNotFoundException {
 		Job job = new Job();
@@ -55,7 +55,7 @@ public class FileBlocksPartitionerTest extends StreamPipelineTestCommon {
 		assertEquals(4270834, bls.get(0).block[0].blockend);
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	@Test
 	public void testgetJobStageBlocks32MBBlockSize() throws PipelineException, MalformedObjectNameException, MBeanRegistrationException, InstanceNotFoundException {
 		Job job = new Job();
@@ -78,7 +78,7 @@ public class FileBlocksPartitionerTest extends StreamPipelineTestCommon {
 		assertEquals(127162942, sum);
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	@Test
 	public void testgetJobStageBlocks64MBBlockSize() throws PipelineException, MalformedObjectNameException, MBeanRegistrationException, InstanceNotFoundException {
 		Job job = new Job();

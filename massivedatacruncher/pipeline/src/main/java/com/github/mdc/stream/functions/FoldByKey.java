@@ -6,7 +6,7 @@ public class FoldByKey {
 	Object value;
 	boolean left;
 	@SuppressWarnings("rawtypes")
-	public FoldByKey(Object value,ReduceByKeyFunction reduceFunction, boolean left){
+	public FoldByKey(Object value, ReduceByKeyFunction reduceFunction, boolean left) {
 		this.reduceFunction = reduceFunction;
 		this.value = value;
 		this.left = left;

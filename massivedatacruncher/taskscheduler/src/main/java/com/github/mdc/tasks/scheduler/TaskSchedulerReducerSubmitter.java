@@ -48,7 +48,7 @@ public class TaskSchedulerReducerSubmitter
 		objects.add(rv);
 		objects.add(applicationid);
 		objects.add(taskid);
-		log.debug("Submitting Reducer Task: "+objects);
+		log.debug("Submitting Reducer Task: " + objects);
 		Utils.writeObject(hp, objects);
 		return null;
 

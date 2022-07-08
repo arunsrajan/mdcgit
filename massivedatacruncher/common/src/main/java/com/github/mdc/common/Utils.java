@@ -121,7 +121,7 @@ public class Utils {
 	private Utils() {
 	}
 
-	static MemoryPoolMXBean mpBeanLocalToJVM = null;
+	static MemoryPoolMXBean mpBeanLocalToJVM;
 	static {
 		for (MemoryPoolMXBean mpBean : ManagementFactory.getMemoryPoolMXBeans()) {
 			if (mpBean.getType() == MemoryType.HEAP) {
@@ -486,8 +486,6 @@ public class Utils {
 		try (var baos = new ByteArrayOutputStream(); var output = new Output(baos);) {
 			writeKryoOutputClassObject(kryo, output, whoisrequest);
 			channel.send(new ObjectMessage(null, baos.toByteArray()));
-		} finally {
-
 		}
 		log.debug("Exiting Utils.whois");
 	}
@@ -508,8 +506,6 @@ public class Utils {
 		try (var baos = new ByteArrayOutputStream(); var output = new Output(baos);) {
 			writeKryoOutputClassObject(kryo, output, whoarerequest);
 			channel.send(new ObjectMessage(null, baos.toByteArray()));
-		} finally {
-
 		}
 		log.debug("Exiting Utils.whoare");
 	}
@@ -531,8 +527,6 @@ public class Utils {
 			whoareresp.setResponsemap(maptosend);
 			writeKryoOutputClassObject(kryo, output, whoareresp);
 			channel.send(new ObjectMessage(address, baos.toByteArray()));
-		} finally {
-
 		}
 		log.debug("Exiting Utils.whoareresponse");
 	}
@@ -559,8 +553,6 @@ public class Utils {
 		try (var baos = new ByteArrayOutputStream(); var output = new Output(baos);) {
 			writeKryoOutputClassObject(kryo, output, whoisresponse);
 			jchannel.send(new ObjectMessage(msg.getSrc(), baos.toByteArray()));
-		} finally {
-
 		}
 		log.debug("Exiting Utils.whoisresp");
 	}
@@ -914,7 +906,7 @@ public class Utils {
 	public static synchronized JChannel getChannelTSSHA(String bindaddress, Receiver receiver) throws Exception {		
 		JChannel channel = getChannelWithPStack(
 				bindaddress);
-		if(!Objects.isNull(channel)) {
+		if (!Objects.isNull(channel)) {
 			channel.setName(bindaddress);			
 			channel.setDiscardOwnMessages(true);
 			if (!Objects.isNull(receiver)) {
@@ -968,14 +960,16 @@ public class Utils {
 			var buffer = new byte[1024];
 			while (true) {
 				var count = in.read(buffer);
-				if (count == -1)
+				if (count == -1) {
 					break;
+				}
 				target.write(buffer, 0, count);
 			}
 			target.closeEntry();
 		} finally {
-			if (in != null)
+			if (in != null) {
 				in.close();
+			}
 		}
 	}
 
@@ -1049,16 +1043,14 @@ public class Utils {
 
 	public static String getIntermediateInputStreamRDF(RemoteDataFetch rdf) throws Exception {
 		log.debug("Entered Utils.getIntermediateInputStreamRDF");
-		var path = (rdf.jobid + MDCConstants.HYPHEN + rdf.stageid + MDCConstants.HYPHEN + rdf.taskid
-				);
+		var path = rdf.jobid + MDCConstants.HYPHEN + rdf.stageid + MDCConstants.HYPHEN + rdf.taskid;
 		log.debug("Returned Utils.getIntermediateInputStreamRDF");
 		return path;
 	}
 
 	public static String getIntermediateInputStreamTask(Task task) throws Exception {
 		log.debug("Entered Utils.getIntermediateInputStreamTask");
-		var path = (task.jobid + MDCConstants.HYPHEN + task.stageid + MDCConstants.HYPHEN + task.taskid
-				);
+		var path = task.jobid + MDCConstants.HYPHEN + task.stageid + MDCConstants.HYPHEN + task.taskid;
 		log.debug("Returned Utils.getIntermediateInputStreamTask");
 		return path;
 	}
@@ -1078,7 +1070,7 @@ public class Utils {
 		for (int container = 0; container < numavailable; container++) {
 			Resources restolaunch = res.next();
 			List<Integer> ports = (List<Integer>) Utils.getResultObjectByInput(restolaunch.getNodeport(), ac);
-			if(Objects.isNull(ports)) {
+			if (Objects.isNull(ports)) {
 				throw new ContainerException("Port Allocation Error From Container");
 			}
 			log.info("Container Allocated In Node: " + restolaunch.getNodeport() + " With Ports: " + ports);
@@ -1101,7 +1093,7 @@ public class Utils {
 			lc.setJobid(jobid);
 			List<Integer> launchedcontainerports = (List<Integer>) Utils.getResultObjectByInput(lc.getNodehostport(),
 					lc);
-			if(Objects.isNull(launchedcontainerports)) {
+			if (Objects.isNull(launchedcontainerports)) {
 				throw new ContainerException("Task Executor Launch Error From Container");
 			}
 			int index = 0;

@@ -26,7 +26,7 @@ public class ApplicationSubmitter {
 
 	static Logger log = Logger.getLogger(ApplicationSubmitter.class);
 	
-	@SuppressWarnings({ "unchecked" })
+	@SuppressWarnings({"unchecked"})
 	public static void main(String[] args) throws Exception {
 		
 		var options = new Options();
@@ -34,20 +34,20 @@ public class ApplicationSubmitter {
 		options.addOption(MDCConstants.JAR, true, MDCConstants.MRJARREQUIRED);
 		options.addOption(MDCConstants.ARGS, true, MDCConstants.ARGUEMENTSOPTIONAL);
 		var parser = new DefaultParser();
-		var cmd = parser.parse( options, args);
+		var cmd = parser.parse(options, args);
 		
 		String jarpath = null;
 		String[] argue = null;
-		if(cmd.hasOption(MDCConstants.JAR)) {
+		if (cmd.hasOption(MDCConstants.JAR)) {
 			jarpath = cmd.getOptionValue(MDCConstants.JAR);
 		}
 		else {
 			var formatter = new HelpFormatter();
-			formatter.printHelp( MDCConstants.ANTFORMATTER, options );
+			formatter.printHelp(MDCConstants.ANTFORMATTER, options);
 			return;
 		}
 		
-		if(cmd.hasOption(MDCConstants.ARGS)) {
+		if (cmd.hasOption(MDCConstants.ARGS)) {
 			argue = cmd.getOptionValue(MDCConstants.ARGS).split(" ");
 		}
 		
@@ -61,10 +61,12 @@ public class ApplicationSubmitter {
 				MDCConstants.ZK_BASE_PATH + MDCConstants.BACKWARD_SLASH + MDCConstants.TASKSCHEDULER, null, null);
 		if (hostport != null || taskschedulers.size() > 0) {
 			String currenttaskscheduler;
-			if (hostport != null)
+			if (hostport != null) {
 				currenttaskscheduler = hostport;
-			else
+			}
+			else {
 				currenttaskscheduler = taskschedulers.get(0);
+			}
 			var ts = currenttaskscheduler.split(MDCConstants.UNDERSCORE);
 			try (var s = new Socket(ts[0], Integer.parseInt(ts[1]));
 					var is = s.getInputStream();
@@ -79,8 +81,8 @@ public class ApplicationSubmitter {
 				var kryo = Utils.getKryoNonDeflateSerializer();
 				writeDataStream(os, baos.toByteArray());
 				writeDataStream(os, new File(jarpath).getName().getBytes());
-				if(!Objects.isNull(argue)) {
-					for(var arg:argue) {
+				if (!Objects.isNull(argue)) {
+					for (var arg :argue) {
 						writeDataStream(os, arg.getBytes());
 					}
 				}
@@ -89,8 +91,9 @@ public class ApplicationSubmitter {
 					var input = new Input(is);
 					var messagetasksscheduler = (String) kryo.readObject(input, String.class);
 					log.info(messagetasksscheduler);
-					if (messagetasksscheduler.trim().equals("quit"))
+					if ("quit".equals(messagetasksscheduler.trim())) {
 						break;
+					}
 				}
 			} catch (Exception ex) {
 				log.error(MDCConstants.EMPTY, ex);
@@ -99,14 +102,14 @@ public class ApplicationSubmitter {
 		cf.close();
 	}
 
-	public static void writeInt(OutputStream os,Integer value) throws Exception{
+	public static void writeInt(OutputStream os, Integer value) throws Exception {
 		var kryo = Utils.getKryoNonDeflateSerializer();
 		var output = new Output(os);
 		kryo.writeClassAndObject(output, value);
 		output.flush();
 	}
 	
-	public static void writeDataStream(OutputStream os,byte[] outbyt) throws Exception {
+	public static void writeDataStream(OutputStream os, byte[] outbyt) throws Exception {
 		var kryo = Utils.getKryoNonDeflateSerializer();
 		var output = new Output(os);
 		kryo.writeClassAndObject(output, outbyt);

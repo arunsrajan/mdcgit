@@ -31,7 +31,7 @@ public class FileBlocksPartitioner {
 	PipelineConfig pc;  
 	Job job;
 	@SuppressWarnings("rawtypes")
-	public void getJobStageBlocks(Job job, PipelineConfig pipelineconfig, String folder,Collection<AbstractPipeline> mdsroots, Set<Stage> rootstages) throws PipelineException {
+	public void getJobStageBlocks(Job job, PipelineConfig pipelineconfig, String folder, Collection<AbstractPipeline> mdsroots, Set<Stage> rootstages) throws PipelineException {
 		pc = pipelineconfig;
 		this.job = job;
 		var roots = mdsroots.iterator();
@@ -40,7 +40,7 @@ public class FileBlocksPartitioner {
 		IgniteCache<Object, byte[]> ignitecache = ignite.cache(MDCConstants.MDCCACHE);
 		job.ignite = ignite;
 		var computeservers = job.ignite.cluster().forServers();
-		job.jm.containersallocated = computeservers.hostNames().stream().collect(Collectors.toMap(key->key, value->0d));
+		job.jm.containersallocated = computeservers.hostNames().stream().collect(Collectors.toMap(key -> key, value -> 0d));
 		job.igcache = ignitecache;
 		job.stageoutputmap = new ConcurrentHashMap<>();
 		for (var rootstage : rootstages) {
@@ -53,7 +53,7 @@ public class FileBlocksPartitioner {
 			var totalsplits = 0;
 			var bls = new ArrayList<BlocksLocation>();
 			for (var csvfile : files) {
-				if(csvfile.isFile()) {
+				if (csvfile.isFile()) {
 					partitionFiles(ignitecache, csvfile.getAbsolutePath(), totalsplits, bls);
 				}
 			}
@@ -106,8 +106,8 @@ public class FileBlocksPartitioner {
 				}
 			}
 		}
-		catch(Exception e) {
-			throw new PipelineException(MDCConstants.FILEBLOCKSPARTITIONINGERROR,e);
+		catch (Exception e) {
+			throw new PipelineException(MDCConstants.FILEBLOCKSPARTITIONINGERROR, e);
 		}
 	}
 
@@ -125,7 +125,7 @@ public class FileBlocksPartitioner {
 		var skip = 0;
 		while (true) {
 			int numread = raf.read(ch);
-			if(numread==-1||numread==0) {
+			if (numread == -1 || numread == 0) {
 				break;
 			}
 			skip++;

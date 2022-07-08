@@ -25,7 +25,7 @@ public class MesosThirdPartyLibraryDistributor {
 	 * @throws Throwable
 	 */
 	public int start() throws Throwable {
-		server = new Server(new InetSocketAddress(MDCConstants.THISHOST,0));
+		server = new Server(new InetSocketAddress(MDCConstants.THISHOST, 0));
 
 		server.getConnectors()[0].getConnectionFactory(HttpConnectionFactory.class);
 		server.setHandler(new HttpRequestHandler(dir));
@@ -40,7 +40,7 @@ public class MesosThirdPartyLibraryDistributor {
 	 * @throws Throwable
 	 */
 	public void stop() throws Throwable {
-		if(server!=null) {
+		if (server != null) {
 			server.stop();
 			server.destroy();
 		}

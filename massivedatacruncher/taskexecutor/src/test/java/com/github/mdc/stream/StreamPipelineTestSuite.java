@@ -62,7 +62,7 @@ import com.github.sakserv.minicluster.impl.HdfsLocalCluster;
 	   MassiveDataCruncherMRApiTest.class,
 	   StreamPipelineSqlTest.class})
 public class StreamPipelineTestSuite extends StreamPipelineBase {
-	@SuppressWarnings({ "unused" })
+	@SuppressWarnings({"unused"})
 	@BeforeClass
 	public static void setServerUp() throws Exception {
 		try {
@@ -96,7 +96,7 @@ public class StreamPipelineTestSuite extends StreamPipelineBase {
 				host = NetworkUtil.getNetworkAddress(MDCProperties.get().getProperty("taskschedulerstream.host"));
 				port =  Integer.parseInt(MDCProperties.get().getProperty("taskschedulerstream.port"));
 				int nodeport = Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.NODE_PORT));
-				hb.init(rescheduledelay, port, host, initialdelay, pingdelay,"");
+				hb.init(rescheduledelay, port, host, initialdelay, pingdelay, "");
 				hb.start();
 				threadpool = Executors.newWorkStealingPool();
 				executorpool = Executors.newWorkStealingPool();
@@ -105,31 +105,31 @@ public class StreamPipelineTestSuite extends StreamPipelineBase {
 				int executorsindex = 0;
 				CountDownLatch cdl = new CountDownLatch(numberofnodes);
 				CountDownLatch cdlport = new CountDownLatch(1);
-				ConcurrentMap<String, Map<String,Process>> containerprocesses = new ConcurrentHashMap<>();
-				ConcurrentMap<String, Map<String,List<Thread>>> containeridthreads = new ConcurrentHashMap<>();
+				ConcurrentMap<String, Map<String, Process>> containerprocesses = new ConcurrentHashMap<>();
+				ConcurrentMap<String, Map<String, List<Thread>>> containeridthreads = new ConcurrentHashMap<>();
 				hdfste = FileSystem.get(new URI(MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL)),
 						configuration);
 				var containeridports = new ConcurrentHashMap<String, List<Integer>>();
 				while (executorsindex < numberofnodes) {
 					hb = new HeartBeatServerStream();
 					host = NetworkUtil.getNetworkAddress(MDCProperties.get().getProperty("taskexecutor.host"));
-					hb.init(rescheduledelay, nodeport, host, initialdelay, pingdelay,"");
+					hb.init(rescheduledelay, nodeport, host, initialdelay, pingdelay, "");
 					hb.ping();
 					hbssl.add(hb);
 					AtomicInteger portinc = new AtomicInteger(port);
 					executorpool.execute(() -> {
 						ServerSocket server;
 						try {
-							server = new ServerSocket(nodeport,256,InetAddress.getByAddress(new byte[] { 0x00, 0x00, 0x00, 0x00 }));
+							server = new ServerSocket(nodeport, 256, InetAddress.getByAddress(new byte[]{0x00, 0x00, 0x00, 0x00}));
 							sss.add(server);
 							cdlport.countDown();
 							cdl.countDown();
 							while (true) {
-								try(Socket sock = server.accept();) {
+								try (Socket sock = server.accept();) {
 									var container = new NodeRunner(sock, portinc, MDCConstants.TEPROPLOADCLASSPATHCONFIG,
-											containerprocesses, hdfs, containeridthreads,containeridports);
+											containerprocesses, hdfs, containeridthreads, containeridports);
 									Future<Boolean> containerallocated = threadpool.submit(container);
-									log.info("Containers Allocated: "+containerallocated.get()+" Next Port Allocation:"+portinc.get());
+									log.info("Containers Allocated: " + containerallocated.get() + " Next Port Allocation:" + portinc.get());
 								} catch (Exception e) {
 								}
 							}
@@ -137,21 +137,9 @@ public class StreamPipelineTestSuite extends StreamPipelineBase {
 						}
 					});
 					cdlport.await();
-					port+=100;
+					port += 100;
 					executorsindex++;
 				}
-			}
-			try(Socket sock = new Socket("localhost",9000);){}
-			catch(Exception ex) {
-				Configuration conf = new Configuration();
-				conf.set("fs.hdfs.impl.disable.cache", "false");
-				conf.set("dfs.block.access.token.enable", "true");
-				hdfsLocalCluster = new HdfsLocalCluster.Builder().setHdfsNamenodePort(namenodeport)
-						.setHdfsNamenodeHttpPort(namenodehttpport).setHdfsTempDir("./target/embedded_hdfs")
-						.setHdfsNumDatanodes(1).setHdfsEnablePermissions(false).setHdfsFormat(true)
-						.setHdfsEnableRunningUserAsProxyUser(true).setHdfsConfig(conf).build();
-	
-				hdfsLocalCluster.start();
 			}
 			uploadfile(hdfs, airlinesamplecsv, airlinesamplecsv + csvfileextn);
 			uploadfile(hdfs, airportssample, airportssample + csvfileextn);
@@ -197,21 +185,30 @@ public class StreamPipelineTestSuite extends StreamPipelineBase {
 
 	@AfterClass
 	public static void closeResources() throws Exception {
-		if(!Objects.isNull(hdfste))hdfste.close();
-		if(!Objects.isNull(hdfs))hdfs.close();
-		if(hdfsLocalCluster!=null)hdfsLocalCluster.stop(true);
-		if (hb != null)
+		if (!Objects.isNull(hdfste)) {
+			hdfste.close();
+		}
+		if (!Objects.isNull(hdfs)) {
+			hdfs.close();
+		}
+		if (hdfsLocalCluster != null) {
+			hdfsLocalCluster.stop(true);
+		}
+		if (hb != null) {
 			hb.close();
-		if(executorpool!=null)
-		executorpool.shutdown();
-		if(threadpool!=null)
-		threadpool.shutdown();
+		}
+		if (executorpool != null) {
+			executorpool.shutdown();
+		}
+		if (threadpool != null) {
+			threadpool.shutdown();
+		}
 		testingserver.close();
 		for (HeartBeatServerStream hbss : hbssl) {
 			hbss.stop();
 			hbss.destroy();
 		}
-		sss.stream().forEach(ss->{
+		sss.stream().forEach(ss -> {
 			try {
 				ss.close();
 			} catch (Exception e) {

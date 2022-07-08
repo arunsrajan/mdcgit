@@ -13,7 +13,7 @@ public class AirlineArrDelayDataMapper implements Mapper<Long, String, Context<S
 		var contents = line.split(",");
 		var map = new HashMap<>();
 		
-		if (contents != null && contents.length > 14 && contents[14] != null && !contents[14].equals("NA") && !contents[14].equals("ArrDelay")) {
+		if (contents != null && contents.length > 14 && contents[14] != null && !"NA".equals(contents[14]) && !"ArrDelay".equals(contents[14])) {
 			map.put("AIRLINEARRDELAY", Long.parseLong(contents[14]));
 			ctx.put(contents[8], map);
 		}

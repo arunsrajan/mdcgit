@@ -11,15 +11,16 @@ public class KryoPool {
 
 	}
 
-	private static Pool<Kryo> kryopool = null;
+	private static Pool<Kryo> kryopool;
 
 	public static Pool<Kryo> getKryoPool() {
-		if (Objects.isNull(kryopool))
+		if (Objects.isNull(kryopool)) {
 			kryopool = new Pool<Kryo>(true, false, 8) {
 				protected Kryo create() {
 					return Utils.getKryoNonDeflateSerializer();
 				}
 			};
+		}
 		return kryopool;
 	}
 

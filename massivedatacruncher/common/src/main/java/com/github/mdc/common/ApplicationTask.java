@@ -11,10 +11,10 @@ public class ApplicationTask implements Serializable {
 
 	private static final long serialVersionUID = -3860457009382190198L;
 	//This enum declaration are the statuses of the Map Reduce Framework Executor and Task Scheduler Heart Beat
-	public enum TaskStatus{YETTOSUBMIT,SUBMITTED,RUNNING,COMPLETED,FAILED};
+	public enum TaskStatus {YETTOSUBMIT,SUBMITTED,RUNNING,COMPLETED,FAILED};
 	
 	//This enum declaration are the task type for Map Reduce Framework.
-	public enum TaskType{REDUCER,MAPPERCOMBINER};
+	public enum TaskType {REDUCER,MAPPERCOMBINER};
 	
 	public String applicationid;
 	public String taskid;
@@ -47,32 +47,43 @@ public class ApplicationTask implements Serializable {
 	}
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
+		if (this == obj) {
 			return true;
-		if (obj == null)
+		}
+		if (obj == null) {
 			return false;
-		if (getClass() != obj.getClass())
+		}
+		if (getClass() != obj.getClass()) {
 			return false;
+		}
 		ApplicationTask other = (ApplicationTask) obj;
 		if (applicationid == null) {
-			if (other.applicationid != null)
+			if (other.applicationid != null) {
 				return false;
-		} else if (!applicationid.equals(other.applicationid))
+			}
+		} else if (!applicationid.equals(other.applicationid)) {
 			return false;
+		}
 		if (hp == null) {
-			if (other.hp != null)
+			if (other.hp != null) {
 				return false;
-		} else if (!hp.equals(other.hp))
+			}
+		} else if (!hp.equals(other.hp)) {
 			return false;
+		}
 		if (taskid == null) {
-			if (other.taskid != null)
+			if (other.taskid != null) {
 				return false;
-		} else if (!taskid.equals(other.taskid))
+			}
+		} else if (!taskid.equals(other.taskid)) {
 			return false;
-		if (taskstatus != other.taskstatus)
+		}
+		if (taskstatus != other.taskstatus) {
 			return false;
-		if (tasktype != other.tasktype)
+		}
+		if (tasktype != other.tasktype) {
 			return false;
+		}
 		return true;
 	}
 	

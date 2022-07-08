@@ -12,11 +12,11 @@ import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
 import com.github.mdc.stream.IgnitePipeline;
-@SuppressWarnings({ "unchecked", "serial", "rawtypes" })
+@SuppressWarnings({"unchecked", "serial", "rawtypes"})
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 	boolean toexecute = true;
-	int sum = 0;
+	int sum;
 
 	@Test
 	public void testFilterFilterFilterCollect() throws Throwable {
@@ -26,15 +26,15 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).collect(toexecute, null);
 		int sum = 0;
@@ -55,15 +55,15 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List<Long>> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).count(null);
 		long sum = 0;
@@ -86,15 +86,15 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		sum = 0;
 		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).forEach(lis -> {
 			sum += ((List) lis).size();
@@ -113,11 +113,11 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
@@ -142,11 +142,11 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List<Long>> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
@@ -173,11 +173,11 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		sum = 0;
 		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
@@ -200,11 +200,11 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
@@ -229,11 +229,11 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List<Long>> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
@@ -260,11 +260,11 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		sum = 0;
 		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 			public java.lang.String[] apply(java.lang.String value) {
@@ -287,11 +287,11 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
 						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -318,11 +318,11 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List<Long>> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
 						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -351,11 +351,11 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		sum = 0;
 		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -379,11 +379,11 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List<Tuple2>> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
 						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -411,11 +411,11 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		sum = 0;
 		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -442,11 +442,11 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
 						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -473,11 +473,11 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List<Long>> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
 						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -506,11 +506,11 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		sum = 0;
 		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -534,13 +534,13 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).peek(val->System.out.println(val)).collect(toexecute, null);
+				}).peek(val -> System.out.println(val)).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -559,13 +559,13 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List<Long>> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).peek(val->System.out.println(val)).count(null);
+				}).peek(val -> System.out.println(val)).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -586,13 +586,13 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		sum = 0;
 		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
-		}).peek(val->System.out.println(val)).forEach(lis -> {
+		}).peek(val -> System.out.println(val)).forEach(lis -> {
 			sum += ((List) lis).size();
 		}, null);
 
@@ -609,11 +609,11 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).sample(46361).collect(toexecute, null);
 		int sum = 0;
@@ -634,11 +634,11 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List<Long>> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).sample(46361).count(null);
 		long sum = 0;
@@ -661,11 +661,11 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		sum = 0;
 		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).sample(46361).forEach(lis -> {
 			sum += ((List) lis).size();
@@ -684,11 +684,11 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
 					public int compare(java.lang.String value1, java.lang.String value2) {
@@ -713,11 +713,11 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List<Long>> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
 					public int compare(java.lang.String value1, java.lang.String value2) {
@@ -744,11 +744,11 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		sum = 0;
 		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
 			public int compare(java.lang.String value1, java.lang.String value2) {
@@ -771,7 +771,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
@@ -779,7 +779,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).collect(toexecute, null);
 		int sum = 0;
@@ -800,7 +800,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List<Long>> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
@@ -808,7 +808,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).count(null);
 		long sum = 0;
@@ -831,7 +831,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		sum = 0;
 		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
@@ -839,7 +839,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 			}
 		}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).forEach(lis -> {
 			sum += ((List) lis).size();
@@ -858,7 +858,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
@@ -887,7 +887,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List<Long>> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
@@ -918,7 +918,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		sum = 0;
 		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
@@ -945,7 +945,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
@@ -974,7 +974,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List<Long>> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
@@ -1005,7 +1005,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		sum = 0;
 		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
@@ -1032,7 +1032,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
@@ -1063,7 +1063,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List<Long>> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
@@ -1096,7 +1096,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		sum = 0;
 		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
@@ -1124,7 +1124,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List<Tuple2>> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
@@ -1156,7 +1156,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		sum = 0;
 		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
@@ -1187,7 +1187,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
@@ -1218,7 +1218,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List<Long>> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
@@ -1251,7 +1251,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		sum = 0;
 		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
@@ -1279,13 +1279,13 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).peek(val->System.out.println(val)).collect(toexecute, null);
+				}).peek(val -> System.out.println(val)).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -1304,13 +1304,13 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List<Long>> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).peek(val->System.out.println(val)).count(null);
+				}).peek(val -> System.out.println(val)).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -1331,13 +1331,13 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		sum = 0;
 		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
-		}).peek(val->System.out.println(val)).forEach(lis -> {
+		}).peek(val -> System.out.println(val)).forEach(lis -> {
 			sum += ((List) lis).size();
 		}, null);
 
@@ -1354,7 +1354,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
@@ -1379,7 +1379,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List<Long>> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
@@ -1406,7 +1406,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		sum = 0;
 		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
@@ -1429,7 +1429,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
@@ -1458,7 +1458,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List<Long>> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
@@ -1489,7 +1489,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		sum = 0;
 		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
@@ -1516,7 +1516,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
@@ -1524,7 +1524,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String[]>() {
 					public boolean test(java.lang.String[] value) {
-						return !value[14].equals("NA") && !value[14].equals("ArrDelay");
+						return !"NA".equals(value[14]) && !"ArrDelay".equals(value[14]);
 					}
 				}).collect(toexecute, null);
 		int sum = 0;
@@ -1545,7 +1545,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List<Long>> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
@@ -1553,7 +1553,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String[]>() {
 					public boolean test(java.lang.String[] value) {
-						return !value[14].equals("NA") && !value[14].equals("ArrDelay");
+						return !"NA".equals(value[14]) && !"ArrDelay".equals(value[14]);
 					}
 				}).count(null);
 		long sum = 0;
@@ -1576,7 +1576,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		sum = 0;
 		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 			public java.lang.String[] apply(java.lang.String value) {
@@ -1584,7 +1584,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 			}
 		}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String[]>() {
 			public boolean test(java.lang.String[] value) {
-				return !value[14].equals("NA") && !value[14].equals("ArrDelay");
+				return !"NA".equals(value[14]) && !"ArrDelay".equals(value[14]);
 			}
 		}).forEach(lis -> {
 			sum += ((List) lis).size();
@@ -1603,7 +1603,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
@@ -1632,7 +1632,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List<Long>> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
@@ -1663,7 +1663,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		sum = 0;
 		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 			public java.lang.String[] apply(java.lang.String value) {
@@ -1690,7 +1690,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
@@ -1719,7 +1719,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List<Long>> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
@@ -1750,7 +1750,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		sum = 0;
 		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 			public java.lang.String[] apply(java.lang.String value) {
@@ -1777,7 +1777,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
@@ -1808,7 +1808,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List<Long>> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
@@ -1841,7 +1841,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		sum = 0;
 		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 			public java.lang.String[] apply(java.lang.String value) {
@@ -1869,7 +1869,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List<Tuple2>> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
@@ -1901,7 +1901,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		sum = 0;
 		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 			public java.lang.String[] apply(java.lang.String value) {
@@ -1932,7 +1932,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
@@ -1963,7 +1963,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List<Long>> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
@@ -1996,7 +1996,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		sum = 0;
 		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 			public java.lang.String[] apply(java.lang.String value) {
@@ -2024,13 +2024,13 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
-				}).peek(val->System.out.println(val)).collect(toexecute, null);
+				}).peek(val -> System.out.println(val)).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -2049,13 +2049,13 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List<Long>> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
-				}).peek(val->System.out.println(val)).count(null);
+				}).peek(val -> System.out.println(val)).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -2076,13 +2076,13 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		sum = 0;
 		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 			public java.lang.String[] apply(java.lang.String value) {
 				return value.split(",");
 			}
-		}).peek(val->System.out.println(val)).forEach(lis -> {
+		}).peek(val -> System.out.println(val)).forEach(lis -> {
 			sum += ((List) lis).size();
 		}, null);
 
@@ -2099,7 +2099,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
@@ -2124,7 +2124,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List<Long>> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
@@ -2151,7 +2151,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		sum = 0;
 		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 			public java.lang.String[] apply(java.lang.String value) {
@@ -2174,7 +2174,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
@@ -2203,7 +2203,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List<Long>> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
@@ -2234,7 +2234,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		sum = 0;
 		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 			public java.lang.String[] apply(java.lang.String value) {
@@ -2261,7 +2261,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
 						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -2292,7 +2292,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List<Long>> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
 						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -2325,7 +2325,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		sum = 0;
 		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -2353,7 +2353,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
 						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -2380,7 +2380,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List<Long>> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
 						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -2409,7 +2409,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		sum = 0;
 		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -2433,7 +2433,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List<Tuple2>> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
 						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -2465,7 +2465,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		sum = 0;
 		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -2497,7 +2497,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List<Tuple2>> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
 						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -2525,7 +2525,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		sum = 0;
 		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -2552,7 +2552,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List<Tuple2>> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
 						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -2580,7 +2580,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		sum = 0;
 		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -2607,7 +2607,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List<Tuple2>> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
 						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -2641,7 +2641,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		sum = 0;
 		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -2674,7 +2674,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List<Tuple2>> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
 						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -2708,7 +2708,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		sum = 0;
 		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -2741,7 +2741,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List<Tuple2>> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
 						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -2775,7 +2775,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		sum = 0;
 		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -2808,7 +2808,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List<Tuple2>> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
 						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -2816,7 +2816,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 							}
 						})
-				.groupByKey().peek(val->System.out.println(val)).collect(toexecute, null);
+				.groupByKey().peek(val -> System.out.println(val)).collect(toexecute, null);
 		int sum = 0;
 		for (List<Tuple2> lsttuples : data) {
 			for (Tuple2 tuple2 : lsttuples) {
@@ -2836,14 +2836,14 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		sum = 0;
 		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
-				}).groupByKey().peek(val->System.out.println(val)).forEach(lsttuples -> {
+				}).groupByKey().peek(val -> System.out.println(val)).forEach(lsttuples -> {
 					for (Tuple2 tuple2 : lsttuples) {
 						sum += ((List) tuple2.v2).size();
 					}
@@ -2863,7 +2863,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List<Tuple2>> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
 						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -2891,7 +2891,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		sum = 0;
 		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -2918,7 +2918,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List<Tuple2>> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
 						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -2950,7 +2950,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		sum = 0;
 		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -2981,7 +2981,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
 						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -3008,7 +3008,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List<Long>> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
 						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -3037,7 +3037,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		sum = 0;
 		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -3061,7 +3061,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
 						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -3094,7 +3094,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List<Long>> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
 						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -3129,7 +3129,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		sum = 0;
 		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -3159,7 +3159,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List<Tuple2>> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
 						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -3193,7 +3193,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		sum = 0;
 		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -3226,7 +3226,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
 						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -3259,7 +3259,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List<Long>> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
 						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -3294,7 +3294,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		sum = 0;
 		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -3324,7 +3324,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
 						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -3332,7 +3332,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 							}
 						})
-				.peek(val->System.out.println(val)).collect(toexecute, null);
+				.peek(val -> System.out.println(val)).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -3351,7 +3351,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List<Long>> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
 						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -3359,7 +3359,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 							}
 						})
-				.peek(val->System.out.println(val)).count(null);
+				.peek(val -> System.out.println(val)).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -3380,14 +3380,14 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		sum = 0;
 		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
-				}).peek(val->System.out.println(val)).forEach(lis -> {
+				}).peek(val -> System.out.println(val)).forEach(lis -> {
 					sum += ((List) lis).size();
 				}, null);
 
@@ -3404,7 +3404,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
 						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -3436,7 +3436,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List<Long>> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
 						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -3470,7 +3470,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		sum = 0;
 		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -3499,7 +3499,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
 						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -3526,7 +3526,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List<Long>> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
 						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -3555,7 +3555,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		sum = 0;
 		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -3579,7 +3579,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
 						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -3606,7 +3606,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List<Long>> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
 						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -3635,7 +3635,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		sum = 0;
 		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -3659,7 +3659,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
 						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -3692,7 +3692,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List<Long>> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
 						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -3727,7 +3727,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		sum = 0;
 		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -3757,7 +3757,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List<Tuple2>> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
 						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -3791,7 +3791,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		sum = 0;
 		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -3824,7 +3824,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
 						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -3857,7 +3857,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List<Long>> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
 						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -3892,7 +3892,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		sum = 0;
 		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -3922,7 +3922,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
 						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -3930,7 +3930,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 							}
 						})
-				.reduceByKey((a, b) -> a + b).peek(val->System.out.println(val)).collect(toexecute, null);
+				.reduceByKey((a, b) -> a + b).peek(val -> System.out.println(val)).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -3949,7 +3949,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List<Long>> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
 						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -3957,7 +3957,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 							}
 						})
-				.reduceByKey((a, b) -> a + b).peek(val->System.out.println(val)).count(null);
+				.reduceByKey((a, b) -> a + b).peek(val -> System.out.println(val)).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -3978,14 +3978,14 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		sum = 0;
 		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
-				}).reduceByKey((a, b) -> a + b).peek(val->System.out.println(val)).forEach(lis -> {
+				}).reduceByKey((a, b) -> a + b).peek(val -> System.out.println(val)).forEach(lis -> {
 					sum += ((List) lis).size();
 				}, null);
 
@@ -4002,7 +4002,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
 						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -4029,7 +4029,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List<Long>> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
 						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -4058,7 +4058,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		sum = 0;
 		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -4082,7 +4082,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
 						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -4114,7 +4114,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List<Long>> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
 						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -4148,7 +4148,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		sum = 0;
 		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -4177,7 +4177,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
 						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -4204,7 +4204,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List<Long>> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
 						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -4233,7 +4233,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		sum = 0;
 		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -4257,7 +4257,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
 						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -4288,7 +4288,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List<Long>> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
 						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -4321,7 +4321,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		sum = 0;
 		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -4349,12 +4349,12 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).peek(val->System.out.println(val))
+				}).peek(val -> System.out.println(val))
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).collect(toexecute, null);
 		int sum = 0;
@@ -4375,12 +4375,12 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List<Long>> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).peek(val->System.out.println(val))
+				}).peek(val -> System.out.println(val))
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).count(null);
 		long sum = 0;
@@ -4403,11 +4403,11 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		sum = 0;
 		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
-		}).peek(val->System.out.println(val)).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		}).peek(val -> System.out.println(val)).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).forEach(lis -> {
 			sum += ((List) lis).size();
@@ -4426,9 +4426,9 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).peek(val->System.out.println(val))
+				}).peek(val -> System.out.println(val))
 				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
@@ -4452,9 +4452,9 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List<Long>> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).peek(val->System.out.println(val))
+				}).peek(val -> System.out.println(val))
 				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
@@ -4480,9 +4480,9 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		sum = 0;
 		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
-		}).peek(val->System.out.println(val))
+		}).peek(val -> System.out.println(val))
 				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
@@ -4504,9 +4504,9 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).peek(val->System.out.println(val))
+				}).peek(val -> System.out.println(val))
 				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
@@ -4530,9 +4530,9 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List<Long>> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).peek(val->System.out.println(val))
+				}).peek(val -> System.out.println(val))
 				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
@@ -4558,9 +4558,9 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		sum = 0;
 		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
-		}).peek(val->System.out.println(val))
+		}).peek(val -> System.out.println(val))
 				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
@@ -4582,9 +4582,9 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).peek(val->System.out.println(val)).mapToPair(
+				}).peek(val -> System.out.println(val)).mapToPair(
 						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -4609,9 +4609,9 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List<Long>> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).peek(val->System.out.println(val)).mapToPair(
+				}).peek(val -> System.out.println(val)).mapToPair(
 						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -4638,9 +4638,9 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		sum = 0;
 		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
-		}).peek(val->System.out.println(val)).mapToPair(
+		}).peek(val -> System.out.println(val)).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -4662,9 +4662,9 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List<Tuple2>> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).peek(val->System.out.println(val)).mapToPair(
+				}).peek(val -> System.out.println(val)).mapToPair(
 						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -4690,9 +4690,9 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		sum = 0;
 		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
-		}).peek(val->System.out.println(val)).mapToPair(
+		}).peek(val -> System.out.println(val)).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -4717,9 +4717,9 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).peek(val->System.out.println(val)).mapToPair(
+				}).peek(val -> System.out.println(val)).mapToPair(
 						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -4744,9 +4744,9 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List<Long>> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).peek(val->System.out.println(val)).mapToPair(
+				}).peek(val -> System.out.println(val)).mapToPair(
 						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -4773,9 +4773,9 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		sum = 0;
 		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
-		}).peek(val->System.out.println(val)).mapToPair(
+		}).peek(val -> System.out.println(val)).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -4797,9 +4797,9 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).peek(val->System.out.println(val)).peek(val->System.out.println(val)).collect(toexecute, null);
+				}).peek(val -> System.out.println(val)).peek(val -> System.out.println(val)).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -4818,9 +4818,9 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List<Long>> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).peek(val->System.out.println(val)).peek(val->System.out.println(val)).count(null);
+				}).peek(val -> System.out.println(val)).peek(val -> System.out.println(val)).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -4841,9 +4841,9 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		sum = 0;
 		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
-		}).peek(val->System.out.println(val)).peek(val->System.out.println(val)).forEach(lis -> {
+		}).peek(val -> System.out.println(val)).peek(val -> System.out.println(val)).forEach(lis -> {
 			sum += ((List) lis).size();
 		}, null);
 
@@ -4860,9 +4860,9 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).peek(val->System.out.println(val)).sample(46361).collect(toexecute, null);
+				}).peek(val -> System.out.println(val)).sample(46361).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -4881,9 +4881,9 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List<Long>> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).peek(val->System.out.println(val)).sample(46361).count(null);
+				}).peek(val -> System.out.println(val)).sample(46361).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -4904,9 +4904,9 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		sum = 0;
 		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
-		}).peek(val->System.out.println(val)).sample(46361).forEach(lis -> {
+		}).peek(val -> System.out.println(val)).sample(46361).forEach(lis -> {
 			sum += ((List) lis).size();
 		}, null);
 
@@ -4923,9 +4923,9 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).peek(val->System.out.println(val)).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
+				}).peek(val -> System.out.println(val)).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
 					public int compare(java.lang.String value1, java.lang.String value2) {
 						return value1.compareTo(value2);
 					}
@@ -4948,9 +4948,9 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List<Long>> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).peek(val->System.out.println(val)).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
+				}).peek(val -> System.out.println(val)).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
 					public int compare(java.lang.String value1, java.lang.String value2) {
 						return value1.compareTo(value2);
 					}
@@ -4975,9 +4975,9 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		sum = 0;
 		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
-		}).peek(val->System.out.println(val)).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
+		}).peek(val -> System.out.println(val)).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
 			public int compare(java.lang.String value1, java.lang.String value2) {
 				return value1.compareTo(value2);
 			}
@@ -4998,11 +4998,11 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).sample(46361).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).collect(toexecute, null);
 		int sum = 0;
@@ -5023,11 +5023,11 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List<Long>> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).sample(46361).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).count(null);
 		long sum = 0;
@@ -5050,11 +5050,11 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		sum = 0;
 		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).sample(46361).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).forEach(lis -> {
 			sum += ((List) lis).size();
@@ -5073,7 +5073,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).sample(46361)
 				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
@@ -5099,7 +5099,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List<Long>> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).sample(46361)
 				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
@@ -5127,7 +5127,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		sum = 0;
 		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).sample(46361).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
@@ -5150,7 +5150,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).sample(46361).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
@@ -5175,7 +5175,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List<Long>> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).sample(46361).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
@@ -5202,7 +5202,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		sum = 0;
 		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).sample(46361).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 			public java.lang.String[] apply(java.lang.String value) {
@@ -5225,7 +5225,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).sample(46361).mapToPair(
 						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -5252,7 +5252,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List<Long>> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).sample(46361).mapToPair(
 						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -5281,7 +5281,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		sum = 0;
 		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).sample(46361).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -5305,7 +5305,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List<Tuple2>> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).sample(46361).mapToPair(
 						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -5333,7 +5333,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		sum = 0;
 		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).sample(46361).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -5360,7 +5360,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).sample(46361).mapToPair(
 						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -5387,7 +5387,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List<Long>> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).sample(46361).mapToPair(
 						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -5416,7 +5416,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		sum = 0;
 		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).sample(46361).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -5440,9 +5440,9 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).sample(46361).peek(val->System.out.println(val)).collect(toexecute, null);
+				}).sample(46361).peek(val -> System.out.println(val)).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -5461,9 +5461,9 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List<Long>> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).sample(46361).peek(val->System.out.println(val)).count(null);
+				}).sample(46361).peek(val -> System.out.println(val)).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -5484,9 +5484,9 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		sum = 0;
 		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
-		}).sample(46361).peek(val->System.out.println(val)).forEach(lis -> {
+		}).sample(46361).peek(val -> System.out.println(val)).forEach(lis -> {
 			sum += ((List) lis).size();
 		}, null);
 
@@ -5503,7 +5503,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).sample(46361).sample(46361).collect(toexecute, null);
 		int sum = 0;
@@ -5524,7 +5524,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List<Long>> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).sample(46361).sample(46361).count(null);
 		long sum = 0;
@@ -5547,7 +5547,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		sum = 0;
 		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).sample(46361).sample(46361).forEach(lis -> {
 			sum += ((List) lis).size();
@@ -5566,7 +5566,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).sample(46361).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
 					public int compare(java.lang.String value1, java.lang.String value2) {
@@ -5591,7 +5591,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List<Long>> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).sample(46361).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
 					public int compare(java.lang.String value1, java.lang.String value2) {
@@ -5618,7 +5618,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		sum = 0;
 		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).sample(46361).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
 			public int compare(java.lang.String value1, java.lang.String value2) {
@@ -5641,7 +5641,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
 					public int compare(java.lang.String value1, java.lang.String value2) {
@@ -5649,7 +5649,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).collect(toexecute, null);
 		int sum = 0;
@@ -5670,7 +5670,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List<Long>> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
 					public int compare(java.lang.String value1, java.lang.String value2) {
@@ -5678,7 +5678,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).count(null);
 		long sum = 0;
@@ -5701,7 +5701,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		sum = 0;
 		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
 			public int compare(java.lang.String value1, java.lang.String value2) {
@@ -5709,7 +5709,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 			}
 		}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).forEach(lis -> {
 			sum += ((List) lis).size();
@@ -5728,7 +5728,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
 					public int compare(java.lang.String value1, java.lang.String value2) {
@@ -5757,7 +5757,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List<Long>> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
 					public int compare(java.lang.String value1, java.lang.String value2) {
@@ -5788,7 +5788,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		sum = 0;
 		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
 			public int compare(java.lang.String value1, java.lang.String value2) {
@@ -5815,7 +5815,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
 					public int compare(java.lang.String value1, java.lang.String value2) {
@@ -5844,7 +5844,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List<Long>> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
 					public int compare(java.lang.String value1, java.lang.String value2) {
@@ -5875,7 +5875,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		sum = 0;
 		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
 			public int compare(java.lang.String value1, java.lang.String value2) {
@@ -5902,7 +5902,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
 					public int compare(java.lang.String value1, java.lang.String value2) {
@@ -5933,7 +5933,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List<Long>> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
 					public int compare(java.lang.String value1, java.lang.String value2) {
@@ -5966,7 +5966,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		sum = 0;
 		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
 			public int compare(java.lang.String value1, java.lang.String value2) {
@@ -5994,7 +5994,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List<Tuple2>> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
 					public int compare(java.lang.String value1, java.lang.String value2) {
@@ -6026,7 +6026,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		sum = 0;
 		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
 			public int compare(java.lang.String value1, java.lang.String value2) {
@@ -6057,7 +6057,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
 					public int compare(java.lang.String value1, java.lang.String value2) {
@@ -6088,7 +6088,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List<Long>> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
 					public int compare(java.lang.String value1, java.lang.String value2) {
@@ -6121,7 +6121,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		sum = 0;
 		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
 			public int compare(java.lang.String value1, java.lang.String value2) {
@@ -6149,13 +6149,13 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
 					public int compare(java.lang.String value1, java.lang.String value2) {
 						return value1.compareTo(value2);
 					}
-				}).peek(val->System.out.println(val)).collect(toexecute, null);
+				}).peek(val -> System.out.println(val)).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -6174,13 +6174,13 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List<Long>> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
 					public int compare(java.lang.String value1, java.lang.String value2) {
 						return value1.compareTo(value2);
 					}
-				}).peek(val->System.out.println(val)).count(null);
+				}).peek(val -> System.out.println(val)).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -6201,13 +6201,13 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		sum = 0;
 		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
 			public int compare(java.lang.String value1, java.lang.String value2) {
 				return value1.compareTo(value2);
 			}
-		}).peek(val->System.out.println(val)).forEach(lis -> {
+		}).peek(val -> System.out.println(val)).forEach(lis -> {
 			sum += ((List) lis).size();
 		}, null);
 
@@ -6224,7 +6224,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
 					public int compare(java.lang.String value1, java.lang.String value2) {
@@ -6249,7 +6249,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List<Long>> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
 					public int compare(java.lang.String value1, java.lang.String value2) {
@@ -6276,7 +6276,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		sum = 0;
 		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
 			public int compare(java.lang.String value1, java.lang.String value2) {
@@ -6299,7 +6299,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
 					public int compare(java.lang.String value1, java.lang.String value2) {
@@ -6328,7 +6328,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		List<List<Long>> data = (List) datapipeline
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
 					public int compare(java.lang.String value1, java.lang.String value2) {
@@ -6359,7 +6359,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 		sum = 0;
 		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
 			public int compare(java.lang.String value1, java.lang.String value2) {
@@ -6390,11 +6390,11 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).collect(toexecute, null);
 		int sum = 0;
@@ -6419,11 +6419,11 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).count(null);
 		long sum = 0;
@@ -6450,11 +6450,11 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 			}
 		}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).forEach(lis -> {
 			sum += ((List) lis).size();
@@ -6477,7 +6477,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
@@ -6506,7 +6506,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
@@ -6537,7 +6537,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 			}
 		}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
@@ -6564,7 +6564,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
@@ -6593,7 +6593,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
@@ -6624,7 +6624,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 			}
 		}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 			public java.lang.String[] apply(java.lang.String value) {
@@ -6651,7 +6651,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
 						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -6682,7 +6682,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
 						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -6715,7 +6715,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 			}
 		}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -6743,7 +6743,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
 						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -6775,7 +6775,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 			}
 		}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -6806,7 +6806,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
 						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -6837,7 +6837,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
 						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -6870,7 +6870,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 			}
 		}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -6898,9 +6898,9 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).peek(val->System.out.println(val)).collect(toexecute, null);
+				}).peek(val -> System.out.println(val)).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -6923,9 +6923,9 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).peek(val->System.out.println(val)).count(null);
+				}).peek(val -> System.out.println(val)).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -6950,9 +6950,9 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 			}
 		}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
-		}).peek(val->System.out.println(val)).forEach(lis -> {
+		}).peek(val -> System.out.println(val)).forEach(lis -> {
 			sum += ((List) lis).size();
 		}, null);
 
@@ -6973,7 +6973,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).sample(46361).collect(toexecute, null);
 		int sum = 0;
@@ -6998,7 +6998,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).sample(46361).count(null);
 		long sum = 0;
@@ -7025,7 +7025,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 			}
 		}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).sample(46361).forEach(lis -> {
 			sum += ((List) lis).size();
@@ -7048,7 +7048,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
 					public int compare(java.lang.String value1, java.lang.String value2) {
@@ -7077,7 +7077,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
 					public int compare(java.lang.String value1, java.lang.String value2) {
@@ -7108,7 +7108,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 			}
 		}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
 			public int compare(java.lang.String value1, java.lang.String value2) {
@@ -7139,7 +7139,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).collect(toexecute, null);
 		int sum = 0;
@@ -7168,7 +7168,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).count(null);
 		long sum = 0;
@@ -7199,7 +7199,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 			}
 		}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).forEach(lis -> {
 			sum += ((List) lis).size();
@@ -7645,7 +7645,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).peek(val->System.out.println(val)).collect(toexecute, null);
+				}).peek(val -> System.out.println(val)).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -7670,7 +7670,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).peek(val->System.out.println(val)).count(null);
+				}).peek(val -> System.out.println(val)).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -7697,7 +7697,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
-		}).peek(val->System.out.println(val)).forEach(lis -> {
+		}).peek(val -> System.out.println(val)).forEach(lis -> {
 			sum += ((List) lis).size();
 		}, null);
 
@@ -7884,7 +7884,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String[]>() {
 					public boolean test(java.lang.String[] value) {
-						return !value[14].equals("NA") && !value[14].equals("ArrDelay");
+						return !"NA".equals(value[14]) && !"ArrDelay".equals(value[14]);
 					}
 				}).collect(toexecute, null);
 		int sum = 0;
@@ -7913,7 +7913,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String[]>() {
 					public boolean test(java.lang.String[] value) {
-						return !value[14].equals("NA") && !value[14].equals("ArrDelay");
+						return !"NA".equals(value[14]) && !"ArrDelay".equals(value[14]);
 					}
 				}).count(null);
 		long sum = 0;
@@ -7944,7 +7944,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 			}
 		}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String[]>() {
 			public boolean test(java.lang.String[] value) {
-				return !value[14].equals("NA") && !value[14].equals("ArrDelay");
+				return !"NA".equals(value[14]) && !"ArrDelay".equals(value[14]);
 			}
 		}).forEach(lis -> {
 			sum += ((List) lis).size();
@@ -8390,7 +8390,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
-				}).peek(val->System.out.println(val)).collect(toexecute, null);
+				}).peek(val -> System.out.println(val)).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -8415,7 +8415,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
-				}).peek(val->System.out.println(val)).count(null);
+				}).peek(val -> System.out.println(val)).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -8442,7 +8442,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 			public java.lang.String[] apply(java.lang.String value) {
 				return value.split(",");
 			}
-		}).peek(val->System.out.println(val)).forEach(lis -> {
+		}).peek(val -> System.out.println(val)).forEach(lis -> {
 			sum += ((List) lis).size();
 		}, null);
 
@@ -9176,7 +9176,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 							}
 						})
-				.groupByKey().peek(val->System.out.println(val)).collect(toexecute, null);
+				.groupByKey().peek(val -> System.out.println(val)).collect(toexecute, null);
 		int sum = 0;
 		for (List<Tuple2> lsttuples : data) {
 			for (Tuple2 tuple2 : lsttuples) {
@@ -9203,7 +9203,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
-				}).groupByKey().peek(val->System.out.println(val)).forEach(lsttuples -> {
+				}).groupByKey().peek(val -> System.out.println(val)).forEach(lsttuples -> {
 					for (Tuple2 tuple2 : lsttuples) {
 						sum += ((List) tuple2.v2).size();
 					}
@@ -9692,7 +9692,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 							}
 						})
-				.peek(val->System.out.println(val)).collect(toexecute, null);
+				.peek(val -> System.out.println(val)).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -9719,7 +9719,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 							}
 						})
-				.peek(val->System.out.println(val)).count(null);
+				.peek(val -> System.out.println(val)).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -9747,7 +9747,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
-				}).peek(val->System.out.println(val)).forEach(lis -> {
+				}).peek(val -> System.out.println(val)).forEach(lis -> {
 					sum += ((List) lis).size();
 				}, null);
 
@@ -10291,7 +10291,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 							}
 						})
-				.reduceByKey((a, b) -> a + b).peek(val->System.out.println(val)).collect(toexecute, null);
+				.reduceByKey((a, b) -> a + b).peek(val -> System.out.println(val)).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -10318,7 +10318,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 							}
 						})
-				.reduceByKey((a, b) -> a + b).peek(val->System.out.println(val)).count(null);
+				.reduceByKey((a, b) -> a + b).peek(val -> System.out.println(val)).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -10346,7 +10346,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
-				}).reduceByKey((a, b) -> a + b).peek(val->System.out.println(val)).forEach(lis -> {
+				}).reduceByKey((a, b) -> a + b).peek(val -> System.out.println(val)).forEach(lis -> {
 					sum += ((List) lis).size();
 				}, null);
 
@@ -10712,10 +10712,10 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).peek(val->System.out.println(val))
+				}).peek(val -> System.out.println(val))
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).collect(toexecute, null);
 		int sum = 0;
@@ -10738,10 +10738,10 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).peek(val->System.out.println(val))
+				}).peek(val -> System.out.println(val))
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).count(null);
 		long sum = 0;
@@ -10766,9 +10766,9 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
-		}).peek(val->System.out.println(val)).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		}).peek(val -> System.out.println(val)).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).forEach(lis -> {
 			sum += ((List) lis).size();
@@ -10789,7 +10789,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).peek(val->System.out.println(val))
+				}).peek(val -> System.out.println(val))
 				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
@@ -10815,7 +10815,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).peek(val->System.out.println(val))
+				}).peek(val -> System.out.println(val))
 				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
@@ -10843,7 +10843,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
-		}).peek(val->System.out.println(val))
+		}).peek(val -> System.out.println(val))
 				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
@@ -10867,7 +10867,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).peek(val->System.out.println(val))
+				}).peek(val -> System.out.println(val))
 				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
@@ -10893,7 +10893,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).peek(val->System.out.println(val))
+				}).peek(val -> System.out.println(val))
 				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
@@ -10921,7 +10921,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
-		}).peek(val->System.out.println(val))
+		}).peek(val -> System.out.println(val))
 				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
@@ -10945,7 +10945,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).peek(val->System.out.println(val)).mapToPair(
+				}).peek(val -> System.out.println(val)).mapToPair(
 						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -10972,7 +10972,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).peek(val->System.out.println(val)).mapToPair(
+				}).peek(val -> System.out.println(val)).mapToPair(
 						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -11001,7 +11001,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
-		}).peek(val->System.out.println(val)).mapToPair(
+		}).peek(val -> System.out.println(val)).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -11025,7 +11025,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).peek(val->System.out.println(val)).mapToPair(
+				}).peek(val -> System.out.println(val)).mapToPair(
 						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -11053,7 +11053,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
-		}).peek(val->System.out.println(val)).mapToPair(
+		}).peek(val -> System.out.println(val)).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -11080,7 +11080,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).peek(val->System.out.println(val)).mapToPair(
+				}).peek(val -> System.out.println(val)).mapToPair(
 						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -11107,7 +11107,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).peek(val->System.out.println(val)).mapToPair(
+				}).peek(val -> System.out.println(val)).mapToPair(
 						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -11136,7 +11136,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
-		}).peek(val->System.out.println(val)).mapToPair(
+		}).peek(val -> System.out.println(val)).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
@@ -11160,7 +11160,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).peek(val->System.out.println(val)).peek(val->System.out.println(val)).collect(toexecute, null);
+				}).peek(val -> System.out.println(val)).peek(val -> System.out.println(val)).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -11181,7 +11181,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).peek(val->System.out.println(val)).peek(val->System.out.println(val)).count(null);
+				}).peek(val -> System.out.println(val)).peek(val -> System.out.println(val)).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -11204,7 +11204,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
-		}).peek(val->System.out.println(val)).peek(val->System.out.println(val)).forEach(lis -> {
+		}).peek(val -> System.out.println(val)).peek(val -> System.out.println(val)).forEach(lis -> {
 			sum += ((List) lis).size();
 		}, null);
 
@@ -11223,7 +11223,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).peek(val->System.out.println(val)).sample(46361).collect(toexecute, null);
+				}).peek(val -> System.out.println(val)).sample(46361).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -11244,7 +11244,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).peek(val->System.out.println(val)).sample(46361).count(null);
+				}).peek(val -> System.out.println(val)).sample(46361).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -11267,7 +11267,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
-		}).peek(val->System.out.println(val)).sample(46361).forEach(lis -> {
+		}).peek(val -> System.out.println(val)).sample(46361).forEach(lis -> {
 			sum += ((List) lis).size();
 		}, null);
 
@@ -11286,7 +11286,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).peek(val->System.out.println(val)).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
+				}).peek(val -> System.out.println(val)).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
 					public int compare(java.lang.String value1, java.lang.String value2) {
 						return value1.compareTo(value2);
 					}
@@ -11311,7 +11311,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).peek(val->System.out.println(val)).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
+				}).peek(val -> System.out.println(val)).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
 					public int compare(java.lang.String value1, java.lang.String value2) {
 						return value1.compareTo(value2);
 					}
@@ -11338,7 +11338,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
-		}).peek(val->System.out.println(val)).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
+		}).peek(val -> System.out.println(val)).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
 			public int compare(java.lang.String value1, java.lang.String value2) {
 				return value1.compareTo(value2);
 			}
@@ -11363,7 +11363,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 					}
 				}).sample(46361).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).collect(toexecute, null);
 		int sum = 0;
@@ -11388,7 +11388,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 					}
 				}).sample(46361).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).count(null);
 		long sum = 0;
@@ -11415,7 +11415,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 			}
 		}).sample(46361).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).forEach(lis -> {
 			sum += ((List) lis).size();
@@ -11803,7 +11803,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).sample(46361).peek(val->System.out.println(val)).collect(toexecute, null);
+				}).sample(46361).peek(val -> System.out.println(val)).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -11824,7 +11824,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).sample(46361).peek(val->System.out.println(val)).count(null);
+				}).sample(46361).peek(val -> System.out.println(val)).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -11847,7 +11847,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
-		}).sample(46361).peek(val->System.out.println(val)).forEach(lis -> {
+		}).sample(46361).peek(val -> System.out.println(val)).forEach(lis -> {
 			sum += ((List) lis).size();
 		}, null);
 
@@ -12010,7 +12010,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).collect(toexecute, null);
 		int sum = 0;
@@ -12039,7 +12039,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).count(null);
 		long sum = 0;
@@ -12070,7 +12070,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 			}
 		}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).forEach(lis -> {
 			sum += ((List) lis).size();
@@ -12516,7 +12516,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 					public int compare(java.lang.String value1, java.lang.String value2) {
 						return value1.compareTo(value2);
 					}
-				}).peek(val->System.out.println(val)).collect(toexecute, null);
+				}).peek(val -> System.out.println(val)).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -12541,7 +12541,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 					public int compare(java.lang.String value1, java.lang.String value2) {
 						return value1.compareTo(value2);
 					}
-				}).peek(val->System.out.println(val)).count(null);
+				}).peek(val -> System.out.println(val)).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -12568,7 +12568,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 			public int compare(java.lang.String value1, java.lang.String value2) {
 				return value1.compareTo(value2);
 			}
-		}).peek(val->System.out.println(val)).forEach(lis -> {
+		}).peek(val -> System.out.println(val)).forEach(lis -> {
 			sum += ((List) lis).size();
 		}, null);
 
@@ -12751,11 +12751,11 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String[]>() {
 					public boolean test(java.lang.String[] value) {
-						return !value[14].equals("NA") && !value[14].equals("ArrDelay");
+						return !"NA".equals(value[14]) && !"ArrDelay".equals(value[14]);
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String[]>() {
 					public boolean test(java.lang.String[] value) {
-						return !value[14].equals("NA") && !value[14].equals("ArrDelay");
+						return !"NA".equals(value[14]) && !"ArrDelay".equals(value[14]);
 					}
 				}).collect(toexecute, null);
 		int sum = 0;
@@ -12780,11 +12780,11 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String[]>() {
 					public boolean test(java.lang.String[] value) {
-						return !value[14].equals("NA") && !value[14].equals("ArrDelay");
+						return !"NA".equals(value[14]) && !"ArrDelay".equals(value[14]);
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String[]>() {
 					public boolean test(java.lang.String[] value) {
-						return !value[14].equals("NA") && !value[14].equals("ArrDelay");
+						return !"NA".equals(value[14]) && !"ArrDelay".equals(value[14]);
 					}
 				}).count(null);
 		long sum = 0;
@@ -12811,11 +12811,11 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 			}
 		}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String[]>() {
 			public boolean test(java.lang.String[] value) {
-				return !value[14].equals("NA") && !value[14].equals("ArrDelay");
+				return !"NA".equals(value[14]) && !"ArrDelay".equals(value[14]);
 			}
 		}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String[]>() {
 			public boolean test(java.lang.String[] value) {
-				return !value[14].equals("NA") && !value[14].equals("ArrDelay");
+				return !"NA".equals(value[14]) && !"ArrDelay".equals(value[14]);
 			}
 		}).forEach(lis -> {
 			sum += ((List) lis).size();
@@ -12838,7 +12838,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String[]>() {
 					public boolean test(java.lang.String[] value) {
-						return !value[14].equals("NA") && !value[14].equals("ArrDelay");
+						return !"NA".equals(value[14]) && !"ArrDelay".equals(value[14]);
 					}
 				}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String[], java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String[] value) {
@@ -12867,7 +12867,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String[]>() {
 					public boolean test(java.lang.String[] value) {
-						return !value[14].equals("NA") && !value[14].equals("ArrDelay");
+						return !"NA".equals(value[14]) && !"ArrDelay".equals(value[14]);
 					}
 				}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String[], java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String[] value) {
@@ -12898,7 +12898,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 			}
 		}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String[]>() {
 			public boolean test(java.lang.String[] value) {
-				return !value[14].equals("NA") && !value[14].equals("ArrDelay");
+				return !"NA".equals(value[14]) && !"ArrDelay".equals(value[14]);
 			}
 		}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String[], java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String[] value) {
@@ -12925,7 +12925,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String[]>() {
 					public boolean test(java.lang.String[] value) {
-						return !value[14].equals("NA") && !value[14].equals("ArrDelay");
+						return !"NA".equals(value[14]) && !"ArrDelay".equals(value[14]);
 					}
 				}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String[], java.lang.String>() {
 					public java.lang.String apply(java.lang.String[] value) {
@@ -12954,7 +12954,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String[]>() {
 					public boolean test(java.lang.String[] value) {
-						return !value[14].equals("NA") && !value[14].equals("ArrDelay");
+						return !"NA".equals(value[14]) && !"ArrDelay".equals(value[14]);
 					}
 				}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String[], java.lang.String>() {
 					public java.lang.String apply(java.lang.String[] value) {
@@ -12985,7 +12985,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 			}
 		}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String[]>() {
 			public boolean test(java.lang.String[] value) {
-				return !value[14].equals("NA") && !value[14].equals("ArrDelay");
+				return !"NA".equals(value[14]) && !"ArrDelay".equals(value[14]);
 			}
 		}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String[], java.lang.String>() {
 			public java.lang.String apply(java.lang.String[] value) {
@@ -13012,7 +13012,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String[]>() {
 					public boolean test(java.lang.String[] value) {
-						return !value[14].equals("NA") && !value[14].equals("ArrDelay");
+						return !"NA".equals(value[14]) && !"ArrDelay".equals(value[14]);
 					}
 				}).mapToPair(
 						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -13043,7 +13043,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String[]>() {
 					public boolean test(java.lang.String[] value) {
-						return !value[14].equals("NA") && !value[14].equals("ArrDelay");
+						return !"NA".equals(value[14]) && !"ArrDelay".equals(value[14]);
 					}
 				}).mapToPair(
 						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -13076,7 +13076,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 			}
 		}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String[]>() {
 			public boolean test(java.lang.String[] value) {
-				return !value[14].equals("NA") && !value[14].equals("ArrDelay");
+				return !"NA".equals(value[14]) && !"ArrDelay".equals(value[14]);
 			}
 		}).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -13104,7 +13104,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String[]>() {
 					public boolean test(java.lang.String[] value) {
-						return !value[14].equals("NA") && !value[14].equals("ArrDelay");
+						return !"NA".equals(value[14]) && !"ArrDelay".equals(value[14]);
 					}
 				}).mapToPair(
 						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -13136,7 +13136,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 			}
 		}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String[]>() {
 			public boolean test(java.lang.String[] value) {
-				return !value[14].equals("NA") && !value[14].equals("ArrDelay");
+				return !"NA".equals(value[14]) && !"ArrDelay".equals(value[14]);
 			}
 		}).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -13167,7 +13167,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String[]>() {
 					public boolean test(java.lang.String[] value) {
-						return !value[14].equals("NA") && !value[14].equals("ArrDelay");
+						return !"NA".equals(value[14]) && !"ArrDelay".equals(value[14]);
 					}
 				}).mapToPair(
 						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -13198,7 +13198,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String[]>() {
 					public boolean test(java.lang.String[] value) {
-						return !value[14].equals("NA") && !value[14].equals("ArrDelay");
+						return !"NA".equals(value[14]) && !"ArrDelay".equals(value[14]);
 					}
 				}).mapToPair(
 						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -13231,7 +13231,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 			}
 		}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String[]>() {
 			public boolean test(java.lang.String[] value) {
-				return !value[14].equals("NA") && !value[14].equals("ArrDelay");
+				return !"NA".equals(value[14]) && !"ArrDelay".equals(value[14]);
 			}
 		}).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
@@ -13259,9 +13259,9 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String[]>() {
 					public boolean test(java.lang.String[] value) {
-						return !value[14].equals("NA") && !value[14].equals("ArrDelay");
+						return !"NA".equals(value[14]) && !"ArrDelay".equals(value[14]);
 					}
-				}).peek(val->System.out.println(val)).collect(toexecute, null);
+				}).peek(val -> System.out.println(val)).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -13284,9 +13284,9 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String[]>() {
 					public boolean test(java.lang.String[] value) {
-						return !value[14].equals("NA") && !value[14].equals("ArrDelay");
+						return !"NA".equals(value[14]) && !"ArrDelay".equals(value[14]);
 					}
-				}).peek(val->System.out.println(val)).count(null);
+				}).peek(val -> System.out.println(val)).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -13311,9 +13311,9 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 			}
 		}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String[]>() {
 			public boolean test(java.lang.String[] value) {
-				return !value[14].equals("NA") && !value[14].equals("ArrDelay");
+				return !"NA".equals(value[14]) && !"ArrDelay".equals(value[14]);
 			}
-		}).peek(val->System.out.println(val)).forEach(lis -> {
+		}).peek(val -> System.out.println(val)).forEach(lis -> {
 			sum += ((List) lis).size();
 		}, null);
 
@@ -13334,7 +13334,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String[]>() {
 					public boolean test(java.lang.String[] value) {
-						return !value[14].equals("NA") && !value[14].equals("ArrDelay");
+						return !"NA".equals(value[14]) && !"ArrDelay".equals(value[14]);
 					}
 				}).sample(46361).collect(toexecute, null);
 		int sum = 0;
@@ -13359,7 +13359,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String[]>() {
 					public boolean test(java.lang.String[] value) {
-						return !value[14].equals("NA") && !value[14].equals("ArrDelay");
+						return !"NA".equals(value[14]) && !"ArrDelay".equals(value[14]);
 					}
 				}).sample(46361).count(null);
 		long sum = 0;
@@ -13386,7 +13386,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 			}
 		}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String[]>() {
 			public boolean test(java.lang.String[] value) {
-				return !value[14].equals("NA") && !value[14].equals("ArrDelay");
+				return !"NA".equals(value[14]) && !"ArrDelay".equals(value[14]);
 			}
 		}).sample(46361).forEach(lis -> {
 			sum += ((List) lis).size();
@@ -13409,7 +13409,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String[]>() {
 					public boolean test(java.lang.String[] value) {
-						return !value[14].equals("NA") && !value[14].equals("ArrDelay");
+						return !"NA".equals(value[14]) && !"ArrDelay".equals(value[14]);
 					}
 				}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String[]>() {
 					public int compare(java.lang.String[] value1, java.lang.String[] value2) {
@@ -13438,7 +13438,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String[]>() {
 					public boolean test(java.lang.String[] value) {
-						return !value[14].equals("NA") && !value[14].equals("ArrDelay");
+						return !"NA".equals(value[14]) && !"ArrDelay".equals(value[14]);
 					}
 				}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String[]>() {
 					public int compare(java.lang.String[] value1, java.lang.String[] value2) {
@@ -13469,7 +13469,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 			}
 		}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String[]>() {
 			public boolean test(java.lang.String[] value) {
-				return !value[14].equals("NA") && !value[14].equals("ArrDelay");
+				return !"NA".equals(value[14]) && !"ArrDelay".equals(value[14]);
 			}
 		}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String[]>() {
 			public int compare(java.lang.String[] value1, java.lang.String[] value2) {
@@ -13872,7 +13872,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 				}).groupByKey().forEach(lsttuples -> {
 					for (Tuple2 tuple2 : lsttuples) {
 						log.info(tuple2.v2);
-						if(tuple2.v2!=null) {
+						if (tuple2.v2 != null) {
 							sum += ((List) tuple2.v2).size();
 						}
 					}
@@ -13993,7 +13993,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 					public java.util.List<java.lang.String> apply(java.lang.String[] value) {
 						return Arrays.asList(value[8] + "-" + value[14]);
 					}
-				}).peek(val->System.out.println(val)).collect(toexecute, null);
+				}).peek(val -> System.out.println(val)).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -14018,7 +14018,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 					public java.util.List<java.lang.String> apply(java.lang.String[] value) {
 						return Arrays.asList(value[8] + "-" + value[14]);
 					}
-				}).peek(val->System.out.println(val)).count(null);
+				}).peek(val -> System.out.println(val)).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -14045,7 +14045,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 			public java.util.List<java.lang.String> apply(java.lang.String[] value) {
 				return Arrays.asList(value[8] + "-" + value[14]);
 			}
-		}).peek(val->System.out.println(val)).forEach(lis -> {
+		}).peek(val -> System.out.println(val)).forEach(lis -> {
 			sum += ((List) lis).size();
 		}, null);
 
@@ -14232,7 +14232,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split("-")[1].equals("NA") && !value.split("-")[1].equals("ArrDelay");
+						return !"NA".equals(value.split("-")[1]) && !"ArrDelay".equals(value.split("-")[1]);
 					}
 				}).collect(toexecute, null);
 		int sum = 0;
@@ -14261,7 +14261,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split("-")[1].equals("NA") && !value.split("-")[1].equals("ArrDelay");
+						return !"NA".equals(value.split("-")[1]) && !"ArrDelay".equals(value.split("-")[1]);
 					}
 				}).count(null);
 		long sum = 0;
@@ -14292,7 +14292,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 			}
 		}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split("-")[1].equals("NA") && !value.split("-")[1].equals("ArrDelay");
+				return !"NA".equals(value.split("-")[1]) && !"ArrDelay".equals(value.split("-")[1]);
 			}
 		}).forEach(lis -> {
 			sum += ((List) lis).size();
@@ -14738,7 +14738,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 					public java.lang.String apply(java.lang.String[] value) {
 						return value[8] + "-" + value[14];
 					}
-				}).peek(val->System.out.println(val)).collect(toexecute, null);
+				}).peek(val -> System.out.println(val)).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -14763,7 +14763,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 					public java.lang.String apply(java.lang.String[] value) {
 						return value[8] + "-" + value[14];
 					}
-				}).peek(val->System.out.println(val)).count(null);
+				}).peek(val -> System.out.println(val)).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -14790,7 +14790,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 			public java.lang.String apply(java.lang.String[] value) {
 				return value[8] + "-" + value[14];
 			}
-		}).peek(val->System.out.println(val)).forEach(lis -> {
+		}).peek(val -> System.out.println(val)).forEach(lis -> {
 			sum += ((List) lis).size();
 		}, null);
 
@@ -15524,7 +15524,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 								return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
 							}
 						})
-				.groupByKey().peek(val->System.out.println(val)).collect(toexecute, null);
+				.groupByKey().peek(val -> System.out.println(val)).collect(toexecute, null);
 		int sum = 0;
 		for (List<Tuple2> lsttuples : data) {
 			for (Tuple2 tuple2 : lsttuples) {
@@ -15551,7 +15551,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
 						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
 					}
-				}).groupByKey().peek(val->System.out.println(val)).forEach(lsttuples -> {
+				}).groupByKey().peek(val -> System.out.println(val)).forEach(lsttuples -> {
 					for (Tuple2 tuple2 : lsttuples) {
 						sum += ((List) tuple2.v2).size();
 					}
@@ -16040,7 +16040,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 								return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
 							}
 						})
-				.peek(val->System.out.println(val)).collect(toexecute, null);
+				.peek(val -> System.out.println(val)).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -16067,7 +16067,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 								return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
 							}
 						})
-				.peek(val->System.out.println(val)).count(null);
+				.peek(val -> System.out.println(val)).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -16095,7 +16095,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
 						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
 					}
-				}).peek(val->System.out.println(val)).forEach(lis -> {
+				}).peek(val -> System.out.println(val)).forEach(lis -> {
 					sum += ((List) lis).size();
 				}, null);
 
@@ -16638,7 +16638,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 								return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
 							}
 						})
-				.reduceByKey((a, b) -> a + b).peek(val->System.out.println(val)).collect(toexecute, null);
+				.reduceByKey((a, b) -> a + b).peek(val -> System.out.println(val)).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -16665,7 +16665,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 								return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
 							}
 						})
-				.reduceByKey((a, b) -> a + b).peek(val->System.out.println(val)).count(null);
+				.reduceByKey((a, b) -> a + b).peek(val -> System.out.println(val)).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -16693,7 +16693,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
 						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
 					}
-				}).reduceByKey((a, b) -> a + b).peek(val->System.out.println(val)).forEach(lis -> {
+				}).reduceByKey((a, b) -> a + b).peek(val -> System.out.println(val)).forEach(lis -> {
 					sum += ((List) lis).size();
 				}, null);
 
@@ -17059,10 +17059,10 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
-				}).peek(val->System.out.println(val))
+				}).peek(val -> System.out.println(val))
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String[]>() {
 					public boolean test(java.lang.String[] value) {
-						return !value[14].equals("NA") && !value[14].equals("ArrDelay");
+						return !"NA".equals(value[14]) && !"ArrDelay".equals(value[14]);
 					}
 				}).collect(toexecute, null);
 		int sum = 0;
@@ -17085,10 +17085,10 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
-				}).peek(val->System.out.println(val))
+				}).peek(val -> System.out.println(val))
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String[]>() {
 					public boolean test(java.lang.String[] value) {
-						return !value[14].equals("NA") && !value[14].equals("ArrDelay");
+						return !"NA".equals(value[14]) && !"ArrDelay".equals(value[14]);
 					}
 				}).count(null);
 		long sum = 0;
@@ -17113,9 +17113,9 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 			public java.lang.String[] apply(java.lang.String value) {
 				return value.split(",");
 			}
-		}).peek(val->System.out.println(val)).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String[]>() {
+		}).peek(val -> System.out.println(val)).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String[]>() {
 			public boolean test(java.lang.String[] value) {
-				return !value[14].equals("NA") && !value[14].equals("ArrDelay");
+				return !"NA".equals(value[14]) && !"ArrDelay".equals(value[14]);
 			}
 		}).forEach(lis -> {
 			sum += ((List) lis).size();
@@ -17136,7 +17136,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
-				}).peek(val->System.out.println(val))
+				}).peek(val -> System.out.println(val))
 				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String[], java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String[] value) {
 						return Arrays.asList(value[8] + "-" + value[14]);
@@ -17162,7 +17162,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
-				}).peek(val->System.out.println(val))
+				}).peek(val -> System.out.println(val))
 				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String[], java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String[] value) {
 						return Arrays.asList(value[8] + "-" + value[14]);
@@ -17190,7 +17190,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 			public java.lang.String[] apply(java.lang.String value) {
 				return value.split(",");
 			}
-		}).peek(val->System.out.println(val))
+		}).peek(val -> System.out.println(val))
 				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String[], java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String[] value) {
 						return Arrays.asList(value[8] + "-" + value[14]);
@@ -17214,7 +17214,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
-				}).peek(val->System.out.println(val))
+				}).peek(val -> System.out.println(val))
 				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String[], java.lang.String>() {
 					public java.lang.String apply(java.lang.String[] value) {
 						return value[8] + "-" + value[14];
@@ -17240,7 +17240,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
-				}).peek(val->System.out.println(val))
+				}).peek(val -> System.out.println(val))
 				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String[], java.lang.String>() {
 					public java.lang.String apply(java.lang.String[] value) {
 						return value[8] + "-" + value[14];
@@ -17268,7 +17268,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 			public java.lang.String[] apply(java.lang.String value) {
 				return value.split(",");
 			}
-		}).peek(val->System.out.println(val))
+		}).peek(val -> System.out.println(val))
 				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String[], java.lang.String>() {
 					public java.lang.String apply(java.lang.String[] value) {
 						return value[8] + "-" + value[14];
@@ -17292,7 +17292,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
-				}).peek(val->System.out.println(val)).mapToPair(
+				}).peek(val -> System.out.println(val)).mapToPair(
 						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
 								return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
@@ -17319,7 +17319,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
-				}).peek(val->System.out.println(val)).mapToPair(
+				}).peek(val -> System.out.println(val)).mapToPair(
 						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
 								return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
@@ -17348,7 +17348,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 			public java.lang.String[] apply(java.lang.String value) {
 				return value.split(",");
 			}
-		}).peek(val->System.out.println(val)).mapToPair(
+		}).peek(val -> System.out.println(val)).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
 						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
@@ -17372,7 +17372,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
-				}).peek(val->System.out.println(val)).mapToPair(
+				}).peek(val -> System.out.println(val)).mapToPair(
 						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
 								return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
@@ -17400,7 +17400,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 			public java.lang.String[] apply(java.lang.String value) {
 				return value.split(",");
 			}
-		}).peek(val->System.out.println(val)).mapToPair(
+		}).peek(val -> System.out.println(val)).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
 						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
@@ -17427,7 +17427,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
-				}).peek(val->System.out.println(val)).mapToPair(
+				}).peek(val -> System.out.println(val)).mapToPair(
 						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
 								return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
@@ -17454,7 +17454,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
-				}).peek(val->System.out.println(val)).mapToPair(
+				}).peek(val -> System.out.println(val)).mapToPair(
 						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
 								return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
@@ -17483,7 +17483,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 			public java.lang.String[] apply(java.lang.String value) {
 				return value.split(",");
 			}
-		}).peek(val->System.out.println(val)).mapToPair(
+		}).peek(val -> System.out.println(val)).mapToPair(
 				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
 						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
@@ -17507,7 +17507,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
-				}).peek(val->System.out.println(val)).peek(val->System.out.println(val)).collect(toexecute, null);
+				}).peek(val -> System.out.println(val)).peek(val -> System.out.println(val)).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -17528,7 +17528,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
-				}).peek(val->System.out.println(val)).peek(val->System.out.println(val)).count(null);
+				}).peek(val -> System.out.println(val)).peek(val -> System.out.println(val)).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -17551,7 +17551,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 			public java.lang.String[] apply(java.lang.String value) {
 				return value.split(",");
 			}
-		}).peek(val->System.out.println(val)).peek(val->System.out.println(val)).forEach(lis -> {
+		}).peek(val -> System.out.println(val)).peek(val -> System.out.println(val)).forEach(lis -> {
 			sum += ((List) lis).size();
 		}, null);
 
@@ -17570,7 +17570,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
-				}).peek(val->System.out.println(val)).sample(46361).collect(toexecute, null);
+				}).peek(val -> System.out.println(val)).sample(46361).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -17591,7 +17591,7 @@ public class IgnitePipelineDepth31Test extends StreamPipelineIgniteBase {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
-				}).peek(val->System.out.println(val)).sample(46361).count(null);
+				}).peek(val -> System.out.println(val)).sample(46361).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {

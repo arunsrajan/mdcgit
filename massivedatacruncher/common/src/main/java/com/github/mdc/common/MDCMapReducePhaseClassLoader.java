@@ -29,7 +29,7 @@ public class MDCMapReducePhaseClassLoader extends ClassLoader {
 	@SuppressWarnings("rawtypes")
 	private static List instances = new ArrayList();
 
-	@SuppressWarnings({ "unchecked" })
+	@SuppressWarnings({"unchecked"})
 	public static MDCMapReducePhaseClassLoader newInstance(byte[] jarBytes, ClassLoader parent) throws IOException {
 		MDCMapReducePhaseClassLoader clsloader = new MDCMapReducePhaseClassLoader(jarBytes, parent);
 		instances.add(clsloader);
@@ -74,7 +74,7 @@ public class MDCMapReducePhaseClassLoader extends ClassLoader {
 	@SuppressWarnings("rawtypes")
 	@Override
 	public Class<?> findClass(String name) throws ClassNotFoundException {
-		String file = name.replace(MDCConstants.DOT, File.separatorChar) + MDCConstants.DOT+MDCConstants.CLASS;
+		String file = name.replace(MDCConstants.DOT, File.separatorChar) + MDCConstants.DOT + MDCConstants.CLASS;
 		byte[] b = null;
 		try {
 
@@ -91,7 +91,7 @@ public class MDCMapReducePhaseClassLoader extends ClassLoader {
 			}
 			return null;
 		} catch (Exception ex) {
-			log.error("ClassLoader findClass error, See Cause below: \n",ex);
+			log.error("ClassLoader findClass error, See Cause below: \n", ex);
 			return null;
 		}
 	}
@@ -118,14 +118,14 @@ public class MDCMapReducePhaseClassLoader extends ClassLoader {
 				}
 			}
 		} catch (Exception ex) {
-			log.error("ClassLoader get zip entry error, See Cause below: \n",ex);
+			log.error("ClassLoader get zip entry error, See Cause below: \n", ex);
 		} finally {
 
 			if (jis != null && !found) {
 				try {
 					jis.close();
 				} catch (Exception ex) {
-					log.error("ClassLoader zip stream close error, See Cause below: \n",ex);
+					log.error("ClassLoader zip stream close error, See Cause below: \n", ex);
 				}
 			}
 		}

@@ -15,21 +15,21 @@ public class StreamPipelineSql {
 	
 	@SuppressWarnings("rawtypes")
 	public Object collect(boolean toexecute, IntSupplier supplier) throws PipelineException {
-		if(mdpmp instanceof StreamPipeline mdp) {
+		if (mdpmp instanceof StreamPipeline mdp) {
 			return mdp.collect(toexecute, supplier);
 		}
-		else if(mdpmp instanceof MapPair mp) {
+		else if (mdpmp instanceof MapPair mp) {
 			return mp.collect(toexecute, supplier);
 		}
 		return null;
 	}
 	
 	@SuppressWarnings("rawtypes")
-	public void  saveAsTextFile(URI uri,String path) throws Exception {
-		if(mdpmp instanceof StreamPipeline mdp) {
+	public void  saveAsTextFile(URI uri, String path) throws Exception {
+		if (mdpmp instanceof StreamPipeline mdp) {
 			mdp.saveAsTextFile(uri, path);
 		}
-		else if(mdpmp instanceof MapPair mp) {
+		else if (mdpmp instanceof MapPair mp) {
 			mp.saveAsTextFile(uri, path);
 		}
 	

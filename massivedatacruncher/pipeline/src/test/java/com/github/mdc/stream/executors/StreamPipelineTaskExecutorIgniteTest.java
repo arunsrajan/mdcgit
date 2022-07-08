@@ -555,7 +555,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		filtertask.jobid = js.jobid;
 		filtertask.stageid = js.stageid;
 		MapFunction<String, String[]> map = (String str) -> str.split(MDCConstants.COMMA);
-		PredicateSerializable<String[]> filter = (String str[]) -> !str[14].equals("ArrDelay") && !str[14].equals("NA");
+		PredicateSerializable<String[]> filter = (String str[]) -> !"ArrDelay".equals(str[14]) && !"NA".equals(str[14]);
 		js.stage.tasks.add(map);
 		js.stage.tasks.add(filter);
 
@@ -595,7 +595,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		calculatecounttask.jobid = js.jobid;
 		calculatecounttask.stageid = js.stageid;
 		MapFunction<String, String[]> map = (String str) -> str.split(MDCConstants.COMMA);
-		PredicateSerializable<String[]> filter = (String str[]) -> !str[14].equals("ArrDelay") && !str[14].equals("NA");
+		PredicateSerializable<String[]> filter = (String str[]) -> !"ArrDelay".equals(str[14]) && !"NA".equals(str[14]);
 		js.stage.tasks.add(map);
 		js.stage.tasks.add(filter);
 		js.stage.tasks.add(new CalculateCount());
@@ -637,7 +637,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		sstask.jobid = js.jobid;
 		sstask.stageid = js.stageid;
 		MapFunction<String, String[]> map = (String str) -> str.split(MDCConstants.COMMA);
-		PredicateSerializable<String[]> filter = (String str[]) -> !str[14].equals("ArrDelay") && !str[14].equals("NA");
+		PredicateSerializable<String[]> filter = (String str[]) -> !"ArrDelay".equals(str[14]) && !"NA".equals(str[14]);
 		ToIntFunction<String[]> toint = (String str[]) -> Integer.parseInt(str[14]);
 		js.stage.tasks.add(map);
 		js.stage.tasks.add(filter);
@@ -686,7 +686,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		maxtask.jobid = js.jobid;
 		maxtask.stageid = js.stageid;
 		MapFunction<String, String[]> map = (String str) -> str.split(MDCConstants.COMMA);
-		PredicateSerializable<String[]> filter = (String str[]) -> !str[14].equals("ArrDelay") && !str[14].equals("NA");
+		PredicateSerializable<String[]> filter = (String str[]) -> !"ArrDelay".equals(str[14]) && !"NA".equals(str[14]);
 		ToIntFunction<String[]> toint = (String str[]) -> Integer.parseInt(str[14]);
 		js.stage.tasks.add(map);
 		js.stage.tasks.add(filter);
@@ -728,7 +728,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		mintask.jobid = js.jobid;
 		mintask.stageid = js.stageid;
 		MapFunction<String, String[]> map = (String str) -> str.split(MDCConstants.COMMA);
-		PredicateSerializable<String[]> filter = (String str[]) -> !str[14].equals("ArrDelay") && !str[14].equals("NA");
+		PredicateSerializable<String[]> filter = (String str[]) -> !"ArrDelay".equals(str[14]) && !"NA".equals(str[14]);
 		ToIntFunction<String[]> toint = (String str[]) -> Integer.parseInt(str[14]);
 		js.stage.tasks.add(map);
 		js.stage.tasks.add(filter);
@@ -771,7 +771,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		sumtask.jobid = js.jobid;
 		sumtask.stageid = js.stageid;
 		MapFunction<String, String[]> map = (String str) -> str.split(MDCConstants.COMMA);
-		PredicateSerializable<String[]> filter = (String str[]) -> !str[14].equals("ArrDelay") && !str[14].equals("NA");
+		PredicateSerializable<String[]> filter = (String str[]) -> !"ArrDelay".equals(str[14]) && !"NA".equals(str[14]);
 		ToIntFunction<String[]> toint = (String str[]) -> Integer.parseInt(str[14]);
 		js.stage.tasks.add(map);
 		js.stage.tasks.add(filter);
@@ -814,7 +814,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		sdtask.jobid = js.jobid;
 		sdtask.stageid = js.stageid;
 		MapFunction<String, String[]> map = (String str) -> str.split(MDCConstants.COMMA);
-		PredicateSerializable<String[]> filter = (String str[]) -> !str[14].equals("ArrDelay") && !str[14].equals("NA");
+		PredicateSerializable<String[]> filter = (String str[]) -> !"ArrDelay".equals(str[14]) && !"NA".equals(str[14]);
 		ToIntFunction<String[]> toint = (String str[]) -> Integer.parseInt(str[14]);
 		js.stage.tasks.add(map);
 		js.stage.tasks.add(filter);
@@ -857,8 +857,8 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		Task calcultecounttask = new Task();
 		calcultecounttask.jobid = js.jobid;
 		calcultecounttask.stageid = js.stageid;
-		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !csvrecord.get(14).equals("ArrDelay")
-				&& !csvrecord.get(14).equals("NA");
+		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !"ArrDelay".equals(csvrecord.get(14))
+				&& !"NA".equals(csvrecord.get(14));
 		js.stage.tasks.add(csvoptions);
 		js.stage.tasks.add(filter);
 		js.stage.tasks.add(new CalculateCount());
@@ -900,8 +900,8 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		Task filtertask = new Task();
 		filtertask.jobid = js.jobid;
 		filtertask.stageid = js.stageid;
-		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !csvrecord.get("ArrDelay").equals("ArrDelay")
-				&& !csvrecord.get("ArrDelay").equals("NA");
+		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !"ArrDelay".equals(csvrecord.get("ArrDelay"))
+				&& !"NA".equals(csvrecord.get("ArrDelay"));
 		js.stage.tasks.add(csvoptions);
 		js.stage.tasks.add(filter);
 
@@ -941,8 +941,8 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		Task summarystaticstask = new Task();
 		summarystaticstask.jobid = js.jobid;
 		summarystaticstask.stageid = js.stageid;
-		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !csvrecord.get("ArrDelay").equals("ArrDelay")
-				&& !csvrecord.get("ArrDelay").equals("NA");
+		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !"ArrDelay".equals(csvrecord.get("ArrDelay"))
+				&& !"NA".equals(csvrecord.get("ArrDelay"));
 		ToIntFunction<CSVRecord> csvint = (CSVRecord csvrecord) -> Integer.parseInt(csvrecord.get("ArrDelay"));
 		js.stage.tasks.add(csvoptions);
 		js.stage.tasks.add(filter);
@@ -991,8 +991,8 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		Task maxtask = new Task();
 		maxtask.jobid = js.jobid;
 		maxtask.stageid = js.stageid;
-		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !csvrecord.get("ArrDelay").equals("ArrDelay")
-				&& !csvrecord.get("ArrDelay").equals("NA");
+		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !"ArrDelay".equals(csvrecord.get("ArrDelay"))
+				&& !"NA".equals(csvrecord.get("ArrDelay"));
 		ToIntFunction<CSVRecord> csvint = (CSVRecord csvrecord) -> Integer.parseInt(csvrecord.get("ArrDelay"));
 		js.stage.tasks.add(csvoptions);
 		js.stage.tasks.add(filter);
@@ -1035,8 +1035,8 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		Task mintask = new Task();
 		mintask.jobid = js.jobid;
 		mintask.stageid = js.stageid;
-		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !csvrecord.get("ArrDelay").equals("ArrDelay")
-				&& !csvrecord.get("ArrDelay").equals("NA");
+		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !"ArrDelay".equals(csvrecord.get("ArrDelay"))
+				&& !"NA".equals(csvrecord.get("ArrDelay"));
 		ToIntFunction<CSVRecord> csvint = (CSVRecord csvrecord) -> Integer.parseInt(csvrecord.get("ArrDelay"));
 		js.stage.tasks.add(csvoptions);
 		js.stage.tasks.add(filter);
@@ -1079,8 +1079,8 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		Task sumtask = new Task();
 		sumtask.jobid = js.jobid;
 		sumtask.stageid = js.stageid;
-		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !csvrecord.get("ArrDelay").equals("ArrDelay")
-				&& !csvrecord.get("ArrDelay").equals("NA");
+		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !"ArrDelay".equals(csvrecord.get("ArrDelay"))
+				&& !"NA".equals(csvrecord.get("ArrDelay"));
 		ToIntFunction<CSVRecord> csvint = (CSVRecord csvrecord) -> Integer.parseInt(csvrecord.get("ArrDelay"));
 		js.stage.tasks.add(csvoptions);
 		js.stage.tasks.add(filter);
@@ -1123,8 +1123,8 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		Task sdtask = new Task();
 		sdtask.jobid = js.jobid;
 		sdtask.stageid = js.stageid;
-		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !csvrecord.get("ArrDelay").equals("ArrDelay")
-				&& !csvrecord.get("ArrDelay").equals("NA");
+		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !"ArrDelay".equals(csvrecord.get("ArrDelay"))
+				&& !"NA".equals(csvrecord.get("ArrDelay"));
 		ToIntFunction<CSVRecord> csvint = (CSVRecord csvrecord) -> Integer.parseInt(csvrecord.get("ArrDelay"));
 		js.stage.tasks.add(csvoptions);
 		js.stage.tasks.add(filter);
@@ -1167,8 +1167,8 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		Task filtertask = new Task();
 		filtertask.jobid = js.jobid;
 		filtertask.stageid = js.stageid;
-		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !csvrecord.get(14).equals("ArrDelay")
-				&& !csvrecord.get(14).equals("NA");
+		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !"ArrDelay".equals(csvrecord.get(14))
+				&& !"NA".equals(csvrecord.get(14));
 		js.stage.tasks.add(csvoptions);
 		js.stage.tasks.add(filter);
 
@@ -1219,8 +1219,8 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		Task filtertask = new Task();
 		filtertask.jobid = js.jobid;
 		filtertask.stageid = js.stageid;
-		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !csvrecord.get(14).equals("ArrDelay")
-				&& !csvrecord.get(14).equals("NA");
+		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !"ArrDelay".equals(csvrecord.get(14))
+				&& !"NA".equals(csvrecord.get(14));
 		js.stage.tasks.add(csvoptions);
 		js.stage.tasks.add(filter);
 
@@ -1280,8 +1280,8 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		filtertask.jobid = js.jobid;
 		filtertask.stageid = js.stageid;
 
-		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !csvrecord.get(14).equals("ArrDelay")
-				&& !csvrecord.get(14).equals("NA");
+		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !"ArrDelay".equals(csvrecord.get(14))
+				&& !"NA".equals(csvrecord.get(14));
 		js.stage.tasks.add(csvoptions);
 		js.stage.tasks.add(filter);
 
@@ -1338,8 +1338,8 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		filtertask.jobid = js.jobid;
 		filtertask.stageid = js.stageid;
 
-		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !csvrecord.get(14).equals("ArrDelay")
-				&& !csvrecord.get(14).equals("NA");
+		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !"ArrDelay".equals(csvrecord.get(14))
+				&& !"NA".equals(csvrecord.get(14));
 		js.stage.tasks.add(csvoptions);
 		js.stage.tasks.add(filter);
 
@@ -1396,8 +1396,8 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		filtertask.jobid = js.jobid;
 		filtertask.stageid = js.stageid;
 
-		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !csvrecord.get(14).equals("ArrDelay")
-				&& !csvrecord.get(14).equals("NA");
+		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !"ArrDelay".equals(csvrecord.get(14))
+				&& !"NA".equals(csvrecord.get(14));
 		js.stage.tasks.add(csvoptions);
 		js.stage.tasks.add(filter);
 
@@ -1454,8 +1454,8 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		filtertask.jobid = js.jobid;
 		filtertask.stageid = js.stageid;
 
-		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !csvrecord.get(14).equals("ArrDelay")
-				&& !csvrecord.get(14).equals("NA");
+		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !"ArrDelay".equals(csvrecord.get(14))
+				&& !"NA".equals(csvrecord.get(14));
 		js.stage.tasks.add(csvoptions);
 		js.stage.tasks.add(filter);
 
@@ -1512,8 +1512,8 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		filtertask.jobid = js.jobid;
 		filtertask.stageid = js.stageid;
 
-		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !csvrecord.get(14).equals("ArrDelay")
-				&& !csvrecord.get(14).equals("NA");
+		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !"ArrDelay".equals(csvrecord.get(14))
+				&& !"NA".equals(csvrecord.get(14));
 		js.stage.tasks.add(csvoptions);
 		js.stage.tasks.add(filter);
 
@@ -1554,8 +1554,8 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		Task counttask = new Task();
 		counttask.jobid = js.jobid;
 		counttask.stageid = js.stageid;
-		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !csvrecord.get(14).equals("ArrDelay")
-				&& !csvrecord.get(14).equals("NA");
+		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !"ArrDelay".equals(csvrecord.get(14))
+				&& !"NA".equals(csvrecord.get(14));
 		Object function = new CalculateCount();
 		js.stage.tasks.add(csvoptions);
 		js.stage.tasks.add(filter);
@@ -1583,7 +1583,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		is.close();
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testProcessStreamSample() throws Exception {
 		JobStage js = new JobStage();
@@ -1598,8 +1598,8 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		filtertask.jobid = js.jobid;
 		filtertask.stageid = js.stageid;
 
-		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !csvrecord.get(14).equals("ArrDelay")
-				&& !csvrecord.get(14).equals("NA");
+		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !"ArrDelay".equals(csvrecord.get(14))
+				&& !"NA".equals(csvrecord.get(14));
 		js.stage.tasks.add(csvoptions);
 		js.stage.tasks.add(filter);
 
@@ -1624,7 +1624,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		Task sample = new Task();
 		sample.jobid = js.jobid;
 		sample.stageid = js.stageid;
-		Function samplefn = (val) -> val;
+		Function samplefn = val -> val;
 		js.stage.tasks.clear();
 		js.stage.tasks.add(samplefn);
 		mdsti.setTask(sample);
@@ -1652,8 +1652,8 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		filtertask.jobid = js.jobid;
 		filtertask.stageid = js.stageid;
 
-		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !csvrecord.get(14).equals("ArrDelay")
-				&& !csvrecord.get(14).equals("NA");
+		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !"ArrDelay".equals(csvrecord.get(14))
+				&& !"NA".equals(csvrecord.get(14));
 		js.stage.tasks.add(csvoptions);
 		js.stage.tasks.add(filter);
 
@@ -1704,8 +1704,8 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		reducebykeytask1.jobid = js.jobid;
 		reducebykeytask1.stageid = js.stageid;
 		MapFunction<String, String[]> map = (String str) -> str.split(MDCConstants.COMMA);
-		PredicateSerializable<String[]> filter = (String str[]) -> !str[14].equals("ArrDelay") && !str[14].equals("NA");
-		MapToPairFunction<String[], Tuple2<String, Integer>> pair = (val) -> new Tuple2<String, Integer>(
+		PredicateSerializable<String[]> filter = (String str[]) -> !"ArrDelay".equals(str[14]) && !"NA".equals(str[14]);
+		MapToPairFunction<String[], Tuple2<String, Integer>> pair = val -> new Tuple2<String, Integer>(
 				(String) val[8], (Integer) Integer.parseInt(val[14]));
 		ReduceByKeyFunction<Integer> redfunc = (input1, input2) -> input1 + input2;
 		js.stage.tasks.add(map);
@@ -1762,7 +1762,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		jointask.jobid = js.jobid;
 		jointask.stageid = js.stageid;
 		js.stage.tasks.clear();
-		Consumer<String> dummy = (val) -> {
+		Consumer<String> dummy = val -> {
 		};
 		js.stage.tasks.add(dummy);
 		JoinPredicate<Tuple2<String, Long>, Tuple2<String, Long>> jp = (Tuple2<String, Long> tup1,
@@ -1798,8 +1798,8 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		reducebykeytask1.jobid = js.jobid;
 		reducebykeytask1.stageid = js.stageid;
 		MapFunction<String, String[]> map = (String str) -> str.split(MDCConstants.COMMA);
-		PredicateSerializable<String[]> filter = (String str[]) -> !str[14].equals("ArrDelay") && !str[14].equals("NA");
-		MapToPairFunction<String[], Tuple2<String, Integer>> pair = (val) -> new Tuple2<String, Integer>(
+		PredicateSerializable<String[]> filter = (String str[]) -> !"ArrDelay".equals(str[14]) && !"NA".equals(str[14]);
+		MapToPairFunction<String[], Tuple2<String, Integer>> pair = val -> new Tuple2<String, Integer>(
 				(String) val[8], (Integer) Integer.parseInt(val[14]));
 		ReduceByKeyFunction<Integer> redfunc = (input1, input2) -> input1 + input2;
 		js.stage.tasks.add(map);
@@ -1856,7 +1856,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		jointask.jobid = js.jobid;
 		jointask.stageid = js.stageid;
 		js.stage.tasks.clear();
-		Consumer<String> dummy = (val) -> {
+		Consumer<String> dummy = val -> {
 		};
 		js.stage.tasks.add(dummy);
 		LeftOuterJoinPredicate<Tuple2<String, Long>, Tuple2<String, Long>> jp = (Tuple2<String, Long> tup1,
@@ -1883,7 +1883,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		assertEquals("AQ", tupleresult.v2.v1);
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testProcessRightOuterJoin() throws Exception {
 		JobStage js = new JobStage();
@@ -1897,8 +1897,8 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		reducebykeytask1.jobid = js.jobid;
 		reducebykeytask1.stageid = js.stageid;
 		MapFunction<String, String[]> map = (String str) -> str.split(MDCConstants.COMMA);
-		PredicateSerializable<String[]> filter = (String str[]) -> !str[14].equals("ArrDelay") && !str[14].equals("NA");
-		MapToPairFunction<String[], Tuple2<String, Integer>> pair = (val) -> new Tuple2<String, Integer>(
+		PredicateSerializable<String[]> filter = (String str[]) -> !"ArrDelay".equals(str[14]) && !"NA".equals(str[14]);
+		MapToPairFunction<String[], Tuple2<String, Integer>> pair = val -> new Tuple2<String, Integer>(
 				(String) val[8], (Integer) Integer.parseInt(val[14]));
 		ReduceByKeyFunction<Integer> redfunc = (input1, input2) -> input1 + input2;
 
@@ -1959,7 +1959,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		mdsti.setTask(jointask);
 		js.stage.tasks.clear();
 
-		Consumer<String> dummy = (val) -> {
+		Consumer<String> dummy = val -> {
 		};
 		js.stage.tasks.add(dummy);
 		RightOuterJoinPredicate<Tuple2<String, Long>, Tuple2<String, Long>> jp = (Tuple2<String, Long> tup1,
@@ -1982,7 +1982,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		assertEquals("AQ", tupleresult.v2.v1);
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testProcessGroupByKey() throws Exception {
 		JobStage js = new JobStage();
@@ -1995,8 +1995,8 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		mappairtask1.jobid = js.jobid;
 		mappairtask1.stageid = js.stageid;
 		MapFunction<String, String[]> map = (String str) -> str.split(MDCConstants.COMMA);
-		PredicateSerializable<String[]> filter = (String str[]) -> !str[14].equals("ArrDelay") && !str[14].equals("NA");
-		MapToPairFunction<String[], Tuple2<String, Integer>> pair = (val) -> new Tuple2<String, Integer>(
+		PredicateSerializable<String[]> filter = (String str[]) -> !"ArrDelay".equals(str[14]) && !"NA".equals(str[14]);
+		MapToPairFunction<String[], Tuple2<String, Integer>> pair = val -> new Tuple2<String, Integer>(
 				(String) val[8], (Integer) Integer.parseInt(val[14]));
 		js.stage.tasks.add(map);
 		js.stage.tasks.add(filter);
@@ -2026,10 +2026,10 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		gbktask.jobid = js.jobid;
 		gbktask.stageid = js.stageid;
 		js.stage.tasks.clear();
-		Consumer<String> dummy = (val) -> {
+		Consumer<String> dummy = val -> {
 		};
 		js.stage.tasks.add(dummy);
-		gbktask.input = new Object[] { is1 };
+		gbktask.input = new Object[]{is1};
 		mdsti = new StreamPipelineTaskExecutorIgnite(js, gbktask);
 		mdsti.setHdfs(hdfs);
 		mdsti.ignite = igniteserver;
@@ -2047,7 +2047,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		assertEquals("AQ", tupleresult.v1);
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testProcessFoldLeft() throws Exception {
 		JobStage js = new JobStage();
@@ -2060,8 +2060,8 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		mappairtask1.jobid = js.jobid;
 		mappairtask1.stageid = js.stageid;
 		MapFunction<String, String[]> map = (String str) -> str.split(MDCConstants.COMMA);
-		PredicateSerializable<String[]> filter = (String str[]) -> !str[14].equals("ArrDelay") && !str[14].equals("NA");
-		MapToPairFunction<String[], Tuple2<String, Long>> pair = (val) -> new Tuple2<String, Long>((String) val[8],
+		PredicateSerializable<String[]> filter = (String str[]) -> !"ArrDelay".equals(str[14]) && !"NA".equals(str[14]);
+		MapToPairFunction<String[], Tuple2<String, Long>> pair = val -> new Tuple2<String, Long>((String) val[8],
 				(Long) Long.parseLong(val[14]));
 		js.stage.tasks.add(map);
 		js.stage.tasks.add(filter);
@@ -2094,7 +2094,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		ReduceByKeyFunction<Long> redfunc = (a, b) -> a + b;
 		FoldByKey fbk = new FoldByKey(0l, redfunc, true);
 		js.stage.tasks.add(fbk);
-		fbktask.input = new Object[] { is1 };
+		fbktask.input = new Object[]{is1};
 		mdsti.setTask(fbktask);
 		mdsti.processFoldByKeyTuple2();
 		is1.close();
@@ -2108,7 +2108,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		assertEquals("AQ", tupleresult.v1);
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testProcessFoldRight() throws Exception {
 		JobStage js = new JobStage();
@@ -2121,8 +2121,8 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		mappairtask1.jobid = js.jobid;
 		mappairtask1.stageid = js.stageid;
 		MapFunction<String, String[]> map = (String str) -> str.split(MDCConstants.COMMA);
-		PredicateSerializable<String[]> filter = (String str[]) -> !str[14].equals("ArrDelay") && !str[14].equals("NA");
-		MapToPairFunction<String[], Tuple2<String, Long>> pair = (val) -> new Tuple2<String, Long>((String) val[8],
+		PredicateSerializable<String[]> filter = (String str[]) -> !"ArrDelay".equals(str[14]) && !"NA".equals(str[14]);
+		MapToPairFunction<String[], Tuple2<String, Long>> pair = val -> new Tuple2<String, Long>((String) val[8],
 				(Long) Long.parseLong(val[14]));
 		js.stage.tasks.add(map);
 		js.stage.tasks.add(filter);
@@ -2156,7 +2156,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		ReduceByKeyFunction<Long> redfunc = (a, b) -> a + b;
 		FoldByKey fbk = new FoldByKey(0l, redfunc, false);
 		js.stage.tasks.add(fbk);
-		fbktask.input = new Object[] { is1 };
+		fbktask.input = new Object[]{is1};
 		mdsti = new StreamPipelineTaskExecutorIgnite(js, fbktask);
 		mdsti.setHdfs(hdfs);
 		mdsti.ignite = igniteserver;
@@ -2173,7 +2173,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		assertEquals("AQ", tupleresult.v1);
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testProcessCountByKey() throws Exception {
 		JobStage js = new JobStage();
@@ -2186,8 +2186,8 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		mappairtask1.jobid = js.jobid;
 		mappairtask1.stageid = js.stageid;
 		MapFunction<String, String[]> map = (String str) -> str.split(MDCConstants.COMMA);
-		PredicateSerializable<String[]> filter = (String str[]) -> !str[14].equals("ArrDelay") && !str[14].equals("NA");
-		MapToPairFunction<String[], Tuple2<String, Long>> pair = (val) -> new Tuple2<String, Long>((String) val[8],
+		PredicateSerializable<String[]> filter = (String str[]) -> !"ArrDelay".equals(str[14]) && !"NA".equals(str[14]);
+		MapToPairFunction<String[], Tuple2<String, Long>> pair = val -> new Tuple2<String, Long>((String) val[8],
 				(Long) Long.parseLong(val[14]));
 
 		js.stage.tasks.add(map);
@@ -2217,7 +2217,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		Task cbktask = new Task();
 		js.stage.tasks.clear();
 		js.stage.tasks.add(new CountByKeyFunction());
-		cbktask.input = new Object[] { is1 };
+		cbktask.input = new Object[]{is1};
 		mdsti = new StreamPipelineTaskExecutorIgnite(js, cbktask);
 		mdsti.setHdfs(hdfs);
 		mdsti.ignite = igniteserver;
@@ -2235,7 +2235,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		assertEquals("AQ", tupleresult.v1);
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testProcessCountByValue() throws Exception {
 		JobStage js = new JobStage();
@@ -2248,8 +2248,8 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		mappairtask1.jobid = js.jobid;
 		mappairtask1.stageid = js.stageid;
 		MapFunction<String, String[]> map = (String str) -> str.split(MDCConstants.COMMA);
-		PredicateSerializable<String[]> filter = (String str[]) -> !str[14].equals("ArrDelay") && !str[14].equals("NA");
-		MapToPairFunction<String[], Tuple2<String, Long>> pair = (val) -> new Tuple2<String, Long>((String) val[8],
+		PredicateSerializable<String[]> filter = (String str[]) -> !"ArrDelay".equals(str[14]) && !"NA".equals(str[14]);
+		MapToPairFunction<String[], Tuple2<String, Long>> pair = val -> new Tuple2<String, Long>((String) val[8],
 				(Long) Long.parseLong(val[14]));
 		js.stage.tasks.add(map);
 		js.stage.tasks.add(filter);
@@ -2280,7 +2280,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		cbktask.stageid = js.stageid;
 		js.stage.tasks.clear();
 		js.stage.tasks.add(new CountByKeyFunction());
-		cbktask.input = new Object[] { is1 };
+		cbktask.input = new Object[]{is1};
 		mdsti = new StreamPipelineTaskExecutorIgnite(js, cbktask);
 		mdsti.setHdfs(hdfs);
 		mdsti.ignite = igniteserver;
@@ -2300,7 +2300,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testProcessCoalesce() throws Exception {
 		JobStage js = new JobStage();
@@ -2313,8 +2313,8 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		reducebykeytask1.jobid = js.jobid;
 		reducebykeytask1.stageid = js.stageid;
 		MapFunction<String, String[]> map = (String str) -> str.split(MDCConstants.COMMA);
-		PredicateSerializable<String[]> filter = (String str[]) -> !str[14].equals("ArrDelay") && !str[14].equals("NA");
-		MapToPairFunction<String[], Tuple2<String, Integer>> pair = (val) -> new Tuple2<String, Integer>(
+		PredicateSerializable<String[]> filter = (String str[]) -> !"ArrDelay".equals(str[14]) && !"NA".equals(str[14]);
+		MapToPairFunction<String[], Tuple2<String, Integer>> pair = val -> new Tuple2<String, Integer>(
 				(String) val[8], (Integer) Integer.parseInt(val[14]));
 		ReduceByKeyFunction<Integer> redfunc = (input1, input2) -> input1 + input2;
 
@@ -2376,7 +2376,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		coalesce.coalescepartition = 1;
 		coalesce.coalescefuncion = (a, b) -> a + b;
 		js.stage.tasks.add(coalesce);
-		coalescetask.input = new Object[] { is1, is2 };
+		coalescetask.input = new Object[]{is1, is2};
 		RightOuterJoinPredicate<Tuple2<String, Long>, Tuple2<String, Long>> jp = (Tuple2<String, Long> tup1,
 				Tuple2<String, Long> tup2) -> tup1.v1.equals(tup2.v1);
 		mdsti = new StreamPipelineTaskExecutorIgnite(js, coalescetask);

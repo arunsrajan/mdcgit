@@ -18,7 +18,6 @@ public class ByteBufferFactory extends BasePooledObjectFactory<ByteBuffer> {
 		} catch (Exception ex) {
 			log.error(MDCConstants.EMPTY, ex);
 			return null;
-		} finally {
 		}
 
 	}

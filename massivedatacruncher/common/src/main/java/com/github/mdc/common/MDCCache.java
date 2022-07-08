@@ -8,11 +8,14 @@ import org.ehcache.Cache;
  * This class holds the cache object for the whole JVM.
  */
 public class MDCCache {
-	private static Cache<?, ?> cache = null;
+	private static Cache<?, ?> cache;
 	public static void put(Cache<?, ?> cache) {
 		MDCCache.cache = cache;
 	}
 	public static Cache<?, ?> get() {
 		return MDCCache.cache;
+	}
+
+	private MDCCache() {
 	}
 }

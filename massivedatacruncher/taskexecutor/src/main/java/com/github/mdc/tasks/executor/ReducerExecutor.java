@@ -22,12 +22,12 @@ public class ReducerExecutor implements Callable<Context> {
 		this.key = key;
 	}
 
-	@SuppressWarnings({"unchecked" })
+	@SuppressWarnings({"unchecked"})
 	@Override
 	public Context call() throws Exception {
 		var ctx = new DataCruncherContext();
-		dcc.keys().parallelStream().forEachOrdered(key->{
-			cr.reduce(key, (List)dcc.get(key), ctx);
+		dcc.keys().parallelStream().forEachOrdered(key -> {
+			cr.reduce(key, (List) dcc.get(key), ctx);
 		});
 		return ctx;
 	}

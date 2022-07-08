@@ -112,7 +112,7 @@ public class HdfsBlockReader {
 			log.debug("Entered HdfsBlockReader.getDataBlock");
 			// Block reader to get file block bytes
 			var totalbytestoread = (int) (block.blockend - block.blockstart);
-			var breader = getBlockReader((DistributedFileSystem) hdfs, lb, lb.getStartOffset()+block.blockstart, containerhost);
+			var breader = getBlockReader((DistributedFileSystem) hdfs, lb, lb.getStartOffset() + block.blockstart, containerhost);
 			log.debug("In getDataBlock Read Bytes: " + totalbytestoread);
 			var readsize = 1024;
 			var byt = new byte[readsize];
@@ -123,8 +123,9 @@ public class HdfsBlockReader {
 				log.debug("In getDataBlock BlockReader: " + breader.getNetworkDistance());
 				while (breader.available() > 0) {
 					var read = breader.read(byt, 0, readsize);
-					if (read == -1)
+					if (read == -1) {
 						break;
+					}
 					// If bytes chunk read are less than or equal to
 					// total number of bytes to read for processing.
 					if (sum + read <= totalbytestoread) {
@@ -162,7 +163,7 @@ public class HdfsBlockReader {
 	 */
 	public static SnappyInputStream getBlockDataSnappyStream(final BlocksLocation bl, FileSystem hdfs) throws Exception {
 		ByteBuffer bb = ByteBufferPool.get().borrowObject();
-		try(var bbos = new ByteBufferOutputStream(bb);
+		try (var bbos = new ByteBufferOutputStream(bb);
 				var lzfos = new SnappyOutputStream(bbos)) {
 			log.debug("Entered HdfsBlockReader.getBlockDataMR");
 			
@@ -240,8 +241,8 @@ public class HdfsBlockReader {
 			dninfo = dnaddress.get();
 		}
 		var offsetIntoBlock = offset - lb.getStartOffset();
-		log.debug("Extended Block Num Bytes: "+eblock.getNumBytes());
-		log.debug("Offset Within Block: "+offsetIntoBlock);
+		log.debug("Extended Block Num Bytes: " + eblock.getNumBytes());
+		log.debug("Offset Within Block: " + offsetIntoBlock);
 		log.debug("Xref Address Address: " + dninfo);
 		log.debug("Target Address: " + targetAddr);
 		fs.getConf().setBoolean("dfs.client.read.shortcircuit", true);
@@ -255,7 +256,7 @@ public class HdfsBlockReader {
 		log.debug("Exiting HdfsBlockReader.getBlockReader");
 		return new BlockReaderFactory(dfsClientConf).setInetSocketAddress(targetAddr).setBlock(eblock)
 				.setFileName(targetAddr.toString() + MDCConstants.COLON + eblock.getBlockId())
-				.setBlockToken(lb.getBlockToken()).setStartOffset(offsetIntoBlock).setLength(lb.getBlockSize()-offsetIntoBlock)
+				.setBlockToken(lb.getBlockToken()).setStartOffset(offsetIntoBlock).setLength(lb.getBlockSize() - offsetIntoBlock)
 				.setVerifyChecksum(true).setClientName(MDCConstants.MDC).setDatanodeInfo(dninfo)
 				.setClientCacheContext(clientContext).setCachingStrategy(CachingStrategy.newDefaultStrategy())
 				.setConfiguration(fs.getConf()).setTracer(new Tracer.Builder("MDCTracer").build())
@@ -278,5 +279,8 @@ public class HdfsBlockReader {
 						return peer;
 					}
 				}).build();
+	}
+
+	private HdfsBlockReader() {
 	}
 }

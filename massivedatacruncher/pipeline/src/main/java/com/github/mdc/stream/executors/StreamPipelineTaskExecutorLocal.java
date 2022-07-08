@@ -35,27 +35,26 @@ import com.github.mdc.stream.PipelineException;
 @SuppressWarnings("rawtypes")
 public final class StreamPipelineTaskExecutorLocal extends StreamPipelineTaskExecutor  {
 	private static Logger log = Logger.getLogger(StreamPipelineTaskExecutorLocal.class);
-	protected ConcurrentMap<String,OutputStream> resultstream = null;
+	protected ConcurrentMap<String, OutputStream> resultstream;
 	public double timetaken = 0.0;
 	
 	public StreamPipelineTaskExecutorLocal(JobStage jobstage, 
-			ConcurrentMap<String,OutputStream> resultstream, Cache cache) {
+			ConcurrentMap<String, OutputStream> resultstream, Cache cache) {
 		super(jobstage, cache);
 		this.resultstream = resultstream;
 	}
 	
 	public OutputStream getIntermediateInputStreamRDF(RemoteDataFetch rdf) throws Exception {
 		log.debug("Entered MassiveDataStreamTaskExecutorInMemory.getIntermediateInputStreamRDF");
-		var path = (rdf.jobid + MDCConstants.HYPHEN +
-				rdf.stageid + MDCConstants.HYPHEN +rdf.taskid
-				);
+		var path = rdf.jobid + MDCConstants.HYPHEN
+				+ rdf.stageid + MDCConstants.HYPHEN + rdf.taskid;
 		OutputStream os = resultstream.get(path);
 		log.debug("Exiting MassiveDataStreamTaskExecutorInMemory.getIntermediateInputStreamFS");
-		if(Objects.isNull(os)) {
-			log.info("Unable to get Result Stream for path: "+path+" Fetching Remotely");
+		if (Objects.isNull(os)) {
+			log.info("Unable to get Result Stream for path: " + path + " Fetching Remotely");
 			return os;
 		}
-		else if(os instanceof ByteArrayOutputStream baos) {
+		else if (os instanceof ByteArrayOutputStream baos) {
 			return os;
 		}
 		else {
@@ -69,9 +68,8 @@ public final class StreamPipelineTaskExecutorLocal extends StreamPipelineTaskExe
 	 */
 	@Override
 	public String getIntermediateDataFSFilePath(Task task) {
-		return (task.jobid + MDCConstants.HYPHEN +
-				task.stageid + MDCConstants.HYPHEN +task.taskid
-					);
+		return task.jobid + MDCConstants.HYPHEN
+				+ task.stageid + MDCConstants.HYPHEN + task.taskid;
 	}
 	
 	
@@ -88,7 +86,7 @@ public final class StreamPipelineTaskExecutorLocal extends StreamPipelineTaskExe
 		try {
 			var path = getIntermediateDataFSFilePath(task);
 			OutputStream os;
-			if(task.finalphase && task.saveresulttohdfs) {
+			if (task.finalphase && task.saveresulttohdfs) {
 				os = new CloseableByteBufferOutputStream(ByteBufferPool.get().borrowObject());
 			}
 			else {
@@ -117,9 +115,9 @@ public final class StreamPipelineTaskExecutorLocal extends StreamPipelineTaskExe
 		var path = getIntermediateDataFSFilePath(task);
 		log.debug("Exiting MassiveDataStreamTaskExecutorInMemory.getIntermediateInputStreamFS");
 		OutputStream os = resultstream.get(path);
-		if(Objects.isNull(os)) {
-			throw new NullPointerException("Unable to get Result Stream for path: "+path);
-		}else if(os instanceof ByteArrayOutputStream baos) {
+		if (Objects.isNull(os)) {
+			throw new NullPointerException("Unable to get Result Stream for path: " + path);
+		} else if (os instanceof ByteArrayOutputStream baos) {
 			return new ByteArrayInputStream(baos.toByteArray());
 		} else {
 			throw new UnsupportedOperationException("Unknown I/O operation");
@@ -134,18 +132,18 @@ public final class StreamPipelineTaskExecutorLocal extends StreamPipelineTaskExe
 		var stageTasks = getStagesTask();
 		var hdfsfilepath = MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL, MDCConstants.HDFSNAMENODEURL_DEFAULT);
 		var configuration = new Configuration();
-		try(var hdfs = FileSystem.newInstance(new URI(hdfsfilepath), configuration);) {
+		try (var hdfs = FileSystem.newInstance(new URI(hdfsfilepath), configuration);) {
 			log.debug("Submitted Stage " + stageTasks);
 			log.debug("Running Stage " + stageTasks);
 			if (task.input != null && task.parentremotedatafetch != null) {
 				var numinputs = task.parentremotedatafetch.length;
-				for (var inputindex = 0; inputindex<numinputs;inputindex++) {
+				for (var inputindex = 0; inputindex < numinputs; inputindex++) {
 					var input = task.parentremotedatafetch[inputindex];
-					if(input != null) {
+					if (input != null) {
 						var rdf = (RemoteDataFetch) input;
 						var os = getIntermediateInputStreamRDF(rdf);
 						if (os != null) {
-							task.input[inputindex] = new SnappyInputStream(new ByteArrayInputStream(((ByteArrayOutputStream)os).toByteArray()));
+							task.input[inputindex] = new SnappyInputStream(new ByteArrayInputStream(((ByteArrayOutputStream) os).toByteArray()));
 						} else {
 							RemoteDataFetcher.remoteInMemoryDataFetch(rdf);
 							task.input[inputindex] = new SnappyInputStream(new ByteArrayInputStream(rdf.data));
@@ -153,17 +151,19 @@ public final class StreamPipelineTaskExecutorLocal extends StreamPipelineTaskExe
 					}
 				}
 			}
-			if(!Objects.isNull(hbtss))
-			hbtss.pingOnce(task.stageid, task.taskid, task.hostport, Task.TaskStatus.RUNNING, timetaken, null);
+			if (!Objects.isNull(hbtss)) {
+				hbtss.pingOnce(task.stageid, task.taskid, task.hostport, Task.TaskStatus.RUNNING, timetaken, null);
+			}
 			timetaken = computeTasks(task, hdfs);
-			if(!Objects.isNull(hbtss))
-			hbtss.pingOnce(task.stageid, task.taskid, task.hostport, Task.TaskStatus.COMPLETED, timetaken, null);
+			if (!Objects.isNull(hbtss)) {
+				hbtss.pingOnce(task.stageid, task.taskid, task.hostport, Task.TaskStatus.COMPLETED, timetaken, null);
+			}
 			log.debug("Completed Stage " + stageTasks);
 		} catch (Exception ex) {
 			log.error("Failed Stage " + stageTasks, ex);
 			completed = true;
 			log.error("Failed Stage: " + task.stageid, ex);
-			if(!Objects.isNull(hbtss)) {
+			if (!Objects.isNull(hbtss)) {
 				try {
 					var baos = new ByteArrayOutputStream();
 					var failuremessage = new PrintWriter(baos, true, StandardCharsets.UTF_8);

@@ -34,7 +34,7 @@ public class StreamPipelineYarnContainer extends AbstractIntegrationYarnContaine
 	private Map<String, String> containerprops;
 	private ExecutorService executor; 
 	private static final Log log = LogFactory.getLog(StreamPipelineYarnContainer.class);
-	private Map<String,JobStage> jsidjsmap;
+	private Map<String, JobStage> jsidjsmap;
 	/**
 	 * Pull the Job to perform MR operation execution requesting 
 	 * the Yarn App Master Service. The various Yarn operation What operation
@@ -55,7 +55,7 @@ public class StreamPipelineYarnContainer extends AbstractIntegrationYarnContaine
 			MDCProperties.put(prop);
 			ByteBufferPoolDirect.init();
 			ByteBufferPool.init(3);
-			while(true) {
+			while (true) {
 				request = new JobRequest();
 				request.setState(JobRequest.State.WHATTODO);
 				request.setContainerid(containerid);
@@ -63,12 +63,12 @@ public class StreamPipelineYarnContainer extends AbstractIntegrationYarnContaine
 				log.debug(request.getTimerequested());
 				client = (MindAppmasterServiceClient) getIntegrationServiceClient();
 				var response = (JobResponse) client.doMindRequest(request);
-				log.debug(containerid+": Response containerid: "+response);
-				if(response == null) {
+				log.debug(containerid + ": Response containerid: " + response);
+				if (response == null) {
 					sleep(1);
 					continue;			
 				}
-				if(response.getJob()!=null) {
+				if (response.getJob() != null) {
 					request = new JobRequest();
 					request.setState(JobRequest.State.RESPONSERECIEVED);
 					request.setContainerid(containerid);
@@ -76,8 +76,8 @@ public class StreamPipelineYarnContainer extends AbstractIntegrationYarnContaine
 					request.setJob(response.getJob());
 					client.doMindRequest(request);
 				}
-				log.debug(containerid+": Response containerid: "+response.getContainerid());
-				log.debug(containerid+": Response State: "+response.getState()+" "+response.getResmsg());
+				log.debug(containerid + ": Response containerid: " + response.getContainerid());
+				log.debug(containerid + ": Response State: " + response.getState() + " " + response.getResmsg());
 				if (response.getState().equals(JobResponse.State.STANDBY)) {
 					sleep(1);
 					continue;
@@ -91,16 +91,16 @@ public class StreamPipelineYarnContainer extends AbstractIntegrationYarnContaine
 					sleep(1);
 				}
 				else if (response.getState().equals(JobResponse.State.RUNJOB)) {
-					log.debug(containerid+": Environment "+getEnvironment());
+					log.debug(containerid + ": Environment " + getEnvironment());
 					job = response.getJob();
 					var kryo = Utils.getKryoNonDeflateSerializer();
 					var input = new Input(new ByteArrayInputStream(job));
 					var object = kryo.readClassAndObject(input);
-					task = (Task)object;
+					task = (Task) object;
 					System.setProperty(MDCConstants.HDFSNAMENODEURL, containerprops.get(MDCConstants.HDFSNAMENODEURL));
 					prop.putAll(containerprops);
 					MDCProperties.put(prop);
-					var yarnexecutor = new StreamPipelineTaskExecutorYarn( containerprops.get(MDCConstants.HDFSNAMENODEURL),jsidjsmap.get(task.jobid + task.stageid));
+					var yarnexecutor = new StreamPipelineTaskExecutorYarn( containerprops.get(MDCConstants.HDFSNAMENODEURL), jsidjsmap.get(task.jobid + task.stageid));
 					yarnexecutor.setTask(task);
 					yarnexecutor.setExecutor(executor);
 					yarnexecutor.call();
@@ -109,17 +109,17 @@ public class StreamPipelineYarnContainer extends AbstractIntegrationYarnContaine
 					request.setJob(job);
 					request.setContainerid(containerid);
 					response = (JobResponse) client.doMindRequest(request);
-					log.debug(containerid+": Task Completed=" + task);
+					log.debug(containerid + ": Task Completed=" + task);
 					sleep(1);
 				}
 				else if (response.getState().equals(JobResponse.State.DIE)) {
-					log.debug(containerid+": Container dies: " + response.getState());
+					log.debug(containerid + ": Container dies: " + response.getState());
 					break;
 				}
-				log.debug(containerid+": Response state=" + response.getState());
+				log.debug(containerid + ": Response state=" + response.getState());
 	
 			}
-			log.debug(containerid+": Completed Job Exiting with status 0...");
+			log.debug(containerid + ": Completed Job Exiting with status 0...");
 			ByteBufferPoolDirect.get().close();
 			shutdownExecutor();
 			System.exit(0);
@@ -129,13 +129,13 @@ public class StreamPipelineYarnContainer extends AbstractIntegrationYarnContaine
 		    // Restore interrupted state...
 		    Thread.currentThread().interrupt();
 		}
-		catch(Exception ex) {
+		catch (Exception ex) {
 			request = new JobRequest();
 			request.setState(JobRequest.State.JOBFAILED);
 			request.setJob(job);
-			if(client!=null) {
+			if (client != null) {
 				var response = (JobResponse) client.doMindRequest(request);
-				log.debug("Job Completion Error..."+response.getState()+"..., See cause below \n",ex);
+				log.debug("Job Completion Error..." + response.getState() + "..., See cause below \n", ex);
 			}
 			ByteBufferPoolDirect.get().close();
 			try {
@@ -145,14 +145,14 @@ public class StreamPipelineYarnContainer extends AbstractIntegrationYarnContaine
 			    // Restore interrupted state...
 			    Thread.currentThread().interrupt();
 			} catch (Exception e) {
-				log.error("",e);
+				log.error("", e);
 			}
 			System.exit(-1);
 		}
 	}
 
 	public void shutdownExecutor() throws InterruptedException {
-		if(executor!=null) {
+		if (executor != null) {
 			executor.shutdownNow();
 			executor.awaitTermination(1, TimeUnit.SECONDS);
 		}
@@ -174,7 +174,7 @@ public class StreamPipelineYarnContainer extends AbstractIntegrationYarnContaine
 		    // Restore interrupted state...
 		    Thread.currentThread().interrupt();
 		} catch (Exception ex) {
-			log.debug("Delay error, See cause below \n",ex);
+			log.debug("Delay error, See cause below \n", ex);
 		}
 	}
 

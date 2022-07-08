@@ -46,7 +46,7 @@ public class MassiveDataMRJobBase {
 	static int namenodeport = 9000;
 	static int namenodehttpport = 50070;
 	static FileSystem hdfs;
-	String[] carrierheader = { "Code", "Description" };
+	String[] carrierheader = {"Code", "Description"};
 	String hdfsfilepath = "hdfs://localhost:9000";
 	String airlines = "/airlines";
 	static String airlinenoheader = "/airlinenoheader";
@@ -103,27 +103,15 @@ public class MassiveDataMRJobBase {
 			HeartBeatServer hb = new HeartBeatServer();
 			hb.init(rescheduledelay, port, host, initialdelay, pingdelay, "");
 			hb.start();
-			try (Socket sock = new Socket(MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_HOST), 9000);) {
-			} catch (Exception ex) {
-				Configuration conf = new Configuration();
-				conf.set("fs.hdfs.impl.disable.cache", "false");
-				conf.set("dfs.block.access.token.enable", "true");
-				hdfsLocalCluster = new HdfsLocalCluster.Builder().setHdfsNamenodePort(namenodeport)
-						.setHdfsNamenodeHttpPort(namenodehttpport).setHdfsTempDir("./target/embedded_hdfs")
-						.setHdfsNumDatanodes(1).setHdfsEnablePermissions(false).setHdfsFormat(true)
-						.setHdfsEnableRunningUserAsProxyUser(true).setHdfsConfig(conf).build();
-
-				hdfsLocalCluster.start();
-			}
 			Configuration configuration = new Configuration();
 			hdfs = FileSystem.get(new URI(MDCProperties.get().getProperty("hdfs.namenode.url")),
 					configuration);
-			log.info("HDFS FileSystem Object: "+hdfs);
+			log.info("HDFS FileSystem Object: " + hdfs);
 			if (numberofnodes > 0) {
 				port = Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.NODE_PORT));
 				int executorsindex = 0;
-				ConcurrentMap<String, Map<String,Process>> containerprocesses = new ConcurrentHashMap<>();
-				ConcurrentMap<String, Map<String,List<Thread>>> containeridthreads = new ConcurrentHashMap<>();
+				ConcurrentMap<String, Map<String, Process>> containerprocesses = new ConcurrentHashMap<>();
+				ConcurrentMap<String, Map<String, List<Thread>>> containeridthreads = new ConcurrentHashMap<>();
 				ExecutorService es = Executors.newWorkStealingPool();
 				CountDownLatch cdl = new CountDownLatch(numberofnodes);
 				CountDownLatch cdlport = new CountDownLatch(1);
@@ -141,7 +129,7 @@ public class MassiveDataMRJobBase {
 					executorpool.execute(() -> {
 						ServerSocket server;
 						try {
-							server = new ServerSocket(port,256,InetAddress.getByAddress(new byte[] { 0x00, 0x00, 0x00, 0x00 }));
+							server = new ServerSocket(port, 256, InetAddress.getByAddress(new byte[]{0x00, 0x00, 0x00, 0x00}));
 							cdlport.countDown();
 							cdl.countDown();
 							while (true) {
@@ -151,7 +139,7 @@ public class MassiveDataMRJobBase {
 												containerprocesses, hdfs, containeridthreads, containeridports));
 							}
 						} catch (Exception ioe) {
-							log.info(MDCConstants.EMPTY,ioe);
+							log.info(MDCConstants.EMPTY, ioe);
 						}
 					});
 					cdlport.await();

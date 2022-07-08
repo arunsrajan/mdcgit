@@ -6,7 +6,7 @@ import org.junit.BeforeClass;
 public class StreamPipelineBaseTestCommon extends StreamPipelineBase {
 	@BeforeClass
 	public static void setServerUp() throws Exception {
-		if(!setupdone) {
+		if (!setupdone) {
 			StreamPipelineTestSuite.setServerUp();
 			setupdone = true;
 			toteardownclass = true;
@@ -14,7 +14,7 @@ public class StreamPipelineBaseTestCommon extends StreamPipelineBase {
 	}
 	@AfterClass
 	public static void tearDown() throws Exception {
-		if(toteardownclass) {
+		if (toteardownclass) {
 			StreamPipelineTestSuite.closeResources();
 		}
 	}

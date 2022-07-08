@@ -8,5 +8,8 @@ public class GlobalByteBufferSemaphore {
 	public static Semaphore get() {
 		return sembb;
 	}
+
+	private GlobalByteBufferSemaphore() {
+	}
 	
 }

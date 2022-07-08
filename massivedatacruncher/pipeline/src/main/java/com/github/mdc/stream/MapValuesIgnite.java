@@ -17,7 +17,7 @@ public final class MapValuesIgnite<I1,I2> extends MapPairIgnite<I1,I2> {
 			ReduceByKeyFunctionValues<I2> rfv)  {
 		this.task = rfv;
 		this.root = root;
-		root.finaltask=task;
+		root.finaltask = task;
 	}
 	
 	/**
@@ -27,10 +27,10 @@ public final class MapValuesIgnite<I1,I2> extends MapPairIgnite<I1,I2> {
 	 * @param root
 	 * @param mvf
 	 */
-	public <I3,I4> MapValuesIgnite(AbstractPipeline root, MapValuesFunction<? super I2, ? extends Tuple2<I3,I4>> mvf) {
+	public <I3, I4> MapValuesIgnite(AbstractPipeline root, MapValuesFunction<? super I2, ? extends Tuple2<I3, I4>> mvf) {
 		this.task = mvf;
 		this.root = root;
-		root.finaltask=task;
+		root.finaltask = task;
 	}
 	
 	/**
@@ -38,8 +38,8 @@ public final class MapValuesIgnite<I1,I2> extends MapPairIgnite<I1,I2> {
 	 * @param rfv
 	 * @return
 	 */
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public MapValuesIgnite<I1,I2> reduceByValues(ReduceByKeyFunctionValues<I2> rfv)  {
+	@SuppressWarnings({"unchecked", "rawtypes"})
+	public MapValuesIgnite<I1, I2> reduceByValues(ReduceByKeyFunctionValues<I2> rfv)  {
 		var mapvalues = new MapValuesIgnite(root, rfv);
 		this.childs.add(mapvalues);
 		mapvalues.parents.add(this);

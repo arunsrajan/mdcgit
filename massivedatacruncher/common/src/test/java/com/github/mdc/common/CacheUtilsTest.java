@@ -47,22 +47,22 @@ public class CacheUtilsTest {
 	@Test
 	public void testCache() throws Exception {
 		FileSystem hdfs = FileSystem.get(new URI(hdfsurl), new Configuration());
-		List<Path> blockpath  =new ArrayList<>();
-		for (String hdfsdir : hdfsdirpaths ) {
+		List<Path> blockpath  = new ArrayList<>();
+		for (String hdfsdir : hdfsdirpaths) {
 			FileStatus[] fileStatus = hdfs.listStatus(
 					new Path(hdfsurl + hdfsdir));
 			Path[] paths = FileUtil.stat2Paths(fileStatus);
 			blockpath.addAll(Arrays.asList(paths));
 		}
-		List<BlocksLocation> bls = HDFSBlockUtils.getBlocksLocationByFixedBlockSizeAuto(hdfs, blockpath,true,128*MDCConstants.MB);
+		List<BlocksLocation> bls = HDFSBlockUtils.getBlocksLocationByFixedBlockSizeAuto(hdfs, blockpath, true, 128 * MDCConstants.MB);
 		getDnXref(bls);
 		String cacheblock = "cacheblock";
 		int blscount = 0;
-		Cache<String,byte[]> cache = (Cache<String, byte[]>) MDCCache.get();
-		for(BlocksLocation bl:bls) {
+		Cache<String, byte[]> cache = (Cache<String, byte[]>) MDCCache.get();
+		for (BlocksLocation bl :bls) {
 			SnappyInputStream sis = HdfsBlockReader.getBlockDataSnappyStream(bl, hdfs);
 			byte[] byt = sis.readAllBytes();
-			cache.put(cacheblock+blscount, byt);
+			cache.put(cacheblock + blscount, byt);
 			blscount++;
 			System.out.println(blscount);
 			sis.close();
@@ -74,12 +74,12 @@ public class CacheUtilsTest {
 		var dnxrefs = bls.stream().parallel().flatMap(bl -> {
 			var xrefs = new LinkedHashSet<String>();
 			Iterator<Set<String>> xref = bl.block[0].dnxref.values().iterator();
-			for (; xref.hasNext();) {
+			for (; xref.hasNext(); ) {
 				xrefs.addAll(xref.next());
 			}
-			if (bl.block.length > 1 && !Objects.isNull(bl.block[1])) {
+			if(bl.block.length > 1 && !Objects.isNull(bl.block[1])) {
 				xref = bl.block[0].dnxref.values().iterator();
-				for (; xref.hasNext();) {
+				for (; xref.hasNext(); ) {
 					xrefs.addAll(xref.next());
 				}
 			}
@@ -98,7 +98,7 @@ public class CacheUtilsTest {
 			var xref = xrefselected.get();
 			dnxrefallocatecount.put(xref, dnxrefallocatecount.get(xref) + 1);
 			b.block[0].hp = xref;
-			if (b.block.length > 1 && !Objects.isNull(b.block[1])) {
+			if(b.block.length > 1 && !Objects.isNull(b.block[1])) {
 				xrefselected = b.block[1].dnxref.keySet().stream()
 						.flatMap(xrefhost -> b.block[1].dnxref.get(xrefhost).stream()).sorted((xref1, xref2) -> {
 							return dnxrefallocatecount.get(xref1).compareTo(dnxrefallocatecount.get(xref2));

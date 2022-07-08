@@ -18,7 +18,7 @@ public class DataCruncherContextTest {
 	String testdata2 = "TestData2";
 	@Test
 	public void testPutGet() {
-		DataCruncherContext<String,String> ctx = new DataCruncherContext<>();
+		DataCruncherContext<String, String> ctx = new DataCruncherContext<>();
 		ctx.put(testdata, testdata);
 		ctx.put(testdata, testdata1);
 		ctx.put(testdata, testdata2);
@@ -29,22 +29,22 @@ public class DataCruncherContextTest {
 	}
 	@Test
 	public void testKeys() {
-		DataCruncherContext<String,String> ctx = new DataCruncherContext<>();
+		DataCruncherContext<String, String> ctx = new DataCruncherContext<>();
 		ctx.put(testdata, testdata);
 		ctx.put(testdata, testdata1);
 		ctx.put(testdata, testdata2);
 		
-		assertTrue(ctx.keys().size()==1);
+		assertTrue(ctx.keys().size() == 1);
 		assertTrue(ctx.keys().contains(testdata));
 		assertFalse(ctx.keys().contains(testdata1));
 	}
 	
 	@Test
 	public void testAddAll() {
-		DataCruncherContext<String,String> ctx = new DataCruncherContext<>();
-		List<String> coll = Arrays.asList(testdata,testdata1,testdata2);
+		DataCruncherContext<String, String> ctx = new DataCruncherContext<>();
+		List<String> coll = Arrays.asList(testdata, testdata1, testdata2);
 		ctx.addAll(testdata, coll);
-		assertTrue(ctx.keys().size()==1);
+		assertTrue(ctx.keys().size() == 1);
 		assertTrue(ctx.keys().contains(testdata));
 		assertFalse(ctx.keys().contains(testdata1));
 		assertTrue(ctx.get(testdata).contains(testdata));
@@ -54,10 +54,10 @@ public class DataCruncherContextTest {
 	
 	@Test
 	public void testPutAll() {
-		DataCruncherContext<String,String> ctx = new DataCruncherContext<>();
-		Set<String> coll = new LinkedHashSet<>(Arrays.asList(testdata,testdata1,testdata2));
+		DataCruncherContext<String, String> ctx = new DataCruncherContext<>();
+		Set<String> coll = new LinkedHashSet<>(Arrays.asList(testdata, testdata1, testdata2));
 		ctx.putAll(coll, testdata);
-		assertTrue(ctx.keys().size()==3);
+		assertTrue(ctx.keys().size() == 3);
 		assertTrue(ctx.keys().contains(testdata));
 		assertTrue(ctx.keys().contains(testdata1));
 		assertTrue(ctx.keys().contains(testdata2));
@@ -67,12 +67,12 @@ public class DataCruncherContextTest {
 	}
 	@Test
 	public void testAdd() {
-		DataCruncherContext<String,String> ctx = new DataCruncherContext<>();
-		Set<String> coll = new LinkedHashSet<>(Arrays.asList(testdata,testdata1,testdata2));
+		DataCruncherContext<String, String> ctx = new DataCruncherContext<>();
+		Set<String> coll = new LinkedHashSet<>(Arrays.asList(testdata, testdata1, testdata2));
 		ctx.putAll(coll, testdata);
-		DataCruncherContext<String,String> ctxtest = new DataCruncherContext<>();
+		DataCruncherContext<String, String> ctxtest = new DataCruncherContext<>();
 		ctxtest.add(ctx);
-		assertTrue(ctxtest.keys().size()==3);
+		assertTrue(ctxtest.keys().size() == 3);
 		assertTrue(ctxtest.keys().contains(testdata));
 		assertTrue(ctxtest.keys().contains(testdata1));
 		assertTrue(ctxtest.keys().contains(testdata2));

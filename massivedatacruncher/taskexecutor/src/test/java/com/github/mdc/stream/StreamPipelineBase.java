@@ -19,20 +19,20 @@ import com.github.sakserv.minicluster.impl.YarnLocalCluster;
 
 public class StreamPipelineBase {
 	static HdfsLocalCluster hdfsLocalCluster;
-	String[] airlineheader = new String[] { "Year", "Month", "DayofMonth", "DayOfWeek", "DepTime", "CRSDepTime",
+	String[] airlineheader = new String[]{"Year", "Month", "DayofMonth", "DayOfWeek", "DepTime", "CRSDepTime",
 			"ArrTime", "CRSArrTime", "UniqueCarrier", "FlightNum", "TailNum", "ActualElapsedTime", "CRSElapsedTime",
 			"AirTime", "ArrDelay", "DepDelay", "Origin", "Dest", "Distance", "TaxiIn", "TaxiOut", "Cancelled",
 			"CancellationCode", "Diverted", "CarrierDelay", "WeatherDelay", "NASDelay", "SecurityDelay",
-			"LateAircraftDelay" };
-	String[] carrierheader = { "Code", "Description" };
-	static SqlTypeName[] airsqltype = {SqlTypeName.VARCHAR,SqlTypeName.VARCHAR,SqlTypeName.VARCHAR,SqlTypeName.VARCHAR,
-			SqlTypeName.VARCHAR,SqlTypeName.VARCHAR,SqlTypeName.VARCHAR,SqlTypeName.VARCHAR,SqlTypeName.VARCHAR,SqlTypeName.VARCHAR,SqlTypeName.VARCHAR,SqlTypeName.VARCHAR
-			,SqlTypeName.VARCHAR,SqlTypeName.VARCHAR,SqlTypeName.VARCHAR,SqlTypeName.VARCHAR,SqlTypeName.VARCHAR,SqlTypeName.VARCHAR,
-			SqlTypeName.VARCHAR,SqlTypeName.VARCHAR,
-			SqlTypeName.VARCHAR,SqlTypeName.VARCHAR,SqlTypeName.VARCHAR,SqlTypeName.VARCHAR,SqlTypeName.VARCHAR,SqlTypeName.VARCHAR,SqlTypeName.VARCHAR,SqlTypeName.VARCHAR,SqlTypeName.VARCHAR};
-	static String[] airportsheader = {"iata","airport","city","state","country","latitude","longitude"};
-	static SqlTypeName[] airportstype = {SqlTypeName.VARCHAR,SqlTypeName.VARCHAR,SqlTypeName.VARCHAR,SqlTypeName.VARCHAR,
-			SqlTypeName.VARCHAR,SqlTypeName.VARCHAR,SqlTypeName.VARCHAR};
+			"LateAircraftDelay"};
+	String[] carrierheader = {"Code", "Description"};
+	static SqlTypeName[] airsqltype = {SqlTypeName.VARCHAR, SqlTypeName.VARCHAR, SqlTypeName.VARCHAR, SqlTypeName.VARCHAR,
+			SqlTypeName.VARCHAR, SqlTypeName.VARCHAR, SqlTypeName.VARCHAR, SqlTypeName.VARCHAR, SqlTypeName.VARCHAR, SqlTypeName.VARCHAR, SqlTypeName.VARCHAR, SqlTypeName.VARCHAR
+			, SqlTypeName.VARCHAR, SqlTypeName.VARCHAR, SqlTypeName.VARCHAR, SqlTypeName.VARCHAR, SqlTypeName.VARCHAR, SqlTypeName.VARCHAR,
+			SqlTypeName.VARCHAR, SqlTypeName.VARCHAR,
+			SqlTypeName.VARCHAR, SqlTypeName.VARCHAR, SqlTypeName.VARCHAR, SqlTypeName.VARCHAR, SqlTypeName.VARCHAR, SqlTypeName.VARCHAR, SqlTypeName.VARCHAR, SqlTypeName.VARCHAR, SqlTypeName.VARCHAR};
+	static String[] airportsheader = {"iata", "airport", "city", "state", "country", "latitude", "longitude"};
+	static SqlTypeName[] airportstype = {SqlTypeName.VARCHAR, SqlTypeName.VARCHAR, SqlTypeName.VARCHAR, SqlTypeName.VARCHAR,
+			SqlTypeName.VARCHAR, SqlTypeName.VARCHAR, SqlTypeName.VARCHAR};
 	protected static String hdfsfilepath = "hdfs://127.0.0.1:9000";
 	protected static String airlines = "/airlines";
 	String airline = "/airline";
@@ -61,7 +61,7 @@ public class StreamPipelineBase {
 	static String wordcount = "/wordcount";
 	static String population = "/population";
 	static String carriers = "/carriers";
-	static SqlTypeName[] carriersqltype = {SqlTypeName.VARCHAR,SqlTypeName.VARCHAR};
+	static SqlTypeName[] carriersqltype = {SqlTypeName.VARCHAR, SqlTypeName.VARCHAR};
 	static String cars = "/cars";
 	String groupbykey = "/groupbykey";
 	static String bicyclecrash = "/bicyclecrash";
@@ -79,9 +79,9 @@ public class StreamPipelineBase {
 	static ExecutorService threadpool, executorpool;
 	static int numberofnodes = 1;
 	static Integer port;
-	YarnLocalCluster yarnLocalCluster = null;
+	YarnLocalCluster yarnLocalCluster;
 	protected static FileSystem hdfs;
-	static boolean setupdone = false,toteardownclass = false;
+	static boolean setupdone,toteardownclass;
 	static TestingServer testingserver;
 	static ConcurrentMap<String, List<Process>> containerprocesses = new ConcurrentHashMap<>();
 	static FileSystem hdfste;

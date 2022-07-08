@@ -12,9 +12,9 @@ import java.util.Set;
  */
 public interface Context<K,V> {
 
-	public void put(K k ,V v);
+	public void put(K k, V v);
 	
-	public void putAll(Set<K> k ,V v);
+	public void putAll(Set<K> k, V v);
 	
 	public Collection<V> get(K k);
 	
@@ -22,5 +22,5 @@ public interface Context<K,V> {
 	
 	public void addAll(K k, Collection<V> v);
 	
-	public void add(Context<K,V> ctx);
+	public void add(Context<K, V> ctx);
 }

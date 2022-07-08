@@ -14,19 +14,19 @@ public class GlobalContainerLaunchers {
 	
 	private GlobalContainerLaunchers() {}
 	
-	private static Map<String,List<LaunchContainers>> lcsmap = new ConcurrentHashMap<String,List<LaunchContainers>>();
+	private static Map<String,List<LaunchContainers>> lcsmap = new ConcurrentHashMap<String, List<LaunchContainers>>();
 	
-	public static void put(String cid,List<LaunchContainers> lcs) {
-		if(!lcsmap.containsKey(cid)) {
-			lcsmap.put(cid,lcs);
+	public static void put(String cid, List<LaunchContainers> lcs) {
+		if (!lcsmap.containsKey(cid)) {
+			lcsmap.put(cid, lcs);
 		}
 		else {
-			log.info("Container Launched Already: "+cid+" With Resources: "+lcs);
+			log.info("Container Launched Already: " + cid + " With Resources: " + lcs);
 		}
 	}
 	
 	public static List<LaunchContainers> getAll() {
-		return lcsmap.keySet().stream().flatMap(cid->lcsmap.get(cid).stream()).collect(Collectors.toList());
+		return lcsmap.keySet().stream().flatMap(cid -> lcsmap.get(cid).stream()).collect(Collectors.toList());
 	}
 	
 	public static List<LaunchContainers> get(String cid) {

@@ -26,9 +26,9 @@ public final class StreamPipelineTaskExecutorMesos extends StreamPipelineTaskExe
 	private ExecutorDriver driver;
 	TaskID taskid;
 	private static Logger log = Logger.getLogger(StreamPipelineTaskExecutorMesos.class);
-	public StreamPipelineTaskExecutorMesos(JobStage jobstage,ExecutorDriver driver,
+	public StreamPipelineTaskExecutorMesos(JobStage jobstage, ExecutorDriver driver,
 			TaskID taskid) {
-		super(jobstage,null);
+		super(jobstage, null);
 		this.driver = driver;
 		this.taskid = taskid;
 	}
@@ -41,7 +41,7 @@ public final class StreamPipelineTaskExecutorMesos extends StreamPipelineTaskExe
 		log.debug("Entered MassiveDataStreamTaskExecutorMesos.run");
 		var configuration = new Configuration();;
 		var hdfsfilepath = MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL, MDCConstants.HDFSNAMENODEURL);
-		try(var hdfs = FileSystem.newInstance(new URI(hdfsfilepath), configuration);) {
+		try (var hdfs = FileSystem.newInstance(new URI(hdfsfilepath), configuration);) {
 			
 			
 			var output = new ArrayList<>();
@@ -56,13 +56,13 @@ public final class StreamPipelineTaskExecutorMesos extends StreamPipelineTaskExe
 					if (input != null) {
 						var rdf = (RemoteDataFetch) input;
 						task.input[inputindex] = RemoteDataFetcher.readIntermediatePhaseOutputFromDFS(rdf.jobid,
-								getIntermediateDataFSFilePath(rdf.jobid, rdf.stageid,rdf.taskid), hdfs);
+								getIntermediateDataFSFilePath(rdf.jobid, rdf.stageid, rdf.taskid), hdfs);
 					}
 				}
 			}
 
 			double timetakenseconds = computeTasks(task, hdfs);
-			log.info("Total Time Taken: "+timetakenseconds+" Seconds");
+			log.info("Total Time Taken: " + timetakenseconds + " Seconds");
 			status = Protos.TaskStatus.newBuilder().setTaskId(taskid).setState(Protos.TaskState.TASK_FINISHED).build();
 			driver.sendStatusUpdate(status);
 			output.clear();

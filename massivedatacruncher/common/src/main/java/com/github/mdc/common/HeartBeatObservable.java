@@ -19,7 +19,7 @@ import org.apache.log4j.Logger;
 public class HeartBeatObservable<T> {
 
 	static Logger log = Logger.getLogger(HeartBeatObservable.class);
-	boolean isstarted = false;
+	boolean isstarted;
 	Semaphore startmutex = new Semaphore(1);
 	PropertyChangeSupport propchangesupport = new PropertyChangeSupport(this);
 
@@ -74,7 +74,7 @@ public class HeartBeatObservable<T> {
 	public synchronized void removePropertyChangeListeners() {
 		log.debug("Entered HeartBeatObservable.removePropertyChangeListeners");
 		var propchangelisten = propchangesupport.getPropertyChangeListeners();
-		for(var proplisten:propchangelisten) {
+		for (var proplisten :propchangelisten) {
 			propchangesupport.removePropertyChangeListener(proplisten);
 		}
 		log.debug("Exiting HeartBeatObservable.removePropertyChangeListeners");

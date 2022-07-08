@@ -9,7 +9,7 @@ import java.util.concurrent.Semaphore;
 import org.apache.log4j.Logger;
 
 public class ByteBufferInputStream extends InputStream {
-	static int allocation = 0,deallocation = 0;
+	static int allocation,deallocation;
 	static Logger log = Logger.getLogger(ByteBufferInputStream.class);
 	private ByteBuffer bb;
 	static Semaphore printallocdealloc = new Semaphore(1);
@@ -21,12 +21,12 @@ public class ByteBufferInputStream extends InputStream {
 			log.info("ByteBuffer Input Stream allocated:" + allocation++ + bb);
 			
 		} 
-		catch(InterruptedException ie) {
-			log.error(MDCConstants.EMPTY,ie);
+		catch (InterruptedException ie) {
+			log.error(MDCConstants.EMPTY, ie);
 			Thread.currentThread().interrupt();
 		}
 		catch (Exception e) {
-			log.error(MDCConstants.EMPTY,e);
+			log.error(MDCConstants.EMPTY, e);
 		} finally {
 			printallocdealloc.release();
 		}
@@ -55,18 +55,18 @@ public class ByteBufferInputStream extends InputStream {
 
 	@Override
 	public void close() {
-		if(!Objects.isNull(bb)) {			
+		if (!Objects.isNull(bb)) {			
 			try {
 				printallocdealloc.acquire();
-				log.info("ByteBuffer Input Stream returning to pool: "+deallocation++ + bb);
+				log.info("ByteBuffer Input Stream returning to pool: " + deallocation++ + bb);
 				bb.clear();
 				bb.rewind();
 				ByteBufferPool.get().returnObject(bb);
-			} catch(InterruptedException ie) {
-				log.error(MDCConstants.EMPTY,ie);
+			} catch (InterruptedException ie) {
+				log.error(MDCConstants.EMPTY, ie);
 				Thread.currentThread().interrupt();
 			} catch (Exception e) {
-				log.error(MDCConstants.EMPTY,e);
+				log.error(MDCConstants.EMPTY, e);
 			} finally {
 				printallocdealloc.release();
 			}

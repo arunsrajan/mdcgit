@@ -38,7 +38,7 @@ public class WebResourcesServlet extends HttpServlet {
 
 			byte[] buffer = new byte[4096];
 			int numread;
-			while ((numread=fis.read(buffer, 0, 4096)) != -1) {
+			while ((numread = fis.read(buffer, 0, 4096)) != -1) {
 				sos.write(buffer, 0, numread);
 				sos.flush();
 			}

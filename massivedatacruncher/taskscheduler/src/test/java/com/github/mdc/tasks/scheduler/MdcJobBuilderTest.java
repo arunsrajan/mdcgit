@@ -9,7 +9,7 @@ import org.junit.Test;
 
 import com.github.mdc.common.DataCruncherContext;
 
-public class MdcJobBuilderTest extends MassiveDataMRJobBase{
+public class MdcJobBuilderTest extends MassiveDataMRJobBase {
 
 	@Test
 	public void testMdcJobBuilder() {
@@ -26,10 +26,10 @@ public class MdcJobBuilderTest extends MassiveDataMRJobBase{
 		assertEquals("/airlines", mdcjob.mappers.get(1).inputfolderpath);
 		assertTrue(mdcjob.combiners.get(0) == AirlineDataMapper.class);
 		assertTrue(mdcjob.reducers.get(0) == AirlineDataMapper.class);
-		assertEquals("/aircararrivaldelay",mdcjob.outputfolder);
+		assertEquals("/aircararrivaldelay", mdcjob.outputfolder);
 	}
 	
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	@Test
 	public void testMdcJobCall() {
 		MapReduceApplication mdcjob = (MapReduceApplication) MapReduceApplicationBuilder.newBuilder()
@@ -42,7 +42,7 @@ public class MdcJobBuilderTest extends MassiveDataMRJobBase{
 		assertEquals(airlines, mdcjob.mappers.get(0).inputfolderpath);
 		assertTrue(mdcjob.combiners.get(0) == AirlineDataMapper.class);
 		assertTrue(mdcjob.reducers.get(0) == AirlineDataMapper.class);
-		assertEquals("/aircararrivaldelay",mdcjob.outputfolder);
+		assertEquals("/aircararrivaldelay", mdcjob.outputfolder);
 		List<DataCruncherContext> dccl = mdcjob.call();
 		log.info(dccl);
 		assertEquals(4, dccl.size());

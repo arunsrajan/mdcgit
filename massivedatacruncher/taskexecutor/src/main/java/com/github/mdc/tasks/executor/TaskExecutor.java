@@ -63,7 +63,7 @@ public class TaskExecutor implements Runnable {
 	Map<String, JobStage> jobidstageidjobstagemap;
 	Queue<Object> taskqueue;
 
-	@SuppressWarnings({ "rawtypes" })
+	@SuppressWarnings({"rawtypes"})
 	public TaskExecutor(Socket s, ClassLoader cl, int port, ExecutorService es, Configuration configuration,
 			Map<String, Object> apptaskexecutormap, Map<String, Object> jobstageexecutormap,
 			ConcurrentMap<String, OutputStream> resultstream, Cache inmemorycache, Object deserobj,
@@ -91,10 +91,10 @@ public class TaskExecutor implements Runnable {
 
 	ClassLoader cl;
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	public void run() {
 		log.debug("Started the run------------------------------------------------------");
-		try(Socket sock = s) {
+		try (Socket sock = s) {
 			log.debug("Framework Message: " + deserobj);
 			if (deserobj instanceof JobStage jobstage) {
 				jobidstageidjobstagemap.put(jobstage.jobid + jobstage.stageid, jobstage);
@@ -105,9 +105,9 @@ public class TaskExecutor implements Runnable {
 				var mdste = (StreamPipelineTaskExecutor) taskexecutor;
 				if (taskexecutor == null || mdste.isCompleted() && task.taskstatus == Task.TaskStatus.FAILED) {
 					var key = task.jobid + task.stageid;
-					mdste = task.storage == STORAGE.INMEMORY_DISK?new StreamPipelineTaskExecutorInMemoryDisk(jobidstageidjobstagemap.get(key), resultstream,
-							inmemorycache, hbtss):task.storage == STORAGE.INMEMORY?new StreamPipelineTaskExecutorInMemory(jobidstageidjobstagemap.get(key),
-									resultstream, inmemorycache):new StreamPipelineTaskExecutor(jobidstageidjobstagemap.get(key),inmemorycache);
+					mdste = task.storage == STORAGE.INMEMORY_DISK ? new StreamPipelineTaskExecutorInMemoryDisk(jobidstageidjobstagemap.get(key), resultstream,
+							inmemorycache, hbtss) : task.storage == STORAGE.INMEMORY ? new StreamPipelineTaskExecutorInMemory(jobidstageidjobstagemap.get(key),
+									resultstream, inmemorycache) : new StreamPipelineTaskExecutor(jobidstageidjobstagemap.get(key), inmemorycache);
 					mdste.setTask(task);
 					mdste.setHbtss(hbtss);
 					mdste.setExecutor(es);
@@ -129,15 +129,15 @@ public class TaskExecutor implements Runnable {
 				}
 			} else if (deserobj instanceof TasksGraphExecutor stagesgraph) {				
 				int numoftasks = stagesgraph.getTasks().size();
-				var key = stagesgraph.getTasks().get(numoftasks-1).jobid+stagesgraph.getTasks().get(numoftasks-1).stageid+stagesgraph.getTasks().get(numoftasks-1).taskid;
+				var key = stagesgraph.getTasks().get(numoftasks - 1).jobid + stagesgraph.getTasks().get(numoftasks - 1).stageid + stagesgraph.getTasks().get(numoftasks - 1).taskid;
 				var taskexecutor = jobstageexecutormap.get(key);
 				var mdste = (StreamPipelineTaskExecutorJGroups) taskexecutor;
 				if (taskexecutor == null) {
 					mdste = new StreamPipelineTaskExecutorJGroups(jobidstageidjobstagemap, stagesgraph.getTasks(),
 							port, inmemorycache);
 					mdste.setExecutor(es);
-					for(Task task:stagesgraph.getTasks()) {
-						jobstageexecutormap.put(task.jobid+task.stageid+task.taskid, mdste);
+					for (Task task :stagesgraph.getTasks()) {
+						jobstageexecutormap.put(task.jobid + task.stageid + task.taskid, mdste);
 					}
 					taskqueue.offer(mdste);
 				}
@@ -147,8 +147,8 @@ public class TaskExecutor implements Runnable {
 				var mdste = (StreamPipelineTaskExecutorJGroups) taskexecutor;
 				if (taskexecutor != null) {
 					mdste.channel.close();
-					for(Task task:closestagesgraph.getTasks()) {
-						jobstageexecutormap.remove(task.jobid+task.stageid+task.taskid);
+					for (Task task :closestagesgraph.getTasks()) {
+						jobstageexecutormap.remove(task.jobid + task.stageid + task.taskid);
 					}
 				}
 			} else if (deserobj instanceof FreeResourcesCompletedJob cce) {
@@ -178,19 +178,19 @@ public class TaskExecutor implements Runnable {
 				var taskexecutor = jobstageexecutormap.get(rdf.jobid + rdf.stageid + rdf.taskid);
 				var mdstde = (StreamPipelineTaskExecutor) taskexecutor;
 				log.info("Executor: " + mdstde);
-				if(rdf.mode.equals(MDCConstants.STANDALONE)) {
+				if (rdf.mode.equals(MDCConstants.STANDALONE)) {
 					if (taskexecutor != null) {
 						Task task  = mdstde.getTask();
-						if(task.storage == MDCConstants.STORAGE.INMEMORY) {
-							var os = ((StreamPipelineTaskExecutorInMemory)mdstde).getIntermediateInputStreamRDF(rdf);
+						if (task.storage == MDCConstants.STORAGE.INMEMORY) {
+							var os = ((StreamPipelineTaskExecutorInMemory) mdstde).getIntermediateInputStreamRDF(rdf);
 							if (!Objects.isNull(os)) {
-								rdf.data = ((ByteArrayOutputStream)os).toByteArray();
+								rdf.data = ((ByteArrayOutputStream) os).toByteArray();
 							}
-						}else if(task.storage == MDCConstants.STORAGE.INMEMORY_DISK) {
+						} else if (task.storage == MDCConstants.STORAGE.INMEMORY_DISK) {
 							var path = Utils.getIntermediateInputStreamRDF(rdf);
 							rdf.data = (byte[]) inmemorycache.get(path);
 						} else {
-							try(var is = mdstde.getIntermediateInputStreamFS(task);){
+							try (var is = mdstde.getIntermediateInputStreamFS(task);) {
 								rdf.data = (byte[]) is.readAllBytes();
 							}
 						}
@@ -204,9 +204,9 @@ public class TaskExecutor implements Runnable {
 					}
 				} else {
 					if (taskexecutor != null) {
-						try(var is = RemoteDataFetcher
+						try (var is = RemoteDataFetcher
 								.readIntermediatePhaseOutputFromFS(rdf.jobid,
-										mdstde.getIntermediateDataRDF(rdf.taskid));){
+										mdstde.getIntermediateDataRDF(rdf.taskid));) {
 							rdf.data = (byte[]) is.readAllBytes();
 							Utils.writeObjectByStream(s.getOutputStream(), rdf);
 						}
@@ -241,9 +241,9 @@ public class TaskExecutor implements Runnable {
 								mdtemc.getHbts().destroy();
 								apptaskexecutormap.remove(apptaskid);
 							}
-							try(var hdfs = FileSystem.newInstance(
+							try (var hdfs = FileSystem.newInstance(
 									new URI(MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL, MDCConstants.HDFSNAMENODEURL)),
-									configuration)){
+									configuration)) {
 							log.debug("Application Submitted:" + applicationid + "-" + taskid);
 							
 							var hbts = hbtsappid.get(applicationid);
@@ -276,14 +276,14 @@ public class TaskExecutor implements Runnable {
 							mdter.getHbts().destroy();
 							log.debug("Obtaining reducer Context: " + apptaskid);
 							ctx = (Context) RemoteDataFetcher.readIntermediatePhaseOutputFromDFS(applicationid,
-									(apptaskid), false);
+									apptaskid, false);
 						}
 						Utils.writeObjectByStream(s.getOutputStream(), ctx);
 						s.close();
 						apptaskexecutormap.remove(apptaskid);
 					} else if (object instanceof RetrieveKeys rk) {
 						var keys = RemoteDataFetcher.readIntermediatePhaseOutputFromDFS(applicationid,
-								(apptaskid), true);
+								apptaskid, true);
 						rk.keys = (Set<Object>) keys;
 						rk.applicationid = applicationid;
 						rk.taskid = taskid;

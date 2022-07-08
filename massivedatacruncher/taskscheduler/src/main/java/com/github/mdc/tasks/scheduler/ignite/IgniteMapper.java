@@ -27,26 +27,26 @@ public class IgniteMapper{
 	static Logger log = Logger.getLogger(IgniteMapper.class);
 	BlocksLocation blockslocation;
 	List<Mapper> crunchmappers;
-	public IgniteMapper(BlocksLocation blockslocation,List<Mapper> crunchmappers) {
+	public IgniteMapper(BlocksLocation blockslocation, List<Mapper> crunchmappers) {
 		this.blockslocation = blockslocation;
 		this.crunchmappers = crunchmappers;
 	}
 	
 	public Context execute() throws Exception {
-		try(IgniteCache<Object,byte[]> cache = ignite.getOrCreateCache(MDCConstants.MDCCACHE);
+		try (IgniteCache<Object, byte[]> cache = ignite.getOrCreateCache(MDCConstants.MDCCACHE);
 				var compstream = new SnappyInputStream(new ByteArrayInputStream(cache.get(blockslocation)));
 				var br = 
 						new BufferedReader(new InputStreamReader(compstream));) {
 			var ctx = new DataCruncherContext();
-			br.lines().parallel().forEach(line->{
+			br.lines().parallel().forEach(line -> {
 				for (Mapper crunchmapper : crunchmappers) {
 					crunchmapper.map(0l, line, ctx);
 				}
 			});
 			return ctx;
 		}
-		catch(Exception ex) {
-			log.info(MDCConstants.EMPTY,ex);
+		catch (Exception ex) {
+			log.info(MDCConstants.EMPTY, ex);
 			throw ex;
 		}
 		

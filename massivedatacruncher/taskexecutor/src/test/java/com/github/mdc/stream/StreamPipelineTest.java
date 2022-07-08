@@ -22,13 +22,13 @@ import org.junit.runners.MethodSorters;
 public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 
 	boolean toexecute = true;
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testCarsReduceByKey() throws Throwable {
 		log.info("testCarsReduceByKey Before---------------------------------------");
 		StreamPipeline<String> datastream = StreamPipeline.newStreamHDFS(hdfsfilepath, cars, pipelineconfig);
 		StreamPipeline<String[]> map = (StreamPipeline<String[]>) datastream.map(dat -> dat.split("\t"))
-				.filter(dat -> !dat[0].equals("make"));
+				.filter(dat -> !"make".equals(dat[0]));
 		MapPair<String, Long> mappairweight = map
 				.mapToPair(dat -> new Tuple2<String, Long>(dat[0], Long.parseLong(dat[8])))
 				.reduceByKey((a, b) -> (Long) a + (Long) b).coalesce(1, (a, b) -> (Long) a + (Long) b);
@@ -46,7 +46,7 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		log.info("testCarsReduceByKey After---------------------------------------");
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	@Test
 	public void testCollectMultiMaps() throws Throwable {
 		log.info("testCollectMultiMaps Before---------------------------------------");
@@ -72,33 +72,33 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 
 	
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testCsvStreamFilterCollect() throws Throwable {
 		log.info("testCsvStreamFilterCollect Before---------------------------------------");
 		CsvStream<CSVRecord, CSVRecord> datastream = StreamPipeline.newCsvStreamHDFS(hdfsfilepath, airlinesample,
-				pipelineconfig,airlineheader);
+				pipelineconfig, airlineheader);
 		List<List<CSVRecord>> result = (List) datastream
-				.filter((record) -> !record.get("ArrDelay").equals("ArrDelay") && !record.get("ArrDelay").equals("NA")
-						&& record.get("Month").equals("4") && record.get("DayofMonth").equals("13"))
+				.filter(record -> !"ArrDelay".equals(record.get("ArrDelay")) && !"NA".equals(record.get("ArrDelay"))
+						&& "4".equals(record.get("Month")) && "13".equals(record.get("DayofMonth")))
 				.collect(toexecute, null);
 		for (CSVRecord csvrec : result.get(0)) {
 			log.info(csvrec);
-			assertEquals(true, csvrec.get("Month").equals("4") && csvrec.get("DayofMonth").equals("13"));
+			assertEquals(true, "4".equals(csvrec.get("Month")) && "13".equals(csvrec.get("DayofMonth")));
 		}
 
 		log.info("testCsvStreamFilterCollect After---------------------------------------");
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testCsvStreamFlatMapLong() throws Throwable {
 		log.info("testCsvStreamFlatMapLong Before---------------------------------------");
 		CsvStream<CSVRecord, CSVRecord> datastream = StreamPipeline.newCsvStreamHDFS(hdfsfilepath, airlinesample,
-				pipelineconfig,airlineheader);
+				pipelineconfig, airlineheader);
 		List<List<Long>> results = (List) datastream
 				.flatMapToLong(csvrec -> Arrays
-						.asList(!csvrec.get("ArrDelay").equals("NA") && !csvrec.get("ArrDelay").equals("ArrDelay")
+						.asList(!"NA".equals(csvrec.get("ArrDelay")) && !"ArrDelay".equals(csvrec.get("ArrDelay"))
 								? Long.parseLong(csvrec.get("ArrDelay"))
 								: 0))
 				.collect(toexecute, null);
@@ -107,12 +107,12 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		log.info("testCsvStreamFlatMapLong After---------------------------------------");
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testCsvStreamFlatMapPair() throws Throwable {
 		log.info("testCsvStreamFlatMapPair Before---------------------------------------");
 		CsvStream<CSVRecord, CSVRecord> datastream = StreamPipeline.newCsvStreamHDFS(hdfsfilepath, airlinesample,
-				pipelineconfig,airlineheader);
+				pipelineconfig, airlineheader);
 		List<List<Tuple2>> results = (List) datastream
 				.flatMapToTuple2(csvrec -> Arrays.asList(Tuple.tuple(csvrec.get("ArrDelay"), csvrec.get("DayofMonth"))))
 				.collect(toexecute, null);
@@ -123,77 +123,77 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		log.info("testCsvStreamFlatMapPair After---------------------------------------");
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testCsvStreamIntersection() throws Throwable {
 		log.info("testCsvStreamIntersection Before---------------------------------------");
 		CsvStream<CSVRecord, CSVRecord> datastream = StreamPipeline.newCsvStreamHDFS(hdfsfilepath, airlinesample,
-				pipelineconfig,airlineheader);
+				pipelineconfig, airlineheader);
 		CsvStream<CSVRecord, CSVRecord> csvStream = (CsvStream) datastream;
 		StreamPipeline filter9 = csvStream.filter(
-				record -> !record.get("ArrDelay").equals("ArrDelay") && Long.parseLong(record.get("Month")) > 9l);
+				record -> !"ArrDelay".equals(record.get("ArrDelay")) && Long.parseLong(record.get("Month")) > 9l);
 		StreamPipeline filter11 = csvStream.filter(
-				record -> !record.get("ArrDelay").equals("ArrDelay") && Long.parseLong(record.get("Month")) > 8l);
+				record -> !"ArrDelay".equals(record.get("ArrDelay")) && Long.parseLong(record.get("Month")) > 8l);
 		List<List<CSVRecord>> csvrecords = (List) filter9.intersection(filter11).collect(toexecute, null);
 		for (CSVRecord csvrec : csvrecords.get(0)) {
 			log.info(csvrec);
-			assertEquals(true, csvrec.get("Month").equals("10") || csvrec.get("Month").equals("11")
-					|| csvrec.get("Month").equals("12"));
+			assertEquals(true, "10".equals(csvrec.get("Month")) || "11".equals(csvrec.get("Month"))
+					|| "12".equals(csvrec.get("Month")));
 
 		}
 		log.info("testCsvStreamIntersection After---------------------------------------");
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testCsvStreamIntersection10_8UnionGt10() throws Throwable {
 		log.info("testCsvStreamIntersection10_8UnionGt10 Before---------------------------------------");
 		CsvStream<CSVRecord, CSVRecord> datastream = StreamPipeline.newCsvStreamHDFS(hdfsfilepath, airlinesample,
-				pipelineconfig,airlineheader);
+				pipelineconfig, airlineheader);
 		CsvStream<CSVRecord, CSVRecord> csvStream = (CsvStream) datastream;
-		StreamPipeline filter10 = csvStream.filter(record -> !record.get("ArrDelay").equals("ArrDelay")
+		StreamPipeline filter10 = csvStream.filter(record -> !"ArrDelay".equals(record.get("ArrDelay"))
 				&& Long.parseLong(record.get("Month")) == 10l);
-		StreamPipeline filter8 = csvStream.filter(record -> !record.get("ArrDelay").equals("ArrDelay")
+		StreamPipeline filter8 = csvStream.filter(record -> !"ArrDelay".equals(record.get("ArrDelay"))
 				&& Long.parseLong(record.get("Month")) == 8l);
-		StreamPipeline filtergt10 = csvStream.filter(record -> !record.get("ArrDelay").equals("ArrDelay")
+		StreamPipeline filtergt10 = csvStream.filter(record -> !"ArrDelay".equals(record.get("ArrDelay"))
 				&& Long.parseLong(record.get("Month")) > 10l);
 		List<List<CSVRecord>> csvrecords = (List) filter10.intersection(filter8).union(filtergt10).collect(toexecute,
 				null);
 		for (CSVRecord csvrec : csvrecords.get(0)) {
 			log.info(csvrec);
-			assertEquals(true, csvrec.get("Month").equals("11") || csvrec.get("Month").equals("12"));
+			assertEquals(true, "11".equals(csvrec.get("Month")) || "12".equals(csvrec.get("Month")));
 		}
 		log.info("testCsvStreamIntersection10_8UnionGt10 After---------------------------------------");
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testCsvStreamIntersectionIntersection() throws Throwable {
 		log.info("testCsvStreamIntersectionIntersection Before---------------------------------------");
 		CsvStream<CSVRecord, CSVRecord> datastream = StreamPipeline.newCsvStreamHDFS(hdfsfilepath, airlinesample,
-				pipelineconfig,airlineheader);
+				pipelineconfig, airlineheader);
 		CsvStream<CSVRecord, CSVRecord> csvStream = (CsvStream) datastream;
 		StreamPipeline filter9 = csvStream.filter(
-				record -> !record.get("ArrDelay").equals("ArrDelay") && Long.parseLong(record.get("Month")) > 9l);
+				record -> !"ArrDelay".equals(record.get("ArrDelay")) && Long.parseLong(record.get("Month")) > 9l);
 		StreamPipeline filter8 = csvStream.filter(
-				record -> !record.get("ArrDelay").equals("ArrDelay") && Long.parseLong(record.get("Month")) > 8l);
-		StreamPipeline filter11 = csvStream.filter(record -> !record.get("ArrDelay").equals("ArrDelay")
+				record -> !"ArrDelay".equals(record.get("ArrDelay")) && Long.parseLong(record.get("Month")) > 8l);
+		StreamPipeline filter11 = csvStream.filter(record -> !"ArrDelay".equals(record.get("ArrDelay"))
 				&& Long.parseLong(record.get("Month")) > 11l);
 		List<List<CSVRecord>> csvrecords = (List) filter9.intersection(filter8).intersection(filter11)
 				.collect(toexecute, null);
 		for (CSVRecord csvrec : csvrecords.get(0)) {
 			log.info(csvrec);
-			assertEquals(true, csvrec.get("Month").equals("12"));
+			assertEquals(true, "12".equals(csvrec.get("Month")));
 		}
 		log.info("testCsvStreamIntersectionIntersection After---------------------------------------");
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testCsvStreamMapPair() throws Throwable {
 		log.info("testCsvStreamMapPair Before---------------------------------------");
 		CsvStream<CSVRecord, CSVRecord> datastream = StreamPipeline.newCsvStreamHDFS(hdfsfilepath, airlinesample,
-				pipelineconfig,airlineheader);
+				pipelineconfig, airlineheader);
 		List<List<Tuple2>> results = (List) datastream
 				.mapToPair(csvrec -> Tuple.tuple(csvrec.get("ArrDelay"), csvrec.get("DayofMonth")))
 				.collect(toexecute, null);
@@ -204,86 +204,86 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		log.info("testCsvStreamMapPair After---------------------------------------");
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testCsvStreamUnion() throws Throwable {
 		log.info("testCsvStreamUnion Before---------------------------------------");
 		CsvStream<CSVRecord, CSVRecord> datastream = StreamPipeline.newCsvStreamHDFS(hdfsfilepath, airlinesample,
 				pipelineconfig, airlineheader);
 		CsvStream<CSVRecord, CSVRecord> csvStream = (CsvStream) datastream;
-		StreamPipeline filter9 = csvStream.filter(record -> !record.get("ArrDelay").equals("ArrDelay")
+		StreamPipeline filter9 = csvStream.filter(record -> !"ArrDelay".equals(record.get("ArrDelay"))
 				&& Long.parseLong(record.get("Month")) == 9l);
-		StreamPipeline filter8 = csvStream.filter(record -> !record.get("ArrDelay").equals("ArrDelay")
+		StreamPipeline filter8 = csvStream.filter(record -> !"ArrDelay".equals(record.get("ArrDelay"))
 				&& Long.parseLong(record.get("Month")) == 8l);
 		List<List<CSVRecord>> csvrecords = (List) filter9.union(filter8).collect(toexecute, null);
 		for (CSVRecord csvrec : csvrecords.get(0)) {
 			log.info(csvrec);
-			assertEquals(true, csvrec.get("Month").equals("9") || csvrec.get("Month").equals("8"));
+			assertEquals(true, "9".equals(csvrec.get("Month")) || "8".equals(csvrec.get("Month")));
 		}
 		log.info("testCsvStreamUnion After---------------------------------------");
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testCsvStreamUnion10_8Intersectiongt8() throws Throwable {
 		log.info("testCsvStreamUnion10_8Intersectiongt8 Before---------------------------------------");
 		CsvStream<CSVRecord, CSVRecord> datastream = StreamPipeline.newCsvStreamHDFS(hdfsfilepath, airlinesample,
 				pipelineconfig, airlineheader);
 		CsvStream<CSVRecord, CSVRecord> csvStream = (CsvStream) datastream;
-		StreamPipeline filter10 = csvStream.filter(record -> !record.get("ArrDelay").equals("ArrDelay")
+		StreamPipeline filter10 = csvStream.filter(record -> !"ArrDelay".equals(record.get("ArrDelay"))
 				&& Long.parseLong(record.get("Month")) == 10l);
-		StreamPipeline filter8 = csvStream.filter(record -> !record.get("ArrDelay").equals("ArrDelay")
+		StreamPipeline filter8 = csvStream.filter(record -> !"ArrDelay".equals(record.get("ArrDelay"))
 				&& Long.parseLong(record.get("Month")) == 8l);
 		StreamPipeline filtergt8 = csvStream.filter(
-				record -> !record.get("ArrDelay").equals("ArrDelay") && Long.parseLong(record.get("Month")) > 8l);
+				record -> !"ArrDelay".equals(record.get("ArrDelay")) && Long.parseLong(record.get("Month")) > 8l);
 		List<List<CSVRecord>> csvrecords = (List) filter10.union(filter8).intersection(filtergt8).collect(toexecute,
 				null);
 		for (CSVRecord csvrec : csvrecords.get(0)) {
 			log.info(csvrec);
-			assertEquals(true, csvrec.get("Month").equals("10"));
+			assertEquals(true, "10".equals(csvrec.get("Month")));
 		}
 		log.info("testCsvStreamUnion10_8Intersectiongt8 After---------------------------------------");
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testCsvStreamUnion10_8Union8_10() throws Throwable {
 		log.info("testCsvStreamUnion10_8Union8_10 Before---------------------------------------");
 		CsvStream<CSVRecord, CSVRecord> datastream = StreamPipeline.newCsvStreamHDFS(hdfsfilepath, airlinesample,
-				pipelineconfig,airlineheader);
+				pipelineconfig, airlineheader);
 		CsvStream<CSVRecord, CSVRecord> csvStream = (CsvStream) datastream;
-		StreamPipeline filter10 = csvStream.filter(record -> !record.get("ArrDelay").equals("ArrDelay")
+		StreamPipeline filter10 = csvStream.filter(record -> !"ArrDelay".equals(record.get("ArrDelay"))
 				&& Long.parseLong(record.get("Month")) == 10l);
-		StreamPipeline filter8 = csvStream.filter(record -> !record.get("ArrDelay").equals("ArrDelay")
+		StreamPipeline filter8 = csvStream.filter(record -> !"ArrDelay".equals(record.get("ArrDelay"))
 				&& Long.parseLong(record.get("Month")) == 8l);
-		StreamPipeline filter10_2 = csvStream.filter(record -> !record.get("ArrDelay").equals("ArrDelay")
+		StreamPipeline filter10_2 = csvStream.filter(record -> !"ArrDelay".equals(record.get("ArrDelay"))
 				&& Long.parseLong(record.get("Month")) == 10l);
 		List<List<CSVRecord>> csvrecords = (List) filter10.union(filter8).union(filter10_2).collect(toexecute, null);
 		for (CSVRecord csvrec : csvrecords.get(0)) {
 			log.info(csvrec);
-			assertEquals(true, csvrec.get("Month").equals("10") || csvrec.get("Month").equals("8"));
+			assertEquals(true, "10".equals(csvrec.get("Month")) || "8".equals(csvrec.get("Month")));
 		}
 		log.info("testCsvStreamUnion10_8Union8_10 After---------------------------------------");
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testCsvStreamUnion10_8Union8_12() throws Throwable {
 		log.info("testCsvStreamUnion10_8Union8_12 Before---------------------------------------");
 		CsvStream<CSVRecord, CSVRecord> datastream = StreamPipeline.newCsvStreamHDFS(hdfsfilepath, airlinesample,
 				pipelineconfig, airlineheader);
 		CsvStream<CSVRecord, CSVRecord> csvStream = (CsvStream) datastream;
-		StreamPipeline filter10 = csvStream.filter(record -> !record.get("ArrDelay").equals("ArrDelay")
+		StreamPipeline filter10 = csvStream.filter(record -> !"ArrDelay".equals(record.get("ArrDelay"))
 				&& Long.parseLong(record.get("Month")) == 10l);
-		StreamPipeline filter8 = csvStream.filter(record -> !record.get("ArrDelay").equals("ArrDelay")
+		StreamPipeline filter8 = csvStream.filter(record -> !"ArrDelay".equals(record.get("ArrDelay"))
 				&& Long.parseLong(record.get("Month")) == 8l);
-		StreamPipeline filter12 = csvStream.filter(record -> !record.get("ArrDelay").equals("ArrDelay")
+		StreamPipeline filter12 = csvStream.filter(record -> !"ArrDelay".equals(record.get("ArrDelay"))
 				&& Long.parseLong(record.get("Month")) == 12l);
 		List<List<CSVRecord>> csvrecords = (List) filter10.union(filter8).union(filter12).collect(toexecute, null);
 		for (CSVRecord csvrec : csvrecords.get(0)) {
 			log.info(csvrec);
-			assertEquals(true, csvrec.get("Month").equals("10") || csvrec.get("Month").equals("8")
-					|| csvrec.get("Month").equals("12"));
+			assertEquals(true, "10".equals(csvrec.get("Month")) || "8".equals(csvrec.get("Month"))
+					|| "12".equals(csvrec.get("Month")));
 		}
 		log.info("testCsvStreamUnion10_8Union8_12 After---------------------------------------");
 	}
@@ -294,34 +294,34 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		log.info("testFilter Before---------------------------------------");
 		StreamPipeline<String> datastream = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesample,
 				pipelineconfig);
-		List data = (List) datastream.filter(dat -> dat.split(",")[2].equals("21")).collect(toexecute, null);
+		List data = (List) datastream.filter(dat -> "21".equals(dat.split(",")[2])).collect(toexecute, null);
 		log.info(data);
 		Assert.assertTrue(data.size() > 0);
 
 		log.info("testFilter After---------------------------------------");
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testFilterFilterFilter() throws Throwable {
 		log.info("testFilterFilterFilter Before---------------------------------------");
 		StreamPipeline<String> datastream = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesample,
 				pipelineconfig);
-		List<List> filterfilterresult = (List) datastream.filter(dat -> dat.split(",")[2].equals("1"))
-				.filter(dat -> dat.split(",")[3].equals("1")).filter(dat -> dat.split(",")[1].equals("1"))
+		List<List> filterfilterresult = (List) datastream.filter(dat -> "1".equals(dat.split(",")[2]))
+				.filter(dat -> "1".equals(dat.split(",")[3])).filter(dat -> "1".equals(dat.split(",")[1]))
 				.collect(true, null);
 		assertTrue(filterfilterresult.get(0).size() > 0);
 		log.info("testFilterFilterFilter After---------------------------------------");
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	public void testFilterMultipleSortFields() throws Throwable {
 		log.info("testFilterMultipleSortFields Before---------------------------------------");
 		StreamPipeline<String> datastream = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesample,
 				pipelineconfig);
 		StreamPipeline map = (StreamPipeline) datastream.filter(dat -> {
 			String[] val = dat.split(",");
-			return !val[14].equals("ArrDelay");
+			return !"ArrDelay".equals(val[14]);
 		}).sorted((val1, val2) -> {
 			String[] vals1 = ((String) val1).split(",");
 			String[] vals2 = ((String) val2).split(",");
@@ -351,26 +351,26 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		log.info("testFilterMultipleSortFields After---------------------------------------");
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testFilterPeek() throws Throwable {
 		log.info("testFilterPeek Before---------------------------------------");
 		StreamPipeline<String> datastream = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesample,
 				pipelineconfig);
-		List<List<String>> values = (List) datastream.filter(value -> value.split(",")[1].equals("10"))
+		List<List<String>> values = (List) datastream.filter(value -> "10".equals(value.split(",")[1]))
 				.peek(System.out::println).peek(valuearr -> System.out.println(valuearr)).collect(toexecute, null);
 		assertTrue(values.get(0).size() > 0);
 		log.info("testFilterPeek After---------------------------------------");
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	public void testFilterSorted() throws Throwable {
 		log.info("testFilterSorted Before---------------------------------------");
 		StreamPipeline<String> datastream = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesample,
 				pipelineconfig);
 		StreamPipeline map = (StreamPipeline) datastream.filter(dat -> {
 			String[] val = dat.split(",");
-			return !val[14].equals("ArrDelay");
+			return !"ArrDelay".equals(val[14]);
 		}).sorted((val1, val2) -> {
 			String[] vals1 = ((String) val1).split(",");
 			String[] vals2 = ((String) val2).split(",");
@@ -388,7 +388,7 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		log.info("testFilterSorted After---------------------------------------");
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	@Test
 	public void testFlatMap() throws Throwable {
 		log.info("testFlatMap Before---------------------------------------");
@@ -402,7 +402,7 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		log.info("testFlatMap After---------------------------------------");
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testFlatMapFlatMapFlatMapFlatMap() throws Throwable {
 		log.info("testFlatMapFlatMapFlatMapFlatMap Before---------------------------------------");
@@ -411,7 +411,7 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		List<List<Double>> longs = (List) datastream.flatMap(value -> {
 			String values[] = value.split(",");
 			return Arrays.asList(
-					Long.parseLong((!values[14].equals("NA") && !values[14].equals("ArrDelay")) ? values[14] : "0"));
+					Long.parseLong((!"NA".equals(values[14]) && !"ArrDelay".equals(values[14])) ? values[14] : "0"));
 		}).flatMap(value -> Arrays.asList(Double.valueOf(value))).flatMap(value -> Arrays.asList(value.longValue()))
 				.flatMap(value -> Arrays.asList(Double.valueOf(value))).collect(toexecute, null);
 
@@ -420,7 +420,7 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		log.info("testFlatMapFlatMapFlatMapFlatMap After---------------------------------------");
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testFlatMapFlatMapToDoubleFlatMapFlatMapToLong() throws Throwable {
 		log.info("testFlatMapFlatMapToDoubleFlatMapFlatMapToLong Before---------------------------------------");
@@ -429,7 +429,7 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		List<List<Long>> longs = (List) datastream.flatMap(value -> {
 			String values[] = value.split(",");
 			return (List<Long>) Arrays.asList(
-					Long.parseLong((!values[14].equals("NA") && !values[14].equals("ArrDelay")) ? values[14] : "0"));
+					Long.parseLong((!"NA".equals(values[14]) && !"ArrDelay".equals(values[14])) ? values[14] : "0"));
 		}).flatMapToDouble(value -> Arrays.asList(Double.valueOf(value))).flatMap(value -> Arrays.asList(value.longValue()))
 				.flatMapToLong(value -> Arrays.asList(value)).collect(toexecute, null);
 
@@ -437,7 +437,7 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		log.info("testFlatMapFlatMapToDoubleFlatMapFlatMapToLong After---------------------------------------");
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testFlatMapPeek() throws Throwable {
 		log.info("testFlatMapPeek Before---------------------------------------");
@@ -449,7 +449,7 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		log.info("testFlatMapPeek After---------------------------------------");
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testFlatMapToDouble() throws Throwable {
 		log.info("testFlatMapToDouble Before---------------------------------------");
@@ -458,7 +458,7 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		List<List<Double>> longs = (List) datastream.flatMapToDouble(value -> {
 			String values[] = value.split(",");
 			return Arrays.asList(Double
-					.parseDouble((!values[14].equals("NA") && !values[14].equals("ArrDelay")) ? values[14] : "0"));
+					.parseDouble((!"NA".equals(values[14]) && !"ArrDelay".equals(values[14])) ? values[14] : "0"));
 		}).collect(toexecute, null);
 
 		assertEquals(-63278,
@@ -466,7 +466,7 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		log.info("testFlatMapToDouble After---------------------------------------");
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testFlatMapToDoubleFlatMap() throws Throwable {
 		log.info("testFlatMapToDoubleFlatMap Before---------------------------------------");
@@ -475,7 +475,7 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		List<List<Double>> longs = (List) datastream.flatMapToDouble(value -> {
 			String values[] = value.split(",");
 			return Arrays.asList(Double
-					.parseDouble((!values[14].equals("NA") && !values[14].equals("ArrDelay")) ? values[14] : "0"));
+					.parseDouble((!"NA".equals(values[14]) && !"ArrDelay".equals(values[14])) ? values[14] : "0"));
 		}).flatMap(value -> Arrays.asList(value)).collect(toexecute, null);
 
 		assertEquals(-63278,
@@ -483,7 +483,7 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		log.info("testFlatMapToDoubleFlatMap After---------------------------------------");
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testFlatMapToLong() throws Throwable {
 		log.info("testFlatMapToLong Before---------------------------------------");
@@ -492,7 +492,7 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		List<List<Long>> longs = (List) datastream.flatMapToLong(value -> {
 			String values[] = value.split(",");
 			return Arrays.asList(
-					Long.parseLong((!values[14].equals("NA") && !values[14].equals("ArrDelay")) ? values[14] : "0"));
+					Long.parseLong((!"NA".equals(values[14]) && !"ArrDelay".equals(values[14])) ? values[14] : "0"));
 		}).collect(toexecute, null);
 
 		assertEquals(-63278,
@@ -500,7 +500,7 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		log.info("testFlatMapToLong After---------------------------------------");
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testFlatMapToLongFlatMap() throws Throwable {
 		log.info("testFlatMapToLongFlatMap Before---------------------------------------");
@@ -509,7 +509,7 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		List<List<Long>> longs = (List) datastream.flatMapToLong(value -> {
 			String values[] = value.split(",");
 			return Arrays.asList(
-					Long.parseLong((!values[14].equals("NA") && !values[14].equals("ArrDelay")) ? values[14] : "0"));
+					Long.parseLong((!"NA".equals(values[14]) && !"ArrDelay".equals(values[14])) ? values[14] : "0"));
 		}).flatMap(value -> Arrays.asList(value)).collect(toexecute, null);
 
 		assertEquals(-63278,
@@ -517,7 +517,7 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		log.info("testFlatMapToLongFlatMap After---------------------------------------");
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testFlatMapToLongFlatMapFlatMapFlatMap() throws Throwable {
 		log.info("testFlatMapToLongFlatMapFlatMapFlatMap Before---------------------------------------");
@@ -526,7 +526,7 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		List<List<Long>> longs = (List) datastream.flatMapToLong(value -> {
 			String values[] = value.split(",");
 			return Arrays.asList(
-					Long.parseLong((!values[14].equals("NA") && !values[14].equals("ArrDelay")) ? values[14] : "0"));
+					Long.parseLong((!"NA".equals(values[14]) && !"ArrDelay".equals(values[14])) ? values[14] : "0"));
 		}).flatMap(value -> Arrays.asList(value)).flatMap(value -> Arrays.asList(value))
 				.flatMap(value -> Arrays.asList(value)).collect(toexecute, null);
 
@@ -534,7 +534,7 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		log.info("testFlatMapToLongFlatMapFlatMapFlatMap After---------------------------------------");
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testFlatMapToLongFlatMapToDouble() throws Throwable {
 		log.info("testFlatMapToLongFlatMapToDouble Before---------------------------------------");
@@ -543,7 +543,7 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		List<List<Double>> longs = (List) datastream.flatMapToLong(value -> {
 			String values[] = value.split(",");
 			return Arrays.asList(
-					Long.parseLong((!values[14].equals("NA") && !values[14].equals("ArrDelay")) ? values[14] : "0"));
+					Long.parseLong((!"NA".equals(values[14]) && !"ArrDelay".equals(values[14])) ? values[14] : "0"));
 		}).flatMapToDouble(value -> Arrays.asList(Double.valueOf(value))).collect(toexecute, null);
 
 		assertEquals(-63278.0,
@@ -551,7 +551,7 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		log.info("testFlatMapToLongFlatMapToDouble After---------------------------------------");
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testFlatMapToLongFlatMapToDoubleFlatMapToLongFlatMapToDouble() throws Throwable {
 		log.info(
@@ -561,7 +561,7 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		List<List<Double>> longs = (List) datastream.flatMapToLong(value -> {
 			String values[] = value.split(",");
 			return Arrays.asList(
-					Long.parseLong((!values[14].equals("NA") && !values[14].equals("ArrDelay")) ? values[14] : "0"));
+					Long.parseLong((!"NA".equals(values[14]) && !"ArrDelay".equals(values[14])) ? values[14] : "0"));
 		}).flatMapToDouble(value -> Arrays.asList(Double.valueOf(value)))
 				.flatMapToLong(value -> Arrays.asList(value.longValue()))
 				.flatMapToDouble(value -> Arrays.asList(Double.valueOf(value))).collect(toexecute, null);
@@ -572,7 +572,7 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 				"testFlatMapToLongFlatMapToDoubleFlatMapToLongFlatMapToDouble After---------------------------------------");
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testFlatMapToLongFlatMapToLong() throws Throwable {
 		log.info("testFlatMapToLongFlatMapToLong Before---------------------------------------");
@@ -581,21 +581,21 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		List<List<Long>> longs = (List) datastream.flatMapToLong(value -> {
 			String values[] = value.split(",");
 			return Arrays.asList(
-					Long.parseLong((!values[14].equals("NA") && !values[14].equals("ArrDelay")) ? values[14] : "0"));
+					Long.parseLong((!"NA".equals(values[14]) && !"ArrDelay".equals(values[14])) ? values[14] : "0"));
 		}).flatMapToLong(value -> Arrays.asList(value)).collect(toexecute, null);
 
 		assertEquals(-63278, longs.stream().flatMap(stream -> stream.stream()).mapToLong(val -> val.longValue()).sum());
 		log.info("testFlatMapToLongFlatMapToLong After---------------------------------------");
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testGroupByKey() throws Throwable {
 		log.info("testGroupByKey Before---------------------------------------");
 		StreamPipeline<String> datastream = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesample,
 				pipelineconfig);
 		List output = (List) datastream.map(dat -> dat.split(","))
-				.filter(dat -> !dat[14].equals("ArrDelay") && !dat[14].equals("NA"))
+				.filter(dat -> !"ArrDelay".equals(dat[14]) && !"NA".equals(dat[14]))
 				.mapToPair(dat -> Tuple.tuple(dat[8], Long.parseLong(dat[14]))).groupByKey().collect(toexecute, null);
 		output.stream().forEach(log::info);
 		log.info(output.size());
@@ -603,7 +603,7 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		log.info("testGroupByKey After---------------------------------------");
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testIntersection() throws Throwable {
 		log.info("testIntersection Before---------------------------------------");
@@ -617,22 +617,22 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		log.info("testIntersection After---------------------------------------");
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testIntersectionFilterIntersection() throws Throwable {
 		log.info("testIntersectionFilterIntersection Before---------------------------------------");
 		StreamPipeline<String> datasmall = StreamPipeline
 				.newStreamHDFS(hdfsfilepath, airlinepairjoin, pipelineconfig)
-				.filter(dat -> dat.split(",")[1].equals("10") || dat.split(",")[1].equals("11"));
+				.filter(dat -> "10".equals(dat.split(",")[1]) || "11".equals(dat.split(",")[1]));
 		StreamPipeline<String> dataverysmall1987 = StreamPipeline
 				.newStreamHDFS(hdfsfilepath, airlinepairjoin, pipelineconfig)
-				.filter(dat -> dat.split(",")[1].equals("10") || dat.split(",")[1].equals("11"));
+				.filter(dat -> "10".equals(dat.split(",")[1]) || "11".equals(dat.split(",")[1]));
 		List<List<String>> datas = (List) datasmall.intersection(dataverysmall1987).collect(true, null);
 		assertEquals(29, datas.get(0).size());
 		log.info("testIntersectionFilterIntersection After---------------------------------------");
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testIntersectionIntersection() throws Throwable {
 		log.info("testIntersectionIntersection Before---------------------------------------");
@@ -647,7 +647,7 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		log.info("testIntersectionIntersection After---------------------------------------");
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testIntersectionIntersectionReduceByKey() throws Throwable {
 		log.info("testIntersectionIntersectionReduceByKey Before---------------------------------------");
@@ -658,7 +658,7 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> dataverysmall = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesample,
 				pipelineconfig);
 		List<List<Tuple>> datas = (List) datasmall.intersection(dataverysmall1987).intersection(dataverysmall)
-				.map(dat -> dat.split(",")).filter(dat -> !dat[14].equals("ArrDelay") && !dat[14].equals("NA"))
+				.map(dat -> dat.split(",")).filter(dat -> !"ArrDelay".equals(dat[14]) && !"NA".equals(dat[14]))
 				.mapToPair(dat -> {
 					return Tuple.tuple(dat[8], Long.parseLong(dat[14]));
 				}).reduceByKey((a, b) -> a + b).coalesce(1, (pair1, pair2) -> (Long) pair1 + (Long) pair2)
@@ -668,7 +668,7 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		log.info("testIntersectionIntersectionReduceByKey After---------------------------------------");
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testIntersectionMapIntersection() throws Throwable {
 		log.info("testIntersectionMapIntersection Before---------------------------------------");
@@ -682,25 +682,25 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		log.info("testIntersectionMapIntersection After---------------------------------------");
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testIntersectionMapPairIntersection() throws Throwable {
 		log.info("testIntersectionMapPairIntersection Before---------------------------------------");
 		StreamPipeline<String> mds = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinepairjoin,
 				pipelineconfig);
 		MapPair<Tuple, Object> dataverysmall = mds.map(dat -> dat.split(","))
-				.filter(dat -> !dat[14].equals("ArrDelay") && !dat[14].equals("NA")).mapToPair(dat -> {
+				.filter(dat -> !"ArrDelay".equals(dat[14]) && !"NA".equals(dat[14])).mapToPair(dat -> {
 					return (Tuple2) Tuple.tuple(dat[8], Long.parseLong(dat[14]));
 				});
 		MapPair<Tuple, Object> datasmall = mds.map(dat -> dat.split(","))
-				.filter(dat -> !dat[14].equals("ArrDelay") && !dat[14].equals("NA"))
+				.filter(dat -> !"ArrDelay".equals(dat[14]) && !"NA".equals(dat[14]))
 				.mapToPair(dat -> (Tuple2) Tuple.tuple(dat[8], Long.parseLong(dat[14])));
 		List<List<Tuple2>> datas = (List) dataverysmall.intersection(datasmall).collect(true, null);
 		assertEquals(25, datas.get(0).size());
 		log.info("testIntersectionMapPairIntersection After---------------------------------------");
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testIntersectionReduceByKey() throws Throwable {
 		log.info("testIntersectionReduceByKey Before---------------------------------------");
@@ -709,7 +709,7 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> dataveryverysmall = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesample,
 				pipelineconfig);
 		List<List<Tuple>> datas = (List) dataverysmall.intersection(dataveryverysmall).map(dat -> dat.split(","))
-				.filter(dat -> !dat[14].equals("ArrDelay") && !dat[14].equals("NA")).mapToPair(dat -> {
+				.filter(dat -> !"ArrDelay".equals(dat[14]) && !"NA".equals(dat[14])).mapToPair(dat -> {
 					return Tuple.tuple(dat[8], Long.parseLong(dat[14]));
 				}).reduceByKey((a, b) -> a + b).coalesce(1, (pair1, pair2) -> (Long) pair1 + (Long) pair2)
 				.collect(true, null);
@@ -717,36 +717,36 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		log.info("testIntersectionReduceByKey After---------------------------------------");
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	@Test
 	public void testJoin() throws Throwable {
 		log.info("testJoin Before---------------------------------------");
 		StreamPipeline<String> datastream = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesample,
 				pipelineconfig);
 		MapPair<String, Long> mappair1 = (MapPair) datastream.map(dat -> dat.split(","))
-				.filter(dat -> !dat[14].equals("ArrDelay") && !dat[14].equals("NA"))
+				.filter(dat -> !"ArrDelay".equals(dat[14]) && !"NA".equals(dat[14]))
 				.mapToPair(dat -> Tuple.tuple(dat[8], Long.parseLong(dat[14])))
 				.reduceByKey((dat1, dat2) -> (Long) dat1 + (Long) dat2)
 				.coalesce(1, (dat1, dat2) -> (Long) dat1 + (Long) dat2);
 
 		MapPair<String, Long> mappair2 = (MapPair) datastream.map(dat -> dat.split(","))
-				.filter(dat -> !dat[14].equals("ArrDelay") && !dat[14].equals("NA"))
+				.filter(dat -> !"ArrDelay".equals(dat[14]) && !"NA".equals(dat[14]))
 				.mapToPair(dat -> Tuple.tuple(dat[8], Long.parseLong(dat[14])))
 				.reduceByKey((dat1, dat2) -> (Long) dat1 + (Long) dat2)
 				.coalesce(1, (dat1, dat2) -> (Long) dat1 + (Long) dat2);
 
 		MapPair<String, Long> mappair3 = (MapPair) datastream.map(dat -> dat.split(","))
-				.filter(dat -> !dat[14].equals("ArrDelay") && !dat[14].equals("NA"))
+				.filter(dat -> !"ArrDelay".equals(dat[14]) && !"NA".equals(dat[14]))
 				.mapToPair(dat -> Tuple.tuple(dat[8], Long.parseLong(dat[14])))
 				.reduceByKey((dat1, dat2) -> (Long) dat1 - (Long) dat2).coalesce(1, (dat1, dat2) -> (Long) dat1 - (Long) dat2);
 
 		MapPair<String, Long> mappair4 = (MapPair) datastream.map(dat -> dat.split(","))
-				.filter(dat -> !dat[14].equals("ArrDelay") && !dat[14].equals("NA"))
+				.filter(dat -> !"ArrDelay".equals(dat[14]) && !"NA".equals(dat[14]))
 				.mapToPair(dat -> Tuple.tuple(dat[8], Long.parseLong(dat[14])))
 				.reduceByKey((dat1, dat2) -> (Long) dat1 - (Long) dat2).coalesce(1, (dat1, dat2) -> (Long) dat1 - (Long) dat2);
 
 		MapPair<String, Long> mappair5 = (MapPair) datastream.map(dat -> dat.split(","))
-				.filter(dat -> !dat[14].equals("ArrDelay") && !dat[14].equals("NA"))
+				.filter(dat -> !"ArrDelay".equals(dat[14]) && !"NA".equals(dat[14]))
 				.mapToPair(dat -> Tuple.tuple(dat[8], Long.parseLong(dat[14])))
 				.reduceByKey((dat1, dat2) -> (Long) dat1 + (Long) dat2).coalesce(1, (dat1, dat2) -> (Long) dat1 + (Long) dat2);
 
@@ -768,14 +768,14 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		log.info("testJoin After---------------------------------------");
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	@Test
 	public void testJoinCommonMapMultipleReduce() throws Throwable {
 		log.info("testJoinCommonMapMultipleReduce Before---------------------------------------");
 		StreamPipeline<String> datastream = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesample,
 				pipelineconfig);
 		MapPair<String, Long> mappair1 = (MapPair) datastream.map(dat -> dat.split(","))
-				.filter(dat -> !dat[14].equals("ArrDelay") && !dat[14].equals("NA"))
+				.filter(dat -> !"ArrDelay".equals(dat[14]) && !"NA".equals(dat[14]))
 				.mapToPair(dat -> Tuple.tuple(dat[8], Long.parseLong(dat[14])));
 
 		MapPair<String, Long> airlinesamples = mappair1.reduceByKey((dat1, dat2) -> dat1 + dat2).coalesce(1,
@@ -800,14 +800,14 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		log.info("testJoinCommonMapMultipleReduce After---------------------------------------");
 	}
 	
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	@Test
 	public void testJoinMapPair() throws Throwable {
 		log.info("testJoinMapPair Before---------------------------------------");
 		StreamPipeline<String> datastream = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesample,
 				pipelineconfig);
 		MapPair<String, Long> mappair1 = (MapPair) datastream.map(dat -> dat.split(","))
-				.filter(dat -> !dat[14].equals("ArrDelay") && !dat[14].equals("NA"))
+				.filter(dat -> !"ArrDelay".equals(dat[14]) && !"NA".equals(dat[14]))
 				.mapToPair(dat -> Tuple.tuple(dat[8], Long.parseLong(dat[14])));
 
 		MapPair<String, Long> airlinesamples1 = mappair1.reduceByKey((dat1, dat2) -> dat1 + dat2).coalesce(1,
@@ -836,14 +836,14 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		log.info("testJoinMapPair After---------------------------------------");
 	}
 	
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	@Test
 	public void testLeftJoinMapPair() throws Throwable {
 		log.info("testLeftJoinMapPair Before---------------------------------------");
 		StreamPipeline<String> datastream = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesample,
 				pipelineconfig);
 		MapPair<String, Long> mappair1 = (MapPair) datastream.map(dat -> dat.split(","))
-				.filter(dat -> !dat[14].equals("ArrDelay") && !dat[14].equals("NA"))
+				.filter(dat -> !"ArrDelay".equals(dat[14]) && !"NA".equals(dat[14]))
 				.mapToPair(dat -> Tuple.tuple(dat[8], Long.parseLong(dat[14])));
 
 		MapPair<String, Long> airlinesamples1 = mappair1.reduceByKey((dat1, dat2) -> dat1 + dat2).coalesce(1,
@@ -873,14 +873,14 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 	}
 
 	
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	@Test
 	public void testRightJoinMapPair() throws Throwable {
 		log.info("testRightJoinMapPair Before---------------------------------------");
 		StreamPipeline<String> datastream = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesample,
 				pipelineconfig);
 		MapPair<String, Long> mappair1 = (MapPair) datastream.map(dat -> dat.split(","))
-				.filter(dat -> !dat[14].equals("ArrDelay") && !dat[14].equals("NA"))
+				.filter(dat -> !"ArrDelay".equals(dat[14]) && !"NA".equals(dat[14]))
 				.mapToPair(dat -> Tuple.tuple(dat[8], Long.parseLong(dat[14])));
 
 		MapPair<String, Long> airlinesamples1 = mappair1.reduceByKey((dat1, dat2) -> dat1 + dat2).coalesce(1,
@@ -890,7 +890,7 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 				pipelineconfig);
 		
 		MapPair<String, Long> carriers = datastream1.map(linetosplit -> linetosplit.split(","))
-				.filter(line->!line[0].substring(1, line[0].length() - 1).equals("AQ"))
+				.filter(line -> !"AQ".equals(line[0].substring(1, line[0].length() - 1)))
 				.mapToPair(line -> new Tuple2(line[0].substring(1, line[0].length() - 1),
 						line[1].substring(1, line[1].length() - 1)));
 		
@@ -911,14 +911,14 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		log.info("testRightJoinMapPair After---------------------------------------");
 	}
 	
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	@Test
 	public void testJoinCommonMapMultipleReduceLeftOuterJoin() throws Throwable {
 		log.info("testJoinCommonMapMultipleReduceLeftOuterJoin Before---------------------------------------");
 		StreamPipeline<String> datastream = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesample,
 				pipelineconfig);
 		MapPair<String, Long> mappair1 = (MapPair) datastream.map(dat -> dat.split(","))
-				.filter(dat -> !dat[14].equals("ArrDelay") && !dat[14].equals("NA"))
+				.filter(dat -> !"ArrDelay".equals(dat[14]) && !"NA".equals(dat[14]))
 				.mapToPair(dat -> Tuple.tuple(dat[8], Long.parseLong(dat[14])));
 
 		MapPair airlinesamples = (MapPair) mappair1.reduceByKey((dat1, dat2) -> dat1 + dat2).coalesce(1, (dat1, dat2) -> dat1 + dat2);
@@ -947,14 +947,14 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		log.info("testJoinCommonMapMultipleReduceLeftOuterJoin After---------------------------------------");
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	@Test
 	public void testJoinCommonMapMultipleReduceRightOuterJoin() throws Throwable {
 		log.info("testJoinCommonMapMultipleReduceRightOuterJoin Before---------------------------------------");
 		StreamPipeline<String> datastream = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesample,
 				pipelineconfig);
 		MapPair<String, Long> mappair1 = (MapPair) datastream.map(dat -> dat.split(","))
-				.filter(dat -> !dat[14].equals("ArrDelay") && !dat[14].equals("NA"))
+				.filter(dat -> !"ArrDelay".equals(dat[14]) && !"NA".equals(dat[14]))
 				.mapToPair(dat -> Tuple.tuple(dat[8], Long.parseLong(dat[14])));
 
 		MapPair airlinesample = (MapPair) mappair1.reduceByKey((dat1, dat2) -> dat1 + dat2).coalesce(1,
@@ -984,19 +984,19 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		log.info("testJoinCommonMapMultipleReduceRightOuterJoin After---------------------------------------");
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	public void testJoinPeek() throws Throwable {
 		log.info("testJoinPeek Before---------------------------------------");
 		StreamPipeline<String> datastream = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesample,
 				pipelineconfig);
 		MapPair mappair1 = (MapPair) datastream.map(dat -> dat.split(","))
-				.filter(dat -> !dat[14].equals("ArrDelay") && !dat[14].equals("NA")).peek(System.out::println)
+				.filter(dat -> !"ArrDelay".equals(dat[14]) && !"NA".equals(dat[14])).peek(System.out::println)
 				.mapToPair(dat -> Tuple.tuple(dat[8], Long.parseLong(dat[14])))
 				.reduceByKey((dat1, dat2) -> (Long) dat1 + (Long) dat2)
 				.coalesce(1, (dat1, dat2) -> (Long) dat1 + (Long) dat2).peek(System.out::println);
 
 		MapPair mappair2 = (MapPair) datastream.map(dat -> dat.split(","))
-				.filter(dat -> !dat[14].equals("ArrDelay") && !dat[14].equals("NA"))
+				.filter(dat -> !"ArrDelay".equals(dat[14]) && !"NA".equals(dat[14]))
 				.mapToPair(dat -> Tuple.tuple(dat[8], Long.parseLong(dat[14])))
 				.reduceByKey((dat1, dat2) -> (Long) dat1 - (Long) dat2).coalesce(1, (dat1, dat2) -> (Long) dat1 - (Long) dat2)
 				.peek(System.out::println);
@@ -1018,14 +1018,14 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		log.info("testJoinPeek After---------------------------------------");
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testMapCsvStream() throws Throwable {
 		log.info("testMapCsvStream Before---------------------------------------");
 		CsvStream<CSVRecord, CSVRecord> datastream = StreamPipeline.newCsvStreamHDFS(hdfsfilepath, airlinepairjoin,
-				pipelineconfig,airlineheader);
+				pipelineconfig, airlineheader);
 		java.util.List<List<Tuple2>> listreducebykey = (List) datastream.filter(
-				dat -> dat != null && !dat.get("ArrDelay").equals("ArrDelay") && !dat.get("ArrDelay").equals("NA"))
+				dat -> dat != null && !"ArrDelay".equals(dat.get("ArrDelay")) && !"NA".equals(dat.get("ArrDelay")))
 				.map(dat -> Tuple.tuple(dat.get(8), Long.parseLong(dat.get(14)))).collect(toexecute, null);
 		for (Tuple2 tuple2 : listreducebykey.get(0)) {
 			log.info(tuple2);
@@ -1036,13 +1036,13 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		log.info("testMapCsvStream After---------------------------------------");
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	public void testMapFilterSorted() throws Throwable {
 		log.info("testMapFilterSorted Before---------------------------------------");
 		StreamPipeline<String> datastream = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesample,
 				pipelineconfig);
 		StreamPipeline map = (StreamPipeline) datastream.map(dat -> dat.split(","))
-				.filter(dat -> !dat[14].equals("ArrDelay")).sorted((val1, val2) -> {
+				.filter(dat -> !"ArrDelay".equals(dat[14])).sorted((val1, val2) -> {
 					Long vall1 = Long.parseLong(((String[]) val1)[2]);
 					Long vall2 = Long.parseLong(((String[]) val2)[2]);
 					return vall1.compareTo(vall2);
@@ -1057,17 +1057,17 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		log.info("testMapFilterSorted After---------------------------------------");
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testMapMappair() throws Throwable {
 		log.info("testMapMappairFilter Before---------------------------------------");
 		StreamPipeline<String> datastream = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesample,
 				pipelineconfig);
 		List<List<Tuple2>> mappairresult = (List) datastream.map(dat -> dat.split(","))
-				.filter(dat -> !(dat[14].equals("ArrDelay") || dat[14].equals("NA")))
+				.filter(dat -> !("ArrDelay".equals(dat[14]) || "NA".equals(dat[14])))
 				.mapToPair(dat -> Tuple.tuple(dat[8], Long.parseLong(dat[14]))).collect(toexecute, null);
 		List<List> arrDelayNA = (List<List>) datastream.map(dat -> dat.split(","))
-				.filter(dat -> dat[14].equals("ArrDelay") || dat[14].equals("NA")).collect(toexecute, null);
+				.filter(dat -> "ArrDelay".equals(dat[14]) || "NA".equals(dat[14])).collect(toexecute, null);
 		long sum = 0;
 		int totalValueCount = 0;
 		for (List<Tuple2> tuples : mappairresult) {
@@ -1089,14 +1089,14 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		log.info("testMapMappair After---------------------------------------");
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testMapMappairFilter() throws Throwable {
 		log.info("testMapMappairFilter Before---------------------------------------");
 		StreamPipeline<String> datastream = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesample,
 				pipelineconfig);
 		java.util.List<List<Tuple2>> mappairresult = (List) datastream.map(dat -> dat.split(","))
-				.filter(dat -> !dat[14].equals("ArrDelay") && !dat[14].equals("NA"))
+				.filter(dat -> !"ArrDelay".equals(dat[14]) && !"NA".equals(dat[14]))
 				.mapToPair(dat -> (Tuple2<String, Long>) Tuple.tuple(dat[8], Long.parseLong(dat[14])))
 				.filter((Tuple2 pair) -> pair != null && (Long) ((Tuple2) pair).v2 > Long.MIN_VALUE)
 				.collect(toexecute, null);
@@ -1112,19 +1112,19 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		log.info("testMapMappairFilter After---------------------------------------");
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testMapMappairJoinPair() throws Throwable {
 		log.info("testMapMappairJoinPair Before---------------------------------------");
 		StreamPipeline<String> datastream = StreamPipeline.newStreamHDFS(hdfsfilepath, airline1987,
 				pipelineconfig);
 		MapPair<String, Long> mappairfirst = datastream.map(dat -> dat.split(","))
-				.filter(dat -> !dat[14].equals("ArrDelay") && !dat[14].equals("NA"))
+				.filter(dat -> !"ArrDelay".equals(dat[14]) && !"NA".equals(dat[14]))
 				.mapToPair(dat -> (Tuple2<String, Long>) Tuple.tuple(dat[8], Long.parseLong(dat[14])))
 				.reduceByKey((a, b) -> (Long) a + (Long) b).coalesce(1, (a, b) -> (Long) a + (Long) b);
 
 		MapPair<String, Long> mappairsecond = datastream.map(dat -> dat.split(","))
-				.filter(dat -> !dat[12].equals("CRSElapsedTime") && !dat[12].equals("NA"))
+				.filter(dat -> !"CRSElapsedTime".equals(dat[12]) && !"NA".equals(dat[12]))
 				.mapToPair(dat -> (Tuple2<String, Long>) Tuple.tuple(dat[8], Long.parseLong(dat[12])))
 				.reduceByKey((a, b) -> (Long) a + (Long) b).coalesce(1, (a, b) -> (Long) a + (Long) b);
 		List<List<Tuple2>> mappairresult = (List) mappairfirst
@@ -1142,14 +1142,14 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		log.info("testMapMappairJoinPair After---------------------------------------");
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testMapOfTupleOutput() throws Throwable {
 		log.info("testMapOfTupleOutput Before---------------------------------------");
 		StreamPipeline<String> datastream = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinepairjoin,
 				pipelineconfig);
 		java.util.List<List<Tuple2>> listreducebykey = (List) datastream.map(dat -> dat.split(","))
-				.filter(dat -> dat != null && !dat[14].equals("ArrDelay") && !dat[14].equals("NA"))
+				.filter(dat -> dat != null && !"ArrDelay".equals(dat[14]) && !"NA".equals(dat[14]))
 				.map(dat -> Tuple.tuple(dat[8], Long.parseLong(dat[14]))).collect(toexecute, null);
 		for (Tuple2 tuple2 : listreducebykey.get(0)) {
 			log.info(tuple2);
@@ -1160,14 +1160,14 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		log.info("testMapOfTupleOutput After---------------------------------------");
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	@Test
 	public void testMapPairCollect() throws Throwable {
 		log.info("testMapPairCollect Before---------------------------------------");
 		StreamPipeline<String> datastream = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesample,
 				pipelineconfig);
 		List<List<Tuple2>> result = (List) datastream.map(dat -> dat.split(","))
-				.filter(dat -> !dat[14].equals("ArrDelay") && !dat[14].equals("NA"))
+				.filter(dat -> !"ArrDelay".equals(dat[14]) && !"NA".equals(dat[14]))
 				.map(dat -> Integer.parseInt(dat[14])).mapToPair(data -> new Tuple2(data, data))
 				.collect(toexecute, null);
 		int sumv1 = 0, sumv2 = 0;
@@ -1184,7 +1184,7 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		log.info("testMapPairCollect After---------------------------------------");
 	}
 
-	@SuppressWarnings({ "unchecked" })
+	@SuppressWarnings({"unchecked"})
 	@Test
 	public void testMapPeek() throws Throwable {
 		log.info("testMapPeek Before---------------------------------------");
@@ -1197,7 +1197,7 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		log.info("testMapPeek After---------------------------------------");
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testMapPair() throws Throwable {
 		log.info("testMapPair Before---------------------------------------");
@@ -1216,7 +1216,7 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		log.info("testMapPair After---------------------------------------");
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testMapPairFilter() throws Throwable {
 		log.info("testMapPairFilter Before---------------------------------------");
@@ -1234,7 +1234,7 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		log.info("testMapPairFilter After---------------------------------------");
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	@Test
 	public void testMapPairFilterContains() throws Throwable {
 		log.info("testMapPairFilterContains Before---------------------------------------");
@@ -1251,7 +1251,7 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		log.info("testMapPairFilterContains After---------------------------------------");
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testMapPairFlatMap() throws Throwable {
 		log.info("testMapPairFlatMap Before---------------------------------------");
@@ -1265,7 +1265,7 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		log.info("testMapPairFlatMap After---------------------------------------");
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testMapPairFlatMapToLong() throws Throwable {
 		log.info("testMapPairFlatMapToLong Before---------------------------------------");
@@ -1282,7 +1282,7 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		log.info("testMapPairFlatMapToLong After---------------------------------------");
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testMapPairMap() throws Throwable {
 		log.info("testMapPairMap Before---------------------------------------");
@@ -1303,7 +1303,7 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		log.info("testMapPairMap After---------------------------------------");
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testMapPairPeek() throws Throwable {
 		log.info("testMapPairPeek Before---------------------------------------");
@@ -1312,19 +1312,19 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		List<List<Tuple2>> vals = (List) datastream.mapToPair(value -> {
 			String[] values = value.split(",");
 			return Tuple.tuple(values[8], values[14]);
-		}).peek(tuple2->System.out.println(tuple2)).collect(toexecute, null);
+		}).peek(tuple2 -> System.out.println(tuple2)).collect(toexecute, null);
 		assertTrue(vals.get(0).size() == 46361);
 		log.info("testMapPairPeek After---------------------------------------");
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	public void testMapPairSorted() throws Throwable {
 		log.info("testMapPairSorted Before---------------------------------------");
 		StreamPipeline<String> datastream = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesample,
 				pipelineconfig);
 		MapPair mappair = (MapPair) datastream.filter(dat -> {
 			String[] val = dat.split(",");
-			return !val[14].equals("ArrDelay") && !val[14].equals("NA");
+			return !"ArrDelay".equals(val[14]) && !"NA".equals(val[14]);
 		}).mapToPair(val -> {
 			String[] valarr = val.split(",");
 			return Tuple.tuple(valarr[8], Integer.parseInt(valarr[14]));
@@ -1347,14 +1347,14 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		log.info("testMapPairSorted After---------------------------------------");
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	public void testMapPairSortedPeek() throws Throwable {
 		log.info("testMapPairSortedPeek Before---------------------------------------");
 		StreamPipeline<String> datastream = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesample,
 				pipelineconfig);
 		MapPair mappair = (MapPair) datastream.filter(dat -> {
 			String[] val = dat.split(",");
-			return !val[14].equals("ArrDelay") && !val[14].equals("NA");
+			return !"ArrDelay".equals(val[14]) && !"NA".equals(val[14]);
 		}).mapToPair(val -> {
 			String[] valarr = val.split(",");
 			return (Tuple2) Tuple.tuple(valarr[8], Integer.parseInt(valarr[14]));
@@ -1377,7 +1377,7 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		log.info("testMapPairSortedPeek After---------------------------------------");
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testMassiveDataPipelinePeek() throws Throwable {
 		log.info("testMassiveDataPipelinePeek Before---------------------------------------");
@@ -1389,7 +1389,7 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		log.info("testMassiveDataPipelinePeek After---------------------------------------");
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testMultipleDAG() throws Throwable {
 		log.info("testMultipleDAG Before---------------------------------------");
@@ -1410,33 +1410,33 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		log.info("testMultipleDAG After---------------------------------------");
 	}
 
-	@SuppressWarnings({ "unused" })
+	@SuppressWarnings({"unused"})
 	@Test
 	public void testMultipleSplits() throws Throwable {
 		log.info("testMultipleSplits Before---------------------------------------");
 		StreamPipeline<String> datastream = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesample,
 				pipelineconfig);
 		StreamPipeline<String[]> map = datastream.map(dat -> dat.split(","));
-		StreamPipeline<String[]> filt = map.filter(dat -> !dat[14].equals("ArrDelay"));
+		StreamPipeline<String[]> filt = map.filter(dat -> !"ArrDelay".equals(dat[14]));
 		StreamPipeline<String> mapfilt = map.map(datas -> datas[0] + "" + datas[14])
-				.filter(dat -> !dat.equals("198723"));
-		StreamPipeline<String[]> filt1 = map.filter(dat -> !dat[14].equals("ArrDelay"));
+				.filter(dat -> !"198723".equals(dat));
+		StreamPipeline<String[]> filt1 = map.filter(dat -> !"ArrDelay".equals(dat[14]));
 		StreamPipeline<String> mapfilt1 = map.map(datas -> datas[0] + "" + datas[14])
-				.filter(dat -> !dat.equals("198723"));
+				.filter(dat -> !"198723".equals(dat));
 		log.info(filt.collect(toexecute, null));
 		log.info(mapfilt.collect(toexecute, null));
 
 		log.info("testMultipleSplits After---------------------------------------");
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testPartitioningEachFileReduceByKey() throws Throwable {
 		log.info("testPartitioningEachFileReduceByKey Before---------------------------------------");
 		StreamPipeline<String> datastream = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinemultiplefilesfolder, pipelineconfig);
 		List<List<Tuple2>> listreducebykey = (List) datastream.map(dat -> dat.split(","))
-				.filter(dat -> dat != null && !dat[14].equals("ArrDelay") && !dat[14].equals("NA"))
+				.filter(dat -> dat != null && !"ArrDelay".equals(dat[14]) && !"NA".equals(dat[14]))
 				.mapToPair(dat -> (Tuple2<String, Long>) Tuple.tuple(dat[8], Long.parseLong(dat[14])))
 				.reduceByKey((a, b) -> a + b).coalesce(1, (pair1, pair2) -> (Long) pair1 + (Long) pair2)
 				.collect(toexecute, new NumPartitionsEachFile(5));
@@ -1450,14 +1450,14 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		log.info("testPartitioningEachFileReduceByKey After---------------------------------------");
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testPartitioningReduceByKey() throws Throwable {
 		log.info("testPartitioningReduceByKey Before---------------------------------------");
 		StreamPipeline<String> datastream = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesample,
 				pipelineconfig);
 		List<List<Tuple2>> listreducebykey = (List) datastream.map(dat -> dat.split(","))
-				.filter(dat -> dat != null && !dat[14].equals("ArrDelay") && !dat[14].equals("NA"))
+				.filter(dat -> dat != null && !"ArrDelay".equals(dat[14]) && !"NA".equals(dat[14]))
 				.mapToPair(dat -> Tuple.tuple(dat[8], Long.parseLong(dat[14]))).reduceByKey((a, b) -> a + b)
 				.coalesce(1, (pair1, pair2) -> (Long) pair1 + (Long) pair2).collect(toexecute, new NumPartitions(4));
 		int sum = 0;
@@ -1471,14 +1471,14 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		log.info("testPartitioningReduceByKey After---------------------------------------");
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testReduceByKey() throws Throwable {
 		log.info("testReduceByKey Before---------------------------------------");
 		StreamPipeline<String> datastream = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesample,
 				pipelineconfig);
 		List<List<Tuple2>> redByKeyList = (List) datastream.map(dat -> dat.split(","))
-				.filter(dat -> dat != null && !dat[14].equals("ArrDelay") && !dat[14].equals("NA"))
+				.filter(dat -> dat != null && !"ArrDelay".equals(dat[14]) && !"NA".equals(dat[14]))
 				.mapToPair(dat -> (Tuple2<String, Long>) Tuple.tuple(dat[8], Long.parseLong(dat[14])))
 				.reduceByKey((a, b) -> a + b).coalesce(1, (pair1, pair2) -> (Long) pair1 + (Long) pair2)
 				.collect(toexecute, null);
@@ -1494,13 +1494,13 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		log.info("testReduceByKey After---------------------------------------");
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testReduceByKeyBiCycleCrashSpeedLimit() throws Throwable {
 		log.info("testReduceByKeyBiCycleCrashSpeedLimit Before---------------------------------------");
 		StreamPipeline<String> datastream = StreamPipeline.newStreamHDFS(hdfsfilepath, bicyclecrash,
 				pipelineconfig);
-		List<List> crashcounts = (List) datastream.map(dat -> dat.split(";")).filter(dat -> !dat[9].equals("bike_sex"))
+		List<List> crashcounts = (List) datastream.map(dat -> dat.split(";")).filter(dat -> !"bike_sex".equals(dat[9]))
 				.mapToPair(dat -> Tuple.tuple(dat[9] + "-" + dat[6] + "-" + dat[44], 1l))
 
 				.reduceByKey((a, b) -> a + b).coalesce(1, (pair1, pair2) -> (Long) pair1 + (Long) pair2)
@@ -1514,14 +1514,14 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		log.info("testReduceByKeyBiCycleCrashSpeedLimit After---------------------------------------");
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testReduceByKeyCarrierDayOfMonthArrDelay() throws Throwable {
 		log.info("testReduceByKeyCarrierDayOfMonthArrDelay Before---------------------------------------");
 		StreamPipeline<String> datastream = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesample,
 				pipelineconfig);
 		List<List<Tuple2>> carrierDayOfmonthArrDelay = (List) datastream.map(dat -> dat.split(","))
-				.filter(dat -> !dat[14].equals("ArrDelay") && !dat[14].equals("NA"))
+				.filter(dat -> !"ArrDelay".equals(dat[14]) && !"NA".equals(dat[14]))
 				.mapToPair(dat -> Tuple.tuple(dat[8] + "-" + dat[2], Long.parseLong(dat[14])))
 
 				.reduceByKey((a, b) -> a + b).coalesce(1, (pair1, pair2) -> (Long) pair1 + (Long) pair2)
@@ -1537,14 +1537,14 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		log.info("testReduceByKeyCarrierDayOfMonthArrDelay After---------------------------------------");
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testReduceByKeyCarrierFlightNumDistance() throws Throwable {
 		log.info("testReduceByKeyCarrierFlightNumDistance Before---------------------------------------");
 		StreamPipeline<String> datastream = StreamPipeline.newStreamHDFS(hdfsfilepath, airline1987,
 				pipelineconfig);
 		List<List> carrierFlightNumDistance = (List) datastream.map(dat -> dat.split(","))
-				.filter(dat -> !dat[18].equals("Distance") && !dat[18].equals("NA"))
+				.filter(dat -> !"Distance".equals(dat[18]) && !"NA".equals(dat[18]))
 				.mapToPair(dat -> Tuple.tuple(dat[8] + "-" + dat[9], Long.parseLong(dat[18])))
 
 				.reduceByKey((a, b) -> a + b).coalesce(1, (pair1, pair2) -> (Long) pair1 + (Long) pair2)
@@ -1558,14 +1558,14 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		log.info("testReduceByKeyCarrierFlightNumDistance After---------------------------------------");
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testReduceByKeyCarrierFlightNumOriginDistance() throws Throwable {
 		log.info("testReduceByKeyCarrierFlightNumOriginDistance Before---------------------------------------");
 		StreamPipeline<String> datastream = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesample,
 				pipelineconfig);
 		List<List> distancecount = (List) datastream.map(dat -> dat.split(","))
-				.filter(dat -> !dat[18].equals("Distance") && !dat[18].equals("NA"))
+				.filter(dat -> !"Distance".equals(dat[18]) && !"NA".equals(dat[18]))
 				.mapToPair(dat -> Tuple.tuple(dat[8] + "-" + dat[9] + "-" + dat[16], Long.parseLong(dat[18])))
 
 				.reduceByKey((a, b) -> a + b).coalesce(1, (pair1, pair2) -> (Long) pair1 + (Long) pair2)
@@ -1579,14 +1579,14 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		log.info("testReduceByKeyCarrierFlightNumOriginDistance After---------------------------------------");
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testReduceByKeyCarrierMonthArrivalDelay() throws Throwable {
 		log.info("testReduceByKeyCarrierMonthArrivalDelay Before---------------------------------------");
 		StreamPipeline<String> datastream = StreamPipeline.newStreamHDFS(hdfsfilepath, airline1987,
 				pipelineconfig);
 		List<List<Tuple2>> carrierMonthArrDelay = (List) datastream.map(dat -> dat.split(","))
-				.filter(dat -> !dat[14].equals("ArrDelay") && !dat[14].equals("NA"))
+				.filter(dat -> !"ArrDelay".equals(dat[14]) && !"NA".equals(dat[14]))
 				.mapToPair(dat -> Tuple.tuple(dat[8] + "-" + dat[1], Long.parseLong(dat[14])))
 
 				.reduceByKey((a, b) -> a + b).coalesce(1, (pair1, pair2) -> (Long) pair1 + (Long) pair2)
@@ -1604,14 +1604,14 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		log.info("testReduceByKeyCarrierMonthArrivalDelay After---------------------------------------");
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testReduceByKeyCsvStream() throws Throwable {
 		log.info("testReduceByKeyCsvStream Before---------------------------------------");
 		CsvStream<CSVRecord, CSVRecord> datastream = StreamPipeline.newCsvStreamHDFS(hdfsfilepath, airlinesample,
-				pipelineconfig,airlineheader);
+				pipelineconfig, airlineheader);
 		java.util.List<List<Tuple2>> listreducebykey = (List) datastream.filter(
-				dat -> dat != null && !dat.get("ArrDelay").equals("ArrDelay") && !dat.get("ArrDelay").equals("NA"))
+				dat -> dat != null && !"ArrDelay".equals(dat.get("ArrDelay")) && !"NA".equals(dat.get("ArrDelay")))
 				.mapToPair(dat -> {
 					return Tuple.tuple(dat.get(8), Long.parseLong(dat.get(14)));
 				}).reduceByKey((a, b) -> a + b).coalesce(1, (pair1, pair2) -> (Long) pair1 + (Long) pair2)
@@ -1624,14 +1624,14 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		log.info("testReduceByKeyCsvStream After---------------------------------------");
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testReduceByKeyPopulation() throws Throwable {
 		log.info("testReduceByKeyPopulation Before---------------------------------------");
 		StreamPipeline<String> datastream = StreamPipeline.newStreamHDFS(hdfsfilepath, population,
 				pipelineconfig);
 		List<List<Tuple2>> listreducebykey = (List) datastream.map(dat -> dat.split(","))
-				.filter(dat -> !dat[2].equals("Abortion_rate")).mapToPair(dat -> {
+				.filter(dat -> !"Abortion_rate".equals(dat[2])).mapToPair(dat -> {
 					return new Tuple2<String, Double>(dat[1], Double.parseDouble(dat[2]));
 				}).reduceByKey((pair1, pair2) -> (Double) pair1 + (Double) pair2)
 				.coalesce(1, (pair1, pair2) -> (Double) pair1 + (Double) pair2).collect(toexecute, null);
@@ -1645,14 +1645,14 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		log.info("testReduceByKeyPopulation After---------------------------------------");
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testReduceByKeyVerySmall() throws Throwable {
 		log.info("testReduceByKeyVerySmall Before---------------------------------------");
 		StreamPipeline<String> datastream = StreamPipeline.newStreamHDFS(hdfsfilepath, airline1987,
 				pipelineconfig);
 		List<List<Tuple2>> carrierArrDelay = (List) datastream.map(dat -> dat.split(","))
-				.filter(dat -> dat != null && !dat[14].equals("ArrDelay") && !dat[14].equals("NA"))
+				.filter(dat -> dat != null && !"ArrDelay".equals(dat[14]) && !"NA".equals(dat[14]))
 				.mapToPair(dat -> Tuple.tuple(dat[8], Long.parseLong(dat[14]))).reduceByKey((a, b) -> a + b)
 				.coalesce(1, (pair1, pair2) -> (Long) pair1 + (Long) pair2).collect(toexecute, null);
 		long sumv1 = 0;
@@ -1667,14 +1667,14 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		log.info("testReduceByKeyVerySmall After---------------------------------------");
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testSample() throws Throwable {
 		log.info("testSample Before---------------------------------------");
 		StreamPipeline<String> datastream = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesample,
 				pipelineconfig);
 		java.util.List<List<Tuple2>> listreducebykey = (List) datastream.sample(46361).map(datas -> datas.split(","))
-				.filter(dat -> !dat[14].equals("ArrDelay") && !dat[14].equals("NA")).mapToPair(dat -> {
+				.filter(dat -> !"ArrDelay".equals(dat[14]) && !"NA".equals(dat[14])).mapToPair(dat -> {
 					return Tuple.tuple(dat[8], Long.parseLong(dat[14]));
 				}).reduceByKey((a, b) -> a + b).coalesce(1, (pair1, pair2) -> (Long) pair1 + (Long) pair2)
 				.collect(toexecute, null);
@@ -1689,14 +1689,14 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		log.info("testSample After---------------------------------------");
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testSampleSample() throws Throwable {
 		log.info("testSampleSample Before---------------------------------------");
 		StreamPipeline<String> datastream = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesample,
 				pipelineconfig);
 		List<List<Tuple2>> listreducebykey = (List) datastream.sample(46361).map(dat -> dat.split(","))
-				.filter(dat -> !dat[14].equals("ArrDelay") && !dat[14].equals("NA"))
+				.filter(dat -> !"ArrDelay".equals(dat[14]) && !"NA".equals(dat[14]))
 				.mapToPair(dat -> Tuple.tuple(dat[8], Long.parseLong(dat[14]))).reduceByKey((a, b) -> a + b)
 				.coalesce(1, (pair1, pair2) -> (Long) pair1 + (Long) pair2).collect(toexecute, null);
 		int sum = 0;
@@ -1710,17 +1710,17 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		log.info("testSampleSample After---------------------------------------");
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	@Test
 	public void testSingleMappairMultipleReduceByKey() throws Throwable {
 		log.info("testSingleMappairMultipleReduceByKey Before---------------------------------------");
 		StreamPipeline<String> datastream = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesample,
 				pipelineconfig);
 		MapPair<String, Long> mappair1 = (MapPair) datastream.map(dat -> dat.split(","))
-				.filter(dat -> !dat[14].equals("ArrDelay") && !dat[14].equals("NA"))
+				.filter(dat -> !"ArrDelay".equals(dat[14]) && !"NA".equals(dat[14]))
 				.mapToPair(dat -> Tuple.tuple(dat[8], Long.parseLong(dat[14])));
 
-		MapPair<String, Long> mappair2 = (MapPair) mappair1.reduceByKey((dat1, dat2) -> dat1 + dat2).coalesce(1,(dat1, dat2) -> dat1 + dat2);
+		MapPair<String, Long> mappair2 = (MapPair) mappair1.reduceByKey((dat1, dat2) -> dat1 + dat2).coalesce(1, (dat1, dat2) -> dat1 + dat2);
 
 		MapPair<String, Long> mappair3 = (MapPair) mappair1.reduceByKey((dat1, dat2) -> dat1 - dat2).coalesce(1,
 				(dat1, dat2) -> dat1 - dat2);
@@ -1746,14 +1746,14 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		log.info("testSingleMappairMultipleReduceByKey After---------------------------------------");
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testStreamSampleSampleSample() throws Throwable {
 		log.info("testStreamSampleSampleSample Before---------------------------------------");
 		StreamPipeline<String> datastream = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesample,
 				pipelineconfig);
 		java.util.List<List<Tuple2>> listreducebykey = (List) datastream.sample(10000).map(dat -> dat.split(","))
-				.filter(dat -> !dat[14].equals("ArrDelay") && !dat[14].equals("NA")).sample(1000)
+				.filter(dat -> !"ArrDelay".equals(dat[14]) && !"NA".equals(dat[14])).sample(1000)
 				.mapToPair(dat -> (Tuple2<String, Long>) Tuple.tuple(dat[8], Long.parseLong(dat[14])))
 				.reduceByKey((a, b) -> a + b).coalesce(1, (pair1, pair2) -> (Long) pair1 + (Long) pair2)
 				.collect(toexecute, null);
@@ -1767,7 +1767,7 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		log.info("testStreamSampleSampleSample After---------------------------------------");
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testUnion() throws Throwable {
 		log.info("testUnion Before---------------------------------------");
@@ -1780,38 +1780,38 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		log.info("testUnion After---------------------------------------");
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testUnionFilterUnion() throws Throwable {
 		log.info("testUnionFilterUnion Before---------------------------------------");
 		StreamPipeline<String> dataverysmall = StreamPipeline
 				.newStreamHDFS(hdfsfilepath, airlinepairjoin, pipelineconfig)
-				.filter(dat -> dat.split(",")[2].equals("10") || dat.split(",")[2].equals("11"));
+				.filter(dat -> "10".equals(dat.split(",")[2]) || "11".equals(dat.split(",")[2]));
 		StreamPipeline<String> dataveryverysmall1989 = StreamPipeline
 				.newStreamHDFS(hdfsfilepath, airlinepairjoin, pipelineconfig)
-				.filter(dat -> dat.split(",")[2].equals("12") || dat.split(",")[2].equals("13"));
+				.filter(dat -> "12".equals(dat.split(",")[2]) || "13".equals(dat.split(",")[2]));
 		List<List<String>> datas = (List) dataverysmall.union(dataveryverysmall1989).collect(true, null);
 		Assert.assertEquals(4, datas.get(0).size());
 		for (String data : datas.get(0)) {
 			String value = data.split(",")[2];
 			Assert.assertEquals(true,
-					value.equals("10") || value.equals("11") || value.equals("12") || value.equals("13"));
+					"10".equals(value) || "11".equals(value) || "12".equals(value) || "13".equals(value));
 		}
 		log.info("testUnionFilterUnion After---------------------------------------");
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testUnionMapPairUnion() throws Throwable {
 		log.info("testUnionFilterMapPairUnion Before---------------------------------------");
 		MapPair<Tuple, Object> dataverysmall = StreamPipeline
 				.newStreamHDFS(hdfsfilepath, airlinepairjoin, pipelineconfig).map(dat -> dat.split(","))
-				.filter(dat -> !dat[14].equals("ArrDelay") && !dat[14].equals("NA")).mapToPair(dat -> {
+				.filter(dat -> !"ArrDelay".equals(dat[14]) && !"NA".equals(dat[14])).mapToPair(dat -> {
 					return (Tuple2) Tuple.tuple(dat[8], Long.parseLong(dat[14]));
 				});
 		MapPair<Tuple, Object> dataveryverysmall1989 = StreamPipeline
 				.newStreamHDFS(hdfsfilepath, airlinepairjoin, pipelineconfig).map(dat -> dat.split(","))
-				.filter(dat -> !dat[14].equals("ArrDelay") && !dat[14].equals("NA")).mapToPair(dat -> {
+				.filter(dat -> !"ArrDelay".equals(dat[14]) && !"NA".equals(dat[14])).mapToPair(dat -> {
 					return (Tuple2) Tuple.tuple(dat[8], Long.parseLong(dat[14]));
 				});
 		List<List<Tuple>> datas = (List) dataverysmall.union(dataveryverysmall1989).collect(true, null);
@@ -1819,7 +1819,7 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		log.info("testUnionFilterMapPairUnion After---------------------------------------");
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testUnionMapUnion() throws Throwable {
 		log.info("testUnionMapUnion Before---------------------------------------");
@@ -1832,7 +1832,7 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		log.info("testUnionMapUnion After---------------------------------------");
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testUnionReduceByKey() throws Throwable {
 		log.info("testUnionReduceByKey Before---------------------------------------");
@@ -1841,7 +1841,7 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> dataveryverysmall = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesample,
 				pipelineconfig);
 		List<List<Tuple>> datas = (List) dataverysmall.union(dataveryverysmall).map(dat -> dat.split(","))
-				.filter(dat -> !dat[14].equals("ArrDelay") && !dat[14].equals("NA")).mapToPair(dat -> {
+				.filter(dat -> !"ArrDelay".equals(dat[14]) && !"NA".equals(dat[14])).mapToPair(dat -> {
 					return Tuple.tuple(dat[8], Long.parseLong(dat[14]));
 				}).reduceByKey((a, b) -> a + b).coalesce(1, (pair1, pair2) -> (Long) pair1 + (Long) pair2)
 				.collect(true, null);
@@ -1849,7 +1849,7 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		log.info("testUnionReduceByKey After---------------------------------------");
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testUnionUnion() throws Throwable {
 		log.info("testUnionUnion Before---------------------------------------");
@@ -1864,7 +1864,7 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		log.info("testUnionUnion After---------------------------------------");
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testUnionUnionReduceByKey() throws Throwable {
 		log.info("testUnionUnionReduceByKey Before---------------------------------------");
@@ -1875,7 +1875,7 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> unionstream3 = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesample,
 				pipelineconfig);
 		List<List<Tuple>> datas = (List) unionstream1.union(unionstream2).union(unionstream3).map(dat -> dat.split(","))
-				.filter(dat -> !dat[14].equals("ArrDelay") && !dat[14].equals("NA")).mapToPair(dat -> {
+				.filter(dat -> !"ArrDelay".equals(dat[14]) && !"NA".equals(dat[14])).mapToPair(dat -> {
 					return Tuple.tuple(dat[8], Long.parseLong(dat[14]));
 				}).reduceByKey((a, b) -> a + b).coalesce(1, (pair1, pair2) -> (Long) pair1 + (Long) pair2)
 				.collect(true, null);
@@ -1883,7 +1883,7 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		log.info("testUnionUnionReduceByKey After---------------------------------------");
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testWordCount() throws Throwable {
 		log.info("testWordCount Before---------------------------------------");
@@ -1897,7 +1897,7 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		log.info("testWordCount After---------------------------------------");
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testWordCountCountAndWordSorted() throws Throwable {
 		log.info("testWordCountCountAndWordSorted Before---------------------------------------");
@@ -1919,7 +1919,7 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		log.info("testWordCountCountAndWordSorted After---------------------------------------");
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testWordCountCountSorted() throws Throwable {
 		log.info("testWordCountCountSorted Before---------------------------------------");
@@ -1937,7 +1937,7 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		log.info("testWordCountCountSorted After---------------------------------------");
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testWordCountFlatMapToTuple() throws Throwable {
 		log.info("testWordCountFlatMapToTuple Before---------------------------------------");
@@ -1956,7 +1956,7 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		log.info("testWordCountFlatMapToTuple After---------------------------------------");
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testWordCountWordSorted() throws Throwable {
 		log.info("testWordCountWordSorted Before---------------------------------------");
@@ -1983,7 +1983,7 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		log.info("testWordCountWordSorted After---------------------------------------");
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testDistinct() throws Throwable {
 		log.info("testDistinct Before---------------------------------------");
@@ -1999,15 +1999,15 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		log.info("testDistinct After---------------------------------------");
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testMapToInt() throws Throwable {
 		log.info("testMapToInt Before---------------------------------------");
 		StreamPipeline<String> datastream = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesample,
 				pipelineconfig);
 		List<List<AtomicInteger>> intvalues = (List) datastream.map(str -> str.split(","))
-				.filter(str -> !str[14].equals("ArrDelay") && !str[14].equals("NA"))
-				.mapToInt(str -> Integer.parseInt(str[14])).<AtomicInteger> collect(toexecute,
+				.filter(str -> !"ArrDelay".equals(str[14]) && !"NA".equals(str[14]))
+				.mapToInt(str -> Integer.parseInt(str[14])).<AtomicInteger>collect(toexecute,
 						() -> new AtomicInteger(),
 						(AtomicInteger a, int b) -> ((AtomicInteger) a).set(((AtomicInteger) a).get() + b),
 						(AtomicInteger a, AtomicInteger b) -> a.set(a.get() + b.get()));
@@ -2019,15 +2019,15 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		log.info("testMapToInt After---------------------------------------");
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testMapToIntDistinct() throws Throwable {
 		log.info("testMapToIntDistinct Before---------------------------------------");
 		StreamPipeline<String> datastream = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesample,
 				pipelineconfig);
 		List<List<AtomicInteger>> intvalues = (List) datastream.map(str -> str.split(","))
-				.filter(str -> !str[14].equals("ArrDelay") && !str[14].equals("NA"))
-				.mapToInt(str -> Integer.parseInt(str[14])).distinct().<AtomicInteger> collect(toexecute,
+				.filter(str -> !"ArrDelay".equals(str[14]) && !"NA".equals(str[14]))
+				.mapToInt(str -> Integer.parseInt(str[14])).distinct().<AtomicInteger>collect(toexecute,
 						() -> new AtomicInteger(),
 						(AtomicInteger a, int b) -> ((AtomicInteger) a).set(((AtomicInteger) a).get() + b),
 						(AtomicInteger a, AtomicInteger b) -> a.set(a.get() + b.get()));
@@ -2039,14 +2039,14 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		log.info("testMapToIntDistinct After---------------------------------------");
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testMapToIntMap() throws Throwable {
 		log.info("testMapToIntMap Before---------------------------------------");
 		StreamPipeline<String> datastream = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesample,
 				pipelineconfig);
 		List<List<AtomicInteger>> intvalues = (List) datastream.map(str -> str.split(","))
-				.filter(str -> !str[14].equals("ArrDelay") && !str[14].equals("NA"))
+				.filter(str -> !"ArrDelay".equals(str[14]) && !"NA".equals(str[14]))
 				.mapToInt(str -> Integer.parseInt(str[14])).map(new IntUnaryOperator() {
 
 					@Override
@@ -2054,7 +2054,7 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 						return operand + 100;
 					}
 
-				}).<AtomicInteger> collect(toexecute, () -> new AtomicInteger(),
+				}).<AtomicInteger>collect(toexecute, () -> new AtomicInteger(),
 						(AtomicInteger a, int b) -> ((AtomicInteger) a).set(((AtomicInteger) a).get() + b),
 						(AtomicInteger a, AtomicInteger b) -> a.set(a.get() + b.get()));
 		for (List<AtomicInteger> vals : intvalues) {
@@ -2065,14 +2065,14 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		log.info("testMapToIntMap After---------------------------------------");
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testCountByKey() throws Throwable {
 		log.info("testCountByKey Before---------------------------------------");
 		StreamPipeline<String> datastream = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesample,
 				pipelineconfig);
 		List<List<Tuple>> tupleslist = (List) datastream.map(str -> str.split(","))
-				.filter(str -> !str[14].equals("ArrDelay")).mapToPair(str -> Tuple.tuple(str[1], str[14])).countByKey()
+				.filter(str -> !"ArrDelay".equals(str[14])).mapToPair(str -> Tuple.tuple(str[1], str[14])).countByKey()
 				.collect(toexecute, new NumPartitions(3));
 		long sum = 0;
 		for (List<Tuple> tuples : tupleslist) {

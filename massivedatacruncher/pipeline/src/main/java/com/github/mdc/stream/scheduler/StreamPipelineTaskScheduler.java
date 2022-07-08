@@ -26,13 +26,13 @@ import com.github.mdc.stream.Pipeline;
  * @author Arun
  * The stream pipelining API task scheduler thread to execut the MR jar file.
  */
-public class StreamPipelineTaskScheduler implements Runnable{
+public class StreamPipelineTaskScheduler implements Runnable {
 	private static Logger log = Logger.getLogger(StreamPipelineTaskScheduler.class);
 	private byte[] mrjar; 
 	private Socket tss;
 	private String[] args;
 	String filename;
-	public StreamPipelineTaskScheduler(CuratorFramework cf, String filename, byte[] mrjar,String[] args,
+	public StreamPipelineTaskScheduler(CuratorFramework cf, String filename, byte[] mrjar, String[] args,
 			 Socket tss) {
 		this.mrjar = mrjar;
 		this.args = args;
@@ -46,25 +46,25 @@ public class StreamPipelineTaskScheduler implements Runnable{
 		var message = "";
 		try {
 			//ClassLoader to load the jar file.
-			ClassLoader ctxcl=Thread.currentThread().getContextClassLoader();
+			ClassLoader ctxcl = Thread.currentThread().getContextClassLoader();
 			var clsloader = MDCMapReducePhaseClassLoader.newInstance(mrjar, ctxcl);
 			Thread.currentThread().setContextClassLoader(clsloader);
 			var ismesos = Boolean.parseBoolean(MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULERSTREAM_ISMESOS));
 			var isyarn = Boolean.parseBoolean(MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULERSTREAM_ISYARN));
 			//If not mesos and yarn load the jar by invoking socket of the task executors.
-			if(ismesos || isyarn) {
+			if (ismesos || isyarn) {
 				new File(MDCConstants.LOCAL_FS_APPJRPATH).mkdirs();
-				var fos = new FileOutputStream(MDCConstants.LOCAL_FS_APPJRPATH+filename);
+				var fos = new FileOutputStream(MDCConstants.LOCAL_FS_APPJRPATH + filename);
 				fos.write(mrjar);
 				fos.close();
 				
 			}
 			//Get the main class to execute.
 			var mainclass = args[0];
-			var main = Class.forName(mainclass,true,clsloader);
+			var main = Class.forName(mainclass, true, clsloader);
 			Thread.currentThread().setContextClassLoader(ctxcl);
-			if(args==null) {
-				args = new String[] {};
+			if (args == null) {
+				args = new String[]{};
 			} else {
 				args = Arrays.copyOfRange(args, 1, args.length);
 			}
@@ -75,11 +75,11 @@ public class StreamPipelineTaskScheduler implements Runnable{
 			var pipeline = (Pipeline) main.newInstance();
 			pipelineconfig.setJobname(main.getSimpleName());
 			pipeline.runPipeline(args, pipelineconfig);
-			message = "Successfully Completed executing the Job from main class "+mainclass;
+			message = "Successfully Completed executing the Job from main class " + mainclass;
 			Utils.writeKryoOutput(kryo, new Output(tss.getOutputStream()), message);
 		}
-		catch(Throwable ex) {
-			log.error("Job execution Error, See cause below \n",ex);
+		catch (Throwable ex) {
+			log.error("Job execution Error, See cause below \n", ex);
 			try (var baos = new ByteArrayOutputStream();) {
 				var failuremessage = new PrintWriter(baos, true, StandardCharsets.UTF_8);
 				ex.printStackTrace(failuremessage);
@@ -93,7 +93,7 @@ public class StreamPipelineTaskScheduler implements Runnable{
 				Utils.writeKryoOutput(kryo, new Output(tss.getOutputStream()), "quit");
 				tss.close();
 			} catch (Exception ex) {
-				log.error("Socket Stream close error, See cause below \n",ex);
+				log.error("Socket Stream close error, See cause below \n", ex);
 			}
 		}
 		

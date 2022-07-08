@@ -35,7 +35,7 @@ import com.github.mdc.stream.scheduler.StreamPipelineTaskSubmitter;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 	
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	@Test
 	public void testGeneratePhysicalExecutionPlanIntersection() throws Exception {
 
@@ -47,7 +47,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 
 		StreamPipeline<String> mdp1 = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesample, pc);
 
-		StreamPipeline<String> intersection = mdp.filter((val) -> true).intersection(mdp1.filter((val) -> true));
+		StreamPipeline<String> intersection = mdp.filter(val -> true).intersection(mdp1.filter(val -> true));
 
 		((StreamPipeline) intersection.root).finaltasks.add(intersection.task);
 		((StreamPipeline) intersection.root).mdsroots.add(mdp);
@@ -78,7 +78,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 		assertEquals(2, graph.edgeSet().size());
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	@Test
 	public void testGeneratePhysicalExecutionPlanIntersectionPartitioned() throws Exception {
 
@@ -90,7 +90,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 		pc.setBlocksize("1");
 		StreamPipeline<String> mdp = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesample, pc);
 		StreamPipeline<String> mdp1 = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesample, pc);
-		StreamPipeline<String> intersection = mdp.filter((val) -> true).intersection(mdp1.filter((val) -> true));
+		StreamPipeline<String> intersection = mdp.filter(val -> true).intersection(mdp1.filter(val -> true));
 
 		((StreamPipeline) intersection.root).finaltasks.add(intersection.task);
 		((StreamPipeline) intersection.root).mdsroots.add(mdp);
@@ -121,7 +121,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 		assertEquals(50, graph.edgeSet().size());
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	@Test
 	public void testGeneratePhysicalExecutionPlanJoin() throws Exception {
 
@@ -130,17 +130,17 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 		pc.setOutput(new Output(System.out));
 		pc.setLocal("true");
 		StreamPipeline<String> mdp = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesample, pc);
-		StreamPipeline<String[]> mdparr = mdp.map((val) -> val.split(MDCConstants.COMMA));
+		StreamPipeline<String[]> mdparr = mdp.map(val -> val.split(MDCConstants.COMMA));
 		StreamPipeline<String[]> filter = mdparr
-				.filter((val) -> !val[14].equals("ArrDelay") && !val[14].equals("NA"));
-		MapPair<String, Long> mappair = filter.mapToPair((val) -> Tuple.tuple(val[8], Long.parseLong(val[14])));
+				.filter(val -> !"ArrDelay".equals(val[14]) && !"NA".equals(val[14]));
+		MapPair<String, Long> mappair = filter.mapToPair(val -> Tuple.tuple(val[8], Long.parseLong(val[14])));
 		MapPair<String, Long> reducebykey = mappair.reduceByKey((a, b) -> a + b);
 
 		StreamPipeline<String> mdp1 = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesample, pc);
-		StreamPipeline<String[]> mdparr1 = mdp1.map((val) -> val.split(MDCConstants.COMMA));
+		StreamPipeline<String[]> mdparr1 = mdp1.map(val -> val.split(MDCConstants.COMMA));
 		StreamPipeline<String[]> filter1 = mdparr1
-				.filter((val) -> !val[14].equals("ArrDelay") && !val[14].equals("NA"));
-		MapPair<String, Long> mappair1 = filter1.mapToPair((val) -> Tuple.tuple(val[8], Long.parseLong(val[14])));
+				.filter(val -> !"ArrDelay".equals(val[14]) && !"NA".equals(val[14]));
+		MapPair<String, Long> mappair1 = filter1.mapToPair(val -> Tuple.tuple(val[8], Long.parseLong(val[14])));
 		MapPair<String, Long> reducebykey1 = mappair1.reduceByKey((a, b) -> a + b);
 		MapPair<Tuple2, Tuple2> join = reducebykey.join(reducebykey1, (tup1, tup2) -> tup1.v1.equals(tup2.v1));
 
@@ -173,7 +173,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 		assertEquals(2, graph.edgeSet().size());
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	@Test
 	public void testGeneratePhysicalExecutionPlanJoinPartitioned() throws Exception {
 
@@ -184,17 +184,17 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 		pc.setIsblocksuserdefined("true");
 		pc.setBlocksize("1");
 		StreamPipeline<String> mdp = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesample, pc);
-		StreamPipeline<String[]> mdparr = mdp.map((val) -> val.split(MDCConstants.COMMA));
+		StreamPipeline<String[]> mdparr = mdp.map(val -> val.split(MDCConstants.COMMA));
 		StreamPipeline<String[]> filter = mdparr
-				.filter((val) -> !val[14].equals("ArrDelay") && !val[14].equals("NA"));
-		MapPair<String, Long> mappair = filter.mapToPair((val) -> Tuple.tuple(val[8], Long.parseLong(val[14])));
+				.filter(val -> !"ArrDelay".equals(val[14]) && !"NA".equals(val[14]));
+		MapPair<String, Long> mappair = filter.mapToPair(val -> Tuple.tuple(val[8], Long.parseLong(val[14])));
 		MapPair<String, Long> reducebykey = mappair.reduceByKey((a, b) -> a + b);
 
 		StreamPipeline<String> mdp1 = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesample, pc);
-		StreamPipeline<String[]> mdparr1 = mdp1.map((val) -> val.split(MDCConstants.COMMA));
+		StreamPipeline<String[]> mdparr1 = mdp1.map(val -> val.split(MDCConstants.COMMA));
 		StreamPipeline<String[]> filter1 = mdparr1
-				.filter((val) -> !val[14].equals("ArrDelay") && !val[14].equals("NA"));
-		MapPair<String, Long> mappair1 = filter1.mapToPair((val) -> Tuple.tuple(val[8], Long.parseLong(val[14])));
+				.filter(val -> !"ArrDelay".equals(val[14]) && !"NA".equals(val[14]));
+		MapPair<String, Long> mappair1 = filter1.mapToPair(val -> Tuple.tuple(val[8], Long.parseLong(val[14])));
 		MapPair<String, Long> reducebykey1 = mappair1.reduceByKey((a, b) -> a + b);
 		MapPair<Tuple2, Tuple2> join = reducebykey.join(reducebykey1, (tup1, tup2) -> tup1.v1.equals(tup2.v1));
 
@@ -227,7 +227,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 		assertEquals(50, graph.edgeSet().size());
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	@Test
 	public void testGeneratePhysicalExecutionPlanLeftJoin() throws Exception {
 
@@ -236,17 +236,17 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 		pc.setOutput(new Output(System.out));
 		pc.setLocal("true");
 		StreamPipeline<String> mdp = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesample, pc);
-		StreamPipeline<String[]> mdparr = mdp.map((val) -> val.split(MDCConstants.COMMA));
+		StreamPipeline<String[]> mdparr = mdp.map(val -> val.split(MDCConstants.COMMA));
 		StreamPipeline<String[]> filter = mdparr
-				.filter((val) -> !val[14].equals("ArrDelay") && !val[14].equals("NA"));
-		MapPair<String, Long> mappair = filter.mapToPair((val) -> Tuple.tuple(val[8], Long.parseLong(val[14])));
+				.filter(val -> !"ArrDelay".equals(val[14]) && !"NA".equals(val[14]));
+		MapPair<String, Long> mappair = filter.mapToPair(val -> Tuple.tuple(val[8], Long.parseLong(val[14])));
 		MapPair<String, Long> reducebykey = mappair.reduceByKey((a, b) -> a + b);
 
 		StreamPipeline<String> mdp1 = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesample, pc);
-		StreamPipeline<String[]> mdparr1 = mdp1.map((val) -> val.split(MDCConstants.COMMA));
+		StreamPipeline<String[]> mdparr1 = mdp1.map(val -> val.split(MDCConstants.COMMA));
 		StreamPipeline<String[]> filter1 = mdparr1
-				.filter((val) -> !val[14].equals("ArrDelay") && !val[14].equals("NA"));
-		MapPair<String, Long> mappair1 = filter1.mapToPair((val) -> Tuple.tuple(val[8], Long.parseLong(val[14])));
+				.filter(val -> !"ArrDelay".equals(val[14]) && !"NA".equals(val[14]));
+		MapPair<String, Long> mappair1 = filter1.mapToPair(val -> Tuple.tuple(val[8], Long.parseLong(val[14])));
 		MapPair<String, Long> reducebykey1 = mappair1.reduceByKey((a, b) -> a + b);
 		MapPair<String, Long> join = reducebykey.leftOuterjoin(reducebykey1, (tup1, tup2) -> tup1.v1.equals(tup2.v1));
 
@@ -279,7 +279,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 		assertEquals(2, graph.edgeSet().size());
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	@Test
 	public void testGeneratePhysicalExecutionPlanLeftJoinPartitioned() throws Exception {
 
@@ -290,17 +290,17 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 		pc.setIsblocksuserdefined("true");
 		pc.setBlocksize("1");
 		StreamPipeline<String> mdp = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesample, pc);
-		StreamPipeline<String[]> mdparr = mdp.map((val) -> val.split(MDCConstants.COMMA));
+		StreamPipeline<String[]> mdparr = mdp.map(val -> val.split(MDCConstants.COMMA));
 		StreamPipeline<String[]> filter = mdparr
-				.filter((val) -> !val[14].equals("ArrDelay") && !val[14].equals("NA"));
-		MapPair<String, Long> mappair = filter.mapToPair((val) -> Tuple.tuple(val[8], Long.parseLong(val[14])));
+				.filter(val -> !"ArrDelay".equals(val[14]) && !"NA".equals(val[14]));
+		MapPair<String, Long> mappair = filter.mapToPair(val -> Tuple.tuple(val[8], Long.parseLong(val[14])));
 		MapPair<String, Long> reducebykey = mappair.reduceByKey((a, b) -> a + b);
 
 		StreamPipeline<String> mdp1 = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesample, pc);
-		StreamPipeline<String[]> mdparr1 = mdp1.map((val) -> val.split(MDCConstants.COMMA));
+		StreamPipeline<String[]> mdparr1 = mdp1.map(val -> val.split(MDCConstants.COMMA));
 		StreamPipeline<String[]> filter1 = mdparr1
-				.filter((val) -> !val[14].equals("ArrDelay") && !val[14].equals("NA"));
-		MapPair<String, Long> mappair1 = filter1.mapToPair((val) -> Tuple.tuple(val[8], Long.parseLong(val[14])));
+				.filter(val -> !"ArrDelay".equals(val[14]) && !"NA".equals(val[14]));
+		MapPair<String, Long> mappair1 = filter1.mapToPair(val -> Tuple.tuple(val[8], Long.parseLong(val[14])));
 		MapPair<String, Long> reducebykey1 = mappair1.reduceByKey((a, b) -> a + b);
 		MapPair<String, Long> join = reducebykey.leftOuterjoin(reducebykey1, (tup1, tup2) -> tup1.v1.equals(tup2.v1));
 
@@ -342,7 +342,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 		pc.setOutput(new Output(System.out));
 		pc.setLocal("true");
 		StreamPipeline<String> mdp = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesample, pc);
-		StreamPipeline<String[]> mdparr = mdp.map((val) -> val.split(MDCConstants.COMMA));
+		StreamPipeline<String[]> mdparr = mdp.map(val -> val.split(MDCConstants.COMMA));
 		mdparr.finaltasks.add(mdparr.task);
 		mdparr.mdsroots.add(mdp);
 
@@ -381,10 +381,10 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 		pc.setOutput(new Output(System.out));
 		pc.setLocal("true");
 		StreamPipeline<String> mdp = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesample, pc);
-		StreamPipeline<String[]> mdparr = mdp.map((val) -> val.split(MDCConstants.COMMA));
+		StreamPipeline<String[]> mdparr = mdp.map(val -> val.split(MDCConstants.COMMA));
 		StreamPipeline<String[]> filter = mdparr
-				.filter((val) -> !val[14].equals("ArrDelay") && !val[14].equals("NA"));
-		MapPair<String, Long> mappair = filter.mapToPair((val) -> Tuple.tuple(val[8], Long.parseLong(val[14])));
+				.filter(val -> !"ArrDelay".equals(val[14]) && !"NA".equals(val[14]));
+		MapPair<String, Long> mappair = filter.mapToPair(val -> Tuple.tuple(val[8], Long.parseLong(val[14])));
 		MapPair<String, Long> reducebykey = mappair.reduceByKey((a, b) -> a + b);
 		mdparr.finaltasks.add(reducebykey.task);
 		mdparr.mdsroots.add(mdp);
@@ -424,10 +424,10 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 		pc.setOutput(new Output(System.out));
 		pc.setLocal("true");
 		StreamPipeline<String> mdp = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesample, pc);
-		StreamPipeline<String[]> mdparr = mdp.map((val) -> val.split(MDCConstants.COMMA));
+		StreamPipeline<String[]> mdparr = mdp.map(val -> val.split(MDCConstants.COMMA));
 		StreamPipeline<String[]> filter = mdparr
-				.filter((val) -> !val[14].equals("ArrDelay") && !val[14].equals("NA"));
-		MapPair<String, Long> mappair = filter.mapToPair((val) -> Tuple.tuple(val[8], Long.parseLong(val[14])));
+				.filter(val -> !"ArrDelay".equals(val[14]) && !"NA".equals(val[14]));
+		MapPair<String, Long> mappair = filter.mapToPair(val -> Tuple.tuple(val[8], Long.parseLong(val[14])));
 		MapPair<String, Long> reducebykey = mappair.reduceByKey((a, b) -> a + b);
 		MapPair<String, Long> coalesce = reducebykey.coalesce(1, (a, b) -> a + b);
 		mdparr.finaltasks.add(coalesce.task);
@@ -470,10 +470,10 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 		pc.setIsblocksuserdefined("true");
 		pc.setBlocksize("1");
 		StreamPipeline<String> mdp = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesample, pc);
-		StreamPipeline<String[]> mdparr = mdp.map((val) -> val.split(MDCConstants.COMMA));
+		StreamPipeline<String[]> mdparr = mdp.map(val -> val.split(MDCConstants.COMMA));
 		StreamPipeline<String[]> filter = mdparr
-				.filter((val) -> !val[14].equals("ArrDelay") && !val[14].equals("NA"));
-		MapPair<String, Long> mappair = filter.mapToPair((val) -> Tuple.tuple(val[8], Long.parseLong(val[14])));
+				.filter(val -> !"ArrDelay".equals(val[14]) && !"NA".equals(val[14]));
+		MapPair<String, Long> mappair = filter.mapToPair(val -> Tuple.tuple(val[8], Long.parseLong(val[14])));
 		MapPair<String, Long> reducebykey = mappair.reduceByKey((a, b) -> a + b);
 		MapPair<String, Long> coalesce = reducebykey.coalesce(1, (a, b) -> a + b);
 		mdparr.finaltasks.add(coalesce.task);
@@ -517,10 +517,10 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 		pc.setIsblocksuserdefined("true");
 		pc.setBlocksize("1");
 		StreamPipeline<String> mdp = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesample, pc);
-		StreamPipeline<String[]> mdparr = mdp.map((val) -> val.split(MDCConstants.COMMA));
+		StreamPipeline<String[]> mdparr = mdp.map(val -> val.split(MDCConstants.COMMA));
 		StreamPipeline<String[]> filter = mdparr
-				.filter((val) -> !val[14].equals("ArrDelay") && !val[14].equals("NA"));
-		MapPair<String, Long> mappair = filter.mapToPair((val) -> Tuple.tuple(val[8], Long.parseLong(val[14])));
+				.filter(val -> !"ArrDelay".equals(val[14]) && !"NA".equals(val[14]));
+		MapPair<String, Long> mappair = filter.mapToPair(val -> Tuple.tuple(val[8], Long.parseLong(val[14])));
 		MapPair<String, Long> reducebykey = mappair.reduceByKey((a, b) -> a + b);
 		mdparr.finaltasks.add(reducebykey.task);
 		mdparr.mdsroots.add(mdp);
@@ -562,7 +562,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 		pc.setIsblocksuserdefined("true");
 		pc.setBlocksize("1");
 		StreamPipeline<String> mdp = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesample, pc);
-		StreamPipeline<String[]> mdparr = mdp.map((val) -> val.split(MDCConstants.COMMA));
+		StreamPipeline<String[]> mdparr = mdp.map(val -> val.split(MDCConstants.COMMA));
 		mdparr.finaltasks.add(mdparr.task);
 		mdparr.mdsroots.add(mdp);
 
@@ -593,7 +593,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 		assertEquals(0, graph.edgeSet().size());
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	@Test
 	public void testGeneratePhysicalExecutionPlanRightJoin() throws Exception {
 
@@ -602,17 +602,17 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 		pc.setOutput(new Output(System.out));
 		pc.setLocal("true");
 		StreamPipeline<String> mdp = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesample, pc);
-		StreamPipeline<String[]> mdparr = mdp.map((val) -> val.split(MDCConstants.COMMA));
+		StreamPipeline<String[]> mdparr = mdp.map(val -> val.split(MDCConstants.COMMA));
 		StreamPipeline<String[]> filter = mdparr
-				.filter((val) -> !val[14].equals("ArrDelay") && !val[14].equals("NA"));
-		MapPair<String, Long> mappair = filter.mapToPair((val) -> Tuple.tuple(val[8], Long.parseLong(val[14])));
+				.filter(val -> !"ArrDelay".equals(val[14]) && !"NA".equals(val[14]));
+		MapPair<String, Long> mappair = filter.mapToPair(val -> Tuple.tuple(val[8], Long.parseLong(val[14])));
 		MapPair<String, Long> reducebykey = mappair.reduceByKey((a, b) -> a + b);
 
 		StreamPipeline<String> mdp1 = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesample, pc);
-		StreamPipeline<String[]> mdparr1 = mdp1.map((val) -> val.split(MDCConstants.COMMA));
+		StreamPipeline<String[]> mdparr1 = mdp1.map(val -> val.split(MDCConstants.COMMA));
 		StreamPipeline<String[]> filter1 = mdparr1
-				.filter((val) -> !val[14].equals("ArrDelay") && !val[14].equals("NA"));
-		MapPair<String, Long> mappair1 = filter1.mapToPair((val) -> Tuple.tuple(val[8], Long.parseLong(val[14])));
+				.filter(val -> !"ArrDelay".equals(val[14]) && !"NA".equals(val[14]));
+		MapPair<String, Long> mappair1 = filter1.mapToPair(val -> Tuple.tuple(val[8], Long.parseLong(val[14])));
 		MapPair<String, Long> reducebykey1 = mappair1.reduceByKey((a, b) -> a + b);
 		MapPair<String, Long> join = reducebykey.rightOuterjoin(reducebykey1, (tup1, tup2) -> tup1.v1.equals(tup2.v1));
 
@@ -646,7 +646,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 		assertEquals(2, graph.edgeSet().size());
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	@Test
 	public void testGeneratePhysicalExecutionPlanRightJoinPartitioned() throws Exception {
 
@@ -657,17 +657,17 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 		pc.setIsblocksuserdefined("true");
 		pc.setBlocksize("1");
 		StreamPipeline<String> mdp = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesample, pc);
-		StreamPipeline<String[]> mdparr = mdp.map((val) -> val.split(MDCConstants.COMMA));
+		StreamPipeline<String[]> mdparr = mdp.map(val -> val.split(MDCConstants.COMMA));
 		StreamPipeline<String[]> filter = mdparr
-				.filter((val) -> !val[14].equals("ArrDelay") && !val[14].equals("NA"));
-		MapPair<String, Long> mappair = filter.mapToPair((val) -> Tuple.tuple(val[8], Long.parseLong(val[14])));
+				.filter(val -> !"ArrDelay".equals(val[14]) && !"NA".equals(val[14]));
+		MapPair<String, Long> mappair = filter.mapToPair(val -> Tuple.tuple(val[8], Long.parseLong(val[14])));
 		MapPair<String, Long> reducebykey = mappair.reduceByKey((a, b) -> a + b);
 
 		StreamPipeline<String> mdp1 = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesample, pc);
-		StreamPipeline<String[]> mdparr1 = mdp1.map((val) -> val.split(MDCConstants.COMMA));
+		StreamPipeline<String[]> mdparr1 = mdp1.map(val -> val.split(MDCConstants.COMMA));
 		StreamPipeline<String[]> filter1 = mdparr1
-				.filter((val) -> !val[14].equals("ArrDelay") && !val[14].equals("NA"));
-		MapPair<String, Long> mappair1 = filter1.mapToPair((val) -> Tuple.tuple(val[8], Long.parseLong(val[14])));
+				.filter(val -> !"ArrDelay".equals(val[14]) && !"NA".equals(val[14]));
+		MapPair<String, Long> mappair1 = filter1.mapToPair(val -> Tuple.tuple(val[8], Long.parseLong(val[14])));
 		MapPair<String, Long> reducebykey1 = mappair1.reduceByKey((a, b) -> a + b);
 		MapPair<String, Long> join = reducebykey.rightOuterjoin(reducebykey1, (tup1, tup2) -> tup1.v1.equals(tup2.v1));
 
@@ -701,7 +701,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 		assertEquals(50, graph.edgeSet().size());
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	@Test
 	public void testGeneratePhysicalExecutionPlanUnion() throws Exception {
 
@@ -713,7 +713,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 
 		StreamPipeline<String> mdp1 = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesample, pc);
 
-		StreamPipeline<String> union = mdp.filter((val) -> true).union(mdp1.filter((val) -> true));
+		StreamPipeline<String> union = mdp.filter(val -> true).union(mdp1.filter(val -> true));
 
 		((StreamPipeline) union.root).finaltasks.add(union.task);
 		((StreamPipeline) union.root).mdsroots.add(mdp);
@@ -746,7 +746,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 		assertEquals(2, graph.edgeSet().size());
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	@Test
 	public void testGeneratePhysicalExecutionPlanUnionPartitioned() throws Exception {
 
@@ -758,7 +758,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 		pc.setBlocksize("1");
 		StreamPipeline<String> mdp = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesample, pc);
 		StreamPipeline<String> mdp1 = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesample, pc);
-		StreamPipeline<String> union = mdp.filter((val) -> true).union(mdp1.filter((val) -> true));
+		StreamPipeline<String> union = mdp.filter(val -> true).union(mdp1.filter(val -> true));
 
 		((StreamPipeline) union.root).finaltasks.add(union.task);
 		((StreamPipeline) union.root).mdsroots.add(mdp);
@@ -799,7 +799,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 		pc.setLocal("false");
 		pc.setJgroups("false");
 		StreamPipeline<String> mdp = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesample, pc);
-		StreamPipeline<String[]> mdparr = mdp.map((val) -> val.split(MDCConstants.COMMA));
+		StreamPipeline<String[]> mdparr = mdp.map(val -> val.split(MDCConstants.COMMA));
 		mdparr.finaltasks.add(mdparr.task);
 		mdparr.mdsroots.add(mdp);
 
@@ -818,7 +818,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 		js.destroyContainers();
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked", "resource" })
+	@SuppressWarnings({"rawtypes", "unchecked", "resource"})
 	@Test
 	public void testParallelExecutionPhaseDExecutor() throws Exception {
 
@@ -830,7 +830,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 		pc.setBlocksize("1");
 		pc.setGctype(MDCConstants.ZGC);
 		StreamPipeline<String> mdp = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesample, pc);
-		StreamPipeline<String[]> mdparr = mdp.map((val) -> val.split(MDCConstants.COMMA));
+		StreamPipeline<String[]> mdparr = mdp.map(val -> val.split(MDCConstants.COMMA));
 		mdparr.finaltasks.add(mdparr.task);
 		mdparr.mdsroots.add(mdp);
 
@@ -883,11 +883,12 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 		List<StreamPipelineTaskSubmitter> mdststs = new ArrayList<>();
 		// Sequential ordering of topological ordering is obtained to
 		// process for parallelization.
-		while (topostages.hasNext())
+		while (topostages.hasNext()) {
 			mdststs.add(topostages.next());
+		}
 		var mdstts = js.getFinalPhasesWithNoSuccessors(graph, mdststs);
 		var partitionnumber = 0;
-		for(var mdstst:mdstts) {
+		for (var mdstst :mdstts) {
 			mdstst.getTask().finalphase = true;
 			mdstst.getTask().hdfsurl = job.uri;
 			mdstst.getTask().filepath = job.savepath + MDCConstants.HYPHEN + partitionnumber++;
@@ -906,7 +907,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 		js.destroyContainers();
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	@Test
 	public void testParallelExecutionPhaseDExecutorLocalMode() throws Exception {
 
@@ -916,7 +917,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 		pc.setLocal("true");
 		pc.setBatchsize("1");
 		StreamPipeline<String> mdp = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesample, pc);
-		StreamPipeline<String[]> mdparr = mdp.map((val) -> val.split(MDCConstants.COMMA));
+		StreamPipeline<String[]> mdparr = mdp.map(val -> val.split(MDCConstants.COMMA));
 		mdparr.finaltasks.add(mdparr.task);
 		mdparr.mdsroots.add(mdp);
 
@@ -953,21 +954,22 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 		List<StreamPipelineTaskSubmitter> mdststs = new ArrayList<>();
 		// Sequential ordering of topological ordering is obtained to
 		// process for parallelization.
-		while (topostages.hasNext())
+		while (topostages.hasNext()) {
 			mdststs.add(topostages.next());
+		}
 		var mdstts = js.getFinalPhasesWithNoSuccessors(graph, mdststs);
 		var partitionnumber = 0;
-		for(var mdstst:mdstts) {
+		for (var mdstst :mdstts) {
 			mdstst.getTask().finalphase = true;
 			mdstst.getTask().hdfsurl = job.uri;
 			mdstst.getTask().filepath = job.savepath + MDCConstants.HYPHEN + partitionnumber++;
 		}
 		js.parallelExecutionPhaseDExecutorLocalMode(graph, js.new TaskProviderLocalMode(graph.vertexSet().size()));
-		List<List> result = js.getLastStageOutput(mdstts,graph, mdststs, false, false, true, false, js.resultstream);
+		List<List> result = js.getLastStageOutput(mdstts, graph, mdststs, false, false, true, false, js.resultstream);
 		assertEquals(46361, result.get(0).size());
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	@Test
 	public void testParallelExecutionPhaseDExecutorLocalModeMultiplePartition() throws Exception {
 
@@ -978,7 +980,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 		pc.setIsblocksuserdefined("true");
 		pc.setBlocksize("1");
 		StreamPipeline<String> mdp = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesample, pc);
-		StreamPipeline<String[]> mdparr = mdp.map((val) -> val.split(MDCConstants.COMMA));
+		StreamPipeline<String[]> mdparr = mdp.map(val -> val.split(MDCConstants.COMMA));
 		mdparr.finaltasks.add(mdparr.task);
 		mdparr.mdsroots.add(mdp);
 
@@ -1015,17 +1017,18 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 		List<StreamPipelineTaskSubmitter> mdststs = new ArrayList<>();
 		// Sequential ordering of topological ordering is obtained to
 		// process for parallelization.
-		while (topostages.hasNext())
+		while (topostages.hasNext()) {
 			mdststs.add(topostages.next());
+		}
 		var mdstts = js.getFinalPhasesWithNoSuccessors(graph, mdststs);
 		var partitionnumber = 0;
-		for(var mdstst:mdstts) {
+		for (var mdstst :mdstts) {
 			mdstst.getTask().finalphase = true;
 			mdstst.getTask().hdfsurl = job.uri;
 			mdstst.getTask().filepath = job.savepath + MDCConstants.HYPHEN + partitionnumber++;
 		}
 		js.parallelExecutionPhaseDExecutorLocalMode(graph, js.new TaskProviderLocalMode(graph.vertexSet().size()));
-		List<List> results = js.getLastStageOutput(mdstts,graph, mdststs, false, false, true, false, js.resultstream);
+		List<List> results = js.getLastStageOutput(mdstts, graph, mdststs, false, false, true, false, js.resultstream);
 		int sum = 0;
 		for (List result : results) {
 			sum += result.size();
@@ -1033,7 +1036,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 		assertEquals(46361, sum);
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	@Test
 	public void testParallelExecutionPhaseDExecutorLocalModeMultiplePartitionBatchSize() throws Exception {
 
@@ -1045,7 +1048,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 		pc.setBlocksize("1");
 		pc.setBatchsize("3");
 		StreamPipeline<String> mdp = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesample, pc);
-		StreamPipeline<String[]> mdparr = mdp.map((val) -> val.split(MDCConstants.COMMA));
+		StreamPipeline<String[]> mdparr = mdp.map(val -> val.split(MDCConstants.COMMA));
 		mdparr.finaltasks.add(mdparr.task);
 		mdparr.mdsroots.add(mdp);
 
@@ -1082,11 +1085,12 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 		List<StreamPipelineTaskSubmitter> mdststs = new ArrayList<>();
 		// Sequential ordering of topological ordering is obtained to
 		// process for parallelization.
-		while (topostages.hasNext())
+		while (topostages.hasNext()) {
 			mdststs.add(topostages.next());
+		}
 		var mdstts = js.getFinalPhasesWithNoSuccessors(graph, mdststs);
 		var partitionnumber = 0;
-		for(var mdstst:mdstts) {
+		for (var mdstst :mdstts) {
 			mdstst.getTask().finalphase = true;
 			mdstst.getTask().hdfsurl = job.uri;
 			mdstst.getTask().filepath = job.savepath + MDCConstants.HYPHEN + partitionnumber++;
@@ -1100,7 +1104,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 		assertEquals(46361, sum);
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testScheduleJobJGroups() throws Exception {
 
@@ -1111,7 +1115,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 		pc.setJgroups("true");
 		pc.setStorage(MDCConstants.STORAGE.DISK);
 		StreamPipeline<String> mdp = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesample, pc);
-		StreamPipeline<String[]> mdparr = mdp.map((val) -> val.split(MDCConstants.COMMA));
+		StreamPipeline<String[]> mdparr = mdp.map(val -> val.split(MDCConstants.COMMA));
 		mdparr.finaltasks.add(mdparr.task);
 		mdparr.mdsroots.add(mdp);
 		Job job = mdparr.createJob();
@@ -1126,7 +1130,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 		assertEquals(46361, result.get(0).size());
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	@Test
 	public void testScheduleJobLocal() throws Exception {
 
@@ -1134,7 +1138,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 		pc.setMode(MDCConstants.MODE_NORMAL);
 		pc.setOutput(new Output(System.out));
 		StreamPipeline<String> mdp = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesample, pc);
-		StreamPipeline<String[]> mdparr = mdp.map((val) -> val.split(MDCConstants.COMMA));
+		StreamPipeline<String[]> mdparr = mdp.map(val -> val.split(MDCConstants.COMMA));
 		mdparr.finaltasks.add(mdparr.task);
 		mdparr.mdsroots.add(mdp);
 
@@ -1148,7 +1152,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 		assertEquals(46361, result.get(0).size());
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testScheduleJobStandalone1() throws Exception {
 
@@ -1158,7 +1162,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 		pc.setLocal("false");
 		pc.setJgroups("false");
 		StreamPipeline<String> mdp = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesample, pc);
-		StreamPipeline<String[]> mdparr = mdp.map((val) -> val.split(MDCConstants.COMMA));
+		StreamPipeline<String[]> mdparr = mdp.map(val -> val.split(MDCConstants.COMMA));
 		mdparr.finaltasks.add(mdparr.task);
 		mdparr.mdsroots.add(mdp);
 		Job job = mdparr.createJob();
@@ -1171,7 +1175,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 		assertEquals(46361, result.get(0).size());
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	public void testScheduleJobStandalone2() throws Exception {
 		PipelineConfig pc = new PipelineConfig();
 		pc.setMode(MDCConstants.MODE_NORMAL);
@@ -1179,7 +1183,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 		pc.setLocal("false");
 		pc.setJgroups("false");
 		StreamPipeline<String> mdp = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesample, pc);
-		StreamPipeline<String[]> mdparr = mdp.map((val) -> val.split(MDCConstants.COMMA));
+		StreamPipeline<String[]> mdparr = mdp.map(val -> val.split(MDCConstants.COMMA));
 		mdparr.finaltasks.add(mdparr.task);
 		mdparr.mdsroots.add(mdp);
 		Job job = mdparr.createJob();

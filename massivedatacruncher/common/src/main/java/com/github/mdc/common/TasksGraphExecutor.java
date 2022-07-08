@@ -34,23 +34,30 @@ public class TasksGraphExecutor {
 	}
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
+		if (this == obj) {
 			return true;
-		if (obj == null)
+		}
+		if (obj == null) {
 			return false;
-		if (getClass() != obj.getClass())
+		}
+		if (getClass() != obj.getClass()) {
 			return false;
+		}
 		TasksGraphExecutor other = (TasksGraphExecutor) obj;
 		if (hostport == null) {
-			if (other.hostport != null)
+			if (other.hostport != null) {
 				return false;
-		} else if (!hostport.equals(other.hostport))
+			}
+		} else if (!hostport.equals(other.hostport)) {
 			return false;
+		}
 		if (tasks == null) {
-			if (other.tasks != null)
+			if (other.tasks != null) {
 				return false;
-		} else if (!tasks.equals(other.tasks))
+			}
+		} else if (!tasks.equals(other.tasks)) {
 			return false;
+		}
 		return true;
 	}
 	@Override

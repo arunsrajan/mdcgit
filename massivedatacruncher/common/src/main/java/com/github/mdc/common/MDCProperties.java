@@ -10,7 +10,7 @@ import java.util.Properties;
  */
 public class MDCProperties {
 	private MDCProperties() {}
-	private static Properties properties = null;
+	private static Properties properties;
 	public static void put(Properties nodes) {
 		MDCProperties.properties = nodes;
 	}

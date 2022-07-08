@@ -17,28 +17,28 @@ public class ZkChunkPropTest extends TestCase{
 	public void testNumberofShards() {
 		ZkChunkProp zcp = new ZkChunkProp();
 		zcp.setNumberofshards(numberofshards);
-		assertEquals(numberofshards,zcp.getNumberofshards());
+		assertEquals(numberofshards, zcp.getNumberofshards());
 	}
 	
 	@Test
 	public void testNumberofShardsNull() {
 		ZkChunkProp zcp = new ZkChunkProp();
 		zcp.setNumberofshards(null);
-		assertEquals(null,zcp.getNumberofshards());
+		assertEquals(null, zcp.getNumberofshards());
 	}
 	
 	@Test
 	public void testNumberofreplicas() {
 		ZkChunkProp zcp = new ZkChunkProp();
 		zcp.setNumberofreplicas(numberofreplicas);
-		assertEquals(numberofreplicas,zcp.getNumberofreplicas());
+		assertEquals(numberofreplicas, zcp.getNumberofreplicas());
 	}
 	
 	@Test
 	public void testNumberofreplicasNull() {
 		ZkChunkProp zcp = new ZkChunkProp();
 		zcp.setNumberofreplicas(null);
-		assertEquals(null,zcp.getNumberofreplicas());
+		assertEquals(null, zcp.getNumberofreplicas());
 	}
 	
 	
@@ -46,34 +46,34 @@ public class ZkChunkPropTest extends TestCase{
 	public void testFiles() {
 		ZkChunkProp zcp = new ZkChunkProp();
 		zcp.setFiles(files);
-		assertEquals(files,zcp.getFiles());
+		assertEquals(files, zcp.getFiles());
 	}
 	
 	@Test
 	public void testFilesNull() {
 		ZkChunkProp zcp = new ZkChunkProp();
 		zcp.setFiles(null);
-		assertEquals(null,zcp.getFiles());
+		assertEquals(null, zcp.getFiles());
 	}
 	
 	@Test
 	public void testHostsinvolved() {
 		ZkChunkProp zcp = new ZkChunkProp();
 		zcp.setHostsinvolved(hostsinvolved);
-		assertEquals(hostsinvolved,zcp.getHostsinvolved());
+		assertEquals(hostsinvolved, zcp.getHostsinvolved());
 	}
 	
 	@Test
 	public void testIsdatasparsed() {
 		ZkChunkProp zcp = new ZkChunkProp();
 		zcp.setIsdatasparsed(isdatasparsed);
-		assertEquals(isdatasparsed,zcp.getIsdatasparsed());
+		assertEquals(isdatasparsed, zcp.getIsdatasparsed());
 	}
 	@Test
 	public void testIsdatasparsedNull() {
 		ZkChunkProp zcp = new ZkChunkProp();
 		zcp.setIsdatasparsed(null);
-		assertEquals(null,zcp.getIsdatasparsed());
+		assertEquals(null, zcp.getIsdatasparsed());
 	}
 	
 	

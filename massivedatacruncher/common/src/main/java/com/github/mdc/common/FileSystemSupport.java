@@ -10,4 +10,7 @@ public class FileSystemSupport {
 	public static final String MDS = "mds";
 	public static final String FILE = "file";
 	public static final String EXCEPTIONUNSUPPORTEDFILESYSTEM = "Unsupported File System Exception";
+
+	private FileSystemSupport() {
+	}
 }

@@ -5,12 +5,12 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class MDCJobMetrics {
 	private MDCJobMetrics() {}
-	static Map<String,JobMetrics> jms = new ConcurrentHashMap<String,JobMetrics>();
+	static Map<String,JobMetrics> jms = new ConcurrentHashMap<String, JobMetrics>();
 	public static void put(JobMetrics jm) {
 		jms.put(jm.jobid, jm);
 	}
 	
-	public static Map<String,JobMetrics> get(){
+	public static Map<String, JobMetrics> get() {
 		return jms;
 	}
 	

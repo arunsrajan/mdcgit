@@ -14,12 +14,12 @@ import org.junit.runners.MethodSorters;
 
 import com.github.mdc.stream.StreamPipeline;
 
-@SuppressWarnings({ "unchecked", "serial", "rawtypes" })
+@SuppressWarnings({"unchecked", "serial", "rawtypes"})
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class StreamPipelineDepth32Test extends StreamPipelineBaseTestCommon {
 	boolean toexecute = true;
 	Logger log = Logger.getLogger(StreamPipelineDepth32Test.class);
-	int sum = 0;
+	int sum;
 	
 	@Test
 	public void testMapPeekSampleForEach() throws Throwable {
@@ -31,7 +31,7 @@ public class StreamPipelineDepth32Test extends StreamPipelineBaseTestCommon {
 			public java.lang.String[] apply(java.lang.String value) {
 				return value.split(",");
 			}
-		}).peek(val->System.out.println(val)).sample(46361).forEach(lis -> {
+		}).peek(val -> System.out.println(val)).sample(46361).forEach(lis -> {
 			sum += ((List) lis).size();
 		}, null);
 
@@ -50,7 +50,7 @@ public class StreamPipelineDepth32Test extends StreamPipelineBaseTestCommon {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
-				}).peek(val->System.out.println(val)).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String[]>() {
+				}).peek(val -> System.out.println(val)).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String[]>() {
 					public int compare(java.lang.String[] value1, java.lang.String[] value2) {
 						return value1[1].compareTo(value2[1]);
 					}
@@ -75,7 +75,7 @@ public class StreamPipelineDepth32Test extends StreamPipelineBaseTestCommon {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
-				}).peek(val->System.out.println(val)).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String[]>() {
+				}).peek(val -> System.out.println(val)).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String[]>() {
 					public int compare(java.lang.String[] value1, java.lang.String[] value2) {
 						return value1[1].compareTo(value2[1]);
 					}
@@ -102,7 +102,7 @@ public class StreamPipelineDepth32Test extends StreamPipelineBaseTestCommon {
 			public java.lang.String[] apply(java.lang.String value) {
 				return value.split(",");
 			}
-		}).peek(val->System.out.println(val)).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String[]>() {
+		}).peek(val -> System.out.println(val)).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String[]>() {
 			public int compare(java.lang.String[] value1, java.lang.String[] value2) {
 				return value1[1].compareTo(value2[1]);
 			}
@@ -127,7 +127,7 @@ public class StreamPipelineDepth32Test extends StreamPipelineBaseTestCommon {
 					}
 				}).sample(46361).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String[]>() {
 					public boolean test(java.lang.String[] value) {
-						return !value[14].equals("NA") && !value[14].equals("ArrDelay");
+						return !"NA".equals(value[14]) && !"ArrDelay".equals(value[14]);
 					}
 				}).collect(toexecute, null);
 		int sum = 0;
@@ -152,7 +152,7 @@ public class StreamPipelineDepth32Test extends StreamPipelineBaseTestCommon {
 					}
 				}).sample(46361).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String[]>() {
 					public boolean test(java.lang.String[] value) {
-						return !value[14].equals("NA") && !value[14].equals("ArrDelay");
+						return !"NA".equals(value[14]) && !"ArrDelay".equals(value[14]);
 					}
 				}).count(null);
 		long sum = 0;
@@ -179,7 +179,7 @@ public class StreamPipelineDepth32Test extends StreamPipelineBaseTestCommon {
 			}
 		}).sample(46361).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String[]>() {
 			public boolean test(java.lang.String[] value) {
-				return !value[14].equals("NA") && !value[14].equals("ArrDelay");
+				return !"NA".equals(value[14]) && !"ArrDelay".equals(value[14]);
 			}
 		}).forEach(lis -> {
 			sum += ((List) lis).size();
@@ -567,7 +567,7 @@ public class StreamPipelineDepth32Test extends StreamPipelineBaseTestCommon {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
-				}).sample(46361).peek(val->System.out.println(val)).collect(toexecute, null);
+				}).sample(46361).peek(val -> System.out.println(val)).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -588,7 +588,7 @@ public class StreamPipelineDepth32Test extends StreamPipelineBaseTestCommon {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
-				}).sample(46361).peek(val->System.out.println(val)).count(null);
+				}).sample(46361).peek(val -> System.out.println(val)).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -611,7 +611,7 @@ public class StreamPipelineDepth32Test extends StreamPipelineBaseTestCommon {
 			public java.lang.String[] apply(java.lang.String value) {
 				return value.split(",");
 			}
-		}).sample(46361).peek(val->System.out.println(val)).forEach(lis -> {
+		}).sample(46361).peek(val -> System.out.println(val)).forEach(lis -> {
 			sum += ((List) lis).size();
 		}, null);
 
@@ -774,7 +774,7 @@ public class StreamPipelineDepth32Test extends StreamPipelineBaseTestCommon {
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String[]>() {
 					public boolean test(java.lang.String[] value) {
-						return !value[14].equals("NA") && !value[14].equals("ArrDelay");
+						return !"NA".equals(value[14]) && !"ArrDelay".equals(value[14]);
 					}
 				}).collect(toexecute, null);
 		int sum = 0;
@@ -803,7 +803,7 @@ public class StreamPipelineDepth32Test extends StreamPipelineBaseTestCommon {
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String[]>() {
 					public boolean test(java.lang.String[] value) {
-						return !value[14].equals("NA") && !value[14].equals("ArrDelay");
+						return !"NA".equals(value[14]) && !"ArrDelay".equals(value[14]);
 					}
 				}).count(null);
 		long sum = 0;
@@ -834,7 +834,7 @@ public class StreamPipelineDepth32Test extends StreamPipelineBaseTestCommon {
 			}
 		}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String[]>() {
 			public boolean test(java.lang.String[] value) {
-				return !value[14].equals("NA") && !value[14].equals("ArrDelay");
+				return !"NA".equals(value[14]) && !"ArrDelay".equals(value[14]);
 			}
 		}).forEach(lis -> {
 			sum += ((List) lis).size();
@@ -1280,7 +1280,7 @@ public class StreamPipelineDepth32Test extends StreamPipelineBaseTestCommon {
 					public int compare(java.lang.String[] value1, java.lang.String[] value2) {
 						return value1[1].compareTo(value2[1]);
 					}
-				}).peek(val->System.out.println(val)).collect(toexecute, null);
+				}).peek(val -> System.out.println(val)).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -1305,7 +1305,7 @@ public class StreamPipelineDepth32Test extends StreamPipelineBaseTestCommon {
 					public int compare(java.lang.String[] value1, java.lang.String[] value2) {
 						return value1[1].compareTo(value2[1]);
 					}
-				}).peek(val->System.out.println(val)).count(null);
+				}).peek(val -> System.out.println(val)).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -1332,7 +1332,7 @@ public class StreamPipelineDepth32Test extends StreamPipelineBaseTestCommon {
 			public int compare(java.lang.String[] value1, java.lang.String[] value2) {
 				return value1[1].compareTo(value2[1]);
 			}
-		}).peek(val->System.out.println(val)).forEach(lis -> {
+		}).peek(val -> System.out.println(val)).forEach(lis -> {
 			sum += ((List) lis).size();
 		}, null);
 
@@ -2010,7 +2010,7 @@ public class StreamPipelineDepth32Test extends StreamPipelineBaseTestCommon {
 					public boolean test(org.jooq.lambda.tuple.Tuple2 value) {
 						return true;
 					}
-				}).peek(val->System.out.println(val)).collect(toexecute, null);
+				}).peek(val -> System.out.println(val)).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -2035,7 +2035,7 @@ public class StreamPipelineDepth32Test extends StreamPipelineBaseTestCommon {
 					public boolean test(org.jooq.lambda.tuple.Tuple2 value) {
 						return true;
 					}
-				}).peek(val->System.out.println(val)).count(null);
+				}).peek(val -> System.out.println(val)).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -2063,7 +2063,7 @@ public class StreamPipelineDepth32Test extends StreamPipelineBaseTestCommon {
 					public boolean test(org.jooq.lambda.tuple.Tuple2 value) {
 						return true;
 					}
-				}).peek(val->System.out.println(val)).forEach(lis -> {
+				}).peek(val -> System.out.println(val)).forEach(lis -> {
 					sum += ((List) lis).size();
 				}, null);
 
@@ -2671,7 +2671,7 @@ public class StreamPipelineDepth32Test extends StreamPipelineBaseTestCommon {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
-				}).peek(val->System.out.println(val)).collect(toexecute, null);
+				}).peek(val -> System.out.println(val)).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -2692,7 +2692,7 @@ public class StreamPipelineDepth32Test extends StreamPipelineBaseTestCommon {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
-				}).peek(val->System.out.println(val)).count(null);
+				}).peek(val -> System.out.println(val)).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -2716,7 +2716,7 @@ public class StreamPipelineDepth32Test extends StreamPipelineBaseTestCommon {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
-				}).peek(val->System.out.println(val)).forEach(lis -> {
+				}).peek(val -> System.out.println(val)).forEach(lis -> {
 					sum += ((List) lis).size();
 				}, null);
 
@@ -3254,7 +3254,7 @@ public class StreamPipelineDepth32Test extends StreamPipelineBaseTestCommon {
 					public boolean test(org.jooq.lambda.tuple.Tuple2 value) {
 						return true;
 					}
-				}).peek(val->System.out.println(val)).collect(toexecute, null);
+				}).peek(val -> System.out.println(val)).collect(toexecute, null);
 		int sum = 0;
 		for (List<Tuple2> lsttuples : data) {
 			for (Tuple2 tuple2 : lsttuples) {
@@ -3282,7 +3282,7 @@ public class StreamPipelineDepth32Test extends StreamPipelineBaseTestCommon {
 					public boolean test(org.jooq.lambda.tuple.Tuple2 value) {
 						return true;
 					}
-				}).peek(val->System.out.println(val)).forEach(lsttuples -> {
+				}).peek(val -> System.out.println(val)).forEach(lsttuples -> {
 					for (Tuple2 tuple2 : lsttuples) {
 						sum += ((List) tuple2.v2).size();
 					}
@@ -3738,7 +3738,7 @@ public class StreamPipelineDepth32Test extends StreamPipelineBaseTestCommon {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
-				}).groupByKey().peek(val->System.out.println(val)).collect(toexecute, null);
+				}).groupByKey().peek(val -> System.out.println(val)).collect(toexecute, null);
 		int sum = 0;
 		for (List<Tuple2> lsttuples : data) {
 			for (Tuple2 tuple2 : lsttuples) {
@@ -3761,7 +3761,7 @@ public class StreamPipelineDepth32Test extends StreamPipelineBaseTestCommon {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
-				}).groupByKey().peek(val->System.out.println(val)).forEach(lsttuples -> {
+				}).groupByKey().peek(val -> System.out.println(val)).forEach(lsttuples -> {
 					for (Tuple2 tuple2 : lsttuples) {
 						sum += ((List) tuple2.v2).size();
 					}
@@ -4197,7 +4197,7 @@ public class StreamPipelineDepth32Test extends StreamPipelineBaseTestCommon {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
-				}).groupByKey().peek(val->System.out.println(val)).collect(toexecute, null);
+				}).groupByKey().peek(val -> System.out.println(val)).collect(toexecute, null);
 		int sum = 0;
 		for (List<Tuple2> lsttuples : data) {
 			for (Tuple2 tuple2 : lsttuples) {
@@ -4220,7 +4220,7 @@ public class StreamPipelineDepth32Test extends StreamPipelineBaseTestCommon {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
-				}).groupByKey().peek(val->System.out.println(val)).forEach(lsttuples -> {
+				}).groupByKey().peek(val -> System.out.println(val)).forEach(lsttuples -> {
 					for (Tuple2 tuple2 : lsttuples) {
 						sum += ((List) tuple2.v2).size();
 					}
@@ -4862,7 +4862,7 @@ public class StreamPipelineDepth32Test extends StreamPipelineBaseTestCommon {
 								return (Tuple2<String, String>) value;
 							}
 						})
-				.groupByKey().peek(val->System.out.println(val)).collect(toexecute, null);
+				.groupByKey().peek(val -> System.out.println(val)).collect(toexecute, null);
 		int sum = 0;
 		for (List<Tuple2> lsttuples : data) {
 			for (Tuple2 tuple2 : lsttuples) {
@@ -4891,7 +4891,7 @@ public class StreamPipelineDepth32Test extends StreamPipelineBaseTestCommon {
 								return (Tuple2<String, String>) value;
 							}
 						})
-				.groupByKey().peek(val->System.out.println(val)).forEach(lsttuples -> {
+				.groupByKey().peek(val -> System.out.println(val)).forEach(lsttuples -> {
 					for (Tuple2 tuple2 : lsttuples) {
 						sum += ((List) tuple2.v2).size();
 					}
@@ -5305,7 +5305,7 @@ public class StreamPipelineDepth32Test extends StreamPipelineBaseTestCommon {
 								return (Tuple2<String, String>) value;
 							}
 						})
-				.peek(val->System.out.println(val)).collect(toexecute, null);
+				.peek(val -> System.out.println(val)).collect(toexecute, null);
 		int sum = 0;
 		for (List<Tuple2> lsttuples : data) {
 			for (Tuple2 tuple2 : lsttuples) {
@@ -5334,7 +5334,7 @@ public class StreamPipelineDepth32Test extends StreamPipelineBaseTestCommon {
 								return (Tuple2<String, String>) value;
 							}
 						})
-				.peek(val->System.out.println(val)).forEach(lsttuples -> {
+				.peek(val -> System.out.println(val)).forEach(lsttuples -> {
 					for (Tuple2 tuple2 : lsttuples) {
 						sum += ((List) tuple2.v2).size();
 					}
@@ -5758,7 +5758,7 @@ public class StreamPipelineDepth32Test extends StreamPipelineBaseTestCommon {
 								return (Tuple2<String, String>) value;
 							}
 						})
-				.reduceByKey((a, b) -> a + b).peek(val->System.out.println(val)).collect(toexecute, null);
+				.reduceByKey((a, b) -> a + b).peek(val -> System.out.println(val)).collect(toexecute, null);
 		int sum = 0;
 		for (List<Tuple2> lsttuples : data) {
 			for (Tuple2 tuple2 : lsttuples) {
@@ -5787,7 +5787,7 @@ public class StreamPipelineDepth32Test extends StreamPipelineBaseTestCommon {
 								return (Tuple2<String, String>) value;
 							}
 						})
-				.reduceByKey((a, b) -> a + b).peek(val->System.out.println(val)).forEach(lsttuples -> {
+				.reduceByKey((a, b) -> a + b).peek(val -> System.out.println(val)).forEach(lsttuples -> {
 					for (Tuple2 tuple2 : lsttuples) {
 						sum += ((List) tuple2.v2).size();
 					}
@@ -6055,7 +6055,7 @@ public class StreamPipelineDepth32Test extends StreamPipelineBaseTestCommon {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
-				}).groupByKey().peek(val->System.out.println(val))
+				}).groupByKey().peek(val -> System.out.println(val))
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<org.jooq.lambda.tuple.Tuple2>() {
 					public boolean test(org.jooq.lambda.tuple.Tuple2 value) {
 						return true;
@@ -6083,7 +6083,7 @@ public class StreamPipelineDepth32Test extends StreamPipelineBaseTestCommon {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
-				}).groupByKey().peek(val->System.out.println(val))
+				}).groupByKey().peek(val -> System.out.println(val))
 				.filter(new com.github.mdc.stream.functions.PredicateSerializable<org.jooq.lambda.tuple.Tuple2>() {
 					public boolean test(org.jooq.lambda.tuple.Tuple2 value) {
 						return true;
@@ -6110,7 +6110,7 @@ public class StreamPipelineDepth32Test extends StreamPipelineBaseTestCommon {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
-				}).groupByKey().peek(val->System.out.println(val)).collect(toexecute, null);
+				}).groupByKey().peek(val -> System.out.println(val)).collect(toexecute, null);
 		int sum = 0;
 		for (List<Tuple2> lsttuples : data) {
 			for (Tuple2 tuple2 : lsttuples) {
@@ -6133,7 +6133,7 @@ public class StreamPipelineDepth32Test extends StreamPipelineBaseTestCommon {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
-				}).groupByKey().peek(val->System.out.println(val)).forEach(lsttuples -> {
+				}).groupByKey().peek(val -> System.out.println(val)).forEach(lsttuples -> {
 					for (Tuple2 tuple2 : lsttuples) {
 						sum += ((List) tuple2.v2).size();
 					}
@@ -6155,7 +6155,7 @@ public class StreamPipelineDepth32Test extends StreamPipelineBaseTestCommon {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
-				}).groupByKey().peek(val->System.out.println(val)).collect(toexecute, null);
+				}).groupByKey().peek(val -> System.out.println(val)).collect(toexecute, null);
 		int sum = 0;
 		for (List<Tuple2> lsttuples : data) {
 			for (Tuple2 tuple2 : lsttuples) {
@@ -6178,7 +6178,7 @@ public class StreamPipelineDepth32Test extends StreamPipelineBaseTestCommon {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
-				}).groupByKey().peek(val->System.out.println(val)).forEach(lsttuples -> {
+				}).groupByKey().peek(val -> System.out.println(val)).forEach(lsttuples -> {
 					for (Tuple2 tuple2 : lsttuples) {
 						sum += ((List) tuple2.v2).size();
 					}
@@ -6200,7 +6200,7 @@ public class StreamPipelineDepth32Test extends StreamPipelineBaseTestCommon {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
-				}).groupByKey().peek(val->System.out.println(val)).mapToPair(
+				}).groupByKey().peek(val -> System.out.println(val)).mapToPair(
 						new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 							public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
 								return (Tuple2<String, String>) value;
@@ -6229,7 +6229,7 @@ public class StreamPipelineDepth32Test extends StreamPipelineBaseTestCommon {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
-				}).groupByKey().peek(val->System.out.println(val)).mapToPair(
+				}).groupByKey().peek(val -> System.out.println(val)).mapToPair(
 						new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 							public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
 								return (Tuple2<String, String>) value;
@@ -6257,7 +6257,7 @@ public class StreamPipelineDepth32Test extends StreamPipelineBaseTestCommon {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
-				}).groupByKey().peek(val->System.out.println(val)).mapToPair(
+				}).groupByKey().peek(val -> System.out.println(val)).mapToPair(
 						new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 							public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
 								return (Tuple2<String, String>) value;
@@ -6286,7 +6286,7 @@ public class StreamPipelineDepth32Test extends StreamPipelineBaseTestCommon {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
-				}).groupByKey().peek(val->System.out.println(val)).mapToPair(
+				}).groupByKey().peek(val -> System.out.println(val)).mapToPair(
 						new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 							public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
 								return (Tuple2<String, String>) value;
@@ -6314,7 +6314,7 @@ public class StreamPipelineDepth32Test extends StreamPipelineBaseTestCommon {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
-				}).groupByKey().peek(val->System.out.println(val)).mapToPair(
+				}).groupByKey().peek(val -> System.out.println(val)).mapToPair(
 						new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 							public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
 								return (Tuple2<String, String>) value;
@@ -6343,7 +6343,7 @@ public class StreamPipelineDepth32Test extends StreamPipelineBaseTestCommon {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
-				}).groupByKey().peek(val->System.out.println(val)).mapToPair(
+				}).groupByKey().peek(val -> System.out.println(val)).mapToPair(
 						new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 							public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
 								return (Tuple2<String, String>) value;
@@ -6371,7 +6371,7 @@ public class StreamPipelineDepth32Test extends StreamPipelineBaseTestCommon {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
-				}).groupByKey().peek(val->System.out.println(val)).peek(val->System.out.println(val)).collect(toexecute, null);
+				}).groupByKey().peek(val -> System.out.println(val)).peek(val -> System.out.println(val)).collect(toexecute, null);
 		int sum = 0;
 		for (List<Tuple2> lsttuples : data) {
 			for (Tuple2 tuple2 : lsttuples) {
@@ -6394,7 +6394,7 @@ public class StreamPipelineDepth32Test extends StreamPipelineBaseTestCommon {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
-				}).groupByKey().peek(val->System.out.println(val)).peek(val->System.out.println(val)).forEach(lsttuples -> {
+				}).groupByKey().peek(val -> System.out.println(val)).peek(val -> System.out.println(val)).forEach(lsttuples -> {
 					for (Tuple2 tuple2 : lsttuples) {
 						sum += ((List) tuple2.v2).size();
 					}
@@ -6416,7 +6416,7 @@ public class StreamPipelineDepth32Test extends StreamPipelineBaseTestCommon {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
-				}).groupByKey().peek(val->System.out.println(val)).sample(46361).collect(toexecute, null);
+				}).groupByKey().peek(val -> System.out.println(val)).sample(46361).collect(toexecute, null);
 		int sum = 0;
 		for (List<Tuple2> lsttuples : data) {
 			for (Tuple2 tuple2 : lsttuples) {
@@ -6439,7 +6439,7 @@ public class StreamPipelineDepth32Test extends StreamPipelineBaseTestCommon {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
-				}).groupByKey().peek(val->System.out.println(val)).sample(46361).forEach(lsttuples -> {
+				}).groupByKey().peek(val -> System.out.println(val)).sample(46361).forEach(lsttuples -> {
 					for (Tuple2 tuple2 : lsttuples) {
 						sum += ((List) tuple2.v2).size();
 					}
@@ -6461,7 +6461,7 @@ public class StreamPipelineDepth32Test extends StreamPipelineBaseTestCommon {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
-				}).groupByKey().peek(val->System.out.println(val))
+				}).groupByKey().peek(val -> System.out.println(val))
 				.sorted(new com.github.mdc.stream.functions.SortedComparator<org.jooq.lambda.tuple.Tuple2>() {
 					public int compare(org.jooq.lambda.tuple.Tuple2 value1, org.jooq.lambda.tuple.Tuple2 value2) {
 						return value1.compareTo(value2);
@@ -6489,7 +6489,7 @@ public class StreamPipelineDepth32Test extends StreamPipelineBaseTestCommon {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
-				}).groupByKey().peek(val->System.out.println(val))
+				}).groupByKey().peek(val -> System.out.println(val))
 				.sorted(new com.github.mdc.stream.functions.SortedComparator<org.jooq.lambda.tuple.Tuple2>() {
 					public int compare(org.jooq.lambda.tuple.Tuple2 value1, org.jooq.lambda.tuple.Tuple2 value2) {
 						return value1.compareTo(value2);
@@ -6832,7 +6832,7 @@ public class StreamPipelineDepth32Test extends StreamPipelineBaseTestCommon {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
-				}).groupByKey().sample(46361).peek(val->System.out.println(val)).collect(toexecute, null);
+				}).groupByKey().sample(46361).peek(val -> System.out.println(val)).collect(toexecute, null);
 		int sum = 0;
 		for (List<Tuple2> lsttuples : data) {
 			for (Tuple2 tuple2 : lsttuples) {
@@ -6855,7 +6855,7 @@ public class StreamPipelineDepth32Test extends StreamPipelineBaseTestCommon {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
-				}).groupByKey().sample(46361).peek(val->System.out.println(val)).forEach(lsttuples -> {
+				}).groupByKey().sample(46361).peek(val -> System.out.println(val)).forEach(lsttuples -> {
 					for (Tuple2 tuple2 : lsttuples) {
 						sum += ((List) tuple2.v2).size();
 					}
@@ -7343,7 +7343,7 @@ public class StreamPipelineDepth32Test extends StreamPipelineBaseTestCommon {
 					public int compare(org.jooq.lambda.tuple.Tuple2 value1, org.jooq.lambda.tuple.Tuple2 value2) {
 						return value1.compareTo(value2);
 					}
-				}).peek(val->System.out.println(val)).collect(toexecute, null);
+				}).peek(val -> System.out.println(val)).collect(toexecute, null);
 		int sum = 0;
 		for (List<Tuple2> lsttuples : data) {
 			for (Tuple2 tuple2 : lsttuples) {
@@ -7370,7 +7370,7 @@ public class StreamPipelineDepth32Test extends StreamPipelineBaseTestCommon {
 					public int compare(org.jooq.lambda.tuple.Tuple2 value1, org.jooq.lambda.tuple.Tuple2 value2) {
 						return value1.compareTo(value2);
 					}
-				}).peek(val->System.out.println(val)).forEach(lsttuples -> {
+				}).peek(val -> System.out.println(val)).forEach(lsttuples -> {
 					for (Tuple2 tuple2 : lsttuples) {
 						sum += ((List) tuple2.v2).size();
 					}
@@ -7931,7 +7931,7 @@ public class StreamPipelineDepth32Test extends StreamPipelineBaseTestCommon {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
-				}).peek(val->System.out.println(val)).collect(toexecute, null);
+				}).peek(val -> System.out.println(val)).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -7952,7 +7952,7 @@ public class StreamPipelineDepth32Test extends StreamPipelineBaseTestCommon {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
-				}).peek(val->System.out.println(val)).count(null);
+				}).peek(val -> System.out.println(val)).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -7976,7 +7976,7 @@ public class StreamPipelineDepth32Test extends StreamPipelineBaseTestCommon {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
-				}).peek(val->System.out.println(val)).forEach(lis -> {
+				}).peek(val -> System.out.println(val)).forEach(lis -> {
 					sum += ((List) lis).size();
 				}, null);
 
@@ -8703,7 +8703,7 @@ public class StreamPipelineDepth32Test extends StreamPipelineBaseTestCommon {
 								return (Tuple2<String, String>) value;
 							}
 						})
-				.groupByKey().peek(val->System.out.println(val)).collect(toexecute, null);
+				.groupByKey().peek(val -> System.out.println(val)).collect(toexecute, null);
 		int sum = 0;
 		for (List<Tuple2> lsttuples : data) {
 			for (Tuple2 tuple2 : lsttuples) {
@@ -8732,7 +8732,7 @@ public class StreamPipelineDepth32Test extends StreamPipelineBaseTestCommon {
 								return (Tuple2<String, String>) value;
 							}
 						})
-				.groupByKey().peek(val->System.out.println(val)).forEach(lsttuples -> {
+				.groupByKey().peek(val -> System.out.println(val)).forEach(lsttuples -> {
 					for (Tuple2 tuple2 : lsttuples) {
 						sum += ((List) tuple2.v2).size();
 					}
@@ -9233,7 +9233,7 @@ public class StreamPipelineDepth32Test extends StreamPipelineBaseTestCommon {
 								return (Tuple2<String, String>) value;
 							}
 						})
-				.peek(val->System.out.println(val)).collect(toexecute, null);
+				.peek(val -> System.out.println(val)).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -9260,7 +9260,7 @@ public class StreamPipelineDepth32Test extends StreamPipelineBaseTestCommon {
 								return (Tuple2<String, String>) value;
 							}
 						})
-				.peek(val->System.out.println(val)).count(null);
+				.peek(val -> System.out.println(val)).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -9290,7 +9290,7 @@ public class StreamPipelineDepth32Test extends StreamPipelineBaseTestCommon {
 								return (Tuple2<String, String>) value;
 							}
 						})
-				.peek(val->System.out.println(val)).forEach(lis -> {
+				.peek(val -> System.out.println(val)).forEach(lis -> {
 					sum += ((List) lis).size();
 				}, null);
 

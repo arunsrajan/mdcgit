@@ -79,8 +79,8 @@ public class StreamPipelineTransformationsSaveToFileTest extends StreamPipelineB
 		pipelineconfig.setLocal("true");
 		StreamPipeline<String> datastream = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesample,
 				pipelineconfig);
-		datastream.filter(val -> val.split(MDCConstants.COMMA)[0].equals("2007")
-				|| val.split(MDCConstants.COMMA)[0].equalsIgnoreCase("Year")).saveAsTextFile(new URI(hdfsfilepath), "/transformation/Trans-" + System.currentTimeMillis());
+		datastream.filter(val -> "2007".equals(val.split(MDCConstants.COMMA)[0])
+				|| "Year".equalsIgnoreCase(val.split(MDCConstants.COMMA)[0])).saveAsTextFile(new URI(hdfsfilepath), "/transformation/Trans-" + System.currentTimeMillis());
 		
 		pipelineconfig.setLocal(local);
 		log.info("testFilter After---------------------------------------");
@@ -207,7 +207,7 @@ public class StreamPipelineTransformationsSaveToFileTest extends StreamPipelineB
 		pipelineconfig.setLocal("true");
 		StreamPipeline<String> datastream1 = StreamPipeline
 				.newStreamHDFS(hdfsfilepath, airlinesample, pipelineconfig)
-				.filter(val -> val.split(MDCConstants.COMMA)[1].equals("1"));
+				.filter(val -> "1".equals(val.split(MDCConstants.COMMA)[1]));
 		StreamPipeline<String> datastream2 = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesample,
 				pipelineconfig);
 		datastream1.leftOuterjoin(datastream2, (val1, val2) -> val1.equals(val2))
@@ -238,9 +238,9 @@ public class StreamPipelineTransformationsSaveToFileTest extends StreamPipelineB
 		pipelineconfig.setLocal("true");
 		StreamPipeline<String> datastream1 = StreamPipeline
 				.newStreamHDFS(hdfsfilepath, airlinesamplejoin, pipelineconfig)
-				.filter(val -> val.split(MDCConstants.COMMA)[2].equals("2")
-						|| val.split(MDCConstants.COMMA)[2].equals("3")
-						|| val.split(MDCConstants.COMMA)[2].equals("4"));
+				.filter(val -> "2".equals(val.split(MDCConstants.COMMA)[2])
+						|| "3".equals(val.split(MDCConstants.COMMA)[2])
+						|| "4".equals(val.split(MDCConstants.COMMA)[2]));
 		StreamPipeline<String> datastream2 = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesamplejoin,
 				pipelineconfig);
 		datastream1.join(datastream2, (val1, val2) -> val1.equals(val2)).collect(toexecute,
@@ -271,9 +271,9 @@ public class StreamPipelineTransformationsSaveToFileTest extends StreamPipelineB
 		pipelineconfig.setLocal("true");
 		StreamPipeline<String> datastream1 = StreamPipeline
 				.newStreamHDFS(hdfsfilepath, airlinesamplejoin, pipelineconfig)
-				.filter(val -> val.split(MDCConstants.COMMA)[2].equals("2")
-						|| val.split(MDCConstants.COMMA)[2].equals("3")
-						|| val.split(MDCConstants.COMMA)[2].equals("4"));
+				.filter(val -> "2".equals(val.split(MDCConstants.COMMA)[2])
+						|| "3".equals(val.split(MDCConstants.COMMA)[2])
+						|| "4".equals(val.split(MDCConstants.COMMA)[2]));
 		StreamPipeline<String> datastream2 = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesamplejoin,
 				pipelineconfig);
 		datastream2.rightOuterjoin(datastream1, (val1, val2) -> val1.equals(val2))
@@ -289,9 +289,9 @@ public class StreamPipelineTransformationsSaveToFileTest extends StreamPipelineB
 		pipelineconfig.setLocal("true");
 		StreamPipeline<String> datastream1 = StreamPipeline
 				.newStreamHDFS(hdfsfilepath, airlinesamplejoin, pipelineconfig)
-				.filter(val -> val.split(MDCConstants.COMMA)[2].equals("2")
-						|| val.split(MDCConstants.COMMA)[2].equals("3")
-						|| val.split(MDCConstants.COMMA)[2].equals("4"));
+				.filter(val -> "2".equals(val.split(MDCConstants.COMMA)[2])
+						|| "3".equals(val.split(MDCConstants.COMMA)[2])
+						|| "4".equals(val.split(MDCConstants.COMMA)[2]));
 		StreamPipeline<String> datastream2 = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesamplejoin,
 				pipelineconfig);
 		datastream1.rightOuterjoin(datastream2, (val1, val2) -> val1.equals(val2))
@@ -323,9 +323,9 @@ public class StreamPipelineTransformationsSaveToFileTest extends StreamPipelineB
 				pipelineconfig);
 		StreamPipeline<String> datastream2 = StreamPipeline
 				.newStreamHDFS(hdfsfilepath, airlinesamplejoin, pipelineconfig)
-				.filter(val -> val.split(MDCConstants.COMMA)[2].equals("2")
-						|| val.split(MDCConstants.COMMA)[2].equals("3")
-						|| val.split(MDCConstants.COMMA)[2].equals("4"));
+				.filter(val -> "2".equals(val.split(MDCConstants.COMMA)[2])
+						|| "3".equals(val.split(MDCConstants.COMMA)[2])
+						|| "4".equals(val.split(MDCConstants.COMMA)[2]));
 		datastream1.union(datastream2).saveAsTextFile(new URI(hdfsfilepath), "/transformation/Trans-" + System.currentTimeMillis());
 		pipelineconfig.setLocal(local);
 		log.info("testUnionFilter After---------------------------------------");
@@ -338,14 +338,14 @@ public class StreamPipelineTransformationsSaveToFileTest extends StreamPipelineB
 		pipelineconfig.setLocal("true");
 		StreamPipeline<String> datastream1 = StreamPipeline
 				.newStreamHDFS(hdfsfilepath, airline1987, pipelineconfig)
-				.filter(val -> val.split(MDCConstants.COMMA)[2].equals("2")
-						|| val.split(MDCConstants.COMMA)[2].equals("3")
-						|| val.split(MDCConstants.COMMA)[2].equals("4"));
+				.filter(val -> "2".equals(val.split(MDCConstants.COMMA)[2])
+						|| "3".equals(val.split(MDCConstants.COMMA)[2])
+						|| "4".equals(val.split(MDCConstants.COMMA)[2]));
 		StreamPipeline<String> datastream2 = StreamPipeline
 				.newStreamHDFS(hdfsfilepath, airlinesamplejoin, pipelineconfig)
-				.filter(val -> val.split(MDCConstants.COMMA)[2].equals("2")
-						|| val.split(MDCConstants.COMMA)[2].equals("3")
-						|| val.split(MDCConstants.COMMA)[2].equals("4"));
+				.filter(val -> "2".equals(val.split(MDCConstants.COMMA)[2])
+						|| "3".equals(val.split(MDCConstants.COMMA)[2])
+						|| "4".equals(val.split(MDCConstants.COMMA)[2]));
 		datastream1.union(datastream2).saveAsTextFile(new URI(hdfsfilepath), "/transformation/Trans-" + System.currentTimeMillis());
 		pipelineconfig.setLocal(local);
 		log.info("testUnionFilterFilter After---------------------------------------");
@@ -374,9 +374,9 @@ public class StreamPipelineTransformationsSaveToFileTest extends StreamPipelineB
 				pipelineconfig);
 		StreamPipeline<String> datastream2 = StreamPipeline
 				.newStreamHDFS(hdfsfilepath, airlinesamplejoin, pipelineconfig)
-				.filter(val -> val.split(MDCConstants.COMMA)[2].equals("2")
-						|| val.split(MDCConstants.COMMA)[2].equals("3")
-						|| val.split(MDCConstants.COMMA)[2].equals("4"));
+				.filter(val -> "2".equals(val.split(MDCConstants.COMMA)[2])
+						|| "3".equals(val.split(MDCConstants.COMMA)[2])
+						|| "4".equals(val.split(MDCConstants.COMMA)[2]));
 		datastream1.intersection(datastream2).saveAsTextFile(new URI(hdfsfilepath), "/transformation/Trans-" + System.currentTimeMillis());
 		pipelineconfig.setLocal(local);
 		log.info("testIntersectionFilter After---------------------------------------");
@@ -389,14 +389,14 @@ public class StreamPipelineTransformationsSaveToFileTest extends StreamPipelineB
 		pipelineconfig.setLocal("true");
 		StreamPipeline<String> datastream1 = StreamPipeline
 				.newStreamHDFS(hdfsfilepath, airlinesamplejoin, pipelineconfig)
-				.filter(val -> val.split(MDCConstants.COMMA)[2].equals("2")
-						|| val.split(MDCConstants.COMMA)[2].equals("3")
-						|| val.split(MDCConstants.COMMA)[2].equals("4"));
+				.filter(val -> "2".equals(val.split(MDCConstants.COMMA)[2])
+						|| "3".equals(val.split(MDCConstants.COMMA)[2])
+						|| "4".equals(val.split(MDCConstants.COMMA)[2]));
 		StreamPipeline<String> datastream2 = StreamPipeline
 				.newStreamHDFS(hdfsfilepath, airlinesamplejoin, pipelineconfig)
-				.filter(val -> val.split(MDCConstants.COMMA)[2].equals("2")
-						|| val.split(MDCConstants.COMMA)[2].equals("3")
-						|| val.split(MDCConstants.COMMA)[2].equals("4"));
+				.filter(val -> "2".equals(val.split(MDCConstants.COMMA)[2])
+						|| "3".equals(val.split(MDCConstants.COMMA)[2])
+						|| "4".equals(val.split(MDCConstants.COMMA)[2]));
 		datastream1.intersection(datastream2).saveAsTextFile(new URI(hdfsfilepath), "/transformation/Trans-" + System.currentTimeMillis());
 		pipelineconfig.setLocal(local);
 		log.info("testIntersectionFilterFilter After---------------------------------------");
@@ -421,7 +421,7 @@ public class StreamPipelineTransformationsSaveToFileTest extends StreamPipelineB
 		pipelineconfig.setLocal("true");
 		StreamPipeline<String> datastream1 = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesamplejoin,
 				pipelineconfig);
-		datastream1.filter(value -> !value.split(MDCConstants.COMMA)[2].equals("DayofMonth"))
+		datastream1.filter(value -> !"DayofMonth".equals(value.split(MDCConstants.COMMA)[2]))
 				.sorted((val1, val2) -> {
 					return Integer.valueOf(val1.split(MDCConstants.COMMA)[2])
 							.compareTo(Integer.valueOf(val2.split(MDCConstants.COMMA)[2]));
@@ -487,7 +487,7 @@ public class StreamPipelineTransformationsSaveToFileTest extends StreamPipelineB
 				.tuple(value.split(MDCConstants.COMMA)[1], value.split(MDCConstants.COMMA)[14]))
 				.flatMapToLong(tuple -> {
 					String val = tuple.v1;
-					if (!val.equals("Month")) {
+					if (!"Month".equals(val)) {
 						return Arrays.asList(Tuple.tuple(Long.parseLong(val), Long.parseLong(val)));
 					}
 					return Arrays.asList(Tuple.tuple(0l, 0l));
@@ -508,7 +508,7 @@ public class StreamPipelineTransformationsSaveToFileTest extends StreamPipelineB
 				.tuple(value.split(MDCConstants.COMMA)[1], value.split(MDCConstants.COMMA)[14]))
 				.flatMapToDouble(tuple -> {
 					String val = tuple.v1;
-					if (!val.equals("Month")) {
+					if (!"Month".equals(val)) {
 						return Arrays.asList(Tuple.tuple(Double.parseDouble(val), Double.parseDouble(val)));
 					}
 					return Arrays.asList(Tuple.tuple(0d, 0d));
@@ -528,7 +528,7 @@ public class StreamPipelineTransformationsSaveToFileTest extends StreamPipelineB
 				pipelineconfig);
 		datastream1.mapToPair(value -> {
 			String arrdelay = value.split(MDCConstants.COMMA)[14];
-			if (!arrdelay.equals("ArrDelay") && !arrdelay.equals("NA")) {
+			if (!"ArrDelay".equals(arrdelay) && !"NA".equals(arrdelay)) {
 				return (Tuple2<String, Long>) Tuple.tuple(value.split(MDCConstants.COMMA)[1], Long.parseLong(arrdelay));
 			} else {
 				return (Tuple2<String, Long>) Tuple.tuple(value.split(MDCConstants.COMMA)[1], 0l);
@@ -550,7 +550,7 @@ public class StreamPipelineTransformationsSaveToFileTest extends StreamPipelineB
 				pipelineconfig);
 		datastream1.mapToPair(value -> {
 			String arrdelay = value.split(MDCConstants.COMMA)[14];
-			if (!arrdelay.equals("ArrDelay") && !arrdelay.equals("NA")) {
+			if (!"ArrDelay".equals(arrdelay) && !"NA".equals(arrdelay)) {
 				return (Tuple2<String, Long>) Tuple.tuple(value.split(MDCConstants.COMMA)[1], Long.parseLong(arrdelay));
 			} else {
 				return (Tuple2<String, Long>) Tuple.tuple(value.split(MDCConstants.COMMA)[1], 0l);
@@ -570,7 +570,7 @@ public class StreamPipelineTransformationsSaveToFileTest extends StreamPipelineB
 				pipelineconfig);
 		datastream1.mapToPair(value -> {
 			String arrdelay = value.split(MDCConstants.COMMA)[14];
-			if (!arrdelay.equals("ArrDelay") && !arrdelay.equals("NA")) {
+			if (!"ArrDelay".equals(arrdelay) && !"NA".equals(arrdelay)) {
 				return (Tuple2<String, Long>) Tuple.tuple(value.split(MDCConstants.COMMA)[1], Long.parseLong(arrdelay));
 			} else {
 				return (Tuple2<String, Long>) Tuple.tuple(value.split(MDCConstants.COMMA)[1], 0l);
@@ -589,7 +589,7 @@ public class StreamPipelineTransformationsSaveToFileTest extends StreamPipelineB
 				pipelineconfig);
 		datastream1.mapToPair(value -> {
 			String arrdelay = value.split(MDCConstants.COMMA)[14];
-			if (!arrdelay.equals("ArrDelay") && !arrdelay.equals("NA")) {
+			if (!"ArrDelay".equals(arrdelay) && !"NA".equals(arrdelay)) {
 				return (Tuple2<String, Long>) Tuple.tuple(value.split(MDCConstants.COMMA)[1], Long.parseLong(arrdelay));
 			} else {
 				return (Tuple2<String, Long>) Tuple.tuple(value.split(MDCConstants.COMMA)[1], 0l);
@@ -609,7 +609,7 @@ public class StreamPipelineTransformationsSaveToFileTest extends StreamPipelineB
 				pipelineconfig);
 		datastream1.mapToPair(value -> {
 			String arrdelay = value.split(MDCConstants.COMMA)[14];
-			if (!arrdelay.equals("ArrDelay") && !arrdelay.equals("NA")) {
+			if (!"ArrDelay".equals(arrdelay) && !"NA".equals(arrdelay)) {
 				return (Tuple2<String, Long>) Tuple.tuple(value.split(MDCConstants.COMMA)[1], Long.parseLong(arrdelay));
 			} else {
 				return (Tuple2<String, Long>) Tuple.tuple(value.split(MDCConstants.COMMA)[1], 0l);
@@ -628,7 +628,7 @@ public class StreamPipelineTransformationsSaveToFileTest extends StreamPipelineB
 				pipelineconfig);
 		datastream1.mapToPair(value -> {
 			String arrdelay = value.split(MDCConstants.COMMA)[14];
-			if (!arrdelay.equals("ArrDelay") && !arrdelay.equals("NA")) {
+			if (!"ArrDelay".equals(arrdelay) && !"NA".equals(arrdelay)) {
 				return (Tuple2<String, Long>) Tuple.tuple(value.split(MDCConstants.COMMA)[1], Long.parseLong(arrdelay));
 			} else {
 				return (Tuple2<String, Long>) Tuple.tuple(value.split(MDCConstants.COMMA)[1], 0l);
@@ -648,7 +648,7 @@ public class StreamPipelineTransformationsSaveToFileTest extends StreamPipelineB
 				pipelineconfig);
 		datastream1.mapToPair(value -> {
 			String arrdelay = value.split(MDCConstants.COMMA)[14];
-			if (!arrdelay.equals("ArrDelay") && !arrdelay.equals("NA")) {
+			if (!"ArrDelay".equals(arrdelay) && !"NA".equals(arrdelay)) {
 				return (Tuple2<String, Long>) Tuple.tuple(value.split(MDCConstants.COMMA)[1], Long.parseLong(arrdelay));
 			} else {
 				return (Tuple2<String, Long>) Tuple.tuple(value.split(MDCConstants.COMMA)[1], 0l);
@@ -764,12 +764,12 @@ public class StreamPipelineTransformationsSaveToFileTest extends StreamPipelineB
 		pipelineconfig.setLocal("true");
 		StreamPipeline<String[]> datastream1 = StreamPipeline
 				.newStreamHDFS(hdfsfilepath, airlinesample, pipelineconfig).map(val -> val.split(","))
-				.filter(val -> !val[14].equals("ArrDelay") && !val[14].equals("NA"));
+				.filter(val -> !"ArrDelay".equals(val[14]) && !"NA".equals(val[14]));
 		MapPair<String, Long> data1 = datastream1
 				.mapToPair(value -> (Tuple2<String, Long>) Tuple.tuple(value[8], Long.parseLong(value[14])));
 
 		MapPair<String, Long> data2 = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesample, pipelineconfig)
-				.map(val -> val.split(",")).filter(val -> !val[14].equals("ArrDelay") && !val[14].equals("NA"))
+				.map(val -> val.split(",")).filter(val -> !"ArrDelay".equals(val[14]) && !"NA".equals(val[14]))
 				.mapToPair(value -> (Tuple2<String, Long>) Tuple.tuple(value[8], Long.parseLong(value[14])));
 		data1.cogroup(data2)
 				.saveAsTextFile(new URI(hdfsfilepath), "/transformation/Trans-" + System.currentTimeMillis());

@@ -61,16 +61,16 @@ public class MesosExecutor implements Executor {
 	 * @param propertyfiles
 	 * @throws Throwable
 	 */
-	public void pullPropertiesMesosDistributor(String httpurl,String[] propertyfiles) throws Exception{
-		for(var propertyfile:propertyfiles) {
-			try(
+	public void pullPropertiesMesosDistributor(String httpurl, String[] propertyfiles) throws Exception {
+		for (var propertyfile :propertyfiles) {
+			try (
 			
-			var istream = new URL(httpurl+MDCConstants.BACKWARD_SLASH+propertyfile).openStream();
-			var fos = new FileOutputStream(propertyfile);){
+			var istream = new URL(httpurl + MDCConstants.BACKWARD_SLASH + propertyfile).openStream();
+			var fos = new FileOutputStream(propertyfile);) {
 				IOUtils.copy(istream, fos);
 			}
-			catch(Exception ex) {
-				log.error(MDCConstants.EMPTY,ex);
+			catch (Exception ex) {
+				log.error(MDCConstants.EMPTY, ex);
 				throw ex;
 			}
 		}
@@ -82,7 +82,7 @@ public class MesosExecutor implements Executor {
 	 */
 	@Override
 	public void launchTask(ExecutorDriver driver, TaskInfo task) {
-		service.execute(()->{
+		service.execute(() -> {
 		try {
 			
 				Utils.loadPropertiesMesos(MDCConstants.MDC_PROPERTIES);
@@ -90,7 +90,7 @@ public class MesosExecutor implements Executor {
 				var bais = new ByteArrayInputStream(task.getData().toByteArray());
 				var input = new Input(bais);
 				//Get the jar bytes which contains the  MR job classes
-				var jarandjobstage= (byte[]) kryo.readClassAndObject(input);
+				var jarandjobstage = (byte[]) kryo.readClassAndObject(input);
 				var clsloader = MDCMapReducePhaseClassLoader
 						.newInstance(jarandjobstage, getClass().getClassLoader());
 				jarandjobstage = (byte[]) kryo.readClassAndObject(input);
@@ -101,14 +101,14 @@ public class MesosExecutor implements Executor {
 				var job = (JobStage) kryo.readClassAndObject(jobstagestream);
 				jobstagestream.close();
 				//Initialize the mesos task executor.
-				var mdstem = new StreamPipelineTaskExecutorMesos(job,driver,task.getTaskId());
+				var mdstem = new StreamPipelineTaskExecutorMesos(job, driver, task.getTaskId());
 				//Execute the tasks via run method.
 				mdstem.call();
-				log.debug(task.getTaskId()+" - Completed");
+				log.debug(task.getTaskId() + " - Completed");
 		
 		}
-		catch(Exception ex) {
-			log.debug("Executing Tasks Failed: See cause below \n",ex);
+		catch (Exception ex) {
+			log.debug("Executing Tasks Failed: See cause below \n", ex);
 		}
 		});
 	}
@@ -125,7 +125,7 @@ public class MesosExecutor implements Executor {
 
 	@Override
 	public void shutdown(ExecutorDriver driver) {
-		if(service!=null) {
+		if (service != null) {
 			service.shutdown();
 		}
 	}

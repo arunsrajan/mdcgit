@@ -15,8 +15,8 @@ Reducer<String, Long, Context>{
 	@Override
 	public void combine(String key, List<Long> values, Context context) {
 		long sum = 0;
-		for(Long value:values) {
-			sum+=value;
+		for (Long value :values) {
+			sum += value;
 		}
 		context.put(key, sum);
 	
@@ -27,8 +27,8 @@ Reducer<String, Long, Context>{
 	public void map(Long index, String line, Context context) {
 
 		String[] contents = line.split(",");
-		if (contents[0] != null && !contents[0].equals("Year")) {
-			if (contents != null && contents.length > 14 && contents[14] != null && !contents[14].equals("NA")) {
+		if (contents[0] != null && !"Year".equals(contents[0])) {
+			if (contents != null && contents.length > 14 && contents[14] != null && !"NA".equals(contents[14])) {
 				context.put(contents[8], Long.parseLong(contents[14]));
 			}
 		}
@@ -39,8 +39,8 @@ Reducer<String, Long, Context>{
 	@Override
 	public void reduce(String key, List<Long> values, Context context) {
 		long sum = 0;
-		for(Long value:values) {
-			sum+=value;
+		for (Long value :values) {
+			sum += value;
 		}
 		context.put(key, sum);
 		
