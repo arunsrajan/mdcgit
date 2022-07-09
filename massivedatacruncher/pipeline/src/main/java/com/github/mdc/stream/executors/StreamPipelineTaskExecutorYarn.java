@@ -1,20 +1,15 @@
 package com.github.mdc.stream.executors;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Objects;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
-import org.xerial.snappy.SnappyInputStream;
 
 import com.github.mdc.common.FileSystemSupport;
 import com.github.mdc.common.JobStage;

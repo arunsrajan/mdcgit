@@ -5,8 +5,6 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 import com.github.mdc.common.MDCConstants;
-import com.github.mdc.tasks.scheduler.JobConfigurationBuilder;
-import com.github.mdc.tasks.scheduler.JobConfiguration;
 
 public class JobConfigurationBuilderTest extends TaskSchedulerCommon {
 

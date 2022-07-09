@@ -11,10 +11,6 @@ import java.util.Objects;
 import org.jgroups.util.UUID;
 import org.junit.Test;
 
-import com.github.mdc.common.HeartBeatServer;
-import com.github.mdc.common.MDCConstants;
-import com.github.mdc.common.Resources;
-
 public class HeartBeatServerTest extends HeartBeatCommon {
 
 	@Test

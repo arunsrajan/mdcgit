@@ -15,9 +15,6 @@ import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
-import com.github.mdc.stream.MapPair;
-import com.github.mdc.stream.StreamPipeline;
-import com.github.mdc.stream.NumPartitions;
 import com.github.mdc.stream.functions.MapFunction;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)

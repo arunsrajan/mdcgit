@@ -32,7 +32,6 @@ import com.github.mdc.common.CacheUtils;
 import com.github.mdc.common.HeartBeatServerStream;
 import com.github.mdc.common.MDCCacheManager;
 import com.github.mdc.common.MDCConstants;
-import com.github.mdc.common.MDCExecutorThreadFactory;
 import com.github.mdc.common.MDCProperties;
 import com.github.mdc.common.NetworkUtil;
 import com.github.mdc.common.PipelineConfig;

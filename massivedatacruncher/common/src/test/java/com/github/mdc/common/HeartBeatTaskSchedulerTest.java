@@ -1,14 +1,11 @@
 package com.github.mdc.common;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 import java.util.UUID;
 
 import org.junit.Test;
 
-import com.github.mdc.common.HeartBeatTaskScheduler;
-import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.ApplicationTask.TaskStatus;
 import com.github.mdc.common.ApplicationTask.TaskType;
 

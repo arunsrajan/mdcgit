@@ -7,7 +7,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.net.URI;
 import java.util.Objects;
-import java.util.Properties;
 import java.util.Set;
 
 import org.apache.hadoop.conf.Configuration;
@@ -17,13 +16,6 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.github.mdc.common.DataCruncherContext;
-import com.github.mdc.common.FileSystemSupport;
-import com.github.mdc.common.JobStage;
-import com.github.mdc.common.MDCConstants;
-import com.github.mdc.common.MDCProperties;
-import com.github.mdc.common.RemoteDataFetcher;
-import com.github.mdc.common.RemoteDataFetcherException;
 import com.github.sakserv.minicluster.impl.HdfsLocalCluster;
 
 public class RemoteDataFetcherTest {

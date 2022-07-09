@@ -8,7 +8,6 @@ import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
-import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.log4j.Logger;
 
@@ -17,7 +16,6 @@ import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.MDCMapReducePhaseClassLoader;
 import com.github.mdc.common.MDCProperties;
 import com.github.mdc.common.PipelineConfig;
-import com.github.mdc.common.Task;
 import com.github.mdc.common.Utils;
 import com.github.mdc.stream.Pipeline;
 

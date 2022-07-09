@@ -12,7 +12,6 @@ import org.springframework.yarn.integration.ip.mind.binding.BaseObject;
 
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
-import com.github.mdc.common.JobStage;
 import com.github.mdc.common.Task;
 import com.github.mdc.common.Utils;
 

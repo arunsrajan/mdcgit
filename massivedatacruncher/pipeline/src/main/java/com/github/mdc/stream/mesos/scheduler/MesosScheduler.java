@@ -29,7 +29,6 @@ import org.jgrapht.graph.SimpleDirectedGraph;
 
 import com.esotericsoftware.kryo.io.Output;
 import com.github.mdc.common.DAGEdge;
-import com.github.mdc.common.JobStage;
 import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.MesosThirdPartyLibraryDistributor;
 import com.github.mdc.common.Task;

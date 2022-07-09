@@ -391,7 +391,7 @@
                         <version>1.8.0</version>
                     </dependency>
                     <dependency>
-                        <groupId>org.openrewrite.recipe</groupId>
+                        <groupId>org.openrewrite</groupId>
                         <artifactId>rewrite-java-17</artifactId>
                         <version>7.25.0</version>
                     </dependency>

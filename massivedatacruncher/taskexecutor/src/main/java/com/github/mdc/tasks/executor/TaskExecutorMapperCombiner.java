@@ -16,7 +16,6 @@ import com.github.mdc.common.ApplicationTask.TaskType;
 import com.github.mdc.common.BlocksLocation;
 import com.github.mdc.common.Context;
 import com.github.mdc.common.HeartBeatTaskScheduler;
-import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.RemoteDataFetcher;
 
 public class TaskExecutorMapperCombiner implements Runnable {

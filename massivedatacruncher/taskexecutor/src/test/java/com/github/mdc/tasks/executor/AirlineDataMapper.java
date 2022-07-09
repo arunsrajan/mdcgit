@@ -3,9 +3,6 @@ package com.github.mdc.tasks.executor;
 import java.util.List;
 
 import com.github.mdc.common.Context;
-import com.github.mdc.tasks.executor.Combiner;
-import com.github.mdc.tasks.executor.Mapper;
-import com.github.mdc.tasks.executor.Reducer;
 
 @SuppressWarnings("rawtypes")
 public class AirlineDataMapper implements Mapper<Long, String, Context>, Combiner<String, Long, Context>,

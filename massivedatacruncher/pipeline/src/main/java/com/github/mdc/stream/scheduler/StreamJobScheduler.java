@@ -82,7 +82,6 @@ import com.github.mdc.common.KryoPool;
 import com.github.mdc.common.LoadJar;
 import com.github.mdc.common.MDCCache;
 import com.github.mdc.common.MDCConstants;
-import com.github.mdc.common.MDCNodesResources;
 import com.github.mdc.common.MDCProperties;
 import com.github.mdc.common.PipelineConstants;
 import com.github.mdc.common.NetworkUtil;

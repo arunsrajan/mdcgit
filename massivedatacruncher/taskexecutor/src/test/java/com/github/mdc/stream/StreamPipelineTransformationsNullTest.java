@@ -10,8 +10,6 @@ import org.junit.Test;
 
 import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.PipelineConstants;
-import com.github.mdc.stream.MapPair;
-import com.github.mdc.stream.StreamPipeline;
 
 public class StreamPipelineTransformationsNullTest extends StreamPipelineBaseTestCommon {
 

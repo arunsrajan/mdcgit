@@ -6,12 +6,6 @@ import java.util.UUID;
 
 import org.junit.Test;
 
-import com.github.mdc.common.HeartBeatServerStream;
-import com.github.mdc.common.HeartBeatTaskSchedulerStream;
-import com.github.mdc.common.JobStage;
-import com.github.mdc.common.MDCConstants;
-import com.github.mdc.common.Task;
-
 public class HeartBeatTaskSchedulerStreamTest extends HeartBeatCommon {
 
 	public static final String stage = MDCConstants.STAGE;

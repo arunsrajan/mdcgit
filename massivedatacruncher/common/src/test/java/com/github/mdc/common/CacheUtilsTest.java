@@ -22,16 +22,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.xerial.snappy.SnappyInputStream;
 
-import com.github.mdc.common.BlocksLocation;
-import com.github.mdc.common.ByteBufferPoolDirect;
-import com.github.mdc.common.CacheUtils;
-import com.github.mdc.common.HDFSBlockUtils;
-import com.github.mdc.common.HdfsBlockReader;
-import com.github.mdc.common.MDCCache;
-import com.github.mdc.common.MDCCacheManager;
-import com.github.mdc.common.MDCConstants;
-import com.github.mdc.common.Utils;
-
 public class CacheUtilsTest {
 
 	String hdfsurl = "hdfs://127.0.0.1:9000";

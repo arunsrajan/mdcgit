@@ -1,7 +1,7 @@
 package com.github.mdc.stream.utils;
 
 
-import static java.util.Objects.*;
+import static java.util.Objects.isNull;
 
 import org.apache.ignite.Ignite;
 import org.apache.ignite.Ignition;

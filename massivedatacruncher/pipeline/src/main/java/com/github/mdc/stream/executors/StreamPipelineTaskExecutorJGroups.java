@@ -1,6 +1,5 @@
 package com.github.mdc.stream.executors;
 
-import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.net.URI;
@@ -15,7 +14,6 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.log4j.Logger;
 import org.ehcache.Cache;
 import org.jgroups.JChannel;
-import org.xerial.snappy.SnappyInputStream;
 
 import com.github.mdc.common.JobStage;
 import com.github.mdc.common.MDCConstants;

@@ -4,9 +4,6 @@ import java.util.Properties;
 
 import org.junit.BeforeClass;
 
-import com.github.mdc.common.MDCConstants;
-import com.github.mdc.common.MDCProperties;
-
 public class HeartBeatCommon {
 
 	@BeforeClass

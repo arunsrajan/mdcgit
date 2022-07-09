@@ -9,9 +9,6 @@ import org.jooq.lambda.tuple.Tuple;
 import org.jooq.lambda.tuple.Tuple2;
 import org.junit.Test;
 
-import com.github.mdc.stream.MapPair;
-import com.github.mdc.stream.StreamPipeline;
-
 public class StreamPipelineCoalesceTest extends StreamPipelineBaseTestCommon {
 
 	@SuppressWarnings({"rawtypes", "unchecked"})

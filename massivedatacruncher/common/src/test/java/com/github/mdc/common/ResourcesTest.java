@@ -2,8 +2,6 @@ package com.github.mdc.common;
 
 import org.junit.Test;
 
-import com.github.mdc.common.Resources;
-
 import junit.framework.TestCase;
 
 public class ResourcesTest extends TestCase {

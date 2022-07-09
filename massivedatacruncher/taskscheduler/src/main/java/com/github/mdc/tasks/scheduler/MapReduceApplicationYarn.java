@@ -39,7 +39,6 @@ import com.github.mdc.common.HeartBeatTaskScheduler;
 import com.github.mdc.common.JobMetrics;
 import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.MDCJobMetrics;
-import com.github.mdc.common.MDCNodesResources;
 import com.github.mdc.common.MDCProperties;
 import com.github.mdc.common.RemoteDataFetcher;
 import com.github.mdc.common.Utils;

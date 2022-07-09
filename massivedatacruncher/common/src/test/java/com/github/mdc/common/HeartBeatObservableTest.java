@@ -8,10 +8,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import org.junit.Test;
 
-import com.github.mdc.common.ApplicationTask;
-import com.github.mdc.common.HeartBeatObservable;
-import com.github.mdc.common.JobStage;
-
 public class HeartBeatObservableTest {
 
 	@Test

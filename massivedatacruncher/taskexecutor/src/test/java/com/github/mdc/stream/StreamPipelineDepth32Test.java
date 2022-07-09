@@ -12,8 +12,6 @@ import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
-import com.github.mdc.stream.StreamPipeline;
-
 @SuppressWarnings({"unchecked", "serial", "rawtypes"})
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class StreamPipelineDepth32Test extends StreamPipelineBaseTestCommon {

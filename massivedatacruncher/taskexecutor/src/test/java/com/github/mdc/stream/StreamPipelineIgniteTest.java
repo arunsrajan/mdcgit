@@ -8,8 +8,6 @@ import org.jooq.lambda.tuple.Tuple2;
 import org.junit.Test;
 
 import com.github.mdc.common.MDCConstants;
-import com.github.mdc.stream.MapPairIgnite;
-import com.github.mdc.stream.IgnitePipeline;
 
 public class StreamPipelineIgniteTest extends StreamPipelineBaseTestCommon {
 	@SuppressWarnings("rawtypes")

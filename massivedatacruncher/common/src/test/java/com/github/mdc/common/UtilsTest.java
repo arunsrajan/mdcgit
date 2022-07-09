@@ -5,9 +5,6 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import com.github.mdc.common.MDCConstants;
-import com.github.mdc.common.Utils;
-
 public class UtilsTest {
 
 	@Test

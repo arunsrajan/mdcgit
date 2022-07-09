@@ -15,7 +15,6 @@ import org.jooq.lambda.tuple.Tuple2;
 import com.github.mdc.common.Context;
 import com.github.mdc.common.DataCruncherContext;
 import com.github.mdc.common.HeartBeatTaskScheduler;
-import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.ReducerValues;
 import com.github.mdc.common.RemoteDataFetcher;
 import com.github.mdc.common.ApplicationTask.TaskStatus;

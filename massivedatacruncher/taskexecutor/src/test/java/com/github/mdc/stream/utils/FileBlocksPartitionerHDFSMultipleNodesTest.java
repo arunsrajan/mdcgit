@@ -40,7 +40,6 @@ import com.github.mdc.common.PipelineConfig;
 import com.github.mdc.common.Resources;
 import com.github.mdc.common.Utils;
 import com.github.mdc.stream.StreamPipelineBase;
-import com.github.mdc.stream.utils.FileBlocksPartitionerHDFS;
 import com.github.mdc.tasks.executor.NodeRunner;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
