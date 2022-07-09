@@ -55,6 +55,7 @@ import com.github.mdc.stream.functions.AggregateFunction;
 import com.github.mdc.stream.functions.AggregateReduceFunction;
 import com.github.mdc.stream.functions.CalculateCount;
 import com.github.mdc.stream.functions.Coalesce;
+import com.github.mdc.stream.functions.CoalesceFunction;
 import com.github.mdc.stream.functions.CountByKeyFunction;
 import com.github.mdc.stream.functions.CountByValueFunction;
 import com.github.mdc.stream.functions.Distinct;
@@ -72,6 +73,7 @@ import com.github.mdc.stream.functions.LongFlatMapFunction;
 import com.github.mdc.stream.functions.MapFunction;
 import com.github.mdc.stream.functions.MapToPairFunction;
 import com.github.mdc.stream.functions.PeekConsumer;
+import com.github.mdc.stream.functions.PipelineCoalesceFunction;
 import com.github.mdc.stream.functions.PredicateSerializable;
 import com.github.mdc.stream.functions.ReduceFunction;
 import com.github.mdc.stream.functions.RightJoin;
@@ -846,6 +848,36 @@ public sealed class StreamPipeline<I1> extends AbstractPipeline permits CsvStrea
 		return mdp;
 	}
 	
+	/**
+	 * StreamPipeline constructor for the Coalesce function.
+	 * @param <O1>
+	 * @param root
+	 * @param cf
+	 */
+	private <O1> StreamPipeline(AbstractPipeline root,
+			Coalesce<I1> cf)  {
+		this.task = cf;
+		this.root = root;
+		root.finaltask=task;
+	}
+	
+	/**
+	 * StreamPipeline accepts the coalesce function.
+	 * @param partition
+	 * @param cf
+	 * @return MapPair object.
+	 * @throws PipelineException
+	 */
+	@SuppressWarnings({ "unchecked" })
+	public StreamPipeline<I1> coalesce(int partition,PipelineCoalesceFunction<I1> cf) throws PipelineException  {
+		if(Objects.isNull(cf)) {
+			throw new PipelineException(PipelineConstants.COALESCENULL);
+		}
+		var streampipelinecoalesce = new StreamPipeline<I1>(root, new Coalesce(partition, cf));
+		this.childs.add(streampipelinecoalesce);
+		streampipelinecoalesce.parents.add(this);
+		return streampipelinecoalesce;
+	}
 	
 	protected DirectedAcyclicGraph<AbstractPipeline, DAGEdge> graph = new DirectedAcyclicGraph<>(DAGEdge.class);
 	

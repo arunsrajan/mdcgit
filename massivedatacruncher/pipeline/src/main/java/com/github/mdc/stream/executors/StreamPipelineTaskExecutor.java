@@ -78,6 +78,7 @@ import com.github.mdc.stream.PipelineIntStreamCollect;
 import com.github.mdc.stream.PipelineUtils;
 import com.github.mdc.stream.functions.CalculateCount;
 import com.github.mdc.stream.functions.Coalesce;
+import com.github.mdc.stream.functions.CoalesceFunction;
 import com.github.mdc.stream.functions.CountByKeyFunction;
 import com.github.mdc.stream.functions.CountByValueFunction;
 import com.github.mdc.stream.functions.FoldByKey;
@@ -89,6 +90,7 @@ import com.github.mdc.stream.functions.LeftJoin;
 import com.github.mdc.stream.functions.LeftOuterJoinPredicate;
 import com.github.mdc.stream.functions.Max;
 import com.github.mdc.stream.functions.Min;
+import com.github.mdc.stream.functions.PipelineCoalesceFunction;
 import com.github.mdc.stream.functions.RightJoin;
 import com.github.mdc.stream.functions.RightOuterJoinPredicate;
 import com.github.mdc.stream.functions.StandardDeviation;
@@ -2607,13 +2609,18 @@ public sealed class StreamPipelineTaskExecutor implements
 			// Parallel execution of reduce by key stream execution.
 			List out = null;
 			if (Objects.nonNull(coalescefunction.get(0).coalescefuncion)) {
-				out = keyvaluepairs.parallelStream().collect(Collectors.toMap(Tuple2::v1, Tuple2::v2,
-						(input1, input2) -> coalescefunction.get(0).coalescefuncion.apply(input1, input2)))
-						.entrySet()
-						.stream()
-						.map(entry -> Tuple.tuple(((Entry) entry).getKey(), ((Entry) entry).getValue()))
-						.collect(ParallelCollectors.parallel(value -> value, Collectors.toCollection(Vector::new), executor,
-							Runtime.getRuntime().availableProcessors())).get();
+				if(coalescefunction.get(0).coalescefuncion instanceof CoalesceFunction cf) {
+					out = keyvaluepairs.parallelStream().collect(Collectors.toMap(Tuple2::v1, Tuple2::v2,
+							(input1, input2) -> cf.apply(input1, input2)))
+							.entrySet()
+							.stream()
+							.map(entry -> Tuple.tuple(((Entry) entry).getKey(), ((Entry) entry).getValue()))
+							.collect(ParallelCollectors.parallel(value -> value, Collectors.toCollection(Vector::new), executor,
+								Runtime.getRuntime().availableProcessors())).get();
+				} else if(coalescefunction.get(0).coalescefuncion instanceof PipelineCoalesceFunction pcf) {
+					out = Arrays.asList(keyvaluepairs.parallelStream().reduce(pcf)
+							.get());
+				}
 			}else {
 				out = keyvaluepairs;
 			}
