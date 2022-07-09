@@ -379,6 +379,7 @@
                 <version>4.26.0</version>
                 <configuration>
                     <activeRecipes>
+                        <recipe>org.openrewrite.java.AddApache2LicenseHeader</recipe>
                         <receipe>org.openrewrite.java.RemoveUnusedImports</receipe>
                         <recipe>org.openrewrite.java.migrate.Java8toJava11</recipe>
                     </activeRecipes>
