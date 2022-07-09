@@ -35,11 +35,12 @@ public class JobConfiguration {
 	String yarnscheduler;
 	String containeralloc;
 	String heappercentage;
+
 	public JobConfiguration(String hdfsurl, String tstempdir, String tshost, String tsport, String zkport,
 			String zkretrydelay, String tspingdelay, String tsrescheduledelay, String tsinitialdelay,
 			String tepingdelay, Boolean hdfs, String blocksize, String batchsize, String numofreducers, String minmem,
 			String maxmem, String gctype, String numberofcontainers, String isblocksuserdefined, String execmode
-			, String taskexeccount, String ignitemulticastgroup, String ignitebackup, String yarnrm, String yarnscheduler,
+		, String taskexeccount, String ignitemulticastgroup, String ignitebackup, String yarnrm, String yarnscheduler,
 			String containeralloc, String heappercentage) {
 		this.hdfsurl = hdfsurl;
 		this.tstempdir = tstempdir;
@@ -312,5 +313,5 @@ public class JobConfiguration {
 	public void setHeappercentage(String heappercentage) {
 		this.heappercentage = heappercentage;
 	}
-	
+
 }

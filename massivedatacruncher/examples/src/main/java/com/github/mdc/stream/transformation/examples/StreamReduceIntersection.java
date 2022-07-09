@@ -44,7 +44,7 @@ public class StreamReduceIntersection implements Serializable, Pipeline {
 		var airlinesample2 = mappair2.reduceByKey((dat1, dat2) -> dat1 + dat2).coalesce(1,
 				(dat1, dat2) -> dat1 + dat2);
 		airlinesample1.intersection(airlinesample2)
-		.saveAsTextFile(new URI(args[0]), args[3] + "/StreamOutReduce-" + System.currentTimeMillis());
+				.saveAsTextFile(new URI(args[0]), args[3] + "/StreamOutReduce-" + System.currentTimeMillis());
 		log.info("StreamReduceIntersection.testReduce After---------------------------------------");
 	}
 }

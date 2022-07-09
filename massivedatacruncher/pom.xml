@@ -16,8 +16,8 @@
         <skip.assemblyxml>true</skip.assemblyxml>
         <ignite.version>2.13.0</ignite.version>
         <calcite.version>1.25.0</calcite.version>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
     </properties>
 
     <dependencies>
@@ -360,8 +360,43 @@
             <version>0.1</version>
         </dependency>
     </dependencies>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.openrewrite.recipe</groupId>
+                <artifactId>rewrite-recipe-bom</artifactId>
+                <version>1.4.0</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.openrewrite.maven</groupId>
+                <artifactId>rewrite-maven-plugin</artifactId>
+                <version>4.26.0</version>
+                <configuration>
+                    <activeRecipes>
+                        <receipe>org.openrewrite.java.RemoveUnusedImports</receipe>
+                        <recipe>org.openrewrite.java.migrate.Java8toJava11</recipe>
+                    </activeRecipes>
+                    <checkstyleConfigFile>checkstyle.xml</checkstyleConfigFile>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.openrewrite.recipe</groupId>
+                        <artifactId>rewrite-migrate-java</artifactId>
+                        <version>1.8.0</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.openrewrite.recipe</groupId>
+                        <artifactId>rewrite-java-17</artifactId>
+                        <version>7.25.0</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-antrun-plugin</artifactId>
@@ -374,30 +409,30 @@
                             <target name="copy files to web project">
                                 <echo message="prepare phase"/>
                                 <unzip src="target/MassiveDataCruncher-${project.version}-jdk17.zip"
-                                       dest="target/unpack/opt/mdc"/>
+                                                                                 dest="target/unpack/opt/mdc"/>
                                 <mkdir dir="target/unpack/usr/local/java"/>
                                 <gunzip src="target/openjdk-17.0.2_linux-x64_bin.tar.gz"
-                                        dest="target/"/>
+                                                                                 dest="target/"/>
                                 <untar src="target/openjdk-17.0.2_linux-x64_bin.tar"
-                                       dest="target/unpack/usr/local/java"/>
+                                                                                 dest="target/unpack/usr/local/java"/>
                                 <copy todir="target/mdcstandalone">
                                     <fileset dir="dockermdcstandalone" includes="entry.sh"/>
                                     <fileset dir="dockermdcstandalone"
-                                             includes="standalone.sh"/>
+                                                                                          includes="standalone.sh"/>
                                 </copy>
                                 <copy todir="target/mdccontainer">
                                     <fileset dir="dockermdccontainer" includes="entry.sh"/>
                                     <fileset dir="dockermdccontainer"
-                                             includes="container.sh"/>
+                                                                                          includes="container.sh"/>
                                 </copy>
                                 <fixcrlf srcdir="target/unpack/usr/local/java"
-                                         eol="unix" includes="**/*.sh"/>
+                                                                                 eol="unix" includes="**/*.sh"/>
                                 <fixcrlf srcdir="target/unpack/opt/mdc" eol="unix"
-                                         includes="**/*.sh"/>
+                                                                                 includes="**/*.sh"/>
                                 <fixcrlf srcdir="target/mdcstandalone" eol="unix"
-                                         includes="*.sh"/>
+                                                                                 includes="*.sh"/>
                                 <fixcrlf srcdir="target/mdccontainer" eol="unix"
-                                         includes="*.sh"/>
+                                                                                 includes="*.sh"/>
                             </target>
                         </configuration>
                         <goals>
@@ -427,6 +462,14 @@
                         <argument>--output</argument>
                         <argument>target/openjdk-17.0.2_linux-x64_bin.tar.gz</argument>
                     </arguments>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jdeprscan-plugin</artifactId>
+                <version>3.0.0-alpha-1</version>
+                <configuration>
+                    <release>11</release>
                 </configuration>
             </plugin>
         </plugins>
@@ -848,6 +891,10 @@
         <repository>
             <id>mavencentral</id>
             <url>https://repo.maven.apache.org/maven2</url>
+        </repository>
+        <repository>
+            <id>mavenrepo</id>
+            <url>https://repo1.maven.org/maven2</url>
         </repository>
         <repository>
             <id>hortonworks</id>

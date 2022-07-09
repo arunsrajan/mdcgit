@@ -8,20 +8,26 @@ package com.github.mdc.common;
  * between task executors.
  */
 public class WhoIsResponse {
-	public static enum STATUS{YETTOSTART,RUNNING,COMPLETED,FAILED};
+	public static enum STATUS {
+		YETTOSTART,RUNNING,COMPLETED,FAILED
+	}
 	private String stagepartitionid;
 	private STATUS status;
+
 	public String getStagepartitionid() {
 		return stagepartitionid;
 	}
+
 	public void setStagepartitionid(String stagepartitionid) {
 		this.stagepartitionid = stagepartitionid;
 	}
+
 	public STATUS getStatus() {
 		return status;
 	}
+
 	public void setStatus(STATUS status) {
 		this.status = status;
 	}
-	
+
 }

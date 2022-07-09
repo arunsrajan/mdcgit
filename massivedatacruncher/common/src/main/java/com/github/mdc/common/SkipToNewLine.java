@@ -9,9 +9,10 @@ import org.apache.hadoop.hdfs.protocol.LocatedBlock;
  * for the current located block with the datanode xref address. 
  */
 public class SkipToNewLine {
-	public LocatedBlock lblock; 
+	public LocatedBlock lblock;
 	public long l;
 	public String xrefaddress;
+
 	@Override
 	public String toString() {
 		return "SkipToNewLine [lblock=" + lblock + ", l=" + l + ", xrefaddress=" + xrefaddress + "]";

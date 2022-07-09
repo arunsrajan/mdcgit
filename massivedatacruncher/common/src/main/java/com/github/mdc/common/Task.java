@@ -13,13 +13,16 @@ import com.github.mdc.common.MDCConstants.STORAGE;
  */
 public class Task implements Serializable,Cloneable {
 	private static final long serialVersionUID = 4608751332110497234L;
-	
+
 	public Task() {
 		super();
 	}
 	public Object[] input;
 	public RemoteDataFetch[] parentremotedatafetch;
-	public enum TaskStatus {YETTOSUBMIT,SUBMITTED,RUNNING,COMPLETED,FAILED};
+
+	public enum TaskStatus {
+		YETTOSUBMIT,SUBMITTED,RUNNING,COMPLETED,FAILED
+	}
 	public TaskStatus taskstatus;
 	public boolean visited;
 	public String jobid;
@@ -35,6 +38,7 @@ public class Task implements Serializable,Cloneable {
 	public String hdfsurl;
 	public String filepath;
 	public boolean saveresulttohdfs;
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -81,7 +85,7 @@ public class Task implements Serializable,Cloneable {
 	@Override
 	public Object clone() throws CloneNotSupportedException {
 		return super.clone();
-		
+
 	}
-	
+
 }

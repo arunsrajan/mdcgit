@@ -13,6 +13,7 @@ public class StreamPipelineUserDefinedObjectsTest extends StreamPipelineBaseTest
 	boolean toexecute = true;
 	int sum;
 	static Logger log = Logger.getLogger(StreamPipelineUserDefinedObjectsTest.class);
+
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testMapCollect() throws Throwable {
@@ -30,7 +31,7 @@ public class StreamPipelineUserDefinedObjectsTest extends StreamPipelineBaseTest
 						index++;
 					}
 					return map;
-					
+
 				}).collect(toexecute, null);
 		int sum = 0;
 		for (List<Map> partitioneddata : data) {
@@ -40,7 +41,7 @@ public class StreamPipelineUserDefinedObjectsTest extends StreamPipelineBaseTest
 		pipelineconfig.setLocal(local);
 		log.info("testMapCollect After---------------------------------------");
 	}
-	
+
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testMapContainerExecuteCollect() throws Throwable {
@@ -58,7 +59,7 @@ public class StreamPipelineUserDefinedObjectsTest extends StreamPipelineBaseTest
 						index++;
 					}
 					return map;
-					
+
 				}).collect(toexecute, null);
 		int sum = 0;
 		for (List<Map> partitioneddata : data) {

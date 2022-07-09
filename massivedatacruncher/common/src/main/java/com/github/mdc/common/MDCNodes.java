@@ -10,14 +10,16 @@ import java.util.List;
  */
 public class MDCNodes {
 	private static List<String> nodes;
+
 	static void put(List<String> nodes) {
 		MDCNodes.nodes = nodes;
 	}
+
 	public static List<String> get() {
 		return MDCNodes.nodes;
 	}
 
 	private MDCNodes() {
 	}
-	
+
 }

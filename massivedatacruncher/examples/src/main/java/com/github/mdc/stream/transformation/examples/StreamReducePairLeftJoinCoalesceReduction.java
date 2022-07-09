@@ -33,7 +33,7 @@ public class StreamReducePairLeftJoinCoalesceReduction implements Serializable, 
 		var mappair1 = datastream.map(dat -> dat.split(","))
 				.filter(dat -> !"ArrDelay".equals(dat[14]) && !"NA".equals(dat[14]))
 				.mapToPair(dat -> Tuple.tuple(dat[8], Long.parseLong(dat[14])))
-				;
+		;
 
 		var airlinesamples = mappair1.reduceByKey((dat1, dat2) -> dat1 + dat2).coalesce(1, (dat1, dat2) -> dat1 + dat2);
 
@@ -44,7 +44,7 @@ public class StreamReducePairLeftJoinCoalesceReduction implements Serializable, 
 						line[1].substring(1, line[1].length() - 1)));
 
 		carriers.leftJoin(airlinesamples)
-		.saveAsTextFile(new URI(args[0]), args[3] + "/StreamReducePairLeftJoin-" + System.currentTimeMillis());
+				.saveAsTextFile(new URI(args[0]), args[3] + "/StreamReducePairLeftJoin-" + System.currentTimeMillis());
 		log.info("StreamReducePairLeftJoinCoalesceReduction.testReduce After---------------------------------------");
 	}
 }

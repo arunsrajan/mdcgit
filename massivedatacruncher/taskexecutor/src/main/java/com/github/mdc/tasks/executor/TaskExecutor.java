@@ -107,7 +107,7 @@ public class TaskExecutor implements Runnable {
 					var key = task.jobid + task.stageid;
 					mdste = task.storage == STORAGE.INMEMORY_DISK ? new StreamPipelineTaskExecutorInMemoryDisk(jobidstageidjobstagemap.get(key), resultstream,
 							inmemorycache, hbtss) : task.storage == STORAGE.INMEMORY ? new StreamPipelineTaskExecutorInMemory(jobidstageidjobstagemap.get(key),
-									resultstream, inmemorycache) : new StreamPipelineTaskExecutor(jobidstageidjobstagemap.get(key), inmemorycache);
+							resultstream, inmemorycache) : new StreamPipelineTaskExecutor(jobidstageidjobstagemap.get(key), inmemorycache);
 					mdste.setTask(task);
 					mdste.setHbtss(hbtss);
 					mdste.setExecutor(es);
@@ -127,7 +127,7 @@ public class TaskExecutor implements Runnable {
 					hbtss.setTimetakenseconds(mdste.getHbtss().getTimetakenseconds());
 					hbtss.pingOnce(task.stageid, task.taskid, task.hostport, Task.TaskStatus.COMPLETED, mdste.getHbtss().getTimetakenseconds(), null);
 				}
-			} else if (deserobj instanceof TasksGraphExecutor stagesgraph) {				
+			} else if (deserobj instanceof TasksGraphExecutor stagesgraph) {
 				int numoftasks = stagesgraph.getTasks().size();
 				var key = stagesgraph.getTasks().get(numoftasks - 1).jobid + stagesgraph.getTasks().get(numoftasks - 1).stageid + stagesgraph.getTasks().get(numoftasks - 1).taskid;
 				var taskexecutor = jobstageexecutormap.get(key);
@@ -212,7 +212,7 @@ public class TaskExecutor implements Runnable {
 						}
 					}
 				}
-				
+
 				log.info("Exiting RemoteDataFetch: ");
 			} else if (deserobj instanceof CacheAvailability ca) {
 				var bl = ca.bl;
@@ -244,12 +244,12 @@ public class TaskExecutor implements Runnable {
 							try (var hdfs = FileSystem.newInstance(
 									new URI(MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL, MDCConstants.HDFSNAMENODEURL)),
 									configuration)) {
-							log.debug("Application Submitted:" + applicationid + "-" + taskid);
-							
-							var hbts = hbtsappid.get(applicationid);
-							mdtemc = new TaskExecutorMapperCombiner(blockslocation,
-									CacheUtils.getBlockData(blockslocation, hdfs), applicationid, taskid, cl,
-									port, hbts);
+								log.debug("Application Submitted:" + applicationid + "-" + taskid);
+
+								var hbts = hbtsappid.get(applicationid);
+								mdtemc = new TaskExecutorMapperCombiner(blockslocation,
+										CacheUtils.getBlockData(blockslocation, hdfs), applicationid, taskid, cl,
+										port, hbts);
 							}
 							apptaskexecutormap.put(apptaskid, mdtemc);
 							es.execute(mdtemc);

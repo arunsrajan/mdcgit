@@ -1,6 +1,7 @@
 package com.github.mdc.tasks.scheduler.yarn;
 
 import org.springframework.yarn.integration.ip.mind.binding.BaseResponseObject;
+
 /**
  * 
  * @author Arun
@@ -11,7 +12,7 @@ public class JobResponse extends BaseResponseObject {
 	private State state;
 	private byte[] job;
 	private String containerid;
-	
+
 	public JobResponse() {
 	}
 
@@ -36,7 +37,7 @@ public class JobResponse extends BaseResponseObject {
 	public void setJob(byte[] job) {
 		this.job = job;
 	}
-	
+
 	public String getContainerid() {
 		return containerid;
 	}
@@ -44,7 +45,6 @@ public class JobResponse extends BaseResponseObject {
 	public void setContainerid(String containerid) {
 		this.containerid = containerid;
 	}
-
 
 
 	public enum State {

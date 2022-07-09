@@ -4,6 +4,6 @@ import java.io.Serializable;
 import java.util.function.Function;
 
 @FunctionalInterface
-public interface MapFunction<T,R> extends Function<T,R>,Serializable{
+public interface MapFunction<T, R> extends Function<T, R>,Serializable {
 
 }

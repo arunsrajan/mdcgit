@@ -33,108 +33,109 @@ import org.apache.calcite.tools.RuleSet;
 import org.apache.calcite.tools.RuleSets;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Properties;
 
 public class Optimizer {
 
-    private final CalciteConnectionConfig config;
-    private final SqlValidator validator;
-    private final SqlToRelConverter converter;
-    private final VolcanoPlanner planner;
+	private final CalciteConnectionConfig config;
+	private final SqlValidator validator;
+	private final SqlToRelConverter converter;
+	private final VolcanoPlanner planner;
 
-    public Optimizer(
-        CalciteConnectionConfig config,
-        SqlValidator validator,
-        SqlToRelConverter converter,
-        VolcanoPlanner planner
-    ) {
-        this.config = config;
-        this.validator = validator;
-        this.converter = converter;
-        this.planner = planner;
-    }
+	public Optimizer(
+			CalciteConnectionConfig config,
+			SqlValidator validator,
+			SqlToRelConverter converter,
+			VolcanoPlanner planner
+		) {
+		this.config = config;
+		this.validator = validator;
+		this.converter = converter;
+		this.planner = planner;
+	}
 
-    public static Optimizer create(SimpleSchema schema) {
-        RelDataTypeFactory typeFactory = new JavaTypeFactoryImpl();
+	public static Optimizer create(SimpleSchema schema) {
+		RelDataTypeFactory typeFactory = new JavaTypeFactoryImpl();
 
-        Properties configProperties = new Properties();
-        configProperties.put(CalciteConnectionProperty.CASE_SENSITIVE.camelName(), Boolean.FALSE.toString());
-        configProperties.put(CalciteConnectionProperty.UNQUOTED_CASING.camelName(), Casing.UNCHANGED.toString());
-        configProperties.put(CalciteConnectionProperty.QUOTED_CASING.camelName(), Casing.UNCHANGED.toString());
-        CalciteConnectionConfig config = new CalciteConnectionConfigImpl(configProperties);
+		Properties configProperties = new Properties();
+		configProperties.put(CalciteConnectionProperty.CASE_SENSITIVE.camelName(), Boolean.FALSE.toString());
+		configProperties.put(CalciteConnectionProperty.UNQUOTED_CASING.camelName(), Casing.UNCHANGED.toString());
+		configProperties.put(CalciteConnectionProperty.QUOTED_CASING.camelName(), Casing.UNCHANGED.toString());
+		CalciteConnectionConfig config = new CalciteConnectionConfigImpl(configProperties);
 
-        CalciteSchema rootSchema = CalciteSchema.createRootSchema(false, false);
-        rootSchema.add(schema.getSchemaName(), schema);
-        Prepare.CatalogReader catalogReader = new CalciteCatalogReader(
-            rootSchema,
-            Collections.singletonList(schema.getSchemaName()),
-            typeFactory,
-            config
-        );
+		CalciteSchema rootSchema = CalciteSchema.createRootSchema(false, false);
+		rootSchema.add(schema.getSchemaName(), schema);
+		Prepare.CatalogReader catalogReader = new CalciteCatalogReader(
+				rootSchema,
+				List.of(schema.getSchemaName()),
+				typeFactory,
+				config
+		);
 
-        SqlOperatorTable operatorTable = ChainedSqlOperatorTable.of(SqlStdOperatorTable.instance());
+		SqlOperatorTable operatorTable = ChainedSqlOperatorTable.of(SqlStdOperatorTable.instance());
 
-        SqlValidator.Config validatorConfig = SqlValidator.Config.DEFAULT
-            .withLenientOperatorLookup(config.lenientOperatorLookup())
-            .withSqlConformance(config.conformance())
-            .withDefaultNullCollation(config.defaultNullCollation())
-            .withIdentifierExpansion(true);
+		SqlValidator.Config validatorConfig = SqlValidator.Config.DEFAULT
+				.withLenientOperatorLookup(config.lenientOperatorLookup())
+				.withSqlConformance(config.conformance())
+				.withDefaultNullCollation(config.defaultNullCollation())
+				.withIdentifierExpansion(true);
 
-        SqlValidator validator = SqlValidatorUtil.newValidator(operatorTable, catalogReader, typeFactory, validatorConfig);
+		SqlValidator validator = SqlValidatorUtil.newValidator(operatorTable, catalogReader, typeFactory, validatorConfig);
 
-        VolcanoPlanner planner = new VolcanoPlanner(RelOptCostImpl.FACTORY, Contexts.of(config));
-        planner.addRelTraitDef(ConventionTraitDef.INSTANCE);
+		VolcanoPlanner planner = new VolcanoPlanner(RelOptCostImpl.FACTORY, Contexts.of(config));
+		planner.addRelTraitDef(ConventionTraitDef.INSTANCE);
 
-        RelOptCluster cluster = RelOptCluster.create(planner, new RexBuilder(typeFactory));
+		RelOptCluster cluster = RelOptCluster.create(planner, new RexBuilder(typeFactory));
 
-        SqlToRelConverter.Config converterConfig = SqlToRelConverter.configBuilder()
-            .withTrimUnusedFields(true)
-            .withExpand(false)
-            .build();
+		SqlToRelConverter.Config converterConfig = SqlToRelConverter.configBuilder()
+				.withTrimUnusedFields(true)
+				.withExpand(false)
+				.build();
 
-        SqlToRelConverter converter = new SqlToRelConverter(
-            null,
-            validator,
-            catalogReader,
-            cluster,
-            StandardConvertletTable.INSTANCE,
-            converterConfig
-        );
+		SqlToRelConverter converter = new SqlToRelConverter(
+				null,
+				validator,
+				catalogReader,
+				cluster,
+				StandardConvertletTable.INSTANCE,
+				converterConfig
+		);
 
-        return new Optimizer(config, validator, converter, planner);
-    }
+		return new Optimizer(config, validator, converter, planner);
+	}
 
-    public SqlNode parse(String sql) throws Exception {
-        SqlParser.ConfigBuilder parserConfig = SqlParser.configBuilder();
-        parserConfig.setCaseSensitive(config.caseSensitive());
-        parserConfig.setUnquotedCasing(config.unquotedCasing());
-        parserConfig.setQuotedCasing(config.quotedCasing());
-        parserConfig.setConformance(config.conformance());
+	public SqlNode parse(String sql) throws Exception {
+		SqlParser.ConfigBuilder parserConfig = SqlParser.configBuilder();
+		parserConfig.setCaseSensitive(config.caseSensitive());
+		parserConfig.setUnquotedCasing(config.unquotedCasing());
+		parserConfig.setQuotedCasing(config.quotedCasing());
+		parserConfig.setConformance(config.conformance());
 
-        SqlParser parser = SqlParser.create(sql, parserConfig.build());
+		SqlParser parser = SqlParser.create(sql, parserConfig.build());
 
-        return parser.parseStmt();
-    }
+		return parser.parseStmt();
+	}
 
-    public SqlNode validate(SqlNode node) {
-        return validator.validate(node);
-    }
+	public SqlNode validate(SqlNode node) {
+		return validator.validate(node);
+	}
 
-    public RelNode convert(SqlNode node) {
-        RelRoot root = converter.convertQuery(node, false, true);
+	public RelNode convert(SqlNode node) {
+		RelRoot root = converter.convertQuery(node, false, true);
 
-        return root.rel;
-    }
+		return root.rel;
+	}
 
-    public RelNode optimize(RelNode node, RelTraitSet requiredTraitSet, RuleSet rules) {
-        Program program = Programs.of(RuleSets.ofList(rules));
+	public RelNode optimize(RelNode node, RelTraitSet requiredTraitSet, RuleSet rules) {
+		Program program = Programs.of(RuleSets.ofList(rules));
 
-        return program.run(
-            planner,
-            node,
-            requiredTraitSet,
-            Collections.emptyList(),
-            Collections.emptyList()
-        );
-    }
+		return program.run(
+				planner,
+				node,
+				requiredTraitSet,
+				Collections.emptyList(),
+				Collections.emptyList()
+		);
+	}
 }

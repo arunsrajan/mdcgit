@@ -14,16 +14,18 @@ import org.apache.ignite.IgniteCache;
  * Holder of job information required to execute the job
  */
 public class Job {
-	public static enum TRIGGER{COUNT,COLLECT,SAVERESULTSTOFILE,FOREACH};
+	public static enum TRIGGER {
+		COUNT,COLLECT,SAVERESULTSTOFILE,FOREACH
+	}
 	public String id;
 	public String containerid;
-	public ConcurrentMap<Stage,Object> stageoutputmap;
-	public ConcurrentMap<String,String> allstageshostport; 
+	public ConcurrentMap<Stage, Object> stageoutputmap;
+	public ConcurrentMap<String, String> allstageshostport;
 	public List<Stage> topostages = new Vector<>();
 	public Long noofpartitions;
 	public List<String> containers;
 	public Set<String> nodes;
-	public IgniteCache<Object,byte[]> igcache;
+	public IgniteCache<Object, byte[]> igcache;
 	public Ignite ignite;
 	public List<Object> input = new Vector<>();
 	public List<Object> output = new Vector<>();

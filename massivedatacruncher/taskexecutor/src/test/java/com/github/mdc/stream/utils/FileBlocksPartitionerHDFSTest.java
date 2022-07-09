@@ -51,7 +51,7 @@ import com.github.mdc.stream.utils.FileBlocksPartitionerHDFS;
 import com.github.mdc.tasks.executor.NodeRunner;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class FileBlocksPartitionerHDFSTest extends StreamPipelineBase{
+public class FileBlocksPartitionerHDFSTest extends StreamPipelineBase {
 	private static final int NOOFNODES = 1;
 	static int teport = 12121;
 	static ExecutorService es,escontainer;
@@ -60,6 +60,7 @@ public class FileBlocksPartitionerHDFSTest extends StreamPipelineBase{
 	static ServerSocket ss;
 	static List<ServerSocket> containerlauncher = new ArrayList<>();
 	static Logger log = Logger.getLogger(FileBlocksPartitionerHDFSTest.class);
+
 	@BeforeClass
 	public static void launchNodes() throws Exception {
 		Utils.loadLog4JSystemPropertiesClassPath("mdctest.properties");
@@ -77,7 +78,7 @@ public class FileBlocksPartitionerHDFSTest extends StreamPipelineBase{
 			semaphore.acquire();
 			ss = new ServerSocket(20000 + nodeindex, 256, InetAddress.getByAddress(new byte[]{0x00, 0x00, 0x00, 0x00}));
 			containerlauncher.add(ss);
-			
+
 			es.execute(() -> {
 				cdl.countDown();
 				semaphore.release();
@@ -94,7 +95,7 @@ public class FileBlocksPartitionerHDFSTest extends StreamPipelineBase{
 		}
 		cdl.await();
 	}
-	
+
 	@AfterClass
 	public static void shutdownNodes() throws Exception {
 		containers.keySet().stream().flatMap(key -> containers.get(key).stream()).forEach(servers -> {
@@ -108,7 +109,8 @@ public class FileBlocksPartitionerHDFSTest extends StreamPipelineBase{
 			containerlauncher.stream().forEach(ss -> {
 				try {
 					ss.close();
-				} catch (IOException e) {				}
+				} catch (IOException e) {
+				}
 			});
 		}
 		if (!Objects.isNull(es)) {
@@ -118,8 +120,8 @@ public class FileBlocksPartitionerHDFSTest extends StreamPipelineBase{
 			escontainer.shutdown();
 		}
 	}
-	
-	
+
+
 	@Test
 	public void testGetContainersBalanced() throws Exception {
 		FileBlocksPartitionerHDFS fbp = new FileBlocksPartitionerHDFS();
@@ -144,7 +146,7 @@ public class FileBlocksPartitionerHDFSTest extends StreamPipelineBase{
 		assertEquals("127.0.0.1_10101", bls.get(0).executorhp);
 		assertEquals("127.0.0.1_10101", bls.get(1).executorhp);
 	}
-	
+
 	@Test
 	public void testGetContainersBalancedMultipleContainer() throws Exception {
 		FileBlocksPartitionerHDFS fbp = new FileBlocksPartitionerHDFS();
@@ -169,7 +171,7 @@ public class FileBlocksPartitionerHDFSTest extends StreamPipelineBase{
 		assertEquals("127.0.0.1_10101", bls.get(0).executorhp);
 		assertEquals("127.0.0.1_10102", bls.get(1).executorhp);
 	}
-	
+
 	@Test
 	public void testGetHDFSParitions() throws Exception {
 		FileBlocksPartitionerHDFS fbp = new FileBlocksPartitionerHDFS();
@@ -191,7 +193,7 @@ public class FileBlocksPartitionerHDFSTest extends StreamPipelineBase{
 		assertEquals(2, bls.size());
 		assertEquals(4270834, fbp.totallength);
 	}
-	
+
 	@Test
 	public void testGetNodesResourcesSortedAuto() throws Exception {
 		FileBlocksPartitionerHDFS fbp = new FileBlocksPartitionerHDFS();
@@ -219,8 +221,8 @@ public class FileBlocksPartitionerHDFSTest extends StreamPipelineBase{
 		assertEquals("127.0.0.1_20001", fbp.nodessorted.get(0));
 		assertEquals("127.0.0.1_20000", fbp.nodessorted.get(1));
 	}
-	
-	
+
+
 	@Test
 	public void testGetNumberOfContainersAuto() throws Exception {
 		FileBlocksPartitionerHDFS fbp = new FileBlocksPartitionerHDFS();
@@ -239,8 +241,8 @@ public class FileBlocksPartitionerHDFSTest extends StreamPipelineBase{
 		assertEquals(128, crs.get(0).getMinmemory());
 		assertEquals(1, crs.get(0).getCpu());
 	}
-	
-	
+
+
 	@Test
 	public void testGetTaskExecutorsAuto() throws Exception {
 		FileBlocksPartitionerHDFS fbp = new FileBlocksPartitionerHDFS();
@@ -269,7 +271,7 @@ public class FileBlocksPartitionerHDFSTest extends StreamPipelineBase{
 		fbp.destroyContainers();
 		GlobalContainerAllocDealloc.getHportcrs().clear();
 	}
-	
+
 	@Test
 	public void testGetTaskExecutorsLessResourcesInputCpu() throws Exception {
 		ConcurrentMap<String, Resources> noderesourcesmap = new ConcurrentHashMap<>();
@@ -324,7 +326,7 @@ public class FileBlocksPartitionerHDFSTest extends StreamPipelineBase{
 			fbp.filepaths = Arrays.asList(paths);
 			List<BlocksLocation> bls = fbp.getBlocks(fbp.isblocksuserdefined, 128);
 			fbp.getDnXref(bls, false);
-			fbp.allocateContainersByResources(bls);			
+			fbp.allocateContainersByResources(bls);
 		} catch (Exception ex) {
 			assertEquals(PipelineConstants.MEMORYALLOCATIONERROR, ex.getCause().getMessage());
 			assertNull(fbp.job.containers);
@@ -334,6 +336,7 @@ public class FileBlocksPartitionerHDFSTest extends StreamPipelineBase{
 			GlobalContainerAllocDealloc.getHportcrs().clear();
 		}
 	}
+
 	@Test
 	public void testGetTaskExecutorsLessResourcesInputMemory2() throws Exception {
 		FileBlocksPartitionerHDFS fbp = new FileBlocksPartitionerHDFS();
@@ -359,7 +362,7 @@ public class FileBlocksPartitionerHDFSTest extends StreamPipelineBase{
 			fbp.filepaths = Arrays.asList(paths);
 			List<BlocksLocation> bls = fbp.getBlocks(fbp.isblocksuserdefined, 128);
 			fbp.getDnXref(bls, false);
-			fbp.allocateContainersByResources(bls);			
+			fbp.allocateContainersByResources(bls);
 		} catch (Exception ex) {
 			assertEquals(PipelineConstants.INSUFFMEMORYALLOCATIONERROR, ex.getCause().getMessage());
 			assertNull(fbp.job.containers);
@@ -369,6 +372,7 @@ public class FileBlocksPartitionerHDFSTest extends StreamPipelineBase{
 			GlobalContainerAllocDealloc.getHportcrs().clear();
 		}
 	}
+
 	@Test
 	public void testGetTaskExecutorsProperInput() throws Exception {
 		ConcurrentMap<String, Resources> noderesourcesmap = new ConcurrentHashMap<>();

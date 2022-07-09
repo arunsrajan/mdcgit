@@ -27,7 +27,7 @@ public class CombinerExecutor implements Callable<Context> {
 		var ctx = new DataCruncherContext();
 		keys.stream().parallel().forEach(key -> {
 			cc.combine(key, (List) dcc.get(key), ctx);
-			
+
 		});
 		return ctx;
 	}

@@ -13,13 +13,14 @@ public class CloseableByteBufferOutputStream extends OutputStream {
 	private ByteBuffer bb;
 	static Semaphore printallocdealloc = new Semaphore(1);
 	static Logger log = Logger.getLogger(CloseableByteBufferOutputStream.class);
+
 	public CloseableByteBufferOutputStream(ByteBuffer bb) {
 		try {
 			this.bb = bb;
 			printallocdealloc.acquire();
 			log.info("CloseableByteBufferOutputStream allocated:" + allocation++ + bb);
-			
-		} 
+
+		}
 		catch (InterruptedException ie) {
 			log.error(MDCConstants.EMPTY, ie);
 			Thread.currentThread().interrupt();
@@ -29,7 +30,7 @@ public class CloseableByteBufferOutputStream extends OutputStream {
 		} finally {
 			printallocdealloc.release();
 		}
-		
+
 	}
 
 	@Override
@@ -41,14 +42,15 @@ public class CloseableByteBufferOutputStream extends OutputStream {
 	public synchronized void write(byte[] bytes, int off, int len) throws IOException {
 		bb.put(bytes, off, len);
 	}
-	
+
 	public ByteBuffer get() {
 		return bb;
-		
+
 	}
+
 	@Override
 	public void close() {
-		if (!Objects.isNull(bb)) {			
+		if (!Objects.isNull(bb)) {
 			try {
 				log.info("CloseableByteBufferOutputStream returning to pool: " + deallocation++ + bb);
 				printallocdealloc.acquire();
@@ -64,7 +66,7 @@ public class CloseableByteBufferOutputStream extends OutputStream {
 			} finally {
 				printallocdealloc.release();
 			}
-			bb = null;			
+			bb = null;
 		}
 	}
 }

@@ -17,13 +17,14 @@ public class IgniteMapperCombiner extends IgniteMapper implements IgniteCallable
 	List<Mapper> crunchmappers;
 	@SuppressWarnings("rawtypes")
 	List<Combiner> crunchcombiners;
+
 	@SuppressWarnings("rawtypes")
 	public IgniteMapperCombiner(BlocksLocation blockslocation, List<Mapper> crunchmappers,
 			List<Combiner> crunchcombiners) {
 		super(blockslocation, crunchmappers);
 		this.crunchcombiners = crunchcombiners;
 	}
-	
+
 	@SuppressWarnings({"rawtypes"})
 	@Override
 	public MapReduceResult call() throws Exception {
@@ -45,5 +46,5 @@ public class IgniteMapperCombiner extends IgniteMapper implements IgniteCallable
 	public BlocksLocation getBlocksLocation() {
 		return this.blockslocation;
 	}
-	
+
 }

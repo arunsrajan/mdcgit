@@ -15,12 +15,10 @@ public class Tuple2Serializable<V1, V2> extends Tuple2<V1, V2> implements Serial
 
 	private static final long serialVersionUID = -622259929441801409L;
 
-	
-	
+
 	public Tuple2Serializable() {
 		super(null, null);
 	}
-
 
 
 	public Tuple2Serializable(V1 v1, V2 v2) {

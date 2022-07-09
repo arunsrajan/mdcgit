@@ -33,7 +33,7 @@ public class StreamReduceCoalescePartition implements Serializable, Pipeline {
 		var mappair1 = datastream.map(dat -> dat.split(","))
 				.filter(dat -> !"ArrDelay".equals(dat[14]) && !"NA".equals(dat[14]))
 				.mapToPair(dat -> Tuple.tuple(dat[8], Long.parseLong(dat[14])))
-				;
+		;
 
 		var airlinesamples = mappair1.reduceByKey((dat1, dat2) -> dat1 + dat2).coalesce(4);
 
@@ -44,7 +44,7 @@ public class StreamReduceCoalescePartition implements Serializable, Pipeline {
 						line[1].substring(1, line[1].length() - 1)));
 
 		carriers.join(airlinesamples, (tuple1, tuple2) -> ((Tuple2) tuple1).v1.equals(((Tuple2) tuple2).v1))
-		.saveAsTextFile(new URI(args[0]), args[3] + "/StreamOutReduce-" + System.currentTimeMillis());
+				.saveAsTextFile(new URI(args[0]), args[3] + "/StreamOutReduce-" + System.currentTimeMillis());
 		log.info("StreamReduceCoalescePartition.testReduce After---------------------------------------");
 	}
 }

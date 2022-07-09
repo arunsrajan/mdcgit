@@ -40,34 +40,34 @@ import com.github.sakserv.minicluster.impl.HdfsLocalCluster;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-	   StreamPipelineTestSuite2.class,
-	   StreamPipelineTest.class,
-	   StreamPipelineContinuedTest.class,
-	   StreamPipelineFoldByKeyKeyByTest.class,
-	   StreamPipelineTransformationsCollectTest.class,
-	   StreamPipelineTransformationsNullTest.class,
-	   StreamPipelineDepth2Test.class,
-	   StreamPipelineDepth31Test.class,
-	   StreamPipelineDepth32Test.class,
-	   StreamPipelineDepth32ContinuedTest.class,
-	   StreamPipelineDepth33Test.class,
-	   StreamPipelineDepth34Test.class,
-	   StreamPipelineUtilsTest.class,
-	   StreamPipelineFunctionsTest.class,
-	   StreamPipelineCoalesceTest.class,
-	   StreamPipelineJsonTest.class,
-	   StreamPipelineTransformationFunctionsTest.class,
-	   HDFSBlockUtilsTest.class,
-	   StreamPipelineStatisticsTest.class,
-	   MassiveDataCruncherMRApiTest.class,
-	   StreamPipelineSqlTest.class})
+		StreamPipelineTestSuite2.class,
+		StreamPipelineTest.class,
+		StreamPipelineContinuedTest.class,
+		StreamPipelineFoldByKeyKeyByTest.class,
+		StreamPipelineTransformationsCollectTest.class,
+		StreamPipelineTransformationsNullTest.class,
+		StreamPipelineDepth2Test.class,
+		StreamPipelineDepth31Test.class,
+		StreamPipelineDepth32Test.class,
+		StreamPipelineDepth32ContinuedTest.class,
+		StreamPipelineDepth33Test.class,
+		StreamPipelineDepth34Test.class,
+		StreamPipelineUtilsTest.class,
+		StreamPipelineFunctionsTest.class,
+		StreamPipelineCoalesceTest.class,
+		StreamPipelineJsonTest.class,
+		StreamPipelineTransformationFunctionsTest.class,
+		HDFSBlockUtilsTest.class,
+		StreamPipelineStatisticsTest.class,
+		MassiveDataCruncherMRApiTest.class,
+		StreamPipelineSqlTest.class})
 public class StreamPipelineTestSuite extends StreamPipelineBase {
 	@SuppressWarnings({"unused"})
 	@BeforeClass
 	public static void setServerUp() throws Exception {
 		try {
 			Utils.loadLog4JSystemPropertiesClassPath("mdctest.properties");
-			Output out = new Output(System.out);			
+			Output out = new Output(System.out);
 			pipelineconfig.setKryoOutput(out);
 			pipelineconfig.setMaxmem("1024");
 			pipelineconfig.setMinmem("512");
@@ -81,7 +81,7 @@ public class StreamPipelineTestSuite extends StreamPipelineBase {
 			pipelineconfig.setBlocksize("20");
 			testingserver = new TestingServer(zookeeperport);
 			testingserver.start();
-			
+
 			Boolean ishdfs = Boolean.parseBoolean(MDCProperties.get().getProperty("taskexecutor.ishdfs"));
 			Configuration configuration = new Configuration();
 			hdfs = FileSystem.newInstance(new URI(MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL)),
@@ -158,7 +158,7 @@ public class StreamPipelineTestSuite extends StreamPipelineBase {
 			uploadfile(hdfs, airlinemultiplefilesfolder, airlinesample + csvfileextn);
 			uploadfile(hdfs, airlinemultiplefilesfolder, airlinenoheader + csvfileextn);
 			uploadfile(hdfs, githubevents, githubevents + jsonfileextn);
-			 
+
 
 		} catch (Throwable e) {
 			log.info("Error Uploading file", e);

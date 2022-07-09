@@ -36,13 +36,13 @@ import com.github.mdc.common.WhoIsResponse;
 public final class StreamPipelineTaskExecutorJGroups extends StreamPipelineTaskExecutor {
 	private static Logger log = Logger.getLogger(StreamPipelineTaskExecutorJGroups.class);
 	private List<Task> tasks = null;
-	Map<String,JobStage> jsidjsmap;
+	Map<String, JobStage> jsidjsmap;
 	public double timetaken = 0.0;
 	public JChannel channel;
 	private int port;
 
-	public StreamPipelineTaskExecutorJGroups(Map<String,JobStage> jsidjsmap, List<Task> tasks, int port, Cache cache) {
-		super(jsidjsmap.get(tasks.get(0).jobid+tasks.get(0).stageid), cache);
+	public StreamPipelineTaskExecutorJGroups(Map<String, JobStage> jsidjsmap, List<Task> tasks, int port, Cache cache) {
+		super(jsidjsmap.get(tasks.get(0).jobid + tasks.get(0).stageid), cache);
 		this.jsidjsmap = jsidjsmap;
 		this.tasks = tasks;
 		this.port = port;
@@ -59,14 +59,14 @@ public final class StreamPipelineTaskExecutorJGroups extends StreamPipelineTaskE
 		var taskstatusconcmapresp = new ConcurrentHashMap<String, WhoIsResponse.STATUS>();
 		var hdfsfilepath = MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL, MDCConstants.HDFSNAMENODEURL);
 		String host = NetworkUtil.getNetworkAddress(MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_HOST));
-		try(var hdfs = FileSystem.newInstance(new URI(hdfsfilepath), new Configuration());) {
+		try (var hdfs = FileSystem.newInstance(new URI(hdfsfilepath), new Configuration());) {
 			this.hdfs = hdfs;
 			channel = Utils.getChannelTaskExecutor(jobstage.jobid,
 					host,
 					port, taskstatusconcmapreq, taskstatusconcmapresp);
-			log.info("Tasks In Jgroups executor: "+tasks +" in host: "+host+" port: "+port);
+			log.info("Tasks In Jgroups executor: " + tasks + " in host: " + host + " port: " + port);
 			for (var task : tasks) {
-				log.info("Task In Jgroups executor: "+task+" in host: "+host+" port: "+port+" with task hostport: "+task.hostport);
+				log.info("Task In Jgroups executor: " + task + " in host: " + host + " port: " + port + " with task hostport: " + task.hostport);
 				this.task = task;
 				this.jobstage = jsidjsmap.get(task.jobid + task.stageid);
 				var stageTasks = getStagesTask();
@@ -86,7 +86,7 @@ public final class StreamPipelineTaskExecutorJGroups extends StreamPipelineTaskE
 							for (var taskid : taskids) {
 								if (taskstatusconcmapresp.get(taskid) != null
 										&& taskstatusconcmapresp
-												.get(taskid) != WhoIsResponse.STATUS.COMPLETED) {
+										.get(taskid) != WhoIsResponse.STATUS.COMPLETED) {
 									Utils.whois(channel, taskid);
 									breakloop = false;
 									continue;
@@ -108,9 +108,9 @@ public final class StreamPipelineTaskExecutorJGroups extends StreamPipelineTaskE
 							Thread.sleep(1000);
 						}
 					}
-					log.debug("Submitted Stage " + stagePartition);					
+					log.debug("Submitted Stage " + stagePartition);
 					log.debug("Running Stage " + stageTasks);
-					
+
 					taskstatusconcmapreq.put(stagePartition, WhoIsResponse.STATUS.RUNNING);
 					if (task.input != null && task.parentremotedatafetch != null) {
 						var numinputs = task.parentremotedatafetch.length;
@@ -122,7 +122,7 @@ public final class StreamPipelineTaskExecutorJGroups extends StreamPipelineTaskE
 										getIntermediateDataRDF(rdf.taskid));
 								if (Objects.isNull(is)) {
 									RemoteDataFetcher.remoteInMemoryDataFetch(rdf);
-									task.input[inputindex] = 
+									task.input[inputindex] =
 											new ByteArrayInputStream(rdf.data);
 								} else {
 									task.input[inputindex] = is;
@@ -132,18 +132,18 @@ public final class StreamPipelineTaskExecutorJGroups extends StreamPipelineTaskE
 					}
 
 					var timetakenseconds = computeTasks(task, hdfs);
-					log.debug("Completed Stage " + stagePartition+" in "+timetakenseconds);
+					log.debug("Completed Stage " + stagePartition + " in " + timetakenseconds);
 					taskstatusconcmapreq.put(stagePartition, WhoIsResponse.STATUS.COMPLETED);
 				} finally {
-					
+
 				}
 			}
 			log.debug("StagePartitionId with Stage Statuses: " + taskstatusconcmapreq
 					+ " WhoIs Response stauses: " + taskstatusconcmapresp);
 		} catch (InterruptedException e) {
 			log.warn("Interrupted!", e);
-		    // Restore interrupted state...
-		    Thread.currentThread().interrupt();
+			// Restore interrupted state...
+			Thread.currentThread().interrupt();
 		} catch (Exception ex) {
 			log.error("Failed Stage " + tasks, ex);
 		}

@@ -14,9 +14,9 @@ import org.eclipse.jetty.servlet.ServletHolder;
  */
 public class ServerUtils implements ServerUtilsMBean {
 
-	
+
 	Server server;
-	
+
 	/**
 	 * Initialize the server.
 	 */
@@ -32,18 +32,18 @@ public class ServerUtils implements ServerUtilsMBean {
 		//Create the server object.
 		server = new Server(port);
 		var context = new ServletContextHandler(ServletContextHandler.SESSIONS);
-        context.setContextPath(MDCConstants.BACKWARD_SLASH);
-        server.setHandler(context);
-        for (var conf = 1; conf < config.length; conf += 2) {
-        	if (!(config[conf] instanceof HttpServlet)) {
-        		throw new Exception(config[conf] + " which is of type " + config[conf].getClass().getName() + " must be instance of servlet javax.servlet.http.HttpServlet");
-        	}
-        	else if (!(config[conf + 1] instanceof String)) {
-        		throw new Exception("Path must be Url path of servlet " + config[conf].getClass().getName());
-        	}
-        	//Configure the server to receive the request.
-        	context.addServlet(new ServletHolder((Servlet) config[conf]), (String) config[conf + 1]);
-        }
+		context.setContextPath(MDCConstants.BACKWARD_SLASH);
+		server.setHandler(context);
+		for (var conf = 1; conf < config.length; conf += 2) {
+			if (!(config[conf] instanceof HttpServlet)) {
+				throw new Exception(config[conf] + " which is of type " + config[conf].getClass().getName() + " must be instance of servlet javax.servlet.http.HttpServlet");
+			}
+			else if (!(config[conf + 1] instanceof String)) {
+				throw new Exception("Path must be Url path of servlet " + config[conf].getClass().getName());
+			}
+			//Configure the server to receive the request.
+			context.addServlet(new ServletHolder((Servlet) config[conf]), (String) config[conf + 1]);
+		}
 	}
 
 	/**

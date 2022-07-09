@@ -8,7 +8,7 @@ import com.github.mdc.common.MDCConstants;
 import com.github.mdc.tasks.scheduler.JobConfigurationBuilder;
 import com.github.mdc.tasks.scheduler.JobConfiguration;
 
-public class JobConfigurationBuilderTest extends TaskSchedulerCommon{
+public class JobConfigurationBuilderTest extends TaskSchedulerCommon {
 
 	@Test
 	public void testJobConfigurationBuilder() {
@@ -35,5 +35,5 @@ public class JobConfigurationBuilderTest extends TaskSchedulerCommon{
 		assertEquals("127.0.0.1:2182", jc.getZkport());
 		assertEquals("2000", jc.getZkretrydelay());
 	}
-	
+
 }

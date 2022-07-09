@@ -97,8 +97,8 @@ public class NodeRunner implements Callable<Boolean> {
 										}
 									} catch (InterruptedException e) {
 										log.warn("Interrupted!", e);
-									    // Restore interrupted state...
-									    Thread.currentThread().interrupt();
+										// Restore interrupted state...
+										Thread.currentThread().interrupt();
 									} catch (Exception ex) {
 										log.debug("Unable to Launch Container:", ex);
 									}
@@ -118,8 +118,8 @@ public class NodeRunner implements Callable<Boolean> {
 										}
 									} catch (InterruptedException e) {
 										log.warn("Interrupted!", e);
-									    // Restore interrupted state...
-									    Thread.currentThread().interrupt();
+										// Restore interrupted state...
+										Thread.currentThread().interrupt();
 									} catch (Exception ex) {
 										log.debug("Unable to Launch Container:", ex);
 									}
@@ -154,18 +154,19 @@ public class NodeRunner implements Callable<Boolean> {
 					processes.keySet().stream()
 							.filter(key -> key.equals(dc.getContainerhp().split(MDCConstants.UNDERSCORE)[1]))
 							.map(key -> processes.get(key)).forEach(proc -> {
-								log.debug("Destroying the Container Process: " + proc);
-								proc.destroy();
-							});
+						log.debug("Destroying the Container Process: " + proc);
+						proc.destroy();
+					});
 					processes.remove(dc.getContainerhp().split(MDCConstants.UNDERSCORE)[1]);
 				} else {
 					containerprocesses.keySet().stream().forEach(key -> {
 						containerprocesses.get(key).keySet().stream().filter(port -> port.equals(dc.getContainerhp().split(MDCConstants.UNDERSCORE)[1]))
-						.map(port -> containerprocesses.get(key).get(port))
-						.filter(proc -> !Objects.isNull(proc)).forEach(proc -> {
+								.map(port -> containerprocesses.get(key).get(port))
+								.filter(proc -> !Objects.isNull(proc)).forEach(proc -> {
 							log.debug("Destroying the Container Process: " + proc);
 							proc.destroy();
-						});;
+						});
+						;
 					});
 				}
 				Map<String, List<Thread>> threads = containeridcontainerthreads.get(dc.getContainerid());

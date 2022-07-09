@@ -60,6 +60,7 @@ public class TaskExecutorRunner implements TaskExecutorRunnerMBean {
 	CuratorFramework cf;
 	ServerSocket server;
 	static ExecutorService es;
+
 	public static void main(String[] args) throws Exception {
 		if (args == null || args.length != 2) {
 			log.debug("Args" + args);
@@ -140,9 +141,10 @@ public class TaskExecutorRunner implements TaskExecutorRunnerMBean {
 				MDCConstants.TE + MDCConstants.HYPHEN,
 				NetworkUtil.getNetworkAddress(MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_HOST))
 						+ MDCConstants.UNDERSCORE + MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_PORT));
-		
-	}	
+
+	}
 	ClassLoader cl;
+
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Override
 	public void start() throws Exception {
@@ -156,11 +158,11 @@ public class TaskExecutorRunner implements TaskExecutorRunnerMBean {
 				new NodeWebServlet(new ConcurrentHashMap<String, Map<String, Process>>()), MDCConstants.BACKWARD_SLASH + MDCConstants.ASTERIX,
 				new WebResourcesServlet(), MDCConstants.BACKWARD_SLASH + MDCConstants.RESOURCES + MDCConstants.BACKWARD_SLASH + MDCConstants.ASTERIX,
 				new ResourcesMetricsServlet(), MDCConstants.BACKWARD_SLASH + MDCConstants.DATA + MDCConstants.BACKWARD_SLASH + MDCConstants.ASTERIX
-				);
+		);
 		su.start();
 		server = new ServerSocket(port, 256, InetAddress.getByAddress(new byte[]{0x00, 0x00, 0x00, 0x00}));
 		var configuration = new Configuration();
-		
+
 		var inmemorycache = MDCCache.get();
 		Semaphore semaphore = new Semaphore(1);
 		cl = Thread.currentThread().getContextClassLoader();
@@ -180,7 +182,7 @@ public class TaskExecutorRunner implements TaskExecutorRunnerMBean {
 						socket.close();
 					} else if (deserobj instanceof JobApp jobapp) {
 						semaphore.acquire();
-						if (jobapp.getJobtype() == JobApp.JOBAPP.MR) {							
+						if (jobapp.getJobtype() == JobApp.JOBAPP.MR) {
 							if (!Objects.isNull(jobapp.getJobappid()) && Objects.isNull(hbtsappid.get(jobapp.getJobappid()))) {
 								var hbts = new HeartBeatTaskScheduler();
 								hbts.init(0,
@@ -190,8 +192,8 @@ public class TaskExecutorRunner implements TaskExecutorRunnerMBean {
 										Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_PINGDELAY)), "",
 										jobapp.getJobappid(), "");
 								hbtsappid.put(jobapp.getJobappid(), hbts);
-							}							
-						}	else if (jobapp.getJobtype() == JobApp.JOBAPP.STREAM) {							
+							}
+						}	else if (jobapp.getJobtype() == JobApp.JOBAPP.STREAM) {
 							if (!Objects.isNull(jobapp.getJobappid()) && Objects.isNull(hbtssjobid.get(jobapp.getJobappid()))) {
 								var hbtss = new HeartBeatTaskSchedulerStream();
 								hbtss.init(0, Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_PORT)),
@@ -200,7 +202,7 @@ public class TaskExecutorRunner implements TaskExecutorRunnerMBean {
 										MDCConstants.EMPTY,
 										jobapp.getJobappid());
 								hbtssjobid.put(jobapp.getJobappid(), hbtss);
-							}							
+							}
 						}
 						var containerid = (String) jobapp.getContainerid();
 						if (Objects.isNull(containeridhbss.get(containerid))) {
@@ -226,8 +228,8 @@ public class TaskExecutorRunner implements TaskExecutorRunnerMBean {
 					}
 				} catch (InterruptedException e) {
 					log.warn("Interrupted!", e);
-				    // Restore interrupted state...
-				    Thread.currentThread().interrupt();
+					// Restore interrupted state...
+					Thread.currentThread().interrupt();
 				} catch (Exception ex) {
 					log.info(MDCConstants.EMPTY, ex);
 				}
@@ -250,8 +252,8 @@ public class TaskExecutorRunner implements TaskExecutorRunnerMBean {
 					Thread.sleep(300);
 				} catch (InterruptedException e) {
 					log.warn("Interrupted!", e);
-				    // Restore interrupted state...
-				    Thread.currentThread().interrupt();
+					// Restore interrupted state...
+					Thread.currentThread().interrupt();
 				} catch (Exception e) {
 				}
 			}
@@ -259,7 +261,7 @@ public class TaskExecutorRunner implements TaskExecutorRunnerMBean {
 		taskpool.execute(() -> {
 			while (true) {
 				try {
-					if (!taskresultqueue.isEmpty()) {						
+					if (!taskresultqueue.isEmpty()) {
 						ExecutorsFutureTask eft = taskresultqueue.poll();
 						eft.future.get();
 						eft.estask.shutdown();
@@ -267,10 +269,10 @@ public class TaskExecutorRunner implements TaskExecutorRunnerMBean {
 					Thread.sleep(300);
 				} catch (InterruptedException e) {
 					log.warn("Interrupted!", e);
-				    // Restore interrupted state...
-				    Thread.currentThread().interrupt();
+					// Restore interrupted state...
+					Thread.currentThread().interrupt();
 				} catch (Exception e) {
-				} 
+				}
 			}
 
 		});
@@ -279,29 +281,29 @@ public class TaskExecutorRunner implements TaskExecutorRunnerMBean {
 	@Override
 	public void destroy() throws Exception {
 		hbtsappid.keySet().stream()
-		.filter(key -> !Objects.isNull(hbtsappid.get(key)))
-		.forEach(key -> {
-			try {
-				hbtsappid.remove(key).close();
-			} catch (Exception e2) {
-			}
-		});
+				.filter(key -> !Objects.isNull(hbtsappid.get(key)))
+				.forEach(key -> {
+					try {
+						hbtsappid.remove(key).close();
+					} catch (Exception e2) {
+					}
+				});
 		hbtssjobid.keySet().stream()
-		.filter(key -> !Objects.isNull(hbtssjobid.get(key)))
-		.forEach(key -> {
-			try {
-				hbtssjobid.remove(key).close();
-			} catch (Exception e1) {			
-			}
-		});
+				.filter(key -> !Objects.isNull(hbtssjobid.get(key)))
+				.forEach(key -> {
+					try {
+						hbtssjobid.remove(key).close();
+					} catch (Exception e1) {
+					}
+				});
 		containeridhbss.keySet().stream()
-		.filter(key -> !Objects.isNull(containeridhbss.get(key)))
-		.forEach(key -> {
-			try {
-				containeridhbss.remove(key).close();
-			} catch (Exception e) {				
-			}
-		});
+				.filter(key -> !Objects.isNull(containeridhbss.get(key)))
+				.forEach(key -> {
+					try {
+						containeridhbss.remove(key).close();
+					} catch (Exception e) {
+					}
+				});
 		if (cf != null) {
 			cf.close();
 		}
@@ -310,10 +312,11 @@ public class TaskExecutorRunner implements TaskExecutorRunnerMBean {
 			es.awaitTermination(1, TimeUnit.SECONDS);
 		}
 	}
-	static class ExecutorsFutureTask{
+
+	static class ExecutorsFutureTask {
 		@SuppressWarnings("rawtypes")
 		Future future;
 		ExecutorService estask;
 	}
-	
+
 }

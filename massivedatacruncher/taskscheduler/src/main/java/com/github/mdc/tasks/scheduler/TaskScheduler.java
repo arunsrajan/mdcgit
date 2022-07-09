@@ -20,6 +20,7 @@ public class TaskScheduler implements Runnable {
 	Socket tss;
 	String[] args;
 	String filename;
+
 	public TaskScheduler(CuratorFramework cf, byte[] mrjar, String[] args, Socket tss, String filename) {
 		this.cf = cf;
 		this.mrjar = mrjar;
@@ -32,7 +33,7 @@ public class TaskScheduler implements Runnable {
 	public void run() {
 		final ClassLoader loader = Thread.currentThread().getContextClassLoader();
 		new File(MDCConstants.LOCAL_FS_APPJRPATH).mkdirs();
-		try (var fos = new FileOutputStream(MDCConstants.LOCAL_FS_APPJRPATH + filename);) {	
+		try (var fos = new FileOutputStream(MDCConstants.LOCAL_FS_APPJRPATH + filename);) {
 			fos.write(mrjar);
 			var clsloader = MDCMapReducePhaseClassLoader.newInstance(mrjar, loader);
 			Thread.currentThread().setContextClassLoader(clsloader);
@@ -47,14 +48,14 @@ public class TaskScheduler implements Runnable {
 				mainclass = args[0];
 				argscopy = Arrays.copyOfRange(args, 1, args.length);
 			}
-			
+
 			var main = Class.forName(mainclass, true, clsloader);
 			var jc = JobConfigurationBuilder.newBuilder().build();
 			jc.setMrjar(mrjar);
 			var tssos = tss.getOutputStream();
 			var output = new Output(tssos);
 			jc.setOutput(output);
-			var mrjob = (Application) main.newInstance();
+			var mrjob = (Application) main.getDeclaredConstructor().newInstance();
 			mrjob.runMRJob(argscopy, jc);
 			kryo.writeClassAndObject(output, "Successfully Completed executing the task " + mainclass);
 			kryo.writeClassAndObject(output, "quit");

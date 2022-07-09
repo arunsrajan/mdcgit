@@ -9,14 +9,15 @@ import org.junit.Test;
 import com.github.mdc.stream.StreamPipeline;
 
 public class StreamPipelineExceptionTest extends StreamPipelineBaseException {
-	
-	
+
+
 	boolean toexecute = true;
+
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testMapValuesReduceByValues() throws Throwable {
 		log.info("testMapValuesReduceByValues Before---------------------------------------");
-		
+
 		StreamPipeline<String> datastream = StreamPipeline.newStreamHDFS(hdfsfilepath, "/1987",
 				pipelineconfig);
 		List<List<Tuple2<String, Tuple2<Long, Long>>>> redByKeyList = (List) datastream.map(dat -> dat.split(","))
@@ -34,5 +35,5 @@ public class StreamPipelineExceptionTest extends StreamPipelineBaseException {
 		log.info(sum);
 		log.info("testMapValuesReduceByValues After---------------------------------------");
 	}
-	
+
 }

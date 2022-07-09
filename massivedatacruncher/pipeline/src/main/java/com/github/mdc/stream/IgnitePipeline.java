@@ -50,10 +50,11 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 	private List<Path> filepaths = new ArrayList<>();
 	private String hdfspath;
 	private static Logger log = Logger.getLogger(IgnitePipeline.class);
+
 	protected IgnitePipeline() {
-		
+
 	}
-	
+
 	/**
 	 * private Constructor for MassiveDataPipelineIgnite 
 	 * @param hdfspath
@@ -77,7 +78,7 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 		this.protocol = protocol;
 		blocksize = Integer.parseInt(pipelineconfig.getBlocksize()) * 1024 * 1024;
 	}
-	
+
 	/**
 	 * The function newStreamHDFS creates Data Pipeline
 	 * accepts the three params hdfs path, folder in HDFS and
@@ -91,8 +92,8 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 	public static IgnitePipeline<String> newStreamHDFS(String hdfspath, String folder, PipelineConfig pipelineconfig) throws PipelineException {
 		return new IgnitePipeline<String>(hdfspath, folder, pipelineconfig, FileSystemSupport.HDFS);
 	}
-	
-	
+
+
 	/**
 	 * The function newStreamFILE creates Data Pipeline
 	 * accepts the three params file path, folder in FILE and
@@ -106,7 +107,7 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 	public static IgnitePipeline<String> newStreamFILE(String folder, PipelineConfig pipelineconfig) throws PipelineException {
 		return new IgnitePipeline<String>(MDCConstants.NULLSTRING, folder, pipelineconfig, FileSystemSupport.FILE);
 	}
-	
+
 	public static IgnitePipeline<String> newStream(String filepathwithscheme, PipelineConfig pipelineconfig) throws PipelineException {
 		IgnitePipeline<String> mdp = null;
 		URL url;
@@ -114,20 +115,20 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 			url = new URL(filepathwithscheme);
 			if (url.getProtocol().equals(FileSystemSupport.HDFS)) {
 				mdp = newStreamHDFS(url.getProtocol() + MDCConstants.COLON + MDCConstants.BACKWARD_SLASH + MDCConstants.BACKWARD_SLASH + url.getHost() + MDCConstants.COLON + url.getPort(), url.getPath(), pipelineconfig);
-			} 
+			}
 			else if (url.getProtocol().equals(FileSystemSupport.FILE)) {
 				mdp = newStreamFILE(url.getPath(), pipelineconfig);
 			}
 			else {
-				throw new UnsupportedOperationException(FileSystemSupport.EXCEPTIONUNSUPPORTEDFILESYSTEM); 
+				throw new UnsupportedOperationException(FileSystemSupport.EXCEPTIONUNSUPPORTEDFILESYSTEM);
 			}
 			return mdp;
 		}
 		catch (Exception e) {
-			throw new PipelineException(PipelineConstants.URISYNTAXNOTPROPER, e); 
+			throw new PipelineException(PipelineConstants.URISYNTAXNOTPROPER, e);
 		}
 	}
-	
+
 	/**
 	 * MassiveDataPipelineIgnite constructor for MapFunction.
 	 * @param <T>
@@ -159,14 +160,15 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 		mapobj.parents.add(this);
 		return mapobj;
 	}
-	
+
 	public List<Path> getFilepaths() {
 		return filepaths;
 	}
+
 	public void setFilepaths(List<Path> filepaths) {
 		this.filepaths = filepaths;
 	}
-	
+
 	/**
 	 * MassiveDataPipelineIgnite constructor for Peek function.
 	 * @param root
@@ -180,7 +182,7 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 		root.finaltask = task;
 		mdsroots.add(root);
 	}
-	
+
 	/**
 	 * MassiveDataPipelineIgnite constructor for count.
 	 * @param root
@@ -207,7 +209,7 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 		this.root = root;
 		root.finaltask = task;
 	}
-	
+
 	/**
 	 * MassiveDataPipelineIgnite accepts the filter i.e predicate function.
 	 * @param predicate
@@ -223,7 +225,7 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 		filter.parents.add(this);
 		return filter;
 	}
-	
+
 	/**
 	 * MassiveDataPipelineIgnite constructor for union.
 	 * @param root
@@ -236,7 +238,7 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 		this.root = root;
 		root.finaltask = task;
 	}
-	
+
 	/**
 	 * MassiveDataPipelineIgnite accepts the union function.
 	 * @param union
@@ -257,7 +259,7 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 		root.mdsroots.add(union.root);
 		return unionchild;
 	}
-	
+
 	/**
 	 * MassiveDataPipelineIgnite constructor for intersection.
 	 * @param root
@@ -270,7 +272,7 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 		this.root = root;
 		root.finaltask = task;
 	}
-	
+
 	/**
 	 * MassiveDataPipelineIgnite accepts the intersection function.
 	 * @param intersection
@@ -291,7 +293,7 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 		root.mdsroots.add(intersection.root);
 		return intersectionchild;
 	}
-	
+
 	/**
 	 * MassiveDataPipelineIgnite accepts the MapPair function.
 	 * @param <I3>
@@ -310,7 +312,7 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 		mappairignite.parents.add(this);
 		return mappairignite;
 	}
-	
+
 	/**
 	 * MassiveDataPipelineIgnite constructor for sample.
 	 * @param root
@@ -323,7 +325,7 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 		this.root = root;
 		root.finaltask = task;
 	}
-	
+
 	/**
 	 * MassiveDataPipelineIgnite accepts the sample function.
 	 * @param numsample
@@ -340,7 +342,7 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 		samplesupplier.parents.add(this);
 		return samplesupplier;
 	}
-	
+
 	/**
 	 * MassiveDataPipelineIgnite accepts the right outer join function.
 	 * @param mappairignite
@@ -364,6 +366,7 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 		root.mdsroots.add(mappairignite.root);
 		return mdp;
 	}
+
 	/**
 	 * MassiveDataPipelineIgnite accepts the left outer join function.
 	 * @param mappairignite
@@ -387,7 +390,7 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 		root.mdsroots.add(mappairignite.root);
 		return mdp;
 	}
-	
+
 	/**
 	 * MassiveDataPipelineIgnite accepts the inner join function.
 	 * @param mappairignite
@@ -411,7 +414,7 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 		root.mdsroots.add(mappairignite.root);
 		return mdp;
 	}
-	
+
 	/**
 	 * MassiveDataPipelineIgnite constructor for FlatMap function.
 	 * @param <T>
@@ -425,7 +428,7 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 		this.root = root;
 		root.finaltask = task;
 	}
-	
+
 	/**
 	 * MassiveDataPipelineIgnite accepts the FlatMap function.
 	 * @param <T>
@@ -443,7 +446,7 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 		mdp.parents.add(this);
 		return mdp;
 	}
-	
+
 	/**
 	 * MassiveDataPipelineIgnite accepts the TupleFlatMap function.
 	 * @param <I3>
@@ -462,7 +465,7 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 		mdp.parents.add(this);
 		return mdp;
 	}
-	
+
 	/**
 	 * MassiveDataPipelineIgnite accepts the TupleFlatMap function.
 	 * @param fmt
@@ -479,7 +482,7 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 		mdp.parents.add(this);
 		return mdp;
 	}
-	
+
 	/**
 	 * MassiveDataPipelineIgnite constructor for TupleFlatMap function.
 	 * @param root
@@ -492,7 +495,7 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 		this.root = root;
 		root.finaltask = task;
 	}
-	
+
 	/**
 	 * MassiveDataPipelineIgnite constructor for LongFlatMap function.
 	 * @param root
@@ -505,7 +508,7 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 		this.root = root;
 		root.finaltask = task;
 	}
-	
+
 	/**
 	 * MassiveDataPipelineIgnite accepts the LongFlatMap function.
 	 * @param lfmf
@@ -521,7 +524,7 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 		mdp.parents.add(this);
 		return mdp;
 	}
-	
+
 	/**
 	 * MassiveDataPipelineIgnite constructor for DoubleFlatMap function.
 	 * @param root
@@ -551,7 +554,7 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 		mdp.parents.add(this);
 		return mdp;
 	}
-	
+
 	/**
 	 * MassiveDataPipelineIgnite accepts the peek function.
 	 * @param consumer
@@ -567,7 +570,7 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 		this.childs.add(map);
 		return map;
 	}
-	
+
 	/**
 	 * MassiveDataPipelineIgnite constructor for sorting function.
 	 * @param root
@@ -580,7 +583,7 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 		this.root = root;
 		root.finaltask = task;
 	}
-	
+
 	/**
 	 * MassiveDataPipelineIgnite constructor for RightOuterJoin function.
 	 * @param mdp
@@ -594,7 +597,7 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 		mdsroots.add(mdp.root);
 		root.finaltask = task;
 	}
-	
+
 	/**
 	 * MassiveDataPipelineIgnite constructor for LeftOuterJoin function.
 	 * @param <T>
@@ -611,7 +614,7 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 		mdsroots.add(mdp.root);
 		root.finaltask = task;
 	}
-	
+
 	/**
 	 * MassiveDataPipelineIgnite constructor for RightOuterJoin function.
 	 * @param root
@@ -624,7 +627,7 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 		this.root = root;
 		root.finaltask = task;
 	}
-	
+
 	/**
 	 * MassiveDataPipelineIgnite constructor for LeftOuterJoin function.
 	 * @param root
@@ -637,7 +640,7 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 		this.root = root;
 		root.finaltask = task;
 	}
-	
+
 	/**
 	 * MassiveDataPipelineIgnite constructor for InnerJoin function.
 	 * @param root
@@ -650,7 +653,7 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 		this.root = root;
 		root.finaltask = task;
 	}
-	
+
 	/**
 	 * MassiveDataPipelineIgnite accepts the sorting function.
 	 * @param sortedcomparator
@@ -666,7 +669,7 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 		this.childs.add(map);
 		return map;
 	}
-	
+
 	/**
 	 * MassiveDataPipelineIgnite constructor for Distinct.
 	 * @param root
@@ -679,7 +682,7 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 		this.root = root;
 		root.finaltask = task;
 	}
-	
+
 	/**
 	 * MassiveDataPipelineIgnite accepts the distinct.
 	 * @return MassiveDataPipelineIgnite object.
@@ -691,7 +694,7 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 		this.childs.add(map);
 		return map;
 	}
-	
+
 	/**
 	 * MassiveDataPipelineIgnite constructor for ToInt function.
 	 * @param root
@@ -704,7 +707,7 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 		this.root = root;
 		root.finaltask = task;
 	}
-	
+
 	/**
 	 * MassiveDataPipelineIgnite accepts the SToInt function.
 	 * @param tointfunction
@@ -720,7 +723,7 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 		this.childs.add(map);
 		return map;
 	}
-	
+
 	/**
 	 * MassiveDataPipelineIgnite constructor for KeyBy function.
 	 * @param root
@@ -733,7 +736,7 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 		this.root = root;
 		root.finaltask = task;
 	}
-	
+
 	/**
 	 * MassiveDataPipelineIgnite accepts the KeyBy function.
 	 * @param <O>
@@ -750,7 +753,7 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 		this.childs.add(mt);
 		return mt;
 	}
-	
+
 	/**
 	 * Terminal operation save as file.
 	 * @param path
@@ -759,20 +762,19 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 	 */
 	@SuppressWarnings({"rawtypes", "unchecked"})
 	public void saveAsTextFile(URI uri, String path) throws PipelineException  {
-			log.debug("Caching...");
-			var kryo = Utils.getKryoNonDeflateSerializer();
-			var mdp = (IgnitePipeline) root;
-			Utils.writeKryoOutput(kryo, mdp.pipelineconfig.getOutput(), "Caching...");
-			var mdscollect = (IgnitePipeline) root;
-			mdscollect.finaltasks.clear();
-			mdscollect.finaltasks.add(mdscollect.finaltask);
-			mdscollect.mdsroots.add(root);
-			mdscollect.cacheInternal(true, uri, path);
-			log.debug("Cached....");
-			Utils.writeKryoOutput(kryo, mdp.pipelineconfig.getOutput(), "Cached...");
+		log.debug("Caching...");
+		var kryo = Utils.getKryoNonDeflateSerializer();
+		var mdp = (IgnitePipeline) root;
+		Utils.writeKryoOutput(kryo, mdp.pipelineconfig.getOutput(), "Caching...");
+		var mdscollect = (IgnitePipeline) root;
+		mdscollect.finaltasks.clear();
+		mdscollect.finaltasks.add(mdscollect.finaltask);
+		mdscollect.mdsroots.add(root);
+		mdscollect.cacheInternal(true, uri, path);
+		log.debug("Cached....");
+		Utils.writeKryoOutput(kryo, mdp.pipelineconfig.getOutput(), "Cached...");
 	}
 
-	
 
 	/**
 	 * Collect result or just computes stages alone by passing the 
@@ -807,7 +809,7 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 			throw new PipelineException(PipelineConstants.PIPELINECOLLECTERROR, ex);
 		}
 	}
-	
+
 	/**
 	 * Collect result or just computes stages alone by passing the 
 	 * toexecute parameter. 
@@ -834,7 +836,7 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 			throw new PipelineException(PipelineConstants.PIPELINECOLLECTERROR, ex);
 		}
 	}
-	
+
 	/**
 	 * The function count return the results of count.
 	 * @param supplier
@@ -847,7 +849,7 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 			mdp.parents.add(this);
 			this.childs.add(mdp);
 			var mdscollect = (IgnitePipeline) root;
-	
+
 			mdscollect.finaltasks.clear();
 			mdscollect.finaltasks.add(mdp.task);
 			mdscollect.mdsroots.add(root);
@@ -859,7 +861,7 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 			throw new PipelineException(PipelineConstants.PIPELINECOUNTERROR, ex);
 		}
 	}
-	
+
 	/**
 	 * This function executes the forEach tasks.
 	 * @param consumer
@@ -872,7 +874,7 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 			var mdscollect = (IgnitePipeline) root;
 			mdscollect.finaltasks.clear();
 			mdscollect.finaltasks.add(mdscollect.finaltask);
-	
+
 			mdscollect.mdsroots.add(root);
 			var job = mdscollect.cacheInternal(true, null, null);
 			var results = (List<?>) job.results;
@@ -883,16 +885,18 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 			throw new PipelineException(PipelineConstants.PIPELINEFOREACHERROR, ex);
 		}
 	}
-	
+
 	public String getHdfspath() {
 		return hdfspath;
 	}
+
 	public String getFolder() {
 		return folder;
 	}
+
 	@Override
 	public String toString() {
 		return "MassiveDataPipelineIgnite [task=" + task + "]";
 	}
-	
+
 }

@@ -1,4 +1,5 @@
 package com.github.mdc.stream.examples;
+
 import java.net.URI;
 
 import org.apache.log4j.Logger;
@@ -12,6 +13,7 @@ import com.github.mdc.stream.Pipeline;
 
 public class StreamReduceLeftOuterJoinJGroupsDivided implements Pipeline {
 	private Logger log = Logger.getLogger(StreamReduceLeftOuterJoinJGroupsDivided.class);
+
 	public void runPipeline(String[] args, PipelineConfig pipelineconfig) throws Exception {
 		pipelineconfig.setIsblocksuserdefined("false");
 		pipelineconfig.setLocal("false");

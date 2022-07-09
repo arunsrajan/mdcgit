@@ -58,11 +58,13 @@ public class StreamPipelineTestCommon {
 	public static void init() {
 		es = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 	}
+
 	@AfterClass
 	public static void tearDown() throws InterruptedException {
 		es.shutdownNow();
 		es.awaitTermination(2000, TimeUnit.MILLISECONDS);
 	}
+
 	@BeforeClass
 	public static void setUp() throws Throwable {
 		System.setProperty("HADOOP_HOME", "C:\\DEVELOPMENT\\hadoop\\hadooplocal\\hadoop-3.3.1");
@@ -81,6 +83,7 @@ public class StreamPipelineTestCommon {
 		uploadfile(hdfs, githubevents, githubevents + jsonfileextn);
 		Utils.loadLog4JSystemPropertiesClassPath("mdctest.properties");
 	}
+
 	public static void uploadfile(FileSystem hdfs, String dir, String filename) throws Throwable {
 		InputStream is = StreamPipelineTestCommon.class.getResourceAsStream(filename);
 		String jobpath = dir;
@@ -96,6 +99,7 @@ public class StreamPipelineTestCommon {
 		is.close();
 		fsdos.close();
 	}
+
 	@AfterClass
 	public static void closeResources() throws Throwable {
 		if (!Objects.isNull(hdfsLocalCluster)) {

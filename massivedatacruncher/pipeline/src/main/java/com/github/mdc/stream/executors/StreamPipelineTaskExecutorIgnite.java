@@ -91,9 +91,9 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 	Task task;
 	@IgniteInstanceResource
 	Ignite ignite;
-	
+
 	IgniteCache<Object, byte[]> cache;
-	
+
 	public StreamPipelineTaskExecutorIgnite(JobStage jobstage, Task task) {
 		this.jobstage = jobstage;
 		this.task = task;
@@ -110,6 +110,7 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 	public void setHbtss(HeartBeatTaskSchedulerStream hbtss) {
 		this.hbtss = hbtss;
 	}
+
 	public FileSystem getHdfs() {
 		return hdfs;
 	}
@@ -117,9 +118,8 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 	public void setHdfs(FileSystem hdfs) {
 		this.hdfs = hdfs;
 	}
-	
-	
-	
+
+
 	public Task getTask() {
 		return task;
 	}
@@ -169,7 +169,7 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 			throws Exception {
 		var starttime = System.currentTimeMillis();
 		log.debug("Entered MassiveDataStreamTaskIgnite.processBlockHDFSIntersection");
-		
+
 		try (var fsdos = createIntermediateDataToFS();
 				var output = new Output(new SnappyOutputStream(new BufferedOutputStream(fsdos)));
 				var bais1 = getIntermediateInputStreamFS(blocksfirst);
@@ -199,7 +199,7 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 			log.error(PipelineConstants.PROCESSHDFSINTERSECTION, ex);
 			throw new PipelineException(PipelineConstants.PROCESSHDFSINTERSECTION, ex);
 		}
-		
+
 	}
 
 	/**
@@ -215,7 +215,7 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 			FileSystem hdfs) throws Exception {
 		var starttime = System.currentTimeMillis();
 		log.debug("Entered MassiveDataStreamTaskIgnite.processBlockHDFSIntersection");
-		
+
 		try (var fsdos = createIntermediateDataToFS();
 				var output = new Output(new SnappyOutputStream(new BufferedOutputStream(fsdos)));
 				var inputfirst = new Input(new BufferedInputStream(fsstreamfirst.iterator().next()));
@@ -258,20 +258,20 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 			throws PipelineException {
 		var starttime = System.currentTimeMillis();
 		log.debug("Entered MassiveDataStreamTaskIgnite.processBlockHDFSIntersection");
-		
+
 		try (var fsdos = createIntermediateDataToFS();
 				var output = new Output(new SnappyOutputStream(new BufferedOutputStream(fsdos)));
 				var inputfirst = new Input(new BufferedInputStream(fsstreamfirst.iterator().next()));
 				var inputsecond = new Input(new BufferedInputStream(fsstreamsecond.iterator().next()));
 
-		) {
+				) {
 
 			var kryo = Utils.getKryoNonDeflateSerializer();
 			var datafirst = (List) kryo.readClassAndObject(inputfirst);
 			var datasecond = (List) kryo.readClassAndObject(inputsecond);
 			// parallel execution of intersection function.
 			var result = (List) datafirst.parallelStream().distinct().filter(datasecond::contains)
-						.collect(Collectors.toCollection(Vector::new));
+					.collect(Collectors.toCollection(Vector::new));
 			kryo.writeClassAndObject(output, result);
 			output.flush();
 			cache.put(task.jobid + task.stageid + task.taskid, fsdos.toByteArray());
@@ -334,7 +334,7 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 			throws PipelineException {
 		var starttime = System.currentTimeMillis();
 		log.debug("Entered MassiveDataStreamTaskIgnite.processBlockHDFSUnion");
-		
+
 		try (var fsdos = createIntermediateDataToFS();
 				var output = new Output(new SnappyOutputStream(new BufferedOutputStream(fsdos)));
 				var bais1 = getIntermediateInputStreamFS(blocksfirst);
@@ -390,7 +390,7 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 			throws PipelineException {
 		var starttime = System.currentTimeMillis();
 		log.debug("Entered MassiveDataStreamTaskIgnite.processBlockHDFSUnion");
-		
+
 		try (var fsdos = createIntermediateDataToFS();
 				var output = new Output(new SnappyOutputStream(new BufferedOutputStream(fsdos)));
 				var inputfirst = new Input(new BufferedInputStream(fsstreamfirst.iterator().next()));
@@ -444,7 +444,7 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 			throws PipelineException {
 		var starttime = System.currentTimeMillis();
 		log.debug("Entered MassiveDataStreamTaskIgnite.processBlockHDFSUnion");
-		
+
 		try (var fsdos = createIntermediateDataToFS();
 				var output = new Output(new SnappyOutputStream(new BufferedOutputStream(fsdos)));
 				var inputfirst = new Input(new BufferedInputStream(fsstreamfirst.iterator().next()));
@@ -488,11 +488,7 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 		}
 	}
 
-	
-	
-	
-	
-	
+
 	/**
 	 * Perform map operation to obtain intermediate stage result.
 	 * @param blockslocation
@@ -525,7 +521,7 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 				});
 			} else {
 				if (jobstage.stage.tasks.get(0) instanceof CsvOptions csvoptions) {
-					
+
 					var csvformat = CSVFormat.DEFAULT;
 					csvformat = csvformat.withHeader(csvoptions.getHeader());
 
@@ -585,9 +581,9 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 					var streamtmp = ((java.util.stream.IntStream) streammap).boxed().collect(Collectors.toList());
 					var mean = streamtmp.stream().mapToInt(Integer.class::cast).average().getAsDouble();
 					var variance = streamtmp.stream().mapToInt(Integer.class::cast)
-                            .mapToDouble(i -> (i - mean) * (i - mean))
-                            .average()
-                            .getAsDouble();
+							.mapToDouble(i -> (i - mean) * (i - mean))
+							.average()
+							.getAsDouble();
 					var standardDeviation = Math.sqrt(variance);
 					out.add(standardDeviation);
 
@@ -643,55 +639,55 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 				try (var input = new Input(InputStream);) {
 					//while (input.available() > 0) {
 					var inputdatas = (List) kryo.readClassAndObject(input);
-						// Get Streams object from list of map functions.
-						try (var streammap = (BaseStream) StreamUtils.getFunctionsToStream(functions,
-								inputdatas.parallelStream());) {
-							if (function instanceof CalculateCount) {
-								out = new Vector<>();
-								if (streammap instanceof IntStream intstr) {
-									out.add(intstr.count());
-								} else {
-									out.add(((Stream) streammap).count());
-								}
-							} else if (function instanceof PipelineIntStreamCollect piplineistream) {
-								out = new Vector<>();
-								out.add(((IntStream) streammap).collect(piplineistream.getSupplier(),
-										piplineistream.getObjIntConsumer(), piplineistream.getBiConsumer()));
-
-							} else if (function instanceof SummaryStatistics) {
-								out = new Vector<>();
-								out.add(((IntStream) streammap).summaryStatistics());
-
-							} else if (function instanceof Max) {
-								out = new Vector<>();
-								out.add(((IntStream) streammap).max().getAsInt());
-
-							} else if (function instanceof Min) {
-								out = new Vector<>();
-								out.add(((IntStream) streammap).min().getAsInt());
-
-							} else if (function instanceof Sum) {
-								out = new Vector<>();
-								out.add(((IntStream) streammap).sum());
-
-							} else if (function instanceof StandardDeviation) {
-								out = new Vector<>();
-								var streamtmp = (List) ((java.util.stream.IntStream) streammap).boxed().collect(Collectors.toList());
-								var mean = streamtmp.stream().mapToInt(Integer.class::cast).average().getAsDouble();
-								var variance = (double) streamtmp.stream().mapToInt(Integer.class::cast)
-			                            .mapToDouble(i -> (i - mean) * (i - mean))
-			                            .average()
-			                            .getAsDouble();
-								var standardDeviation = Math.sqrt(variance);
-								out.add(standardDeviation);
-
+					// Get Streams object from list of map functions.
+					try (var streammap = (BaseStream) StreamUtils.getFunctionsToStream(functions,
+							inputdatas.parallelStream());) {
+						if (function instanceof CalculateCount) {
+							out = new Vector<>();
+							if (streammap instanceof IntStream intstr) {
+								out.add(intstr.count());
 							} else {
-								out = (List) ((Stream) streammap).collect(Collectors.toCollection(Vector::new));
+								out.add(((Stream) streammap).count());
 							}
-						} catch (Exception ex) {
-							log.error(PipelineConstants.PROCESSHDFSERROR, ex);
-							throw new PipelineException(PipelineConstants.PROCESSHDFSERROR, ex);
+						} else if (function instanceof PipelineIntStreamCollect piplineistream) {
+							out = new Vector<>();
+							out.add(((IntStream) streammap).collect(piplineistream.getSupplier(),
+									piplineistream.getObjIntConsumer(), piplineistream.getBiConsumer()));
+
+						} else if (function instanceof SummaryStatistics) {
+							out = new Vector<>();
+							out.add(((IntStream) streammap).summaryStatistics());
+
+						} else if (function instanceof Max) {
+							out = new Vector<>();
+							out.add(((IntStream) streammap).max().getAsInt());
+
+						} else if (function instanceof Min) {
+							out = new Vector<>();
+							out.add(((IntStream) streammap).min().getAsInt());
+
+						} else if (function instanceof Sum) {
+							out = new Vector<>();
+							out.add(((IntStream) streammap).sum());
+
+						} else if (function instanceof StandardDeviation) {
+							out = new Vector<>();
+							var streamtmp = (List) ((java.util.stream.IntStream) streammap).boxed().collect(Collectors.toList());
+							var mean = streamtmp.stream().mapToInt(Integer.class::cast).average().getAsDouble();
+							var variance = (double) streamtmp.stream().mapToInt(Integer.class::cast)
+									.mapToDouble(i -> (i - mean) * (i - mean))
+									.average()
+									.getAsDouble();
+							var standardDeviation = Math.sqrt(variance);
+							out.add(standardDeviation);
+
+						} else {
+							out = (List) ((Stream) streammap).collect(Collectors.toCollection(Vector::new));
 						}
+					} catch (Exception ex) {
+						log.error(PipelineConstants.PROCESSHDFSERROR, ex);
+						throw new PipelineException(PipelineConstants.PROCESSHDFSERROR, ex);
+					}
 					//}
 				} catch (Exception ex) {
 					log.error(PipelineConstants.PROCESSHDFSERROR, ex);
@@ -831,7 +827,7 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 		log.info("Exiting MassiveDataStreamTaskIgnite.call");
 	}
 
-	
+
 	public double computeTasks(Task task) throws Exception {
 		var timetakenseconds = 0.0;
 		if (jobstage.stage.tasks.get(0) instanceof JoinPredicate jp) {
@@ -917,7 +913,7 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 				timetakenseconds = processBlockHDFSIntersection(blfirst, blsecond, hdfs);
 			} else if (((task.input[0] instanceof BlocksLocation) && task.input[1] instanceof InputStream)
 					|| ((task.input[0] instanceof InputStream) && task.input[1] instanceof Blocks
-							|| task.input[1] instanceof BlocksLocation)) {
+					|| task.input[1] instanceof BlocksLocation)) {
 				var streamfirst = new LinkedHashSet<InputStream>();
 				var blockssecond = new ArrayList<BlocksLocation>();
 				for (var input : task.input) {
@@ -940,7 +936,7 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 				timetakenseconds = processBlockHDFSUnion(blfirst, blsecond, hdfs);
 			} else if (((task.input[0] instanceof BlocksLocation) && task.input[1] instanceof InputStream)
 					|| ((task.input[0] instanceof InputStream) && task.input[1] instanceof Blocks
-							|| task.input[1] instanceof BlocksLocation)) {
+					|| task.input[1] instanceof BlocksLocation)) {
 				var streamfirst = new LinkedHashSet<InputStream>();
 				var blockssecond = new ArrayList<BlocksLocation>();
 				for (var input : task.input) {
@@ -986,9 +982,8 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 		}
 		return timetakenseconds;
 	}
-	
-	
-	
+
+
 	/**
 	 * Join pair operation.
 	 * 
@@ -1002,7 +997,7 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 			throws PipelineException {
 		log.debug("Entered MassiveDataStreamTaskIgnite.processJoinLZF");
 		var starttime = System.currentTimeMillis();
-		
+
 		try (var fsdos = createIntermediateDataToFS();
 				var output = new Output(new SnappyOutputStream(new BufferedOutputStream(fsdos)));
 				var inputfirst = isinputfirstblocks ? null : new Input(streamfirst);
@@ -1014,7 +1009,7 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 						? new BufferedReader(new InputStreamReader(streamsecond))
 						: null;
 
-		) {
+				) {
 
 			var kryo = Utils.getKryoNonDeflateSerializer();
 			List inputs1 = null, inputs2 = null;
@@ -1077,7 +1072,7 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 			LeftOuterJoinPredicate leftouterjoinpredicate, boolean isinputfirstblocks, boolean isinputsecondblocks) throws PipelineException {
 		var starttime = System.currentTimeMillis();
 		log.debug("Entered MassiveDataStreamTaskIgnite.processLeftOuterJoinLZF");
-		
+
 		try (var fsdos = createIntermediateDataToFS();
 				var output = new Output(new SnappyOutputStream(new BufferedOutputStream(fsdos)));
 				var inputfirst = isinputfirstblocks ? null : new Input(streamfirst);
@@ -1089,10 +1084,11 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 						? new BufferedReader(new InputStreamReader(streamsecond))
 						: null;
 
-		) {
+				) {
 
 			var kryo = Utils.getKryoNonDeflateSerializer();
-			List inputs1 = null,inputs2 = null;;
+			List inputs1 = null,inputs2 = null;
+			;
 			if (Objects.isNull(buffreader1)) {
 				inputs1 = (List) kryo.readClassAndObject(inputfirst);
 			} else {
@@ -1145,12 +1141,13 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 			throw new PipelineException(PipelineConstants.PROCESSLEFTOUTERJOIN, ex);
 		}
 	}
+
 	@SuppressWarnings("unchecked")
 	public double processRightOuterJoinLZF(InputStream streamfirst, InputStream streamsecond,
 			RightOuterJoinPredicate rightouterjoinpredicate, boolean isinputfirstblocks, boolean isinputsecondblocks) throws PipelineException {
 		var starttime = System.currentTimeMillis();
 		log.debug("Entered MassiveDataStreamTaskIgnite.processRightOuterJoinLZF");
-		
+
 		try (var fsdos = createIntermediateDataToFS();
 				var output = new Output(new SnappyOutputStream(new BufferedOutputStream(fsdos)));
 				var inputfirst = isinputfirstblocks ? null : new Input(streamfirst);
@@ -1162,10 +1159,11 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 						? new BufferedReader(new InputStreamReader(streamsecond))
 						: null;
 
-		) {
+				) {
 
 			var kryo = Utils.getKryoNonDeflateSerializer();
-			List inputs1 = null,inputs2 = null;;
+			List inputs1 = null,inputs2 = null;
+			;
 			if (Objects.isNull(buffreader1)) {
 				inputs1 = (List) kryo.readClassAndObject(inputfirst);
 			} else {
@@ -1229,7 +1227,7 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 	public double processGroupByKeyTuple2() throws PipelineException {
 		var starttime = System.currentTimeMillis();
 		log.debug("Entered MassiveDataStreamTaskIgnite.processGroupByKeyTuple2");
-		
+
 		try (var fsdos = createIntermediateDataToFS(); Output output = new Output(new SnappyOutputStream(fsdos))) {
 			var kryo = Utils.getKryoNonDeflateSerializer();
 
@@ -1240,11 +1238,11 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 						var input = new Input(new BufferedInputStream(fsdis));) {
 					//while (input.available() > 0) {
 						var keyvaluepair = kryo.readClassAndObject(input);
-						if (keyvaluepair instanceof List kvp) {
-							allpairs.addAll(kvp);
-						} else if (keyvaluepair instanceof Map kvpmap) {
-							mapgpbykey.add(kvpmap);
-						}
+					if (keyvaluepair instanceof List kvp) {
+						allpairs.addAll(kvp);
+					} else if (keyvaluepair instanceof Map kvpmap) {
+						mapgpbykey.add(kvpmap);
+					}
 					//}
 				} catch (IOException ioe) {
 					log.error(PipelineConstants.FILEIOERROR, ioe);
@@ -1296,7 +1294,7 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 	public double processFoldByKeyTuple2() throws PipelineException {
 		var starttime = System.currentTimeMillis();
 		log.debug("Entered MassiveDataStreamTaskIgnite.processFoldByKeyTuple2");
-		
+
 		var function = jobstage.stage.tasks.get(jobstage.stage.tasks.size() - 1);
 		try (var fsdos = createIntermediateDataToFS();
 				var output = new Output(new SnappyOutputStream(fsdos));) {
@@ -1309,11 +1307,11 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 						var input = new Input(new BufferedInputStream(fsdis));) {
 					//while (input.available() > 0) {
 					var keyvaluepair = kryo.readClassAndObject(input);
-						if (keyvaluepair instanceof List kvp) {
-							allpairs.addAll(kvp);
-						} else if (keyvaluepair instanceof Map kvpmap) {
-							mapgpbykey.add(kvpmap);
-						}
+					if (keyvaluepair instanceof List kvp) {
+						allpairs.addAll(kvp);
+					} else if (keyvaluepair instanceof Map kvpmap) {
+						mapgpbykey.add(kvpmap);
+					}
 					//}
 				} catch (IOException ioe) {
 					log.error(PipelineConstants.FILEIOERROR, ioe);
@@ -1382,9 +1380,9 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 				var input = new Input(new BufferedInputStream(fsdis));
 				//while (input.available() > 0) {
 					var keyvaluepair = kryo.readClassAndObject(input);
-					if (keyvaluepair instanceof List kvp) {
-						allpairs.addAll(kvp);
-					}
+				if (keyvaluepair instanceof List kvp) {
+					allpairs.addAll(kvp);
+				}
 				//}
 				input.close();
 			}
@@ -1438,9 +1436,9 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 				var input = new Input(new BufferedInputStream(fsdis));
 				//while (input.available() > 0) {
 					var keyvaluepair = kryo.readClassAndObject(input);
-					if (keyvaluepair instanceof List kvp) {
-						allpairs.addAll(kvp);
-					}
+				if (keyvaluepair instanceof List kvp) {
+					allpairs.addAll(kvp);
+				}
 				//}
 				input.close();
 			}

@@ -30,7 +30,7 @@ public class LineSplitUtil {
 		}
 		return count;
 	}
-	
+
 	/**
 	 * Splitting of lines from bytes.
 	 * @param byt
@@ -47,6 +47,7 @@ public class LineSplitUtil {
 		reader.close();
 		return strings.toArray(new String[strings.size()]);
 	}
+
 	public static String getNextLine(BufferedReader reader) throws Exception {
 		return reader.readLine();
 	}

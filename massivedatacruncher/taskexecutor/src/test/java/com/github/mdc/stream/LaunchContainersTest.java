@@ -22,7 +22,7 @@ import com.github.mdc.common.Resources;
 import com.github.mdc.common.Utils;
 
 public class LaunchContainersTest extends StreamPipelineBaseTestCommon {
-	
+
 	@Test
 	public void testLaunchContainersDestroy() throws Exception {
 		PipelineConfig pc = new PipelineConfig();
@@ -87,7 +87,6 @@ public class LaunchContainersTest extends StreamPipelineBaseTestCommon {
 		joinresult.stream().forEach(log::info);
 		Utils.destroyContainers(lc);
 	}
-	
-	
-	
+
+
 }

@@ -24,7 +24,7 @@ import com.github.mdc.stream.functions.MapFunction;
 public class StreamPipelineContinuedTest extends StreamPipelineBaseTestCommon {
 
 	boolean toexecute = true;
-	
+
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testFilterCount() throws Throwable {
@@ -715,14 +715,14 @@ public class StreamPipelineContinuedTest extends StreamPipelineBaseTestCommon {
 		List<List> wordscount = (List) datastream.flatMap(str -> Arrays.asList(str.split(" ")))
 				.mapToPair(str -> Tuple.tuple(str.trim().replace(" ", ""), (Long) 1l))
 				.reduceByKey((pair1, pair2) -> (Long) pair1 + (Long) pair2).sorted((val1, val2) -> {
-					Tuple2 tup1 = (Tuple2) val1;
-					Tuple2 tup2 = (Tuple2) val2;
-					int compres = ((Long) tup1.v2).compareTo(((Long) tup2.v2));
-					if (compres == 0) {
-						return ((String) tup1.v1).compareToIgnoreCase(((String) tup2.v1));
-					}
-					return compres;
-				}).collect(toexecute, new NumPartitions(2));
+			Tuple2 tup1 = (Tuple2) val1;
+			Tuple2 tup2 = (Tuple2) val2;
+			int compres = ((Long) tup1.v2).compareTo(((Long) tup2.v2));
+			if (compres == 0) {
+				return ((String) tup1.v1).compareToIgnoreCase(((String) tup2.v1));
+			}
+			return compres;
+		}).collect(toexecute, new NumPartitions(2));
 		int numberofwords = 0;
 		Set<String> distinct = new HashSet<>();
 		assertEquals(2, wordscount.size());
@@ -748,14 +748,14 @@ public class StreamPipelineContinuedTest extends StreamPipelineBaseTestCommon {
 		List<List<Long>> wordscount = (List) datastream.flatMap(str -> Arrays.asList(str.split(" ")))
 				.mapToPair(str -> Tuple.tuple(str.trim().replace(" ", ""), (Long) 1l))
 				.reduceByKey((pair1, pair2) -> (Long) pair1 + (Long) pair2).sorted((val1, val2) -> {
-					Tuple2 tup1 = (Tuple2) val1;
-					Tuple2 tup2 = (Tuple2) val2;
-					int compres = ((Long) tup1.v2).compareTo(((Long) tup2.v2));
-					if (compres == 0) {
-						return ((String) tup1.v1).compareToIgnoreCase(((String) tup2.v1));
-					}
-					return compres;
-				}).count(null);
+			Tuple2 tup1 = (Tuple2) val1;
+			Tuple2 tup2 = (Tuple2) val2;
+			int compres = ((Long) tup1.v2).compareTo(((Long) tup2.v2));
+			if (compres == 0) {
+				return ((String) tup1.v1).compareToIgnoreCase(((String) tup2.v1));
+			}
+			return compres;
+		}).count(null);
 		wordscount.stream().flatMap(stream -> stream.stream()).forEach(log::info);
 		int sum = 0;
 		for (List<Long> wcs : wordscount) {
@@ -777,10 +777,10 @@ public class StreamPipelineContinuedTest extends StreamPipelineBaseTestCommon {
 		List<List> wordscount = (List) datastream.flatMap(str -> Arrays.asList(str.split(" ")))
 				.mapToPair(str -> Tuple.tuple(str.trim().replace(" ", ""), (Long) 1l))
 				.reduceByKey((pair1, pair2) -> (Long) pair1 + (Long) pair2).sorted((val1, val2) -> {
-					Tuple2 tup1 = (Tuple2) val1;
-					Tuple2 tup2 = (Tuple2) val2;
-					return ((Long) tup1.v2).compareTo(((Long) tup2.v2));
-				}).collect(toexecute, new NumPartitions(2));
+			Tuple2 tup1 = (Tuple2) val1;
+			Tuple2 tup2 = (Tuple2) val2;
+			return ((Long) tup1.v2).compareTo(((Long) tup2.v2));
+		}).collect(toexecute, new NumPartitions(2));
 		int numberofwords = 0;
 		Set<String> distinct = new HashSet<>();
 		for (List<Tuple2> vals : wordscount) {
@@ -805,14 +805,14 @@ public class StreamPipelineContinuedTest extends StreamPipelineBaseTestCommon {
 		List<List<Long>> wordscount = (List) datastream.flatMap(str -> Arrays.asList(str.split(" ")))
 				.mapToPair(str -> Tuple.tuple(str.trim().replace(" ", ""), (Long) 1l))
 				.reduceByKey((pair1, pair2) -> (Long) pair1 + (Long) pair2).sorted((val1, val2) -> {
-					Tuple2 tup1 = (Tuple2) val1;
-					Tuple2 tup2 = (Tuple2) val2;
-					int compres = ((Long) tup1.v2).compareTo(((Long) tup2.v2));
-					if (compres == 0) {
-						return ((String) tup1.v1).compareToIgnoreCase(((String) tup2.v1));
-					}
-					return compres;
-				}).count(new NumPartitions(4));
+			Tuple2 tup1 = (Tuple2) val1;
+			Tuple2 tup2 = (Tuple2) val2;
+			int compres = ((Long) tup1.v2).compareTo(((Long) tup2.v2));
+			if (compres == 0) {
+				return ((String) tup1.v1).compareToIgnoreCase(((String) tup2.v1));
+			}
+			return compres;
+		}).count(new NumPartitions(4));
 		wordscount.stream().flatMap(stream -> stream.stream()).forEach(log::info);
 		int sum = 0;
 		for (List<Long> wcs : wordscount) {
@@ -834,10 +834,10 @@ public class StreamPipelineContinuedTest extends StreamPipelineBaseTestCommon {
 		List<List> wordscount = (List) datastream.flatMap(str -> Arrays.asList(str.split(" ")))
 				.mapToPair(str -> Tuple.tuple(str.trim().replace(" ", ""), (Long) 1l))
 				.reduceByKey((pair1, pair2) -> (Long) pair1 + (Long) pair2).sorted((val1, val2) -> {
-					Tuple2 tup1 = (Tuple2) val1;
-					Tuple2 tup2 = (Tuple2) val2;
-					return ((String) tup1.v1).compareToIgnoreCase(((String) tup2.v1));
-				}).collect(toexecute, new NumPartitions(2));
+			Tuple2 tup1 = (Tuple2) val1;
+			Tuple2 tup2 = (Tuple2) val2;
+			return ((String) tup1.v1).compareToIgnoreCase(((String) tup2.v1));
+		}).collect(toexecute, new NumPartitions(2));
 		int numberofwords = 0;
 		Set<String> distinct = new HashSet<>();
 		assertEquals(2, wordscount.size());
@@ -862,10 +862,10 @@ public class StreamPipelineContinuedTest extends StreamPipelineBaseTestCommon {
 		MapPair<Tuple, Tuple> mappair = datastream.flatMap(str -> Arrays.asList(str.split(" ")))
 				.mapToPair(str -> (Tuple2) Tuple.tuple(str.trim().replace(" ", ""), (Long) 1l))
 				.reduceByKey((pair1, pair2) -> (Long) pair1 + (Long) pair2).sorted((val1, val2) -> {
-					Tuple2 tup1 = (Tuple2) val1;
-					Tuple2 tup2 = (Tuple2) val2;
-					return ((String) tup1.v1).compareToIgnoreCase(((String) tup2.v1));
-				});
+			Tuple2 tup1 = (Tuple2) val1;
+			Tuple2 tup2 = (Tuple2) val2;
+			return ((String) tup1.v1).compareToIgnoreCase(((String) tup2.v1));
+		});
 
 		mappair.forEach(System.out::println, new NumPartitions(4));
 		mappair.forEach(System.out::println, new NumPartitions(3));
@@ -881,16 +881,16 @@ public class StreamPipelineContinuedTest extends StreamPipelineBaseTestCommon {
 		MapPair<String, Long> mappair = datastream.flatMap(str -> Arrays.asList(str.split(" ")))
 				.mapToPair(str -> Tuple.tuple(str.trim().replace(" ", ""), (Long) 1l))
 				.reduceByKey((pair1, pair2) -> (Long) pair1 + (Long) pair2).sorted((val1, val2) -> {
-					Tuple2 tup1 = (Tuple2) val1;
-					Tuple2 tup2 = (Tuple2) val2;
-					return ((String) tup1.v1).compareToIgnoreCase(((String) tup2.v1));
-				});
+			Tuple2 tup1 = (Tuple2) val1;
+			Tuple2 tup2 = (Tuple2) val2;
+			return ((String) tup1.v1).compareToIgnoreCase(((String) tup2.v1));
+		});
 
 		List<List> output = (List<List>) mappair.collect(true, null);
 		output.stream().flatMap(lst -> lst.stream()).forEach(System.out::println);
 		log.info("testWordCountWordSortedPartitioned After---------------------------------------");
 	}
-	
+
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testCountByValue() throws Throwable {
@@ -923,8 +923,8 @@ public class StreamPipelineContinuedTest extends StreamPipelineBaseTestCommon {
 				.filter(str -> !"ArrDelay".equals(str[14]) && !"NA".equals(str[14]))
 				.mapToPair(str -> Tuple.tuple(str[1], str[14])).countByValue()
 				.reduceByKey((a, b) -> a + b).coalesce(1, (a, b) -> a + b).sorted((Tuple2 tup1, Tuple2 tup2) -> {
-					return Integer.valueOf((String) ((Tuple2) tup1.v1).v1).compareTo(Integer.valueOf((String) ((Tuple2) tup2.v1).v1));
-				}).collect(toexecute, new NumPartitions(3));
+			return Integer.valueOf((String) ((Tuple2) tup1.v1).v1).compareTo(Integer.valueOf((String) ((Tuple2) tup2.v1).v1));
+		}).collect(toexecute, new NumPartitions(3));
 		long sum = 0;
 		for (List<Tuple> tuples : tupleslist) {
 			for (Tuple tuple : tuples) {
@@ -936,7 +936,7 @@ public class StreamPipelineContinuedTest extends StreamPipelineBaseTestCommon {
 		assertEquals(45957l, sum);
 		log.info("testCountByValueSorted After---------------------------------------");
 	}
-	
+
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testReduce() throws Throwable {
@@ -957,7 +957,7 @@ public class StreamPipelineContinuedTest extends StreamPipelineBaseTestCommon {
 		assertEquals(-63278l, sum);
 		log.info("testReduce After---------------------------------------");
 	}
-	
+
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testReduceWithAdditionalMap() throws Throwable {
@@ -978,7 +978,7 @@ public class StreamPipelineContinuedTest extends StreamPipelineBaseTestCommon {
 		assertEquals(-63248l, sum);
 		log.info("testReduceWithAdditionalMap After---------------------------------------");
 	}
-	
+
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testReduceByKeyReduceByKey() throws Throwable {
@@ -990,7 +990,7 @@ public class StreamPipelineContinuedTest extends StreamPipelineBaseTestCommon {
 		MapPair<String, Integer> reducebykey1 = (MapPair<String, Integer>) datastream1.map(str -> str.split(","))
 				.filter(str -> !"ArrDelay".equals(str[14]) && !"NA".equals(str[14]))
 				.mapToPair(val -> Tuple.tuple(val[8], Integer.parseInt(val[14]))).reduceByKey((a, b) -> a + b);
-		
+
 		MapPair<String, Integer> reducebykey2 = (MapPair<String, Integer>) datastream2.map(str -> str.split(","))
 				.filter(str -> !"ArrDelay".equals(str[14]) && !"NA".equals(str[14]))
 				.mapToPair(val -> Tuple.tuple(val[8], Integer.parseInt(val[14]))).reduceByKey((a, b) -> a + b);
@@ -1004,7 +1004,7 @@ public class StreamPipelineContinuedTest extends StreamPipelineBaseTestCommon {
 		}
 		log.info("testReduceByKeyReduceByKey After---------------------------------------");
 	}
-	
+
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testReduceByKeyReduceByKeyPartitioned() throws Throwable {
@@ -1016,7 +1016,7 @@ public class StreamPipelineContinuedTest extends StreamPipelineBaseTestCommon {
 		MapPair<String, Integer> reducebykey1 = (MapPair<String, Integer>) datastream1.map(str -> str.split(","))
 				.filter(str -> !"ArrDelay".equals(str[14]) && !"NA".equals(str[14]))
 				.mapToPair(val -> Tuple.tuple(val[8], Integer.parseInt(val[14]))).reduceByKey((a, b) -> a + b);
-		
+
 		MapPair<String, Integer> reducebykey2 = (MapPair<String, Integer>) datastream2.map(str -> str.split(","))
 				.filter(str -> !"ArrDelay".equals(str[14]) && !"NA".equals(str[14]))
 				.mapToPair(val -> Tuple.tuple(val[8], Integer.parseInt(val[14]))).reduceByKey((a, b) -> a + b);
@@ -1031,8 +1031,8 @@ public class StreamPipelineContinuedTest extends StreamPipelineBaseTestCommon {
 		}
 		log.info("testReduceByKeyReduceByKeyPartitioned After---------------------------------------");
 	}
-	
-	
+
+
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testReduceByKeyReduceByKeyPartitionedCoalesce() throws Throwable {
@@ -1044,7 +1044,7 @@ public class StreamPipelineContinuedTest extends StreamPipelineBaseTestCommon {
 		MapPair<String, Integer> reducebykey1 = (MapPair<String, Integer>) datastream1.map(str -> str.split(","))
 				.filter(str -> !"ArrDelay".equals(str[14]) && !"NA".equals(str[14]))
 				.mapToPair(val -> Tuple.tuple(val[8], Integer.parseInt(val[14]))).reduceByKey((a, b) -> a + b);
-		
+
 		MapPair<String, Integer> reducebykey2 = (MapPair<String, Integer>) datastream2.map(str -> str.split(","))
 				.filter(str -> !"ArrDelay".equals(str[14]) && !"NA".equals(str[14]))
 				.mapToPair(val -> Tuple.tuple(val[8], Integer.parseInt(val[14]))).reduceByKey((a, b) -> a + b);
@@ -1059,7 +1059,7 @@ public class StreamPipelineContinuedTest extends StreamPipelineBaseTestCommon {
 		}
 		log.info("testReduceByKeyReduceByKeyPartitionedCoalesce After---------------------------------------");
 	}
-	
+
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testCoalesceCoalescePartitioned() throws Throwable {
@@ -1071,7 +1071,7 @@ public class StreamPipelineContinuedTest extends StreamPipelineBaseTestCommon {
 		MapPair<String, Integer> coalesce1 = (MapPair<String, Integer>) datastream1.map(str -> str.split(","))
 				.filter(str -> !"ArrDelay".equals(str[14]) && !"NA".equals(str[14]))
 				.mapToPair(val -> Tuple.tuple(val[8], Integer.parseInt(val[14]))).coalesce(1, (a, b) -> a + b);
-		
+
 		MapPair<String, Integer> coalesce2 = (MapPair<String, Integer>) datastream2.map(str -> str.split(","))
 				.filter(str -> !"ArrDelay".equals(str[14]) && !"NA".equals(str[14]))
 				.mapToPair(val -> Tuple.tuple(val[8], Integer.parseInt(val[14]))).coalesce(1, (a, b) -> a + b);
@@ -1085,7 +1085,7 @@ public class StreamPipelineContinuedTest extends StreamPipelineBaseTestCommon {
 		}
 		log.info("testCoalesceCoalescePartitioned After---------------------------------------");
 	}
-	
+
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testCoalesceCoalesceDiffPartitioned() throws Throwable {
@@ -1097,7 +1097,7 @@ public class StreamPipelineContinuedTest extends StreamPipelineBaseTestCommon {
 		MapPair<String, Integer> coalesce1 = (MapPair<String, Integer>) datastream1.map(str -> str.split(","))
 				.filter(str -> !"ArrDelay".equals(str[14]) && !"NA".equals(str[14]))
 				.mapToPair(val -> Tuple.tuple(val[8], Integer.parseInt(val[14]))).coalesce(3, (a, b) -> a + b);
-		
+
 		MapPair<String, Integer> coalesce2 = (MapPair<String, Integer>) datastream2.map(str -> str.split(","))
 				.filter(str -> !"ArrDelay".equals(str[14]) && !"NA".equals(str[14]))
 				.mapToPair(val -> Tuple.tuple(val[8], Integer.parseInt(val[14]))).coalesce(2, (a, b) -> a + b);
@@ -1111,6 +1111,7 @@ public class StreamPipelineContinuedTest extends StreamPipelineBaseTestCommon {
 		}
 		log.info("testCoalesceCoalesceDiffPartitioned After---------------------------------------");
 	}
+
 	@SuppressWarnings({"unchecked"})
 	@Test
 	public void testMappairCoalesce() throws Throwable {

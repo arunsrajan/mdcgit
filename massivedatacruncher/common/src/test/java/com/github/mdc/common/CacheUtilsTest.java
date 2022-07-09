@@ -36,6 +36,7 @@ public class CacheUtilsTest {
 
 	String hdfsurl = "hdfs://127.0.0.1:9000";
 	String[] hdfsdirpaths = {"/airlines"};
+
 	@BeforeClass
 	public static void initCache() throws Exception {
 		Utils.loadLog4JSystemPropertiesClassPath(MDCConstants.MDC_TEST_PROPERTIES);
@@ -43,7 +44,7 @@ public class CacheUtilsTest {
 		ByteBufferPoolDirect.init();
 		ByteBufferPool.init(Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.BYTEBUFFERPOOL_MAX, MDCConstants.BYTEBUFFERPOOL_MAX_DEFAULT)));
 	}
-	
+
 	@Test
 	public void testCache() throws Exception {
 		FileSystem hdfs = FileSystem.get(new URI(hdfsurl), new Configuration());
@@ -68,7 +69,7 @@ public class CacheUtilsTest {
 			sis.close();
 		}
 	}
-	
+
 	public void getDnXref(List<BlocksLocation> bls) {
 
 		var dnxrefs = bls.stream().parallel().flatMap(bl -> {
@@ -93,26 +94,27 @@ public class CacheUtilsTest {
 		for (var b : bls) {
 			var xrefselected = b.block[0].dnxref.keySet().stream()
 					.flatMap(xrefhost -> b.block[0].dnxref.get(xrefhost).stream()).sorted((xref1, xref2) -> {
-						return dnxrefallocatecount.get(xref1).compareTo(dnxrefallocatecount.get(xref2));
-					}).findFirst();
+				return dnxrefallocatecount.get(xref1).compareTo(dnxrefallocatecount.get(xref2));
+			}).findFirst();
 			var xref = xrefselected.get();
 			dnxrefallocatecount.put(xref, dnxrefallocatecount.get(xref) + 1);
 			b.block[0].hp = xref;
 			if(b.block.length > 1 && !Objects.isNull(b.block[1])) {
 				xrefselected = b.block[1].dnxref.keySet().stream()
 						.flatMap(xrefhost -> b.block[1].dnxref.get(xrefhost).stream()).sorted((xref1, xref2) -> {
-							return dnxrefallocatecount.get(xref1).compareTo(dnxrefallocatecount.get(xref2));
-						}).findFirst();
+					return dnxrefallocatecount.get(xref1).compareTo(dnxrefallocatecount.get(xref2));
+				}).findFirst();
 				xref = xrefselected.get();
 				b.block[1].hp = xref;
 			}
 		}
 	}
+
 	@AfterClass
 	public static void destroyCache() throws Exception {
 		MDCCache.get().clear();
 		MDCCacheManager.get().close();
 		ByteBufferPoolDirect.get().close();
 	}
-	
+
 }

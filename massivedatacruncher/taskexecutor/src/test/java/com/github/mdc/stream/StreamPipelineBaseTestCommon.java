@@ -12,6 +12,7 @@ public class StreamPipelineBaseTestCommon extends StreamPipelineBase {
 			toteardownclass = true;
 		}
 	}
+
 	@AfterClass
 	public static void tearDown() throws Exception {
 		if (toteardownclass) {

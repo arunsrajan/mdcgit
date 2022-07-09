@@ -7,13 +7,14 @@ package com.github.mdc.common;
  * This class holds the information of the error messages for the pipeline tasks errors.
  */
 public class PipelineConstants {
-	private PipelineConstants() {}
+	private PipelineConstants() {
+	}
 	//Exception Messages
 	public static final String URISYNTAXNOTPROPER = "URI syntax not proper";
 	public static final String FILEIOERROR = "File IO Error";
 	public static final String CREATEOREXECUTEJOBERROR = "Create or Execute Job Error";
 	public static final String DELETEINTERMEDIATEPHASEOUTPUTERROR = "Deleting intermediate stage output error, See Cause Below";
-	
+
 	public static final String UNKNOWNERROR = "Unknown Error";
 	public static final String PROCESSHDFSERROR = "Process map task execution error";
 	public static final String PROCESSHDFSINTERSECTION = "Process intersection task execution error";
@@ -74,7 +75,7 @@ public class PipelineConstants {
 	public static final String FILEBLOCKSERROR = "File blocks acquire error";
 	public static final String FILEBLOCKSPARTITIONINGERROR = "File blocks partitioning error";
 	public static final String TASKEXECUTORSALLOCATIONERROR = "Task executors allocation error";
-	public static final String TASKFAILEDEXCEPTION= "Task Failed Exception";
+	public static final String TASKFAILEDEXCEPTION = "Task Failed Exception";
 	public static final String MEMORYALLOCATIONERROR = "Memory allocation error Minimum Required Memory is 128 MB";
 	public static final String INSUFFMEMORYALLOCATIONERROR = "Insufficient memory, required memory is greater than the available memory";
 	public static final String INSUFFCPUALLOCATIONERROR = "Insufficient cpu, required cpu is greater than the available cpu";

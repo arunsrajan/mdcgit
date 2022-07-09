@@ -15,9 +15,10 @@ import com.github.mdc.common.MDCNodesResources;
 import com.github.mdc.common.PipelineConfig;
 
 public class StreamPipelineBigFilesTest extends StreamPipelineBaseTestCommon {
-	
-	
+
+
 	boolean toexecute = true;
+
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testMapValuesReduceByValues() throws Throwable {
@@ -49,7 +50,7 @@ public class StreamPipelineBigFilesTest extends StreamPipelineBaseTestCommon {
 		assertEquals(41630119l, sum);
 		log.info("testMapValuesReduceByValues After---------------------------------------");
 	}
-	
+
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testMapValuesReduceByValuesBigger() throws Throwable {
@@ -81,7 +82,7 @@ public class StreamPipelineBigFilesTest extends StreamPipelineBaseTestCommon {
 		assertEquals(41630119l, sum);
 		log.info("testMapValuesReduceByValuesBigger After---------------------------------------");
 	}
-	
+
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testMapValuesReduceByValuesCoalesce() throws Throwable {
@@ -116,6 +117,7 @@ public class StreamPipelineBigFilesTest extends StreamPipelineBaseTestCommon {
 		pipelineconfig.setBlocksize("20");
 		log.info("testMapValuesReduceByValuesCoalesce After---------------------------------------");
 	}
+
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testMapValuesReduceByValuesJGroups() throws Throwable {
@@ -149,7 +151,7 @@ public class StreamPipelineBigFilesTest extends StreamPipelineBaseTestCommon {
 		assertEquals(852674931, sum);
 		log.info("testMapValuesReduceByValuesJGroups After---------------------------------------");
 	}
-	
+
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testMapValuesReduceByValuesLocal() throws Throwable {
@@ -182,6 +184,7 @@ public class StreamPipelineBigFilesTest extends StreamPipelineBaseTestCommon {
 		assertEquals(852674931, sum);
 		log.info("testMapValuesReduceByValuesJGroups After---------------------------------------");
 	}
+
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testMapValuesReduceByValuesCoalesceJGroups() throws Throwable {
@@ -210,6 +213,7 @@ public class StreamPipelineBigFilesTest extends StreamPipelineBaseTestCommon {
 		pipelineconfig.setBlocksize("20");
 		log.info("testMapValuesReduceByValuesCoalesce After---------------------------------------");
 	}
+
 	@Test
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	public void testReduceByKeyCoalesceJoinUserDefinedBlockSize() throws Throwable {
@@ -237,6 +241,7 @@ public class StreamPipelineBigFilesTest extends StreamPipelineBaseTestCommon {
 				.join(airlinesamples, (tuple1, tuple2) -> ((Tuple2) tuple1).v1.equals(((Tuple2) tuple2).v1)).saveAsTextFile(new URI(hdfsfilepath), "/coalesce/Coalesce-" + System.currentTimeMillis());
 		log.info("testReduceByKeyCoalesceJoinUserDefinedBlockSize After---------------------------------------");
 	}
+
 	@Test
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	public void testReduceByKeyCoalesceJoinUserDefinedBlockSizeCollect() throws Throwable {
@@ -269,6 +274,7 @@ public class StreamPipelineBigFilesTest extends StreamPipelineBaseTestCommon {
 		}
 		log.info("testReduceByKeyCoalesceJoinUserDefinedBlockSizeCollect After---------------------------------------");
 	}
+
 	@Test
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	public void testReduceByKeyCoalesceJoinUserDefinedBlockSizeJGroups() throws Throwable {
@@ -297,9 +303,8 @@ public class StreamPipelineBigFilesTest extends StreamPipelineBaseTestCommon {
 				.join(airlinesamples, (tuple1, tuple2) -> ((Tuple2) tuple1).v1.equals(((Tuple2) tuple2).v1)).saveAsTextFile(new URI(hdfsfilepath), "/coalesce/Coalesce-" + System.currentTimeMillis());
 		log.info("testReduceByKeyCoalesceJoinUserDefinedBlockSizeJGroups After---------------------------------------");
 	}
-	
 
-	
+
 	@Test
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	public void testReduceByKeyCoalesceJoin() throws Throwable {
@@ -326,8 +331,8 @@ public class StreamPipelineBigFilesTest extends StreamPipelineBaseTestCommon {
 				.join(airlinesamples, (tuple1, tuple2) -> ((Tuple2) tuple1).v1.equals(((Tuple2) tuple2).v1)).saveAsTextFile(new URI(hdfsfilepath), "/coalesce/Coalesce-" + System.currentTimeMillis());
 		log.info("testReduceByKeyCoalesceJoin After---------------------------------------");
 	}
-	
-	
+
+
 	@Test
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	public void testReduceByKeyCoalesceJoinJGroups() throws Throwable {
@@ -355,7 +360,7 @@ public class StreamPipelineBigFilesTest extends StreamPipelineBaseTestCommon {
 				.join(airlinesamples, (tuple1, tuple2) -> ((Tuple2) tuple1).v1.equals(((Tuple2) tuple2).v1)).saveAsTextFile(new URI(hdfsfilepath), "/coalesce/Coalesce-" + System.currentTimeMillis());
 		log.info("testReduceByKeyCoalesceJoinJGroups After---------------------------------------");
 	}
-	
+
 	@Test
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	public void testReduceByKeyCoalesceJoinJGroupsCollect() throws Throwable {
@@ -389,7 +394,7 @@ public class StreamPipelineBigFilesTest extends StreamPipelineBaseTestCommon {
 		}
 		log.info("testReduceByKeyCoalesceJoinJGroupsCollect After---------------------------------------");
 	}
-	
+
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testFilterCollect() throws Throwable {
@@ -407,7 +412,7 @@ public class StreamPipelineBigFilesTest extends StreamPipelineBaseTestCommon {
 		assertEquals(1311826, sum);
 		log.info("testFilterCollect After---------------------------------------");
 	}
-	
+
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testResourcesAllocationBeforeAndAfterExecCombined() throws Throwable {
@@ -443,6 +448,7 @@ public class StreamPipelineBigFilesTest extends StreamPipelineBaseTestCommon {
 		log.info(MDCNodesResources.get());
 		log.info("testResourcesAllocationBeforeAndAfterExecCombined After---------------------------------------");
 	}
+
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testResourcesAllocationBeforeAndAfterExecDivided() throws Throwable {
@@ -479,8 +485,8 @@ public class StreamPipelineBigFilesTest extends StreamPipelineBaseTestCommon {
 		log.info(MDCNodesResources.get());
 		log.info("testResourcesAllocationBeforeAndAfterExecDivided After---------------------------------------");
 	}
-	
-	
+
+
 	@Test
 	public void testResourcesAllocationBeforeAndAfterExecCombinedCombinedCombined() throws Throwable {
 		Thread thr1 = new Thread(() -> {
@@ -508,7 +514,7 @@ public class StreamPipelineBigFilesTest extends StreamPipelineBaseTestCommon {
 		thr2.join();
 		thr3.join();
 	}
-	
+
 	@Test
 	public void testFilterFilterSaveAsTextFile() throws Exception {
 		log.info("testFilterFilterSaveAsTextFile Before---------------------------------------");
@@ -526,13 +532,13 @@ public class StreamPipelineBigFilesTest extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datastream = StreamPipeline.newStreamHDFS(hdfsfilepath, airlines,
 				pipelineconfig);
 		datastream
-		.filter(value -> !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]))
-		.filter(value -> !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]))
-		.saveAsTextFile(new URI(hdfsfilepath), "/filtertest/FilterFilter-" + System.currentTimeMillis());
+				.filter(value -> !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]))
+				.filter(value -> !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]))
+				.saveAsTextFile(new URI(hdfsfilepath), "/filtertest/FilterFilter-" + System.currentTimeMillis());
 		log.info("testFilterFilterSaveAsTextFile After---------------------------------------");
 	}
-	
-	
+
+
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testResourcesAllocationCoalesceExecDivided() throws Throwable {

@@ -10,6 +10,6 @@ public class TaskSchedulerCommon {
 	public static void init() throws Exception {
 		Utils.loadLog4JSystemPropertiesClassPath("mdctest.properties");
 	}
-	
-	
+
+
 }

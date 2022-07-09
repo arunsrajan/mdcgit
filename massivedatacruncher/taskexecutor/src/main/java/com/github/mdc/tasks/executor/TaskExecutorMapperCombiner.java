@@ -34,6 +34,7 @@ public class TaskExecutorMapperCombiner implements Runnable {
 	String taskid;
 	SnappyInputStream datastream;
 	int port;
+
 	@SuppressWarnings({"rawtypes"})
 	public TaskExecutorMapperCombiner(BlocksLocation blockslocation, SnappyInputStream datastream, String applicationid, String taskid,
 			ClassLoader cl, int port,
@@ -46,13 +47,13 @@ public class TaskExecutorMapperCombiner implements Runnable {
 			if (blockslocation.mapperclasses != null) {
 				for (var mapperclass :blockslocation.mapperclasses) {
 					clz = cl.loadClass(mapperclass);
-					cm.add((Mapper) clz.newInstance());
+					cm.add((Mapper) clz.getDeclaredConstructor().newInstance());
 				}
 			}
 			if (blockslocation.combinerclasses != null) {
 				for (var combinerclass :blockslocation.combinerclasses) {
 					clz = cl.loadClass(combinerclass);
-					cc.add((Combiner) clz.newInstance());
+					cc.add((Combiner) clz.getDeclaredConstructor().newInstance());
 				}
 			}
 		}
@@ -70,7 +71,7 @@ public class TaskExecutorMapperCombiner implements Runnable {
 
 		try {
 			hbts.pingOnce(taskid, TaskStatus.SUBMITTED, TaskType.MAPPERCOMBINER, null);
-			
+
 			var mdcmc = new MapperCombinerExecutor(blockslocation, datastream, cm, cc);
 			hbts.pingOnce(taskid, TaskStatus.RUNNING, TaskType.MAPPERCOMBINER, null);
 			var fc = es.submit(mdcmc);
@@ -98,5 +99,5 @@ public class TaskExecutorMapperCombiner implements Runnable {
 	public HeartBeatTaskScheduler getHbts() {
 		return hbts;
 	}
-	
+
 }

@@ -25,15 +25,15 @@ import org.xerial.snappy.SnappyInputStream;
  * The cache helper class to initialize and build in memory cache.
  */
 public class CacheUtils {
-	
+
 	static Logger log = Logger.getLogger(CacheUtils.class);
-	
+
 	private CacheUtils() {
 	}
 
 	public static enum CacheExpiry {
 		HOURS, MINUTES, SECONDS
-	};
+	}
 
 	/**
 	 * This functions builds cache objects given cachename, expiry and dizksize.
@@ -54,17 +54,17 @@ public class CacheUtils {
 		CacheManager cacheManager;
 		if (Objects.isNull(MDCCacheManager.get())) {
 			CacheConfiguration<?, ?> ccb = CacheConfigurationBuilder
-			.newCacheConfigurationBuilder(keytype, valuetype,
-					ResourcePoolsBuilder.newResourcePoolsBuilder()
-					.heap(numbuffsize, MemoryUnit.MB)
-					.disk(disksizeingb, MemoryUnit.GB, false)
-							)
-			.withExpiry(ExpiryPolicyBuilder
-					.timeToLiveExpiration(cacheexpiry == CacheExpiry.HOURS ? Duration.ofHours(expiry)
-							: cacheexpiry == CacheExpiry.MINUTES ? Duration.ofMinutes(expiry)
+					.newCacheConfigurationBuilder(keytype, valuetype,
+							ResourcePoolsBuilder.newResourcePoolsBuilder()
+									.heap(numbuffsize, MemoryUnit.MB)
+									.disk(disksizeingb, MemoryUnit.GB, false)
+					)
+					.withExpiry(ExpiryPolicyBuilder
+							.timeToLiveExpiration(cacheexpiry == CacheExpiry.HOURS ? Duration.ofHours(expiry)
+									: cacheexpiry == CacheExpiry.MINUTES ? Duration.ofMinutes(expiry)
 									: Duration.ofSeconds(expiry))).build();
 			cacheManager = CacheManagerBuilder.newCacheManagerBuilder()
-					.with(CacheManagerBuilder.persistence(cachedatapath)) 
+					.with(CacheManagerBuilder.persistence(cachedatapath))
 					.withCache(cachename, ccb).build();
 			log.debug("Cache Manager Object Built");
 			cacheManager.init();
@@ -91,7 +91,7 @@ public class CacheUtils {
 				(String) MDCProperties.get().getProperty(MDCConstants.CACHEDISKPATH, MDCConstants.CACHEDISKPATH_DEFAULT) + MDCConstants.BACKWARD_SLASH + Utils.getUniqueID()));
 		log.debug("Exiting CacheUtils.initCache");
 	}
-	
+
 	/**
 	 * This function returns block data in bytes in compressed stream using LZF compression.
 	 * @param blockslocation
@@ -102,6 +102,6 @@ public class CacheUtils {
 	public static SnappyInputStream getBlockData(BlocksLocation blockslocation, FileSystem hdfs) throws Exception {
 		log.debug("Entered CacheUtils.getBlockData");
 		return HdfsBlockReader.getBlockDataSnappyStream(blockslocation, hdfs);
-	
+
 	}
 }

@@ -67,7 +67,7 @@ import com.github.mdc.stream.utils.FileBlocksPartitionerHDFS;
 
 public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTestCommon {
 	ConcurrentMap<String, OutputStream> resultstream = new ConcurrentHashMap<>();
-	
+
 
 	// CSV Test Cases Start
 	@SuppressWarnings("unchecked")
@@ -2340,6 +2340,7 @@ public class StreamPipelineTaskExecutorInMemoryDiskTest extends StreamPipelineTe
 		assertEquals("AQ", tupleresult.v1);
 
 	}
+
 	// CSV Test Cases End
 
 	// JSON Test cases Start

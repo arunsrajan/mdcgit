@@ -63,6 +63,6 @@ public class MapReduceApplicationBuilder {
 			return new MapReduceApplicationYarn(jobname, jobconf, mappers, combiners, reducers, outputfolder);
 		}
 		return new MapReduceApplication(jobname, jobconf, mappers, combiners, reducers, outputfolder);
-		
+
 	}
 }

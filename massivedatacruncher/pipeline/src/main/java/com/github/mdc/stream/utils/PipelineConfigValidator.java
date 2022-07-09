@@ -8,7 +8,7 @@ import org.apache.commons.lang.StringUtils;
 import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.PipelineConfig;
 
-public class PipelineConfigValidator implements ConfigValidator{
+public class PipelineConfigValidator implements ConfigValidator {
 
 	public static final String BLOCKSIZENUMBER = "The block size should be number";
 	public static final String BLOCKSIZERANGE = "The block size should greater than 1 and less than 128";
@@ -23,6 +23,7 @@ public class PipelineConfigValidator implements ConfigValidator{
 	public static final String GCTYPEERROR = "The GC Type should be either G1GC (-XX:+UseG1GC) or ZGC (-XX:+UseZGC)";
 	public static final String NUMCONTERROR = "The numnber of containers should be positive number";
 	public static final String MESOSMASTERNOTSETERROR = "The mesos master url ([mesoshost]:[mesosport]) needs to set";
+
 	@Override
 	public List<String> validate(PipelineConfig pc) {
 		var errormessage = new ArrayList<String>();
@@ -63,15 +64,15 @@ public class PipelineConfigValidator implements ConfigValidator{
 		if (!(!ismodetruefalseerror && (
 				("true".equalsIgnoreCase(yarn) && "false".equalsIgnoreCase(mesos)
 						&& "false".equalsIgnoreCase(local) && "false".equalsIgnoreCase(jgroups))
-				|| ("false".equalsIgnoreCase(yarn) && "true".equalsIgnoreCase(mesos)
+						|| ("false".equalsIgnoreCase(yarn) && "true".equalsIgnoreCase(mesos)
 						&& "false".equalsIgnoreCase(local) && "false".equalsIgnoreCase(jgroups))
-				|| ("false".equalsIgnoreCase(yarn) && "false".equalsIgnoreCase(mesos)
+						|| ("false".equalsIgnoreCase(yarn) && "false".equalsIgnoreCase(mesos)
 						&& "true".equalsIgnoreCase(local) && "false".equalsIgnoreCase(jgroups))
-				|| ("false".equalsIgnoreCase(yarn) && "false".equalsIgnoreCase(mesos)
+						|| ("false".equalsIgnoreCase(yarn) && "false".equalsIgnoreCase(mesos)
 						&& "false".equalsIgnoreCase(local) && "true".equalsIgnoreCase(jgroups))
-				|| ("false".equalsIgnoreCase(yarn) && "false".equalsIgnoreCase(mesos)
+						|| ("false".equalsIgnoreCase(yarn) && "false".equalsIgnoreCase(mesos)
 						&& "false".equalsIgnoreCase(local) && "false".equalsIgnoreCase(jgroups))
-				))) {
+		))) {
 			errormessage.add(ERRORJGROUPSYARNLOCALMESOSSET);
 		}
 		value = pc.getMinmem();

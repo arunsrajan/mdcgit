@@ -18,13 +18,14 @@ import com.github.mdc.common.ServerUtils;
 
 import junit.framework.TestCase;
 
-public class ServerUtilsTest extends TestCase{
+public class ServerUtilsTest extends TestCase {
 
 	public static final String testhtml = "<html><p>test</p></html>";
 	public static final String message = "Server requires Port and atleast one servlet and url to access";
-	public static final String instanceservletmessage= "test which is of type java.lang.String must be instance of servlet javax.servlet.http.HttpServlet";
-	public static final String instanceservletmessagewithnoproperpath = "Path must be Url path of servlet "+TestServlet.class.getName();
+	public static final String instanceservletmessage = "test which is of type java.lang.String must be instance of servlet javax.servlet.http.HttpServlet";
+	public static final String instanceservletmessagewithnoproperpath = "Path must be Url path of servlet " + TestServlet.class.getName();
 	public static final String integerportmessage = "Configuration port must be integer";
+
 	@Test
 	public void testServerInitWithoutServlet() throws Exception {
 		try {
@@ -35,6 +36,7 @@ public class ServerUtilsTest extends TestCase{
 			assertEquals(message, ex.getMessage());
 		}
 	}
+
 	@Test
 	public void testServerInitWithNoPort() throws Exception {
 		try {
@@ -45,6 +47,7 @@ public class ServerUtilsTest extends TestCase{
 			assertEquals(message, ex.getMessage());
 		}
 	}
+
 	@Test
 	public void testServerInitWithImproperPortType() throws Exception {
 		try {
@@ -55,6 +58,7 @@ public class ServerUtilsTest extends TestCase{
 			assertEquals(integerportmessage, ex.getMessage());
 		}
 	}
+
 	@Test
 	public void testServerInitWithServletNoPath() throws Exception {
 		try {
@@ -65,7 +69,7 @@ public class ServerUtilsTest extends TestCase{
 			assertEquals(message, ex.getMessage());
 		}
 	}
-	
+
 	@Test
 	public void testServerInitWithNoServletWithPath() throws Exception {
 		try {
@@ -76,7 +80,7 @@ public class ServerUtilsTest extends TestCase{
 			assertEquals(instanceservletmessage, ex.getMessage());
 		}
 	}
-	
+
 	@Test
 	public void testServerInitWithServletWithNoProperPath() throws Exception {
 		try {
@@ -87,7 +91,7 @@ public class ServerUtilsTest extends TestCase{
 			assertEquals(instanceservletmessagewithnoproperpath, ex.getMessage());
 		}
 	}
-	
+
 	@Test
 	public void testServerHttpServlet() throws Exception {
 		ServerUtils serverutils = new ServerUtils();

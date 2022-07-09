@@ -16,8 +16,8 @@ public class StreamPipelineJsonTest extends StreamPipelineBaseTestCommon {
 	boolean toexecute = true;
 	Logger log = Logger.getLogger(StreamPipelineDepth2Test.class);
 	int sum;
-	
-	
+
+
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testFilterJsonCollect() throws Throwable {
@@ -34,7 +34,7 @@ public class StreamPipelineJsonTest extends StreamPipelineBaseTestCommon {
 		}
 		log.info("testFilterJsonCollect After---------------------------------------");
 	}
-	
+
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testFilterMapJsonCollect() throws Throwable {
@@ -52,7 +52,7 @@ public class StreamPipelineJsonTest extends StreamPipelineBaseTestCommon {
 		}
 		log.info("testFilterMapJsonCollect After---------------------------------------");
 	}
-	
+
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testFilterMapJsonAllCollect() throws Throwable {
@@ -70,7 +70,7 @@ public class StreamPipelineJsonTest extends StreamPipelineBaseTestCommon {
 		}
 		log.info("testFilterMapJsonAllCollect After---------------------------------------");
 	}
-	
+
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testFilterMapWithTupleObjectJsonUnionCollect() throws Throwable {
@@ -80,11 +80,11 @@ public class StreamPipelineJsonTest extends StreamPipelineBaseTestCommon {
 		StreamPipeline<Tuple2<String, Long>> mdp1 = (StreamPipeline<Tuple2<String, Long>>) datapipeline
 				.filter(jsonobj -> jsonobj != null)
 				.map(json -> new Tuple2<>((String) json.get("type"), 1l));
-		
+
 		StreamPipeline<Tuple2<String, Long>> mdp2 = (StreamPipeline<Tuple2<String, Long>>) datapipeline
 				.filter(jsonobj -> jsonobj != null)
 				.map(json -> new Tuple2<>((String) json.get("type"), json.get("type").equals("CreateEvent") ? 2l : 1l));
-		
+
 		List<List<Tuple2>> result = mdp1.union(mdp2).collect(toexecute, null);
 		for (List<Tuple2> partitioneddata : result) {
 			for (Tuple2 obj :partitioneddata) {
@@ -93,7 +93,7 @@ public class StreamPipelineJsonTest extends StreamPipelineBaseTestCommon {
 		}
 		log.info("testFilterMapJsonUnionCollect After---------------------------------------");
 	}
-	
+
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testFilterMapJsonIntersectionCollect() throws Throwable {
@@ -103,11 +103,11 @@ public class StreamPipelineJsonTest extends StreamPipelineBaseTestCommon {
 		StreamPipeline<Tuple2<String, Long>> mdp1 = (StreamPipeline<Tuple2<String, Long>>) datapipeline
 				.filter(jsonobj -> jsonobj != null)
 				.map(json -> new Tuple2<>((String) json.get("type"), 1l));
-		
+
 		StreamPipeline<Tuple2<String, Long>> mdp2 = (StreamPipeline<Tuple2<String, Long>>) datapipeline
 				.filter(jsonobj -> jsonobj != null)
 				.map(json -> new Tuple2<>((String) json.get("type"), json.get("type").equals("CreateEvent") ? 2l : 1l));
-		
+
 		List<List<Tuple2>> result = mdp1.intersection(mdp2).collect(toexecute, null);
 		for (List<Tuple2> partitioneddata : result) {
 			for (Tuple2 obj :partitioneddata) {
@@ -116,7 +116,7 @@ public class StreamPipelineJsonTest extends StreamPipelineBaseTestCommon {
 		}
 		log.info("testFilterMapJsonIntersectionCollect After---------------------------------------");
 	}
-	
+
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testFilterMapJsonUnionIntersectionCollect() throws Throwable {
@@ -126,15 +126,15 @@ public class StreamPipelineJsonTest extends StreamPipelineBaseTestCommon {
 		StreamPipeline<Tuple2<String, Long>> mdp1 = (StreamPipeline<Tuple2<String, Long>>) datapipeline
 				.filter(jsonobj -> jsonobj != null)
 				.map(json -> new Tuple2<>((String) json.get("type"), 1l));
-		
+
 		StreamPipeline<Tuple2<String, Long>> mdp2 = (StreamPipeline<Tuple2<String, Long>>) datapipeline
 				.filter(jsonobj -> jsonobj != null)
 				.map(json -> new Tuple2<>((String) json.get("type"), json.get("type").equals("CreateEvent") ? 2l : 1l));
-		
+
 		StreamPipeline<Tuple2<String, Long>> mdp3 = (StreamPipeline<Tuple2<String, Long>>) datapipeline
 				.filter(jsonobj -> jsonobj != null)
 				.map(json -> new Tuple2<>((String) json.get("type"), json.get("type").equals("IssueCommentEvent") ? 2l : 1l));
-		
+
 		List<List<Tuple2>> result = mdp1.union(mdp2).intersection(mdp3).collect(toexecute, null);
 		for (List<Tuple2> partitioneddata : result) {
 			for (Tuple2 obj :partitioneddata) {
@@ -143,7 +143,7 @@ public class StreamPipelineJsonTest extends StreamPipelineBaseTestCommon {
 		}
 		log.info("testFilterMapJsonUnionIntersectionCollect After---------------------------------------");
 	}
-	
+
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testFilterMapJsonUnionIntersectionUnionCollect() throws Throwable {
@@ -153,19 +153,19 @@ public class StreamPipelineJsonTest extends StreamPipelineBaseTestCommon {
 		StreamPipeline<Tuple2<String, Long>> mdp1 = (StreamPipeline<Tuple2<String, Long>>) datapipeline
 				.filter(jsonobj -> jsonobj != null)
 				.map(json -> new Tuple2<>((String) json.get("type"), 1l));
-		
+
 		StreamPipeline<Tuple2<String, Long>> mdp2 = (StreamPipeline<Tuple2<String, Long>>) datapipeline
 				.filter(jsonobj -> jsonobj != null)
 				.map(json -> new Tuple2<>((String) json.get("type"), json.get("type").equals("CreateEvent") ? 2l : 1l));
-		
+
 		StreamPipeline<Tuple2<String, Long>> mdp3 = (StreamPipeline<Tuple2<String, Long>>) datapipeline
 				.filter(jsonobj -> jsonobj != null)
 				.map(json -> new Tuple2<>((String) json.get("type"), json.get("type").equals("IssueCommentEvent") ? 2l : 1l));
-		
+
 		StreamPipeline<Tuple2<String, Long>> mdp4 = (StreamPipeline<Tuple2<String, Long>>) datapipeline
 				.filter(jsonobj -> jsonobj != null)
 				.map(json -> new Tuple2<>((String) json.get("type"), 1l));
-		
+
 		List<List<Tuple2>> result = mdp1.union(mdp2).intersection(mdp3).union(mdp4).collect(toexecute, null);
 		for (List<Tuple2> partitioneddata : result) {
 			for (Tuple2 obj :partitioneddata) {
@@ -174,8 +174,8 @@ public class StreamPipelineJsonTest extends StreamPipelineBaseTestCommon {
 		}
 		log.info("testFilterMapJsonUnionIntersectionUnionCollect After---------------------------------------");
 	}
-	
-	
+
+
 	@SuppressWarnings({"unchecked"})
 	@Test
 	public void testFilterMapJsonUnionIntersectionUnionCount() throws Throwable {
@@ -185,19 +185,19 @@ public class StreamPipelineJsonTest extends StreamPipelineBaseTestCommon {
 		StreamPipeline<Tuple2<String, Long>> mdp1 = (StreamPipeline<Tuple2<String, Long>>) datapipeline
 				.filter(jsonobj -> jsonobj != null)
 				.map(json -> new Tuple2<>((String) json.get("type"), 1l));
-		
+
 		StreamPipeline<Tuple2<String, Long>> mdp2 = (StreamPipeline<Tuple2<String, Long>>) datapipeline
 				.filter(jsonobj -> jsonobj != null)
 				.map(json -> new Tuple2<>((String) json.get("type"), json.get("type").equals("CreateEvent") ? 2l : 1l));
-		
+
 		StreamPipeline<Tuple2<String, Long>> mdp3 = (StreamPipeline<Tuple2<String, Long>>) datapipeline
 				.filter(jsonobj -> jsonobj != null)
 				.map(json -> new Tuple2<>((String) json.get("type"), json.get("type").equals("IssueCommentEvent") ? 2l : 1l));
-		
+
 		StreamPipeline<Tuple2<String, Long>> mdp4 = (StreamPipeline<Tuple2<String, Long>>) datapipeline
 				.filter(jsonobj -> jsonobj != null)
 				.map(json -> new Tuple2<>((String) json.get("type"), 1l));
-		
+
 		List<List<Long>> result = (List<List<Long>>) mdp1.union(mdp2).intersection(mdp3).union(mdp4).count(null);
 		for (List<Long> partitioneddata : result) {
 			for (Long obj :partitioneddata) {
@@ -206,7 +206,7 @@ public class StreamPipelineJsonTest extends StreamPipelineBaseTestCommon {
 		}
 		log.info("testFilterMapJsonUnionIntersectionUnionCount After---------------------------------------");
 	}
-	
+
 	@SuppressWarnings({"unchecked"})
 	@Test
 	public void testFilterJsonUnionSortedAscCollect() throws Throwable {
@@ -232,7 +232,7 @@ public class StreamPipelineJsonTest extends StreamPipelineBaseTestCommon {
 		}
 		log.info("testFilterJsonUnionSortedAscCollect After---------------------------------------");
 	}
-	
+
 	@SuppressWarnings({"unchecked"})
 	@Test
 	public void testFilterJsonUnionSortedDescCollect() throws Throwable {
@@ -258,7 +258,7 @@ public class StreamPipelineJsonTest extends StreamPipelineBaseTestCommon {
 		}
 		log.info("testFilterJsonUnionSortedDescCollect After---------------------------------------");
 	}
-	
+
 	@SuppressWarnings({"unchecked"})
 	@Test
 	public void testFilterJsonUnionSortedDescFilterCollect() throws Throwable {
@@ -284,7 +284,7 @@ public class StreamPipelineJsonTest extends StreamPipelineBaseTestCommon {
 		}
 		log.info("testFilterJsonUnionSortedDescFilterCollect After---------------------------------------");
 	}
-	
+
 	@SuppressWarnings({"unchecked"})
 	@Test
 	public void testFilterJsonIntersectionSortedDescCollect() throws Throwable {

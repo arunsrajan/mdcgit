@@ -40,8 +40,9 @@ public class StreamPipelineFunctionsTest extends TestCase {
 		AggregateFunction<Long, String, String> aggregateFunctionSL = (a, b) -> a + b;
 		String resultSL = aggregateFunctionSL.apply(10l, "20");
 		assertEquals("1020", resultSL);
-		
+
 	}
+
 	@Test
 	public void testAggregateReduceFunction() {
 		AggregateReduceFunction<String, String, String> aggregateReduceFunction = (a, b) -> a + b;
@@ -53,9 +54,9 @@ public class StreamPipelineFunctionsTest extends TestCase {
 		AggregateReduceFunction<Long, String, String> aggregateReduceFunctionSL = (a, b) -> a + b;
 		String resultSL = aggregateReduceFunctionSL.apply(10l, "20");
 		assertEquals("1020", resultSL);
-		
+
 	}
-	
+
 	@Test
 	public void testBiPredicateSerializable() {
 		BiPredicateSerializable<String, String> biPredicateSerializable = (a, b) -> a.equals(b);
@@ -66,7 +67,7 @@ public class StreamPipelineFunctionsTest extends TestCase {
 		result = biPredicateSerializable.negate().test("MDC", "MDCTest");
 		assertTrue(result);
 	}
-	
+
 	@Test
 	public void testCoalesceFunction() {
 		CoalesceFunction<String> coalesceFunctionS = (a, b) -> a + b;
@@ -76,6 +77,7 @@ public class StreamPipelineFunctionsTest extends TestCase {
 		long resultL = coalesceFunctionL.apply(20l, 30l);
 		assertEquals(50, resultL);
 	}
+
 	@Test
 	public void testDoubleFlatMapFunction() {
 		DoubleFlatMapFunction<String> doubleFlatMapFunctionSD = a -> Arrays.asList(Double.parseDouble(a));
@@ -85,7 +87,7 @@ public class StreamPipelineFunctionsTest extends TestCase {
 		List<Double> resultDD = doubleFlatMapFunctionDD.apply(100d);
 		assertEquals(100.0d, resultDD.get(0));
 	}
-	
+
 	@Test
 	public void testFlatMapFunction() {
 		FlatMapFunction<String, String> flatMapFunctionSS = a -> Arrays.asList(a);
@@ -95,7 +97,7 @@ public class StreamPipelineFunctionsTest extends TestCase {
 		List<Double> resultDD = flatMapFunctionDD.apply(100d);
 		assertEquals(100.0d, resultDD.get(0));
 	}
-	
+
 	@Test
 	public void testJoinPredicate() {
 		JoinPredicate<String, String> joinPredicateSS = (a, b) -> a.equals(b);
@@ -113,6 +115,7 @@ public class StreamPipelineFunctionsTest extends TestCase {
 		result = joinPredicateLL.negate().test(100l, 101l);
 		assertTrue(result);
 	}
+
 	@Test
 	public void testKeyByFunction() {
 		KeyByFunction<String, String> keyByFunctionSS = a -> a + "-MassiveDataCruncher";
@@ -122,6 +125,7 @@ public class StreamPipelineFunctionsTest extends TestCase {
 		Double resultDD = keyByFunctionDD.apply(100.0d);
 		assertEquals(200.0, resultDD);
 	}
+
 	@Test
 	public void testLeftOuterJoinPredicate() {
 		LeftOuterJoinPredicate<String, String> leftOuterJoinPredicateSB = (a, b) -> a.equals(b);
@@ -139,8 +143,8 @@ public class StreamPipelineFunctionsTest extends TestCase {
 		resultSDB = leftOuterJoinPredicateSDB.negate().test("100", 100d);
 		assertTrue(resultSDB);
 	}
-	
-	
+
+
 	@Test
 	public void testLongFlatMapFunction() {
 		LongFlatMapFunction<String> longFlatMapFunctionSL = a -> Arrays.asList(Long.parseLong(a));
@@ -150,7 +154,7 @@ public class StreamPipelineFunctionsTest extends TestCase {
 		List<Long> resultLL = longFlatMapFunctionLL.apply(100l);
 		assertEquals(100l, resultLL.get(0).longValue());
 	}
-	
+
 	@Test
 	public void testMapFunction() {
 		MapFunction<String, String> mapFunction = a -> a + "100";
@@ -165,9 +169,9 @@ public class StreamPipelineFunctionsTest extends TestCase {
 		MapFunction<String, Long> mapFunctionSL = a -> Long.parseLong(a);
 		Long resultSL = mapFunctionSL.apply("100");
 		assertEquals(100l, resultSL.longValue());
-		
+
 	}
-	
+
 	@Test
 	public void testPairFunction() {
 		PairFunction<String, String> pairFunction = a -> a + "100";
@@ -182,10 +186,10 @@ public class StreamPipelineFunctionsTest extends TestCase {
 		PairFunction<String, Long> pairFunctionSL = a -> Long.parseLong(a);
 		Long resultSL = pairFunctionSL.apply("100");
 		assertEquals(100l, resultSL.longValue());
-		
+
 	}
-	
-	
+
+
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testMapPairFunction() {
@@ -193,15 +197,16 @@ public class StreamPipelineFunctionsTest extends TestCase {
 		Tuple2<String, String> result = (Tuple2<String, String>) mapPairFunction.apply("MDC");
 		assertEquals("MDC", result.v1);
 		assertEquals("MDC", result.v2);
-		
+
 		MapToPairFunction<Long, Tuple> mapPairFunctionLT = a -> new Tuple2<Long, Long>(a, a);
 		Tuple2<Long, Long> resultLT = (Tuple2<Long, Long>) mapPairFunctionLT.apply(100l);
 		assertEquals(100l, resultLT.v1.longValue());
 		assertEquals(100l, resultLT.v2.longValue());
-		
+
 	}
 	String dataS;
 	Long valL;
+
 	@Test
 	public void testPeekConsumer() {
 		PeekConsumer<String> consumerS = data1 -> dataS = data1;
@@ -211,7 +216,7 @@ public class StreamPipelineFunctionsTest extends TestCase {
 		consumerL.accept(100l);
 		assertEquals(100, valL.longValue());
 	}
-	
+
 	@Test
 	public void testPredicateSerializable() {
 		PredicateSerializable<String> predicateSerializableSS = a -> "MDC".equals(a);
@@ -225,7 +230,7 @@ public class StreamPipelineFunctionsTest extends TestCase {
 		result = joinPredicateLL.negate().test(100l);
 		assertFalse(result);
 	}
-	
+
 	@Test
 	public void testReduceFunction() {
 		ReduceByKeyFunction<String> reduceFunctionSS = (a, b) -> a + b;
@@ -238,7 +243,7 @@ public class StreamPipelineFunctionsTest extends TestCase {
 		Double resultD = reduceFunctionDD.apply(100.0, 100.0);
 		assertEquals(200.0, resultD.doubleValue());
 	}
-	
+
 	@Test
 	public void testRightOuterJoinPredicate() {
 		RightOuterJoinPredicate<String, String> rightOuterJoinPredicateSB = (a, b) -> a.equals(b);
@@ -256,6 +261,7 @@ public class StreamPipelineFunctionsTest extends TestCase {
 		resultSDB = rightOuterJoinPredicateSDB.negate().test("100", 100d);
 		assertTrue(resultSDB);
 	}
+
 	@Test
 	public void testTupleFlatMapFunction() {
 		TupleFlatMapFunction<String, Tuple2<String, String>> tupleFlatMapFunction = data -> Arrays.asList(new Tuple2<String, String>(data, data + "100"));

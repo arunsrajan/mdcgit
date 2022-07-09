@@ -26,29 +26,32 @@ public final class StreamPipelineTaskExecutorMesos extends StreamPipelineTaskExe
 	private ExecutorDriver driver;
 	TaskID taskid;
 	private static Logger log = Logger.getLogger(StreamPipelineTaskExecutorMesos.class);
+
 	public StreamPipelineTaskExecutorMesos(JobStage jobstage, ExecutorDriver driver,
 			TaskID taskid) {
 		super(jobstage, null);
 		this.driver = driver;
 		this.taskid = taskid;
 	}
+
 	/**
 	 * Execute the tasks via run method.
 	 */
 	@Override
 	public StreamPipelineTaskExecutor call() {
-		
+
 		log.debug("Entered MassiveDataStreamTaskExecutorMesos.run");
-		var configuration = new Configuration();;
+		var configuration = new Configuration();
+		;
 		var hdfsfilepath = MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL, MDCConstants.HDFSNAMENODEURL);
 		try (var hdfs = FileSystem.newInstance(new URI(hdfsfilepath), configuration);) {
-			
-			
+
+
 			var output = new ArrayList<>();
 			var status = Protos.TaskStatus.newBuilder().setTaskId(taskid)
 					.setState(Protos.TaskState.TASK_RUNNING).build();
 			driver.sendStatusUpdate(status);
-			
+
 			if (task.input != null && task.parentremotedatafetch != null) {
 				var numinputs = task.parentremotedatafetch.length;
 				for (var inputindex = 0; inputindex < numinputs; inputindex++) {
@@ -75,6 +78,6 @@ public final class StreamPipelineTaskExecutorMesos extends StreamPipelineTaskExe
 		log.debug("Exiting MassiveDataStreamTaskExecutorMesos.run");
 		return this;
 	}
-	
-	
+
+
 }

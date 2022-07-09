@@ -28,6 +28,7 @@ public class TaskSchedulerMapperSubmitter implements TaskSchedulerMapperSubmitte
 	List<String> containers;
 	Boolean iscompleted;
 	HeartBeatTaskScheduler hbts;
+
 	TaskSchedulerMapperSubmitter(Object blockslocation, boolean mapper, Set<String> mapperclasses,
 			ApplicationTask apptask, CuratorFramework cf, List<String> containers,
 			HeartBeatTaskScheduler hbts) {

@@ -45,8 +45,8 @@ public class StreamPipelineSqlBiggerFilesTest extends StreamPipelineBaseTestComm
 		log.info("In testMDPSqlBuilderSumArrivalDelayInMemory() method Exit");
 		pipelineconfig.setLocal("true");
 	}
-	
-	
+
+
 	@SuppressWarnings({"unchecked"})
 	@Test
 	public void testMDPSqlBuilderSumArrivalDelayInMemoryLocal() throws Exception {
@@ -71,8 +71,8 @@ public class StreamPipelineSqlBiggerFilesTest extends StreamPipelineBaseTestComm
 		log.info("In testMDPSqlBuilderSumArrivalDelayInMemoryLocal() method Exit");
 		pipelineconfig.setLocal("true");
 	}
-	
-	
+
+
 	@SuppressWarnings({"unchecked"})
 	@Test
 	public void testMDPSqlBuilderCountArrivalDelayBiggerFiles() throws Exception {
@@ -98,8 +98,8 @@ public class StreamPipelineSqlBiggerFilesTest extends StreamPipelineBaseTestComm
 		assertEquals(120947440l, sum);
 		log.info("In testMDPSqlBuilderCountArrivalDelayBiggerFiles() method Exit");
 	}
-	
-	
+
+
 	@SuppressWarnings({"unchecked"})
 	@Test
 	public void testMDPSqlBuilderSumArrivalDelayDisk() throws Exception {

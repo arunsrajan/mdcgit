@@ -12,13 +12,14 @@ public class JobMetrics {
 	public double totalfilesize;
 	public List<String> stages;
 	public List<String> containerresources;
-	public Map<String,Double> containersallocated;
+	public Map<String, Double> containersallocated;
 	public Set<String> nodes;
 	public long totalblocks;
 	public long jobstarttime;
 	public long jobcompletiontime;
 	public double totaltimetaken;
 	public List<String> stagecompletiontime;
+
 	@Override
 	public String toString() {
 		return "JobMetrics [jobname=" + jobname + ", jobid=" + jobid + ", files=" + files + ", mode=" + mode

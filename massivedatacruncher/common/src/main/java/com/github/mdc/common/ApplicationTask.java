@@ -10,30 +10,34 @@ import java.io.Serializable;
 public class ApplicationTask implements Serializable {
 
 	private static final long serialVersionUID = -3860457009382190198L;
+
 	//This enum declaration are the statuses of the Map Reduce Framework Executor and Task Scheduler Heart Beat
-	public enum TaskStatus {YETTOSUBMIT,SUBMITTED,RUNNING,COMPLETED,FAILED};
-	
+	public enum TaskStatus {
+		YETTOSUBMIT,SUBMITTED,RUNNING,COMPLETED,FAILED
+	}
+
 	//This enum declaration are the task type for Map Reduce Framework.
-	public enum TaskType {REDUCER,MAPPERCOMBINER};
-	
+	public enum TaskType {
+		REDUCER,MAPPERCOMBINER
+	}
+
 	public String applicationid;
 	public String taskid;
 	public TaskStatus taskstatus;
 	public TaskType tasktype;
 	public String hp;
 	public String apperrormessage;
-	
-	
+
+
 	public String getHp() {
 		return hp;
 	}
+
 	public TaskType getTasktype() {
 		return tasktype;
 	}
-	
-	
-	
-	
+
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -45,6 +49,7 @@ public class ApplicationTask implements Serializable {
 		result = prime * result + ((tasktype == null) ? 0 : tasktype.hashCode());
 		return result;
 	}
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
@@ -86,11 +91,11 @@ public class ApplicationTask implements Serializable {
 		}
 		return true;
 	}
-	
+
 	@Override
 	public String toString() {
 		return "ApplicationTask [applicationid=" + applicationid + ", taskid=" + taskid + ", taskstatus=" + taskstatus
 				+ ", tasktype=" + tasktype + ", hp=" + hp + "]";
 	}
-	
+
 }

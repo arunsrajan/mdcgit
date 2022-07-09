@@ -37,13 +37,13 @@ public final class StreamPipelineTaskExecutorLocal extends StreamPipelineTaskExe
 	private static Logger log = Logger.getLogger(StreamPipelineTaskExecutorLocal.class);
 	protected ConcurrentMap<String, OutputStream> resultstream;
 	public double timetaken = 0.0;
-	
-	public StreamPipelineTaskExecutorLocal(JobStage jobstage, 
+
+	public StreamPipelineTaskExecutorLocal(JobStage jobstage,
 			ConcurrentMap<String, OutputStream> resultstream, Cache cache) {
 		super(jobstage, cache);
 		this.resultstream = resultstream;
 	}
-	
+
 	public OutputStream getIntermediateInputStreamRDF(RemoteDataFetch rdf) throws Exception {
 		log.debug("Entered MassiveDataStreamTaskExecutorInMemory.getIntermediateInputStreamRDF");
 		var path = rdf.jobid + MDCConstants.HYPHEN
@@ -61,7 +61,7 @@ public final class StreamPipelineTaskExecutorLocal extends StreamPipelineTaskExe
 			throw new UnsupportedOperationException("Unknown I/O operation");
 		}
 	}
-	
+
 	/**
 	 * Get the HDFS file path using the job and stage id.
 	 * @return
@@ -71,8 +71,8 @@ public final class StreamPipelineTaskExecutorLocal extends StreamPipelineTaskExe
 		return task.jobid + MDCConstants.HYPHEN
 				+ task.stageid + MDCConstants.HYPHEN + task.taskid;
 	}
-	
-	
+
+
 	/**
 	 * Create a file in HDFS and return the stream.
 	 * @param hdfs
@@ -101,7 +101,6 @@ public final class StreamPipelineTaskExecutorLocal extends StreamPipelineTaskExe
 		}
 	}
 
-	
 
 	/**
 	 * Open the already existing file using the job and stageid.
@@ -122,10 +121,10 @@ public final class StreamPipelineTaskExecutorLocal extends StreamPipelineTaskExe
 		} else {
 			throw new UnsupportedOperationException("Unknown I/O operation");
 		}
-		
+
 	}
 
-	
+
 	@Override
 	public StreamPipelineTaskExecutorLocal call() {
 		log.debug("Entered MassiveDataStreamTaskExecutorInMemory.call");
@@ -178,5 +177,5 @@ public final class StreamPipelineTaskExecutorLocal extends StreamPipelineTaskExe
 		log.debug("Exiting MassiveDataStreamTaskExecutorInMemory.call");
 		return this;
 	}
-	
+
 }

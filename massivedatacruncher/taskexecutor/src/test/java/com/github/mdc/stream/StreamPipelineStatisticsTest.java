@@ -11,12 +11,13 @@ import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
 import com.github.mdc.stream.StreamPipeline;
+
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class StreamPipelineStatisticsTest extends StreamPipelineBaseTestCommon {
 
 	Logger log = Logger.getLogger(StreamPipelineStatisticsTest.class);
 	boolean toexecute = true;
-	
+
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testSummaryStatistics() throws Throwable {
@@ -34,6 +35,7 @@ public class StreamPipelineStatisticsTest extends StreamPipelineBaseTestCommon {
 		assertTrue(summarylist.size() > 0);
 		log.info("testSummaryStatistics After---------------------------------------");
 	}
+
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testSummaryStatisticsPartitioned() throws Throwable {
@@ -53,6 +55,7 @@ public class StreamPipelineStatisticsTest extends StreamPipelineBaseTestCommon {
 		pipelineconfig.setBlocksize("20");
 		log.info("testSummaryStatisticsPartitioned After---------------------------------------");
 	}
+
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testSum() throws Throwable {
@@ -70,6 +73,7 @@ public class StreamPipelineStatisticsTest extends StreamPipelineBaseTestCommon {
 		assertTrue(suml.size() > 0);
 		log.info("testSum After---------------------------------------");
 	}
+
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testSumPartitioned() throws Throwable {
@@ -89,6 +93,7 @@ public class StreamPipelineStatisticsTest extends StreamPipelineBaseTestCommon {
 		pipelineconfig.setBlocksize("20");
 		log.info("testSumPartitioned After---------------------------------------");
 	}
+
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testMax() throws Throwable {
@@ -106,6 +111,7 @@ public class StreamPipelineStatisticsTest extends StreamPipelineBaseTestCommon {
 		assertTrue(maxl.size() > 0);
 		log.info("testMax After---------------------------------------");
 	}
+
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testMaxPartitioned() throws Throwable {
@@ -125,7 +131,7 @@ public class StreamPipelineStatisticsTest extends StreamPipelineBaseTestCommon {
 		pipelineconfig.setBlocksize("20");
 		log.info("testMaxPartitioned After---------------------------------------");
 	}
-	
+
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testMin() throws Throwable {
@@ -143,6 +149,7 @@ public class StreamPipelineStatisticsTest extends StreamPipelineBaseTestCommon {
 		assertTrue(minl.size() > 0);
 		log.info("testMin After---------------------------------------");
 	}
+
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testMinPartitioned() throws Throwable {
@@ -162,6 +169,7 @@ public class StreamPipelineStatisticsTest extends StreamPipelineBaseTestCommon {
 		pipelineconfig.setBlocksize("20");
 		log.info("testMinPartitioned After---------------------------------------");
 	}
+
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testStandardDeviation() throws Throwable {
@@ -179,7 +187,7 @@ public class StreamPipelineStatisticsTest extends StreamPipelineBaseTestCommon {
 		assertTrue(stdl.size() > 0);
 		log.info("testStandardDeviation After---------------------------------------");
 	}
-	
+
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testStandardDeviationPartitioned() throws Throwable {

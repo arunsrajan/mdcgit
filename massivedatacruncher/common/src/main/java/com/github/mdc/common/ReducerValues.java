@@ -10,10 +10,11 @@ import java.util.List;
  * the Reducer tasks in the task executor daemon.
  */
 @SuppressWarnings("serial")
-public class ReducerValues implements Serializable{
+public class ReducerValues implements Serializable {
 	public List tuples;
 	public String reducerclass;
 	public String appid;
+
 	@Override
 	public String toString() {
 		return "ReducerValues [tuples=" + tuples + ", reducerclass=" + reducerclass + ", appid=" + appid + "]";

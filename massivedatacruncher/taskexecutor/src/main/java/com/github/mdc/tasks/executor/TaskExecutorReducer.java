@@ -33,6 +33,7 @@ public class TaskExecutorReducer implements Runnable {
 	String applicationid;
 	String taskid;
 	int port;
+
 	@SuppressWarnings({"rawtypes"})
 	public TaskExecutorReducer(ReducerValues rv, String applicationid, String taskid,
 			ClassLoader cl, int port,
@@ -42,7 +43,7 @@ public class TaskExecutorReducer implements Runnable {
 		this.port = port;
 		try {
 			clz = cl.loadClass(rv.reducerclass);
-			cr = (Reducer) clz.newInstance();
+			cr = (Reducer) clz.getDeclaredConstructor().newInstance();
 			this.applicationid = applicationid;
 			this.taskid = taskid;
 		}
@@ -106,7 +107,6 @@ public class TaskExecutorReducer implements Runnable {
 	public HeartBeatTaskScheduler getHbts() {
 		return hbts;
 	}
-	
-	
-	
+
+
 }

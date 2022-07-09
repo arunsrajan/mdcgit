@@ -10,6 +10,7 @@ import com.github.mdc.tasks.scheduler.MapReduceApplicationIgnite;
 
 public class MrJobArrivalDelayIGNITE implements com.github.mdc.tasks.scheduler.Application {
 	static Logger log = Logger.getLogger(MrJobArrivalDelayIGNITE.class);
+
 	@Override
 	public void runMRJob(String[] args, JobConfiguration jobconfiguration) {
 		jobconfiguration.setBatchsize("2");

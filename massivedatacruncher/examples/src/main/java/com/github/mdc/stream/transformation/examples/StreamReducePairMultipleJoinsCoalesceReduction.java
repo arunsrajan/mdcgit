@@ -33,7 +33,7 @@ public class StreamReducePairMultipleJoinsCoalesceReduction implements Serializa
 		var mappair1 = datastream.map(dat -> dat.split(","))
 				.filter(dat -> !"ArrDelay".equals(dat[14]) && !"NA".equals(dat[14]))
 				.mapToPair(dat -> Tuple.tuple(dat[8], Long.parseLong(dat[14])))
-				;
+		;
 
 		var airlinesamples = mappair1.reduceByKey((dat1, dat2) -> dat1 + dat2).coalesce(1, (dat1, dat2) -> dat1 + dat2);
 
@@ -44,8 +44,8 @@ public class StreamReducePairMultipleJoinsCoalesceReduction implements Serializa
 						line[1].substring(1, line[1].length() - 1)));
 
 		carriers.join(airlinesamples).join(carriers).join(carriers).join(carriers).join(carriers)
-		.join(airlinesamples).join(airlinesamples)
-		.saveAsTextFile(new URI(args[0]), args[3] + "/StreamReducePairMultipleJoin-" + System.currentTimeMillis());
+				.join(airlinesamples).join(airlinesamples)
+				.saveAsTextFile(new URI(args[0]), args[3] + "/StreamReducePairMultipleJoin-" + System.currentTimeMillis());
 		log.info("StreamReducePairMultipleJoins.testReduce After---------------------------------------");
 	}
 }

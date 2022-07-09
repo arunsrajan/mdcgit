@@ -24,6 +24,7 @@ public class TaskSchedulerReducerSubmitter
 	CuratorFramework cf;
 	List<String> containers;
 	boolean iscompleted;
+
 	public TaskSchedulerReducerSubmitter(String currentexecutor, ReducerValues rv, String applicationid, String taskid2,
 			long reducersubmittedcount, CuratorFramework cf, List<String> containers) {
 		this.rv = rv;

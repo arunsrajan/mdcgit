@@ -10,9 +10,10 @@ import org.apache.log4j.Logger;
  * The helper or utility class for launching container processes.
  */
 public class ContainerLauncher {
-	
-	private ContainerLauncher() {}
-	
+
+	private ContainerLauncher() {
+	}
+
 	static Logger log = Logger.getLogger(ContainerLauncher.class);
 
 	public static Process spawnMDCContainer(String port,
@@ -22,7 +23,7 @@ public class ContainerLauncher {
 			var argumentsForSpawn = new ArrayList<String>();
 			argumentsForSpawn.add(System.getProperty("java.home").replace("\\", "/") + "/bin/java");
 			argumentsForSpawn.add("-classpath");
-			argumentsForSpawn.add(System.getProperty("java.class.path"));			
+			argumentsForSpawn.add(System.getProperty("java.class.path"));
 			argumentsForSpawn.add("-Xms" + cr.getMinmemory() + "m");
 			argumentsForSpawn.add("-Xmx" + cr.getMaxmemory() + "m");
 			argumentsForSpawn.add("-XX:ActiveProcessorCount=" + cr.getCpu());
@@ -50,14 +51,14 @@ public class ContainerLauncher {
 		}
 		return null;
 	}
-	
+
 	public static Process spawnMDCContainerIgnite(String port,
 			String diskcache, Class<?> cls, String prop, ContainerResources cr) {
 		try {
 			var argumentsForSpawn = new ArrayList<String>();
 			argumentsForSpawn.add(System.getProperty("java.home").replace("\\", "/") + "/bin/java");
 			argumentsForSpawn.add("-classpath");
-			argumentsForSpawn.add(System.getProperty("java.class.path"));			
+			argumentsForSpawn.add(System.getProperty("java.class.path"));
 			argumentsForSpawn.add("-Xms" + cr.getMinmemory() + "m");
 			argumentsForSpawn.add("-Xmx" + cr.getMaxmemory() + "m");
 			argumentsForSpawn.add("-XX:ActiveProcessorCount=" + cr.getCpu());

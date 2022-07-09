@@ -37,7 +37,7 @@ import com.github.mdc.stream.PipelineException;
 @SuppressWarnings("rawtypes")
 public final class StreamPipelineTaskExecutorInMemoryDisk extends StreamPipelineTaskExecutorInMemory {
 	private static Logger log = Logger.getLogger(StreamPipelineTaskExecutorInMemoryDisk.class);
-	
+
 	public StreamPipelineTaskExecutorInMemoryDisk(JobStage jobstage,
 			ConcurrentMap<String, OutputStream> resultstream,
 			Cache cache, HeartBeatTaskSchedulerStream hbtss) throws Exception {
@@ -45,9 +45,8 @@ public final class StreamPipelineTaskExecutorInMemoryDisk extends StreamPipeline
 		iscacheable = true;
 		this.hbtss = hbtss;
 	}
-	
-	
-	
+
+
 	/**
 	 * Get the HDFS file path using the job and stage id.
 	 * @return
@@ -57,8 +56,8 @@ public final class StreamPipelineTaskExecutorInMemoryDisk extends StreamPipeline
 		return task.jobid + MDCConstants.HYPHEN
 				+ task.stageid + MDCConstants.HYPHEN + task.taskid;
 	}
-	
-	
+
+
 	/**
 	 * Create a file in HDFS and return the stream.
 	 * @param hdfs
@@ -80,7 +79,6 @@ public final class StreamPipelineTaskExecutorInMemoryDisk extends StreamPipeline
 		}
 	}
 
-	
 
 	/**
 	 * Open the already existing file using the job and stageid.
@@ -118,6 +116,7 @@ public final class StreamPipelineTaskExecutorInMemoryDisk extends StreamPipeline
 				+ rdf.stageid + MDCConstants.HYPHEN + rdf.taskid;
 		return (byte[]) cache.get(path);
 	}
+
 	@Override
 	public StreamPipelineTaskExecutorInMemoryDisk call() {
 		log.debug("Entered MassiveDataStreamTaskExecutorInMemory.call");
@@ -126,7 +125,7 @@ public final class StreamPipelineTaskExecutorInMemoryDisk extends StreamPipeline
 		var configuration = new Configuration();
 		var timetakenseconds = 0.0;
 		try (var hdfs = FileSystem.newInstance(new URI(hdfsfilepath), configuration);) {
-			
+
 			hbtss.setTimetakenseconds(timetakenseconds);
 			hbtss.pingOnce(task.stageid, task.taskid, task.hostport, Task.TaskStatus.SUBMITTED, timetakenseconds, null);
 			log.debug("Submitted JobStage " + task.jobid + " " + task.stageid + " " + jobstage);
@@ -177,5 +176,5 @@ public final class StreamPipelineTaskExecutorInMemoryDisk extends StreamPipeline
 		log.debug("Exiting MassiveDataStreamTaskExecutorInMemory.call");
 		return this;
 	}
-	
+
 }

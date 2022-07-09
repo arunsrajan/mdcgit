@@ -29,9 +29,8 @@ public class ZookeeperOperations {
 			return null;
 		}
 	};
-	
-	
-	
+
+
 	/**
 	 * Ephemeral sequential node create operation.
 	 */
@@ -44,7 +43,7 @@ public class ZookeeperOperations {
 			return null;
 		}
 	};
-	
+
 	/**
 	 * Operation to obtain child nodes information of a node. 
 	 */
@@ -73,7 +72,7 @@ public class ZookeeperOperations {
 			return null;
 		}
 	};
-	
+
 	/**
 	 * Operation to obtain node data.
 	 */
@@ -88,7 +87,7 @@ public class ZookeeperOperations {
 			return null;
 		}
 	};
-	
+
 	/**
 	 * Operation to delete node.
 	 */
@@ -104,7 +103,7 @@ public class ZookeeperOperations {
 			return null;
 		}
 	};
-	
+
 	/**
 	 * Operation to obtain nodes data 
 	 */
@@ -118,12 +117,12 @@ public class ZookeeperOperations {
 			return null;
 		}
 	};
-	
+
 	/**
 	 * Operation to write data to node.
 	 */
 	@SuppressWarnings("finally")
-	public static Zk<CuratorFramework,String,String,String> writedata = (final CuratorFramework cf,final String path,final String child,final String data)->{
+	public static Zk<CuratorFramework, String, String, String> writedata = (final CuratorFramework cf, final String path, final String child, final String data) -> {
 		try {
 			cf.setData().forPath(path, data.getBytes());
 		} catch (Exception ex) {
@@ -133,12 +132,12 @@ public class ZookeeperOperations {
 			return null;
 		}
 	};
-	
+
 	/**
 	 * Operation to obtain information on whether node exists or not. 
 	 */
 	@SuppressWarnings("finally")
-	public static Zk<CuratorFramework,String,String,String> checkexists = (final CuratorFramework cf,final String path,final String child,final String data)->{
+	public static Zk<CuratorFramework, String, String, String> checkexists = (final CuratorFramework cf, final String path, final String child, final String data) -> {
 		var isexists = false;
 		try {
 			if (child != null) {
@@ -154,17 +153,14 @@ public class ZookeeperOperations {
 			return isexists;
 		}
 	};
-	
-	
-	
-	public static ZkConnectivity<CuratorFramework,ConnectionStateListener> addconnectionstate = (final CuratorFramework cf,ConnectionStateListener connectionstatelistener)->{
+
+
+	public static ZkConnectivity<CuratorFramework, ConnectionStateListener> addconnectionstate = (final CuratorFramework cf, ConnectionStateListener connectionstatelistener) -> {
 		cf.getConnectionStateListenable().addListener(connectionstatelistener);
 	};
 
 	private ZookeeperOperations() {
 	}
-	
-	
-	
-	
+
+
 }

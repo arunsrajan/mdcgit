@@ -12,7 +12,7 @@ import com.github.mdc.stream.functions.ReduceByKeyFunctionValues;
  * @param <I1>
  * @param <I2>
  */
-public final class MapValues<I1,I2> extends MapPair<I1,I2> {
+public final class MapValues<I1, I2> extends MapPair<I1, I2> {
 	@SuppressWarnings({"unchecked"})
 	private MapValues(AbstractPipeline root,
 			ReduceByKeyFunctionValues<I2> rfv)  {
@@ -20,7 +20,7 @@ public final class MapValues<I1,I2> extends MapPair<I1,I2> {
 		this.root = root;
 		root.finaltask = task;
 	}
-	
+
 	/**
 	 * Constructor for MapValues
 	 * @param <I3>
@@ -34,7 +34,7 @@ public final class MapValues<I1,I2> extends MapPair<I1,I2> {
 		this.root = root;
 		root.finaltask = task;
 	}
-	
+
 	/**
 	 * MapValues accepts ReduceFunctionValues.
 	 * @param rfv

@@ -20,7 +20,7 @@ public class StreamPipelineTransformationsNullTest extends StreamPipelineBaseTes
 	static String modeYarn = "";
 	static String modeJgroups = "";
 	boolean toexecute = true;
-	
+
 	@BeforeClass
 	public static void getSetExecutorMode() {
 		modeLocal = pipelineconfig.getLocal();

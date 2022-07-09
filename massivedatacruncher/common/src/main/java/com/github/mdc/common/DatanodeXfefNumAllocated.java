@@ -8,7 +8,7 @@ package com.github.mdc.common;
 public class DatanodeXfefNumAllocated {
 	String ref;
 	int numallocated;
-	
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -17,6 +17,7 @@ public class DatanodeXfefNumAllocated {
 		result = prime * result + ((ref == null) ? 0 : ref.hashCode());
 		return result;
 	}
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
@@ -41,6 +42,6 @@ public class DatanodeXfefNumAllocated {
 		}
 		return true;
 	}
-	
-	
+
+
 }

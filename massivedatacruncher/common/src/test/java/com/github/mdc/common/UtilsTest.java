@@ -12,9 +12,10 @@ public class UtilsTest {
 
 	@Test
 	public void testaddShutDownHook() {
-		Utils.addShutdownHook(() -> {});
+		Utils.addShutdownHook(() -> {
+		});
 	}
-	
+
 	@Test
 	public void testloadLog4JSystemPropertiesPropertyFileNull() {
 		try {
@@ -24,6 +25,7 @@ public class UtilsTest {
 			assertEquals("Property File Name cannot be null", ex.getMessage());
 		}
 	}
+
 	@Test
 	public void testloadLog4JSystemPropertiesFilePath() {
 		try {
@@ -33,13 +35,13 @@ public class UtilsTest {
 			assertEquals("Properties File Path cannot be null", ex.getMessage());
 		}
 	}
-	
+
 	@Test
 	public void testloadLog4JSystemPropertiesProperInput() throws Exception {
 		Utils.loadLog4JSystemProperties(MDCConstants.PREV_FOLDER + MDCConstants.BACKWARD_SLASH
 				+ MDCConstants.DIST_CONFIG_FOLDER + MDCConstants.BACKWARD_SLASH, MDCConstants.MDC_PROPERTIES);
 	}
-	
+
 	@Test
 	public void testloadLog4JSystemPropertiesEmptyFileName() {
 		try {
@@ -51,7 +53,7 @@ public class UtilsTest {
 			assertTrue(ex.getCause().getMessage().contains("Access is denied"));
 		}
 	}
-	
+
 	@Test
 	public void testloadLog4JSystemPropertiesClassPathImproperFileName() {
 		try {
@@ -61,7 +63,7 @@ public class UtilsTest {
 			assertEquals("Property File Name cannot be null", ex.getMessage());
 		}
 	}
-	
+
 	@Test
 	public void testloadLog4JSystemPropertiesClassPathEmptyFileName() {
 		try {
@@ -72,6 +74,7 @@ public class UtilsTest {
 			assertTrue(ex.getCause().getMessage().contains("Access is denied"));
 		}
 	}
+
 	@Test
 	public void testloadLog4JSystemPropertiesClassPathProperInput() throws Exception {
 		Utils.loadLog4JSystemPropertiesClassPath(MDCConstants.MDC_TEST_PROPERTIES);

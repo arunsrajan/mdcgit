@@ -123,6 +123,7 @@ public class StreamPipelineYarnAppmaster extends StaticEventingAppmaster impleme
 		super.submitApplication();
 	}
 	Map<String, String> containeridipmap = new ConcurrentHashMap<>();
+
 	/**
 	 * Set App Master service hosts and port running before the container is
 	 * launched.

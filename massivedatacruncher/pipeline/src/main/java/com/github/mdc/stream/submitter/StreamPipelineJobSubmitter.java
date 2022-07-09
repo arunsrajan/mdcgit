@@ -18,6 +18,7 @@ import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.MDCProperties;
 import com.github.mdc.common.Utils;
 import com.github.mdc.common.ZookeeperOperations;
+
 /**
  * 
  * @author Arun
@@ -26,7 +27,7 @@ import com.github.mdc.common.ZookeeperOperations;
 public class StreamPipelineJobSubmitter {
 
 	static Logger log = Logger.getLogger(StreamPipelineJobSubmitter.class);
-	
+
 	/**
 	 * Main method for sumbitting the MR jobs.
 	 * @param args
@@ -36,7 +37,7 @@ public class StreamPipelineJobSubmitter {
 		Utils.loadLog4JSystemProperties(MDCConstants.PREV_FOLDER + MDCConstants.BACKWARD_SLASH
 				+ MDCConstants.DIST_CONFIG_FOLDER + MDCConstants.BACKWARD_SLASH, MDCConstants.MDC_PROPERTIES);
 		try (var cf = CuratorFrameworkFactory.newClient(MDCProperties.get().getProperty(MDCConstants.ZOOKEEPER_HOSTPORT),
-						20000, 50000, new RetryForever(2000));) {
+				20000, 50000, new RetryForever(2000));) {
 			cf.start();
 			var hostport = MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULERSTREAM_HOSTPORT);
 			var taskscheduler = (String) ZookeeperOperations.nodedata.invoke(cf,
@@ -65,7 +66,7 @@ public class StreamPipelineJobSubmitter {
 		}
 	}
 
-	
+
 	public static void writeToTaskScheduler(String[] ts, String mrjarpath, String[] args) {
 		try (var s = new Socket(ts[0], Integer.parseInt(ts[1]));
 				var is = s.getInputStream();
@@ -102,7 +103,7 @@ public class StreamPipelineJobSubmitter {
 			log.error("Exception in submit Jar to Task Scheduler", ex);
 		}
 	}
-	
+
 	/**
 	 * Write integer value to scheduler 
 	 * @param os
@@ -115,7 +116,7 @@ public class StreamPipelineJobSubmitter {
 		kryo.writeClassAndObject(output, value);
 		output.flush();
 	}
-	
+
 	/**
 	 * Write bytes information to schedulers outputstream via kryo serializer.
 	 * @param os
@@ -128,6 +129,6 @@ public class StreamPipelineJobSubmitter {
 		kryo.writeClassAndObject(output, outbyt);
 		output.flush();
 	}
-	
-	
+
+
 }

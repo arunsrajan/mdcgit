@@ -31,14 +31,15 @@ public class RemoteDataFetcherTest {
 	static HdfsLocalCluster hdfsLocalCluster;
 	static int namenodeport = 9000;
 	static int namenodehttpport = 60070;
+
 	@BeforeClass
 	public static void setUpHdfs() throws Exception {
 		System.setProperty("HADOOP_HOME", "C:\\DEVELOPMENT\\hadoop\\hadoop-3.3.1");
-		
+
 		Utils.loadLog4JSystemPropertiesClassPath(MDCConstants.MDC_TEST_PROPERTIES);
 		System.setProperty(MDCConstants.HDFSNAMENODEURL, MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL));
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testWriteReadInterMediateOutputToFromDFS() throws Exception {
@@ -57,7 +58,7 @@ public class RemoteDataFetcherTest {
 		assertTrue(ctx.keys().size() == 1);
 		assertTrue(ctx.get(testdata).contains(testdata));
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testWriteReadInterMediateOutputToFromDFSReadException() {
@@ -82,6 +83,7 @@ public class RemoteDataFetcherTest {
 			assertEquals(RemoteDataFetcherException.INTERMEDIATEPHASEREADERROR, ex.getMessage());
 		}
 	}
+
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testWriteReadInterMediateOutputToFromDFSReadKeysException() {
@@ -106,37 +108,38 @@ public class RemoteDataFetcherTest {
 			assertEquals(RemoteDataFetcherException.INTERMEDIATEPHASEREADERROR, ex.getMessage());
 		}
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testCreateFileMR() throws Exception {
-			String filename = "TestFile1.dat";
-			String job = MDCConstants.JOB + MDCConstants.HYPHEN + System.currentTimeMillis();
-			Configuration configuration = new Configuration();
-			configuration.set(MDCConstants.HDFS_DEFAULTFS, MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL));
-			configuration.set(MDCConstants.HDFS_IMPL, org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
-			configuration.set(MDCConstants.HDFS_FILE_IMPL, org.apache.hadoop.fs.LocalFileSystem.class.getName());
-			String jobpath = MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL) + MDCConstants.BACKWARD_SLASH
-					+ FileSystemSupport.MDS + MDCConstants.BACKWARD_SLASH + job;
-			String filepath = jobpath + MDCConstants.BACKWARD_SLASH + filename;
-			// Create folders if not already created.
-			Path filepathurl = new Path(filepath);
-			FileSystem hdfs = FileSystem.newInstance(new URI(MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL)),
-					configuration);
-			String testdata = "TestData";
-			DataCruncherContext<String, String> ctx = new DataCruncherContext<>();
-			ctx.put(testdata, testdata);
-			RemoteDataFetcher.createFileMR(hdfs, filepathurl, ctx);
-			
-			Set<String> keys = (Set<String>) RemoteDataFetcher.readIntermediatePhaseOutputFromDFS(job, filename, true);
-			assertNotNull(keys);
-			assertTrue(keys.size() == 1);
-			ctx = null;
-			ctx = (DataCruncherContext<String, String>) RemoteDataFetcher.readIntermediatePhaseOutputFromDFS(job, filename, false);
-			assertNotNull(ctx);
-			assertTrue(ctx.keys().size() == 1);
-			assertTrue(ctx.get(testdata).contains(testdata));
+		String filename = "TestFile1.dat";
+		String job = MDCConstants.JOB + MDCConstants.HYPHEN + System.currentTimeMillis();
+		Configuration configuration = new Configuration();
+		configuration.set(MDCConstants.HDFS_DEFAULTFS, MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL));
+		configuration.set(MDCConstants.HDFS_IMPL, org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
+		configuration.set(MDCConstants.HDFS_FILE_IMPL, org.apache.hadoop.fs.LocalFileSystem.class.getName());
+		String jobpath = MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL) + MDCConstants.BACKWARD_SLASH
+				+ FileSystemSupport.MDS + MDCConstants.BACKWARD_SLASH + job;
+		String filepath = jobpath + MDCConstants.BACKWARD_SLASH + filename;
+		// Create folders if not already created.
+		Path filepathurl = new Path(filepath);
+		FileSystem hdfs = FileSystem.newInstance(new URI(MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL)),
+				configuration);
+		String testdata = "TestData";
+		DataCruncherContext<String, String> ctx = new DataCruncherContext<>();
+		ctx.put(testdata, testdata);
+		RemoteDataFetcher.createFileMR(hdfs, filepathurl, ctx);
+
+		Set<String> keys = (Set<String>) RemoteDataFetcher.readIntermediatePhaseOutputFromDFS(job, filename, true);
+		assertNotNull(keys);
+		assertTrue(keys.size() == 1);
+		ctx = null;
+		ctx = (DataCruncherContext<String, String>) RemoteDataFetcher.readIntermediatePhaseOutputFromDFS(job, filename, false);
+		assertNotNull(ctx);
+		assertTrue(ctx.keys().size() == 1);
+		assertTrue(ctx.get(testdata).contains(testdata));
 	}
+
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testCreateFileMRException() {
@@ -154,7 +157,7 @@ public class RemoteDataFetcherTest {
 			DataCruncherContext ctx = new DataCruncherContext();
 			ctx.put(testdata, testdata);
 			RemoteDataFetcher.createFileMR(hdfs, null, ctx);
-			
+
 			Set<String> keys = (Set<String>) RemoteDataFetcher.readIntermediatePhaseOutputFromDFS(job, filename, true);
 			assertNotNull(keys);
 			assertTrue(keys.size() == 1);
@@ -168,7 +171,7 @@ public class RemoteDataFetcherTest {
 			assertEquals(RemoteDataFetcherException.INTERMEDIATEPHASEWRITEERROR, ex.getMessage());
 		}
 	}
-	
+
 	@Test
 	public void testCreateFileException() {
 		try {
@@ -189,8 +192,8 @@ public class RemoteDataFetcherTest {
 			assertEquals(RemoteDataFetcherException.INTERMEDIATEPHASEWRITEERROR, ex.getMessage());
 		}
 	}
-	
-	
+
+
 	@Test
 	public void testdeleteFolder() throws Exception {
 		String filename = "TestFiledelete1.dat";
@@ -213,7 +216,7 @@ public class RemoteDataFetcherTest {
 		assertFalse(hdfs.exists(filepathurl));
 
 	}
-	
+
 	@Test
 	public void testdeleteFolderException() {
 		try {
@@ -238,6 +241,7 @@ public class RemoteDataFetcherTest {
 			assertEquals(RemoteDataFetcherException.INTERMEDIATEPHASEDELETEERROR, ex.getMessage());
 		}
 	}
+
 	@AfterClass
 	public static void closeHdfs() throws Exception {
 		if(!Objects.isNull(hdfsLocalCluster)) {

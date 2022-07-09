@@ -13,13 +13,14 @@ import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
 import com.github.mdc.stream.StreamPipeline;
+
 @SuppressWarnings({"unchecked", "serial", "rawtypes"})
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 	boolean toexecute = true;
 	Logger log = Logger.getLogger(StreamPipelineDepth2Test.class);
 	int sum;
-	
+
 	@Test
 	public void testFilterFilterCollect() throws Throwable {
 		log.info("testFilterFilter Before---------------------------------------");
@@ -31,10 +32,10 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
-					public boolean test(java.lang.String value) {
-						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
-					}
-				}).collect(toexecute, null);
+			public boolean test(java.lang.String value) {
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
+			}
+		}).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -56,10 +57,10 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
-					public boolean test(java.lang.String value) {
-						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
-					}
-				}).count(null);
+			public boolean test(java.lang.String value) {
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
+			}
+		}).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -106,10 +107,10 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
-					public java.util.List<java.lang.String> apply(java.lang.String value) {
-						return Arrays.asList(value);
-					}
-				}).collect(toexecute, null);
+			public java.util.List<java.lang.String> apply(java.lang.String value) {
+				return Arrays.asList(value);
+			}
+		}).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -131,10 +132,10 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
-					public java.util.List<java.lang.String> apply(java.lang.String value) {
-						return Arrays.asList(value);
-					}
-				}).count(null);
+			public java.util.List<java.lang.String> apply(java.lang.String value) {
+				return Arrays.asList(value);
+			}
+		}).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -181,10 +182,10 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
-					public java.lang.String[] apply(java.lang.String value) {
-						return value.split(",");
-					}
-				}).collect(toexecute, null);
+			public java.lang.String[] apply(java.lang.String value) {
+				return value.split(",");
+			}
+		}).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -206,10 +207,10 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
-					public java.lang.String[] apply(java.lang.String value) {
-						return value.split(",");
-					}
-				}).count(null);
+			public java.lang.String[] apply(java.lang.String value) {
+				return value.split(",");
+			}
+		}).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -256,11 +257,11 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
 				.collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
@@ -283,11 +284,11 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
 				.count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
@@ -317,8 +318,8 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(45957, sum);
 
@@ -336,11 +337,11 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
 				.groupByKey().collect(toexecute, null);
 		int sum = 0;
 		for (List<Tuple2> lsttuples : data) {
@@ -369,11 +370,11 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).groupByKey().forEach(lsttuples -> {
-					for (Tuple2 tuple2 : lsttuples) {
-						sum += ((List) tuple2.v2).size();
-					}
+			for (Tuple2 tuple2 : lsttuples) {
+				sum += ((List) tuple2.v2).size();
+			}
 
-				}, null);
+		}, null);
 
 		assertEquals(45957, sum);
 
@@ -391,11 +392,11 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
 				.reduceByKey((a, b) -> a + b).coalesce(1, (a, b) -> a + b).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
@@ -418,11 +419,11 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
 				.reduceByKey((a, b) -> a + b).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
@@ -452,8 +453,8 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).reduceByKey((a, b) -> a + b).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(1, sum);
 
@@ -597,10 +598,10 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
-					public int compare(java.lang.String value1, java.lang.String value2) {
-						return value1.compareTo(value2);
-					}
-				}).collect(toexecute, null);
+			public int compare(java.lang.String value1, java.lang.String value2) {
+				return value1.compareTo(value2);
+			}
+		}).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -622,10 +623,10 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
-					public int compare(java.lang.String value1, java.lang.String value2) {
-						return value1.compareTo(value2);
-					}
-				}).count(null);
+			public int compare(java.lang.String value1, java.lang.String value2) {
+				return value1.compareTo(value2);
+			}
+		}).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -672,10 +673,10 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return Arrays.asList(value);
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
-					public boolean test(java.lang.String value) {
-						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
-					}
-				}).collect(toexecute, null);
+			public boolean test(java.lang.String value) {
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
+			}
+		}).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -697,10 +698,10 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return Arrays.asList(value);
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
-					public boolean test(java.lang.String value) {
-						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
-					}
-				}).count(null);
+			public boolean test(java.lang.String value) {
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
+			}
+		}).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -747,10 +748,10 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return Arrays.asList(value);
 					}
 				}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
-					public java.util.List<java.lang.String> apply(java.lang.String value) {
-						return Arrays.asList(value);
-					}
-				}).collect(toexecute, null);
+			public java.util.List<java.lang.String> apply(java.lang.String value) {
+				return Arrays.asList(value);
+			}
+		}).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -772,10 +773,10 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return Arrays.asList(value);
 					}
 				}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
-					public java.util.List<java.lang.String> apply(java.lang.String value) {
-						return Arrays.asList(value);
-					}
-				}).count(null);
+			public java.util.List<java.lang.String> apply(java.lang.String value) {
+				return Arrays.asList(value);
+			}
+		}).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -822,10 +823,10 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return Arrays.asList(value);
 					}
 				}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
-					public java.lang.String[] apply(java.lang.String value) {
-						return value.split(",");
-					}
-				}).collect(toexecute, null);
+			public java.lang.String[] apply(java.lang.String value) {
+				return value.split(",");
+			}
+		}).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -847,10 +848,10 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return Arrays.asList(value);
 					}
 				}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
-					public java.lang.String[] apply(java.lang.String value) {
-						return value.split(",");
-					}
-				}).count(null);
+			public java.lang.String[] apply(java.lang.String value) {
+				return value.split(",");
+			}
+		}).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -897,11 +898,11 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return Arrays.asList(value);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
 				.collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
@@ -924,11 +925,11 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return Arrays.asList(value);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
 				.count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
@@ -958,8 +959,8 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(46361, sum);
 
@@ -977,11 +978,11 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return Arrays.asList(value);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
 				.groupByKey().collect(toexecute, null);
 		int sum = 0;
 		for (List<Tuple2> lsttuples : data) {
@@ -1010,11 +1011,11 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).groupByKey().forEach(lsttuples -> {
-					for (Tuple2 tuple2 : lsttuples) {
-						sum += ((List) tuple2.v2).size();
-					}
+			for (Tuple2 tuple2 : lsttuples) {
+				sum += ((List) tuple2.v2).size();
+			}
 
-				}, null);
+		}, null);
 
 		assertEquals(46361, sum);
 
@@ -1032,11 +1033,11 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return Arrays.asList(value);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
 				.reduceByKey((a, b) -> a + b).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
@@ -1059,11 +1060,11 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return Arrays.asList(value);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
 				.reduceByKey((a, b) -> a + b).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
@@ -1093,8 +1094,8 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).reduceByKey((a, b) -> a + b).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(2, sum);
 
@@ -1238,10 +1239,10 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return Arrays.asList(value);
 					}
 				}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
-					public int compare(java.lang.String value1, java.lang.String value2) {
-						return value1.compareTo(value2);
-					}
-				}).collect(toexecute, null);
+			public int compare(java.lang.String value1, java.lang.String value2) {
+				return value1.compareTo(value2);
+			}
+		}).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -1263,10 +1264,10 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return Arrays.asList(value);
 					}
 				}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
-					public int compare(java.lang.String value1, java.lang.String value2) {
-						return value1.compareTo(value2);
-					}
-				}).count(null);
+			public int compare(java.lang.String value1, java.lang.String value2) {
+				return value1.compareTo(value2);
+			}
+		}).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -1313,10 +1314,10 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return value.split(",");
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String[]>() {
-					public boolean test(java.lang.String[] value) {
-						return !"NA".equals(value[14]) && !"ArrDelay".equals(value[14]);
-					}
-				}).collect(toexecute, null);
+			public boolean test(java.lang.String[] value) {
+				return !"NA".equals(value[14]) && !"ArrDelay".equals(value[14]);
+			}
+		}).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -1338,10 +1339,10 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return value.split(",");
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String[]>() {
-					public boolean test(java.lang.String[] value) {
-						return !"NA".equals(value[14]) && !"ArrDelay".equals(value[14]);
-					}
-				}).count(null);
+			public boolean test(java.lang.String[] value) {
+				return !"NA".equals(value[14]) && !"ArrDelay".equals(value[14]);
+			}
+		}).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -1388,10 +1389,10 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return value.split(",");
 					}
 				}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String[], java.lang.String>() {
-					public java.util.List<java.lang.String> apply(java.lang.String[] value) {
-						return Arrays.asList(value[8] + "-" + value[14]);
-					}
-				}).collect(toexecute, null);
+			public java.util.List<java.lang.String> apply(java.lang.String[] value) {
+				return Arrays.asList(value[8] + "-" + value[14]);
+			}
+		}).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -1413,10 +1414,10 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return value.split(",");
 					}
 				}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String[], java.lang.String>() {
-					public java.util.List<java.lang.String> apply(java.lang.String[] value) {
-						return Arrays.asList(value[8] + "-" + value[14]);
-					}
-				}).count(null);
+			public java.util.List<java.lang.String> apply(java.lang.String[] value) {
+				return Arrays.asList(value[8] + "-" + value[14]);
+			}
+		}).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -1463,10 +1464,10 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return value.split(",");
 					}
 				}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String[], java.lang.String>() {
-					public java.lang.String apply(java.lang.String[] value) {
-						return value[8] + "-" + value[14];
-					}
-				}).collect(toexecute, null);
+			public java.lang.String apply(java.lang.String[] value) {
+				return value[8] + "-" + value[14];
+			}
+		}).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -1488,10 +1489,10 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return value.split(",");
 					}
 				}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String[], java.lang.String>() {
-					public java.lang.String apply(java.lang.String[] value) {
-						return value[8] + "-" + value[14];
-					}
-				}).count(null);
+			public java.lang.String apply(java.lang.String[] value) {
+				return value[8] + "-" + value[14];
+			}
+		}).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -1538,11 +1539,11 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return value.split(",");
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
-								return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
-							}
-						})
+				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
+						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
+					}
+				})
 				.collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
@@ -1565,11 +1566,11 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return value.split(",");
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
-								return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
-							}
-						})
+				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
+						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
+					}
+				})
 				.count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
@@ -1599,8 +1600,8 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
 					}
 				}).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(46361, sum);
 
@@ -1618,11 +1619,11 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return value.split(",");
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
-								return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
-							}
-						})
+				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
+						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
+					}
+				})
 				.groupByKey().collect(toexecute, null);
 		int sum = 0;
 		for (List<Tuple2> lsttuples : data) {
@@ -1651,11 +1652,11 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
 					}
 				}).groupByKey().forEach(lsttuples -> {
-					for (Tuple2 tuple2 : lsttuples) {
-						sum += ((List) tuple2.v2).size();
-					}
+			for (Tuple2 tuple2 : lsttuples) {
+				sum += ((List) tuple2.v2).size();
+			}
 
-				}, null);
+		}, null);
 
 		assertEquals(46361, sum);
 
@@ -1673,11 +1674,11 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return value.split(",");
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
-								return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
-							}
-						})
+				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
+						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
+					}
+				})
 				.reduceByKey((a, b) -> a + b).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
@@ -1700,11 +1701,11 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return value.split(",");
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
-								return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
-							}
-						})
+				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
+						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
+					}
+				})
 				.reduceByKey((a, b) -> a + b).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
@@ -1734,8 +1735,8 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
 					}
 				}).reduceByKey((a, b) -> a + b).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(2, sum);
 
@@ -1879,10 +1880,10 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return value.split(",");
 					}
 				}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String[]>() {
-					public int compare(java.lang.String[] value1, java.lang.String[] value2) {
-						return value1[1].compareTo(value2[1]);
-					}
-				}).collect(toexecute, null);
+			public int compare(java.lang.String[] value1, java.lang.String[] value2) {
+				return value1[1].compareTo(value2[1]);
+			}
+		}).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -1904,10 +1905,10 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return value.split(",");
 					}
 				}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String[]>() {
-					public int compare(java.lang.String[] value1, java.lang.String[] value2) {
-						return value1[1].compareTo(value2[1]);
-					}
-				}).count(null);
+			public int compare(java.lang.String[] value1, java.lang.String[] value2) {
+				return value1[1].compareTo(value2[1]);
+			}
+		}).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -1954,10 +1955,10 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<org.jooq.lambda.tuple.Tuple2>() {
-					public boolean test(org.jooq.lambda.tuple.Tuple2 value) {
-						return true;
-					}
-				}).collect(toexecute, null);
+			public boolean test(org.jooq.lambda.tuple.Tuple2 value) {
+				return true;
+			}
+		}).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -1979,10 +1980,10 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<org.jooq.lambda.tuple.Tuple2>() {
-					public boolean test(org.jooq.lambda.tuple.Tuple2 value) {
-						return true;
-					}
-				}).count(null);
+			public boolean test(org.jooq.lambda.tuple.Tuple2 value) {
+				return true;
+			}
+		}).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -2007,12 +2008,12 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<org.jooq.lambda.tuple.Tuple2>() {
-					public boolean test(org.jooq.lambda.tuple.Tuple2 value) {
-						return true;
-					}
-				}).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+			public boolean test(org.jooq.lambda.tuple.Tuple2 value) {
+				return true;
+			}
+		}).forEach(lis -> {
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(46361, sum);
 
@@ -2075,8 +2076,8 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(46361, sum);
 
@@ -2127,11 +2128,11 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return true;
 					}
 				}).forEach(lsttuples -> {
-					for (Tuple2 tuple2 : lsttuples) {
-						sum += ((List) tuple2.v2).size();
-					}
+			for (Tuple2 tuple2 : lsttuples) {
+				sum += ((List) tuple2.v2).size();
+			}
 
-				}, null);
+		}, null);
 
 		assertEquals(46361, sum);
 
@@ -2172,11 +2173,11 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).groupByKey().forEach(lsttuples -> {
-					for (Tuple2 tuple2 : lsttuples) {
-						sum += ((List) tuple2.v2).size();
-					}
+			for (Tuple2 tuple2 : lsttuples) {
+				sum += ((List) tuple2.v2).size();
+			}
 
-				}, null);
+		}, null);
 
 		assertEquals(46361, sum);
 
@@ -2217,11 +2218,11 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).groupByKey().forEach(lsttuples -> {
-					for (Tuple2 tuple2 : lsttuples) {
-						sum += ((List) tuple2.v2).size();
-					}
+			for (Tuple2 tuple2 : lsttuples) {
+				sum += ((List) tuple2.v2).size();
+			}
 
-				}, null);
+		}, null);
 
 		assertEquals(46361, sum);
 
@@ -2239,11 +2240,11 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).groupByKey().mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
-								return (Tuple2<String, String>) value;
-							}
-						})
+				new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
+						return (Tuple2<String, String>) value;
+					}
+				})
 				.collect(toexecute, null);
 		int sum = 0;
 		for (List<Tuple2> lsttuples : data) {
@@ -2268,11 +2269,11 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).groupByKey().mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
-								return (Tuple2<String, String>) value;
-							}
-						})
+				new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
+						return (Tuple2<String, String>) value;
+					}
+				})
 				.forEach(lsttuples -> {
 					for (Tuple2 tuple2 : lsttuples) {
 						sum += ((List) tuple2.v2).size();
@@ -2296,11 +2297,11 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).groupByKey().mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
-								return (Tuple2<String, String>) value;
-							}
-						})
+				new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
+						return (Tuple2<String, String>) value;
+					}
+				})
 				.groupByKey().collect(toexecute, null);
 		int sum = 0;
 		for (List<Tuple2> lsttuples : data) {
@@ -2325,17 +2326,17 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).groupByKey().mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
-								return (Tuple2<String, String>) value;
-							}
-						})
-				.groupByKey().forEach(lsttuples -> {
-					for (Tuple2 tuple2 : lsttuples) {
-						sum += ((List) tuple2.v2).size();
+				new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
+						return (Tuple2<String, String>) value;
 					}
+				})
+				.groupByKey().forEach(lsttuples -> {
+			for (Tuple2 tuple2 : lsttuples) {
+				sum += ((List) tuple2.v2).size();
+			}
 
-				}, null);
+		}, null);
 
 		assertEquals(2, sum);
 
@@ -2353,11 +2354,11 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).groupByKey().mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
-								return (Tuple2<String, String>) value;
-							}
-						})
+				new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
+						return (Tuple2<String, String>) value;
+					}
+				})
 				.reduceByKey((a, b) -> a + b).collect(toexecute, null);
 		int sum = 0;
 		for (List<Tuple2> lsttuples : data) {
@@ -2382,17 +2383,17 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).groupByKey().mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
-								return (Tuple2<String, String>) value;
-							}
-						})
-				.reduceByKey((a, b) -> a + b).forEach(lsttuples -> {
-					for (Tuple2 tuple2 : lsttuples) {
-						sum += ((List) tuple2.v2).size();
+				new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
+						return (Tuple2<String, String>) value;
 					}
+				})
+				.reduceByKey((a, b) -> a + b).forEach(lsttuples -> {
+			for (Tuple2 tuple2 : lsttuples) {
+				sum += ((List) tuple2.v2).size();
+			}
 
-				}, null);
+		}, null);
 
 		assertEquals(46361, sum);
 
@@ -2433,11 +2434,11 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).groupByKey().peek(val -> System.out.println(val)).forEach(lsttuples -> {
-					for (Tuple2 tuple2 : lsttuples) {
-						sum += ((List) tuple2.v2).size();
-					}
+			for (Tuple2 tuple2 : lsttuples) {
+				sum += ((List) tuple2.v2).size();
+			}
 
-				}, null);
+		}, null);
 
 		assertEquals(46361, sum);
 
@@ -2478,11 +2479,11 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).groupByKey().sample(46361).forEach(lsttuples -> {
-					for (Tuple2 tuple2 : lsttuples) {
-						sum += ((List) tuple2.v2).size();
-					}
+			for (Tuple2 tuple2 : lsttuples) {
+				sum += ((List) tuple2.v2).size();
+			}
 
-				}, null);
+		}, null);
 
 		assertEquals(46361, sum);
 
@@ -2500,10 +2501,10 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).groupByKey().sorted(new com.github.mdc.stream.functions.SortedComparator<org.jooq.lambda.tuple.Tuple2>() {
-					public int compare(org.jooq.lambda.tuple.Tuple2 value1, org.jooq.lambda.tuple.Tuple2 value2) {
-						return value1.compareTo(value2);
-					}
-				}).collect(toexecute, null);
+			public int compare(org.jooq.lambda.tuple.Tuple2 value1, org.jooq.lambda.tuple.Tuple2 value2) {
+				return value1.compareTo(value2);
+			}
+		}).collect(toexecute, null);
 		int sum = 0;
 		for (List<Tuple2> lsttuples : data) {
 			for (Tuple2 tuple2 : lsttuples) {
@@ -2527,15 +2528,15 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).groupByKey().sorted(new com.github.mdc.stream.functions.SortedComparator<org.jooq.lambda.tuple.Tuple2>() {
-					public int compare(org.jooq.lambda.tuple.Tuple2 value1, org.jooq.lambda.tuple.Tuple2 value2) {
-						return value1.compareTo(value2);
-					}
-				}).forEach(lsttuples -> {
-					for (Tuple2 tuple2 : lsttuples) {
-						sum += ((List) tuple2.v2).size();
-					}
+			public int compare(org.jooq.lambda.tuple.Tuple2 value1, org.jooq.lambda.tuple.Tuple2 value2) {
+				return value1.compareTo(value2);
+			}
+		}).forEach(lsttuples -> {
+			for (Tuple2 tuple2 : lsttuples) {
+				sum += ((List) tuple2.v2).size();
+			}
 
-				}, null);
+		}, null);
 
 		assertEquals(46361, sum);
 
@@ -2598,8 +2599,8 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(46361, sum);
 
@@ -2617,11 +2618,11 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
-								return (Tuple2<String, String>) value;
-							}
-						})
+				new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
+						return (Tuple2<String, String>) value;
+					}
+				})
 				.collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
@@ -2644,11 +2645,11 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
-								return (Tuple2<String, String>) value;
-							}
-						})
+				new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
+						return (Tuple2<String, String>) value;
+					}
+				})
 				.count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
@@ -2674,11 +2675,11 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
-								return (Tuple2<String, String>) value;
-							}
-						})
+				new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
+						return (Tuple2<String, String>) value;
+					}
+				})
 				.forEach(lis -> {
 					sum += ((List) lis).size();
 				}, null);
@@ -2699,11 +2700,11 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
-								return (Tuple2<String, String>) value;
-							}
-						})
+				new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
+						return (Tuple2<String, String>) value;
+					}
+				})
 				.groupByKey().collect(toexecute, null);
 		int sum = 0;
 		for (List<Tuple2> lsttuples : data) {
@@ -2728,17 +2729,17 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
-								return (Tuple2<String, String>) value;
-							}
-						})
-				.groupByKey().forEach(lsttuples -> {
-					for (Tuple2 tuple2 : lsttuples) {
-						sum += ((List) tuple2.v2).size();
+				new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
+						return (Tuple2<String, String>) value;
 					}
+				})
+				.groupByKey().forEach(lsttuples -> {
+			for (Tuple2 tuple2 : lsttuples) {
+				sum += ((List) tuple2.v2).size();
+			}
 
-				}, null);
+		}, null);
 
 		assertEquals(46361, sum);
 
@@ -2756,11 +2757,11 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
-								return (Tuple2<String, String>) value;
-							}
-						})
+				new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
+						return (Tuple2<String, String>) value;
+					}
+				})
 				.reduceByKey((a, b) -> a + b).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
@@ -2783,11 +2784,11 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
-								return (Tuple2<String, String>) value;
-							}
-						})
+				new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
+						return (Tuple2<String, String>) value;
+					}
+				})
 				.reduceByKey((a, b) -> a + b).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
@@ -2813,14 +2814,14 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
-								return (Tuple2<String, String>) value;
-							}
-						})
+				new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
+						return (Tuple2<String, String>) value;
+					}
+				})
 				.reduceByKey((a, b) -> a + b).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(2, sum);
 
@@ -2883,8 +2884,8 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).peek(val -> System.out.println(val)).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(46361, sum);
 
@@ -2962,8 +2963,8 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return true;
 					}
 				}).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(2, sum);
 
@@ -3026,8 +3027,8 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).reduceByKey((a, b) -> a + b).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(2, sum);
 
@@ -3090,8 +3091,8 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).reduceByKey((a, b) -> a + b).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(2, sum);
 
@@ -3109,11 +3110,11 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).reduceByKey((a, b) -> a + b).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
-								return (Tuple2<String, String>) value;
-							}
-						})
+				new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
+						return (Tuple2<String, String>) value;
+					}
+				})
 				.collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
@@ -3136,11 +3137,11 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).reduceByKey((a, b) -> a + b).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
-								return (Tuple2<String, String>) value;
-							}
-						})
+				new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
+						return (Tuple2<String, String>) value;
+					}
+				})
 				.count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
@@ -3166,11 +3167,11 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).reduceByKey((a, b) -> a + b).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
-								return (Tuple2<String, String>) value;
-							}
-						})
+				new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
+						return (Tuple2<String, String>) value;
+					}
+				})
 				.forEach(lis -> {
 					sum += ((List) lis).size();
 				}, null);
@@ -3191,11 +3192,11 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).reduceByKey((a, b) -> a + b).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
-								return (Tuple2<String, String>) value;
-							}
-						})
+				new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
+						return (Tuple2<String, String>) value;
+					}
+				})
 				.groupByKey().collect(toexecute, null);
 		int sum = 0;
 		for (List<Tuple2> lsttuples : data) {
@@ -3220,17 +3221,17 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).reduceByKey((a, b) -> a + b).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
-								return (Tuple2<String, String>) value;
-							}
-						})
-				.groupByKey().forEach(lsttuples -> {
-					for (Tuple2 tuple2 : lsttuples) {
-						sum += ((List) tuple2.v2).size();
+				new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
+						return (Tuple2<String, String>) value;
 					}
+				})
+				.groupByKey().forEach(lsttuples -> {
+			for (Tuple2 tuple2 : lsttuples) {
+				sum += ((List) tuple2.v2).size();
+			}
 
-				}, null);
+		}, null);
 
 		assertEquals(2, sum);
 
@@ -3248,11 +3249,11 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).reduceByKey((a, b) -> a + b).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
-								return (Tuple2<String, String>) value;
-							}
-						})
+				new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
+						return (Tuple2<String, String>) value;
+					}
+				})
 				.reduceByKey((a, b) -> a + b).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
@@ -3275,11 +3276,11 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).reduceByKey((a, b) -> a + b).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
-								return (Tuple2<String, String>) value;
-							}
-						})
+				new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
+						return (Tuple2<String, String>) value;
+					}
+				})
 				.reduceByKey((a, b) -> a + b).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
@@ -3305,14 +3306,14 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).reduceByKey((a, b) -> a + b).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
-								return (Tuple2<String, String>) value;
-							}
-						})
+				new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
+						return (Tuple2<String, String>) value;
+					}
+				})
 				.reduceByKey((a, b) -> a + b).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(2, sum);
 
@@ -3375,8 +3376,8 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).reduceByKey((a, b) -> a + b).peek(val -> System.out.println(val)).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(2, sum);
 
@@ -3439,8 +3440,8 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).reduceByKey((a, b) -> a + b).sample(46361).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(2, sum);
 
@@ -3518,8 +3519,8 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return value1.compareTo(value2);
 					}
 				}).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(2, sum);
 
@@ -3582,8 +3583,8 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).sample(46361).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(46361, sum);
 
@@ -3601,10 +3602,10 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).sorted(new com.github.mdc.stream.functions.SortedComparator<org.jooq.lambda.tuple.Tuple2>() {
-					public int compare(org.jooq.lambda.tuple.Tuple2 value1, org.jooq.lambda.tuple.Tuple2 value2) {
-						return value1.compareTo(value2);
-					}
-				}).collect(toexecute, null);
+			public int compare(org.jooq.lambda.tuple.Tuple2 value1, org.jooq.lambda.tuple.Tuple2 value2) {
+				return value1.compareTo(value2);
+			}
+		}).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -3626,10 +3627,10 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).sorted(new com.github.mdc.stream.functions.SortedComparator<org.jooq.lambda.tuple.Tuple2>() {
-					public int compare(org.jooq.lambda.tuple.Tuple2 value1, org.jooq.lambda.tuple.Tuple2 value2) {
-						return value1.compareTo(value2);
-					}
-				}).count(null);
+			public int compare(org.jooq.lambda.tuple.Tuple2 value1, org.jooq.lambda.tuple.Tuple2 value2) {
+				return value1.compareTo(value2);
+			}
+		}).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -3654,12 +3655,12 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).sorted(new com.github.mdc.stream.functions.SortedComparator<org.jooq.lambda.tuple.Tuple2>() {
-					public int compare(org.jooq.lambda.tuple.Tuple2 value1, org.jooq.lambda.tuple.Tuple2 value2) {
-						return value1.compareTo(value2);
-					}
-				}).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+			public int compare(org.jooq.lambda.tuple.Tuple2 value1, org.jooq.lambda.tuple.Tuple2 value2) {
+				return value1.compareTo(value2);
+			}
+		}).forEach(lis -> {
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(46361, sum);
 
@@ -3722,8 +3723,8 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(45957, sum);
 
@@ -3786,8 +3787,8 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return Arrays.asList(value);
 					}
 				}).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(46361, sum);
 
@@ -3850,8 +3851,8 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return value.split(",");
 					}
 				}).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(46361, sum);
 
@@ -3914,8 +3915,8 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(46361, sum);
 
@@ -3956,11 +3957,11 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).groupByKey().forEach(lsttuples -> {
-					for (Tuple2 tuple2 : lsttuples) {
-						sum += ((List) tuple2.v2).size();
-					}
+			for (Tuple2 tuple2 : lsttuples) {
+				sum += ((List) tuple2.v2).size();
+			}
 
-				}, null);
+		}, null);
 
 		assertEquals(46361, sum);
 
@@ -4023,8 +4024,8 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).reduceByKey((a, b) -> a + b).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(2, sum);
 
@@ -4312,8 +4313,8 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return Arrays.asList(value);
 					}
 				}).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(46361, sum);
 
@@ -4439,8 +4440,8 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(46361, sum);
 
@@ -4481,11 +4482,11 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).groupByKey().forEach(lsttuples -> {
-					for (Tuple2 tuple2 : lsttuples) {
-						sum += ((List) tuple2.v2).size();
-					}
+			for (Tuple2 tuple2 : lsttuples) {
+				sum += ((List) tuple2.v2).size();
+			}
 
-				}, null);
+		}, null);
 
 		assertEquals(46361, sum);
 
@@ -4548,8 +4549,8 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).reduceByKey((a, b) -> a + b).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(2, sum);
 
@@ -4752,10 +4753,10 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return value1.compareTo(value2);
 					}
 				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
-					public boolean test(java.lang.String value) {
-						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
-					}
-				}).count(null);
+			public boolean test(java.lang.String value) {
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
+			}
+		}).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -4826,10 +4827,10 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return value1.compareTo(value2);
 					}
 				}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
-					public java.util.List<java.lang.String> apply(java.lang.String value) {
-						return Arrays.asList(value);
-					}
-				}).count(null);
+			public java.util.List<java.lang.String> apply(java.lang.String value) {
+				return Arrays.asList(value);
+			}
+		}).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -4900,10 +4901,10 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return value1.compareTo(value2);
 					}
 				}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
-					public java.lang.String[] apply(java.lang.String value) {
-						return value.split(",");
-					}
-				}).count(null);
+			public java.lang.String[] apply(java.lang.String value) {
+				return value.split(",");
+			}
+		}).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -4975,11 +4976,11 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return value1.compareTo(value2);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
 				.count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
@@ -5009,8 +5010,8 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(46361, sum);
 
@@ -5028,11 +5029,11 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return value1.compareTo(value2);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
 				.groupByKey().collect(toexecute, null);
 		int sum = 0;
 		for (List<Tuple2> lsttuples : data) {
@@ -5061,11 +5062,11 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).groupByKey().forEach(lsttuples -> {
-					for (Tuple2 tuple2 : lsttuples) {
-						sum += ((List) tuple2.v2).size();
-					}
+			for (Tuple2 tuple2 : lsttuples) {
+				sum += ((List) tuple2.v2).size();
+			}
 
-				}, null);
+		}, null);
 
 		assertEquals(46361, sum);
 
@@ -5108,11 +5109,11 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return value1.compareTo(value2);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
 				.reduceByKey((a, b) -> a + b).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
@@ -5142,8 +5143,8 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).reduceByKey((a, b) -> a + b).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(2, sum);
 
@@ -5309,10 +5310,10 @@ public class StreamPipelineDepth2Test extends StreamPipelineBaseTestCommon {
 						return value1.compareTo(value2);
 					}
 				}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
-					public int compare(java.lang.String value1, java.lang.String value2) {
-						return value1.compareTo(value2);
-					}
-				}).count(null);
+			public int compare(java.lang.String value1, java.lang.String value2) {
+				return value1.compareTo(value2);
+			}
+		}).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {

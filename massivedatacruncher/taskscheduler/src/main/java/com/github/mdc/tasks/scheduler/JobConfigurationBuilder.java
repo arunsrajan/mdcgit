@@ -31,6 +31,7 @@ public class JobConfigurationBuilder {
 	String yarnscheduler;
 	String containeralloc;
 	String heappercentage;
+
 	private JobConfigurationBuilder() {
 		hdfsurl = MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL);
 		tstempdir = MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULER_TMP_DIR);
@@ -56,8 +57,11 @@ public class JobConfigurationBuilder {
 		taskexeccount = MDCProperties.get().getProperty(MDCConstants.EXECUTIONCOUNT, MDCConstants.EXECUTIONCOUNT_DEFAULT);
 		ignitemulticastgroup = MDCProperties.get().getProperty(MDCConstants.IGNITEMULTICASTGROUP, MDCConstants.IGNITEMULTICASTGROUP_DEFAULT);
 		ignitebackup = MDCProperties.get().getProperty(MDCConstants.IGNITEBACKUP, MDCConstants.IGNITEBACKUP_DEFAULT);
-		yarnrm = MDCProperties.get().getProperty(MDCConstants.YARNRM, MDCConstants.YARNRM_DEFAULT);;
-		yarnscheduler = MDCProperties.get().getProperty(MDCConstants.YARNSCHEDULER, MDCConstants.YARNSCHEDULER_DEFAULT);;;
+		yarnrm = MDCProperties.get().getProperty(MDCConstants.YARNRM, MDCConstants.YARNRM_DEFAULT);
+		;
+		yarnscheduler = MDCProperties.get().getProperty(MDCConstants.YARNSCHEDULER, MDCConstants.YARNSCHEDULER_DEFAULT);
+		;
+		;
 		containeralloc = MDCProperties.get().getProperty(MDCConstants.CONTAINER_ALLOC, MDCConstants.CONTAINER_ALLOC_DEFAULT);
 		heappercentage = MDCProperties.get().getProperty(MDCConstants.HEAP_PERCENTAGE, MDCConstants.HEAP_PERCENTAGE_DEFAULT);
 	}
@@ -139,9 +143,9 @@ public class JobConfigurationBuilder {
 	public JobConfiguration build() {
 		return new JobConfiguration(hdfsurl, tstempdir, tshost, tsport, zkport, zkretrydelay, tspingdelay,
 				tsrescheduledelay, tsinitialdelay, tepingdelay, hdfs, blocksize, batchsize, numofreducers, minmem,
-				maxmem, gctype, numberofcontainers, isblocksuserdefined, execmode, taskexeccount, 
+				maxmem, gctype, numberofcontainers, isblocksuserdefined, execmode, taskexeccount,
 				ignitemulticastgroup, ignitebackup, yarnrm, yarnscheduler, containeralloc, heappercentage);
-		
+
 	}
 
 	public String getMinmem() {
@@ -175,8 +179,7 @@ public class JobConfigurationBuilder {
 		return numberofcontainers;
 	}
 
-	
-	
+
 	public JobConfigurationBuilder setIsblocksuserdefined(String isblocksuserdefined) {
 		this.isblocksuserdefined = isblocksuserdefined;
 		return this;
@@ -230,7 +233,6 @@ public class JobConfigurationBuilder {
 		this.heappercentage = heappercentage;
 		return this;
 	}
-	
-	
-	
+
+
 }

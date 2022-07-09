@@ -19,16 +19,17 @@ public class MapperExecutor implements Callable<Context> {
 	BlocksLocation blockslocation;
 	List<Mapper> crunchmappers;
 	SnappyInputStream datastream;
+
 	public MapperExecutor(BlocksLocation blockslocation, SnappyInputStream datastream, List<Mapper> crunchmappers) {
 		this.blockslocation = blockslocation;
 		this.datastream = datastream;
 		this.crunchmappers = crunchmappers;
 	}
-	
+
 	@Override
 	public Context call() throws Exception {
 		try (var compstream = datastream;
-				var br = 
+				var br =
 						new BufferedReader(new InputStreamReader(compstream));) {
 			var ctx = new DataCruncherContext();
 			br.lines().parallel().forEach(line -> {
@@ -42,9 +43,8 @@ public class MapperExecutor implements Callable<Context> {
 			log.info(MDCConstants.EMPTY, ex);
 			throw ex;
 		}
-		
+
 	}
 
-	
-	
+
 }

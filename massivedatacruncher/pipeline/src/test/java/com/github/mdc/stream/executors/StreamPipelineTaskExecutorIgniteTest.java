@@ -82,7 +82,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 	@BeforeClass
 	public static void launchNodes() throws Exception {
 		Utils.loadLog4JSystemPropertiesClassPath("mdctest.properties");
-		
+
 		// Starting the node
 		igniteserver = MDCIgniteServer.instance();
 		ignitecache = igniteserver.getOrCreateCache(MDCConstants.MDCCACHE);
@@ -2397,6 +2397,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		assertEquals("AQ", tupleresult.v1);
 
 	}
+
 	// CSV Test Cases End
 
 	// JSON Test cases Start

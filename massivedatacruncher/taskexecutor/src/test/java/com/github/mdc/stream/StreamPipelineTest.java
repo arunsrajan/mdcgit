@@ -22,6 +22,7 @@ import org.junit.runners.MethodSorters;
 public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 
 	boolean toexecute = true;
+
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testCarsReduceByKey() throws Throwable {
@@ -70,7 +71,6 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		log.info("testCollectMultiMaps After---------------------------------------");
 	}
 
-	
 
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
@@ -690,8 +690,8 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 				pipelineconfig);
 		MapPair<Tuple, Object> dataverysmall = mds.map(dat -> dat.split(","))
 				.filter(dat -> !"ArrDelay".equals(dat[14]) && !"NA".equals(dat[14])).mapToPair(dat -> {
-					return (Tuple2) Tuple.tuple(dat[8], Long.parseLong(dat[14]));
-				});
+			return (Tuple2) Tuple.tuple(dat[8], Long.parseLong(dat[14]));
+		});
 		MapPair<Tuple, Object> datasmall = mds.map(dat -> dat.split(","))
 				.filter(dat -> !"ArrDelay".equals(dat[14]) && !"NA".equals(dat[14]))
 				.mapToPair(dat -> (Tuple2) Tuple.tuple(dat[8], Long.parseLong(dat[14])));
@@ -710,8 +710,8 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 				pipelineconfig);
 		List<List<Tuple>> datas = (List) dataverysmall.intersection(dataveryverysmall).map(dat -> dat.split(","))
 				.filter(dat -> !"ArrDelay".equals(dat[14]) && !"NA".equals(dat[14])).mapToPair(dat -> {
-					return Tuple.tuple(dat[8], Long.parseLong(dat[14]));
-				}).reduceByKey((a, b) -> a + b).coalesce(1, (pair1, pair2) -> (Long) pair1 + (Long) pair2)
+			return Tuple.tuple(dat[8], Long.parseLong(dat[14]));
+		}).reduceByKey((a, b) -> a + b).coalesce(1, (pair1, pair2) -> (Long) pair1 + (Long) pair2)
 				.collect(true, null);
 		assertEquals(-63278l, ((Tuple2) datas.get(0).get(0)).v2);
 		log.info("testIntersectionReduceByKey After---------------------------------------");
@@ -799,7 +799,7 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 
 		log.info("testJoinCommonMapMultipleReduce After---------------------------------------");
 	}
-	
+
 	@SuppressWarnings({"rawtypes", "unchecked"})
 	@Test
 	public void testJoinMapPair() throws Throwable {
@@ -812,7 +812,7 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 
 		MapPair<String, Long> airlinesamples1 = mappair1.reduceByKey((dat1, dat2) -> dat1 + dat2).coalesce(1,
 				(dat1, dat2) -> dat1 + dat2);
-		
+
 		MapPair<String, Long> airlinesamples2 = mappair1.reduceByKey((dat1, dat2) -> dat1 - dat2).coalesce(1,
 				(dat1, dat2) -> dat1 - dat2);
 
@@ -835,7 +835,7 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 
 		log.info("testJoinMapPair After---------------------------------------");
 	}
-	
+
 	@SuppressWarnings({"rawtypes", "unchecked"})
 	@Test
 	public void testLeftJoinMapPair() throws Throwable {
@@ -848,13 +848,13 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 
 		MapPair<String, Long> airlinesamples1 = mappair1.reduceByKey((dat1, dat2) -> dat1 + dat2).coalesce(1,
 				(dat1, dat2) -> dat1 + dat2);
-		
+
 		StreamPipeline<String> datastream1 = StreamPipeline.newStreamHDFS(hdfsfilepath, carriers,
 				pipelineconfig);
 
 		MapPair<String, Long> airlinesamples2 = mappair1.reduceByKey((dat1, dat2) -> dat1 - dat2).coalesce(1,
 				(dat1, dat2) -> dat1 - dat2);
-		
+
 		MapPair<String, Long> carriers = datastream1.map(linetosplit -> linetosplit.split(","))
 				.mapToPair(line -> new Tuple2(line[0].substring(1, line[0].length() - 1),
 						line[1].substring(1, line[1].length() - 1)));
@@ -872,7 +872,7 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		log.info("testLeftJoinMapPair After---------------------------------------");
 	}
 
-	
+
 	@SuppressWarnings({"rawtypes", "unchecked"})
 	@Test
 	public void testRightJoinMapPair() throws Throwable {
@@ -885,15 +885,15 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 
 		MapPair<String, Long> airlinesamples1 = mappair1.reduceByKey((dat1, dat2) -> dat1 + dat2).coalesce(1,
 				(dat1, dat2) -> dat1 + dat2);
-		
+
 		StreamPipeline<String> datastream1 = StreamPipeline.newStreamHDFS(hdfsfilepath, carriers,
 				pipelineconfig);
-		
+
 		MapPair<String, Long> carriers = datastream1.map(linetosplit -> linetosplit.split(","))
 				.filter(line -> !"AQ".equals(line[0].substring(1, line[0].length() - 1)))
 				.mapToPair(line -> new Tuple2(line[0].substring(1, line[0].length() - 1),
 						line[1].substring(1, line[1].length() - 1)));
-		
+
 		MapPair<String, Long> carriers1 = datastream1.map(linetosplit -> linetosplit.split(","))
 				.mapToPair(line -> new Tuple2(line[0].substring(1, line[0].length() - 1),
 						line[1].substring(1, line[1].length() - 1)));
@@ -910,7 +910,7 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 
 		log.info("testRightJoinMapPair After---------------------------------------");
 	}
-	
+
 	@SuppressWarnings({"rawtypes", "unchecked"})
 	@Test
 	public void testJoinCommonMapMultipleReduceLeftOuterJoin() throws Throwable {
@@ -1043,10 +1043,10 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 				pipelineconfig);
 		StreamPipeline map = (StreamPipeline) datastream.map(dat -> dat.split(","))
 				.filter(dat -> !"ArrDelay".equals(dat[14])).sorted((val1, val2) -> {
-					Long vall1 = Long.parseLong(((String[]) val1)[2]);
-					Long vall2 = Long.parseLong(((String[]) val2)[2]);
-					return vall1.compareTo(vall2);
-				});
+			Long vall1 = Long.parseLong(((String[]) val1)[2]);
+			Long vall2 = Long.parseLong(((String[]) val2)[2]);
+			return vall1.compareTo(vall2);
+		});
 		List<List<String[]>> values = (List) map.collect(toexecute, null);
 		for (List<String[]> vals : values) {
 			for (String[] valarr : vals) {
@@ -1632,8 +1632,8 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 				pipelineconfig);
 		List<List<Tuple2>> listreducebykey = (List) datastream.map(dat -> dat.split(","))
 				.filter(dat -> !"Abortion_rate".equals(dat[2])).mapToPair(dat -> {
-					return new Tuple2<String, Double>(dat[1], Double.parseDouble(dat[2]));
-				}).reduceByKey((pair1, pair2) -> (Double) pair1 + (Double) pair2)
+			return new Tuple2<String, Double>(dat[1], Double.parseDouble(dat[2]));
+		}).reduceByKey((pair1, pair2) -> (Double) pair1 + (Double) pair2)
 				.coalesce(1, (pair1, pair2) -> (Double) pair1 + (Double) pair2).collect(toexecute, null);
 		double sum = 0;
 		for (Tuple2 pair : listreducebykey.get(0)) {
@@ -1675,8 +1675,8 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 				pipelineconfig);
 		java.util.List<List<Tuple2>> listreducebykey = (List) datastream.sample(46361).map(datas -> datas.split(","))
 				.filter(dat -> !"ArrDelay".equals(dat[14]) && !"NA".equals(dat[14])).mapToPair(dat -> {
-					return Tuple.tuple(dat[8], Long.parseLong(dat[14]));
-				}).reduceByKey((a, b) -> a + b).coalesce(1, (pair1, pair2) -> (Long) pair1 + (Long) pair2)
+			return Tuple.tuple(dat[8], Long.parseLong(dat[14]));
+		}).reduceByKey((a, b) -> a + b).coalesce(1, (pair1, pair2) -> (Long) pair1 + (Long) pair2)
 				.collect(toexecute, null);
 		int sum = 0;
 		for (List<Tuple2> tuples : listreducebykey) {
@@ -1807,13 +1807,13 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		MapPair<Tuple, Object> dataverysmall = StreamPipeline
 				.newStreamHDFS(hdfsfilepath, airlinepairjoin, pipelineconfig).map(dat -> dat.split(","))
 				.filter(dat -> !"ArrDelay".equals(dat[14]) && !"NA".equals(dat[14])).mapToPair(dat -> {
-					return (Tuple2) Tuple.tuple(dat[8], Long.parseLong(dat[14]));
-				});
+			return (Tuple2) Tuple.tuple(dat[8], Long.parseLong(dat[14]));
+		});
 		MapPair<Tuple, Object> dataveryverysmall1989 = StreamPipeline
 				.newStreamHDFS(hdfsfilepath, airlinepairjoin, pipelineconfig).map(dat -> dat.split(","))
 				.filter(dat -> !"ArrDelay".equals(dat[14]) && !"NA".equals(dat[14])).mapToPair(dat -> {
-					return (Tuple2) Tuple.tuple(dat[8], Long.parseLong(dat[14]));
-				});
+			return (Tuple2) Tuple.tuple(dat[8], Long.parseLong(dat[14]));
+		});
 		List<List<Tuple>> datas = (List) dataverysmall.union(dataveryverysmall1989).collect(true, null);
 		Assert.assertEquals(25, datas.get(0).size());
 		log.info("testUnionFilterMapPairUnion After---------------------------------------");
@@ -1842,8 +1842,8 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 				pipelineconfig);
 		List<List<Tuple>> datas = (List) dataverysmall.union(dataveryverysmall).map(dat -> dat.split(","))
 				.filter(dat -> !"ArrDelay".equals(dat[14]) && !"NA".equals(dat[14])).mapToPair(dat -> {
-					return Tuple.tuple(dat[8], Long.parseLong(dat[14]));
-				}).reduceByKey((a, b) -> a + b).coalesce(1, (pair1, pair2) -> (Long) pair1 + (Long) pair2)
+			return Tuple.tuple(dat[8], Long.parseLong(dat[14]));
+		}).reduceByKey((a, b) -> a + b).coalesce(1, (pair1, pair2) -> (Long) pair1 + (Long) pair2)
 				.collect(true, null);
 		assertEquals(-63278l, ((Tuple2) datas.get(0).get(0)).v2);
 		log.info("testUnionReduceByKey After---------------------------------------");
@@ -1876,8 +1876,8 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 				pipelineconfig);
 		List<List<Tuple>> datas = (List) unionstream1.union(unionstream2).union(unionstream3).map(dat -> dat.split(","))
 				.filter(dat -> !"ArrDelay".equals(dat[14]) && !"NA".equals(dat[14])).mapToPair(dat -> {
-					return Tuple.tuple(dat[8], Long.parseLong(dat[14]));
-				}).reduceByKey((a, b) -> a + b).coalesce(1, (pair1, pair2) -> (Long) pair1 + (Long) pair2)
+			return Tuple.tuple(dat[8], Long.parseLong(dat[14]));
+		}).reduceByKey((a, b) -> a + b).coalesce(1, (pair1, pair2) -> (Long) pair1 + (Long) pair2)
 				.collect(true, null);
 		assertEquals(-63278l, ((Tuple2) datas.get(0).get(0)).v2);
 		log.info("testUnionUnionReduceByKey After---------------------------------------");
@@ -1906,14 +1906,14 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		List<List> wordscount = (List) datastream.flatMap(str -> Arrays.asList(str.split(" ")))
 				.mapToPair(str -> Tuple.tuple(str.trim().replace(" ", ""), (Long) 1l)).reduceByKey((a, b) -> a + b)
 				.coalesce(1, (pair1, pair2) -> (Long) pair1 + (Long) pair2).sorted((val1, val2) -> {
-					Tuple2 tup1 = (Tuple2) val1;
-					Tuple2 tup2 = (Tuple2) val2;
-					int compres = ((Long) tup1.v2).compareTo(((Long) tup2.v2));
-					if (compres == 0) {
-						return ((String) tup1.v1).compareToIgnoreCase(((String) tup2.v1));
-					}
-					return compres;
-				}).collect(toexecute, null);
+			Tuple2 tup1 = (Tuple2) val1;
+			Tuple2 tup2 = (Tuple2) val2;
+			int compres = ((Long) tup1.v2).compareTo(((Long) tup2.v2));
+			if (compres == 0) {
+				return ((String) tup1.v1).compareToIgnoreCase(((String) tup2.v1));
+			}
+			return compres;
+		}).collect(toexecute, null);
 		wordscount.stream().flatMap(stream -> stream.stream()).forEach(log::info);
 
 		log.info("testWordCountCountAndWordSorted After---------------------------------------");
@@ -1928,10 +1928,10 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		List<List> wordscount = (List) datastream.flatMap(str -> Arrays.asList(str.split(" ")))
 				.mapToPair(str -> Tuple.tuple(str.trim().replace(" ", ""), (Long) 1l)).reduceByKey((a, b) -> a + b)
 				.coalesce(1, (pair1, pair2) -> (Long) pair1 + (Long) pair2).sorted((val1, val2) -> {
-					Tuple2 tup1 = (Tuple2) val1;
-					Tuple2 tup2 = (Tuple2) val2;
-					return ((Long) tup1.v2).compareTo(((Long) tup2.v2));
-				}).collect(toexecute, null);
+			Tuple2 tup1 = (Tuple2) val1;
+			Tuple2 tup2 = (Tuple2) val2;
+			return ((Long) tup1.v2).compareTo(((Long) tup2.v2));
+		}).collect(toexecute, null);
 		wordscount.stream().flatMap(stream -> stream.stream()).forEach(log::info);
 
 		log.info("testWordCountCountSorted After---------------------------------------");
@@ -1965,10 +1965,10 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		List<List> wordscount = (List) datastream.flatMap(str -> Arrays.asList(str.split(" ")))
 				.mapToPair(str -> Tuple.tuple(str.trim().replace(" ", ""), (Long) 1l)).reduceByKey((a, b) -> a + b)
 				.coalesce(1, (pair1, pair2) -> (Long) pair1 + (Long) pair2).sorted((val1, val2) -> {
-					Tuple2 tup1 = (Tuple2) val1;
-					Tuple2 tup2 = (Tuple2) val2;
-					return ((String) tup1.v1).compareToIgnoreCase(((String) tup2.v1));
-				}).collect(toexecute, null);
+			Tuple2 tup1 = (Tuple2) val1;
+			Tuple2 tup2 = (Tuple2) val2;
+			return ((String) tup1.v1).compareToIgnoreCase(((String) tup2.v1));
+		}).collect(toexecute, null);
 		int numberofwords = 0;
 		int numberofdistinctwords = 0;
 		for (List<Tuple2> vals : wordscount) {
@@ -2008,9 +2008,9 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		List<List<AtomicInteger>> intvalues = (List) datastream.map(str -> str.split(","))
 				.filter(str -> !"ArrDelay".equals(str[14]) && !"NA".equals(str[14]))
 				.mapToInt(str -> Integer.parseInt(str[14])).<AtomicInteger>collect(toexecute,
-						() -> new AtomicInteger(),
-						(AtomicInteger a, int b) -> ((AtomicInteger) a).set(((AtomicInteger) a).get() + b),
-						(AtomicInteger a, AtomicInteger b) -> a.set(a.get() + b.get()));
+				() -> new AtomicInteger(),
+				(AtomicInteger a, int b) -> ((AtomicInteger) a).set(((AtomicInteger) a).get() + b),
+				(AtomicInteger a, AtomicInteger b) -> a.set(a.get() + b.get()));
 		for (List<AtomicInteger> vals : intvalues) {
 			for (AtomicInteger intvalue : vals)
 				log.info(intvalue);
@@ -2028,9 +2028,9 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		List<List<AtomicInteger>> intvalues = (List) datastream.map(str -> str.split(","))
 				.filter(str -> !"ArrDelay".equals(str[14]) && !"NA".equals(str[14]))
 				.mapToInt(str -> Integer.parseInt(str[14])).distinct().<AtomicInteger>collect(toexecute,
-						() -> new AtomicInteger(),
-						(AtomicInteger a, int b) -> ((AtomicInteger) a).set(((AtomicInteger) a).get() + b),
-						(AtomicInteger a, AtomicInteger b) -> a.set(a.get() + b.get()));
+				() -> new AtomicInteger(),
+				(AtomicInteger a, int b) -> ((AtomicInteger) a).set(((AtomicInteger) a).get() + b),
+				(AtomicInteger a, AtomicInteger b) -> a.set(a.get() + b.get()));
 		for (List<AtomicInteger> vals : intvalues) {
 			for (AtomicInteger intvalue : vals)
 				log.info(intvalue);
@@ -2049,14 +2049,14 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 				.filter(str -> !"ArrDelay".equals(str[14]) && !"NA".equals(str[14]))
 				.mapToInt(str -> Integer.parseInt(str[14])).map(new IntUnaryOperator() {
 
-					@Override
-					public int applyAsInt(int operand) {
-						return operand + 100;
-					}
+			@Override
+			public int applyAsInt(int operand) {
+				return operand + 100;
+			}
 
-				}).<AtomicInteger>collect(toexecute, () -> new AtomicInteger(),
-						(AtomicInteger a, int b) -> ((AtomicInteger) a).set(((AtomicInteger) a).get() + b),
-						(AtomicInteger a, AtomicInteger b) -> a.set(a.get() + b.get()));
+		}).<AtomicInteger>collect(toexecute, () -> new AtomicInteger(),
+				(AtomicInteger a, int b) -> ((AtomicInteger) a).set(((AtomicInteger) a).get() + b),
+				(AtomicInteger a, AtomicInteger b) -> a.set(a.get() + b.get()));
 		for (List<AtomicInteger> vals : intvalues) {
 			for (AtomicInteger intvalue : vals)
 				log.info(intvalue);
@@ -2086,6 +2086,5 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		log.info("testCountByKey After---------------------------------------");
 	}
 
-	
 
 }

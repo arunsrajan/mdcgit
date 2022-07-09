@@ -42,26 +42,27 @@ public class ResourcesMetricsServlet extends HttpServlet {
 			MemoryUsage nonheap = membean.getNonHeapMemoryUsage();
 			double nonheapusage = nonheap.getUsed() / (double) nonheap.getMax() * 100.0;
 			String[] cpuheap  = {systemloadaverage + MDCConstants.EMPTY, heapusage + MDCConstants.EMPTY, nonheapusage + MDCConstants.EMPTY};
-			
+
 			writer.write(new ObjectMapper().writeValueAsString(cpuheap));
 			writer.flush();
 		} catch (Exception ex) {
 			log.debug("TaskScheduler Web servlet error, See cause below \n", ex);
 		}
 	}
+
 	public static double getProcessCpuLoad() throws Exception {
 
-	    MBeanServer mbs    = ManagementFactory.getPlatformMBeanServer();
-	    ObjectName name    = ObjectName.getInstance("java.lang:type=OperatingSystem");
-	    AttributeList list = mbs.getAttributes(name, new String[]{"ProcessCpuLoad"});
+		MBeanServer mbs    = ManagementFactory.getPlatformMBeanServer();
+		ObjectName name    = ObjectName.getInstance("java.lang:type=OperatingSystem");
+		AttributeList list = mbs.getAttributes(name, new String[]{"ProcessCpuLoad"});
 		if (list.isEmpty()) {
 			return Double.NaN;
 		}
-	    Attribute att = (Attribute) list.get(0);
-	    Double value  = (Double) att.getValue();
+		Attribute att = (Attribute) list.get(0);
+		Double value  = (Double) att.getValue();
 		if (value == -1.0) {
 			return Double.NaN;
 		}
-	    return (int) (value * 1000) / 10.0;
+		return (int) (value * 1000) / 10.0;
 	}
 }

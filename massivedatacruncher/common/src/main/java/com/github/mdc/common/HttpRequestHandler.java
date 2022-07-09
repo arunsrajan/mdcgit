@@ -20,10 +20,11 @@ import org.eclipse.jetty.server.handler.AbstractHandler;
  *
  */
 public class HttpRequestHandler extends AbstractHandler {
-	
+
 	private static Logger log = Logger.getLogger(HttpRequestHandler.class);
-	
+
 	private String dir;
+
 	HttpRequestHandler(String dir) {
 		this.dir = dir;
 	}
@@ -35,38 +36,38 @@ public class HttpRequestHandler extends AbstractHandler {
 		var downloadFile = new File(filePath);
 		try (var inStream = new FileInputStream(downloadFile);
 				var outStream = response.getOutputStream();) {
-			
-	
+
+
 			// if you want to use a relative path to context root:
 			
 			log.debug("relativePath = " + relativePath);
-	
+
 			var mimeType = "application/octet-stream";
-	
+
 			log.debug("MIME type: " + mimeType);
-	
+
 			// modifies response
 			response.setContentType(mimeType);
 			response.setContentLength((int) downloadFile.length());
-	
+
 			// forces download
 			var headerKey = "Content-Disposition";
 			var headerValue = String.format("attachment; filename=\"%s\"", downloadFile.getName());
 			response.setHeader(headerKey, headerValue);
-	
+
 			// obtains response's output stream
 			
 	
 			var buffer = new byte[4096];
 			var bytesRead = -1;
-	
+
 			while ((bytesRead = inStream.read(buffer)) != -1) {
 				outStream.write(buffer, 0, bytesRead);
 			}
-	
+
 			inStream.close();
 			outStream.close();
-	
+
 			baseRequest.setHandled(true);
 		}
 		catch (Exception ex) {

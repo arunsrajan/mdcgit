@@ -24,9 +24,10 @@ import com.esotericsoftware.kryo.io.Output;
  * and the final stage output from the HDFS and local file system
  */
 public class RemoteDataFetcher {
-	private RemoteDataFetcher() {}
+	private RemoteDataFetcher() {
+	}
 	private static Logger log = Logger.getLogger(RemoteDataFetcher.class);
-	
+
 	/**
 	 * Write the intermediate and final stage output to HDFS.
 	 * @param serobj
@@ -57,14 +58,14 @@ public class RemoteDataFetcher {
 				hdfs.delete(filepathurl, false);
 			}
 			createFileMR(hdfs, filepathurl, serobj);
-			
+
 		} catch (Exception ioe) {
 			log.error(RemoteDataFetcherException.INTERMEDIATEPHASEWRITEERROR, ioe);
 			throw new RemoteDataFetcherException(RemoteDataFetcherException.INTERMEDIATEPHASEWRITEERROR, ioe);
 		}
 		log.debug("Exiting RemoteDataFetcher.writerIntermediatePhaseOutputToDFS");
 	}
-	
+
 	/**
 	 * This method creates file given the path in HDFS for the MRJob API
 	 * @param hdfs
@@ -75,7 +76,7 @@ public class RemoteDataFetcher {
 	@SuppressWarnings({"rawtypes", "unchecked"})
 	protected static void createFileMR(FileSystem hdfs, Path filepathurl, Context serobj) throws RemoteDataFetcherException {
 		log.debug("Entered RemoteDataFetcher.createFileMR");
-		
+
 		try (var fsdos = hdfs.create(filepathurl); 
 				var output = new Output(fsdos);) {
 
@@ -87,7 +88,7 @@ public class RemoteDataFetcher {
 			fsdos.hflush();
 			fsdos.hsync();
 			kryo.writeClassAndObject(output, serobj);
-			output.flush();			
+			output.flush();
 			fsdos.hflush();
 			fsdos.hsync();
 		} catch (Exception ex) {
@@ -96,8 +97,8 @@ public class RemoteDataFetcher {
 		}
 		log.debug("Exiting RemoteDataFetcher.createFileMR");
 	}
-	
-	
+
+
 	/**
 	 * This method creates file given the path in HDFS for the pipeline API
 	 * @param hdfs
@@ -123,6 +124,7 @@ public class RemoteDataFetcher {
 		}
 		log.debug("Exiting RemoteDataFetcher.createFile");
 	}
+
 	/**
 	 * Write intermediate data like graph, jobstage maps and topological order
 	 * information 
@@ -139,7 +141,7 @@ public class RemoteDataFetcher {
 		configuration.set(MDCConstants.HDFS_DEFAULTFS, MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL, MDCConstants.HDFSNAMENODEURL_DEFAULT));
 		configuration.set(MDCConstants.HDFS_IMPL, org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
 		configuration.set(MDCConstants.HDFS_FILE_IMPL, org.apache.hadoop.fs.LocalFileSystem.class.getName());
-		
+
 		var jobpath = MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL, MDCConstants.HDFSNAMENODEURL_DEFAULT) + MDCConstants.BACKWARD_SLASH + FileSystemSupport.MDS + MDCConstants.BACKWARD_SLASH + dirtowrite;
 		var filepath = jobpath + MDCConstants.BACKWARD_SLASH + filename;
 		var jobpathurl = new Path(jobpath);
@@ -149,13 +151,14 @@ public class RemoteDataFetcher {
 				hdfs.mkdirs(jobpathurl);
 			}
 			createFile(hdfs, filepathurl, serobj);
-			
+
 		} catch (Exception ioe) {
 			log.error(RemoteDataFetcherException.INTERMEDIATEPHASEWRITEERROR, ioe);
 			throw new RemoteDataFetcherException(RemoteDataFetcherException.INTERMEDIATEPHASEWRITEERROR, ioe);
 		}
 		log.debug("Exiting RemoteDataFetcher.writerYarnAppmasterServiceDataToDFS");
 	}
+
 	/**
 	 * Reads intermediate data like graph, jobstage maps and topological order
 	 * information 
@@ -185,9 +188,9 @@ public class RemoteDataFetcher {
 			log.error(RemoteDataFetcherException.INTERMEDIATEPHASEREADERROR, ioe);
 			throw new RemoteDataFetcherException(RemoteDataFetcherException.INTERMEDIATEPHASEREADERROR, ioe);
 		}
-		
+
 	}
-	
+
 	/**
 	 * Read intermediate and final stage output from HDFS.
 	 * @param jobid
@@ -219,7 +222,7 @@ public class RemoteDataFetcher {
 		}
 
 	}
-	
+
 	/**
 	 * Gets the HDFS inputstream of a file using jobid and filename 
 	 * @param jobid
@@ -241,8 +244,8 @@ public class RemoteDataFetcher {
 			throw new RemoteDataFetcherException(RemoteDataFetcherException.INTERMEDIATEPHASEREADERROR, ioe);
 		}
 	}
-	
-	
+
+
 	/**
 	 * Gets the local file using jobid and filename 
 	 * @param jobid
@@ -268,8 +271,8 @@ public class RemoteDataFetcher {
 			throw new RemoteDataFetcherException(RemoteDataFetcherException.INTERMEDIATEPHASEREADERROR, ioe);
 		}
 	}
-	
-	
+
+
 	/**
 	 * Delete all the stages outputs of a job
 	 * @param jobid
@@ -279,7 +282,7 @@ public class RemoteDataFetcher {
 			String jobid) throws RemoteDataFetcherException {
 		log.debug("Entered RemoteDataFetcher.deleteIntermediatePhaseOutputFromDFS");
 		var configuration = new Configuration();
-		try (var hdfs = FileSystem.newInstance(new URI(MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL, MDCConstants.HDFSNAMENODEURL_DEFAULT)), configuration)) {			
+		try (var hdfs = FileSystem.newInstance(new URI(MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL, MDCConstants.HDFSNAMENODEURL_DEFAULT)), configuration)) {
 			hdfs.delete(new Path(MDCConstants.BACKWARD_SLASH + FileSystemSupport.MDS + MDCConstants.BACKWARD_SLASH + jobid), true);
 		}
 		catch (Exception ioe) {
@@ -288,7 +291,7 @@ public class RemoteDataFetcher {
 		}
 		log.debug("Exiting RemoteDataFetcher.deleteIntermediatePhaseOutputFromDFS");
 	}
-	
+
 	/**
 	 * This method returns the intermediate data remote by passing the
 	 * RemoteDataFetch object.
@@ -302,6 +305,6 @@ public class RemoteDataFetcher {
 		rdf.data = rdfwithdata.data;
 		log.debug("Exiting RemoteDataFetcher.remoteInMemoryDataFetch");
 	}
-	
-	
+
+
 }

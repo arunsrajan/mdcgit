@@ -9,9 +9,11 @@ import org.ehcache.CacheManager;
  */
 public class MDCCacheManager {
 	private static CacheManager cachemanager;
+
 	public static void put(CacheManager cachemanager) {
 		MDCCacheManager.cachemanager = cachemanager;
 	}
+
 	public static CacheManager get() {
 		return MDCCacheManager.cachemanager;
 	}

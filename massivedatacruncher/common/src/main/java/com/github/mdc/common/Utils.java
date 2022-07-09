@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
+import java.util.Set;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Semaphore;
@@ -122,6 +123,7 @@ public class Utils {
 	}
 
 	static MemoryPoolMXBean mpBeanLocalToJVM;
+
 	static {
 		for (MemoryPoolMXBean mpBean : ManagementFactory.getMemoryPoolMXBeans()) {
 			if (mpBean.getType() == MemoryType.HEAP) {
@@ -572,8 +574,8 @@ public class Utils {
 				Thread.sleep(500);
 			} catch (InterruptedException e) {
 				log.warn("Interrupted!", e);
-			    // Restore interrupted state...
-			    Thread.currentThread().interrupt();
+				// Restore interrupted state...
+				Thread.currentThread().interrupt();
 			} catch (Exception ex) {
 				log.error("Delay Error, see cause below \n", ex);
 			}
@@ -610,8 +612,8 @@ public class Utils {
 				Thread.sleep(500);
 			} catch (InterruptedException e) {
 				log.warn("Interrupted!", e);
-			    // Restore interrupted state...
-			    Thread.currentThread().interrupt();
+				// Restore interrupted state...
+				Thread.currentThread().interrupt();
 			} catch (Exception ex) {
 				log.error("Delay Error, see cause below \n", ex);
 			}
@@ -697,10 +699,10 @@ public class Utils {
 		kryo.register(Collections.EMPTY_LIST.getClass(), new CollectionsEmptyListSerializer());
 		kryo.register(Collections.EMPTY_MAP.getClass(), new CollectionsEmptyMapSerializer());
 		kryo.register(Collections.EMPTY_SET.getClass(), new CollectionsEmptySetSerializer());
-		kryo.register(Collections.singletonList(MDCConstants.EMPTY).getClass(),
+		kryo.register(List.of(MDCConstants.EMPTY).getClass(),
 				new CollectionsSingletonListSerializer());
-		kryo.register(Collections.singleton(MDCConstants.EMPTY).getClass(), new CollectionsSingletonSetSerializer());
-		kryo.register(Collections.singletonMap(MDCConstants.EMPTY, MDCConstants.EMPTY).getClass(),
+		kryo.register(Set.of(MDCConstants.EMPTY).getClass(), new CollectionsSingletonSetSerializer());
+		kryo.register(Map.of(MDCConstants.EMPTY, MDCConstants.EMPTY).getClass(),
 				new CollectionsSingletonMapSerializer());
 		kryo.register(GregorianCalendar.class, new GregorianCalendarSerializer());
 		kryo.register(InvocationHandler.class, new JdkProxySerializer());
@@ -903,11 +905,11 @@ public class Utils {
 		return null;
 	}
 
-	public static synchronized JChannel getChannelTSSHA(String bindaddress, Receiver receiver) throws Exception {		
+	public static synchronized JChannel getChannelTSSHA(String bindaddress, Receiver receiver) throws Exception {
 		JChannel channel = getChannelWithPStack(
 				bindaddress);
 		if (!Objects.isNull(channel)) {
-			channel.setName(bindaddress);			
+			channel.setName(bindaddress);
 			channel.setDiscardOwnMessages(true);
 			if (!Objects.isNull(receiver)) {
 				channel.setReceiver(receiver);
@@ -1109,8 +1111,8 @@ public class Utils {
 							Thread.sleep(1000);
 						} catch (InterruptedException e) {
 							log.warn("Interrupted!", e);
-						    // Restore interrupted state...
-						    Thread.currentThread().interrupt();
+							// Restore interrupted state...
+							Thread.currentThread().interrupt();
 						} catch (Exception e) {
 							log.error(MDCConstants.EMPTY, e);
 						}

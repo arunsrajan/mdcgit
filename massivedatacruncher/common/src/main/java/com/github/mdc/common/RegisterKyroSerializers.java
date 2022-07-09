@@ -4,6 +4,9 @@ import java.lang.reflect.InvocationHandler;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.GregorianCalendar;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import com.esotericsoftware.kryo.Kryo;
 
@@ -41,7 +44,7 @@ import de.javakaffee.kryoserializers.guava.UnmodifiableNavigableSetSerializer;
  * This class registers the custom serializers for the collections object.
  */
 public class RegisterKyroSerializers {
-	
+
 	/**
 	 * This method registers the serializers for the java collections and the guava objects.
 	 * @param kryo
@@ -51,9 +54,9 @@ public class RegisterKyroSerializers {
 		kryo.register(Collections.EMPTY_LIST.getClass(), new CollectionsEmptyListSerializer());
 		kryo.register(Collections.EMPTY_MAP.getClass(), new CollectionsEmptyMapSerializer());
 		kryo.register(Collections.EMPTY_SET.getClass(), new CollectionsEmptySetSerializer());
-		kryo.register(Collections.singletonList(MDCConstants.EMPTY).getClass(), new CollectionsSingletonListSerializer());
-		kryo.register(Collections.singleton(MDCConstants.EMPTY).getClass(), new CollectionsSingletonSetSerializer());
-		kryo.register(Collections.singletonMap(MDCConstants.EMPTY, MDCConstants.EMPTY).getClass(), new CollectionsSingletonMapSerializer());
+		kryo.register(List.of(MDCConstants.EMPTY).getClass(), new CollectionsSingletonListSerializer());
+		kryo.register(Set.of(MDCConstants.EMPTY).getClass(), new CollectionsSingletonSetSerializer());
+		kryo.register(Map.of(MDCConstants.EMPTY, MDCConstants.EMPTY).getClass(), new CollectionsSingletonMapSerializer());
 		kryo.register(GregorianCalendar.class, new GregorianCalendarSerializer());
 		kryo.register(InvocationHandler.class, new JdkProxySerializer());
 		UnmodifiableCollectionsSerializer.registerSerializers(kryo);

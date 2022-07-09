@@ -44,22 +44,23 @@ import com.github.mdc.stream.utils.FileBlocksPartitionerHDFS;
 import com.github.mdc.tasks.executor.NodeRunner;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class FileBlocksPartitionerHDFSMultipleNodesTest extends StreamPipelineBase{
+public class FileBlocksPartitionerHDFSMultipleNodesTest extends StreamPipelineBase {
 	private static final int NOOFNODES = 5;
 	static int teport = 12121;
 	static ExecutorService es,escontainer;
 	static ConcurrentMap<String, List<ServerSocket>> containers;
-	static ConcurrentMap<String, List<Thread>> tes;	
+	static ConcurrentMap<String, List<Thread>> tes;
 	static List<ServerSocket> containerlauncher = new ArrayList<>();
 	static Logger log = Logger.getLogger(FileBlocksPartitionerHDFSTest.class);
 	static int nodeindex;
 	static FileSystem hdfs;
 	static Path[] paths;
 	static List<BlocksLocation> bls;
+
 	@BeforeClass
 	public static void launchNodes() throws Exception {
 		Utils.loadLog4JSystemPropertiesClassPath("mdctest.properties");
-		hdfs = FileSystem.newInstance(new URI(hdfsfilepath), new Configuration());		
+		hdfs = FileSystem.newInstance(new URI(hdfsfilepath), new Configuration());
 		FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsfilepath + airlines));
 		paths = FileUtil.stat2Paths(fileStatus);
 		FileBlocksPartitionerHDFS fbp = new FileBlocksPartitionerHDFS();
@@ -68,9 +69,9 @@ public class FileBlocksPartitionerHDFSMultipleNodesTest extends StreamPipelineBa
 		bls = fbp.getBlocks(true, 128 * MDCConstants.MB);
 		containers = new ConcurrentHashMap<>();
 		tes = new ConcurrentHashMap<>();
-		es = Executors.newFixedThreadPool(NOOFNODES);	
+		es = Executors.newFixedThreadPool(NOOFNODES);
 		Semaphore semaphore = new Semaphore(1);
-		CountDownLatch cdl = new CountDownLatch(NOOFNODES);		
+		CountDownLatch cdl = new CountDownLatch(NOOFNODES);
 		escontainer = Executors.newFixedThreadPool(100);
 		var containerprocesses = new ConcurrentHashMap<String, Map<String, Process>>();
 		var containeridthreads = new ConcurrentHashMap<String, Map<String, List<Thread>>>();
@@ -90,7 +91,7 @@ public class FileBlocksPartitionerHDFSMultipleNodesTest extends StreamPipelineBa
 				ServerSocket ssl = ss;
 				cdl.countDown();
 				AtomicInteger portinc = new AtomicInteger(teport + nodeindex * 100);
-				semaphore.release();				
+				semaphore.release();
 				while (true) {
 					try (Socket sock = ssl.accept();) {
 						var container = new NodeRunner(sock, portinc, MDCConstants.PROPLOADERCONFIGFOLDER,
@@ -104,7 +105,7 @@ public class FileBlocksPartitionerHDFSMultipleNodesTest extends StreamPipelineBa
 		}
 		cdl.await();
 	}
-	
+
 	@AfterClass
 	public static void shutdownNodes() throws Exception {
 		containers.keySet().stream().flatMap(key -> containers.get(key).stream()).forEach(servers -> {
@@ -118,7 +119,8 @@ public class FileBlocksPartitionerHDFSMultipleNodesTest extends StreamPipelineBa
 			containerlauncher.stream().forEach(ss -> {
 				try {
 					ss.close();
-				} catch (IOException e) {				}
+				} catch (IOException e) {
+				}
 			});
 		}
 		if (!Objects.isNull(es)) {
@@ -128,12 +130,12 @@ public class FileBlocksPartitionerHDFSMultipleNodesTest extends StreamPipelineBa
 			escontainer.shutdown();
 		}
 	}
-	
+
 	@Test
 	public void testGetNodesResourcesSortedAuto() throws Exception {
 		log.info("FileBlocksPartitionerHDFSMultipleNodesTest.testGetNodesResourcesSortedAuto() Entered------------------------------");
 		FileBlocksPartitionerHDFS fbp = new FileBlocksPartitionerHDFS();
-		fbp.hdfs = hdfs;		
+		fbp.hdfs = hdfs;
 		fbp.isblocksuserdefined = false;
 		fbp.job = new Job();
 		Map<String, Long> nodestotalblockmem = new ConcurrentHashMap<>();
@@ -142,8 +144,8 @@ public class FileBlocksPartitionerHDFSMultipleNodesTest extends StreamPipelineBa
 		log.info(fbp.nodessorted);
 		log.info("FileBlocksPartitionerHDFSMultipleNodesTest.testGetNodesResourcesSortedAuto() Exiting------------------------------");
 	}
-	
-	
+
+
 	@Test
 	public void testGetTaskExecutorsAuto() throws Exception {
 		log.info("FileBlocksPartitionerHDFSMultipleNodesTest.testGetTaskExecutorsAuto() Entered------------------------------");
@@ -159,12 +161,12 @@ public class FileBlocksPartitionerHDFSMultipleNodesTest extends StreamPipelineBa
 		fbp.getDnXref(bls, false);
 		fbp.allocateContainersByResources(bls);
 		log.info(fbp.job.nodes);
-		log.info(fbp.job.containers);		
+		log.info(fbp.job.containers);
 		fbp.destroyContainers();
 		GlobalContainerAllocDealloc.getHportcrs().clear();
 		log.info("FileBlocksPartitionerHDFSMultipleNodesTest.testGetTaskExecutorsAuto() Exiting------------------------------");
 	}
-	
+
 	@Test
 	public void testGetTaskExecutorsProperInput() throws Exception {
 		log.info("FileBlocksPartitionerHDFSMultipleNodesTest.testGetTaskExecutorsProperInput() Entered------------------------------");
@@ -183,6 +185,6 @@ public class FileBlocksPartitionerHDFSMultipleNodesTest extends StreamPipelineBa
 		log.info(fbp.job.containers);
 		fbp.destroyContainers();
 		GlobalContainerAllocDealloc.getHportcrs().clear();
-		log.info("FileBlocksPartitionerHDFSMultipleNodesTest.testGetTaskExecutorsProperInput() Exiting------------------------------");		
+		log.info("FileBlocksPartitionerHDFSMultipleNodesTest.testGetTaskExecutorsProperInput() Exiting------------------------------");
 	}
 }

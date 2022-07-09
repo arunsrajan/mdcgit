@@ -35,7 +35,7 @@ public class CarriersDataMapper implements Mapper<Long, String, Context<String, 
 			}
 			if (map.get("AIRLINEARRDELAY") != null) {
 				arrdelaysum += (long) map.get("AIRLINEARRDELAY");
-			} 
+			}
 			if (map.get("AIRLINEDEPDELAY") != null) {
 				depdelaysum += (long) map.get("AIRLINEDEPDELAY");
 			}
@@ -43,7 +43,7 @@ public class CarriersDataMapper implements Mapper<Long, String, Context<String, 
 		var map1 = new HashMap<>();
 		if (!(arrdelaysum == 0 && depdelaysum == 0)) {
 			context.put(key, carrierName + "," + (arrdelaysum == 0 ? "" : arrdelaysum) + ","
-				+ (depdelaysum == 0 ? "" : depdelaysum));
+					+ (depdelaysum == 0 ? "" : depdelaysum));
 		}
 
 	}
@@ -56,15 +56,15 @@ public class CarriersDataMapper implements Mapper<Long, String, Context<String, 
 		for (var map : values) {
 			if (map.get("CARRIERS") != null) {
 				mapdelaywithcarrier.put("CARRIERS", map.get("CARRIERS"));
-			} 
+			}
 			if (map.get("AIRLINEARRDELAY") != null) {
 				arrdelaysum += (long) map.get("AIRLINEARRDELAY");
-			} 
+			}
 			if (map.get("AIRLINEDEPDELAY") != null) {
 				depdelaysum += (long) map.get("AIRLINEDEPDELAY");
 			}
 		}
-		
+
 		mapdelaywithcarrier.put("AIRLINEARRDELAY", arrdelaysum);
 		mapdelaywithcarrier.put("AIRLINEDEPDELAY", depdelaysum);
 		context.put(key, mapdelaywithcarrier);

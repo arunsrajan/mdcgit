@@ -8,13 +8,13 @@ import java.io.Serializable;
  * The Holder of job with stage information and also the job statuses
  */
 public class JobStage implements Serializable,Cloneable {
-	private static final long serialVersionUID = 7292002084722232039L;	
-	public int currentstageindex;		
+	private static final long serialVersionUID = 7292002084722232039L;
+	public int currentstageindex;
 	public String jobid;
 	public String stageid;
 	public Stage stage;
 	public boolean isalreadyprocessed;
-	
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;

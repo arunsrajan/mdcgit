@@ -8,7 +8,7 @@ import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.MDCProperties;
 
 public class HeartBeatCommon {
-	
+
 	@BeforeClass
 	public static void initBefore() throws Exception {
 		Properties prop = new Properties();
@@ -21,6 +21,6 @@ public class HeartBeatCommon {
 
 	public HeartBeatCommon() {
 	}
-	
-	
+
+
 }

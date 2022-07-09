@@ -9,9 +9,11 @@ import org.ehcache.Cache;
  */
 public class MDCCache {
 	private static Cache<?, ?> cache;
+
 	public static void put(Cache<?, ?> cache) {
 		MDCCache.cache = cache;
 	}
+
 	public static Cache<?, ?> get() {
 		return MDCCache.cache;
 	}

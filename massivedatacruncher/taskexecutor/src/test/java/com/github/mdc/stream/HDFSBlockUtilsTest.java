@@ -23,9 +23,9 @@ import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.MDCProperties;
 import com.github.mdc.common.NetworkUtil;
 
-public class HDFSBlockUtilsTest extends StreamPipelineBaseTestCommon{
+public class HDFSBlockUtilsTest extends StreamPipelineBaseTestCommon {
 	static Logger log = Logger.getLogger(HDFSBlockUtilsTest.class);
-	
+
 	public static long TOTAL = 486518821l;
 	public static long TOTAL_1987_1989 = 613681763l;
 	public static long AIRSAMPLETOTAL = 4270834l;
@@ -35,11 +35,12 @@ public class HDFSBlockUtilsTest extends StreamPipelineBaseTestCommon{
 	String[] airlinesample = {"/airlinesample"};
 	String host = NetworkUtil.getNetworkAddress(MDCProperties.get().getProperty("taskexecutor.host"));
 	int port =  Integer.parseInt(MDCProperties.get().getProperty("node.port"));
+
 	@Test
 	public void testBlocksDefinedBlocksize128MB() throws Exception {
 		Configuration conf  = new Configuration();
 		FileSystem hdfs = FileSystem.newInstance(new URI(hdfsurl), conf);
-		
+
 		List<Path> blockpath  = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths) {
 			FileStatus[] fileStatus = hdfs.listStatus(
@@ -62,7 +63,7 @@ public class HDFSBlockUtilsTest extends StreamPipelineBaseTestCommon{
 		assertEquals(TOTAL, totalbytes);
 		hdfs.close();
 	}
-	
+
 	@Test
 	public void testBlocksDefinedBlocksize64MB() throws Exception {
 		Configuration conf = new Configuration();
@@ -89,6 +90,7 @@ public class HDFSBlockUtilsTest extends StreamPipelineBaseTestCommon{
 		assertEquals(TOTAL, totalbytes);
 		hdfs.close();
 	}
+
 	@Test
 	public void testBlocksDefinedBlocksize96MB() throws Exception {
 		Configuration conf = new Configuration();
@@ -115,6 +117,7 @@ public class HDFSBlockUtilsTest extends StreamPipelineBaseTestCommon{
 		assertEquals(TOTAL, totalbytes);
 		hdfs.close();
 	}
+
 	@Test
 	public void testBlocksDefinedBlocksize48MB() throws Exception {
 		Configuration conf = new Configuration();
@@ -132,7 +135,7 @@ public class HDFSBlockUtilsTest extends StreamPipelineBaseTestCommon{
 			int sum = 0;
 			log.info(bl);
 			for (Block b : bl.block) {
-				if (!Objects.isNull(b)) {					
+				if (!Objects.isNull(b)) {
 					sum += b.blockend - b.blockstart;
 				}
 			}
@@ -141,8 +144,8 @@ public class HDFSBlockUtilsTest extends StreamPipelineBaseTestCommon{
 		assertEquals(TOTAL, totalbytes);
 		hdfs.close();
 	}
-	
-	
+
+
 	@Test
 	public void testBlocksDefinedBlocksize32MB() throws Exception {
 		Configuration conf = new Configuration();
@@ -160,7 +163,7 @@ public class HDFSBlockUtilsTest extends StreamPipelineBaseTestCommon{
 			int sum = 0;
 			log.info(bl);
 			for (Block b : bl.block) {
-				if (!Objects.isNull(b)) {					
+				if (!Objects.isNull(b)) {
 					sum += b.blockend - b.blockstart;
 				}
 			}
@@ -169,6 +172,7 @@ public class HDFSBlockUtilsTest extends StreamPipelineBaseTestCommon{
 		assertEquals(TOTAL, totalbytes);
 		hdfs.close();
 	}
+
 	@Test
 	public void testBlocksDefinedBlocksize16MB() throws Exception {
 		Configuration conf = new Configuration();
@@ -186,7 +190,7 @@ public class HDFSBlockUtilsTest extends StreamPipelineBaseTestCommon{
 			int sum = 0;
 			log.info(bl);
 			for (Block b : bl.block) {
-				if (!Objects.isNull(b)) {					
+				if (!Objects.isNull(b)) {
 					sum += b.blockend - b.blockstart;
 				}
 			}
@@ -195,6 +199,7 @@ public class HDFSBlockUtilsTest extends StreamPipelineBaseTestCommon{
 		assertEquals(TOTAL, totalbytes);
 		hdfs.close();
 	}
+
 	@Test
 	public void testBlocksDefinedBlocksize8MB() throws Exception {
 		Configuration conf = new Configuration();
@@ -212,7 +217,7 @@ public class HDFSBlockUtilsTest extends StreamPipelineBaseTestCommon{
 			int sum = 0;
 			log.info(bl);
 			for (Block b : bl.block) {
-				if (!Objects.isNull(b)) {					
+				if (!Objects.isNull(b)) {
 					sum += b.blockend - b.blockstart;
 				}
 			}
@@ -221,6 +226,7 @@ public class HDFSBlockUtilsTest extends StreamPipelineBaseTestCommon{
 		assertEquals(TOTAL, totalbytes);
 		hdfs.close();
 	}
+
 	@Test
 	public void testBlocksDefinedBlocksize4MB() throws Exception {
 		Configuration conf = new Configuration();
@@ -238,7 +244,7 @@ public class HDFSBlockUtilsTest extends StreamPipelineBaseTestCommon{
 			int sum = 0;
 			log.info(bl);
 			for (Block b : bl.block) {
-				if (!Objects.isNull(b)) {					
+				if (!Objects.isNull(b)) {
 					sum += b.blockend - b.blockstart;
 				}
 			}
@@ -247,6 +253,7 @@ public class HDFSBlockUtilsTest extends StreamPipelineBaseTestCommon{
 		assertEquals(TOTAL, totalbytes);
 		hdfs.close();
 	}
+
 	@Test
 	public void testBlocksDefinedBlocksize2MB() throws Exception {
 		Configuration conf = new Configuration();
@@ -264,7 +271,7 @@ public class HDFSBlockUtilsTest extends StreamPipelineBaseTestCommon{
 			int sum = 0;
 			log.info(bl);
 			for (Block b : bl.block) {
-				if (!Objects.isNull(b)) {					
+				if (!Objects.isNull(b)) {
 					sum += b.blockend - b.blockstart;
 				}
 			}
@@ -273,6 +280,7 @@ public class HDFSBlockUtilsTest extends StreamPipelineBaseTestCommon{
 		assertEquals(TOTAL, totalbytes);
 		hdfs.close();
 	}
+
 	@Test
 	public void testBlocksDefinedBlocksize1MB() throws Exception {
 		Configuration conf = new Configuration();
@@ -299,12 +307,12 @@ public class HDFSBlockUtilsTest extends StreamPipelineBaseTestCommon{
 		assertEquals(AIRSAMPLETOTAL, totalbytes);
 		hdfs.close();
 	}
-	
+
 	@Test
 	public void testBlocks128MB() throws Exception {
 		Configuration conf  = new Configuration();
 		FileSystem hdfs = FileSystem.newInstance(new URI(hdfsurl), conf);
-		
+
 		List<Path> blockpath  = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths) {
 			FileStatus[] fileStatus = hdfs.listStatus(
@@ -327,13 +335,13 @@ public class HDFSBlockUtilsTest extends StreamPipelineBaseTestCommon{
 		assertEquals(TOTAL, totalbytes);
 		hdfs.close();
 	}
-	
-	
+
+
 	@Test
 	public void testBlocks1987_1989_UserDefinedBlock_128MB() throws Exception {
 		Configuration conf  = new Configuration();
 		FileSystem hdfs = FileSystem.newInstance(new URI(hdfsurl), conf);
-		
+
 		List<Path> blockpath  = new ArrayList<>();
 		for (String hdfsdir : hdfsdir_1989_1987) {
 			FileStatus[] fileStatus = hdfs.listStatus(
@@ -356,11 +364,12 @@ public class HDFSBlockUtilsTest extends StreamPipelineBaseTestCommon{
 		assertEquals(TOTAL_1987_1989, totalbytes);
 		hdfs.close();
 	}
+
 	@Test
 	public void testBlocks1987_1989_128MB() throws Exception {
 		Configuration conf  = new Configuration();
 		FileSystem hdfs = FileSystem.newInstance(new URI(hdfsurl), conf);
-		
+
 		List<Path> blockpath  = new ArrayList<>();
 		for (String hdfsdir : hdfsdir_1989_1987) {
 			FileStatus[] fileStatus = hdfs.listStatus(

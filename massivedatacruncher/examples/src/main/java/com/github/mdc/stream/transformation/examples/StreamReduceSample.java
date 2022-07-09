@@ -45,7 +45,7 @@ public class StreamReduceSample implements Serializable, Pipeline {
 						line[1].substring(1, line[1].length() - 1)));
 
 		carriers.join(airlinesamples, (tuple1, tuple2) -> ((Tuple2) tuple1).v1.equals(((Tuple2) tuple2).v1))
-		.saveAsTextFile(new URI(args[0]), args[3] + "/StreamOutReduce-" + System.currentTimeMillis());
+				.saveAsTextFile(new URI(args[0]), args[3] + "/StreamOutReduce-" + System.currentTimeMillis());
 		log.info("StreamReduceSample.testReduce After---------------------------------------");
 	}
 }

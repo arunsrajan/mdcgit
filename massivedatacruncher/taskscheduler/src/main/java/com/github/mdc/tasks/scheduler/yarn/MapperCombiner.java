@@ -56,8 +56,6 @@ public class MapperCombiner {
 		return "MapperCombiner [blockslocation=" + blockslocation + ", mapperclasses=" + mapperclasses + ", apptask="
 				+ apptask + ", combinerclasses=" + combinerclasses + "]";
 	}
-	
-	
-	
-	
+
+
 }

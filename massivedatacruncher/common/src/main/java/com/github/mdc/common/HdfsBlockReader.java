@@ -116,7 +116,7 @@ public class HdfsBlockReader {
 			log.debug("In getDataBlock Read Bytes: " + totalbytestoread);
 			var readsize = 1024;
 			var byt = new byte[readsize];
-			
+
 			var sum = 0;
 			// Number of bytes to read.
 			if (breader.available() > 0) {
@@ -151,8 +151,8 @@ public class HdfsBlockReader {
 
 		return null;
 	}
-	
-	
+
+
 	/**
 	 * 
 	 * This function returns compressed data stream using LZF compression.
@@ -166,8 +166,8 @@ public class HdfsBlockReader {
 		try (var bbos = new ByteBufferOutputStream(bb);
 				var lzfos = new SnappyOutputStream(bbos)) {
 			log.debug("Entered HdfsBlockReader.getBlockDataMR");
-			
-			
+
+
 			var mapfilenamelb = new HashMap<String, List<LocatedBlock>>();
 			for (var block : bl.block) {
 				log.debug("In getBlockDataMR block: " + block);
@@ -197,7 +197,7 @@ public class HdfsBlockReader {
 		return null;
 
 	}
-	
+
 	public static Set<BlockExecutors> sort(Set<BlockExecutors> blocks) {
 		return blocks.parallelStream().sorted((b1, b2) -> {
 			return b1.numberofblockstoread - b2.numberofblockstoread;

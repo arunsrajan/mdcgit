@@ -127,7 +127,7 @@ public class NodeWebServlet extends HttpServlet {
 					</body>
 					</html>
 										""", contextpath, contextpath, contextpath, contextpath, contextpath, request.getServerName() + MDCConstants.COLON
-				+ request.getLocalPort()));
+					+ request.getLocalPort()));
 		} catch (Exception ex) {
 			log.debug("TaskScheduler Web servlet error, See cause below \n", ex);
 		}

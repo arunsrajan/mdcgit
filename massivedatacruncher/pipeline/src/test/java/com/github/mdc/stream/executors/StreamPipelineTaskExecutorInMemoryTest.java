@@ -82,7 +82,8 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 
 		StreamPipelineTaskExecutorInMemory mdsteim = new StreamPipelineTaskExecutorInMemory(js, resultstream,
 				MDCCache.get());
-		mdsteim.setHdfs(hdfs);mdsteim.setExecutor(es);
+		mdsteim.setHdfs(hdfs);
+		mdsteim.setExecutor(es);
 		List<Path> filepaths = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -120,7 +121,8 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 
 		StreamPipelineTaskExecutorInMemory mdsteim = new StreamPipelineTaskExecutorInMemory(js, resultstream,
 				MDCCache.get());
-		mdsteim.setHdfs(hdfs);mdsteim.setExecutor(es);
+		mdsteim.setHdfs(hdfs);
+		mdsteim.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>(), filepaths2 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -166,7 +168,8 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 
 		StreamPipelineTaskExecutorInMemory mdsteim = new StreamPipelineTaskExecutorInMemory(js, resultstream,
 				MDCCache.get());
-		mdsteim.setHdfs(hdfs);mdsteim.setExecutor(es);
+		mdsteim.setHdfs(hdfs);
+		mdsteim.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>(), filepaths2 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -223,7 +226,8 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 
 		StreamPipelineTaskExecutorInMemory mdsteim = new StreamPipelineTaskExecutorInMemory(js, resultstream,
 				MDCCache.get());
-		mdsteim.setHdfs(hdfs);mdsteim.setExecutor(es);
+		mdsteim.setHdfs(hdfs);
+		mdsteim.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>(), filepaths2 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -295,7 +299,8 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 
 		StreamPipelineTaskExecutorInMemory mdsteim = new StreamPipelineTaskExecutorInMemory(js, resultstream,
 				MDCCache.get());
-		mdsteim.setHdfs(hdfs);mdsteim.setExecutor(es);
+		mdsteim.setHdfs(hdfs);
+		mdsteim.setExecutor(es);
 		List<Path> filepaths = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -333,7 +338,8 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 
 		StreamPipelineTaskExecutorInMemory mdsteim = new StreamPipelineTaskExecutorInMemory(js, resultstream,
 				MDCCache.get());
-		mdsteim.setHdfs(hdfs);mdsteim.setExecutor(es);
+		mdsteim.setHdfs(hdfs);
+		mdsteim.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>(), filepaths2 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths3) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -379,7 +385,8 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 
 		StreamPipelineTaskExecutorInMemory mdsteim = new StreamPipelineTaskExecutorInMemory(js, resultstream,
 				MDCCache.get());
-		mdsteim.setHdfs(hdfs);mdsteim.setExecutor(es);
+		mdsteim.setHdfs(hdfs);
+		mdsteim.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>(), filepaths2 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths3) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -437,7 +444,8 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 
 		StreamPipelineTaskExecutorInMemory mdsteim = new StreamPipelineTaskExecutorInMemory(js, resultstream,
 				MDCCache.get());
-		mdsteim.setHdfs(hdfs);mdsteim.setExecutor(es);
+		mdsteim.setHdfs(hdfs);
+		mdsteim.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>(), filepaths2 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths3) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -512,7 +520,8 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 
 		StreamPipelineTaskExecutorInMemory mdsteim = new StreamPipelineTaskExecutorInMemory(js, resultstream,
 				MDCCache.get());
-		mdsteim.setHdfs(hdfs);mdsteim.setExecutor(es);
+		mdsteim.setHdfs(hdfs);
+		mdsteim.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -554,7 +563,8 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 
 		StreamPipelineTaskExecutorInMemory mdsteim = new StreamPipelineTaskExecutorInMemory(js, resultstream,
 				MDCCache.get());
-		mdsteim.setHdfs(hdfs);mdsteim.setExecutor(es);
+		mdsteim.setHdfs(hdfs);
+		mdsteim.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -597,7 +607,8 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 
 		StreamPipelineTaskExecutorInMemory mdsteim = new StreamPipelineTaskExecutorInMemory(js, resultstream,
 				MDCCache.get());
-		mdsteim.setHdfs(hdfs);mdsteim.setExecutor(es);
+		mdsteim.setHdfs(hdfs);
+		mdsteim.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -646,7 +657,8 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 
 		StreamPipelineTaskExecutorInMemory mdsteim = new StreamPipelineTaskExecutorInMemory(js, resultstream,
 				MDCCache.get());
-		mdsteim.setHdfs(hdfs);mdsteim.setExecutor(es);
+		mdsteim.setHdfs(hdfs);
+		mdsteim.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -689,7 +701,8 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 
 		StreamPipelineTaskExecutorInMemory mdsteim = new StreamPipelineTaskExecutorInMemory(js, resultstream,
 				MDCCache.get());
-		mdsteim.setHdfs(hdfs);mdsteim.setExecutor(es);
+		mdsteim.setHdfs(hdfs);
+		mdsteim.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -732,7 +745,8 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 
 		StreamPipelineTaskExecutorInMemory mdsteim = new StreamPipelineTaskExecutorInMemory(js, resultstream,
 				MDCCache.get());
-		mdsteim.setHdfs(hdfs);mdsteim.setExecutor(es);
+		mdsteim.setHdfs(hdfs);
+		mdsteim.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -775,7 +789,8 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 
 		StreamPipelineTaskExecutorInMemory mdsteim = new StreamPipelineTaskExecutorInMemory(js, resultstream,
 				MDCCache.get());
-		mdsteim.setHdfs(hdfs);mdsteim.setExecutor(es);
+		mdsteim.setHdfs(hdfs);
+		mdsteim.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -817,7 +832,8 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 
 		StreamPipelineTaskExecutorInMemory mdsteim = new StreamPipelineTaskExecutorInMemory(js, resultstream,
 				MDCCache.get());
-		mdsteim.setHdfs(hdfs);mdsteim.setExecutor(es);
+		mdsteim.setHdfs(hdfs);
+		mdsteim.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -858,7 +874,8 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 
 		StreamPipelineTaskExecutorInMemory mdsteim = new StreamPipelineTaskExecutorInMemory(js, resultstream,
 				MDCCache.get());
-		mdsteim.setHdfs(hdfs);mdsteim.setExecutor(es);
+		mdsteim.setHdfs(hdfs);
+		mdsteim.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -902,7 +919,8 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 
 		StreamPipelineTaskExecutorInMemory mdsteim = new StreamPipelineTaskExecutorInMemory(js, resultstream,
 				MDCCache.get());
-		mdsteim.setHdfs(hdfs);mdsteim.setExecutor(es);
+		mdsteim.setHdfs(hdfs);
+		mdsteim.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -951,7 +969,8 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 
 		StreamPipelineTaskExecutorInMemory mdsteim = new StreamPipelineTaskExecutorInMemory(js, resultstream,
 				MDCCache.get());
-		mdsteim.setHdfs(hdfs);mdsteim.setExecutor(es);
+		mdsteim.setHdfs(hdfs);
+		mdsteim.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -995,7 +1014,8 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 
 		StreamPipelineTaskExecutorInMemory mdsteim = new StreamPipelineTaskExecutorInMemory(js, resultstream,
 				MDCCache.get());
-		mdsteim.setHdfs(hdfs);mdsteim.setExecutor(es);
+		mdsteim.setHdfs(hdfs);
+		mdsteim.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -1039,7 +1059,8 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 
 		StreamPipelineTaskExecutorInMemory mdsteim = new StreamPipelineTaskExecutorInMemory(js, resultstream,
 				MDCCache.get());
-		mdsteim.setHdfs(hdfs);mdsteim.setExecutor(es);
+		mdsteim.setHdfs(hdfs);
+		mdsteim.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -1083,7 +1104,8 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 
 		StreamPipelineTaskExecutorInMemory mdsteim = new StreamPipelineTaskExecutorInMemory(js, resultstream,
 				MDCCache.get());
-		mdsteim.setHdfs(hdfs);mdsteim.setExecutor(es);
+		mdsteim.setHdfs(hdfs);
+		mdsteim.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -1125,7 +1147,8 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 
 		StreamPipelineTaskExecutorInMemory mdsteim = new StreamPipelineTaskExecutorInMemory(js, resultstream,
 				MDCCache.get());
-		mdsteim.setHdfs(hdfs);mdsteim.setExecutor(es);
+		mdsteim.setHdfs(hdfs);
+		mdsteim.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -1178,7 +1201,8 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 
 		StreamPipelineTaskExecutorInMemory mdsteim = new StreamPipelineTaskExecutorInMemory(js, resultstream,
 				MDCCache.get());
-		mdsteim.setHdfs(hdfs);mdsteim.setExecutor(es);
+		mdsteim.setHdfs(hdfs);
+		mdsteim.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -1238,7 +1262,8 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 
 		StreamPipelineTaskExecutorInMemory mdsteim = new StreamPipelineTaskExecutorInMemory(js, resultstream,
 				MDCCache.get());
-		mdsteim.setHdfs(hdfs);mdsteim.setExecutor(es);
+		mdsteim.setHdfs(hdfs);
+		mdsteim.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -1292,7 +1317,8 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 
 		StreamPipelineTaskExecutorInMemory mdsteim = new StreamPipelineTaskExecutorInMemory(js, resultstream,
 				MDCCache.get());
-		mdsteim.setHdfs(hdfs);mdsteim.setExecutor(es);
+		mdsteim.setHdfs(hdfs);
+		mdsteim.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -1347,7 +1373,8 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 
 		StreamPipelineTaskExecutorInMemory mdsteim = new StreamPipelineTaskExecutorInMemory(js, resultstream,
 				MDCCache.get());
-		mdsteim.setHdfs(hdfs);mdsteim.setExecutor(es);
+		mdsteim.setHdfs(hdfs);
+		mdsteim.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -1402,7 +1429,8 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 
 		StreamPipelineTaskExecutorInMemory mdsteim = new StreamPipelineTaskExecutorInMemory(js, resultstream,
 				MDCCache.get());
-		mdsteim.setHdfs(hdfs);mdsteim.setExecutor(es);
+		mdsteim.setHdfs(hdfs);
+		mdsteim.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -1457,7 +1485,8 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 
 		StreamPipelineTaskExecutorInMemory mdsteim = new StreamPipelineTaskExecutorInMemory(js, resultstream,
 				MDCCache.get());
-		mdsteim.setHdfs(hdfs);mdsteim.setExecutor(es);
+		mdsteim.setHdfs(hdfs);
+		mdsteim.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -1498,7 +1527,8 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 		js.stage.tasks.add(new CalculateCount());
 		StreamPipelineTaskExecutorInMemory mdsteim = new StreamPipelineTaskExecutorInMemory(js, resultstream,
 				MDCCache.get());
-		mdsteim.setHdfs(hdfs);mdsteim.setExecutor(es);
+		mdsteim.setHdfs(hdfs);
+		mdsteim.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -1540,7 +1570,8 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 
 		StreamPipelineTaskExecutorInMemory mdsteim = new StreamPipelineTaskExecutorInMemory(js, resultstream,
 				MDCCache.get());
-		mdsteim.setHdfs(hdfs);mdsteim.setExecutor(es);
+		mdsteim.setHdfs(hdfs);
+		mdsteim.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -1594,7 +1625,8 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 
 		StreamPipelineTaskExecutorInMemory mdsteim = new StreamPipelineTaskExecutorInMemory(js, resultstream,
 				MDCCache.get());
-		mdsteim.setHdfs(hdfs);mdsteim.setExecutor(es);
+		mdsteim.setHdfs(hdfs);
+		mdsteim.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -1650,7 +1682,8 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 
 		StreamPipelineTaskExecutorInMemory mdsteim = new StreamPipelineTaskExecutorInMemory(js, resultstream,
 				MDCCache.get());
-		mdsteim.setHdfs(hdfs);mdsteim.setExecutor(es);
+		mdsteim.setHdfs(hdfs);
+		mdsteim.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>(), filepaths2 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -1737,7 +1770,8 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 
 		StreamPipelineTaskExecutorInMemory mdsteim = new StreamPipelineTaskExecutorInMemory(js, resultstream,
 				MDCCache.get());
-		mdsteim.setHdfs(hdfs);mdsteim.setExecutor(es);
+		mdsteim.setHdfs(hdfs);
+		mdsteim.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>(), filepaths2 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -1829,7 +1863,8 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 
 		StreamPipelineTaskExecutorInMemory mdsteim = new StreamPipelineTaskExecutorInMemory(js, resultstream,
 				MDCCache.get());
-		mdsteim.setHdfs(hdfs);mdsteim.setExecutor(es);
+		mdsteim.setHdfs(hdfs);
+		mdsteim.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>(), filepaths2 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -1919,7 +1954,8 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 
 		StreamPipelineTaskExecutorInMemory mdsteim = new StreamPipelineTaskExecutorInMemory(js, resultstream,
 				MDCCache.get());
-		mdsteim.setHdfs(hdfs);mdsteim.setExecutor(es);
+		mdsteim.setHdfs(hdfs);
+		mdsteim.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -1980,7 +2016,8 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 
 		StreamPipelineTaskExecutorInMemory mdsteim = new StreamPipelineTaskExecutorInMemory(js, resultstream,
 				MDCCache.get());
-		mdsteim.setHdfs(hdfs);mdsteim.setExecutor(es);
+		mdsteim.setHdfs(hdfs);
+		mdsteim.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -2039,7 +2076,8 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 
 		StreamPipelineTaskExecutorInMemory mdsteim = new StreamPipelineTaskExecutorInMemory(js, resultstream,
 				MDCCache.get());
-		mdsteim.setHdfs(hdfs);mdsteim.setExecutor(es);
+		mdsteim.setHdfs(hdfs);
+		mdsteim.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -2099,7 +2137,8 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 
 		StreamPipelineTaskExecutorInMemory mdsteim = new StreamPipelineTaskExecutorInMemory(js, resultstream,
 				MDCCache.get());
-		mdsteim.setHdfs(hdfs);mdsteim.setExecutor(es);
+		mdsteim.setHdfs(hdfs);
+		mdsteim.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -2156,7 +2195,8 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 
 		StreamPipelineTaskExecutorInMemory mdsteim = new StreamPipelineTaskExecutorInMemory(js, resultstream,
 				MDCCache.get());
-		mdsteim.setHdfs(hdfs);mdsteim.setExecutor(es);
+		mdsteim.setHdfs(hdfs);
+		mdsteim.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -2218,7 +2258,8 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 
 		StreamPipelineTaskExecutorInMemory mdsteim = new StreamPipelineTaskExecutorInMemory(js, resultstream,
 				MDCCache.get());
-		mdsteim.setHdfs(hdfs);mdsteim.setExecutor(es);
+		mdsteim.setHdfs(hdfs);
+		mdsteim.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>(), filepaths2 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -2281,6 +2322,7 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 		assertEquals("AQ", tupleresult.v1);
 
 	}
+
 	// CSV Test Cases End
 
 	// JSON Test cases Start
@@ -2304,7 +2346,8 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 
 		StreamPipelineTaskExecutorInMemory mdsteim = new StreamPipelineTaskExecutorInMemory(js, resultstream,
 				MDCCache.get());
-		mdsteim.setHdfs(hdfs);mdsteim.setExecutor(es);
+		mdsteim.setHdfs(hdfs);
+		mdsteim.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : githubevents1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));

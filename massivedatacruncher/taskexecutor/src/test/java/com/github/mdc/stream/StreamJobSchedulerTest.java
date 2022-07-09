@@ -34,7 +34,7 @@ import com.github.mdc.stream.scheduler.StreamPipelineTaskSubmitter;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
-	
+
 	@SuppressWarnings({"rawtypes", "unchecked"})
 	@Test
 	public void testGeneratePhysicalExecutionPlanIntersection() throws Exception {
@@ -923,7 +923,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 
 		Job job = mdparr.createJob();
 		StreamJobScheduler js = new StreamJobScheduler();
-		js.batchsize = Integer.parseInt(pc.getBatchsize()); 
+		js.batchsize = Integer.parseInt(pc.getBatchsize());
 		js.pipelineconfig = pc;
 		js.isignite = Objects.isNull(pc.getMode()) ? false
 				: pc.getMode().equals(MDCConstants.MODE_DEFAULT) ? true : false;
@@ -986,7 +986,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 
 		Job job = mdparr.createJob();
 		StreamJobScheduler js = new StreamJobScheduler();
-		js.batchsize = Integer.parseInt(pc.getBatchsize()); 
+		js.batchsize = Integer.parseInt(pc.getBatchsize());
 		js.pipelineconfig = pc;
 		js.isignite = Objects.isNull(pc.getMode()) ? false
 				: pc.getMode().equals(MDCConstants.MODE_DEFAULT) ? true : false;

@@ -9,6 +9,7 @@ import com.github.mdc.tasks.scheduler.MapReduceApplicationBuilder;
 
 public class MrJobArrivalDelayNormal implements com.github.mdc.tasks.scheduler.Application {
 	static Logger log = Logger.getLogger(MrJobArrivalDelayNormal.class);
+
 	@Override
 	public void runMRJob(String[] args, JobConfiguration jobconfiguration) {
 		jobconfiguration.setBatchsize(args[4]);
@@ -20,13 +21,13 @@ public class MrJobArrivalDelayNormal implements com.github.mdc.tasks.scheduler.A
 		var mdcjob = (MapReduceApplication) MapReduceApplicationBuilder.newBuilder()
 				.addMapper(CarriersDataMapper.class, args[1])
 				.addMapper(AirlineArrDelayDataMapper.class, args[0])
-				.addMapper(AirlineDepDelayDataMapper.class, args[0])			
+				.addMapper(AirlineDepDelayDataMapper.class, args[0])
 				.addCombiner(CarriersDataMapper.class)
 				.addReducer(CarriersDataMapper.class)
 				.setOutputfolder(args[2])
 				.setJobConf(jobconfiguration)
 				.build();
-				
+
 		var ctx = mdcjob.call();
 		log.info(ctx);
 	}

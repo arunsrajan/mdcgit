@@ -44,10 +44,10 @@ public class TaskSchedulerWebServlet extends HttpServlet {
 					<script src="%s/resources/jquery-ui.js"></script>
 					</head>
 					<body>""", contextpath, contextpath, contextpath, contextpath));
-			
+
 			if (!Objects.isNull(lists) && lists.keySet().size() > 0) {
 				builder.append(
-					"""
+						"""
 						<table style=\"color:#000000;border-collapse:collapse;width:800px;height:30px\" align=\"center\" border=\"1.0\">
 				<thead><th>Node</th><th>FreeMemory</th><th>TotalProcessors</th><th>Physicalmemorysize</th><th>Totaldisksize</th><th>Totalmemory</th><th>Usabledisksize</th></thead>
 				<tbody>""");
@@ -87,7 +87,7 @@ public class TaskSchedulerWebServlet extends HttpServlet {
 				}
 				builder.append("</tbody></table>");
 			}
-			
+
 			if (MDCJobMetrics.get().keySet().size() > 0) {
 				int i = 0;
 				builder.append("<br/>");
@@ -154,7 +154,7 @@ public class TaskSchedulerWebServlet extends HttpServlet {
 					builder.append("</tr>");
 				}
 				builder.append("</tbody></table>");
-				
+
 			}
 			builder.append("</body></html>");
 			writer.write(builder.toString());
@@ -172,7 +172,7 @@ public class TaskSchedulerWebServlet extends HttpServlet {
 			}
 		}
 	}
-	
+
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	public String toHtml(Object data) {
 		StringBuilder builder = new StringBuilder();
@@ -197,5 +197,5 @@ public class TaskSchedulerWebServlet extends HttpServlet {
 		builder.append("</p>");
 		return builder.toString();
 	}
-	
+
 }

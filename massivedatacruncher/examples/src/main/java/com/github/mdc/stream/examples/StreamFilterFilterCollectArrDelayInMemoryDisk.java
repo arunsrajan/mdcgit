@@ -35,16 +35,16 @@ public class StreamFilterFilterCollectArrDelayInMemoryDisk implements Serializab
 		log.info("testMapValuesReduceByValues Before---------------------------------------");
 		StreamPipeline<String> datastream = StreamPipeline.newStreamHDFS(args[0], args[1], pipelineconfig);
 		datastream
-		.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
-			public boolean test(java.lang.String value) {
-				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
-			}
-		}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+					public boolean test(java.lang.String value) {
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
+					}
+				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
 				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		})
-		.saveAsTextFile(new URI(args[0]), args[2] + "/FilterFilter-" + System.currentTimeMillis());
+				.saveAsTextFile(new URI(args[0]), args[2] + "/FilterFilter-" + System.currentTimeMillis());
 		log.info("testMapValuesReduceByValues After---------------------------------------");
 	}
 }

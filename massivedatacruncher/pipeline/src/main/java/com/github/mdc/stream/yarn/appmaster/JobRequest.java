@@ -1,6 +1,7 @@
 package com.github.mdc.stream.yarn.appmaster;
 
 import org.springframework.yarn.integration.ip.mind.binding.BaseObject;
+
 /**
  * 
  * @author Arun
@@ -11,7 +12,8 @@ public class JobRequest extends BaseObject {
 	private State state;
 	private byte[] job;
 	private String containerid;
-	private long timerequested; 
+	private long timerequested;
+
 	public JobRequest() {
 	}
 

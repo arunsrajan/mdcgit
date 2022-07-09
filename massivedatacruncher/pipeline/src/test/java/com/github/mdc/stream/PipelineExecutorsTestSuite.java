@@ -34,16 +34,16 @@ import com.github.mdc.stream.utils.PipelineConfigValidatorTest;
 import com.github.sakserv.minicluster.impl.HdfsLocalCluster;
 
 @RunWith(Suite.class)
-@SuiteClasses({ 
-	StreamPipelineTaskExecutorInMemoryDiskTest.class,
-	StreamPipelineTest.class,
-	StreamPipelineTaskExecutorTest.class,
-	StreamPipelineTaskExecutorInMemoryTest.class,
-	StreamPipelineTaskExecutorJGroupsTest.class,	
-	PipelineConfigValidatorTest.class,	
-	StreamPipelineTaskExecutorYarnTest.class,
-	FileBlocksPartitionerTest.class,
-	StreamPipelineTaskExecutorIgniteTest.class})
-public class PipelineExecutorsTestSuite extends StreamPipelineTestCommon{
-	
+@SuiteClasses({
+		StreamPipelineTaskExecutorInMemoryDiskTest.class,
+		StreamPipelineTest.class,
+		StreamPipelineTaskExecutorTest.class,
+		StreamPipelineTaskExecutorInMemoryTest.class,
+		StreamPipelineTaskExecutorJGroupsTest.class,
+		PipelineConfigValidatorTest.class,
+		StreamPipelineTaskExecutorYarnTest.class,
+		FileBlocksPartitionerTest.class,
+		StreamPipelineTaskExecutorIgniteTest.class})
+public class PipelineExecutorsTestSuite extends StreamPipelineTestCommon {
+
 }

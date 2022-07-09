@@ -11,6 +11,7 @@ import com.github.mdc.tasks.scheduler.MapReduceApplicationYarn;
 public class MrJobArrivalDelayYARN implements com.github.mdc.tasks.scheduler.Application {
 	static String heapsize = "1024";
 	static Logger log = Logger.getLogger(MrJobArrivalDelayYARN.class);
+
 	@Override
 	public void runMRJob(String[] args, JobConfiguration jobconfiguration) {
 		jobconfiguration.setBatchsize("2");
@@ -23,7 +24,7 @@ public class MrJobArrivalDelayYARN implements com.github.mdc.tasks.scheduler.App
 		var mdcjob = (MapReduceApplicationYarn) MapReduceApplicationBuilder.newBuilder()
 				.addMapper(CarriersDataMapper.class, args[1])
 				.addMapper(AirlineArrDelayDataMapper.class, args[0])
-				.addMapper(AirlineDepDelayDataMapper.class, args[0])			
+				.addMapper(AirlineDepDelayDataMapper.class, args[0])
 				.addCombiner(CarriersDataMapper.class)
 				.addReducer(CarriersDataMapper.class)
 				.setOutputfolder(args[2])

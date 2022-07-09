@@ -17,7 +17,6 @@ public class WhoIsRequest {
 	public void setStagepartitionid(String stagepartitionid) {
 		this.stagepartitionid = stagepartitionid;
 	}
-	
-	
-	
+
+
 }

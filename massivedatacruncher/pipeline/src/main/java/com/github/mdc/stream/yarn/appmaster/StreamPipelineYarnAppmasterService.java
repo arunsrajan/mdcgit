@@ -25,7 +25,7 @@ public class StreamPipelineYarnAppmasterService extends MindAppmasterService {
 
 	private static final Log log = LogFactory.getLog(StreamPipelineYarnAppmasterService.class);
 
-	
+
 	private StreamPipelineYarnAppmaster yarnAppMaster;
 
 	/**
@@ -85,7 +85,7 @@ public class StreamPipelineYarnAppmasterService extends MindAppmasterService {
 					log.debug("Handle job request error, See cause below \n", ex);
 				}
 			}
-			
+
 			var job = yarnAppMaster.getTask(request.getContainerid());
 			log.debug(request.getContainerid() + ": " + job);
 			//Job is available
@@ -103,7 +103,7 @@ public class StreamPipelineYarnAppmasterService extends MindAppmasterService {
 					response.setState(JobResponse.State.RUNJOB);
 					response.setResstate(JobResponse.State.RUNJOB.name());
 				}
-			} 
+			}
 			//If there is no jobs to executor return the status for
 			//container to DIE.
 			else if (!yarnAppMaster.hasJobs()) {

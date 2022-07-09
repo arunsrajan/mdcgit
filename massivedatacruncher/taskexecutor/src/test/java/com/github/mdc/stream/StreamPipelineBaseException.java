@@ -103,7 +103,7 @@ public class StreamPipelineBaseException {
 	@BeforeClass
 	public static void setServerUp() throws Exception {
 		try {
-			Output out = new Output(System.out);			
+			Output out = new Output(System.out);
 			pipelineconfig.setKryoOutput(out);
 			pipelineconfig.setMaxmem("1024");
 			pipelineconfig.setMinmem("512");
@@ -116,7 +116,7 @@ public class StreamPipelineBaseException {
 			pipelineconfig.setBlocksize("20");
 			testingserver = new TestingServer(zookeeperport);
 			testingserver.start();
-			
+
 			Boolean ishdfs = Boolean.parseBoolean(MDCProperties.get().getProperty("taskexecutor.ishdfs"));
 			Configuration configuration = new Configuration();
 			hdfs = FileSystem.newInstance(new URI(MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL)),
@@ -189,7 +189,7 @@ public class StreamPipelineBaseException {
 			uploadfile(hdfs, airlinemultiplefilesfolder, airlinesample + csvfileextn);
 			uploadfile(hdfs, airlinemultiplefilesfolder, airlinenoheader + csvfileextn);
 			uploadfile(hdfs, githubevents, githubevents + jsonfileextn);
-			 
+
 
 		} catch (Throwable e) {
 			log.info("Error Uploading file", e);

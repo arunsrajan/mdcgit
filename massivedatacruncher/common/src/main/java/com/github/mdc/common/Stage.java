@@ -22,20 +22,24 @@ public class Stage implements Serializable,Cloneable {
 	public Boolean isstagecompleted = false;
 	public Boolean tovisit = true;
 	public String tasksdescription = "";
+
 	@Override
 	public Stage clone() throws CloneNotSupportedException {
 		return (Stage) super.clone();
 	}
+
 	@Override
 	public String toString() {
 		return stageid + tasksdescription;
 	}
+
 	public String getStageid() {
 		return stageid;
 	}
+
 	public void setStageid(String stageid) {
 		this.stageid = stageid;
 	}
-	
-	
+
+
 }

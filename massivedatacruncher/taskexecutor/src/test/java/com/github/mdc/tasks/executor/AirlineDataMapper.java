@@ -9,7 +9,7 @@ import com.github.mdc.tasks.executor.Reducer;
 
 @SuppressWarnings("rawtypes")
 public class AirlineDataMapper implements Mapper<Long, String, Context>, Combiner<String, Long, Context>,
-Reducer<String, Long, Context>{
+		Reducer<String, Long, Context> {
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -19,7 +19,7 @@ Reducer<String, Long, Context>{
 			sum += value;
 		}
 		context.put(key, sum);
-	
+
 	}
 
 	@SuppressWarnings("unchecked")
@@ -32,8 +32,8 @@ Reducer<String, Long, Context>{
 				context.put(contents[8], Long.parseLong(contents[14]));
 			}
 		}
-	
-		
+
+
 	}
 
 	@Override
@@ -43,7 +43,7 @@ Reducer<String, Long, Context>{
 			sum += value;
 		}
 		context.put(key, sum);
-		
+
 	}
 
 }

@@ -22,14 +22,14 @@ public class StreamPipelineTaskSubmitter implements StreamPipelineTaskSubmitterM
 	private String hp;
 	private boolean completedexecution;
 	private boolean resultobtainedte;
-	public StreamPipelineTaskSubmitter() {}
 
-	
-	
+	public StreamPipelineTaskSubmitter() {
+	}
+
+
 	public boolean isCompletedexecution() {
 		return completedexecution;
 	}
-
 
 
 	public void setCompletedexecution(boolean completedexecution) {
@@ -37,12 +37,11 @@ public class StreamPipelineTaskSubmitter implements StreamPipelineTaskSubmitterM
 	}
 
 
-
 	public StreamPipelineTaskSubmitter(Task task, String hp) {
 		this.task = task;
 		this.hp = hp;
 	}
-	
+
 	public Task getTask() {
 		return task;
 	}
@@ -68,7 +67,6 @@ public class StreamPipelineTaskSubmitter implements StreamPipelineTaskSubmitterM
 	}
 
 
-	
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -76,7 +74,6 @@ public class StreamPipelineTaskSubmitter implements StreamPipelineTaskSubmitterM
 		result = prime * result + ((task == null) ? 0 : task.hashCode());
 		return result;
 	}
-
 
 
 	@Override
@@ -109,25 +106,22 @@ public class StreamPipelineTaskSubmitter implements StreamPipelineTaskSubmitterM
 	}
 
 
-
 	@Override
 	public String toString() {
 		return "StreamPipelineTaskSubmitter [task=" + task + ", hp=" + hp + ", completedexecution=" + completedexecution + "]";
 	}
 
 
-
 	@Override
 	public void setHostPort(String hp) {
 		this.hp = hp;
-		
+
 	}
-	
+
 	@Override
 	public String getHostPort() {
 		return hp;
 	}
-
 
 
 	public int getLevel() {
@@ -135,11 +129,9 @@ public class StreamPipelineTaskSubmitter implements StreamPipelineTaskSubmitterM
 	}
 
 
-
 	public void setLevel(int level) {
 		this.level = level;
 	}
-
 
 
 	public boolean isResultobtainedte() {
@@ -147,13 +139,9 @@ public class StreamPipelineTaskSubmitter implements StreamPipelineTaskSubmitterM
 	}
 
 
-
 	public void setResultobtainedte(boolean resultobtainedte) {
 		this.resultobtainedte = resultobtainedte;
 	}
-	
-	
-	
-	
-	
+
+
 }

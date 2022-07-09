@@ -9,10 +9,11 @@ import com.github.mdc.stream.PipelineException;
 
 public class StreamPipelineSql {
 	Object mdpmp;
+
 	public StreamPipelineSql(Object mdpmp) {
 		this.mdpmp = mdpmp;
 	}
-	
+
 	@SuppressWarnings("rawtypes")
 	public Object collect(boolean toexecute, IntSupplier supplier) throws PipelineException {
 		if (mdpmp instanceof StreamPipeline mdp) {
@@ -23,7 +24,7 @@ public class StreamPipelineSql {
 		}
 		return null;
 	}
-	
+
 	@SuppressWarnings("rawtypes")
 	public void  saveAsTextFile(URI uri, String path) throws Exception {
 		if (mdpmp instanceof StreamPipeline mdp) {
@@ -32,7 +33,7 @@ public class StreamPipelineSql {
 		else if (mdpmp instanceof MapPair mp) {
 			mp.saveAsTextFile(uri, path);
 		}
-	
+
 	}
-	
+
 }

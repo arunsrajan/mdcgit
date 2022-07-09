@@ -14,21 +14,24 @@ import org.junit.runners.MethodSorters;
 import com.github.mdc.stream.MapPair;
 import com.github.mdc.stream.StreamPipeline;
 import com.github.mdc.stream.SampleSupplierPartition;
+
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class StreamPipelineFoldByKeyKeyByTest extends StreamPipelineBaseTestCommon {
-	
+
 	boolean toexecute = true;
-	
+
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
-	public void testFoldByKey() throws Throwable {		
+	public void testFoldByKey() throws Throwable {
 		log.info("testFoldByKey Before---------------------------------------");
 		Long foldValue = 0l;
 		StreamPipeline<String> datastream = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesample, pipelineconfig);
 		List<List<Tuple>> tupleslist = (List) datastream.map(str -> str.split(","))
 				.filter(str -> !"ArrDelay".equals(str[14]) && !"NA".equals(str[14]))
 				.mapToPair(str -> Tuple.tuple(Integer.parseInt(str[1]), Long.parseLong(str[14]))).foldRight(foldValue, (a, b) -> a + b, 1, (a, b) -> a + b)
-				.sorted((value1, value2) -> {return ((Integer) value1.v1).compareTo((Integer) value2.v1);}).collect(toexecute, new SampleSupplierPartition(3));
+				.sorted((value1, value2) -> {
+					return ((Integer) value1.v1).compareTo((Integer) value2.v1);
+				}).collect(toexecute, new SampleSupplierPartition(3));
 		long sum = 0;
 		for (List<Tuple>  tuples :tupleslist) {
 			for (Tuple tuple :tuples) {
@@ -40,7 +43,7 @@ public class StreamPipelineFoldByKeyKeyByTest extends StreamPipelineBaseTestComm
 		assertEquals(-63278, sum);
 		log.info("testFoldByKey After---------------------------------------");
 	}
-	
+
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testFoldByKeyFoldValue2() throws Throwable {
@@ -66,9 +69,10 @@ public class StreamPipelineFoldByKeyKeyByTest extends StreamPipelineBaseTestComm
 		assertEquals(-63278 + counts.get(0).get(0) * foldValue, sum);
 		log.info("testFoldByKeyFoldValue2 After---------------------------------------");
 	}
+
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
-	public void testKeyBy() throws Throwable {		
+	public void testKeyBy() throws Throwable {
 		log.info("testKeyBy Before---------------------------------------");
 		StreamPipeline<String> datastream = StreamPipeline.newStreamHDFS(hdfsfilepath, wordcount, pipelineconfig);
 		List<List<Tuple2>> tupleslist = (List) datastream.map(str -> str.split(" "))
@@ -88,10 +92,10 @@ public class StreamPipelineFoldByKeyKeyByTest extends StreamPipelineBaseTestComm
 		assertEquals(79, sum);
 		log.info("testKeyBy After---------------------------------------");
 	}
-	
+
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
-	public void testKeyBySorted() throws Throwable {		
+	public void testKeyBySorted() throws Throwable {
 		log.info("testKeyBySorted Before---------------------------------------");
 		StreamPipeline<String> datastream = StreamPipeline.newStreamHDFS(hdfsfilepath, wordcount, pipelineconfig);
 		List<List<Tuple2>> tupleslist = (List) datastream.map(str -> str.split(" "))
@@ -112,10 +116,10 @@ public class StreamPipelineFoldByKeyKeyByTest extends StreamPipelineBaseTestComm
 		assertEquals(79, sum);
 		log.info("testKeyBySorted After---------------------------------------");
 	}
-	
+
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
-	public void testKeyByJoin() throws Throwable {		
+	public void testKeyByJoin() throws Throwable {
 		log.info("testKeyByJoin Before---------------------------------------");
 		StreamPipeline<String> datastream = StreamPipeline.newStreamHDFS(hdfsfilepath, wordcount, pipelineconfig);
 		MapPair<String, String> maptup = datastream.map(str -> str.split(" "))
@@ -139,9 +143,10 @@ public class StreamPipelineFoldByKeyKeyByTest extends StreamPipelineBaseTestComm
 		assertEquals(455, sum);
 		log.info("testKeyByJoin After---------------------------------------");
 	}
+
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
-	public void testKeyByJoinSorted() throws Throwable {		
+	public void testKeyByJoinSorted() throws Throwable {
 		log.info("testKeyByJoinSorted Before---------------------------------------");
 		StreamPipeline<String> datastream = StreamPipeline.newStreamHDFS(hdfsfilepath, wordcount, pipelineconfig);
 		MapPair<String, String> maptup = datastream.map(str -> str.split(" "))
@@ -166,10 +171,10 @@ public class StreamPipelineFoldByKeyKeyByTest extends StreamPipelineBaseTestComm
 		assertEquals(455, sum);
 		log.info("testKeyByJoinSorted After---------------------------------------");
 	}
-	
+
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
-	public void testKeyByReduceByKeyJoinSorted() throws Throwable {		
+	public void testKeyByReduceByKeyJoinSorted() throws Throwable {
 		log.info("testKeyByReduceByKeyJoinSorted Before---------------------------------------");
 		StreamPipeline<String> datastream = StreamPipeline.newStreamHDFS(hdfsfilepath, wordcount, pipelineconfig);
 		MapPair<String, String> maptup = datastream.map(str -> str.split(" "))
@@ -194,9 +199,10 @@ public class StreamPipelineFoldByKeyKeyByTest extends StreamPipelineBaseTestComm
 		assertEquals(79, sum);
 		log.info("testKeyByReduceByKeyJoinSorted After---------------------------------------");
 	}
+
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
-	public void testKeyByFlatMapMultiValues() throws Throwable {		
+	public void testKeyByFlatMapMultiValues() throws Throwable {
 		log.info("testKeyByFlatMapMultiValues Before---------------------------------------");
 		StreamPipeline<String> datastream = StreamPipeline.newStreamHDFS(hdfsfilepath, wordcount, pipelineconfig);
 		List<List<Tuple2>> results = datastream.map(str -> str.split("\n"))
@@ -217,10 +223,10 @@ public class StreamPipelineFoldByKeyKeyByTest extends StreamPipelineBaseTestComm
 		assertEquals(22, sum);
 		log.info("testKeyByFlatMapMultiValues After---------------------------------------");
 	}
-	
+
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
-	public void testKeyByFlatMapJoinMultiValues() throws Throwable {		
+	public void testKeyByFlatMapJoinMultiValues() throws Throwable {
 		log.info("testKeyByFlatMapJoinMultiValues Before---------------------------------------");
 		StreamPipeline<String> datastream = StreamPipeline.newStreamHDFS(hdfsfilepath, wordcount, pipelineconfig);
 		MapPair<String, String[]> map1 = datastream.map(str -> str.split("\n"))
@@ -247,10 +253,10 @@ public class StreamPipelineFoldByKeyKeyByTest extends StreamPipelineBaseTestComm
 		assertEquals(15, sum);
 		log.info("testKeyByFlatMapJoinMultiValues After---------------------------------------");
 	}
-	
+
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
-	public void testKeyByFlatMapLeftOuterJoinMultiValues() throws Throwable {		
+	public void testKeyByFlatMapLeftOuterJoinMultiValues() throws Throwable {
 		log.info("testKeyByFlatMapLeftOuterJoinMultiValues Before---------------------------------------");
 		StreamPipeline<String> datastream = StreamPipeline.newStreamHDFS(hdfsfilepath, wordcount, pipelineconfig);
 		MapPair<String, String[]> map1 = datastream.map(str -> str.split("\n"))
@@ -282,7 +288,7 @@ public class StreamPipelineFoldByKeyKeyByTest extends StreamPipelineBaseTestComm
 				log.info(tuple);
 			}
 		}
-		
+
 		List<List<Tuple2>> keybyvaluesmap2 = map2.collect(toexecute, null);
 		log.info("");
 		for (List<Tuple2> tuples : keybyvaluesmap2) {
@@ -290,7 +296,7 @@ public class StreamPipelineFoldByKeyKeyByTest extends StreamPipelineBaseTestComm
 				log.info(tuple);
 			}
 		}
-		
+
 		log.info("testKeyByFlatMapLeftOuterJoinMultiValues After---------------------------------------");
 	}
 }

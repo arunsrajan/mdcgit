@@ -7,11 +7,12 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Semaphore;
 
 public class GlobalContainerAllocDealloc {
-	private static Map<String,List<String>> containercontainerids = new ConcurrentHashMap<>();
+	private static Map<String, List<String>> containercontainerids = new ConcurrentHashMap<>();
 	private static Semaphore globalcontainerallocdeallocsem = new Semaphore(1);
-	private static Map<String,ContainerResources> hportcrs = new ConcurrentHashMap<>();
-	private static Map<String,String> containernode = new ConcurrentHashMap<>();
-	private static Map<String,Set<String>> nodecontainers = new ConcurrentHashMap<>();
+	private static Map<String, ContainerResources> hportcrs = new ConcurrentHashMap<>();
+	private static Map<String, String> containernode = new ConcurrentHashMap<>();
+	private static Map<String, Set<String>> nodecontainers = new ConcurrentHashMap<>();
+
 	public static Map<String, List<String>> getContainercontainerids() {
 		return containercontainerids;
 	}
@@ -36,5 +37,5 @@ public class GlobalContainerAllocDealloc {
 	private GlobalContainerAllocDealloc() {
 	}
 
-	
+
 }

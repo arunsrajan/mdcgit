@@ -9,11 +9,11 @@ import java.util.List;
  * This class is like marker to close the Executor JGroups Channel
  */
 public class CloseStagesGraphExecutor {
-	
+
 	public CloseStagesGraphExecutor(List<Task> tasks) {
 		this.tasks = tasks;
 	}
-	
+
 	private List<Task> tasks;
 
 	public List<Task> getTasks() {
@@ -23,5 +23,5 @@ public class CloseStagesGraphExecutor {
 	public void setTasks(List<Task> tasks) {
 		this.tasks = tasks;
 	}
-	
+
 }

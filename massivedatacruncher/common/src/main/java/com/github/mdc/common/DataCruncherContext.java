@@ -65,7 +65,7 @@ public class DataCruncherContext<K, V> implements Context<K, V>, Serializable {
 		ctx.keys().stream().forEach(key -> {
 			addAll(key, ctx.get(key));
 		});
-		
+
 	}
 
 	@Override

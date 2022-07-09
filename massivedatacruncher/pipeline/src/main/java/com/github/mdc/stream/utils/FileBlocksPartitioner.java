@@ -27,9 +27,10 @@ import com.github.mdc.stream.IgnitePipeline;
 import com.github.mdc.stream.PipelineException;
 
 public class FileBlocksPartitioner {
-	
-	PipelineConfig pc;  
+
+	PipelineConfig pc;
 	Job job;
+
 	@SuppressWarnings("rawtypes")
 	public void getJobStageBlocks(Job job, PipelineConfig pipelineconfig, String folder, Collection<AbstractPipeline> mdsroots, Set<Stage> rootstages) throws PipelineException {
 		pc = pipelineconfig;
@@ -60,7 +61,7 @@ public class FileBlocksPartitioner {
 			job.stageoutputmap.put(rootstage, bls);
 		}
 	}
-	
+
 	protected void partitionFiles(IgniteCache<Object, byte[]> cache, String filepath, int id,
 			List<BlocksLocation> bls) throws PipelineException {
 		try (var raf = new RandomAccessFile(filepath, "r");) {

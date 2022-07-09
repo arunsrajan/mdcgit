@@ -19,6 +19,7 @@ public class IgnitePipelineFileTest  extends StreamPipelineIgniteBase {
 	boolean toexecute = true;
 	String airlinesfolder = "file:E:/DEVELOPMENT/dataset/airline";
 	String carriersfolder = "file:E:/DEVELOPMENT/dataset/carriers";
+
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testMapFilterIgnite() throws Throwable {
@@ -35,19 +36,19 @@ public class IgnitePipelineFileTest  extends StreamPipelineIgniteBase {
 		List<List> results = (List) ((List) tupresult.job.results);
 		sum = 0;
 		for (List result :results) {
-			sum += result.size(); 
+			sum += result.size();
 		}
 		assertEquals(1288326, sum);
 		IgnitePipeline<Tuple2<String, Integer>> tupresult1 = mdpi.map(dat -> new Tuple2<String, Integer>(dat[0], Integer.parseInt(dat[14]))).cache(true);
 		results = (List) ((List) tupresult1.job.results);
 		sum = 0;
 		for (List result :results) {
-			sum += result.size(); 
+			sum += result.size();
 		}
 		assertEquals(1288326, sum);
 		log.info("testMapFilterIgnite After---------------------------------------");
 	}
-	
+
 	@SuppressWarnings({"unchecked"})
 	@Test
 	public void testMapFilterMapPairRbkIgniteJoin() throws Throwable {
@@ -67,8 +68,8 @@ public class IgnitePipelineFileTest  extends StreamPipelineIgniteBase {
 		assertEquals(14, ((List) ((List) joinresult.job.results).get(0)).size());
 		log.info("testMapFilterMapPairRbkIgniteJoin After---------------------------------------");
 	}
-	
-	
+
+
 	@Test
 	@SuppressWarnings({"unchecked"})
 	public void testReduceByKeyCoalesceJoinUserDefinedBlockSize() throws Throwable {

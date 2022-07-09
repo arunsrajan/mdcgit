@@ -7,20 +7,21 @@ import org.xerial.snappy.SnappyInputStream;
 import com.github.mdc.common.BlocksLocation;
 import com.github.mdc.common.Context;
 
-public class MapperCombinerExecutor extends MapperExecutor{
+public class MapperCombinerExecutor extends MapperExecutor {
 
 	BlocksLocation blockslocation;
 	@SuppressWarnings("rawtypes")
 	List<Mapper> crunchmappers;
 	@SuppressWarnings("rawtypes")
 	List<Combiner> crunchcombiners;
+
 	@SuppressWarnings("rawtypes")
 	public MapperCombinerExecutor(BlocksLocation blockslocation, SnappyInputStream datastream, List<Mapper> crunchmappers,
 			List<Combiner> crunchcombiners) {
 		super(blockslocation, datastream, crunchmappers);
 		this.crunchcombiners = crunchcombiners;
 	}
-	
+
 	@SuppressWarnings({"rawtypes"})
 	@Override
 	public Context call() throws Exception {

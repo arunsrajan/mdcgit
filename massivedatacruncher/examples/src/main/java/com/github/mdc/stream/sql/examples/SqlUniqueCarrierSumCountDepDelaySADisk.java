@@ -25,10 +25,11 @@ public class SqlUniqueCarrierSumCountDepDelaySADisk implements Serializable, Pip
 	String[] carrierheader = {"Code", "Description"};
 	static SqlTypeName[] airsqltype = {SqlTypeName.VARCHAR, SqlTypeName.VARCHAR, SqlTypeName.VARCHAR, SqlTypeName.VARCHAR,
 			SqlTypeName.VARCHAR, SqlTypeName.VARCHAR, SqlTypeName.VARCHAR, SqlTypeName.VARCHAR, SqlTypeName.VARCHAR, SqlTypeName.VARCHAR, SqlTypeName.VARCHAR, SqlTypeName.VARCHAR
-			, SqlTypeName.VARCHAR, SqlTypeName.VARCHAR, SqlTypeName.VARCHAR, SqlTypeName.VARCHAR, SqlTypeName.VARCHAR, SqlTypeName.VARCHAR,
+	, SqlTypeName.VARCHAR, SqlTypeName.VARCHAR, SqlTypeName.VARCHAR, SqlTypeName.VARCHAR, SqlTypeName.VARCHAR, SqlTypeName.VARCHAR,
 			SqlTypeName.VARCHAR, SqlTypeName.VARCHAR,
 			SqlTypeName.VARCHAR, SqlTypeName.VARCHAR, SqlTypeName.VARCHAR, SqlTypeName.VARCHAR, SqlTypeName.VARCHAR, SqlTypeName.VARCHAR, SqlTypeName.VARCHAR, SqlTypeName.VARCHAR, SqlTypeName.VARCHAR};
 	static SqlTypeName[] carriersqltype = {SqlTypeName.VARCHAR, SqlTypeName.VARCHAR};
+
 	public void runPipeline(String[] args, PipelineConfig pipelineconfig) throws Exception {
 		pipelineconfig.setIsblocksuserdefined("true");
 		pipelineconfig.setMaxmem(args[4]);
@@ -40,7 +41,7 @@ public class SqlUniqueCarrierSumCountDepDelaySADisk implements Serializable, Pip
 		pipelineconfig.setBlocksize(args[2]);
 		pipelineconfig.setBatchsize(args[3]);
 		pipelineconfig.setStorage(STORAGE.DISK);
-		pipelineconfig.setNumberofcontainers(args[5]);	
+		pipelineconfig.setNumberofcontainers(args[5]);
 		pipelineconfig.setMode(MDCConstants.MODE_NORMAL);
 		testSql(args, pipelineconfig);
 	}

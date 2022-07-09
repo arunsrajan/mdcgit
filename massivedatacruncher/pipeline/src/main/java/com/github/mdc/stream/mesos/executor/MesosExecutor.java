@@ -30,14 +30,16 @@ import com.github.mdc.stream.executors.StreamPipelineTaskExecutorMesos;
  * Mesos executor driver.
  */
 public class MesosExecutor implements Executor {
-	
+
 	String[] args;
 	ExecutorService service;
+
 	public MesosExecutor(String[] args) {
 		this.args = args;
 	}
-	
+
 	static Logger log = Logger.getLogger(MesosExecutor.class);
+
 	@Override
 	public void registered(ExecutorDriver driver, ExecutorInfo executorInfo, FrameworkInfo frameworkInfo,
 			SlaveInfo slaveInfo) {
@@ -46,15 +48,16 @@ public class MesosExecutor implements Executor {
 
 	@Override
 	public void reregistered(ExecutorDriver driver, SlaveInfo slaveInfo) {
-		
+
 
 	}
 
 	@Override
 	public void disconnected(ExecutorDriver driver) {
-		
+
 
 	}
+
 	/**
 	 * Get all the property files from the mesos property server running in master.
 	 * @param httpurl
@@ -74,17 +77,17 @@ public class MesosExecutor implements Executor {
 				throw ex;
 			}
 		}
-		
+
 	}
-	
+
 	/**
 	 * Execute the tasks
 	 */
 	@Override
 	public void launchTask(ExecutorDriver driver, TaskInfo task) {
 		service.execute(() -> {
-		try {
-			
+			try {
+
 				Utils.loadPropertiesMesos(MDCConstants.MDC_PROPERTIES);
 				var kryo = Utils.getKryoMesos();
 				var bais = new ByteArrayInputStream(task.getData().toByteArray());
@@ -105,22 +108,22 @@ public class MesosExecutor implements Executor {
 				//Execute the tasks via run method.
 				mdstem.call();
 				log.debug(task.getTaskId() + " - Completed");
-		
-		}
-		catch (Exception ex) {
-			log.debug("Executing Tasks Failed: See cause below \n", ex);
-		}
+
+			}
+			catch (Exception ex) {
+				log.debug("Executing Tasks Failed: See cause below \n", ex);
+			}
 		});
 	}
 
 	@Override
 	public void killTask(ExecutorDriver driver, TaskID taskId) {
-		
+
 	}
 
 	@Override
 	public void frameworkMessage(ExecutorDriver driver, byte[] data) {
-		
+
 	}
 
 	@Override
@@ -132,9 +135,9 @@ public class MesosExecutor implements Executor {
 
 	@Override
 	public void error(ExecutorDriver driver, String message) {
-		
+
 	}
-	
+
 	/**
 	 * Start the mesos executor driver
 	 * @param args

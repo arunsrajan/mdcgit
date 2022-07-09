@@ -16,9 +16,11 @@ import org.eclipse.jetty.server.ServerConnector;
 public class MesosThirdPartyLibraryDistributor {
 	private String dir;
 	private Server server;
+
 	public MesosThirdPartyLibraryDistributor(String dir) {
 		this.dir = dir;
 	}
+
 	/**
 	 * Start the server daemon
 	 * @return
@@ -35,6 +37,7 @@ public class MesosThirdPartyLibraryDistributor {
 		Connector[] port = server.getConnectors();
 		return ((ServerConnector) port[0]).getLocalPort();
 	}
+
 	/**
 	 * Stop the server
 	 * @throws Throwable

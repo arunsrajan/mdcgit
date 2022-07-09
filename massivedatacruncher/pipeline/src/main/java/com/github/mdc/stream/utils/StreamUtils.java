@@ -37,7 +37,9 @@ import com.github.mdc.stream.functions.SortedComparator;
 import com.github.mdc.stream.functions.TupleFlatMapFunction;
 
 public class StreamUtils {
-	private StreamUtils() {}
+	private StreamUtils() {
+	}
+
 	@SuppressWarnings({"rawtypes", "unchecked"})
 	public static Object getFunctionsToStream(List functions, BaseStream stream) throws PipelineException {
 		var streamparser = stream;
@@ -87,88 +89,95 @@ public class StreamUtils {
 				streamparser = flatMapToLongTuple(ltff, (Stream) streamparser);
 			} else if (function instanceof DoubleTupleFlatMapFunction dtff) {
 				streamparser = flatMapToDoubleTuple(dtff, (Stream) streamparser);
-			} 
+			}
 		}
 		return streamparser;
 	}
-	
+
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	private static Stream flatMap(FlatMapFunction flatmapfunction, Stream stream) {
 		return stream.flatMap(map -> flatmapfunction.apply(map).stream());
 	}
-	
+
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	private static Stream peek(PeekConsumer peekconsumer, Stream stream) {
 		return stream.peek(peekconsumer);
 	}
-	
+
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	private static Stream sorted(SortedComparator sortedcomparator, Stream stream) {
 		return stream.sorted(sortedcomparator);
 	}
-	
+
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	private static Stream flatMapToTuple(TupleFlatMapFunction pairflatmapfunction, Stream stream) {
 		return stream.flatMap(map -> pairflatmapfunction.apply(map).stream());
 	}
-	
+
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	private static Stream keyByFunction(KeyByFunction keybyfunction, Stream stream) {
 		return stream.map(val -> new Tuple2(keybyfunction.apply(val), val));
 	}
-	
+
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	private static Stream flatMapToDouble(DoubleFlatMapFunction doubleflatmapfunction, Stream stream) {
 		return stream.flatMap(map -> doubleflatmapfunction.apply(map).stream());
 	}
+
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	private static Stream flatMapToLong(LongFlatMapFunction longflatmapfunction, Stream stream) {
 		return stream.flatMap(map -> longflatmapfunction.apply(map).stream());
 	}
-	
+
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	private static Stream flatMapToLongTuple(LongTupleFlatMapFunction longtupleflatmapfunction, Stream stream) {
 		return stream.flatMap(map -> longtupleflatmapfunction.apply(map).stream());
 	}
+
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	private static Stream flatMapToDoubleTuple(DoubleTupleFlatMapFunction doubletupleflatmapfunction, Stream stream) {
 		return stream.flatMap(map -> doubletupleflatmapfunction.apply(map).stream());
 	}
+
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	private static Stream map(MapFunction mapfunction, Stream stream) {
 		return stream.map(mapfunction);
 	}
+
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	private static Stream map(MapToPairFunction mappairfunction, Stream stream) {
 		return stream.map(mappairfunction);
 	}
-	
+
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	private static Stream map(MapValuesFunction mapvaluesfunction, Stream<Tuple2> stream) {
 		return stream.map(tuple2 -> Tuple.tuple(tuple2.v1, mapvaluesfunction.apply(tuple2.v2)));
 	}
-	
-	
+
+
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	private static Stream filter(PredicateSerializable predicate, Stream stream) {
 		return stream.filter(predicate);
 	}
+
 	@SuppressWarnings({"rawtypes"})
 	private static Stream distinct(Stream streamparser) {
 		return streamparser.distinct();
 	}
-	
+
 	private static IntStream distinct(IntStream streamparser) {
 		return streamparser.distinct();
 	}
+
 	@SuppressWarnings({"rawtypes", "unchecked"})
 	private static IntStream mapToInt(ToIntFunction tointfinction, Stream stream) {
 		return stream.mapToInt(tointfinction);
 	}
+
 	private static IntStream map(IntUnaryOperator intunaryoperator, IntStream stream) {
 		return stream.map(intunaryoperator);
 	}
-	
+
 	@SuppressWarnings({"rawtypes", "unchecked"})
 	private static Stream reduce(ReduceFunction reducefunction, Stream stream) throws PipelineException {
 		Optional optional = stream.reduce(reducefunction);
@@ -180,22 +189,22 @@ public class StreamUtils {
 			throw new PipelineException(PipelineConstants.REDUCEEXECUTIONVALUEEMPTY);
 		}
 	}
-	
-	
+
+
 	@SuppressWarnings({"rawtypes", "unchecked"})
 	private static Stream reduce(ReduceByKeyFunction reducefunction, Stream<Tuple2> stream) {
 		java.util.Map out = stream.collect(Collectors.toMap(Tuple2::v1, Tuple2::v2, reducefunction::apply));
 		return ((List) out.entrySet().parallelStream()
 				.map(entry -> Tuple.tuple(((Entry) entry).getKey(), ((Entry) entry).getValue())).collect(Collectors.toCollection(Vector::new))).stream();
 	}
-	
+
 	@SuppressWarnings({"rawtypes", "unchecked"})
 	private static Stream reduce(ReduceByKeyFunctionValues reducefunctionvalues, Stream<Tuple2> stream) {
 		java.util.Map out = stream.collect(Collectors.toMap(Tuple2::v1, Tuple2::v2, reducefunctionvalues::apply));
 		return ((List) out.entrySet().parallelStream()
 				.map(entry -> Tuple.tuple(((Entry) entry).getKey(), ((Entry) entry).getValue())).collect(Collectors.toCollection(Vector::new))).stream();
 	}
-	
+
 	@SuppressWarnings({"rawtypes", "unchecked"})
 	private static Stream coalesce(CoalesceFunction coelescefunction, Stream<Tuple2> stream) {
 		java.util.Map out = stream.collect(Collectors.toMap(Tuple2::v1, Tuple2::v2, coelescefunction::apply));

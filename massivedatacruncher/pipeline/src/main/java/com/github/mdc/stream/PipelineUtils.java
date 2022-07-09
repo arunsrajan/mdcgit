@@ -45,8 +45,9 @@ import com.github.mdc.stream.functions.UnionFunction;
  * The class MassiveDataPipelineUtils is helper class for Pipeline.
  */
 public class PipelineUtils {
-	private PipelineUtils() {}
-	
+	private PipelineUtils() {
+	}
+
 	/**
 	 * The function returns the function name based on the type of 
 	 * function provided as parameter to the getFunctions. 
@@ -133,7 +134,7 @@ public class PipelineUtils {
 		}
 		return MDCConstants.EMPTY;
 	}
-	
+
 	/**
 	 * The function returns the list of function name in list.
 	 * @param tasks

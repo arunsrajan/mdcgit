@@ -12,36 +12,46 @@ public class ZkChunkProp {
 	private String files;
 	private String hostsinvolved;
 	private Boolean isdatasparsed;
+
 	public Integer getNumberofshards() {
 		return numberofshards;
 	}
+
 	public void setNumberofshards(Integer numberofshards) {
 		this.numberofshards = numberofshards;
 	}
+
 	public Integer getNumberofreplicas() {
 		return numberofreplicas;
 	}
+
 	public void setNumberofreplicas(Integer numberofreplicas) {
 		this.numberofreplicas = numberofreplicas;
 	}
+
 	public String getFiles() {
 		return files;
 	}
+
 	public void setFiles(String files) {
 		this.files = files;
 	}
+
 	public String getHostsinvolved() {
 		return hostsinvolved;
 	}
+
 	public void setHostsinvolved(String hostsinvolved) {
 		this.hostsinvolved = hostsinvolved;
 	}
+
 	public Boolean getIsdatasparsed() {
 		return isdatasparsed;
 	}
+
 	public void setIsdatasparsed(Boolean isdatasparsed) {
 		this.isdatasparsed = isdatasparsed;
 	}
-	
-	
+
+
 }

@@ -9,7 +9,7 @@ import java.util.Map;
  * returned by the task executors to the job scheduler. 
  */
 public class WhoAreResponse {
-	private Map<String,WhoIsResponse.STATUS> responsemap;
+	private Map<String, WhoIsResponse.STATUS> responsemap;
 
 	public Map<String, WhoIsResponse.STATUS> getResponsemap() {
 		return responsemap;
@@ -18,5 +18,5 @@ public class WhoAreResponse {
 	public void setResponsemap(Map<String, WhoIsResponse.STATUS> responsemap) {
 		this.responsemap = responsemap;
 	}
-	
+
 }

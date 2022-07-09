@@ -11,11 +11,14 @@ import java.util.concurrent.ConcurrentMap;
  * The values contains the resource information.
  */
 public class MDCNodesResources {
-	private MDCNodesResources() {}
-	private static ConcurrentMap<String,Resources> resources;
+	private MDCNodesResources() {
+	}
+	private static ConcurrentMap<String, Resources> resources;
+
 	public static void put(ConcurrentMap<String, Resources> resources) {
 		MDCNodesResources.resources = resources;
 	}
+
 	public static ConcurrentMap<String, Resources> get() {
 		return MDCNodesResources.resources;
 	}

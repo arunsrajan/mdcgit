@@ -31,6 +31,7 @@ public class MassiveDataCruncherMRApiTest extends StreamPipelineBase {
 	public static void setServerUp() throws Exception {
 		Utils.loadLog4JSystemPropertiesClassPath("mdctest.properties");
 	}
+
 	@SuppressWarnings({"rawtypes", "unchecked"})
 	@Test
 	public void testMassiveDataCruncherCombiner() throws Exception {
@@ -51,7 +52,7 @@ public class MassiveDataCruncherMRApiTest extends StreamPipelineBase {
 		assertEquals(-12000, (int) (result.get("PS").iterator().next()));
 		assertEquals(-1300, (int) result.get("SW").iterator().next());
 	}
-	
+
 	@SuppressWarnings({"rawtypes", "unchecked", "resource"})
 	@Test
 	public void testMassiveDataCruncherMapper() throws Exception {
@@ -73,8 +74,8 @@ public class MassiveDataCruncherMRApiTest extends StreamPipelineBase {
 		Context<String, Integer> result = mdcm.call();
 		assertEquals(45957l, (int) (result.get("AQ").size()));
 	}
-	
-	
+
+
 	@SuppressWarnings({"rawtypes", "unchecked", "resource"})
 	@Test
 	public void testMassiveDataCruncherReducer() throws Exception {
@@ -95,8 +96,8 @@ public class MassiveDataCruncherMRApiTest extends StreamPipelineBase {
 		assertEquals(-12000, (int) (result.get("PS").iterator().next()));
 		assertEquals(-1300, (int) result.get("SW").iterator().next());
 	}
-	
-	
+
+
 	@SuppressWarnings({"resource", "rawtypes", "unchecked"})
 	@Test
 	public void testMassiveDataTaskExecutorMapperCombiner() throws Exception {
@@ -138,7 +139,7 @@ public class MassiveDataCruncherMRApiTest extends StreamPipelineBase {
 		es.shutdown();
 		assertEquals(-63278, (long) (ctx.get("AQ").iterator().next()));
 	}
-	
+
 	@SuppressWarnings({"resource", "rawtypes", "unchecked"})
 	@Test
 	public void testMassiveDataTaskExecutorMapperReducer() throws Exception {

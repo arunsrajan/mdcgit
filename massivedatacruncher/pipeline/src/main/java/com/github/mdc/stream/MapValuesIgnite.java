@@ -12,14 +12,14 @@ import com.github.mdc.stream.functions.ReduceByKeyFunctionValues;
  * @param <I1>
  * @param <I2>
  */
-public final class MapValuesIgnite<I1,I2> extends MapPairIgnite<I1,I2> {
+public final class MapValuesIgnite<I1, I2> extends MapPairIgnite<I1, I2> {
 	private MapValuesIgnite(AbstractPipeline root,
 			ReduceByKeyFunctionValues<I2> rfv)  {
 		this.task = rfv;
 		this.root = root;
 		root.finaltask = task;
 	}
-	
+
 	/**
 	 * Constructor for MapValuesIgnite
 	 * @param <I3>
@@ -32,7 +32,7 @@ public final class MapValuesIgnite<I1,I2> extends MapPairIgnite<I1,I2> {
 		this.root = root;
 		root.finaltask = task;
 	}
-	
+
 	/**
 	 * MapValuesIgnite accepts ReduceFunctionValues.
 	 * @param rfv

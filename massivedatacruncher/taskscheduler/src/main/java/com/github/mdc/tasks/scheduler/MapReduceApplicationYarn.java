@@ -73,6 +73,7 @@ public class MapReduceApplicationYarn implements Callable<List<DataCruncherConte
 	int executorindex;
 	ExecutorService es;
 	HeartBeatServer hbs;
+
 	public MapReduceApplicationYarn(String jobname, JobConfiguration jobconf, List<MapperInput> mappers,
 			List<Class<?>> combiners, List<Class<?>> reducers, String outputfolder) {
 		this.jobname = jobname;
@@ -114,16 +115,16 @@ public class MapReduceApplicationYarn implements Callable<List<DataCruncherConte
 		for (var b : bls) {
 			var xrefselected = b.block[0].dnxref.keySet().stream()
 					.flatMap(xrefhost -> b.block[0].dnxref.get(xrefhost).stream()).sorted((xref1, xref2) -> {
-						return dnxrefallocatecount.get(xref1).compareTo(dnxrefallocatecount.get(xref2));
-					}).findFirst();
+				return dnxrefallocatecount.get(xref1).compareTo(dnxrefallocatecount.get(xref2));
+			}).findFirst();
 			var xref = xrefselected.get();
 			dnxrefallocatecount.put(xref, dnxrefallocatecount.get(xref) + 1);
 			b.block[0].hp = xref;
 			if (b.block.length > 1 && !Objects.isNull(b.block[1])) {
 				xrefselected = b.block[1].dnxref.keySet().stream()
 						.flatMap(xrefhost -> b.block[1].dnxref.get(xrefhost).stream()).sorted((xref1, xref2) -> {
-							return dnxrefallocatecount.get(xref1).compareTo(dnxrefallocatecount.get(xref2));
-						}).findFirst();
+					return dnxrefallocatecount.get(xref1).compareTo(dnxrefallocatecount.get(xref2));
+				}).findFirst();
 				xref = xrefselected.get();
 				dnxrefallocatecount.put(xref, dnxrefallocatecount.get(xref) + 1);
 				b.block[1].hp = xref;
@@ -132,6 +133,7 @@ public class MapReduceApplicationYarn implements Callable<List<DataCruncherConte
 
 		log.debug("Exiting MdcJob.getDnXref");
 	}
+
 	public List<DataCruncherContext> call() {
 		String applicationid = MDCConstants.MDCAPPLICATION + MDCConstants.HYPHEN + System.currentTimeMillis();
 		try {
@@ -185,7 +187,7 @@ public class MapReduceApplicationYarn implements Callable<List<DataCruncherConte
 				jm.totalfilesize += Utils.getTotalLengthByFiles(hdfs, blockpath);
 				blockpath.clear();
 			}
-			
+
 			jm.totalfilesize = jm.totalfilesize / MDCConstants.MB;
 			jm.files = allfiles;
 			jm.mode = jobconf.execmode;
@@ -211,7 +213,7 @@ public class MapReduceApplicationYarn implements Callable<List<DataCruncherConte
 				if (reducer != null) {
 					reducer.add(cls.getName());
 				}
-			}			
+			}
 			var yarninputfolder = MDCConstants.YARNINPUTFOLDER + MDCConstants.BACKWARD_SLASH + applicationid;
 			var output = jobconf.getOutput();
 			jobconf.setOutputfolder(outputfolder);
@@ -229,7 +231,7 @@ public class MapReduceApplicationYarn implements Callable<List<DataCruncherConte
 			RemoteDataFetcher.writerYarnAppmasterServiceDataToDFS(folderfileblocksmap, yarninputfolder,
 					MDCConstants.MASSIVEDATA_YARNINPUT_FILEBLOCKS);
 			RemoteDataFetcher.writerYarnAppmasterServiceDataToDFS(jobconf, yarninputfolder,
-					MDCConstants.MASSIVEDATA_YARNINPUT_CONFIGURATION);	
+					MDCConstants.MASSIVEDATA_YARNINPUT_CONFIGURATION);
 			ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(
 					MDCConstants.BACKWARD_SLASH + MDCConstants.CONTEXT_FILE_CLIENT, getClass());
 			var client = (CommandYarnClient) context.getBean(MDCConstants.YARN_CLIENT);
@@ -241,7 +243,7 @@ public class MapReduceApplicationYarn implements Callable<List<DataCruncherConte
 				appreport = client.getApplicationReport(appid);
 				Thread.sleep(1000);
 			}
-		
+
 			log.debug("Waiting for the Reducer to complete------------");
 			log.debug("Reducer completed------------------------------");
 			jobconf.setOutput(output);
@@ -249,20 +251,20 @@ public class MapReduceApplicationYarn implements Callable<List<DataCruncherConte
 			jm.totaltimetaken = (jm.jobcompletiontime - jm.jobstarttime) / 1000.0;
 			if (!Objects.isNull(jobconf.getOutput())) {
 				Utils.writeKryoOutput(kryo, jobconf.getOutput(),
-					"Completed Job in " + (jm.totaltimetaken) + " seconds");
+						"Completed Job in " + (jm.totaltimetaken) + " seconds");
 			}
 			return null;
 		} catch (InterruptedException e) {
 			log.warn("Interrupted!", e);
-		    // Restore interrupted state...
-		    Thread.currentThread().interrupt();
+			// Restore interrupted state...
+			Thread.currentThread().interrupt();
 		} catch (Exception ex) {
 			log.info("Unable To Execute Job, See Cause Below:", ex);
 		}
 		return null;
 	}
-	
-	
+
+
 	/**
 	 * Calculate the container count via number of processors and container
 	 * memory
@@ -278,5 +280,5 @@ public class MapReduceApplicationYarn implements Callable<List<DataCruncherConte
 		System.setProperty("hd.rm", jobconf.getYarnrm());
 		System.setProperty("hd.scheduler", jobconf.getYarnscheduler());
 	}
-	
+
 }

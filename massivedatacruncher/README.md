@@ -2,7 +2,7 @@ The MDC can be build using the following maven goals
 
 mvn -Dmaven.antrun.skip=true -Dmaven.test.skip=true -Pmodules clean rewrite:run
 
-mvn -Dmaven.antrun.skip=true -Dmaven.test.skip=true -Pmodules clean package assembly:assembly
+mvn -Dmaven.antrun.skip=true -Dmaven.test.skip=true -DskipMavenParsing=true -Pmodules clean package assembly:assembly
 
 mvn -f pomjar.xml -Pmdc exec:exec antrun:run@prepare compile jib:dockerBuild@buildstandalone jib:dockerBuild@buildcontainer
 

@@ -39,7 +39,7 @@ public class StreamPipelineTransformationsSaveToFileTest extends StreamPipelineB
 		pipelineconfig.setJgroups(modeJgroups);
 	}
 
-	
+
 	@Test
 	public void testPipelineMap() throws Exception {
 		StreamPipeline<String> pipeline = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesample,
@@ -49,7 +49,7 @@ public class StreamPipelineTransformationsSaveToFileTest extends StreamPipelineB
 				"/transformation/Trans-" + System.currentTimeMillis());
 	}
 
-	
+
 	@Test
 	public void testPipelineFlatMap() throws Exception {
 		StreamPipeline<String> pipeline = StreamPipeline.newStreamHDFS(hdfsfilepath, wordcount,
@@ -57,7 +57,7 @@ public class StreamPipelineTransformationsSaveToFileTest extends StreamPipelineB
 		StreamPipeline<String> flatmap = pipeline.flatMap(dat -> Arrays.asList(dat.split(" ")));
 		flatmap.saveAsTextFile(new URI(hdfsfilepath),
 				"/transformation/Trans-" + System.currentTimeMillis());
-		
+
 	}
 
 	@Test
@@ -81,7 +81,7 @@ public class StreamPipelineTransformationsSaveToFileTest extends StreamPipelineB
 				pipelineconfig);
 		datastream.filter(val -> "2007".equals(val.split(MDCConstants.COMMA)[0])
 				|| "Year".equalsIgnoreCase(val.split(MDCConstants.COMMA)[0])).saveAsTextFile(new URI(hdfsfilepath), "/transformation/Trans-" + System.currentTimeMillis());
-		
+
 		pipelineconfig.setLocal(local);
 		log.info("testFilter After---------------------------------------");
 	}
@@ -95,7 +95,7 @@ public class StreamPipelineTransformationsSaveToFileTest extends StreamPipelineB
 				pipelineconfig);
 		datastream.flatMap(val -> Arrays.asList(val.split(MDCConstants.COMMA)))
 				.saveAsTextFile(new URI(hdfsfilepath), "/transformation/Trans-" + System.currentTimeMillis());
-		
+
 		pipelineconfig.setLocal(local);
 		log.info("testflatMap After---------------------------------------");
 	}
@@ -115,7 +115,7 @@ public class StreamPipelineTransformationsSaveToFileTest extends StreamPipelineB
 				return Arrays.asList(0d);
 			}
 		}).saveAsTextFile(new URI(hdfsfilepath), "/transformation/Trans-" + System.currentTimeMillis());
-		
+
 		pipelineconfig.setLocal(local);
 		log.info("flatMapToDouble After---------------------------------------");
 	}
@@ -135,7 +135,7 @@ public class StreamPipelineTransformationsSaveToFileTest extends StreamPipelineB
 				return Arrays.asList(0l);
 			}
 		}).saveAsTextFile(new URI(hdfsfilepath), "/transformation/Trans-" + System.currentTimeMillis());
-		
+
 		pipelineconfig.setLocal(local);
 		log.info("testflatMapToLong After---------------------------------------");
 	}
@@ -151,7 +151,7 @@ public class StreamPipelineTransformationsSaveToFileTest extends StreamPipelineB
 			String[] values = val.split(MDCConstants.COMMA);
 			return Arrays.asList((Tuple2<String, String>) Tuple.tuple(values[14], values[8]));
 		}).saveAsTextFile(new URI(hdfsfilepath), "/transformation/Trans-" + System.currentTimeMillis());
-		
+
 		pipelineconfig.setLocal(local);
 		log.info("testflatMapToTuple2 After---------------------------------------");
 	}
@@ -167,7 +167,7 @@ public class StreamPipelineTransformationsSaveToFileTest extends StreamPipelineB
 			String[] values = val.split(MDCConstants.COMMA);
 			return Arrays.asList(Tuple.tuple(values[0], values[1], values[14], values[8]));
 		}).saveAsTextFile(new URI(hdfsfilepath), "/transformation/Trans-" + System.currentTimeMillis());
-		
+
 		pipelineconfig.setLocal(local);
 		log.info("testflatMapToTuple After---------------------------------------");
 	}
@@ -180,7 +180,7 @@ public class StreamPipelineTransformationsSaveToFileTest extends StreamPipelineB
 		StreamPipeline<String> datastream = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesample,
 				pipelineconfig);
 		datastream.keyBy(val -> val.split(MDCConstants.COMMA)[0]).saveAsTextFile(new URI(hdfsfilepath), "/transformation/Trans-" + System.currentTimeMillis());
-		
+
 		pipelineconfig.setLocal(local);
 		log.info("testKeyByFunction After---------------------------------------");
 	}
@@ -471,7 +471,7 @@ public class StreamPipelineTransformationsSaveToFileTest extends StreamPipelineB
 				.mapToPair(value -> (Tuple2<String, String>) Tuple.tuple(value.split(MDCConstants.COMMA)[1],
 						value.split(MDCConstants.COMMA)[14]))
 				.flatMap(tuple -> Arrays.asList(tuple, tuple)).saveAsTextFile(new URI(hdfsfilepath), "/transformation/Trans-" + System.currentTimeMillis());
-		
+
 		pipelineconfig.setLocal(local);
 		log.info("testMapPairFlatMap After---------------------------------------");
 	}
@@ -492,7 +492,7 @@ public class StreamPipelineTransformationsSaveToFileTest extends StreamPipelineB
 					}
 					return Arrays.asList(Tuple.tuple(0l, 0l));
 				}).saveAsTextFile(new URI(hdfsfilepath), "/transformation/Trans-" + System.currentTimeMillis());
-		
+
 		pipelineconfig.setLocal(local);
 		log.info("testMapPairFlatMapToLong After---------------------------------------");
 	}
@@ -595,7 +595,7 @@ public class StreamPipelineTransformationsSaveToFileTest extends StreamPipelineB
 				return (Tuple2<String, Long>) Tuple.tuple(value.split(MDCConstants.COMMA)[1], 0l);
 			}
 		}).peek(System.out::println).saveAsTextFile(new URI(hdfsfilepath), "/transformation/Trans-" + System.currentTimeMillis());
-		
+
 		pipelineconfig.setLocal(local);
 		log.info("testMapPairPeek After---------------------------------------");
 	}
@@ -634,7 +634,7 @@ public class StreamPipelineTransformationsSaveToFileTest extends StreamPipelineB
 				return (Tuple2<String, Long>) Tuple.tuple(value.split(MDCConstants.COMMA)[1], 0l);
 			}
 		}).foldRight(0l, (a, b) -> a + b, 1, (a, b) -> a + b).saveAsTextFile(new URI(hdfsfilepath), "/transformation/Trans-" + System.currentTimeMillis());
-		
+
 		pipelineconfig.setLocal(local);
 		log.info("testMapPairFoldRight After---------------------------------------");
 	}
@@ -741,7 +741,7 @@ public class StreamPipelineTransformationsSaveToFileTest extends StreamPipelineB
 		log.info("testMapPairIntersection After---------------------------------------");
 	}
 
-	@Test	
+	@Test
 	public void testMapPairSorted() throws Exception {
 		log.info("testMapPairSorted Before---------------------------------------");
 		String local = pipelineconfig.getLocal();

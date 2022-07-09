@@ -32,9 +32,10 @@ import com.github.mdc.stream.yarn.appmaster.JobResponse;
 public class StreamPipelineYarnContainer extends AbstractIntegrationYarnContainer {
 
 	private Map<String, String> containerprops;
-	private ExecutorService executor; 
+	private ExecutorService executor;
 	private static final Log log = LogFactory.getLog(StreamPipelineYarnContainer.class);
 	private Map<String, JobStage> jsidjsmap;
+
 	/**
 	 * Pull the Job to perform MR operation execution requesting 
 	 * the Yarn App Master Service. The various Yarn operation What operation
@@ -66,7 +67,7 @@ public class StreamPipelineYarnContainer extends AbstractIntegrationYarnContaine
 				log.debug(containerid + ": Response containerid: " + response);
 				if (response == null) {
 					sleep(1);
-					continue;			
+					continue;
 				}
 				if (response.getJob() != null) {
 					request = new JobRequest();
@@ -117,7 +118,7 @@ public class StreamPipelineYarnContainer extends AbstractIntegrationYarnContaine
 					break;
 				}
 				log.debug(containerid + ": Response state=" + response.getState());
-	
+
 			}
 			log.debug(containerid + ": Completed Job Exiting with status 0...");
 			ByteBufferPoolDirect.get().close();
@@ -126,8 +127,8 @@ public class StreamPipelineYarnContainer extends AbstractIntegrationYarnContaine
 		}
 		catch (InterruptedException e) {
 			log.warn("Interrupted!", e);
-		    // Restore interrupted state...
-		    Thread.currentThread().interrupt();
+			// Restore interrupted state...
+			Thread.currentThread().interrupt();
 		}
 		catch (Exception ex) {
 			request = new JobRequest();
@@ -142,8 +143,8 @@ public class StreamPipelineYarnContainer extends AbstractIntegrationYarnContaine
 				shutdownExecutor();
 			} catch (InterruptedException e) {
 				log.warn("Interrupted!", e);
-			    // Restore interrupted state...
-			    Thread.currentThread().interrupt();
+				// Restore interrupted state...
+				Thread.currentThread().interrupt();
 			} catch (Exception e) {
 				log.error("", e);
 			}
@@ -157,7 +158,7 @@ public class StreamPipelineYarnContainer extends AbstractIntegrationYarnContaine
 			executor.awaitTermination(1, TimeUnit.SECONDS);
 		}
 	}
-	
+
 	public Map<String, String> getContainerprops() {
 		return containerprops;
 	}
@@ -171,8 +172,8 @@ public class StreamPipelineYarnContainer extends AbstractIntegrationYarnContaine
 			Thread.sleep(1000l * seconds);
 		} catch (InterruptedException e) {
 			log.warn("Interrupted!", e);
-		    // Restore interrupted state...
-		    Thread.currentThread().interrupt();
+			// Restore interrupted state...
+			Thread.currentThread().interrupt();
 		} catch (Exception ex) {
 			log.debug("Delay error, See cause below \n", ex);
 		}

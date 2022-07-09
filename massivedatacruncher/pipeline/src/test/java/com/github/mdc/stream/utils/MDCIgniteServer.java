@@ -20,8 +20,9 @@ public class MDCIgniteServer {
 
 	private static Ignite ignite;
 
-	private MDCIgniteServer() {}
-	
+	private MDCIgniteServer() {
+	}
+
 	public static synchronized Ignite instance() {
 		if (isNull(ignite)) {
 			Ignition.setClientMode(false);

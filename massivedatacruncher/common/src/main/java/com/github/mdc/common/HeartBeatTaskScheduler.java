@@ -18,13 +18,14 @@ import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 import com.github.mdc.common.ApplicationTask.TaskStatus;
 import com.github.mdc.common.ApplicationTask.TaskType;
+
 /**
  * 
  * @author Arun
  * Heart beat task scheduler to receive updates on Job execution from task executors to task schedulers.
  */
 public final class HeartBeatTaskScheduler extends HeartBeatServer implements HeartBeatCloseable {
-	
+
 	private String applicationid,taskid;
 	public TaskStatus taskstatus = TaskStatus.SUBMITTED;
 	public TaskType tasktype = TaskType.MAPPERCOMBINER;
@@ -35,7 +36,7 @@ public final class HeartBeatTaskScheduler extends HeartBeatServer implements Hea
 	ConcurrentMap<String, Callable<Context>> apptaskmdtstcmap = new ConcurrentHashMap<>();
 	@SuppressWarnings("rawtypes")
 	public ConcurrentMap<String, Callable<Context>> apptaskmdtstrmap = new ConcurrentHashMap<>();
-	
+
 	/**
 	 * This method initializes heartbeat.
 	 */
@@ -48,23 +49,22 @@ public final class HeartBeatTaskScheduler extends HeartBeatServer implements Hea
 		}
 		if (config[6] instanceof String appid) {
 			applicationid = appid;
-			
+
 		} else {
 			throw new Exception(MDCConstants.HEARTBEAT_TASK_SCHEDULER_EXCEPTION_APPID);
 		}
-		
+
 		if (config[7] instanceof String tid) {
 			taskid = tid;
 		}
 		else {
 			throw new Exception(MDCConstants.HEARTBEAT_TASK_SCHEDULER_EXCEPTION_TASKID);
 		}
-		
+
 		log.debug("Exiting HeartBeatTaskScheduler.init");
 	}
-	
-	
-	
+
+
 	/**
 	 * Start the heart beat server to receive the updates on job execution statuses. 
 	 */
@@ -90,7 +90,7 @@ public final class HeartBeatTaskScheduler extends HeartBeatServer implements Hea
 						if (applicationid.equals(apptask.applicationid)) {
 							if ((apptask.taskstatus == ApplicationTask.TaskStatus.COMPLETED
 									|| apptask.taskstatus == ApplicationTask.TaskStatus.FAILED)
-							&& !apptasks.contains(apptask.taskid)) {
+									&& !apptasks.contains(apptask.taskid)) {
 								log.info("AppTask Before adding to queue: " + apptask);
 								hbo.addToQueue(apptask);
 								apptasks.add(apptask.taskid);
@@ -98,7 +98,7 @@ public final class HeartBeatTaskScheduler extends HeartBeatServer implements Hea
 									|| apptask.taskstatus == ApplicationTask.TaskStatus.FAILED) {
 								var mrjr = new MRJobResponse();
 								mrjr.setAppid(apptask.applicationid);
-								mrjr.setTaskid(apptask.taskid);								
+								mrjr.setTaskid(apptask.taskid);
 								try (var baos = new ByteArrayOutputStream();
 										var output = new Output(baos);) {
 									Utils.writeKryoOutputClassObject(kryo, output, mrjr);
@@ -109,11 +109,11 @@ public final class HeartBeatTaskScheduler extends HeartBeatServer implements Hea
 							}
 						}
 						log.debug("Exiting Receiver.receive");
-					} 
+					}
 				} catch (InterruptedException e) {
 					log.warn("Interrupted!", e);
-				    // Restore interrupted state...
-				    Thread.currentThread().interrupt();
+					// Restore interrupted state...
+					Thread.currentThread().interrupt();
 				} catch (Exception ex) {
 					log.error("Heartbeat Receive Updates error, See Cause below: \n", ex);
 				}
@@ -125,7 +125,7 @@ public final class HeartBeatTaskScheduler extends HeartBeatServer implements Hea
 	}
 	Semaphore pingmutex = new Semaphore(1);
 	boolean responsereceived;
-	
+
 	/**
 	 * This method pings the status of the tasks executed by the task executors.
 	 * @param taskid
@@ -182,9 +182,9 @@ public final class HeartBeatTaskScheduler extends HeartBeatServer implements Hea
 			}
 		} catch (InterruptedException e) {
 			log.warn("Interrupted!", e);
-		    // Restore interrupted state...
-		    Thread.currentThread().interrupt();
-		  } catch (Exception ex) {
+			// Restore interrupted state...
+			Thread.currentThread().interrupt();
+		} catch (Exception ex) {
 			log.info("Heartbeat ping once error, See Cause below: \n", ex);
 		}
 		log.debug("Exiting HeartBeatTaskScheduler.pingOnce");
@@ -242,9 +242,9 @@ public final class HeartBeatTaskScheduler extends HeartBeatServer implements Hea
 			}
 		} catch (InterruptedException e) {
 			log.warn("Interrupted!", e);
-		    // Restore interrupted state...
-		    Thread.currentThread().interrupt();
-		  } catch (Exception ex) {
+			// Restore interrupted state...
+			Thread.currentThread().interrupt();
+		} catch (Exception ex) {
 			log.info("Heartbeat ping once error, See Cause below: \n", ex);
 		}
 		log.debug("Exiting HeartBeatTaskScheduler.pingOnce");
@@ -257,10 +257,11 @@ public final class HeartBeatTaskScheduler extends HeartBeatServer implements Hea
 	public HeartBeatObservable<ApplicationTask> getHbo() {
 		return hbo;
 	}
-	
+
 	public void stop() throws Exception {
 		super.stop();
 	}
+
 	public void destroy() throws Exception {
 		super.destroy();
 	}

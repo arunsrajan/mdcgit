@@ -29,24 +29,27 @@ public final class HeartBeatTaskSchedulerStream extends HeartBeatServerStream im
 	private HeartBeatObservable<Task> hbo;
 	protected double timetakenseconds;
 	public List<String> containers;
-	
+
 	public TaskStatus getTaskstatus() {
 		return taskstatus;
 	}
+
 	public void setTaskstatus(TaskStatus taskstatus) {
 		this.taskstatus = taskstatus;
 	}
+
 	public HeartBeatObservable<Task> getHbo() {
 		return hbo;
 	}
-	
+
 	public double getTimetakenseconds() {
 		return timetakenseconds;
 	}
+
 	public void setTimetakenseconds(double timetakenseconds) {
 		this.timetakenseconds = timetakenseconds;
 	}
-	
+
 	/**
 	 * This method initializes heartbeat.
 	 */
@@ -58,7 +61,7 @@ public final class HeartBeatTaskSchedulerStream extends HeartBeatServerStream im
 			throw new HeartBeatException(MDCConstants.HEARTBEAT_TASK_SCHEDULER_STREAM_EXCEPTON_MESSAGE);
 		}
 		if (config[6] instanceof String jid) {
-			jobid = jid;			
+			jobid = jid;
 		}
 		else {
 			throw new HeartBeatException(MDCConstants.HEARTBEAT_TASK_SCHEDULER_STREAM_EXCEPTON_JOBID);
@@ -66,9 +69,8 @@ public final class HeartBeatTaskSchedulerStream extends HeartBeatServerStream im
 		hbo = new HeartBeatObservable<>();
 		log.debug("Exiting HeartBeatTaskSchedulerStream.init");
 	}
-	
-	
-	
+
+
 	/**
 	 * Start the heart beat server in task schedulers 
 	 * to receive the task updates.
@@ -79,7 +81,7 @@ public final class HeartBeatTaskSchedulerStream extends HeartBeatServerStream im
 		channel = Utils.getChannelWithPStack(networkaddress);
 		channel.setName(jobid);
 		channel.setReceiver(new Receiver() {
-			
+
 			@Override
 			public void viewAccepted(View clusterview) {
 				log.debug("Nodes View: " + clusterview.getMembers());
@@ -118,8 +120,8 @@ public final class HeartBeatTaskSchedulerStream extends HeartBeatServerStream im
 					}
 				} catch (InterruptedException e) {
 					log.warn("Interrupted!", e);
-				    // Restore interrupted state...
-				    Thread.currentThread().interrupt();
+					// Restore interrupted state...
+					Thread.currentThread().interrupt();
 				} catch (Exception ex) {
 					log.info("Heartbeat Receive Updates error, See Cause below: \n", ex);
 				}
@@ -129,14 +131,14 @@ public final class HeartBeatTaskSchedulerStream extends HeartBeatServerStream im
 		channel.connect(jobid);
 		log.debug("Exiting HeartBeatTaskSchedulerStream.start");
 	}
-	
+
 	public void clearStageJobStageMap() {
 		hpresmap.clear();
 	}
-	
+
 	Semaphore pingmutex = new Semaphore(1);
 	boolean responsereceived;
-	
+
 	/**
 	 * This method pings the status of the tasks executed by the task executors.
 	 * @param stageid
@@ -164,7 +166,7 @@ public final class HeartBeatTaskSchedulerStream extends HeartBeatServerStream im
 			task.hostport = hostport;
 			task.taskid = taskid;
 			task.timetakenseconds = timetaken;
-			task.stagefailuremessage = taskstatus == Task.TaskStatus.FAILED ? stagefailuremessage : ""; 
+			task.stagefailuremessage = taskstatus == Task.TaskStatus.FAILED ? stagefailuremessage : "";
 			// Initiate the tasks execution by sending the job stage
 			// information.
 			try (var baos = new ByteArrayOutputStream(); var output = new Output(baos);) {
@@ -205,13 +207,13 @@ public final class HeartBeatTaskSchedulerStream extends HeartBeatServerStream im
 					+ taskid + MDCConstants.SINGLESPACE + taskstatus);
 		} catch (InterruptedException e) {
 			log.warn("Interrupted!", e);
-		    // Restore interrupted state...
-		    Thread.currentThread().interrupt();
+			// Restore interrupted state...
+			Thread.currentThread().interrupt();
 		} catch (Exception ex) {
 			log.info("Heartbeat ping once error, See Cause below: \n", ex);
 		}
 		pingmutex.release();
 		log.debug("Exiting HeartBeatTaskSchedulerStream.pingOnce");
 	}
-	
+
 }

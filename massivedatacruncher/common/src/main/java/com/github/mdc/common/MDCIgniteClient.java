@@ -15,11 +15,12 @@ import org.apache.ignite.spi.discovery.tcp.TcpDiscoverySpi;
 import org.apache.ignite.spi.discovery.tcp.ipfinder.multicast.TcpDiscoveryMulticastIpFinder;
 
 public class MDCIgniteClient {
-	
-	private MDCIgniteClient() {}
-	
+
+	private MDCIgniteClient() {
+	}
+
 	private static Ignite ignite;
-	
+
 	public synchronized static Ignite instance(PipelineConfig pipelineconfig) {
 		if (isNull(ignite) || nonNull(ignite) && !ignite.active()) {
 			var cfg = new IgniteConfiguration();

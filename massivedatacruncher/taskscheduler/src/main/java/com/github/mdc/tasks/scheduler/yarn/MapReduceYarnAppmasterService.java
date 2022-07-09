@@ -22,7 +22,7 @@ public class MapReduceYarnAppmasterService extends MindAppmasterService {
 
 	private static final Log log = LogFactory.getLog(MapReduceYarnAppmasterService.class);
 
-	
+
 	private MapReduceYarnAppmaster yarnAppMaster;
 
 	/**
@@ -74,7 +74,7 @@ public class MapReduceYarnAppmasterService extends MindAppmasterService {
 						// Update statuses to App Master if job has been Failed.
 						else if (request.getState().equals(JobRequest.State.JOBFAILED)) {
 							yarnAppMaster.reportJobStatus(mc, false, request.getContainerid());
-						} 
+						}
 					}
 					else if (object instanceof YarnReducer red) {
 						// Update statuses to App Master if job has been completed.
@@ -85,13 +85,13 @@ public class MapReduceYarnAppmasterService extends MindAppmasterService {
 						// Update statuses to App Master if job has been Failed.
 						else if (request.getState().equals(JobRequest.State.JOBFAILED)) {
 							yarnAppMaster.reportJobStatus(red, false, request.getContainerid());
-						} 
+						}
 					}
 				} catch (Exception ex) {
 					log.info("Handle job request error, See cause below \n", ex);
 				}
 			}
-			
+
 			var job = yarnAppMaster.getJob(request.getContainerid());
 			log.info(request.getContainerid() + ": " + job);
 			//Job is available
@@ -104,7 +104,7 @@ public class MapReduceYarnAppmasterService extends MindAppmasterService {
 				response.setJob(baos.toByteArray());
 				response.setState(JobResponse.State.RUNJOB);
 				response.setResstate(JobResponse.State.RUNJOB.name());
-			} 
+			}
 			//If there is no jobs to executor return the status for
 			//container to DIE.
 			else if (!yarnAppMaster.hasJobs()) {

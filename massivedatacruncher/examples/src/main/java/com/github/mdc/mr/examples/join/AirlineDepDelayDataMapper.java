@@ -23,7 +23,7 @@ public class AirlineDepDelayDataMapper implements Mapper<Long, String, Context<S
 			}
 		}
 		catch (Exception ex) {
-			
+
 		}
 	}
 

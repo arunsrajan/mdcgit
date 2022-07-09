@@ -10,7 +10,7 @@ import java.util.Set;
  *  the MR Job APi.
  */
 public class RetrieveKeys implements Serializable {
-	
+
 	private static final long serialVersionUID = -100582342914768069L;
 
 	public String applicationid;

@@ -18,12 +18,13 @@ import org.junit.Test;
 import com.github.mdc.common.MDCConstants;
 
 public class StreamPipelineTransformationsCollectTest extends StreamPipelineBaseTestCommon {
-	
+
 	static String modeLocal = "";
 	static String modeMesos = "";
 	static String modeYarn = "";
 	static String modeJgroups = "";
 	boolean toexecute = true;
+
 	@BeforeClass
 	public static void getSetExecutorMode() {
 		modeLocal = pipelineconfig.getLocal();
@@ -35,6 +36,7 @@ public class StreamPipelineTransformationsCollectTest extends StreamPipelineBase
 		pipelineconfig.setYarn("false");
 		pipelineconfig.setJgroups("false");
 	}
+
 	@AfterClass
 	public static void setExecutorMode() {
 		pipelineconfig.setLocal(modeLocal);
@@ -42,7 +44,7 @@ public class StreamPipelineTransformationsCollectTest extends StreamPipelineBase
 		pipelineconfig.setYarn(modeYarn);
 		pipelineconfig.setJgroups(modeJgroups);
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testPipelineMap() throws Exception {
@@ -51,6 +53,7 @@ public class StreamPipelineTransformationsCollectTest extends StreamPipelineBase
 		List<String[]> mapcollect = map.collect(true, null);
 		assertTrue(mapcollect.size() > 0);
 	}
+
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testPipelineFlatMap() throws Exception {
@@ -59,7 +62,7 @@ public class StreamPipelineTransformationsCollectTest extends StreamPipelineBase
 		List<String> flatmapcollect = flatmap.collect(true, null);
 		assertTrue(flatmapcollect.size() > 0);
 	}
-	
+
 	@Test
 	@SuppressWarnings({"unchecked"})
 	public void testMap() throws Exception {
@@ -80,7 +83,7 @@ public class StreamPipelineTransformationsCollectTest extends StreamPipelineBase
 		pipelineconfig.setLocal(local);
 		log.info("testMap After---------------------------------------");
 	}
-	
+
 	@Test
 	@SuppressWarnings({"unchecked"})
 	public void testFilter() throws Exception {
@@ -101,7 +104,7 @@ public class StreamPipelineTransformationsCollectTest extends StreamPipelineBase
 		pipelineconfig.setLocal(local);
 		log.info("testFilter After---------------------------------------");
 	}
-	
+
 	@Test
 	@SuppressWarnings({"unchecked"})
 	public void testflatMap() throws Exception {
@@ -122,6 +125,7 @@ public class StreamPipelineTransformationsCollectTest extends StreamPipelineBase
 		pipelineconfig.setLocal(local);
 		log.info("testflatMap After---------------------------------------");
 	}
+
 	@Test
 	@SuppressWarnings({"unchecked"})
 	public void testflatMapToDouble() throws Exception {
@@ -136,7 +140,7 @@ public class StreamPipelineTransformationsCollectTest extends StreamPipelineBase
 		List<List<Double>> data = datastream.flatMapToDouble(val -> {
 			String[] values = val.split(MDCConstants.COMMA);
 			try {
-			return Arrays.asList(Double.parseDouble(values[0]));
+				return Arrays.asList(Double.parseDouble(values[0]));
 			}
 			catch (Exception ex) {
 				return Arrays.asList(0d);
@@ -150,7 +154,7 @@ public class StreamPipelineTransformationsCollectTest extends StreamPipelineBase
 		pipelineconfig.setLocal(local);
 		log.info("flatMapToDouble After---------------------------------------");
 	}
-	
+
 	@Test
 	@SuppressWarnings({"unchecked"})
 	public void testflatMapToLong() throws Exception {
@@ -165,7 +169,7 @@ public class StreamPipelineTransformationsCollectTest extends StreamPipelineBase
 		List<List<Long>> data = datastream.flatMapToLong(val -> {
 			String[] values = val.split(MDCConstants.COMMA);
 			try {
-			return Arrays.asList(Long.parseLong(values[0]));
+				return Arrays.asList(Long.parseLong(values[0]));
 			}
 			catch (Exception ex) {
 				return Arrays.asList(0l);
@@ -179,8 +183,8 @@ public class StreamPipelineTransformationsCollectTest extends StreamPipelineBase
 		pipelineconfig.setLocal(local);
 		log.info("testflatMapToLong After---------------------------------------");
 	}
-	
-	
+
+
 	@Test
 	@SuppressWarnings({"unchecked"})
 	public void testflatMapToTuple2() throws Exception {
@@ -204,7 +208,7 @@ public class StreamPipelineTransformationsCollectTest extends StreamPipelineBase
 		pipelineconfig.setLocal(local);
 		log.info("testflatMapToTuple2 After---------------------------------------");
 	}
-	
+
 	@Test
 	@SuppressWarnings({"unchecked"})
 	public void testflatMapToTuple() throws Exception {
@@ -228,7 +232,7 @@ public class StreamPipelineTransformationsCollectTest extends StreamPipelineBase
 		pipelineconfig.setLocal(local);
 		log.info("testflatMapToTuple After---------------------------------------");
 	}
-	
+
 	@Test
 	@SuppressWarnings({"unchecked"})
 	public void testKeyByFunction() throws Exception {
@@ -249,6 +253,7 @@ public class StreamPipelineTransformationsCollectTest extends StreamPipelineBase
 		pipelineconfig.setLocal(local);
 		log.info("testKeyByFunction After---------------------------------------");
 	}
+
 	@Test
 	@SuppressWarnings({"unchecked"})
 	public void testLeftOuterJoin() throws Exception {
@@ -270,8 +275,8 @@ public class StreamPipelineTransformationsCollectTest extends StreamPipelineBase
 		assertEquals(count, sum);
 		pipelineconfig.setLocal(local);
 		log.info("testLeftOuterJoin After---------------------------------------");
-	}	
-	
+	}
+
 	@Test
 	@SuppressWarnings({"unchecked"})
 	public void testLeftOuterJoinFilter() throws Exception {
@@ -291,7 +296,7 @@ public class StreamPipelineTransformationsCollectTest extends StreamPipelineBase
 		pipelineconfig.setLocal(local);
 		log.info("testLeftOuterJoinFilter After---------------------------------------");
 	}
-	
+
 	@Test
 	@SuppressWarnings({"unchecked"})
 	public void testJoin() throws Exception {
@@ -314,7 +319,7 @@ public class StreamPipelineTransformationsCollectTest extends StreamPipelineBase
 		pipelineconfig.setLocal(local);
 		log.info("testJoin After---------------------------------------");
 	}
-	
+
 	@Test
 	@SuppressWarnings({"unchecked"})
 	public void testJoinFilter() throws Exception {
@@ -323,8 +328,8 @@ public class StreamPipelineTransformationsCollectTest extends StreamPipelineBase
 		pipelineconfig.setLocal("true");
 		StreamPipeline<String> datastream1 = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesamplejoin,
 				pipelineconfig).filter(val -> "2".equals(val.split(MDCConstants.COMMA)[2])
-						|| "3".equals(val.split(MDCConstants.COMMA)[2])
-						|| "4".equals(val.split(MDCConstants.COMMA)[2]));
+				|| "3".equals(val.split(MDCConstants.COMMA)[2])
+				|| "4".equals(val.split(MDCConstants.COMMA)[2]));
 		StreamPipeline<String> datastream2 = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesamplejoin,
 				pipelineconfig);
 		List<List<String>> data = datastream1.join(datastream2, (val1, val2) -> val1.equals(val2)).collect(toexecute, null);
@@ -336,9 +341,8 @@ public class StreamPipelineTransformationsCollectTest extends StreamPipelineBase
 		pipelineconfig.setLocal(local);
 		log.info("testJoinFilter After---------------------------------------");
 	}
-	
-	
-	
+
+
 	@Test
 	@SuppressWarnings({"unchecked"})
 	public void testRightOuterJoin() throws Exception {
@@ -361,7 +365,7 @@ public class StreamPipelineTransformationsCollectTest extends StreamPipelineBase
 		pipelineconfig.setLocal(local);
 		log.info("testRightOuterJoin After---------------------------------------");
 	}
-	
+
 	@Test
 	@SuppressWarnings({"unchecked"})
 	public void testRightOuterJoinFilterReverse() throws Exception {
@@ -370,8 +374,8 @@ public class StreamPipelineTransformationsCollectTest extends StreamPipelineBase
 		pipelineconfig.setLocal("true");
 		StreamPipeline<String> datastream1 = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesamplejoin,
 				pipelineconfig).filter(val -> "2".equals(val.split(MDCConstants.COMMA)[2])
-						|| "3".equals(val.split(MDCConstants.COMMA)[2])
-						|| "4".equals(val.split(MDCConstants.COMMA)[2]));
+				|| "3".equals(val.split(MDCConstants.COMMA)[2])
+				|| "4".equals(val.split(MDCConstants.COMMA)[2]));
 		StreamPipeline<String> datastream2 = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesamplejoin,
 				pipelineconfig);
 		List<List<String>> data = datastream2.rightOuterjoin(datastream1, (val1, val2) -> val1.equals(val2)).collect(toexecute, null);
@@ -383,7 +387,7 @@ public class StreamPipelineTransformationsCollectTest extends StreamPipelineBase
 		pipelineconfig.setLocal(local);
 		log.info("testRightOuterJoinFilterReverse After---------------------------------------");
 	}
-	
+
 	@Test
 	@SuppressWarnings({"unchecked"})
 	public void testRightOuterJoinFilter() throws Exception {
@@ -392,8 +396,8 @@ public class StreamPipelineTransformationsCollectTest extends StreamPipelineBase
 		pipelineconfig.setLocal("true");
 		StreamPipeline<String> datastream1 = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesamplejoin,
 				pipelineconfig).filter(val -> "2".equals(val.split(MDCConstants.COMMA)[2])
-						|| "3".equals(val.split(MDCConstants.COMMA)[2])
-						|| "4".equals(val.split(MDCConstants.COMMA)[2]));
+				|| "3".equals(val.split(MDCConstants.COMMA)[2])
+				|| "4".equals(val.split(MDCConstants.COMMA)[2]));
 		StreamPipeline<String> datastream2 = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesamplejoin,
 				pipelineconfig);
 		List<List<String>> data = datastream1.rightOuterjoin(datastream2, (val1, val2) -> val1.equals(val2)).collect(toexecute, null);
@@ -405,8 +409,8 @@ public class StreamPipelineTransformationsCollectTest extends StreamPipelineBase
 		pipelineconfig.setLocal(local);
 		log.info("testRightOuterJoinFilter After---------------------------------------");
 	}
-	
-	
+
+
 	@Test
 	@SuppressWarnings({"unchecked"})
 	public void testUnion() throws Exception {
@@ -432,8 +436,8 @@ public class StreamPipelineTransformationsCollectTest extends StreamPipelineBase
 		pipelineconfig.setLocal(local);
 		log.info("testUnion After---------------------------------------");
 	}
-	
-	
+
+
 	@Test
 	@SuppressWarnings({"unchecked"})
 	public void testUnionFilter() throws Exception {
@@ -444,8 +448,8 @@ public class StreamPipelineTransformationsCollectTest extends StreamPipelineBase
 				pipelineconfig);
 		StreamPipeline<String> datastream2 = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesamplejoin,
 				pipelineconfig).filter(val -> "2".equals(val.split(MDCConstants.COMMA)[2])
-						|| "3".equals(val.split(MDCConstants.COMMA)[2])
-						|| "4".equals(val.split(MDCConstants.COMMA)[2]));
+				|| "3".equals(val.split(MDCConstants.COMMA)[2])
+				|| "4".equals(val.split(MDCConstants.COMMA)[2]));
 		List<List<String>> data = datastream1.union(datastream2).collect(toexecute, null);
 		long sum = 0;
 		for (int index = 0; index < data.size(); index++) {
@@ -455,7 +459,7 @@ public class StreamPipelineTransformationsCollectTest extends StreamPipelineBase
 		pipelineconfig.setLocal(local);
 		log.info("testUnionFilter After---------------------------------------");
 	}
-	
+
 	@Test
 	@SuppressWarnings({"unchecked"})
 	public void testUnionFilterFilter() throws Exception {
@@ -464,12 +468,12 @@ public class StreamPipelineTransformationsCollectTest extends StreamPipelineBase
 		pipelineconfig.setLocal("true");
 		StreamPipeline<String> datastream1 = StreamPipeline.newStreamHDFS(hdfsfilepath, airline1987,
 				pipelineconfig).filter(val -> "2".equals(val.split(MDCConstants.COMMA)[2])
-						|| "3".equals(val.split(MDCConstants.COMMA)[2])
-						|| "4".equals(val.split(MDCConstants.COMMA)[2]));
+				|| "3".equals(val.split(MDCConstants.COMMA)[2])
+				|| "4".equals(val.split(MDCConstants.COMMA)[2]));
 		StreamPipeline<String> datastream2 = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesamplejoin,
 				pipelineconfig).filter(val -> "2".equals(val.split(MDCConstants.COMMA)[2])
-						|| "3".equals(val.split(MDCConstants.COMMA)[2])
-						|| "4".equals(val.split(MDCConstants.COMMA)[2]));
+				|| "3".equals(val.split(MDCConstants.COMMA)[2])
+				|| "4".equals(val.split(MDCConstants.COMMA)[2]));
 		List<List<String>> data = datastream1.union(datastream2).collect(toexecute, null);
 		long sum = 0;
 		for (int index = 0; index < data.size(); index++) {
@@ -479,8 +483,8 @@ public class StreamPipelineTransformationsCollectTest extends StreamPipelineBase
 		pipelineconfig.setLocal(local);
 		log.info("testUnionFilterFilter After---------------------------------------");
 	}
-	
-	
+
+
 	@Test
 	@SuppressWarnings({"unchecked"})
 	public void testIntersection() throws Exception {
@@ -503,8 +507,8 @@ public class StreamPipelineTransformationsCollectTest extends StreamPipelineBase
 		pipelineconfig.setLocal(local);
 		log.info("testIntersection After---------------------------------------");
 	}
-	
-	
+
+
 	@Test
 	@SuppressWarnings({"unchecked"})
 	public void testIntersectionFilter() throws Exception {
@@ -515,8 +519,8 @@ public class StreamPipelineTransformationsCollectTest extends StreamPipelineBase
 				pipelineconfig);
 		StreamPipeline<String> datastream2 = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesamplejoin,
 				pipelineconfig).filter(val -> "2".equals(val.split(MDCConstants.COMMA)[2])
-						|| "3".equals(val.split(MDCConstants.COMMA)[2])
-						|| "4".equals(val.split(MDCConstants.COMMA)[2]));
+				|| "3".equals(val.split(MDCConstants.COMMA)[2])
+				|| "4".equals(val.split(MDCConstants.COMMA)[2]));
 		List<List<String>> data = datastream1.intersection(datastream2).collect(toexecute, null);
 		long sum = 0;
 		for (int index = 0; index < data.size(); index++) {
@@ -526,7 +530,7 @@ public class StreamPipelineTransformationsCollectTest extends StreamPipelineBase
 		pipelineconfig.setLocal(local);
 		log.info("testIntersectionFilter After---------------------------------------");
 	}
-	
+
 	@Test
 	@SuppressWarnings({"unchecked"})
 	public void testIntersectionFilterFilter() throws Exception {
@@ -535,12 +539,12 @@ public class StreamPipelineTransformationsCollectTest extends StreamPipelineBase
 		pipelineconfig.setLocal("true");
 		StreamPipeline<String> datastream1 = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesamplejoin,
 				pipelineconfig).filter(val -> "2".equals(val.split(MDCConstants.COMMA)[2])
-						|| "3".equals(val.split(MDCConstants.COMMA)[2])
-						|| "4".equals(val.split(MDCConstants.COMMA)[2]));
+				|| "3".equals(val.split(MDCConstants.COMMA)[2])
+				|| "4".equals(val.split(MDCConstants.COMMA)[2]));
 		StreamPipeline<String> datastream2 = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesamplejoin,
 				pipelineconfig).filter(val -> "2".equals(val.split(MDCConstants.COMMA)[2])
-						|| "3".equals(val.split(MDCConstants.COMMA)[2])
-						|| "4".equals(val.split(MDCConstants.COMMA)[2]));
+				|| "3".equals(val.split(MDCConstants.COMMA)[2])
+				|| "4".equals(val.split(MDCConstants.COMMA)[2]));
 		List<List<String>> data = datastream1.intersection(datastream2).collect(toexecute, null);
 		long sum = 0;
 		for (int index = 0; index < data.size(); index++) {
@@ -550,7 +554,7 @@ public class StreamPipelineTransformationsCollectTest extends StreamPipelineBase
 		pipelineconfig.setLocal(local);
 		log.info("testIntersectionFilterFilter After---------------------------------------");
 	}
-	
+
 	@Test
 	@SuppressWarnings({"unchecked"})
 	public void testPeek() throws Exception {
@@ -571,9 +575,8 @@ public class StreamPipelineTransformationsCollectTest extends StreamPipelineBase
 		pipelineconfig.setLocal(local);
 		log.info("testPeek After---------------------------------------");
 	}
-	
-	
-	
+
+
 	@Test
 	@SuppressWarnings({"unchecked"})
 	public void testFilterSorted() throws Exception {
@@ -601,6 +604,7 @@ public class StreamPipelineTransformationsCollectTest extends StreamPipelineBase
 		pipelineconfig.setLocal(local);
 		log.info("testFilterSorted After---------------------------------------");
 	}
+
 	@Test
 	@SuppressWarnings({"unchecked"})
 	public void testMapPair() throws Exception {
@@ -625,7 +629,7 @@ public class StreamPipelineTransformationsCollectTest extends StreamPipelineBase
 		pipelineconfig.setLocal(local);
 		log.info("testMapPair After---------------------------------------");
 	}
-	
+
 	@Test
 	@SuppressWarnings({"unchecked"})
 	public void testMapPairFilter() throws Exception {
@@ -647,7 +651,7 @@ public class StreamPipelineTransformationsCollectTest extends StreamPipelineBase
 		pipelineconfig.setLocal(local);
 		log.info("testMapPairFilter After---------------------------------------");
 	}
-	
+
 	@Test
 	@SuppressWarnings({"unchecked"})
 	public void testMapPairFlatMap() throws Exception {
@@ -669,8 +673,8 @@ public class StreamPipelineTransformationsCollectTest extends StreamPipelineBase
 		pipelineconfig.setLocal(local);
 		log.info("testMapPairFlatMap After---------------------------------------");
 	}
-	
-	
+
+
 	@Test
 	@SuppressWarnings({"unchecked"})
 	public void testMapPairFlatMapToLong() throws Exception {
@@ -700,6 +704,7 @@ public class StreamPipelineTransformationsCollectTest extends StreamPipelineBase
 		pipelineconfig.setLocal(local);
 		log.info("testMapPairFlatMapToLong After---------------------------------------");
 	}
+
 	@Test
 	@SuppressWarnings({"unchecked"})
 	public void testMapPairFlatMapToDouble() throws Exception {
@@ -729,7 +734,7 @@ public class StreamPipelineTransformationsCollectTest extends StreamPipelineBase
 		pipelineconfig.setLocal(local);
 		log.info("testMapPairFlatMapToDouble After---------------------------------------");
 	}
-	
+
 	@Test
 	@SuppressWarnings({"unchecked"})
 	public void testMapPairCoalesce() throws Exception {
@@ -760,7 +765,7 @@ public class StreamPipelineTransformationsCollectTest extends StreamPipelineBase
 		pipelineconfig.setBlocksize(blocksize);
 		log.info("testMapPairCoalesce After---------------------------------------");
 	}
-	
+
 	@Test
 	@SuppressWarnings({"unchecked"})
 	public void testMapPairReduceByKey() throws Exception {
@@ -791,6 +796,7 @@ public class StreamPipelineTransformationsCollectTest extends StreamPipelineBase
 		pipelineconfig.setBlocksize(blocksize);
 		log.info("testMapPairReduceByKey After---------------------------------------");
 	}
+
 	@Test
 	@SuppressWarnings({"unchecked"})
 	public void testMapPairSample() throws Exception {
@@ -818,6 +824,7 @@ public class StreamPipelineTransformationsCollectTest extends StreamPipelineBase
 		pipelineconfig.setLocal(local);
 		log.info("testMapPairSample After---------------------------------------");
 	}
+
 	@Test
 	@SuppressWarnings({"unchecked"})
 	public void testMapPairPeek() throws Exception {
@@ -845,8 +852,8 @@ public class StreamPipelineTransformationsCollectTest extends StreamPipelineBase
 		pipelineconfig.setLocal(local);
 		log.info("testMapPairPeek After---------------------------------------");
 	}
-	
-	
+
+
 	@Test
 	@SuppressWarnings({"unchecked"})
 	public void testMapPairFoldLeft() throws Exception {
@@ -865,7 +872,7 @@ public class StreamPipelineTransformationsCollectTest extends StreamPipelineBase
 		}).foldLeft(0l, (a, b) -> a + b, 1, (a, b) -> a + b).collect(toexecute, null);
 		long sum = 0;
 		for (List<Tuple2<String, Long>> data : datas) {
-			
+
 			for (Tuple2<String, Long> tuple : data) {
 				assertTrue(tuple instanceof Tuple2);
 				sum += tuple.v2;
@@ -875,6 +882,7 @@ public class StreamPipelineTransformationsCollectTest extends StreamPipelineBase
 		pipelineconfig.setLocal(local);
 		log.info("testMapPairFoldLeft After---------------------------------------");
 	}
+
 	@Test
 	@SuppressWarnings({"unchecked"})
 	public void testMapPairFoldRight() throws Exception {
@@ -893,7 +901,7 @@ public class StreamPipelineTransformationsCollectTest extends StreamPipelineBase
 		}).foldRight(0l, (a, b) -> a + b, 1, (a, b) -> a + b).collect(toexecute, null);
 		long sum = 0;
 		for (List<Tuple2<String, Long>> data : datas) {
-			
+
 			for (Tuple2<String, Long> tuple : data) {
 				assertTrue(tuple instanceof Tuple2);
 				sum += tuple.v2;
@@ -903,8 +911,8 @@ public class StreamPipelineTransformationsCollectTest extends StreamPipelineBase
 		pipelineconfig.setLocal(local);
 		log.info("testMapPairFoldRight After---------------------------------------");
 	}
-	
-	
+
+
 	@Test
 	@SuppressWarnings({"unchecked"})
 	public void testMapPairGroupByKey() throws Exception {
@@ -924,7 +932,7 @@ public class StreamPipelineTransformationsCollectTest extends StreamPipelineBase
 		long sum = 0;
 		long totalrec = 0;
 		for (List<Tuple2<String, List<Long>>> data : datas) {
-			
+
 			for (Tuple2<String, List<Long>> tuple : data) {
 				assertTrue(tuple instanceof Tuple2);
 				totalrec += tuple.v2.size();
@@ -938,7 +946,7 @@ public class StreamPipelineTransformationsCollectTest extends StreamPipelineBase
 		pipelineconfig.setLocal(local);
 		log.info("testMapPairGroupByKey After---------------------------------------");
 	}
-	
+
 	@Test
 	@SuppressWarnings({"unchecked"})
 	public void testMapPairJoin() throws Exception {
@@ -965,8 +973,8 @@ public class StreamPipelineTransformationsCollectTest extends StreamPipelineBase
 		pipelineconfig.setLocal(local);
 		log.info("testMapPairJoin After---------------------------------------");
 	}
-	
-	
+
+
 	@Test
 	@SuppressWarnings({"unchecked"})
 	public void testMapPairLeftOuterJoin() throws Exception {
@@ -993,6 +1001,7 @@ public class StreamPipelineTransformationsCollectTest extends StreamPipelineBase
 		pipelineconfig.setLocal(local);
 		log.info("testMapPairLeftOuterJoin After---------------------------------------");
 	}
+
 	@Test
 	@SuppressWarnings({"unchecked"})
 	public void testMapPairRightOuterJoin() throws Exception {
@@ -1019,7 +1028,7 @@ public class StreamPipelineTransformationsCollectTest extends StreamPipelineBase
 		pipelineconfig.setLocal(local);
 		log.info("testMapPairRightOuterJoin After---------------------------------------");
 	}
-	
+
 	@Test
 	@SuppressWarnings({"unchecked"})
 	public void testMapPairUnion() throws Exception {
@@ -1045,7 +1054,7 @@ public class StreamPipelineTransformationsCollectTest extends StreamPipelineBase
 		pipelineconfig.setLocal(local);
 		log.info("testMapPairUnion After---------------------------------------");
 	}
-	
+
 	@Test
 	@SuppressWarnings({"unchecked"})
 	public void testMapPairIntersection() throws Exception {
@@ -1071,7 +1080,7 @@ public class StreamPipelineTransformationsCollectTest extends StreamPipelineBase
 		pipelineconfig.setLocal(local);
 		log.info("testMapPairIntersection After---------------------------------------");
 	}
-	
+
 	@Test
 	@SuppressWarnings({"unchecked"})
 	public void testMapPairSorted() throws Exception {
@@ -1093,7 +1102,7 @@ public class StreamPipelineTransformationsCollectTest extends StreamPipelineBase
 		pipelineconfig.setLocal(local);
 		log.info("testMapPairSorted After---------------------------------------");
 	}
-	
+
 	@Test
 	@SuppressWarnings({"unchecked"})
 	public void testMapFilterMapPairCogroup() throws Exception {
@@ -1105,7 +1114,7 @@ public class StreamPipelineTransformationsCollectTest extends StreamPipelineBase
 				.filter(val -> !"ArrDelay".equals(val[14]) && !"NA".equals(val[14]));
 		MapPair<String, Long> data1 = datastream1
 				.mapToPair(value -> (Tuple2<String, Long>) Tuple.tuple(value[8], Long.parseLong(value[14])));
-		
+
 		MapPair<String, Long> data2 = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesample, pipelineconfig)
 				.map(val -> val.split(",")).filter(val -> !"ArrDelay".equals(val[14]) && !"NA".equals(val[14]))
 				.mapToPair(value -> (Tuple2<String, Long>) Tuple.tuple(value[8], Long.parseLong(value[14])));
@@ -1123,5 +1132,5 @@ public class StreamPipelineTransformationsCollectTest extends StreamPipelineBase
 		pipelineconfig.setLocal(local);
 		log.info("testFilterMapPairCogroup After---------------------------------------");
 	}
-	
+
 }

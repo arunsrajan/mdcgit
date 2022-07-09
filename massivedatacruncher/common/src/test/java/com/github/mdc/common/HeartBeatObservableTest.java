@@ -27,7 +27,7 @@ public class HeartBeatObservableTest {
 		JobStage jobstage = queue.poll();
 		assertNotNull(jobstage);
 	}
-	
+
 	@Test
 	public void hboTestAppTask() throws Exception {
 		HeartBeatObservable<ApplicationTask> hobat = new HeartBeatObservable<>();
@@ -41,7 +41,7 @@ public class HeartBeatObservableTest {
 		ApplicationTask apptask = queue.poll();
 		assertNotNull(apptask);
 	}
-	
+
 	@Test
 	public void hboTestJobStageAddToQueueBeforeStart() throws Exception {
 		HeartBeatObservable<JobStage> hobjs = new HeartBeatObservable<>();
@@ -49,14 +49,14 @@ public class HeartBeatObservableTest {
 		hobjs.addPropertyChangeListener(event -> queue.add((JobStage) event.getNewValue()));
 		hobjs.addToQueue(new JobStage());
 		hobjs.start();
-		
+
 		while (Objects.isNull(queue.peek())) {
 			Thread.sleep(500);
 		}
 		JobStage jobstage = queue.poll();
 		assertNotNull(jobstage);
 	}
-	
+
 	@Test
 	public void hboTestAppTaskAddToQueueBeforeStart() throws Exception {
 		HeartBeatObservable<ApplicationTask> hobat = new HeartBeatObservable<>();
@@ -70,7 +70,7 @@ public class HeartBeatObservableTest {
 		ApplicationTask apptask = queue.poll();
 		assertNotNull(apptask);
 	}
-	
+
 	@Test
 	public void hboTestJobStageMultipleObjects() throws Exception {
 		HeartBeatObservable<JobStage> hobjs = new HeartBeatObservable<>();
@@ -92,9 +92,9 @@ public class HeartBeatObservableTest {
 				currentobj++;
 			}
 		}
-		
+
 	}
-	
+
 	@Test
 	public void hboTestAppTaskMultipleObjects() throws Exception {
 		HeartBeatObservable<ApplicationTask> hobat = new HeartBeatObservable<>();
@@ -117,7 +117,7 @@ public class HeartBeatObservableTest {
 			}
 		}
 	}
-	
+
 	@Test
 	public void hboTestJobStageMultipleObjectsMultipleListeners() throws Exception {
 		HeartBeatObservable<JobStage> hobjs = new HeartBeatObservable<>();
@@ -151,7 +151,7 @@ public class HeartBeatObservableTest {
 			}
 		}
 	}
-	
+
 	@Test
 	public void hboTestAppTaskMultipleObjectsMultipleListeners() throws Exception {
 		HeartBeatObservable<ApplicationTask> hobat = new HeartBeatObservable<>();
@@ -185,8 +185,8 @@ public class HeartBeatObservableTest {
 			}
 		}
 	}
-	
-	
+
+
 	@Test
 	public void hboTestJobStageMultipleListeners() throws Exception {
 		HeartBeatObservable<JobStage> hobjs = new HeartBeatObservable<>();
@@ -207,7 +207,7 @@ public class HeartBeatObservableTest {
 		jobstage = queue2.poll();
 		assertNotNull(jobstage);
 	}
-	
+
 	@Test
 	public void hboTestAppTaskMultipleListeners() throws Exception {
 		HeartBeatObservable<ApplicationTask> hobat = new HeartBeatObservable<>();

@@ -13,7 +13,7 @@ import com.github.mdc.stream.MapPair;
 import com.github.mdc.stream.StreamPipeline;
 
 public class StreamPipelineCoalesceTest extends StreamPipelineBaseTestCommon {
-	
+
 	@SuppressWarnings({"rawtypes", "unchecked"})
 	@Test
 	public void testCoalesce() throws Throwable {
@@ -41,7 +41,7 @@ public class StreamPipelineCoalesceTest extends StreamPipelineBaseTestCommon {
 
 		log.info("testCoalesce After---------------------------------------");
 	}
-	
+
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testCoalesceWithJoin() throws Throwable {
@@ -53,15 +53,15 @@ public class StreamPipelineCoalesceTest extends StreamPipelineBaseTestCommon {
 		MapPair<String, Long> coalesce = (MapPair<String, Long>) datastream.map(dat -> dat.split(","))
 				.filter(dat -> !"ArrDelay".equals(dat[14]) && !"NA".equals(dat[14]))
 				.mapToPair(dat -> Tuple.tuple(dat[8], Long.parseLong(dat[14])));
-		
+
 		MapPair<String, Long> coalesce1 = coalesce
 				.reduceByKey((dat1, dat2) -> (Long) dat1 + (Long) dat2)
 				.coalesce(1, (dat1, dat2) -> (Long) dat1 + (Long) dat2);
-		
+
 		MapPair<String, Long> coalesce2 = coalesce
 				.reduceByKey((dat1, dat2) -> (Long) dat1 + (Long) dat2)
 				.coalesce(1, (dat1, dat2) -> (Long) dat1 + (Long) dat2);
-		
+
 		List<List<Tuple>> coalesceresult = coalesce1.join(coalesce2, (dat1, dat2) -> dat1.equals(dat2)).collect(true, null);
 
 		long sum = 0;
@@ -77,6 +77,7 @@ public class StreamPipelineCoalesceTest extends StreamPipelineBaseTestCommon {
 
 		log.info("testCoalesceWithJoin After---------------------------------------");
 	}
+
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testReduceByKeyCoalesceWithJoin() throws Throwable {
@@ -88,14 +89,14 @@ public class StreamPipelineCoalesceTest extends StreamPipelineBaseTestCommon {
 		MapPair<String, Long> coalesce = (MapPair<String, Long>) datastream.map(dat -> dat.split(","))
 				.filter(dat -> !"ArrDelay".equals(dat[14]) && !"NA".equals(dat[14]))
 				.mapToPair(dat -> Tuple.tuple(dat[8], Long.parseLong(dat[14])));
-		
+
 		MapPair<String, Long> coalesce1 = coalesce
 				.reduceByKey((dat1, dat2) -> (Long) dat1 + (Long) dat2);
-		
+
 		MapPair<String, Long> coalesce2 = coalesce
 				.reduceByKey((dat1, dat2) -> (Long) dat1 + (Long) dat2)
 				.coalesce(1, (dat1, dat2) -> (Long) dat1 + (Long) dat2);
-		
+
 		List<List<Tuple2<Tuple2<String, Object>, Tuple2<String, Object>>>> coalesceresult = coalesce1.join(coalesce2, (dat1, dat2) -> ((Tuple2) dat1).v1.equals(((Tuple2) dat2).v1)).collect(true, null);
 
 		for (List<Tuple2<Tuple2<String, Object>, Tuple2<String, Object>>> tuples : coalesceresult) {
@@ -109,6 +110,7 @@ public class StreamPipelineCoalesceTest extends StreamPipelineBaseTestCommon {
 
 		log.info("testReduceByKeyCoalesceWithJoin After---------------------------------------");
 	}
+
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testCoalesceReduceByKeyWithJoin() throws Throwable {
@@ -120,14 +122,14 @@ public class StreamPipelineCoalesceTest extends StreamPipelineBaseTestCommon {
 		MapPair<String, Long> coalesce = (MapPair<String, Long>) datastream.map(dat -> dat.split(","))
 				.filter(dat -> !"ArrDelay".equals(dat[14]) && !"NA".equals(dat[14]))
 				.mapToPair(dat -> Tuple.tuple(dat[8], Long.parseLong(dat[14])));
-		
+
 		MapPair<String, Long> coalesce1 = coalesce
 				.reduceByKey((dat1, dat2) -> (Long) dat1 + (Long) dat2);
-		
+
 		MapPair<String, Long> coalesce2 = coalesce
 				.reduceByKey((dat1, dat2) -> (Long) dat1 + (Long) dat2)
 				.coalesce(1, (dat1, dat2) -> (Long) dat1 + (Long) dat2);
-		
+
 		List<List<Tuple2<Tuple2<String, Object>, Tuple2<String, Object>>>> coalesceresult = coalesce2.join(coalesce1, (dat1, dat2) -> ((Tuple2) dat1).v1.equals(((Tuple2) dat2).v1)).collect(true, null);
 
 		for (List<Tuple2<Tuple2<String, Object>, Tuple2<String, Object>>> tuples : coalesceresult) {

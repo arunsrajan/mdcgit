@@ -19,8 +19,8 @@ public class ByteBufferInputStream extends InputStream {
 			this.bb = bb;
 			printallocdealloc.acquire();
 			log.info("ByteBuffer Input Stream allocated:" + allocation++ + bb);
-			
-		} 
+
+		}
 		catch (InterruptedException ie) {
 			log.error(MDCConstants.EMPTY, ie);
 			Thread.currentThread().interrupt();
@@ -30,7 +30,7 @@ public class ByteBufferInputStream extends InputStream {
 		} finally {
 			printallocdealloc.release();
 		}
-		
+
 	}
 
 	public synchronized int read() throws IOException {
@@ -55,7 +55,7 @@ public class ByteBufferInputStream extends InputStream {
 
 	@Override
 	public void close() {
-		if (!Objects.isNull(bb)) {			
+		if (!Objects.isNull(bb)) {
 			try {
 				printallocdealloc.acquire();
 				log.info("ByteBuffer Input Stream returning to pool: " + deallocation++ + bb);
@@ -70,7 +70,7 @@ public class ByteBufferInputStream extends InputStream {
 			} finally {
 				printallocdealloc.release();
 			}
-			bb = null;			
+			bb = null;
 		}
 	}
 }

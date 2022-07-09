@@ -67,7 +67,7 @@ public class HeartBeatObservable<T> {
 		objectqueue.clear();
 		log.debug("Exiting HeartBeatObservable.clearQueue");
 	}
-	
+
 	/**
 	 * This method removes all the typed parameter objects from the queue.
 	 */
@@ -79,7 +79,7 @@ public class HeartBeatObservable<T> {
 		}
 		log.debug("Exiting HeartBeatObservable.removePropertyChangeListeners");
 	}
-	
+
 	/**
 	 * This method notifies change in the typed parameter object and triggers notification to the 
 	 * property change listeners.  
@@ -113,8 +113,8 @@ public class HeartBeatObservable<T> {
 						}
 						catch (InterruptedException e) {
 							log.warn("Interrupted!", e);
-						    // Restore interrupted state...
-						    Thread.currentThread().interrupt();
+							// Restore interrupted state...
+							Thread.currentThread().interrupt();
 						}
 						catch (Exception e) {
 							log.error("Exiting HeartBeatObservable.stop");

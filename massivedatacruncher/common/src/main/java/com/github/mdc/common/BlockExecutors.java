@@ -7,7 +7,7 @@ public class BlockExecutors {
 	}
 	String hp;
 	int numberofblockstoread;
-	
+
 	@Override
 	public boolean equals(Object obj) {
 		if (obj == null) {
@@ -19,13 +19,14 @@ public class BlockExecutors {
 		}
 		BlockExecutors be = (BlockExecutors) obj;
 		return be.hp.equals(this.hp) && be.numberofblockstoread == this.numberofblockstoread;
-		
+
 	}
+
 	@Override
 	public int hashCode() {
 		return this.hp.hashCode();
 	}
-	
+
 	public String toString() {
 		return hp + MDCConstants.HYPHEN + numberofblockstoread;
 	}

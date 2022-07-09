@@ -139,6 +139,7 @@ public class StreamJobScheduler {
 	public List<Object> stageoutput = new ArrayList<>();
 	String hdfsfilepath;
 	FileSystem hdfs;
+
 	public StreamJobScheduler() {
 		hdfsfilepath = MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL, MDCConstants.HDFSNAMENODEURL_DEFAULT);
 	}
@@ -422,8 +423,8 @@ public class StreamJobScheduler {
 					closeResourcesTaskExecutor(tasksgraphexecutor);
 				} catch (InterruptedException e) {
 					log.warn("Interrupted!", e);
-				    // Restore interrupted state...
-				    Thread.currentThread().interrupt();
+					// Restore interrupted state...
+					Thread.currentThread().interrupt();
 				} catch (Exception e) {
 					log.error(MDCConstants.EMPTY, e);
 				}
@@ -456,9 +457,9 @@ public class StreamJobScheduler {
 			return finalstageoutput;
 		} catch (InterruptedException e) {
 			log.warn("Interrupted!", e);
-		    // Restore interrupted state...
-		    Thread.currentThread().interrupt();
-		    return null;
+			// Restore interrupted state...
+			Thread.currentThread().interrupt();
+			return null;
 		} catch (Exception ex) {
 			log.error(PipelineConstants.JOBSCHEDULERERROR, ex);
 			throw new PipelineException(PipelineConstants.JOBSCHEDULERERROR, ex);
@@ -495,7 +496,7 @@ public class StreamJobScheduler {
 			istaskcancelled.set(true);
 			jobping.shutdownNow();
 		}
-		
+
 	}
 
 	public void broadcastJobStageToTaskExecutors() throws Exception {
@@ -572,8 +573,8 @@ public class StreamJobScheduler {
 			}
 		} catch (InterruptedException e) {
 			log.warn("Interrupted!", e);
-		    // Restore interrupted state...
-		    Thread.currentThread().interrupt();
+			// Restore interrupted state...
+			Thread.currentThread().interrupt();
 		} catch (Exception ex) {
 			log.error(PipelineConstants.JOBSCHEDULERCONTAINERERROR, ex);
 			throw new PipelineException(PipelineConstants.JOBSCHEDULERCONTAINERERROR, ex);
@@ -727,11 +728,11 @@ public class StreamJobScheduler {
 		}
 	}
 
-	
+
 	Map<String, Integer> servertotaltasks = new ConcurrentHashMap<>();
 	Map<String, Double> tetotaltaskscompleted = new ConcurrentHashMap<>();
 	Map<String, Double> tetotaltasksfailed = new ConcurrentHashMap<>();
-	
+
 	/**
 	 * Creates DExecutor object, executes tasks and reexecutes tasks if fails.
 	 * 
@@ -746,12 +747,13 @@ public class StreamJobScheduler {
 			var numexecute = 0;
 			var executioncount = Integer.parseInt(pipelineconfig.getExecutioncount());
 			es = newExecutor(batchsize);
-			List<ExecutionResult<StreamPipelineTaskSubmitter, Boolean>> erroredresult = null;			
+			List<ExecutionResult<StreamPipelineTaskSubmitter, Boolean>> erroredresult = null;
 
-			var temdstdtmap = new ConcurrentHashMap<String, List<StreamPipelineTaskSubmitter>>();			
+			var temdstdtmap = new ConcurrentHashMap<String, List<StreamPipelineTaskSubmitter>>();
 			var chpcres = GlobalContainerAllocDealloc.getHportcrs();
 			while (!completed && numexecute < executioncount) {
-				temdstdtmap.clear();;
+				temdstdtmap.clear();
+				;
 				var configexec = new DexecutorConfig<StreamPipelineTaskSubmitter, Boolean>(es,
 						new DAGScheduler(graph.vertexSet().size(), batchsize));
 				var dexecutor = new DefaultDexecutor<StreamPipelineTaskSubmitter, Boolean>(configexec);
@@ -778,7 +780,7 @@ public class StreamJobScheduler {
 							temdstdtmap.put(mdstst.getHostPort(), mdststs);
 						}
 						mdststs.add(mdstst);
-					
+
 					}
 				}
 				var config = new DexecutorConfig<DefaultDexecutor<StreamPipelineTaskSubmitter, Boolean>, List<ExecutionResult<StreamPipelineTaskSubmitter, Boolean>>>(
@@ -853,8 +855,8 @@ public class StreamJobScheduler {
 			}
 		}
 	}
-	
-	
+
+
 	private class DAGSchedulerInitialStage implements
 			TaskProvider<DefaultDexecutor<StreamPipelineTaskSubmitter, Boolean>, List<ExecutionResult<StreamPipelineTaskSubmitter, Boolean>>> {
 
@@ -1057,15 +1059,16 @@ public class StreamJobScheduler {
 	public class TaskProviderLocalMode
 			implements TaskProvider<StreamPipelineTaskSubmitter, StreamPipelineTaskExecutorLocal> {
 
-		
+
 		double totaltasks;
 		double counttaskscomp = 0;
 		double counttasksfailed = 0;
 		Semaphore printresults = new Semaphore(1);
+
 		public TaskProviderLocalMode(double totaltasks) {
 			this.totaltasks = totaltasks;
 		}
-		
+
 		public com.github.dexecutor.core.task.Task<StreamPipelineTaskSubmitter, StreamPipelineTaskExecutorLocal> provideTask(
 				final StreamPipelineTaskSubmitter mdstst) {
 
@@ -1073,7 +1076,7 @@ public class StreamJobScheduler {
 				Task task = mdstst.getTask();
 				private static final long serialVersionUID = 1L;
 
-				public StreamPipelineTaskExecutorLocal execute() {					
+				public StreamPipelineTaskExecutorLocal execute() {
 					var mdste = new StreamPipelineTaskExecutorLocal(jsidjsmap.get(task.jobid + task.stageid),
 							resultstream, cache);
 					mdste.setTask(task);
@@ -1090,11 +1093,11 @@ public class StreamJobScheduler {
 						counttaskscomp++;
 						Utils.writeKryoOutput(kryo, pipelineconfig.getOutput(), "\nPercentage Completed "
 								+ Math.floor((counttaskscomp / totaltasks) * 100.0) + "% \n");
-						printresults.release();						
+						printresults.release();
 					} catch (InterruptedException e) {
 						log.warn("Interrupted!", e);
-					    // Restore interrupted state...
-					    Thread.currentThread().interrupt();
+						// Restore interrupted state...
+						Thread.currentThread().interrupt();
 					} catch (Exception e) {
 						log.error("SleepyTaskProvider error", e);
 					}
@@ -1132,8 +1135,8 @@ public class StreamJobScheduler {
 						semaphore.release();
 					} catch (InterruptedException e) {
 						log.warn("Interrupted!", e);
-					    // Restore interrupted state...
-					    Thread.currentThread().interrupt();
+						// Restore interrupted state...
+						Thread.currentThread().interrupt();
 					} catch (Exception e) {
 						log.error("TaskProviderIgnite error", e);
 					}
@@ -1152,13 +1155,14 @@ public class StreamJobScheduler {
 		double totaltasks;
 		double counttaskscomp = 0;
 		double counttasksfailed = 0;
+
 		public DAGScheduler(double totaltasks, Integer batchsize) {
 			this.totaltasks = totaltasks;
 			this.mutex = new Semaphore(batchsize);
 		}
-		
+
 		Semaphore printresult = new Semaphore(1);
-		
+
 		Semaphore mutex;
 		ConcurrentMap<String, Timer> jobtimer = new ConcurrentHashMap<>();
 
@@ -1179,8 +1183,8 @@ public class StreamJobScheduler {
 							}
 							counttaskscomp++;
 							tetotaltaskscompleted.put(mdststlocal.getHostPort(), tetotaltaskscompleted.get(mdststlocal.getHostPort()) + 1);
-							if (job.trigger != Job.TRIGGER.SAVERESULTSTOFILE && !mdststlocal.isResultobtainedte() 
-									&& mdststlocal.getTask().finalphase && mdststlocal.isCompletedexecution() 
+							if (job.trigger != Job.TRIGGER.SAVERESULTSTOFILE && !mdststlocal.isResultobtainedte()
+									&& mdststlocal.getTask().finalphase && mdststlocal.isCompletedexecution()
 									&& (mdststlocal.getTask().storage == MDCConstants.STORAGE.INMEMORY
 									|| mdststlocal.getTask().storage == MDCConstants.STORAGE.INMEMORY_DISK)) {
 								writeOutputToFileInMemory(mdststlocal, kryo, stageoutput);
@@ -1192,8 +1196,8 @@ public class StreamJobScheduler {
 							printresult.release();
 						} catch (InterruptedException e) {
 							log.warn("Interrupted!", e);
-						    // Restore interrupted state...
-						    Thread.currentThread().interrupt();
+							// Restore interrupted state...
+							Thread.currentThread().interrupt();
 						} catch (Exception e) {
 							log.info("DAGTaskExecutor error", e);
 						}
@@ -1219,8 +1223,8 @@ public class StreamJobScheduler {
 								}
 								counttaskscomp++;
 								tetotaltaskscompleted.put(mdststlocal.getHostPort(), tetotaltaskscompleted.get(mdststlocal.getHostPort()) + 1);
-								if (job.trigger != Job.TRIGGER.SAVERESULTSTOFILE && mdststlocal.getTask().finalphase 
-										&& mdststlocal.isCompletedexecution() 
+								if (job.trigger != Job.TRIGGER.SAVERESULTSTOFILE && mdststlocal.getTask().finalphase
+										&& mdststlocal.isCompletedexecution()
 										&& (mdststlocal.getTask().storage == MDCConstants.STORAGE.INMEMORY
 										|| mdststlocal.getTask().storage == MDCConstants.STORAGE.INMEMORY_DISK)) {
 									writeOutputToFileInMemory(mdststlocal, kryo, stageoutput);
@@ -1236,10 +1240,10 @@ public class StreamJobScheduler {
 										+ percentagecompleted + "% \n");
 								log.info("\nPercentage Completed TE(" + mdststlocal.getHostPort() + ") "
 										+ percentagecompleted + "% \n");
-								job.jm.containersallocated.put(mdststlocal.getHostPort(), percentagecompleted);								
+								job.jm.containersallocated.put(mdststlocal.getHostPort(), percentagecompleted);
 								printresult.release();
 								cdl.countDown();
-								
+
 							} else if (mdststlocal.getTask().taskid.equals(task.taskid)
 									&& task.taskstatus == Task.TaskStatus.FAILED) {
 								var timer = jobtimer.get(task.taskid);
@@ -1266,8 +1270,8 @@ public class StreamJobScheduler {
 							}
 						} catch (InterruptedException e) {
 							log.warn("Interrupted!", e);
-						    // Restore interrupted state...
-						    Thread.currentThread().interrupt();
+							// Restore interrupted state...
+							Thread.currentThread().interrupt();
 						} catch (Exception e) {
 							log.info("DAGTaskExecutor error", e);
 						}
@@ -1313,8 +1317,8 @@ public class StreamJobScheduler {
 						hbtss.getHbo().removePropertyChangeListener(observer);
 					} catch (InterruptedException e) {
 						log.warn("Interrupted!", e);
-					    // Restore interrupted state...
-					    Thread.currentThread().interrupt();
+						// Restore interrupted state...
+						Thread.currentThread().interrupt();
 					} catch (Exception e) {
 						log.info("Job Submission error", e);
 						mdststlocal.setCompletedexecution(false);
@@ -1477,7 +1481,7 @@ public class StreamJobScheduler {
 			// Form the edges and nodes for the JoinPair function.
 			else if (function instanceof JoinPredicate || function instanceof LeftOuterJoinPredicate
 					|| function instanceof RightOuterJoinPredicate
-					|| function instanceof Join 
+					|| function instanceof Join
 					|| function instanceof LeftJoin
 					|| function instanceof RightJoin) {
 				for (var inputparent1 : outputparent1) {
@@ -1651,14 +1655,14 @@ public class StreamJobScheduler {
 	@SuppressWarnings({"rawtypes"})
 	public List getLastStageOutput(Set<StreamPipelineTaskSubmitter> mdstts, Graph graph, List<StreamPipelineTaskSubmitter> mdststs, Boolean ismesos,
 			Boolean isyarn, Boolean islocal, Boolean isjgroups,
-			ConcurrentMap<String, OutputStream> resultstream) throws PipelineException {		
+			ConcurrentMap<String, OutputStream> resultstream) throws PipelineException {
 		log.debug("HDFS Path TO Retrieve Final Task Output: " + hdfsfilepath);
 		var configuration = new Configuration();
 		var kryofinal = KryoPool.getKryoPool().obtain();
 		try (var hdfs = FileSystem.newInstance(new URI(hdfsfilepath), configuration);) {
 			log.debug("Final Stages: " + mdstts);
 			Utils.writeKryoOutput(kryo, pipelineconfig.getOutput(), "Final Stages: " + mdstts);
-			
+
 			if (Boolean.TRUE.equals(isignite)) {
 				int partition = 0;
 				for (var mdstt : mdstts) {
@@ -1723,14 +1727,13 @@ public class StreamJobScheduler {
 			throw new PipelineException(PipelineConstants.JOBSCHEDULERFINALSTAGERESULTSERROR, ex);
 		} finally {
 			if (!Objects.isNull(kryofinal)) {
-				 KryoPool.getKryoPool().free(kryofinal);
+				KryoPool.getKryoPool().free(kryofinal);
 			}
 		}
 
 	}
 
-	
-	
+
 	@SuppressWarnings("rawtypes")
 	public void writeOutputToFile(int partcount, Object result)
 			throws PipelineException {
@@ -1739,7 +1742,7 @@ public class StreamJobScheduler {
 					var fsdos = hdfs.create(
 							new Path(job.uri.toString() + job.savepath + MDCConstants.HYPHEN + partcount));
 					BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(fsdos))) {
-				
+
 				if (result instanceof List res) {
 					for (var value : res) {
 						bw.write(value.toString());
@@ -1757,20 +1760,21 @@ public class StreamJobScheduler {
 			}
 		}
 	}
-	
+
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	public void writeOutputToFileInMemory(StreamPipelineTaskSubmitter mdstst, Kryo kryo, List stageoutput)
 			throws PipelineException {
-			try (var fsstream = getIntermediateInputStreamInMemory(mdstst.getTask());
+		try (var fsstream = getIntermediateInputStreamInMemory(mdstst.getTask());
 					var input = new Input(fsstream);) {
-				var obj = kryo.readClassAndObject(input);
-				writeOutputToFile(stageoutput.size(), obj);
-				stageoutput.add(obj);
-			} catch (Exception ex) {
-				log.error(PipelineConstants.JOBSCHEDULERFINALSTAGERESULTSERROR, ex);
-				throw new PipelineException(PipelineConstants.FILEIOERROR, ex);
-			}
+			var obj = kryo.readClassAndObject(input);
+			writeOutputToFile(stageoutput.size(), obj);
+			stageoutput.add(obj);
+		} catch (Exception ex) {
+			log.error(PipelineConstants.JOBSCHEDULERFINALSTAGERESULTSERROR, ex);
+			throw new PipelineException(PipelineConstants.FILEIOERROR, ex);
+		}
 	}
+
 	/**
 	 * Get the file streams from HDFS and jobid and stageid.
 	 * 
@@ -1793,6 +1797,7 @@ public class StreamJobScheduler {
 			throw new PipelineException(PipelineConstants.JOBSCHEDULERINMEMORYDATAFETCHERROR, ex);
 		}
 	}
+
 	public String getIntermediateDataFSFilePath(String jobid, String stageid, String taskid) {
 		return jobid + MDCConstants.HYPHEN + stageid + MDCConstants.HYPHEN + taskid;
 	}
@@ -1810,18 +1815,18 @@ public class StreamJobScheduler {
 		try {
 			var path = MDCConstants.BACKWARD_SLASH + FileSystemSupport.MDS + MDCConstants.BACKWARD_SLASH + task.jobid
 					+ MDCConstants.BACKWARD_SLASH + (task.jobid + MDCConstants.HYPHEN + task.stageid
-							+ MDCConstants.HYPHEN + task.taskid);
+					+ MDCConstants.HYPHEN + task.taskid);
 			log.debug("Forming URL Final Stage:" + MDCConstants.BACKWARD_SLASH + FileSystemSupport.MDS
 					+ MDCConstants.BACKWARD_SLASH + task.jobid + MDCConstants.BACKWARD_SLASH
 					+ (task.jobid + MDCConstants.HYPHEN + task.stageid + MDCConstants.HYPHEN + task.taskid
-							));			
+			));
 			try (var input = new Input(new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path)))));) {
 				stageoutput.add(kryo.readClassAndObject(input));
 			} catch (Exception ex) {
 				log.error(PipelineConstants.JOBSCHEDULERFINALSTAGERESULTSERROR, ex);
 				throw new PipelineException(PipelineConstants.FILEIOERROR, ex);
 			}
-		
+
 		} catch (Exception ex) {
 			log.error(PipelineConstants.JOBSCHEDULERHDFSDATAFETCHERROR, ex);
 			throw new PipelineException(PipelineConstants.JOBSCHEDULERHDFSDATAFETCHERROR, ex);
@@ -1861,11 +1866,11 @@ public class StreamJobScheduler {
 	private void writeResultsFromIgnite(FileSystem hdfs, Task task, int partition, List stageoutput) throws Exception {
 		try {
 			log.info("Final Results Ignite Task: " + task);
-			
+
 			try (var sis = new SnappyInputStream(
 					new ByteArrayInputStream(job.igcache.get(task.jobid + task.stageid + task.taskid)));
 					var input = new Input(sis);) {
-				var obj = kryo.readClassAndObject(input);				
+				var obj = kryo.readClassAndObject(input);
 				if (!Objects.isNull(job.uri)) {
 					job.trigger = Job.TRIGGER.SAVERESULTSTOFILE;
 					writeOutputToFile(partition, obj);
@@ -1885,7 +1890,7 @@ public class StreamJobScheduler {
 
 	private String getIntermediateResultFS(Task task) throws Exception {
 		return task.jobid + MDCConstants.HYPHEN + task.stageid + MDCConstants.HYPHEN + task.taskid
-				;
+		;
 	}
 
 	private int partitionindex;
@@ -1981,8 +1986,8 @@ public class StreamJobScheduler {
 					Thread.sleep(1000);
 				} catch (InterruptedException e) {
 					log.warn("Interrupted!", e);
-				    // Restore interrupted state...
-				    Thread.currentThread().interrupt();
+					// Restore interrupted state...
+					Thread.currentThread().interrupt();
 				} catch (Exception e) {
 					log.error(MDCConstants.EMPTY, e);
 					break;

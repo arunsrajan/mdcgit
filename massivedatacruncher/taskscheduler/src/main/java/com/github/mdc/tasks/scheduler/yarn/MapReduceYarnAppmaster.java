@@ -51,7 +51,7 @@ import com.google.common.collect.Iterables;
 public class MapReduceYarnAppmaster extends StaticEventingAppmaster implements ContainerLauncherInterceptor {
 
 	private static final Log log = LogFactory.getLog(MapReduceYarnAppmaster.class);
-	
+
 	private Map<String, Object> pendingjobs = new ConcurrentHashMap<>();
 	private final Semaphore lock = new Semaphore(1);
 	@SuppressWarnings("rawtypes")
@@ -60,6 +60,7 @@ public class MapReduceYarnAppmaster extends StaticEventingAppmaster implements C
 	private int tasksubmitted;
 	private int redtasksubmitted;
 	private int numreducers;
+
 	/**
 	 * Container initialization.
 	 */
@@ -80,6 +81,7 @@ public class MapReduceYarnAppmaster extends StaticEventingAppmaster implements C
 	int totalmappersize;
 	Map<String, String> containeridipmap = new ConcurrentHashMap<>();
 	Map<String, Integer> iptasksubmittedmap = new ConcurrentHashMap<>();
+
 	/**
 	 * Submit the user application. The various parameters obtained from
 	 * HDFS are graph with node and edges, job stage map, job stage with 
@@ -179,8 +181,7 @@ public class MapReduceYarnAppmaster extends StaticEventingAppmaster implements C
 		}
 	}
 
-	
-	
+
 	public MapperCombiner getMapperCombiner(
 			Map<String, Set<String>> mapclzchunkfile,
 			Set<String> combiners, BlocksLocation blockslocation, ApplicationTask apptask) {
@@ -189,7 +190,7 @@ public class MapReduceYarnAppmaster extends StaticEventingAppmaster implements C
 				combiners);
 		return mapcombiner;
 	}
-	
+
 	/**
 	 * Set App Master service hosts and port running before the container is launched.
 	 */
@@ -209,7 +210,7 @@ public class MapReduceYarnAppmaster extends StaticEventingAppmaster implements C
 				env = new HashMap<>(context.getEnvironment());
 				//Set the service port to the environment object.
 				env.put(YarnSystemConstants.AMSERVICE_PORT, Integer.toString(port));
-			
+
 				//Set the service host to the environment object.
 				env.put(YarnSystemConstants.AMSERVICE_HOST, address);
 			} catch (Exception ex) {
@@ -221,6 +222,7 @@ public class MapReduceYarnAppmaster extends StaticEventingAppmaster implements C
 			return context;
 		}
 	}
+
 	/**
 	 * Execute the OnContainer completed method when container is exited with
 	 * the exitcode.
@@ -234,8 +236,8 @@ public class MapReduceYarnAppmaster extends StaticEventingAppmaster implements C
 		}
 		catch (InterruptedException e) {
 			log.warn("Interrupted!", e);
-		    // Restore interrupted state...
-		    Thread.currentThread().interrupt();
+			// Restore interrupted state...
+			Thread.currentThread().interrupt();
 		} catch (Exception ex) {
 			log.info("Container Completion fails", ex);
 		}
@@ -243,7 +245,7 @@ public class MapReduceYarnAppmaster extends StaticEventingAppmaster implements C
 			lock.release();
 		}
 	}
-		
+
 	/**
 	 * Execute the OnContainer failed method when container is exited with
 	 * the exitcode.
@@ -257,9 +259,9 @@ public class MapReduceYarnAppmaster extends StaticEventingAppmaster implements C
 		}
 		catch (InterruptedException e) {
 			log.warn("Interrupted!", e);
-		    // Restore interrupted state...
-		    Thread.currentThread().interrupt();
-		    return false;
+			// Restore interrupted state...
+			Thread.currentThread().interrupt();
+			return false;
 		} catch (Exception ex) {
 			log.info("Container allocation fails", ex);
 			return false;
@@ -268,7 +270,7 @@ public class MapReduceYarnAppmaster extends StaticEventingAppmaster implements C
 			lock.release();
 		}
 	}
-	
+
 
 	/**
 	 * Update the job statuses if job status is completed.
@@ -293,8 +295,8 @@ public class MapReduceYarnAppmaster extends StaticEventingAppmaster implements C
 		}
 		catch (InterruptedException e) {
 			log.warn("Interrupted!", e);
-		    // Restore interrupted state...
-		    Thread.currentThread().interrupt();
+			// Restore interrupted state...
+			Thread.currentThread().interrupt();
 		} catch (Exception ex) {
 			log.info("reportJobStatus fails", ex);
 		}
@@ -302,8 +304,8 @@ public class MapReduceYarnAppmaster extends StaticEventingAppmaster implements C
 			lock.release();
 		}
 	}
-	
-	
+
+
 	public void reportJobStatus(YarnReducer r, boolean success, String containerid) {
 		try {
 			lock.acquire();
@@ -347,8 +349,8 @@ public class MapReduceYarnAppmaster extends StaticEventingAppmaster implements C
 		}
 		catch (InterruptedException e) {
 			log.warn("Interrupted!", e);
-		    // Restore interrupted state...
-		    Thread.currentThread().interrupt();
+			// Restore interrupted state...
+			Thread.currentThread().interrupt();
 		}
 		catch (Exception ex) {
 			log.info("reportJobStatus fails", ex);
@@ -357,8 +359,9 @@ public class MapReduceYarnAppmaster extends StaticEventingAppmaster implements C
 			lock.release();
 		}
 	}
-	
+
 	Iterator<List<Tuple2Serializable>> partkeys;
+
 	/**
 	 * Obtain the job to execute
 	 * @return
@@ -398,9 +401,9 @@ public class MapReduceYarnAppmaster extends StaticEventingAppmaster implements C
 			return null;
 		} catch (InterruptedException e) {
 			log.warn("Interrupted!", e);
-		    // Restore interrupted state...
-		    Thread.currentThread().interrupt();
-		    return null;
+			// Restore interrupted state...
+			Thread.currentThread().interrupt();
+			return null;
 		} catch (Exception ex) {
 			log.info("reportJobStatus fails", ex);
 			return null;
@@ -420,9 +423,9 @@ public class MapReduceYarnAppmaster extends StaticEventingAppmaster implements C
 		}
 		catch (InterruptedException e) {
 			log.warn("Interrupted!", e);
-		    // Restore interrupted state...
-		    Thread.currentThread().interrupt();
-		    return false;
+			// Restore interrupted state...
+			Thread.currentThread().interrupt();
+			return false;
 		} catch (Exception ex) {
 			log.info("hasJobs fails", ex);
 			return false;
@@ -431,8 +434,8 @@ public class MapReduceYarnAppmaster extends StaticEventingAppmaster implements C
 			lock.release();
 		}
 	}
-	
-	
+
+
 	@Override
 	public String toString() {
 		return MDCConstants.PENDINGJOBS + MDCConstants.EQUAL + pendingjobs.size() + MDCConstants.SINGLESPACE + MDCConstants.RUNNINGJOBS + MDCConstants.EQUAL + pendingjobs.size();

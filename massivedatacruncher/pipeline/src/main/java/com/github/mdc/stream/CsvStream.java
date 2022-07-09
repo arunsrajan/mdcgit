@@ -36,7 +36,7 @@ import net.sf.jsqlparser.util.deparser.ExpressionDeParser;
  * @param <I1>
  * @param <I2>
  */
-public final class CsvStream<I1,I2> extends StreamPipeline<I1> {
+public final class CsvStream<I1, I2> extends StreamPipeline<I1> {
 
 	@SuppressWarnings({"rawtypes"})
 	public CsvStream(StreamPipeline root, CsvOptions csvOptions) {
@@ -46,7 +46,7 @@ public final class CsvStream<I1,I2> extends StreamPipeline<I1> {
 		this.parents.add(root);
 		this.protocol = root.protocol;
 	}
-	
+
 	@SuppressWarnings({"rawtypes"})
 	public CsvStream(StreamPipeline root, PeekConsumer peekconsumer) {
 		this.root = root;
@@ -55,5 +55,5 @@ public final class CsvStream<I1,I2> extends StreamPipeline<I1> {
 		this.parents.add(root);
 		this.protocol = root.protocol;
 	}
-	
+
 }

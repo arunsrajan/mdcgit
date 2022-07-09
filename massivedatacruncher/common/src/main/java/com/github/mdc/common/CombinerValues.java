@@ -8,9 +8,7 @@ import java.io.Serializable;
  * The combiner classes with jar bytes
  */
 @SuppressWarnings("serial")
-public class CombinerValues implements Serializable{
-	
-	
-	
-	
+public class CombinerValues implements Serializable {
+
+
 }

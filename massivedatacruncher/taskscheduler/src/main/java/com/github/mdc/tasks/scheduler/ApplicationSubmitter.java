@@ -25,17 +25,17 @@ import com.github.mdc.common.ZookeeperOperations;
 public class ApplicationSubmitter {
 
 	static Logger log = Logger.getLogger(ApplicationSubmitter.class);
-	
+
 	@SuppressWarnings({"unchecked"})
 	public static void main(String[] args) throws Exception {
-		
+
 		var options = new Options();
-		
+
 		options.addOption(MDCConstants.JAR, true, MDCConstants.MRJARREQUIRED);
 		options.addOption(MDCConstants.ARGS, true, MDCConstants.ARGUEMENTSOPTIONAL);
 		var parser = new DefaultParser();
 		var cmd = parser.parse(options, args);
-		
+
 		String jarpath = null;
 		String[] argue = null;
 		if (cmd.hasOption(MDCConstants.JAR)) {
@@ -46,11 +46,11 @@ public class ApplicationSubmitter {
 			formatter.printHelp(MDCConstants.ANTFORMATTER, options);
 			return;
 		}
-		
+
 		if (cmd.hasOption(MDCConstants.ARGS)) {
 			argue = cmd.getOptionValue(MDCConstants.ARGS).split(" ");
 		}
-		
+
 		Utils.loadLog4JSystemProperties(MDCConstants.PREV_FOLDER + MDCConstants.BACKWARD_SLASH
 				+ MDCConstants.DIST_CONFIG_FOLDER + MDCConstants.BACKWARD_SLASH, MDCConstants.MDC_PROPERTIES);
 		var cf = CuratorFrameworkFactory.newClient(MDCProperties.get().getProperty(MDCConstants.ZOOKEEPER_HOSTPORT), 20000,
@@ -108,13 +108,13 @@ public class ApplicationSubmitter {
 		kryo.writeClassAndObject(output, value);
 		output.flush();
 	}
-	
+
 	public static void writeDataStream(OutputStream os, byte[] outbyt) throws Exception {
 		var kryo = Utils.getKryoNonDeflateSerializer();
 		var output = new Output(os);
 		kryo.writeClassAndObject(output, outbyt);
 		output.flush();
 	}
-	
-	
+
+
 }

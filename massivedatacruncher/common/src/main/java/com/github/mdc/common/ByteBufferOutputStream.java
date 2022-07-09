@@ -20,10 +20,10 @@ public class ByteBufferOutputStream extends OutputStream {
 	public synchronized void write(byte[] bytes, int off, int len) throws IOException {
 		bb.put(bytes, off, len);
 	}
-	
+
 	public ByteBuffer get() {
 		return bb;
-		
+
 	}
-	
+
 }

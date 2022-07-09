@@ -25,11 +25,11 @@ public class NetworkUtil {
 			var netinfs = NetworkInterface.getNetworkInterfaces();
 			for (var netinf :Collections.list(netinfs)) {
 				var inetAddresses = netinf.getInetAddresses();
-		        for (var inetAddress : Collections.list(inetAddresses)) {
-		            if (inetAddress.getHostAddress().equals(host)) {
-		            	return host;
-		            }
-		        }
+				for (var inetAddress : Collections.list(inetAddresses)) {
+					if (inetAddress.getHostAddress().equals(host)) {
+						return host;
+					}
+				}
 			}
 			var hostia = InetAddress.getByName(host);
 			if (hostia == null) {
@@ -37,7 +37,7 @@ public class NetworkUtil {
 				hostia = InetAddress.getLocalHost();
 			}
 			log.debug("Exiting NetworkUtil getNetworkAddress() method with host: " + hostia.getHostAddress());
-	        return (hostia.getHostAddress()).trim(); 
+			return (hostia.getHostAddress()).trim();
 		} catch (Exception ex) {
 			log.error("Exception in NetworkUtil getNetworkAddress() method", ex);
 		}

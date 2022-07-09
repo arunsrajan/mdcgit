@@ -29,7 +29,7 @@ public class StreamPipelineIgniteTest extends StreamPipelineBaseTestCommon {
 		assertEquals(45957, ((List) ((List) tupresult1.job.results).get(0)).size());
 		log.info("testMapFilterIgnite After---------------------------------------");
 	}
-	
+
 	@SuppressWarnings("rawtypes")
 	@Test
 	public void testMapFilterMapPairRbkIgnite() throws Throwable {
@@ -47,7 +47,7 @@ public class StreamPipelineIgniteTest extends StreamPipelineBaseTestCommon {
 		assertEquals(1, ((List) ((List) tupresult1.job.results).get(0)).size());
 		log.info("testMapFilterMapPairRbkIgnite After---------------------------------------");
 	}
-	
+
 	@SuppressWarnings({"rawtypes", "unchecked"})
 	@Test
 	public void testMapFilterMapTupeRbkIgniteJoin() throws Throwable {
@@ -67,6 +67,7 @@ public class StreamPipelineIgniteTest extends StreamPipelineBaseTestCommon {
 		assertEquals(14, ((List) ((List) joinresult.job.results).get(0)).size());
 		log.info("testMapFilterMapTupeRbkIgnite After---------------------------------------");
 	}
+
 	@SuppressWarnings({"rawtypes", "unchecked"})
 	@Test
 	public void testMapFilterMapTupeRbkIgniteBigJoin() throws Throwable {
@@ -87,8 +88,8 @@ public class StreamPipelineIgniteTest extends StreamPipelineBaseTestCommon {
 		assertEquals(4, (((List) joinresult.job.results).size()));
 		log.info("testMapFilterMapTupeRbkIgniteBigJoin After---------------------------------------");
 	}
-	
-	
+
+
 	@SuppressWarnings({"rawtypes", "unchecked"})
 	@Test
 	public void testMapFilterMapTupeRbkIgniteBigJoinCoalesce() throws Throwable {

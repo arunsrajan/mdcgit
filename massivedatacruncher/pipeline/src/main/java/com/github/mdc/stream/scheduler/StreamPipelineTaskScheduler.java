@@ -28,12 +28,13 @@ import com.github.mdc.stream.Pipeline;
  */
 public class StreamPipelineTaskScheduler implements Runnable {
 	private static Logger log = Logger.getLogger(StreamPipelineTaskScheduler.class);
-	private byte[] mrjar; 
+	private byte[] mrjar;
 	private Socket tss;
 	private String[] args;
 	String filename;
+
 	public StreamPipelineTaskScheduler(CuratorFramework cf, String filename, byte[] mrjar, String[] args,
-			 Socket tss) {
+			Socket tss) {
 		this.mrjar = mrjar;
 		this.args = args;
 		this.tss = tss;
@@ -57,7 +58,7 @@ public class StreamPipelineTaskScheduler implements Runnable {
 				var fos = new FileOutputStream(MDCConstants.LOCAL_FS_APPJRPATH + filename);
 				fos.write(mrjar);
 				fos.close();
-				
+
 			}
 			//Get the main class to execute.
 			var mainclass = args[0];
@@ -72,7 +73,7 @@ public class StreamPipelineTaskScheduler implements Runnable {
 			var pipelineconfig = new PipelineConfig();
 			pipelineconfig.setJar(mrjar);
 			pipelineconfig.setKryoOutput(new Output(tss.getOutputStream()));
-			var pipeline = (Pipeline) main.newInstance();
+			var pipeline = (Pipeline) main.getDeclaredConstructor().newInstance();
 			pipelineconfig.setJobname(main.getSimpleName());
 			pipeline.runPipeline(args, pipelineconfig);
 			message = "Successfully Completed executing the Job from main class " + mainclass;
@@ -96,6 +97,6 @@ public class StreamPipelineTaskScheduler implements Runnable {
 				log.error("Socket Stream close error, See cause below \n", ex);
 			}
 		}
-		
+
 	}
 }

@@ -15,7 +15,7 @@ public class PipelineIntStreamCollect {
 	private ObjIntConsumer objintconsumer;
 	@SuppressWarnings("rawtypes")
 	private BiConsumer biconsumer;
-	
+
 	@SuppressWarnings("rawtypes")
 	public PipelineIntStreamCollect(AtomicIntegerSupplier supplier,
 			AtomicObjIntConsumer objintconsumer,
@@ -24,15 +24,17 @@ public class PipelineIntStreamCollect {
 		this.objintconsumer = objintconsumer;
 		this.biconsumer = biconsumer;
 	}
+
 	@SuppressWarnings("rawtypes")
 	public Supplier getSupplier() {
 		return this.supplier;
 	}
+
 	@SuppressWarnings("rawtypes")
 	public ObjIntConsumer getObjIntConsumer() {
 		return this.objintconsumer;
 	}
-	
+
 	@SuppressWarnings("rawtypes")
 	public BiConsumer getBiConsumer() {
 		return this.biconsumer;

@@ -47,9 +47,7 @@ public class MapReduceYarnContainer extends AbstractIntegrationYarnContainer {
 
 	private static final Log log = LogFactory.getLog(MapReduceYarnContainer.class);
 
-	
-	
-	
+
 	/**
 	 * Pull the Job to perform MR operation execution requesting the Yarn App Master
 	 * Service. The various Yarn operation What operation to execute i.e
@@ -96,7 +94,7 @@ public class MapReduceYarnContainer extends AbstractIntegrationYarnContainer {
 								containerprops.get(MDCConstants.HDFSNAMENODEURL));
 						var cm = new ArrayList<Mapper>();
 						var cc = new ArrayList<Combiner>();
-						prop.putAll(containerprops);						
+						prop.putAll(containerprops);
 						try (var hdfs = FileSystem.newInstance(
 								new URI(MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL)),
 								new Configuration());) {
@@ -113,7 +111,7 @@ public class MapReduceYarnContainer extends AbstractIntegrationYarnContainer {
 									cc.add((Combiner) clz.newInstance());
 								}
 							}
-	
+
 							var es = Executors.newWorkStealingPool();
 							var mdcmc = new MapperCombinerExecutor(
 									mc.blockslocation, CacheUtils.getBlockData(mc.blockslocation, hdfs), cm, cc);
@@ -134,7 +132,7 @@ public class MapReduceYarnContainer extends AbstractIntegrationYarnContainer {
 					} else if (object instanceof YarnReducer red) {
 						Class<?> clz = null;
 						clz = getClass().getClassLoader().loadClass(red.reducerclasses.iterator().next());
-						var cr = (Reducer) clz.newInstance();
+						var cr = (Reducer) clz.getDeclaredConstructor().newInstance();
 						var complete = new DataCruncherContext();
 						var apptaskcontextmap = new ConcurrentHashMap<String, Context>();
 						Context currentctx;
@@ -209,8 +207,8 @@ public class MapReduceYarnContainer extends AbstractIntegrationYarnContainer {
 			Thread.sleep(1000l * seconds);
 		} catch (InterruptedException e) {
 			log.warn("Interrupted!", e);
-		    // Restore interrupted state...
-		    Thread.currentThread().interrupt();
+			// Restore interrupted state...
+			Thread.currentThread().interrupt();
 		} catch (Exception ex) {
 			log.info("Delay error, See cause below \n", ex);
 		}

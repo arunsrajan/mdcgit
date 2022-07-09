@@ -13,7 +13,7 @@ import com.github.mdc.tasks.executor.Combiner;
 @SuppressWarnings("rawtypes")
 public class IgniteCombiner implements IgniteCallable<Context> {
 	private static final long serialVersionUID = -2886619127389224706L;
-	
+
 	static Logger log = Logger.getLogger(IgniteCombiner.class);
 	Context dcc;
 	Combiner cc;
@@ -30,7 +30,7 @@ public class IgniteCombiner implements IgniteCallable<Context> {
 		var ctx = new DataCruncherContext();
 		keys.stream().parallel().forEach(key -> {
 			cc.combine(key, (List) dcc.get(key), ctx);
-			
+
 		});
 		return ctx;
 	}

@@ -82,6 +82,7 @@ public class MassiveDataMRJobBase {
 	static int zookeeperport = 2182;
 
 	private static TestingServer testingserver;
+
 	@BeforeClass
 	public static void setServerUp() throws Exception {
 		try (InputStream istream = MassiveDataMRJobBase.class.getResourceAsStream("/log4j.properties");) {
@@ -148,7 +149,7 @@ public class MassiveDataMRJobBase {
 				}
 				cdl.await();
 			}
-			
+
 			uploadfile(hdfs, airlinesample, airlinesample + csvfileextn);
 			uploadfile(hdfs, carriers, carriers + csvfileextn);
 		} catch (Exception ex) {
@@ -156,7 +157,6 @@ public class MassiveDataMRJobBase {
 		}
 	}
 
-	
 
 	public static void uploadfile(FileSystem hdfs, String dir, String filename) throws Exception {
 		InputStream is = MassiveDataMRJobBase.class.getResourceAsStream(filename);

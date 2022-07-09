@@ -22,6 +22,7 @@ public class StreamPipelineSqlTest extends StreamPipelineBaseTestCommon {
 			"LateAircraftDelay"};
 	String[] carrierheader = {"Code", "Description"};
 	Logger log = Logger.getLogger(StreamPipelineSqlTest.class);
+
 	@SuppressWarnings({"unchecked"})
 	@Test
 	public void testFilterMDPSqlBuilderAirlines() throws Exception {
@@ -242,7 +243,7 @@ public class StreamPipelineSqlTest extends StreamPipelineBaseTestCommon {
 		assertEquals(132, totalrecords);
 		log.info("In testMDPSqlBuilderAirlinesCarriersJoinCount() method Exit");
 	}
-	
+
 	@SuppressWarnings({"unchecked"})
 	@Test
 	public void testMDPSqlBuilderAirlinesCarriersJoinRecordCount() throws Exception {
@@ -264,8 +265,8 @@ public class StreamPipelineSqlTest extends StreamPipelineBaseTestCommon {
 		assertEquals(132, totalrecords);
 		log.info("In testMDPSqlBuilderAirlinesCarriersJoinRecordCount() method Exit");
 	}
-	
-	
+
+
 	@SuppressWarnings({"unchecked"})
 	@Test
 	public void testMDPSqlBuilderAirlinesCarriersLeftJoinRecordCount() throws Exception {
@@ -284,8 +285,8 @@ public class StreamPipelineSqlTest extends StreamPipelineBaseTestCommon {
 		}
 		log.info("In testMDPSqlBuilderAirlinesCarriersLeftJoinRecordCount() method Exit");
 	}
-	
-	
+
+
 	@SuppressWarnings({"unchecked"})
 	@Test
 	public void testMDPSqlBuilderAirlinesCarrierAirpJoin() throws Exception {
@@ -430,7 +431,7 @@ public class StreamPipelineSqlTest extends StreamPipelineBaseTestCommon {
 		assertEquals(-63278, sum);
 		log.info("In testMDPSqlBuilderCarriersSumArrDelay() method Exit");
 	}
-	
+
 	@SuppressWarnings({"unchecked"})
 	@Test
 	public void testMDPSqlBuilderCarriersSumArrDelayCountArrivalDelay() throws Exception {
@@ -454,8 +455,8 @@ public class StreamPipelineSqlTest extends StreamPipelineBaseTestCommon {
 		assertEquals(-63278, sum);
 		log.info("In testMDPSqlBuilderCarriersSumArrDelayCountArrivalDelay() method Exit");
 	}
-	
-	
+
+
 	@SuppressWarnings({"unchecked"})
 	@Test
 	public void testMDPSqlBuilderCarriersSumArrDelayCountArrivalDelaySwap() throws Exception {
@@ -479,7 +480,7 @@ public class StreamPipelineSqlTest extends StreamPipelineBaseTestCommon {
 		assertEquals(-63278, sum);
 		log.info("In testMDPSqlBuilderCarriersSumArrDelayCountArrivalDelaySwap() method Exit");
 	}
-	
+
 	@SuppressWarnings({"unchecked"})
 	@Test
 	public void testMDPSqlBuilderCarriersSumArrDelayFirstColumn() throws Exception {
@@ -500,6 +501,7 @@ public class StreamPipelineSqlTest extends StreamPipelineBaseTestCommon {
 		assertEquals(-63278, sum);
 		log.info("In testMDPSqlBuilderCarriersSumArrDelay() method Exit");
 	}
+
 	@SuppressWarnings({"unchecked"})
 	@Test
 	public void testMDPSqlBuilderCarriersSumArrDelayFirstColumnCountSecondColumn() throws Exception {
@@ -520,7 +522,7 @@ public class StreamPipelineSqlTest extends StreamPipelineBaseTestCommon {
 		assertEquals(-63278, sum);
 		log.info("In testMDPSqlBuilderCarriersSumArrDelayFirstColumnCountSecondColumn() method Exit");
 	}
-	
+
 	@SuppressWarnings({"unchecked"})
 	@Test
 	public void testMDPSqlBuilderCarriersSumArrDelayFirstColumnCountSecondColumnSwap() throws Exception {
@@ -541,7 +543,7 @@ public class StreamPipelineSqlTest extends StreamPipelineBaseTestCommon {
 		assertEquals(-63278, sum);
 		log.info("In testMDPSqlBuilderCarriersSumArrDelayFirstColumnCountSecondColumnSwap() method Exit");
 	}
-	
+
 	@SuppressWarnings({"unchecked"})
 	@Test
 	public void testMDPSqlBuilderArrDelaySumArrDelayCountMid() throws Exception {
@@ -562,6 +564,7 @@ public class StreamPipelineSqlTest extends StreamPipelineBaseTestCommon {
 		assertEquals(-63278, sum);
 		log.info("In testMDPSqlBuilderArrDelaySumArrDelayCountMid() method Exit");
 	}
+
 	@SuppressWarnings({"unchecked"})
 	@Test
 	public void testMDPSqlBuilderArrDelaySumArrDelayCountMidSwap() throws Exception {
@@ -588,7 +591,7 @@ public class StreamPipelineSqlTest extends StreamPipelineBaseTestCommon {
 		pipelineconfig.setBlocksize("20");
 		log.info("In testMDPSqlBuilderArrDelaySumArrDelayCountMidSwap() method Exit");
 	}
-	
+
 	@SuppressWarnings({"unchecked"})
 	@Test
 	public void testMDPSqlBuilderArrDelaySumArrDelayCountMonthMidSwap() throws Exception {
@@ -615,7 +618,7 @@ public class StreamPipelineSqlTest extends StreamPipelineBaseTestCommon {
 		pipelineconfig.setBlocksize("20");
 		log.info("In testMDPSqlBuilderArrDelaySumArrDelayCountMonthMidSwap() method Exit");
 	}
-	
+
 	@SuppressWarnings({"unchecked"})
 	@Test
 	public void testMDPSqlBuilderDepDelaySumDepDelayCountMidSwap() throws Exception {
@@ -636,7 +639,7 @@ public class StreamPipelineSqlTest extends StreamPipelineBaseTestCommon {
 		assertEquals(20168, sum);
 		log.info("In testMDPSqlBuilderDepDelaySumDepDelayCountMidSwap() method Exit");
 	}
-	
+
 	@SuppressWarnings({"unchecked"})
 	@Test
 	public void testMDPSqlBuilderCarriersSumDepDelay() throws Exception {
@@ -657,8 +660,8 @@ public class StreamPipelineSqlTest extends StreamPipelineBaseTestCommon {
 		assertEquals(20168, sum);
 		log.info("In testMDPSqlBuilderCarriersSumDepDelay() method Exit");
 	}
-	
-	
+
+
 	@SuppressWarnings({"unchecked"})
 	@Test
 	public void testMDPSqlBuilderGroupByCarriersOnlySumDepDelay() throws Exception {
@@ -680,7 +683,7 @@ public class StreamPipelineSqlTest extends StreamPipelineBaseTestCommon {
 		assertEquals(20168, sum);
 		log.info("In testMDPSqlBuilderGroupByCarriersOnlySumDepDelay() method Exit");
 	}
-	
+
 	@SuppressWarnings({"unchecked"})
 	@Test
 	public void testMDPSqlBuilderGroupByCarriersOnlyArrivalDelay() throws Exception {
@@ -702,10 +705,8 @@ public class StreamPipelineSqlTest extends StreamPipelineBaseTestCommon {
 		assertEquals(-63278, sum);
 		log.info("In testMDPSqlBuilderGroupByCarriersOnlyArrivalDelay() method Exit");
 	}
-	
-		
-	
-	
+
+
 	@SuppressWarnings({"unchecked"})
 	@Test
 	public void testMDPSqlBuilderCountArrivalDelay() throws Exception {
@@ -727,7 +728,7 @@ public class StreamPipelineSqlTest extends StreamPipelineBaseTestCommon {
 		assertEquals(45957, sum);
 		log.info("In testMDPSqlBuilderCountArrivalDelay() method Exit");
 	}
-	
+
 	@SuppressWarnings({"unchecked"})
 	@Test
 	public void testMDPSqlBuilderCountArrDelaySumArrDelayBiggerFiles() throws Exception {
@@ -749,8 +750,8 @@ public class StreamPipelineSqlTest extends StreamPipelineBaseTestCommon {
 		assertEquals(-63278, sum);
 		log.info("In testMDPSqlBuilderCountArrDelaySumArrDelayBiggerFiles() method Exit");
 	}
-	
-	
+
+
 	@SuppressWarnings({"unchecked"})
 	@Test
 	public void testMDPSqlBuilderUniqueCarrierCountArrDelay() throws Exception {
@@ -772,7 +773,7 @@ public class StreamPipelineSqlTest extends StreamPipelineBaseTestCommon {
 		assertEquals(45957, sum);
 		log.info("In testMDPSqlBuilderUniqueCarrierCountArrDelay() method Exit");
 	}
-	
+
 	@SuppressWarnings({"unchecked"})
 	@Test
 	public void testMDPSqlBuilderUniqueCarrierCountArrDelaySA() throws Exception {
