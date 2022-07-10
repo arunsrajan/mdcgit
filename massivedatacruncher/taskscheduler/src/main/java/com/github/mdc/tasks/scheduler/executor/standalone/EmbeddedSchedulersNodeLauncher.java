@@ -37,8 +37,8 @@ public class EmbeddedSchedulersNodeLauncher {
 	public static void main(String[] args) throws Exception {
 		URL.setURLStreamHandlerFactory(new FsUrlStreamHandlerFactory());
 		log.info(MDCScalaConstants.SCALA_VERSION());
-		Utils.loadLog4JSystemProperties(MDCConstants.PREV_FOLDER + MDCConstants.BACKWARD_SLASH
-				+ MDCConstants.DIST_CONFIG_FOLDER + MDCConstants.BACKWARD_SLASH, MDCConstants.MDC_PROPERTIES);
+		Utils.loadLog4JSystemProperties(MDCConstants.PREV_FOLDER + MDCConstants.FORWARD_SLASH
+				+ MDCConstants.DIST_CONFIG_FOLDER + MDCConstants.FORWARD_SLASH, MDCConstants.MDC_PROPERTIES);
 		var cdl = new CountDownLatch(3);
 		var clientport = Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.ZOOKEEPER_STANDALONE_CLIENTPORT,
 				MDCConstants.ZOOKEEPER_STANDALONE_CLIENTPORT_DEFAULT));
@@ -97,11 +97,11 @@ public class EmbeddedSchedulersNodeLauncher {
 			var containeridports = new ConcurrentHashMap<String, List<Integer>>();
 			var su = new ServerUtils();
 			su.init(port + 50, new NodeWebServlet(containerprocesses),
-					MDCConstants.BACKWARD_SLASH + MDCConstants.ASTERIX, new WebResourcesServlet(),
-					MDCConstants.BACKWARD_SLASH + MDCConstants.RESOURCES + MDCConstants.BACKWARD_SLASH
+					MDCConstants.FORWARD_SLASH + MDCConstants.ASTERIX, new WebResourcesServlet(),
+					MDCConstants.FORWARD_SLASH + MDCConstants.RESOURCES + MDCConstants.FORWARD_SLASH
 							+ MDCConstants.ASTERIX,
-					new ResourcesMetricsServlet(), MDCConstants.BACKWARD_SLASH + MDCConstants.DATA
-							+ MDCConstants.BACKWARD_SLASH + MDCConstants.ASTERIX);
+					new ResourcesMetricsServlet(), MDCConstants.FORWARD_SLASH + MDCConstants.DATA
+							+ MDCConstants.FORWARD_SLASH + MDCConstants.ASTERIX);
 			su.start();
 			AtomicInteger portinc = new AtomicInteger(teport);
 			es.execute(() -> {
@@ -158,20 +158,20 @@ public class EmbeddedSchedulersNodeLauncher {
 		var es = Executors.newWorkStealingPool();
 		var su = new ServerUtils();
 		su.init(Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULERSTREAM_WEB_PORT)),
-				new TaskSchedulerWebServlet(), MDCConstants.BACKWARD_SLASH + MDCConstants.ASTERIX,
-				new WebResourcesServlet(), MDCConstants.BACKWARD_SLASH + MDCConstants.RESOURCES
-						+ MDCConstants.BACKWARD_SLASH + MDCConstants.ASTERIX);
+				new TaskSchedulerWebServlet(), MDCConstants.FORWARD_SLASH + MDCConstants.ASTERIX,
+				new WebResourcesServlet(), MDCConstants.FORWARD_SLASH + MDCConstants.RESOURCES
+						+ MDCConstants.FORWARD_SLASH + MDCConstants.ASTERIX);
 		su.start();
 		if (!(boolean) ZookeeperOperations.checkexists.invoke(cf,
-				MDCConstants.BACKWARD_SLASH + MDCProperties.get().getProperty(MDCConstants.CLUSTERNAME)
-						+ MDCConstants.BACKWARD_SLASH + MDCConstants.TSS,
+				MDCConstants.FORWARD_SLASH + MDCProperties.get().getProperty(MDCConstants.CLUSTERNAME)
+						+ MDCConstants.FORWARD_SLASH + MDCConstants.TSS,
 				MDCConstants.LEADER,
 				NetworkUtil.getNetworkAddress(MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULERSTREAM_HOST))
 						+ MDCConstants.UNDERSCORE
 						+ MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULERSTREAM_PORT))) {
 			ZookeeperOperations.persistentCreate.invoke(cf,
-					MDCConstants.BACKWARD_SLASH + MDCProperties.get()
-							.getProperty(MDCConstants.CLUSTERNAME) + MDCConstants.BACKWARD_SLASH + MDCConstants.TSS,
+					MDCConstants.FORWARD_SLASH + MDCProperties.get()
+							.getProperty(MDCConstants.CLUSTERNAME) + MDCConstants.FORWARD_SLASH + MDCConstants.TSS,
 					MDCConstants.LEADER,
 					NetworkUtil
 							.getNetworkAddress(MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULERSTREAM_HOST))
@@ -180,10 +180,10 @@ public class EmbeddedSchedulersNodeLauncher {
 		} else {
 			ZookeeperOperations.writedata
 					.invoke(cf,
-							MDCConstants.BACKWARD_SLASH
+							MDCConstants.FORWARD_SLASH
 									+ MDCProperties.get()
 											.getProperty(MDCConstants.CLUSTERNAME)
-									+ MDCConstants.BACKWARD_SLASH + MDCConstants.TSS + MDCConstants.BACKWARD_SLASH
+									+ MDCConstants.FORWARD_SLASH + MDCConstants.TSS + MDCConstants.FORWARD_SLASH
 									+ MDCConstants.LEADER,
 							MDCConstants.EMPTY,
 							NetworkUtil.getNetworkAddress(
@@ -280,9 +280,9 @@ public class EmbeddedSchedulersNodeLauncher {
 		hbs.start();
 		var su = new ServerUtils();
 		su.init(Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULER_WEB_PORT)),
-				new TaskSchedulerWebServlet(), MDCConstants.BACKWARD_SLASH + MDCConstants.ASTERIX,
-				new WebResourcesServlet(), MDCConstants.BACKWARD_SLASH + MDCConstants.RESOURCES
-						+ MDCConstants.BACKWARD_SLASH + MDCConstants.ASTERIX);
+				new TaskSchedulerWebServlet(), MDCConstants.FORWARD_SLASH + MDCConstants.ASTERIX,
+				new WebResourcesServlet(), MDCConstants.FORWARD_SLASH + MDCConstants.RESOURCES
+						+ MDCConstants.FORWARD_SLASH + MDCConstants.ASTERIX);
 		su.start();
 		var es = Executors.newWorkStealingPool();
 		var essingle = Executors.newSingleThreadExecutor();
@@ -295,17 +295,17 @@ public class EmbeddedSchedulersNodeLauncher {
 								+ MDCConstants.UNDERSCORE
 								+ MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULER_PORT);
 						var nodesdata = (List<String>) ZookeeperOperations.nodesdata.invoke(cf,
-								MDCConstants.ZK_BASE_PATH + MDCConstants.BACKWARD_SLASH + MDCConstants.TASKSCHEDULER,
+								MDCConstants.ZK_BASE_PATH + MDCConstants.FORWARD_SLASH + MDCConstants.TASKSCHEDULER,
 								null, null);
 						if (!nodesdata.contains(nodedata))
 							ZookeeperOperations.ephemeralSequentialCreate.invoke(cfclient,
-									MDCConstants.ZK_BASE_PATH + MDCConstants.BACKWARD_SLASH
+									MDCConstants.ZK_BASE_PATH + MDCConstants.FORWARD_SLASH
 											+ MDCConstants.TASKSCHEDULER,
 									MDCConstants.TS + MDCConstants.HYPHEN, nodedata);
 					}
 				});
 		ZookeeperOperations.ephemeralSequentialCreate.invoke(cf,
-				MDCConstants.ZK_BASE_PATH + MDCConstants.BACKWARD_SLASH + MDCConstants.TASKSCHEDULER,
+				MDCConstants.ZK_BASE_PATH + MDCConstants.FORWARD_SLASH + MDCConstants.TASKSCHEDULER,
 				MDCConstants.TS + MDCConstants.HYPHEN,
 				NetworkUtil.getNetworkAddress(MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULER_HOST))
 						+ MDCConstants.UNDERSCORE + MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULER_PORT));

@@ -33,8 +33,8 @@ public class TaskSchedulerRunner {
 	@SuppressWarnings({ "unused", "unchecked" })
 	public static void main(String[] args) throws Exception {
 		URL.setURLStreamHandlerFactory(new FsUrlStreamHandlerFactory());
-		Utils.loadLog4JSystemProperties(MDCConstants.PREV_FOLDER + MDCConstants.BACKWARD_SLASH
-				+ MDCConstants.DIST_CONFIG_FOLDER + MDCConstants.BACKWARD_SLASH, MDCConstants.MDC_PROPERTIES);
+		Utils.loadLog4JSystemProperties(MDCConstants.PREV_FOLDER + MDCConstants.FORWARD_SLASH
+				+ MDCConstants.DIST_CONFIG_FOLDER + MDCConstants.FORWARD_SLASH, MDCConstants.MDC_PROPERTIES);
 		var cdl = new CountDownLatch(1);
 		try (var cf = CuratorFrameworkFactory.newClient(MDCProperties.get().getProperty(MDCConstants.ZOOKEEPER_HOSTPORT),
 				20000, 50000,
@@ -52,9 +52,9 @@ public class TaskSchedulerRunner {
 			hbs.start();
 			var su = new ServerUtils();
 			su.init(Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULER_WEB_PORT)),
-					new TaskSchedulerWebServlet(), MDCConstants.BACKWARD_SLASH + MDCConstants.ASTERIX,
+					new TaskSchedulerWebServlet(), MDCConstants.FORWARD_SLASH + MDCConstants.ASTERIX,
 					new WebResourcesServlet(),
-					MDCConstants.BACKWARD_SLASH +MDCConstants.RESOURCES+MDCConstants.BACKWARD_SLASH+ MDCConstants.ASTERIX);
+					MDCConstants.FORWARD_SLASH +MDCConstants.RESOURCES+MDCConstants.FORWARD_SLASH+ MDCConstants.ASTERIX);
 			su.start();
 			var es = Executors.newWorkStealingPool();
 			var essingle = Executors.newFixedThreadPool(1);
@@ -66,18 +66,18 @@ public class TaskSchedulerRunner {
 									.getNetworkAddress(MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULER_HOST))
 									+ MDCConstants.UNDERSCORE + MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULER_PORT);
 							var nodesdata = (List<String>) ZookeeperOperations.nodesdata.invoke(cf,
-									MDCConstants.ZK_BASE_PATH + MDCConstants.BACKWARD_SLASH
+									MDCConstants.ZK_BASE_PATH + MDCConstants.FORWARD_SLASH
 											+ MDCConstants.TASKSCHEDULER,
 									null, null);
 							if (!nodesdata.contains(nodedata))
 								ZookeeperOperations.ephemeralSequentialCreate.invoke(cfclient,
-										MDCConstants.ZK_BASE_PATH + MDCConstants.BACKWARD_SLASH
+										MDCConstants.ZK_BASE_PATH + MDCConstants.FORWARD_SLASH
 												+ MDCConstants.TASKSCHEDULER,
 										MDCConstants.TS + MDCConstants.HYPHEN, nodedata);
 						}
 					});
 			ZookeeperOperations.ephemeralSequentialCreate.invoke(cf,
-					MDCConstants.ZK_BASE_PATH + MDCConstants.BACKWARD_SLASH + MDCConstants.TASKSCHEDULER,
+					MDCConstants.ZK_BASE_PATH + MDCConstants.FORWARD_SLASH + MDCConstants.TASKSCHEDULER,
 					MDCConstants.TS + MDCConstants.HYPHEN,
 					NetworkUtil.getNetworkAddress(MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULER_HOST))
 							+ MDCConstants.UNDERSCORE + MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULER_PORT));

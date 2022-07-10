@@ -66,8 +66,8 @@ public class StreamPipelineTaskSchedulerRunner {
 		URL.setURLStreamHandlerFactory(new FsUrlStreamHandlerFactory());
 		threadpool = Executors.newWorkStealingPool();
 		// Load log4j properties.
-		Utils.loadLog4JSystemProperties(MDCConstants.PREV_FOLDER + MDCConstants.BACKWARD_SLASH
-				+ MDCConstants.DIST_CONFIG_FOLDER + MDCConstants.BACKWARD_SLASH, MDCConstants.MDC_PROPERTIES);
+		Utils.loadLog4JSystemProperties(MDCConstants.PREV_FOLDER + MDCConstants.FORWARD_SLASH
+				+ MDCConstants.DIST_CONFIG_FOLDER + MDCConstants.FORWARD_SLASH, MDCConstants.MDC_PROPERTIES);
 		CacheUtils.initCache();
 		var cdl = new CountDownLatch(1);
 
@@ -84,8 +84,8 @@ public class StreamPipelineTaskSchedulerRunner {
 			ByteBufferPool.init(Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.BYTEBUFFERPOOL_MAX,
 					MDCConstants.BYTEBUFFERPOOL_MAX_DEFAULT)));
 			try (LeaderLatch ll = new LeaderLatch(cf,
-					MDCConstants.BACKWARD_SLASH + MDCProperties.get().getProperty(MDCConstants.CLUSTERNAME)
-							+ MDCConstants.BACKWARD_SLASH + MDCConstants.TSS)) {
+					MDCConstants.FORWARD_SLASH + MDCProperties.get().getProperty(MDCConstants.CLUSTERNAME)
+							+ MDCConstants.FORWARD_SLASH + MDCConstants.TSS)) {
 				LeaderLatchListener lllistener = new LeaderLatchListener() {
 					@Override
 					public void isLeader() {
@@ -98,13 +98,13 @@ public class StreamPipelineTaskSchedulerRunner {
 							var su = new ServerUtils();
 							su.init(Integer.parseInt(
 									MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULERSTREAM_WEB_PORT)),
-									new TaskSchedulerWebServlet(), MDCConstants.BACKWARD_SLASH + MDCConstants.ASTERIX,
-									new WebResourcesServlet(), MDCConstants.BACKWARD_SLASH + MDCConstants.RESOURCES
-											+ MDCConstants.BACKWARD_SLASH + MDCConstants.ASTERIX);
+									new TaskSchedulerWebServlet(), MDCConstants.FORWARD_SLASH + MDCConstants.ASTERIX,
+									new WebResourcesServlet(), MDCConstants.FORWARD_SLASH + MDCConstants.RESOURCES
+											+ MDCConstants.FORWARD_SLASH + MDCConstants.ASTERIX);
 							su.start();
 							if (!(boolean) ZookeeperOperations.checkexists.invoke(cf,
-									MDCConstants.BACKWARD_SLASH + MDCProperties.get().getProperty(
-											MDCConstants.CLUSTERNAME) + MDCConstants.BACKWARD_SLASH + MDCConstants.TSS,
+									MDCConstants.FORWARD_SLASH + MDCProperties.get().getProperty(
+											MDCConstants.CLUSTERNAME) + MDCConstants.FORWARD_SLASH + MDCConstants.TSS,
 									MDCConstants.LEADER,
 									NetworkUtil.getNetworkAddress(
 											MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULERSTREAM_HOST))
@@ -112,9 +112,9 @@ public class StreamPipelineTaskSchedulerRunner {
 											+ MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULERSTREAM_PORT))) {
 								ZookeeperOperations.persistentCreate
 										.invoke(cf,
-												MDCConstants.BACKWARD_SLASH
+												MDCConstants.FORWARD_SLASH
 														+ MDCProperties.get().getProperty(MDCConstants.CLUSTERNAME)
-														+ MDCConstants.BACKWARD_SLASH + MDCConstants.TSS,
+														+ MDCConstants.FORWARD_SLASH + MDCConstants.TSS,
 												MDCConstants.LEADER,
 												NetworkUtil
 														.getNetworkAddress(MDCProperties.get()
@@ -123,9 +123,9 @@ public class StreamPipelineTaskSchedulerRunner {
 																.getProperty(MDCConstants.TASKSCHEDULERSTREAM_PORT));
 							} else {
 								ZookeeperOperations.writedata.invoke(cf,
-										MDCConstants.BACKWARD_SLASH + MDCProperties.get()
-												.getProperty(MDCConstants.CLUSTERNAME) + MDCConstants.BACKWARD_SLASH
-												+ MDCConstants.TSS + MDCConstants.BACKWARD_SLASH + MDCConstants.LEADER,
+										MDCConstants.FORWARD_SLASH + MDCProperties.get()
+												.getProperty(MDCConstants.CLUSTERNAME) + MDCConstants.FORWARD_SLASH
+												+ MDCConstants.TSS + MDCConstants.FORWARD_SLASH + MDCConstants.LEADER,
 										MDCConstants.EMPTY,
 										NetworkUtil.getNetworkAddress(
 												MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULERSTREAM_HOST))
