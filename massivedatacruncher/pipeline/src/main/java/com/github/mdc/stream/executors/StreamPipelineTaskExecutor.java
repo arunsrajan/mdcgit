@@ -2609,18 +2609,19 @@ public sealed class StreamPipelineTaskExecutor implements
 			// Parallel execution of reduce by key stream execution.
 			List out = null;
 			if (Objects.nonNull(coalescefunction.get(0).coalescefuncion)) {
-				if(coalescefunction.get(0).coalescefuncion instanceof CoalesceFunction cf) {
+				if(coalescefunction.get(0).coalescefuncion instanceof PipelineCoalesceFunction pcf) {
+					out = Arrays.asList(keyvaluepairs.parallelStream().reduce(pcf)
+							.get());
+				}
+				else {
 					out = keyvaluepairs.parallelStream().collect(Collectors.toMap(Tuple2::v1, Tuple2::v2,
-							(input1, input2) -> cf.apply(input1, input2)))
+							(input1, input2) -> coalescefunction.get(0).coalescefuncion.apply(input1, input2)))
 							.entrySet()
 							.stream()
 							.map(entry -> Tuple.tuple(((Entry) entry).getKey(), ((Entry) entry).getValue()))
 							.collect(ParallelCollectors.parallel(value -> value, Collectors.toCollection(Vector::new), executor,
 								Runtime.getRuntime().availableProcessors())).get();
-				} else if(coalescefunction.get(0).coalescefuncion instanceof PipelineCoalesceFunction pcf) {
-					out = Arrays.asList(keyvaluepairs.parallelStream().reduce(pcf)
-							.get());
-				}
+				}  
 			}else {
 				out = keyvaluepairs;
 			}

@@ -190,7 +190,7 @@
         <dependency>
             <groupId>com.esotericsoftware</groupId>
             <artifactId>kryo</artifactId>
-            <version>4.0.2</version>
+            <version>5.3.0</version>
         </dependency>
 
         <dependency>
@@ -562,7 +562,7 @@
                             <forkCount>3</forkCount>
                             <reuseForks>true</reuseForks>
                             <argLine>
-                            	-Xms4g -Xmx4g
+                            	-Xms2g -Xmx4g
                                 --add-opens java.base/java.util=ALL-UNNAMED
                                 --add-opens java.base/java.lang.invoke=ALL-UNNAMED
                                 --add-opens java.base/java.nio=ALL-UNNAMED

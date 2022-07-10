@@ -15,6 +15,9 @@
  */
 package com.github.mdc.stream;
 
+import java.net.URL;
+
+import org.apache.hadoop.fs.FsUrlStreamHandlerFactory;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 
@@ -22,6 +25,7 @@ public class StreamPipelineBaseTestCommon extends StreamPipelineBase {
 	@BeforeClass
 	public static void setServerUp() throws Exception {
 		if (!setupdone) {
+			URL.setURLStreamHandlerFactory(new FsUrlStreamHandlerFactory());
 			StreamPipelineTestSuite.setServerUp();
 			setupdone = true;
 			toteardownclass = true;

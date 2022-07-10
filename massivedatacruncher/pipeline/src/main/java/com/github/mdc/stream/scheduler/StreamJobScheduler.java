@@ -129,6 +129,8 @@ import com.github.mdc.stream.functions.UnionFunction;
 import com.github.mdc.stream.mesos.scheduler.MesosScheduler;
 import com.google.common.collect.Iterables;
 
+import static java.util.Objects.*;
+
 /**
  * 
  * @author Arun Schedule the jobs for parallel execution to task executor for
@@ -291,7 +293,10 @@ public class StreamJobScheduler {
 			log.debug(mdststs);
 			var mdstts = getFinalPhasesWithNoSuccessors(graph, mdststs);
 			var partitionnumber = 0;
-			var ishdfs = new URL(job.uri).getProtocol().equals(MDCConstants.HDFS_PROTOCOL);
+			var ishdfs = false;
+			if(nonNull(job.uri)) {
+				ishdfs = new URL(job.uri).getProtocol().equals(MDCConstants.HDFS_PROTOCOL);
+			}
 			for (var mdstst : mdstts) {
 				mdstst.getTask().finalphase = true;
 				if (job.trigger == Job.TRIGGER.SAVERESULTSTOFILE && ishdfs) {
@@ -1711,7 +1716,10 @@ public class StreamJobScheduler {
 					writeOutputToHDFS(hdfs, mdstt.getTask(), partition++, stageoutput);
 				}
 			} else {
-				var ishdfs = new URL(job.uri).getProtocol().equals(MDCConstants.HDFS_PROTOCOL);
+				var ishdfs = false;
+				if(nonNull(job.uri)) {
+					ishdfs = new URL(job.uri).getProtocol().equals(MDCConstants.HDFS_PROTOCOL);
+				}
 				for (var mdstt : mdstts) {
 					// Get final stage results
 					if (mdstt.isCompletedexecution() && job.trigger != Job.TRIGGER.SAVERESULTSTOFILE || !ishdfs) {

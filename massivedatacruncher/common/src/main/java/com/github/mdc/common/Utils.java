@@ -20,6 +20,9 @@ import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 import com.esotericsoftware.kryo.serializers.ClosureSerializer;
 import com.esotericsoftware.kryo.serializers.CompatibleFieldSerializer;
+import com.esotericsoftware.kryo.serializers.CompatibleFieldSerializer.CompatibleFieldSerializerConfig;
+import com.esotericsoftware.kryo.util.DefaultInstantiatorStrategy;
+
 import de.javakaffee.kryoserializers.*;
 import de.javakaffee.kryoserializers.cglib.CGLibProxySerializer;
 import de.javakaffee.kryoserializers.guava.*;
@@ -193,7 +196,7 @@ public class Utils {
 	public static void getKryo(Kryo kryo) {
 		RegisterKyroSerializers.register(kryo);
 		var is = new StdInstantiatorStrategy();
-		var dis = new Kryo.DefaultInstantiatorStrategy(is);
+		var dis = new DefaultInstantiatorStrategy(is);
 		kryo.setInstantiatorStrategy(dis);
 		dis.setFallbackInstantiatorStrategy(new StdInstantiatorStrategy());
 		kryo.register(Vector.class);
@@ -224,13 +227,11 @@ public class Utils {
 	 */
 	public static void registerKryoNonDeflateSerializer(Kryo kryo) {
 		log.debug("Entered Utils.registerKryoNonDeflateSerializer");
+		kryo.setRegistrationRequired(false);
 		kryo.setReferences(true);
+		kryo.setWarnUnregisteredClasses(false);
 		RegisterKyroSerializers.register(kryo);
-		var allfunctions = findAllClassesUsingReflectionsLibrary("com.github.mdc.stream.functions");
-		for(Class cls:allfunctions) {
-			kryo.register(cls);
-		}
-		var dis = new Kryo.DefaultInstantiatorStrategy(new StdInstantiatorStrategy());
+		var dis = new com.esotericsoftware.kryo.util.DefaultInstantiatorStrategy(new StdInstantiatorStrategy());
 		kryo.setInstantiatorStrategy(dis);
 		dis.setFallbackInstantiatorStrategy(new StdInstantiatorStrategy());
 		kryo.setDefaultSerializer(CompatibleFieldSerializer.class);
@@ -242,7 +243,9 @@ public class Utils {
 		kryo.register(ClosureSerializer.Closure.class, new ClosureSerializer());
 		kryo.register(Vector.class);
 		kryo.register(ArrayList.class);
-		CompatibleFieldSerializer<Tuple2> cfs = new CompatibleFieldSerializer<Tuple2>(kryo, Tuple2.class);
+		CompatibleFieldSerializerConfig configtuple2 = new CompatibleFieldSerializerConfig();
+		configtuple2.setFieldsCanBeNull(true);
+		CompatibleFieldSerializer<Tuple2> cfs = new CompatibleFieldSerializer<Tuple2>(kryo, Tuple2.class, configtuple2);
 		kryo.register(Tuple2.class, cfs);
 		kryo.register(LinkedHashSet.class);
 		kryo.register(Tuple2Serializable.class);
@@ -265,12 +268,16 @@ public class Utils {
 		kryo.register(JSONObject.class);
 		kryo.register(PipelineConfig.class);
 		kryo.register(SimpleDirectedGraph.class);
+		CompatibleFieldSerializerConfig config = new CompatibleFieldSerializerConfig();
+		config.setSerializeTransient(false);
 		CompatibleFieldSerializer<CSVParser> transientcsvparser = new CompatibleFieldSerializer<CSVParser>(kryo,
-				CSVParser.class);
+				CSVParser.class, config);
 		transientcsvparser.removeField("lexer");
 		kryo.register(CSVParser.class, transientcsvparser);
+		config = new CompatibleFieldSerializerConfig();
+		config.setSerializeTransient(true);
 		CompatibleFieldSerializer<CSVRecord> transientcsvser = new CompatibleFieldSerializer<CSVRecord>(kryo,
-				CSVRecord.class);
+				CSVRecord.class, config);
 		kryo.register(CSVRecord.class, transientcsvser);
 		kryo.register(ReducerValues.class);
 		kryo.register(Task.class);
@@ -641,7 +648,7 @@ public class Utils {
 		log.debug("Entered Utils.getKryoMesos");
 		var kryo = new Kryo();
 		var is = new StdInstantiatorStrategy();
-		var dis = new Kryo.DefaultInstantiatorStrategy(is);
+		var dis = new DefaultInstantiatorStrategy(is);
 		kryo.setInstantiatorStrategy(dis);
 		kryo.register(Object[].class);
 		kryo.register(Object.class);
@@ -663,7 +670,7 @@ public class Utils {
 	 */
 	public static void registerKryoResult(Kryo kryo) {
 		log.debug("Entered Utils.registerKryoResult");
-		var dis = new Kryo.DefaultInstantiatorStrategy(new StdInstantiatorStrategy());
+		var dis = new DefaultInstantiatorStrategy(new StdInstantiatorStrategy());
 		kryo.setInstantiatorStrategy(dis);
 		dis.setFallbackInstantiatorStrategy(new StdInstantiatorStrategy());
 		kryo.register(Arrays.asList().getClass(), new ArraysAsListSerializer());
