@@ -77,7 +77,7 @@ public class MDCMapReducePhaseClassLoader extends ClassLoader {
 		try (ZipInputStream jis = new ZipInputStream(new ByteArrayInputStream(jarBytes))) {
 			ZipEntry entry;
 			while ((entry = jis.getNextEntry()) != null) {
-				set.add(entry.getName().replace(MDCConstants.BACKWARD_SLASH, MDCConstants.EMPTY + File.separatorChar));
+				set.add(entry.getName().replace(MDCConstants.FORWARD_SLASH, MDCConstants.EMPTY + File.separatorChar));
 			}
 		}
 		return Collections.unmodifiableSet(set);
@@ -127,7 +127,7 @@ public class MDCMapReducePhaseClassLoader extends ClassLoader {
 			jis = new ZipInputStream(new ByteArrayInputStream(jarBytes));
 			ZipEntry entry;
 			while ((entry = jis.getNextEntry()) != null) {
-				if (entry.getName().replace(MDCConstants.BACKWARD_SLASH, MDCConstants.EMPTY + File.separatorChar).equals(name)) {
+				if (entry.getName().replace(MDCConstants.FORWARD_SLASH, MDCConstants.EMPTY + File.separatorChar).equals(name)) {
 					found = true;
 					return jis;
 				}

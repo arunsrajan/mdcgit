@@ -47,8 +47,8 @@ public class WebResourcesServlet extends HttpServlet {
 		} else if (filename.endsWith(MDCConstants.CSS)) {
 			response.setContentType(MDCConstants.TEXTCSS);
 		}
-		File file = new File(MDCConstants.PREV_FOLDER + MDCConstants.BACKWARD_SLASH + MDCConstants.WEB_FOLDER
-				+ MDCConstants.BACKWARD_SLASH + filename);
+		File file = new File(MDCConstants.PREV_FOLDER + MDCConstants.FORWARD_SLASH + MDCConstants.WEB_FOLDER
+				+ MDCConstants.FORWARD_SLASH + filename);
 		try (FileInputStream fis = new FileInputStream(file); ServletOutputStream sos = response.getOutputStream();) {
 
 			byte[] buffer = new byte[4096];

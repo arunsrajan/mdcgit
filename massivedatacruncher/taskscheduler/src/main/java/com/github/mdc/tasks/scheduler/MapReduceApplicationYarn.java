@@ -228,7 +228,7 @@ public class MapReduceApplicationYarn implements Callable<List<DataCruncherConte
 					reducer.add(cls.getName());
 				}
 			}
-			var yarninputfolder = MDCConstants.YARNINPUTFOLDER + MDCConstants.BACKWARD_SLASH + applicationid;
+			var yarninputfolder = MDCConstants.YARNINPUTFOLDER + MDCConstants.FORWARD_SLASH + applicationid;
 			var output = jobconf.getOutput();
 			jobconf.setOutputfolder(outputfolder);
 			jobconf.setOutput(null);
@@ -247,7 +247,7 @@ public class MapReduceApplicationYarn implements Callable<List<DataCruncherConte
 			RemoteDataFetcher.writerYarnAppmasterServiceDataToDFS(jobconf, yarninputfolder,
 					MDCConstants.MASSIVEDATA_YARNINPUT_CONFIGURATION);
 			ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(
-					MDCConstants.BACKWARD_SLASH + MDCConstants.CONTEXT_FILE_CLIENT, getClass());
+					MDCConstants.FORWARD_SLASH + MDCConstants.CONTEXT_FILE_CLIENT, getClass());
 			var client = (CommandYarnClient) context.getBean(MDCConstants.YARN_CLIENT);
 			client.getEnvironment().put(MDCConstants.YARNMDCJOBID, applicationid);
 			var appid = client.submitApplication(true);

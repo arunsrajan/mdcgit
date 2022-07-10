@@ -37,7 +37,7 @@ public class ZookeeperOperations {
 	 */
 	public static Zk<CuratorFramework, String, String, String> persistentCreate = (final CuratorFramework cf, final String path, final String child, final String data) -> {
 		try {
-			cf.create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath(path + MDCConstants.BACKWARD_SLASH + child, data.getBytes());
+			cf.create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath(path + MDCConstants.FORWARD_SLASH + child, data.getBytes());
 			return path + child + MDCConstants.ZKOPERATION_CREATED;
 		} catch (Exception ex) {
 			log.error("ZookeeperOperations create persistent znode error, See Cause below: \n", ex);
@@ -51,7 +51,7 @@ public class ZookeeperOperations {
 	 */
 	public static Zk<CuratorFramework, String, String, String> ephemeralSequentialCreate = (final CuratorFramework cf, final String path, final String child, final String data) -> {
 		try {
-			cf.create().creatingParentsIfNeeded().withMode(CreateMode.EPHEMERAL_SEQUENTIAL).forPath(path + MDCConstants.BACKWARD_SLASH + child, data.getBytes());
+			cf.create().creatingParentsIfNeeded().withMode(CreateMode.EPHEMERAL_SEQUENTIAL).forPath(path + MDCConstants.FORWARD_SLASH + child, data.getBytes());
 			return path + child + MDCConstants.ZKOPERATION_CREATED;
 		} catch (Exception ex) {
 			log.error("ZookeeperOperations create ephemeral sequential znode error, See Cause below: \n", ex);
@@ -65,7 +65,7 @@ public class ZookeeperOperations {
 	public static Zk<CuratorFramework, String, String, String> childNodes = (final CuratorFramework cf, final String path, final String child, final String data) -> {
 		try {
 			if (child != null) {
-				return cf.getChildren().forPath(path + MDCConstants.BACKWARD_SLASH + child);
+				return cf.getChildren().forPath(path + MDCConstants.FORWARD_SLASH + child);
 			}
 			else {
 				return cf.getChildren().forPath(path);
@@ -81,7 +81,7 @@ public class ZookeeperOperations {
 	public static Zk<CuratorFramework, String, String, String> childNodesWithPath = (final CuratorFramework cf, final String path, final String child, final String data) -> {
 		try {
 			var childnodes = cf.getChildren().forPath(path);
-			return childnodes.stream().sorted().map(childnode -> path + MDCConstants.BACKWARD_SLASH + childnode).collect(Collectors.toList());
+			return childnodes.stream().sorted().map(childnode -> path + MDCConstants.FORWARD_SLASH + childnode).collect(Collectors.toList());
 		} catch (Exception ex) {
 			log.error("ZookeeperOperations retrieve child nodes with path error, See Cause below: \n", ex);
 			return null;
@@ -94,7 +94,7 @@ public class ZookeeperOperations {
 	public static Zk<CuratorFramework, String, String, String> nodedata = (final CuratorFramework cf, final String path, final String child, final String data) -> {
 		try {
 			if (child != null) {
-				return new String(cf.getData().forPath(path + MDCConstants.BACKWARD_SLASH + child));
+				return new String(cf.getData().forPath(path + MDCConstants.FORWARD_SLASH + child));
 			}
 			return new String(cf.getData().forPath(path));
 		} catch (Exception ex) {
@@ -109,7 +109,7 @@ public class ZookeeperOperations {
 	public static Zk<CuratorFramework, String, String, String> deletenode = (final CuratorFramework cf, final String path, final String child, final String data) -> {
 		try {
 			if (child != null) {
-				cf.delete().deletingChildrenIfNeeded().forPath(path + MDCConstants.BACKWARD_SLASH + child);
+				cf.delete().deletingChildrenIfNeeded().forPath(path + MDCConstants.FORWARD_SLASH + child);
 			}
 			cf.delete().deletingChildrenIfNeeded().forPath(path);
 			return null;
@@ -156,7 +156,7 @@ public class ZookeeperOperations {
 		var isexists = false;
 		try {
 			if (child != null) {
-				isexists =  cf.checkExists().forPath(path + MDCConstants.BACKWARD_SLASH + child) != null;
+				isexists =  cf.checkExists().forPath(path + MDCConstants.FORWARD_SLASH + child) != null;
 			}
 			else {
 				isexists = cf.checkExists().forPath(path) != null;

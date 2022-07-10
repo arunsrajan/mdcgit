@@ -50,15 +50,15 @@ public class UtilsTest {
 
 	@Test
 	public void testloadLog4JSystemPropertiesProperInput() throws Exception {
-		Utils.loadLog4JSystemProperties(MDCConstants.PREV_FOLDER + MDCConstants.BACKWARD_SLASH
-				+ MDCConstants.DIST_CONFIG_FOLDER + MDCConstants.BACKWARD_SLASH, MDCConstants.MDC_PROPERTIES);
+		Utils.loadLog4JSystemProperties(MDCConstants.PREV_FOLDER + MDCConstants.FORWARD_SLASH
+				+ MDCConstants.DIST_CONFIG_FOLDER + MDCConstants.FORWARD_SLASH, MDCConstants.MDC_PROPERTIES);
 	}
 
 	@Test
 	public void testloadLog4JSystemPropertiesEmptyFileName() {
 		try {
-			Utils.loadLog4JSystemProperties(MDCConstants.PREV_FOLDER + MDCConstants.BACKWARD_SLASH
-					+ MDCConstants.DIST_CONFIG_FOLDER + MDCConstants.BACKWARD_SLASH, "");
+			Utils.loadLog4JSystemProperties(MDCConstants.PREV_FOLDER + MDCConstants.FORWARD_SLASH
+					+ MDCConstants.DIST_CONFIG_FOLDER + MDCConstants.FORWARD_SLASH, "");
 		}
 		catch (Exception ex) {
 			assertEquals("Unable To Load Properties", ex.getMessage());

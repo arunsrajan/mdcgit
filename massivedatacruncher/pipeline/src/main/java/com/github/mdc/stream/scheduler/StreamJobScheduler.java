@@ -21,13 +21,16 @@ import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.StringWriter;
 import java.lang.ref.SoftReference;
+import java.net.MalformedURLException;
 import java.net.Socket;
 import java.net.URI;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -93,7 +96,6 @@ import com.github.mdc.common.HeartBeatTaskSchedulerStream;
 import com.github.mdc.common.Job;
 import com.github.mdc.common.JobApp;
 import com.github.mdc.common.JobStage;
-import com.github.mdc.common.KryoPool;
 import com.github.mdc.common.LoadJar;
 import com.github.mdc.common.MDCCache;
 import com.github.mdc.common.MDCConstants;
@@ -289,9 +291,10 @@ public class StreamJobScheduler {
 			log.debug(mdststs);
 			var mdstts = getFinalPhasesWithNoSuccessors(graph, mdststs);
 			var partitionnumber = 0;
+			var ishdfs = new URL(job.uri).getProtocol().equals(MDCConstants.HDFS_PROTOCOL);
 			for (var mdstst : mdstts) {
 				mdstst.getTask().finalphase = true;
-				if (job.trigger == Job.TRIGGER.SAVERESULTSTOFILE) {
+				if (job.trigger == Job.TRIGGER.SAVERESULTSTOFILE && ishdfs) {
 					mdstst.getTask().saveresulttohdfs = true;
 					mdstst.getTask().hdfsurl = job.uri;
 					mdstst.getTask().filepath = job.savepath + MDCConstants.HYPHEN + partitionnumber++;
@@ -321,7 +324,7 @@ public class StreamJobScheduler {
 				new File(MDCConstants.LOCAL_FS_APPJRPATH).mkdirs();
 				Utils.createJar(new File(MDCConstants.YARNFOLDER), MDCConstants.LOCAL_FS_APPJRPATH,
 						MDCConstants.YARNOUTJAR);
-				var yarninputfolder = MDCConstants.YARNINPUTFOLDER + MDCConstants.BACKWARD_SLASH + job.id;
+				var yarninputfolder = MDCConstants.YARNINPUTFOLDER + MDCConstants.FORWARD_SLASH + job.id;
 				RemoteDataFetcher.writerYarnAppmasterServiceDataToDFS(mdststs, yarninputfolder,
 						MDCConstants.MASSIVEDATA_YARNINPUT_DATAFILE);
 				RemoteDataFetcher.writerYarnAppmasterServiceDataToDFS(graph, yarninputfolder,
@@ -333,7 +336,7 @@ public class StreamJobScheduler {
 				decideContainerCountAndPhysicalMemoryByBlockSize(mdststs.size(),
 						Integer.parseInt(pipelineconfig.getBlocksize()));
 				ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(
-						MDCConstants.BACKWARD_SLASH + YarnSystemConstants.DEFAULT_CONTEXT_FILE_CLIENT, getClass());
+						MDCConstants.FORWARD_SLASH + YarnSystemConstants.DEFAULT_CONTEXT_FILE_CLIENT, getClass());
 				var client = (CommandYarnClient) context.getBean(MDCConstants.YARN_CLIENT);
 				client.getEnvironment().put(MDCConstants.YARNMDCJOBID, job.id);
 				var appid = client.submitApplication(true);
@@ -528,8 +531,7 @@ public class StreamJobScheduler {
 
 	/**
 	 * Get containers host port by launching.
-	 * 
-	 * @param hbss
+	 *
 	 * @throws PipelineException
 	 */
 	@SuppressWarnings("unchecked")
@@ -1671,9 +1673,8 @@ public class StreamJobScheduler {
 			Boolean isyarn, Boolean islocal, Boolean isjgroups,
 			ConcurrentMap<String, OutputStream> resultstream) throws PipelineException {
 		log.debug("HDFS Path TO Retrieve Final Task Output: " + hdfsfilepath);
-		var configuration = new Configuration();
-		var kryofinal = KryoPool.getKryoPool().obtain();
-		try (var hdfs = FileSystem.newInstance(new URI(hdfsfilepath), configuration);) {
+		var kryofinal = Utils.getKryoNonDeflateSerializer();
+		try {
 			log.debug("Final Stages: " + mdstts);
 			Utils.writeKryoOutput(kryo, pipelineconfig.getOutput(), "Final Stages: " + mdstts);
 
@@ -1683,7 +1684,7 @@ public class StreamJobScheduler {
 					job.output.add(mdstt);
 					if (job.isresultrequired) {
 						// Get final stage results from ignite
-						writeResultsFromIgnite(hdfs, mdstt.getTask(), partition++, stageoutput);
+						writeResultsFromIgnite(mdstt.getTask(), partition++, stageoutput);
 					}
 				}
 			} else if (Boolean.TRUE.equals(islocal)) {
@@ -1710,9 +1711,10 @@ public class StreamJobScheduler {
 					writeOutputToHDFS(hdfs, mdstt.getTask(), partition++, stageoutput);
 				}
 			} else {
+				var ishdfs = new URL(job.uri).getProtocol().equals(MDCConstants.HDFS_PROTOCOL);
 				for (var mdstt : mdstts) {
 					// Get final stage results
-					if (mdstt.isCompletedexecution() && job.trigger != Job.TRIGGER.SAVERESULTSTOFILE) {
+					if (mdstt.isCompletedexecution() && job.trigger != Job.TRIGGER.SAVERESULTSTOFILE || !ishdfs) {
 						Task task = mdstt.getTask();
 						RemoteDataFetch rdf = new RemoteDataFetch();
 						rdf.hp = task.hostport;
@@ -1739,10 +1741,6 @@ public class StreamJobScheduler {
 		} catch (Exception ex) {
 			log.error(PipelineConstants.JOBSCHEDULERFINALSTAGERESULTSERROR, ex);
 			throw new PipelineException(PipelineConstants.JOBSCHEDULERFINALSTAGERESULTSERROR, ex);
-		} finally {
-			if (!Objects.isNull(kryofinal)) {
-				KryoPool.getKryoPool().free(kryofinal);
-			}
 		}
 
 	}
@@ -1750,29 +1748,31 @@ public class StreamJobScheduler {
 
 	@SuppressWarnings("rawtypes")
 	public void writeOutputToFile(int partcount, Object result)
-			throws PipelineException {
+			throws PipelineException, MalformedURLException {
 		if (job.trigger == Job.TRIGGER.SAVERESULTSTOFILE) {
-			try (var hdfs = FileSystem.get(new URI(job.uri), new Configuration());
-					var fsdos = hdfs.create(
-							new Path(job.uri.toString() + job.savepath + MDCConstants.HYPHEN + partcount));
-					BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(fsdos))) {
-
-				if (result instanceof List res) {
-					for (var value : res) {
-						bw.write(value.toString());
-						bw.write(MDCConstants.NEWLINE);
+			URL url = new URL(job.uri);
+			boolean isfolder = url.getProtocol().equals(MDCConstants.FILE);
+				try (OutputStream fsdos = isfolder?new FileOutputStream(url.getPath() + MDCConstants.FORWARD_SLASH + job.savepath + MDCConstants.HYPHEN + partcount) 
+						: hdfs.create(
+								new Path(job.uri.toString() + job.savepath + MDCConstants.HYPHEN + partcount));
+						BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(fsdos))) {
+	
+					if (result instanceof List res) {
+						for (var value : res) {
+							bw.write(value.toString());
+							bw.write(MDCConstants.NEWLINE);
+						}
 					}
+					else {
+						bw.write(result.toString());
+					}
+					bw.flush();
+					fsdos.flush();
+				} catch (Exception ioe) {
+					log.error(PipelineConstants.FILEIOERROR, ioe);
+					throw new PipelineException(PipelineConstants.FILEIOERROR, ioe);
 				}
-				else {
-					bw.write(result.toString());
-				}
-				bw.flush();
-				fsdos.hflush();
-			} catch (Exception ioe) {
-				log.error(PipelineConstants.FILEIOERROR, ioe);
-				throw new PipelineException(PipelineConstants.FILEIOERROR, ioe);
 			}
-		}
 	}
 
 	@SuppressWarnings({"unchecked", "rawtypes"})
@@ -1792,8 +1792,7 @@ public class StreamJobScheduler {
 	/**
 	 * Get the file streams from HDFS and jobid and stageid.
 	 * 
-	 * @param hdfs
-	 * @param jobstage
+	 * @param task
 	 * @return
 	 * @throws Exception
 	 */
@@ -1827,11 +1826,11 @@ public class StreamJobScheduler {
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	private void writeOutputToHDFS(FileSystem hdfs, Task task, int partition, List stageoutput) throws Exception {
 		try {
-			var path = MDCConstants.BACKWARD_SLASH + FileSystemSupport.MDS + MDCConstants.BACKWARD_SLASH + task.jobid
-					+ MDCConstants.BACKWARD_SLASH + (task.jobid + MDCConstants.HYPHEN + task.stageid
+			var path = MDCConstants.FORWARD_SLASH + FileSystemSupport.MDS + MDCConstants.FORWARD_SLASH + task.jobid
+					+ MDCConstants.FORWARD_SLASH + (task.jobid + MDCConstants.HYPHEN + task.stageid
 					+ MDCConstants.HYPHEN + task.taskid);
-			log.debug("Forming URL Final Stage:" + MDCConstants.BACKWARD_SLASH + FileSystemSupport.MDS
-					+ MDCConstants.BACKWARD_SLASH + task.jobid + MDCConstants.BACKWARD_SLASH
+			log.debug("Forming URL Final Stage:" + MDCConstants.FORWARD_SLASH + FileSystemSupport.MDS
+					+ MDCConstants.FORWARD_SLASH + task.jobid + MDCConstants.FORWARD_SLASH
 					+ (task.jobid + MDCConstants.HYPHEN + task.stageid + MDCConstants.HYPHEN + task.taskid
 			));
 			try (var input = new Input(new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path)))));) {
@@ -1877,7 +1876,7 @@ public class StreamJobScheduler {
 	 * @throws Exception
 	 */
 	@SuppressWarnings({"rawtypes", "unchecked"})
-	private void writeResultsFromIgnite(FileSystem hdfs, Task task, int partition, List stageoutput) throws Exception {
+	private void writeResultsFromIgnite(Task task, int partition, List stageoutput) throws Exception {
 		try {
 			log.info("Final Results Ignite Task: " + task);
 

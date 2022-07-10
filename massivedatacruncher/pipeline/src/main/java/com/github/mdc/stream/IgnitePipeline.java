@@ -129,7 +129,7 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 		try {
 			url = new URL(filepathwithscheme);
 			if (url.getProtocol().equals(FileSystemSupport.HDFS)) {
-				mdp = newStreamHDFS(url.getProtocol() + MDCConstants.COLON + MDCConstants.BACKWARD_SLASH + MDCConstants.BACKWARD_SLASH + url.getHost() + MDCConstants.COLON + url.getPort(), url.getPath(), pipelineconfig);
+				mdp = newStreamHDFS(url.getProtocol() + MDCConstants.COLON + MDCConstants.FORWARD_SLASH + MDCConstants.FORWARD_SLASH + url.getHost() + MDCConstants.COLON + url.getPort(), url.getPath(), pipelineconfig);
 			}
 			else if (url.getProtocol().equals(FileSystemSupport.FILE)) {
 				mdp = newStreamFILE(url.getPath(), pipelineconfig);

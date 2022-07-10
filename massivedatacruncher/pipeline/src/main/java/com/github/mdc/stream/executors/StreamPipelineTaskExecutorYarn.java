@@ -56,8 +56,8 @@ public final class StreamPipelineTaskExecutorYarn extends StreamPipelineTaskExec
 	 * @return
 	 */
 	public String getIntermediateDataFSFilePath(Task task) {
-		return MDCConstants.BACKWARD_SLASH + FileSystemSupport.MDS + MDCConstants.BACKWARD_SLASH + jobstage.jobid
-				+ MDCConstants.BACKWARD_SLASH + task.taskid;
+		return MDCConstants.FORWARD_SLASH + FileSystemSupport.MDS + MDCConstants.FORWARD_SLASH + jobstage.jobid
+				+ MDCConstants.FORWARD_SLASH + task.taskid;
 	}
 
 	/**

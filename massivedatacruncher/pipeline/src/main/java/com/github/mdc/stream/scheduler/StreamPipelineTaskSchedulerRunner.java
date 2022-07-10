@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Objects;
@@ -18,6 +19,7 @@ import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.recipes.leader.LeaderLatch;
 import org.apache.curator.framework.recipes.leader.LeaderLatchListener;
 import org.apache.curator.retry.RetryForever;
+import org.apache.hadoop.fs.FsUrlStreamHandlerFactory;
 import org.apache.log4j.Logger;
 import org.jgroups.JChannel;
 import org.jgroups.Message;
@@ -61,6 +63,7 @@ public class StreamPipelineTaskSchedulerRunner {
 	static ExecutorService threadpool = null;
 
 	public static void main(String[] args) throws Exception {
+		URL.setURLStreamHandlerFactory(new FsUrlStreamHandlerFactory());
 		threadpool = Executors.newWorkStealingPool();
 		// Load log4j properties.
 		Utils.loadLog4JSystemProperties(MDCConstants.PREV_FOLDER + MDCConstants.BACKWARD_SLASH

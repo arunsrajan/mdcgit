@@ -15,51 +15,14 @@
  */
 package com.github.mdc.common;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
-import java.lang.invoke.SerializedLambda;
-import java.lang.management.ManagementFactory;
-import java.lang.management.MemoryPoolMXBean;
-import java.lang.management.MemoryType;
-import java.lang.management.MemoryUsage;
-import java.lang.reflect.InvocationHandler;
-import java.net.InetSocketAddress;
-import java.net.Socket;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.GregorianCalendar;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Properties;
-import java.util.Set;
-import java.util.Vector;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Semaphore;
-import java.util.jar.Attributes;
-import java.util.jar.JarEntry;
-import java.util.jar.JarOutputStream;
-import java.util.jar.Manifest;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
+import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.io.Input;
+import com.esotericsoftware.kryo.io.Output;
+import com.esotericsoftware.kryo.serializers.ClosureSerializer;
+import com.esotericsoftware.kryo.serializers.CompatibleFieldSerializer;
+import de.javakaffee.kryoserializers.*;
+import de.javakaffee.kryoserializers.cglib.CGLibProxySerializer;
+import de.javakaffee.kryoserializers.guava.*;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import org.apache.hadoop.conf.Configuration;
@@ -76,52 +39,33 @@ import org.jgrapht.io.ComponentNameProvider;
 import org.jgrapht.io.DOTExporter;
 import org.jgrapht.io.ExportException;
 import org.jgrapht.io.GraphExporter;
-import org.jgroups.Address;
-import org.jgroups.JChannel;
-import org.jgroups.Message;
-import org.jgroups.ObjectMessage;
-import org.jgroups.Receiver;
-import org.jgroups.View;
+import org.jgroups.*;
 import org.jgroups.util.UUID;
 import org.jooq.lambda.tuple.Tuple2;
 import org.json.simple.JSONObject;
 import org.objenesis.strategy.StdInstantiatorStrategy;
+import org.reflections.Reflections;
+import org.reflections.scanners.SubTypesScanner;
 
-import com.esotericsoftware.kryo.Kryo;
-import com.esotericsoftware.kryo.io.Input;
-import com.esotericsoftware.kryo.io.Output;
-import com.esotericsoftware.kryo.serializers.ClosureSerializer;
-import com.esotericsoftware.kryo.serializers.CompatibleFieldSerializer;
-import com.esotericsoftware.kryo.serializers.CompatibleFieldSerializer.CompatibleFieldSerializerConfig;
-import com.esotericsoftware.kryo.util.DefaultInstantiatorStrategy;
-
-import de.javakaffee.kryoserializers.ArraysAsListSerializer;
-import de.javakaffee.kryoserializers.CollectionsEmptyListSerializer;
-import de.javakaffee.kryoserializers.CollectionsEmptyMapSerializer;
-import de.javakaffee.kryoserializers.CollectionsEmptySetSerializer;
-import de.javakaffee.kryoserializers.CollectionsSingletonListSerializer;
-import de.javakaffee.kryoserializers.CollectionsSingletonMapSerializer;
-import de.javakaffee.kryoserializers.CollectionsSingletonSetSerializer;
-import de.javakaffee.kryoserializers.GregorianCalendarSerializer;
-import de.javakaffee.kryoserializers.JdkProxySerializer;
-import de.javakaffee.kryoserializers.SynchronizedCollectionsSerializer;
-import de.javakaffee.kryoserializers.UnmodifiableCollectionsSerializer;
-import de.javakaffee.kryoserializers.cglib.CGLibProxySerializer;
-import de.javakaffee.kryoserializers.guava.ArrayListMultimapSerializer;
-import de.javakaffee.kryoserializers.guava.ArrayTableSerializer;
-import de.javakaffee.kryoserializers.guava.HashBasedTableSerializer;
-import de.javakaffee.kryoserializers.guava.HashMultimapSerializer;
-import de.javakaffee.kryoserializers.guava.ImmutableListSerializer;
-import de.javakaffee.kryoserializers.guava.ImmutableMapSerializer;
-import de.javakaffee.kryoserializers.guava.ImmutableMultimapSerializer;
-import de.javakaffee.kryoserializers.guava.ImmutableSetSerializer;
-import de.javakaffee.kryoserializers.guava.ImmutableTableSerializer;
-import de.javakaffee.kryoserializers.guava.LinkedHashMultimapSerializer;
-import de.javakaffee.kryoserializers.guava.LinkedListMultimapSerializer;
-import de.javakaffee.kryoserializers.guava.ReverseListSerializer;
-import de.javakaffee.kryoserializers.guava.TreeBasedTableSerializer;
-import de.javakaffee.kryoserializers.guava.TreeMultimapSerializer;
-import de.javakaffee.kryoserializers.guava.UnmodifiableNavigableSetSerializer;
+import java.io.*;
+import java.lang.invoke.SerializedLambda;
+import java.lang.management.ManagementFactory;
+import java.lang.management.MemoryPoolMXBean;
+import java.lang.management.MemoryType;
+import java.lang.management.MemoryUsage;
+import java.lang.reflect.InvocationHandler;
+import java.net.InetSocketAddress;
+import java.net.Socket;
+import java.net.URI;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Semaphore;
+import java.util.jar.Attributes;
+import java.util.jar.JarEntry;
+import java.util.jar.JarOutputStream;
+import java.util.jar.Manifest;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * 
@@ -249,7 +193,7 @@ public class Utils {
 	public static void getKryo(Kryo kryo) {
 		RegisterKyroSerializers.register(kryo);
 		var is = new StdInstantiatorStrategy();
-		var dis = new DefaultInstantiatorStrategy(is);
+		var dis = new Kryo.DefaultInstantiatorStrategy(is);
 		kryo.setInstantiatorStrategy(dis);
 		dis.setFallbackInstantiatorStrategy(new StdInstantiatorStrategy());
 		kryo.register(Vector.class);
@@ -261,6 +205,18 @@ public class Utils {
 	}
 
 	/**
+	 * The method which finds all the classes in a package
+	 * @param packageName
+	 * @return set of class
+	 */
+	public static Set<Class> findAllClassesUsingReflectionsLibrary(String packageName) {
+	    Reflections reflections = new Reflections(packageName, new SubTypesScanner(false));
+	    return reflections.getSubTypesOf(Object.class)
+	      .stream()
+	      .collect(Collectors.toSet());
+	}
+	
+	/**
 	 * This method configures kryo object with the registered classes with
 	 * serializers.
 	 * 
@@ -268,11 +224,13 @@ public class Utils {
 	 */
 	public static void registerKryoNonDeflateSerializer(Kryo kryo) {
 		log.debug("Entered Utils.registerKryoNonDeflateSerializer");
-		kryo.setRegistrationRequired(false);
 		kryo.setReferences(true);
-		kryo.setWarnUnregisteredClasses(false);
 		RegisterKyroSerializers.register(kryo);
-		var dis = new com.esotericsoftware.kryo.util.DefaultInstantiatorStrategy(new StdInstantiatorStrategy());
+		var allfunctions = findAllClassesUsingReflectionsLibrary("com.github.mdc.stream.functions");
+		for(Class cls:allfunctions) {
+			kryo.register(cls);
+		}
+		var dis = new Kryo.DefaultInstantiatorStrategy(new StdInstantiatorStrategy());
 		kryo.setInstantiatorStrategy(dis);
 		dis.setFallbackInstantiatorStrategy(new StdInstantiatorStrategy());
 		kryo.setDefaultSerializer(CompatibleFieldSerializer.class);
@@ -284,9 +242,7 @@ public class Utils {
 		kryo.register(ClosureSerializer.Closure.class, new ClosureSerializer());
 		kryo.register(Vector.class);
 		kryo.register(ArrayList.class);
-		CompatibleFieldSerializerConfig configtuple2 = new CompatibleFieldSerializerConfig();
-		configtuple2.setFieldsCanBeNull(true);
-		CompatibleFieldSerializer<Tuple2> cfs = new CompatibleFieldSerializer<Tuple2>(kryo, Tuple2.class, configtuple2);
+		CompatibleFieldSerializer<Tuple2> cfs = new CompatibleFieldSerializer<Tuple2>(kryo, Tuple2.class);
 		kryo.register(Tuple2.class, cfs);
 		kryo.register(LinkedHashSet.class);
 		kryo.register(Tuple2Serializable.class);
@@ -309,16 +265,12 @@ public class Utils {
 		kryo.register(JSONObject.class);
 		kryo.register(PipelineConfig.class);
 		kryo.register(SimpleDirectedGraph.class);
-		CompatibleFieldSerializerConfig config = new CompatibleFieldSerializerConfig();
-		config.setSerializeTransient(false);
 		CompatibleFieldSerializer<CSVParser> transientcsvparser = new CompatibleFieldSerializer<CSVParser>(kryo,
-				CSVParser.class, config);
+				CSVParser.class);
 		transientcsvparser.removeField("lexer");
 		kryo.register(CSVParser.class, transientcsvparser);
-		config = new CompatibleFieldSerializerConfig();
-		config.setSerializeTransient(true);
 		CompatibleFieldSerializer<CSVRecord> transientcsvser = new CompatibleFieldSerializer<CSVRecord>(kryo,
-				CSVRecord.class, config);
+				CSVRecord.class);
 		kryo.register(CSVRecord.class, transientcsvser);
 		kryo.register(ReducerValues.class);
 		kryo.register(Task.class);
@@ -326,6 +278,13 @@ public class Utils {
 		kryo.register(CloseStagesGraphExecutor.class);
 		kryo.register(CloseStagesGraphExecutor.class,
 				new CompatibleFieldSerializer(kryo, CloseStagesGraphExecutor.class));
+		kryo.register(AllocateContainers.class);
+		kryo.register(LaunchContainers.class);
+		kryo.register(ContainerLaunchAttributes.class);
+		kryo.register(ContainerResources.class);
+		kryo.register(LaunchContainers.MODE.class);
+		kryo.register(JobApp.class);
+		kryo.register(JobApp.JOBAPP.class);
 		log.debug("Exiting Utils.registerKryoNonDeflateSerializer");
 	}
 
@@ -372,10 +331,10 @@ public class Utils {
 			throw new Exception("Property File Name cannot be null");
 		}
 		PropertyConfigurator.configure(
-				Utils.class.getResourceAsStream(MDCConstants.BACKWARD_SLASH + MDCConstants.LOG4J_PROPERTIES));
+				Utils.class.getResourceAsStream(MDCConstants.FORWARD_SLASH + MDCConstants.LOG4J_PROPERTIES));
 		var prop = new Properties();
 		try {
-			var fis = Utils.class.getResourceAsStream(MDCConstants.BACKWARD_SLASH + propertyfile);
+			var fis = Utils.class.getResourceAsStream(MDCConstants.FORWARD_SLASH + propertyfile);
 			prop.load(fis);
 			prop.putAll(System.getProperties());
 			log.debug("Property Names: " + prop.stringPropertyNames());
@@ -396,9 +355,9 @@ public class Utils {
 	public static void loadPropertiesMesos(String propertyfile) {
 		log.debug("Entered Utils.loadPropertiesMesos");
 		PropertyConfigurator.configure(
-				Utils.class.getResourceAsStream(MDCConstants.BACKWARD_SLASH + MDCConstants.LOG4J_PROPERTIES));
+				Utils.class.getResourceAsStream(MDCConstants.FORWARD_SLASH + MDCConstants.LOG4J_PROPERTIES));
 		var prop = new Properties();
-		try (var fis = Utils.class.getResourceAsStream(MDCConstants.BACKWARD_SLASH + propertyfile);) {
+		try (var fis = Utils.class.getResourceAsStream(MDCConstants.FORWARD_SLASH + propertyfile);) {
 			prop.load(fis);
 			prop.putAll(System.getProperties());
 			log.debug("Properties: " + prop.entrySet());
@@ -511,7 +470,6 @@ public class Utils {
 	 * executions.
 	 * 
 	 * @param channel
-	 * @param stagepartitionid
 	 * @throws Exception
 	 */
 	public static void whoare(JChannel channel) throws Exception {
@@ -683,7 +641,7 @@ public class Utils {
 		log.debug("Entered Utils.getKryoMesos");
 		var kryo = new Kryo();
 		var is = new StdInstantiatorStrategy();
-		var dis = new DefaultInstantiatorStrategy(is);
+		var dis = new Kryo.DefaultInstantiatorStrategy(is);
 		kryo.setInstantiatorStrategy(dis);
 		kryo.register(Object[].class);
 		kryo.register(Object.class);
@@ -705,7 +663,7 @@ public class Utils {
 	 */
 	public static void registerKryoResult(Kryo kryo) {
 		log.debug("Entered Utils.registerKryoResult");
-		var dis = new DefaultInstantiatorStrategy(new StdInstantiatorStrategy());
+		var dis = new Kryo.DefaultInstantiatorStrategy(new StdInstantiatorStrategy());
 		kryo.setInstantiatorStrategy(dis);
 		dis.setFallbackInstantiatorStrategy(new StdInstantiatorStrategy());
 		kryo.register(Arrays.asList().getClass(), new ArraysAsListSerializer());
@@ -886,7 +844,7 @@ public class Utils {
 	/**
 	 * This method writes the object via sockets outputstream of server.
 	 * 
-	 * @param hp
+	 * @param ostream
 	 * @param inputobj
 	 * @throws Exception
 	 */
@@ -909,7 +867,7 @@ public class Utils {
 	public static synchronized JChannel getChannelWithPStack(String bindaddr) {
 		try {
 			System.setProperty(MDCConstants.BINDADDRESS, bindaddr);
-			var channel = new JChannel(System.getProperty(MDCConstants.USERDIR) + MDCConstants.BACKWARD_SLASH
+			var channel = new JChannel(System.getProperty(MDCConstants.USERDIR) + MDCConstants.FORWARD_SLASH
 					+ MDCProperties.get().getProperty(MDCConstants.JGROUPSCONF));
 			return channel;
 		} catch (Exception ex) {
@@ -951,7 +909,7 @@ public class Utils {
 		var manifest = new Manifest();
 		manifest.getMainAttributes().put(Attributes.Name.MANIFEST_VERSION, "1.0");
 		try (var target = new JarOutputStream(
-				new FileOutputStream(outputfolder + MDCConstants.BACKWARD_SLASH + outjarfilename), manifest);) {
+				new FileOutputStream(outputfolder + MDCConstants.FORWARD_SLASH + outjarfilename), manifest);) {
 			add(folder, target);
 		} catch (IOException ioe) {
 			log.error("Unable to create Jar", ioe);

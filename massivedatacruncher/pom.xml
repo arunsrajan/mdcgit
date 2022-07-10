@@ -105,7 +105,7 @@
         <dependency>
             <groupId>org.reflections</groupId>
             <artifactId>reflections</artifactId>
-            <version>0.9.11</version>
+            <version>0.9.12</version>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
@@ -190,7 +190,7 @@
         <dependency>
             <groupId>com.esotericsoftware</groupId>
             <artifactId>kryo</artifactId>
-            <version>5.2.0</version>
+            <version>4.0.2</version>
         </dependency>
 
         <dependency>

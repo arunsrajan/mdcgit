@@ -397,8 +397,8 @@ public sealed class StreamPipelineTaskExecutor implements
 	 * @return
 	 */
 	public String getIntermediateDataFSFilePath(Task task) {
-		return (MDCConstants.BACKWARD_SLASH + FileSystemSupport.MDS + MDCConstants.BACKWARD_SLASH + jobstage.jobid
-				+ MDCConstants.BACKWARD_SLASH + task.taskid);
+		return (MDCConstants.FORWARD_SLASH + FileSystemSupport.MDS + MDCConstants.FORWARD_SLASH + jobstage.jobid
+				+ MDCConstants.FORWARD_SLASH + task.taskid);
 	}
 
 	/**
@@ -412,8 +412,8 @@ public sealed class StreamPipelineTaskExecutor implements
 		log.debug("Entered MassiveDataStreamTaskDExecutor.createIntermediateDataToFS");
 		try {
 			var path = getIntermediateDataFSFilePath(task);
-			new File(MDCProperties.get().getProperty(MDCConstants.TMPDIR) + MDCConstants.BACKWARD_SLASH
-					+ FileSystemSupport.MDS + MDCConstants.BACKWARD_SLASH + jobstage.jobid).mkdirs();
+			new File(MDCProperties.get().getProperty(MDCConstants.TMPDIR) + MDCConstants.FORWARD_SLASH
+					+ FileSystemSupport.MDS + MDCConstants.FORWARD_SLASH + jobstage.jobid).mkdirs();
 			log.debug("Exiting MassiveDataStreamTaskDExecutor.createIntermediateDataToFS");
 			return new FileOutputStream(MDCProperties.get().getProperty(MDCConstants.TMPDIR) + path);
 		} catch (IOException ioe) {

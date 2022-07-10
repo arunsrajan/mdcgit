@@ -19,6 +19,7 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.URI;
+import java.net.URL;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -30,6 +31,7 @@ import java.util.stream.Collectors;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.FsUrlStreamHandlerFactory;
 import org.apache.log4j.Logger;
 
 import com.github.mdc.common.HeartBeatServer;
@@ -47,8 +49,9 @@ public class NodeLauncher {
 	static Logger log = Logger.getLogger(NodeLauncher.class);
 
 	public static void main(String[] args) throws Exception {
-		Utils.loadLog4JSystemProperties(MDCConstants.PREV_FOLDER + MDCConstants.BACKWARD_SLASH
-				+ MDCConstants.DIST_CONFIG_FOLDER + MDCConstants.BACKWARD_SLASH, MDCConstants.MDC_PROPERTIES);
+		URL.setURLStreamHandlerFactory(new FsUrlStreamHandlerFactory());
+		Utils.loadLog4JSystemProperties(MDCConstants.PREV_FOLDER + MDCConstants.FORWARD_SLASH
+				+ MDCConstants.DIST_CONFIG_FOLDER + MDCConstants.FORWARD_SLASH, MDCConstants.MDC_PROPERTIES);
 		var port = Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.NODE_PORT));
 		try (var hbss = new HeartBeatServerStream();var server = new ServerSocket(port, 256, InetAddress.getByAddress(new byte[]{0x00, 0x00, 0x00, 0x00}));) {
 			var pingdelay = Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULER_PINGDELAY));
@@ -68,9 +71,9 @@ public class NodeLauncher {
 			var containeridports = new ConcurrentHashMap<String, List<Integer>>();
 			var su = new ServerUtils();
 			su.init(port + 50,
-					new NodeWebServlet(containerprocesses), MDCConstants.BACKWARD_SLASH + MDCConstants.ASTERIX,
-					new WebResourcesServlet(), MDCConstants.BACKWARD_SLASH + MDCConstants.RESOURCES + MDCConstants.BACKWARD_SLASH + MDCConstants.ASTERIX,
-					new ResourcesMetricsServlet(), MDCConstants.BACKWARD_SLASH + MDCConstants.DATA + MDCConstants.BACKWARD_SLASH + MDCConstants.ASTERIX
+					new NodeWebServlet(containerprocesses), MDCConstants.FORWARD_SLASH + MDCConstants.ASTERIX,
+					new WebResourcesServlet(), MDCConstants.FORWARD_SLASH + MDCConstants.RESOURCES + MDCConstants.FORWARD_SLASH + MDCConstants.ASTERIX,
+					new ResourcesMetricsServlet(), MDCConstants.FORWARD_SLASH + MDCConstants.DATA + MDCConstants.FORWARD_SLASH + MDCConstants.ASTERIX
 			);
 			su.start();
 			AtomicInteger portinc = new AtomicInteger(teport);

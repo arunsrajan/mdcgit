@@ -27,8 +27,8 @@ public class ZookeeperMain {
 	static Logger log = Logger.getLogger(ZookeeperMain.class);
 
 	public static void main(String[] args) throws Exception {
-		Utils.loadLog4JSystemProperties(MDCConstants.PREV_FOLDER + MDCConstants.BACKWARD_SLASH
-				+ MDCConstants.DIST_CONFIG_FOLDER + MDCConstants.BACKWARD_SLASH, MDCConstants.MDC_PROPERTIES);
+		Utils.loadLog4JSystemProperties(MDCConstants.PREV_FOLDER + MDCConstants.FORWARD_SLASH
+				+ MDCConstants.DIST_CONFIG_FOLDER + MDCConstants.FORWARD_SLASH, MDCConstants.MDC_PROPERTIES);
 		var cdl = new CountDownLatch(1);
 		var clientport = Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.ZOOKEEPER_STANDALONE_CLIENTPORT,
 				MDCConstants.ZOOKEEPER_STANDALONE_CLIENTPORT_DEFAULT));

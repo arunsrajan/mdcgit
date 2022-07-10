@@ -125,9 +125,9 @@ public class RemoteDataFetcherTest {
 		configuration.set(MDCConstants.HDFS_DEFAULTFS, MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL));
 		configuration.set(MDCConstants.HDFS_IMPL, org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
 		configuration.set(MDCConstants.HDFS_FILE_IMPL, org.apache.hadoop.fs.LocalFileSystem.class.getName());
-		String jobpath = MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL) + MDCConstants.BACKWARD_SLASH
-				+ FileSystemSupport.MDS + MDCConstants.BACKWARD_SLASH + job;
-		String filepath = jobpath + MDCConstants.BACKWARD_SLASH + filename;
+		String jobpath = MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL) + MDCConstants.FORWARD_SLASH
+				+ FileSystemSupport.MDS + MDCConstants.FORWARD_SLASH + job;
+		String filepath = jobpath + MDCConstants.FORWARD_SLASH + filename;
 		// Create folders if not already created.
 		Path filepathurl = new Path(filepath);
 		FileSystem hdfs = FileSystem.newInstance(new URI(MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL)),
@@ -188,9 +188,9 @@ public class RemoteDataFetcherTest {
 			configuration.set(MDCConstants.HDFS_DEFAULTFS, MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL));
 			configuration.set(MDCConstants.HDFS_IMPL, org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
 			configuration.set(MDCConstants.HDFS_FILE_IMPL, org.apache.hadoop.fs.LocalFileSystem.class.getName());
-			String jobpath = MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL) + MDCConstants.BACKWARD_SLASH
-					+ FileSystemSupport.MDS + MDCConstants.BACKWARD_SLASH + dir;
-			String filepath = jobpath + MDCConstants.BACKWARD_SLASH + filename;
+			String jobpath = MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL) + MDCConstants.FORWARD_SLASH
+					+ FileSystemSupport.MDS + MDCConstants.FORWARD_SLASH + dir;
+			String filepath = jobpath + MDCConstants.FORWARD_SLASH + filename;
 			Path filepathurl = new Path(filepath);
 			JobStage js = new JobStage();
 			RemoteDataFetcher.createFile(null, filepathurl, js);
@@ -210,9 +210,9 @@ public class RemoteDataFetcherTest {
 				MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL));
 		configuration.set(MDCConstants.HDFS_IMPL, org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
 		configuration.set(MDCConstants.HDFS_FILE_IMPL, org.apache.hadoop.fs.LocalFileSystem.class.getName());
-		String jobpath = MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL) + MDCConstants.BACKWARD_SLASH
-				+ FileSystemSupport.MDS + MDCConstants.BACKWARD_SLASH + dir;
-		String filepath = jobpath + MDCConstants.BACKWARD_SLASH + filename;
+		String jobpath = MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL) + MDCConstants.FORWARD_SLASH
+				+ FileSystemSupport.MDS + MDCConstants.FORWARD_SLASH + dir;
+		String filepath = jobpath + MDCConstants.FORWARD_SLASH + filename;
 		Path filepathurl = new Path(filepath);
 		FileSystem hdfs = FileSystem
 				.newInstance(new URI(MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL)), configuration);
@@ -233,9 +233,9 @@ public class RemoteDataFetcherTest {
 			configuration.set(MDCConstants.HDFS_DEFAULTFS, MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL));
 			configuration.set(MDCConstants.HDFS_IMPL, org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
 			configuration.set(MDCConstants.HDFS_FILE_IMPL, org.apache.hadoop.fs.LocalFileSystem.class.getName());
-			String jobpath = MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL) + MDCConstants.BACKWARD_SLASH
-					+ FileSystemSupport.MDS + MDCConstants.BACKWARD_SLASH + dir;
-			String filepath = jobpath + MDCConstants.BACKWARD_SLASH + filename;
+			String jobpath = MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL) + MDCConstants.FORWARD_SLASH
+					+ FileSystemSupport.MDS + MDCConstants.FORWARD_SLASH + dir;
+			String filepath = jobpath + MDCConstants.FORWARD_SLASH + filename;
 			Path filepathurl = new Path(filepath);
 			FileSystem hdfs = FileSystem.newInstance(new URI(MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL)),
 					configuration);

@@ -1,10 +1,7 @@
 package com.github.mdc.tasks.scheduler.executor.standalone;
 
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.net.URI;
+import java.net.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +20,7 @@ import org.apache.curator.framework.state.ConnectionState;
 import org.apache.curator.retry.RetryForever;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.FsUrlStreamHandlerFactory;
 import org.apache.log4j.Logger;
 import org.apache.zookeeper.server.ServerCnxnFactory;
 
@@ -37,6 +35,7 @@ public class EmbeddedSchedulersNodeLauncher {
 	static Logger log = Logger.getLogger(EmbeddedSchedulersNodeLauncher.class);
 
 	public static void main(String[] args) throws Exception {
+		URL.setURLStreamHandlerFactory(new FsUrlStreamHandlerFactory());
 		log.info(MDCScalaConstants.SCALA_VERSION());
 		Utils.loadLog4JSystemProperties(MDCConstants.PREV_FOLDER + MDCConstants.BACKWARD_SLASH
 				+ MDCConstants.DIST_CONFIG_FOLDER + MDCConstants.BACKWARD_SLASH, MDCConstants.MDC_PROPERTIES);

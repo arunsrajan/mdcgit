@@ -18,6 +18,7 @@ package com.github.mdc.tasks.executor;
 import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.ServerSocket;
+import java.net.URL;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -37,6 +38,7 @@ import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.state.ConnectionState;
 import org.apache.curator.retry.RetryForever;
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FsUrlStreamHandlerFactory;
 import org.apache.log4j.Logger;
 
 import com.github.mdc.common.ByteBufferPool;
@@ -77,6 +79,7 @@ public class TaskExecutorRunner implements TaskExecutorRunnerMBean {
 	static ExecutorService es;
 
 	public static void main(String[] args) throws Exception {
+		URL.setURLStreamHandlerFactory(new FsUrlStreamHandlerFactory());
 		if (args == null || args.length != 2) {
 			log.debug("Args" + args);
 			if (args != null) {
@@ -94,8 +97,8 @@ public class TaskExecutorRunner implements TaskExecutorRunnerMBean {
 			}
 		}
 		if (args[0].equals(MDCConstants.TEPROPLOADDISTROCONFIG)) {
-			Utils.loadLog4JSystemProperties(MDCConstants.PREV_FOLDER + MDCConstants.BACKWARD_SLASH
-					+ MDCConstants.DIST_CONFIG_FOLDER + MDCConstants.BACKWARD_SLASH, MDCConstants.MDC_PROPERTIES);
+			Utils.loadLog4JSystemProperties(MDCConstants.PREV_FOLDER + MDCConstants.FORWARD_SLASH
+					+ MDCConstants.DIST_CONFIG_FOLDER + MDCConstants.FORWARD_SLASH, MDCConstants.MDC_PROPERTIES);
 		} else if (args[0].equals(MDCConstants.TEPROPLOADCLASSPATHCONFIG)) {
 			Utils.loadLog4JSystemPropertiesClassPath(MDCConstants.MDC_TEST_PROPERTIES);
 		} else if (args[0].equals(MDCConstants.TEPROPLOADCLASSPATHCONFIGEXCEPTION)) {
@@ -141,18 +144,18 @@ public class TaskExecutorRunner implements TaskExecutorRunnerMBean {
 								+ MDCConstants.UNDERSCORE
 								+ MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_PORT);
 						var nodesdata = (List<String>) ZookeeperOperations.nodesdata.invoke(cf,
-								MDCConstants.ZK_BASE_PATH + MDCConstants.BACKWARD_SLASH + MDCConstants.TASKEXECUTOR,
+								MDCConstants.ZK_BASE_PATH + MDCConstants.FORWARD_SLASH + MDCConstants.TASKEXECUTOR,
 								null, null);
 						if (!nodesdata.contains(nodedata)) {
 							ZookeeperOperations.ephemeralSequentialCreate.invoke(cf,
-									MDCConstants.ZK_BASE_PATH + MDCConstants.BACKWARD_SLASH + MDCConstants.TASKEXECUTOR,
+									MDCConstants.ZK_BASE_PATH + MDCConstants.FORWARD_SLASH + MDCConstants.TASKEXECUTOR,
 									MDCConstants.TE + MDCConstants.HYPHEN, nodedata);
 						}
 					}
 				});
 
 		ZookeeperOperations.ephemeralSequentialCreate.invoke(cf,
-				MDCConstants.ZK_BASE_PATH + MDCConstants.BACKWARD_SLASH + MDCConstants.TASKEXECUTOR,
+				MDCConstants.ZK_BASE_PATH + MDCConstants.FORWARD_SLASH + MDCConstants.TASKEXECUTOR,
 				MDCConstants.TE + MDCConstants.HYPHEN,
 				NetworkUtil.getNetworkAddress(MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_HOST))
 						+ MDCConstants.UNDERSCORE + MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_PORT));
@@ -170,9 +173,9 @@ public class TaskExecutorRunner implements TaskExecutorRunnerMBean {
 		log.info("TaskExecutor Port: " + port);
 		var su = new ServerUtils();
 		su.init(port + 50,
-				new NodeWebServlet(new ConcurrentHashMap<String, Map<String, Process>>()), MDCConstants.BACKWARD_SLASH + MDCConstants.ASTERIX,
-				new WebResourcesServlet(), MDCConstants.BACKWARD_SLASH + MDCConstants.RESOURCES + MDCConstants.BACKWARD_SLASH + MDCConstants.ASTERIX,
-				new ResourcesMetricsServlet(), MDCConstants.BACKWARD_SLASH + MDCConstants.DATA + MDCConstants.BACKWARD_SLASH + MDCConstants.ASTERIX
+				new NodeWebServlet(new ConcurrentHashMap<String, Map<String, Process>>()), MDCConstants.FORWARD_SLASH + MDCConstants.ASTERIX,
+				new WebResourcesServlet(), MDCConstants.FORWARD_SLASH + MDCConstants.RESOURCES + MDCConstants.FORWARD_SLASH + MDCConstants.ASTERIX,
+				new ResourcesMetricsServlet(), MDCConstants.FORWARD_SLASH + MDCConstants.DATA + MDCConstants.FORWARD_SLASH + MDCConstants.ASTERIX
 		);
 		su.start();
 		server = new ServerSocket(port, 256, InetAddress.getByAddress(new byte[]{0x00, 0x00, 0x00, 0x00}));

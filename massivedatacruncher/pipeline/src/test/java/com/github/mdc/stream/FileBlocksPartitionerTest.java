@@ -58,7 +58,7 @@ public class FileBlocksPartitionerTest extends StreamPipelineTestCommon {
 		PipelineConfig pc = new PipelineConfig();
 		IgnitePipeline mdpi = IgnitePipeline
 				.newStreamFILE(
-						System.getProperty("user.dir") + MDCConstants.BACKWARD_SLASH + "src/test/resources/ignite", pc)
+						System.getProperty("user.dir") + MDCConstants.FORWARD_SLASH + "src/test/resources/ignite", pc)
 				.map(val -> val.split(MDCConstants.COMMA));
 		((IgnitePipeline) mdpi.root).mdsroots.add(mdpi.root);
 		((IgnitePipeline) mdpi.root).finaltasks = new HashSet<>(Arrays.asList(mdpi.root.finaltask));

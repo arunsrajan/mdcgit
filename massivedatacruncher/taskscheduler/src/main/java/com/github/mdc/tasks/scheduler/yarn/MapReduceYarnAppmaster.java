@@ -111,7 +111,7 @@ public class MapReduceYarnAppmaster extends StaticEventingAppmaster implements C
 			ByteBufferPoolDirect.init();
 			ByteBufferPool.init(3);
 			log.info("Environment: " + getEnvironment());
-			var yarninputfolder = MDCConstants.YARNINPUTFOLDER + MDCConstants.BACKWARD_SLASH
+			var yarninputfolder = MDCConstants.YARNINPUTFOLDER + MDCConstants.FORWARD_SLASH
 					+ getEnvironment().get(MDCConstants.YARNMDCJOBID);
 			log.info("Yarn Input Folder: " + yarninputfolder);
 			log.info("AppMaster HDFS: " + getConfiguration().get(MDCConstants.HDFSNAMENODEURL));
@@ -200,8 +200,8 @@ public class MapReduceYarnAppmaster extends StaticEventingAppmaster implements C
 	public MapperCombiner getMapperCombiner(
 			Map<String, Set<String>> mapclzchunkfile,
 			Set<String> combiners, BlocksLocation blockslocation, ApplicationTask apptask) {
-		var rawpath = blockslocation.block[0].filename.split(MDCConstants.BACKWARD_SLASH);
-		var mapcombiner = new MapperCombiner(blockslocation, mapclzchunkfile.get(MDCConstants.BACKWARD_SLASH + rawpath[3]), apptask,
+		var rawpath = blockslocation.block[0].filename.split(MDCConstants.FORWARD_SLASH);
+		var mapcombiner = new MapperCombiner(blockslocation, mapclzchunkfile.get(MDCConstants.FORWARD_SLASH + rawpath[3]), apptask,
 				combiners);
 		return mapcombiner;
 	}
@@ -348,8 +348,8 @@ public class MapReduceYarnAppmaster extends StaticEventingAppmaster implements C
 					log.info("Writing Results to file: " + filename);
 					try (var hdfs = FileSystem.get(new URI(MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL)),
 							new Configuration());var fsdos = hdfs.create(new Path(
-							MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL) + MDCConstants.BACKWARD_SLASH
-									+ jobconf.getOutputfolder() + MDCConstants.BACKWARD_SLASH + filename));) {
+							MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL) + MDCConstants.FORWARD_SLASH
+									+ jobconf.getOutputfolder() + MDCConstants.FORWARD_SLASH + filename));) {
 						fsdos.write(sb.toString().getBytes());
 					} catch (Exception ex) {
 						log.error(MDCConstants.EMPTY, ex);

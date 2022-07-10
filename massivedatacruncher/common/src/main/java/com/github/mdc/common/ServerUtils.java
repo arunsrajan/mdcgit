@@ -47,7 +47,7 @@ public class ServerUtils implements ServerUtilsMBean {
 		//Create the server object.
 		server = new Server(port);
 		var context = new ServletContextHandler(ServletContextHandler.SESSIONS);
-		context.setContextPath(MDCConstants.BACKWARD_SLASH);
+		context.setContextPath(MDCConstants.FORWARD_SLASH);
 		server.setHandler(context);
 		for (var conf = 1; conf < config.length; conf += 2) {
 			if (!(config[conf] instanceof HttpServlet)) {

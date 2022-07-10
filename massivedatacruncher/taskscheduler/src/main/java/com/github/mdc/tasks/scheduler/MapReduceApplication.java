@@ -737,8 +737,8 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 				var filename = MDCConstants.MAPRED + MDCConstants.HYPHEN + System.currentTimeMillis();
 				log.debug("Writing Results to file: " + filename);
 				try (var fsdos = hdfs.create(new Path(
-						MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL) + MDCConstants.BACKWARD_SLASH
-								+ this.outputfolder + MDCConstants.BACKWARD_SLASH + filename));) {
+						MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL) + MDCConstants.FORWARD_SLASH
+								+ this.outputfolder + MDCConstants.FORWARD_SLASH + filename));) {
 					fsdos.write(sb.toString().getBytes());
 				} catch (Exception ex) {
 					log.error(MDCConstants.EMPTY, ex);

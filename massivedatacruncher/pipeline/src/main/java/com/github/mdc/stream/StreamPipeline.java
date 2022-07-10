@@ -161,7 +161,7 @@ public sealed class StreamPipeline<I1> extends AbstractPipeline permits CsvStrea
 		try {
 			url = new URL(filepathwithscheme);
 			if (url.getProtocol().equals(FileSystemSupport.HDFS)) {
-				mdp = newStreamHDFS(url.getProtocol() + MDCConstants.COLON+MDCConstants.BACKWARD_SLASH+MDCConstants.BACKWARD_SLASH+ url.getHost() + MDCConstants.COLON + url.getPort(), url.getPath(), pipelineconfig);
+				mdp = newStreamHDFS(url.getProtocol() + MDCConstants.COLON+MDCConstants.FORWARD_SLASH+MDCConstants.FORWARD_SLASH+ url.getHost() + MDCConstants.COLON + url.getPort(), url.getPath(), pipelineconfig);
 			} 
 			return mdp;
 		}

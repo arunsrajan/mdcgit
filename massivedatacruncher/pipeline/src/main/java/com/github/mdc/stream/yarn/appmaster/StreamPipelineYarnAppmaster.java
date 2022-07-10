@@ -102,7 +102,7 @@ public class StreamPipelineYarnAppmaster extends StaticEventingAppmaster impleme
 			ByteBufferPool.init(3);
 			log.debug("Task Id Counter: " + taskidcounter);
 			log.debug("Environment: " + getEnvironment());
-			var yarninputfolder = MDCConstants.YARNINPUTFOLDER + MDCConstants.BACKWARD_SLASH
+			var yarninputfolder = MDCConstants.YARNINPUTFOLDER + MDCConstants.FORWARD_SLASH
 					+ getEnvironment().get(MDCConstants.YARNMDCJOBID);
 			log.debug("Yarn Input Folder: " + yarninputfolder);
 			log.debug("AppMaster HDFS: " + getConfiguration().get(MDCConstants.HDFSNAMENODEURL));

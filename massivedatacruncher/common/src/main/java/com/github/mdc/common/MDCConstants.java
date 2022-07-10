@@ -28,7 +28,8 @@ public class MDCConstants {
 	public static final String NEWLINE = "\n";
 	public static final String HYPHEN = "-";
 	static final String SLASH = "\\";
-	public static final String BACKWARD_SLASH = "/";
+	public static final String FORWARD_SLASH = "/";
+	public static final String BACKWARD_SLASH = "\\";
 	public static final String COLON = ":";
 	public static final String EQUAL = "=";
 	public static final String UNDERSCORE = "_";
@@ -174,6 +175,8 @@ public class MDCConstants {
 	static final String HDFS_DEFAULTFS = "fs.defaultFS";
 	static final String HDFS_IMPL = "fs.hdfs.impl";
 	static final String HDFS_FILE_IMPL = "fs.file.impl";
+	public static final String HDFS_PROTOCOL = "hdfs";
+	public static final String FILE_PROTOCOL = "file";
 
 	public static final String ZK_BASE_PATH = "/mdc/cluster1";
 

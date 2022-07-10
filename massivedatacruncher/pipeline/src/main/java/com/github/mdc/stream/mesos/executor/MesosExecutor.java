@@ -22,6 +22,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.hadoop.fs.FsUrlStreamHandlerFactory;
 import org.apache.log4j.Logger;
 import org.apache.mesos.Executor;
 import org.apache.mesos.ExecutorDriver;
@@ -83,7 +84,7 @@ public class MesosExecutor implements Executor {
 		for (var propertyfile :propertyfiles) {
 			try (
 			
-			var istream = new URL(httpurl + MDCConstants.BACKWARD_SLASH + propertyfile).openStream();
+			var istream = new URL(httpurl + MDCConstants.FORWARD_SLASH + propertyfile).openStream();
 			var fos = new FileOutputStream(propertyfile);) {
 				IOUtils.copy(istream, fos);
 			}
@@ -159,6 +160,7 @@ public class MesosExecutor implements Executor {
 	 * @throws Exception
 	 */
 	public static void main(String[] args) {
+		URL.setURLStreamHandlerFactory(new FsUrlStreamHandlerFactory());
 		log.debug("Launching MassiveDataCruncher Mesos Executor");
 		//Initialize the mesos executor driver with the 
 		//mesos executor object inialized with the arguments.

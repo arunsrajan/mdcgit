@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.net.URL;
 import java.util.List;
 import java.util.Objects;
 
@@ -28,6 +29,7 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.RetryForever;
+import org.apache.hadoop.fs.FsUrlStreamHandlerFactory;
 import org.apache.log4j.Logger;
 
 import com.esotericsoftware.kryo.io.Input;
@@ -44,6 +46,8 @@ public class ApplicationSubmitter {
 	@SuppressWarnings({"unchecked"})
 	public static void main(String[] args) throws Exception {
 
+		URL.setURLStreamHandlerFactory(new FsUrlStreamHandlerFactory());
+		
 		var options = new Options();
 
 		options.addOption(MDCConstants.JAR, true, MDCConstants.MRJARREQUIRED);
@@ -66,14 +70,14 @@ public class ApplicationSubmitter {
 			argue = cmd.getOptionValue(MDCConstants.ARGS).split(" ");
 		}
 
-		Utils.loadLog4JSystemProperties(MDCConstants.PREV_FOLDER + MDCConstants.BACKWARD_SLASH
-				+ MDCConstants.DIST_CONFIG_FOLDER + MDCConstants.BACKWARD_SLASH, MDCConstants.MDC_PROPERTIES);
+		Utils.loadLog4JSystemProperties(MDCConstants.PREV_FOLDER + MDCConstants.FORWARD_SLASH
+				+ MDCConstants.DIST_CONFIG_FOLDER + MDCConstants.FORWARD_SLASH, MDCConstants.MDC_PROPERTIES);
 		var cf = CuratorFrameworkFactory.newClient(MDCProperties.get().getProperty(MDCConstants.ZOOKEEPER_HOSTPORT), 20000,
 				50000, new RetryForever(2000));
 		cf.start();
 		var hostport = MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULER_HOSTPORT);
 		var taskschedulers = (List<String>) ZookeeperOperations.nodesdata.invoke(cf,
-				MDCConstants.ZK_BASE_PATH + MDCConstants.BACKWARD_SLASH + MDCConstants.TASKSCHEDULER, null, null);
+				MDCConstants.ZK_BASE_PATH + MDCConstants.FORWARD_SLASH + MDCConstants.TASKSCHEDULER, null, null);
 		if (hostport != null || taskschedulers.size() > 0) {
 			String currenttaskscheduler;
 			if (hostport != null) {

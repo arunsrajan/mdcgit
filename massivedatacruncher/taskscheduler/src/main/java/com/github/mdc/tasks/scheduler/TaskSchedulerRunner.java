@@ -2,6 +2,7 @@ package com.github.mdc.tasks.scheduler;
 
 import java.net.InetAddress;
 import java.net.ServerSocket;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -11,6 +12,7 @@ import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.state.ConnectionState;
 import org.apache.curator.retry.RetryForever;
+import org.apache.hadoop.fs.FsUrlStreamHandlerFactory;
 import org.apache.log4j.Logger;
 
 import com.esotericsoftware.kryo.io.Input;
@@ -30,6 +32,7 @@ public class TaskSchedulerRunner {
 
 	@SuppressWarnings({ "unused", "unchecked" })
 	public static void main(String[] args) throws Exception {
+		URL.setURLStreamHandlerFactory(new FsUrlStreamHandlerFactory());
 		Utils.loadLog4JSystemProperties(MDCConstants.PREV_FOLDER + MDCConstants.BACKWARD_SLASH
 				+ MDCConstants.DIST_CONFIG_FOLDER + MDCConstants.BACKWARD_SLASH, MDCConstants.MDC_PROPERTIES);
 		var cdl = new CountDownLatch(1);
