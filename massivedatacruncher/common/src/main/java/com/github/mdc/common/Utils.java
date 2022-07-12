@@ -21,6 +21,7 @@ import com.esotericsoftware.kryo.io.Output;
 import com.esotericsoftware.kryo.serializers.ClosureSerializer;
 import com.esotericsoftware.kryo.serializers.CompatibleFieldSerializer;
 import com.esotericsoftware.kryo.serializers.CompatibleFieldSerializer.CompatibleFieldSerializerConfig;
+import com.esotericsoftware.kryo.serializers.JavaSerializer;
 import com.esotericsoftware.kryo.util.DefaultInstantiatorStrategy;
 
 import de.javakaffee.kryoserializers.*;
@@ -229,7 +230,9 @@ public class Utils {
 		log.debug("Entered Utils.registerKryoNonDeflateSerializer");
 		kryo.setRegistrationRequired(false);
 		kryo.setReferences(true);
-		kryo.setWarnUnregisteredClasses(false);
+		kryo.setWarnUnregisteredClasses(true);
+		kryo.setOptimizedGenerics(true);
+		kryo.setAutoReset(true);
 		RegisterKyroSerializers.register(kryo);
 		var dis = new com.esotericsoftware.kryo.util.DefaultInstantiatorStrategy(new StdInstantiatorStrategy());
 		kryo.setInstantiatorStrategy(dis);
@@ -257,11 +260,11 @@ public class Utils {
 		kryo.register(ConcurrentHashMap.class);
 		kryo.register(byte[].class);
 		kryo.register(LoadJar.class);
-		kryo.register(JobStage.class);
+		kryo.register(JobStage.class, new JavaSerializer());
 		kryo.register(RemoteDataFetch[].class);
 		kryo.register(RemoteDataFetch.class);
-		kryo.register(Stage.class);
-		kryo.register(Task.class);
+		kryo.register(Stage.class, new JavaSerializer());
+		kryo.register(Task.class, new JavaSerializer());
 		kryo.register(TasksGraphExecutor.class);
 		kryo.register(DAGEdge.class);
 		kryo.register(DataCruncherContext.class);
@@ -799,10 +802,10 @@ public class Utils {
 	 * @return object
 	 */
 	public static Object readObject(Socket socket, ClassLoader cl) {
-		try {
-			var input = new Input(socket.getInputStream());
-			var kryo = Utils.getKryoNonDeflateSerializer();
+		try (var input = new Input(socket.getInputStream());){			
+			Kryo kryo = new Kryo();
 			kryo.setClassLoader(cl);
+			Utils.registerKryoNonDeflateSerializer(kryo);
 			return kryo.readClassAndObject(input);
 
 		} catch (Exception ex) {
