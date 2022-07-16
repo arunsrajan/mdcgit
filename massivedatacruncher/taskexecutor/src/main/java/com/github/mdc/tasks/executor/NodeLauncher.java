@@ -76,14 +76,13 @@ public class NodeLauncher {
 					new ResourcesMetricsServlet(), MDCConstants.FORWARD_SLASH + MDCConstants.DATA + MDCConstants.FORWARD_SLASH + MDCConstants.ASTERIX
 			);
 			su.start();
-			AtomicInteger portinc = new AtomicInteger(teport);
 			es.execute(() -> {
 				while (true) {
 					try (Socket sock = server.accept();) {
-						var container = new NodeRunner(sock, portinc, MDCConstants.PROPLOADERCONFIGFOLDER,
+						var container = new NodeRunner(sock, MDCConstants.PROPLOADERCONFIGFOLDER,
 								containerprocesses, hdfs, containeridthreads, containeridports);
 						Future<Boolean> containerallocated = escontainer.submit(container);
-						log.info("Containers Allocated: " + containerallocated.get() + " Next Port Allocation:" + portinc.get());
+						log.info("Containers Allocated: " + containerallocated.get());
 					} catch (InterruptedException e) {
 						log.warn("Interrupted!", e);
 						// Restore interrupted state...

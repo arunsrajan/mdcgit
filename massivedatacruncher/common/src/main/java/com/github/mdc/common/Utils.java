@@ -802,10 +802,10 @@ public class Utils {
 	 * @return object
 	 */
 	public static Object readObject(Socket socket, ClassLoader cl) {
-		try (var input = new Input(socket.getInputStream());){			
-			Kryo kryo = new Kryo();
+		try {
+			var input = new Input(socket.getInputStream());
+			var kryo = Utils.getKryoNonDeflateSerializer();
 			kryo.setClassLoader(cl);
-			Utils.registerKryoNonDeflateSerializer(kryo);
 			return kryo.readClassAndObject(input);
 
 		} catch (Exception ex) {

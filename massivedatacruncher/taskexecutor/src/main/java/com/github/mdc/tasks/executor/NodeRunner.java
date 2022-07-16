@@ -16,6 +16,7 @@
 package com.github.mdc.tasks.executor;
 
 import java.io.InputStream;
+import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -47,19 +48,17 @@ import com.github.mdc.common.Utils;
 public class NodeRunner implements Callable<Boolean> {
 	private static Logger log = Logger.getLogger(NodeRunner.class);
 	Socket sock;
-	AtomicInteger portinc;
 	String proploaderpath;
 	ConcurrentMap<String, Map<String, Process>> containerprocesses;
 	FileSystem hdfs;
 	ConcurrentMap<String, Map<String, List<Thread>>> containeridcontainerthreads;
 	ConcurrentMap<String, List<Integer>> containeridports;
 
-	public NodeRunner(Socket sock, AtomicInteger portinc, String proploaderpath,
+	public NodeRunner(Socket sock, String proploaderpath,
 			ConcurrentMap<String, Map<String, Process>> containerprocesses, FileSystem hdfs,
 			ConcurrentMap<String, Map<String, List<Thread>>> containeridcontainerthreads,
 			ConcurrentMap<String, List<Integer>> containeridports) {
 		this.sock = sock;
-		this.portinc = portinc;
 		this.proploaderpath = proploaderpath;
 		this.containerprocesses = containerprocesses;
 		this.hdfs = hdfs;
@@ -74,12 +73,14 @@ public class NodeRunner implements Callable<Boolean> {
 			Object deserobj = Utils.readObject(sock);
 			if (deserobj instanceof AllocateContainers ac) {
 				List<Integer> ports = new ArrayList<>();
-				for (int port = 0; port < ac.getNumberofcontainers(); port++) {
-					log.info("Allocating Port " + (port + portinc.get()));
-					ports.add(port + portinc.get());
+				for (int numport = 0; numport < ac.getNumberofcontainers(); numport++) {
+					try(ServerSocket s = new ServerSocket(0);){
+						int port = s.getLocalPort();
+						log.info("Allocating Port " + port);
+						ports.add(port);
+					}
 				}
 				containeridports.put(ac.getContainerid(), ports);
-				portinc.set(portinc.get() + ac.getNumberofcontainers());
 				Utils.writeObjectByStream(sock.getOutputStream(), ports);
 			} else if (deserobj instanceof LaunchContainers lc) {
 				Map<String, Process> processes = new ConcurrentHashMap<>();
