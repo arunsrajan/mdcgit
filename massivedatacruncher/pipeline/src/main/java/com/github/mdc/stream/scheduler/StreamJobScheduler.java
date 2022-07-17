@@ -662,7 +662,7 @@ public class StreamJobScheduler {
 
 	/**
 	 * Closes Stages in task executor making room for another tasks to be executed
-	 * in tkas executors JVM.
+	 * in task executors JVM.
 	 * 
 	 * @param tasksgraphexecutor
 	 * @throws Exception
@@ -671,7 +671,8 @@ public class StreamJobScheduler {
 		for (var taskgraphexecutor : tasksgraphexecutor) {
 			if (!taskgraphexecutor.getTasks().isEmpty()) {
 				var hp = taskgraphexecutor.getHostport();
-				Utils.writeObject(hp, new CloseStagesGraphExecutor(taskgraphexecutor.getTasks()));
+				if((boolean) Utils.getResultObjectByInput(hp, new CloseStagesGraphExecutor(taskgraphexecutor.getTasks()))) {
+					log.info("Cleanup of tasks completed successfully for host "+hp);				}
 			}
 		}
 	}

@@ -16,6 +16,7 @@
 package com.github.mdc.tasks.executor;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.net.URI;
@@ -39,6 +40,7 @@ import com.github.mdc.common.CacheAvailability;
 import com.github.mdc.common.CacheUtils;
 import com.github.mdc.common.CloseStagesGraphExecutor;
 import com.github.mdc.common.Context;
+import com.github.mdc.common.FileSystemSupport;
 import com.github.mdc.common.FreeResourcesCompletedJob;
 import com.github.mdc.common.HeartBeatServerStream;
 import com.github.mdc.common.HeartBeatTaskScheduler;
@@ -164,7 +166,22 @@ public class TaskExecutor implements Runnable {
 					mdste.channel.close();
 					for (Task task :closestagesgraph.getTasks()) {
 						jobstageexecutormap.remove(task.jobid + task.stageid + task.taskid);
+						File todelete = new File(MDCProperties.get().getProperty(MDCConstants.TMPDIR) + MDCConstants.FORWARD_SLASH
+								+ FileSystemSupport.MDS + MDCConstants.FORWARD_SLASH + task.jobid + MDCConstants.FORWARD_SLASH + task.taskid);
+						todelete.delete();
+						log.info("Cleaning Up the Intermedite Task " + todelete);
 					}
+					File jobtmpdir = new File(MDCProperties.get().getProperty(MDCConstants.TMPDIR) + MDCConstants.FORWARD_SLASH
+							+ FileSystemSupport.MDS + MDCConstants.FORWARD_SLASH + closestagesgraph.getTasks().get(0).jobid);
+					File[] taskintermediatefiles = jobtmpdir.listFiles();
+					if(jobtmpdir.isDirectory()) {
+						if(Objects.isNull(taskintermediatefiles) || 
+								Objects.nonNull(taskintermediatefiles) 
+								&& taskintermediatefiles.length==0) {
+							jobtmpdir.delete();
+						}
+					}
+					Utils.writeObject(sock,  true);
 				}
 			} else if (deserobj instanceof FreeResourcesCompletedJob cce) {
 				var jsem = jobidstageidexecutormap.remove(cce.jobid);
