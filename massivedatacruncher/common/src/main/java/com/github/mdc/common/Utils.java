@@ -21,6 +21,7 @@ import com.esotericsoftware.kryo.io.Output;
 import com.esotericsoftware.kryo.serializers.ClosureSerializer;
 import com.esotericsoftware.kryo.serializers.CompatibleFieldSerializer;
 import com.esotericsoftware.kryo.serializers.CompatibleFieldSerializer.CompatibleFieldSerializerConfig;
+import com.esotericsoftware.kryo.serializers.DefaultSerializers.EnumSerializer;
 import com.esotericsoftware.kryo.serializers.JavaSerializer;
 import com.esotericsoftware.kryo.util.DefaultInstantiatorStrategy;
 
@@ -290,11 +291,13 @@ public class Utils {
 				new CompatibleFieldSerializer(kryo, CloseStagesGraphExecutor.class));
 		kryo.register(AllocateContainers.class);
 		kryo.register(LaunchContainers.class);
+		kryo.register(AllocateContainers.class);
 		kryo.register(ContainerLaunchAttributes.class);
 		kryo.register(ContainerResources.class);
 		kryo.register(LaunchContainers.MODE.class);
-		kryo.register(JobApp.class);
-		kryo.register(JobApp.JOBAPP.class);
+		kryo.register(JobApp.class, new JavaSerializer());
+		kryo.register(JobApp.JOBAPP.class, new EnumSerializer(JobApp.JOBAPP.class));
+		kryo.register(Dummy.class, new JavaSerializer());
 		log.debug("Exiting Utils.registerKryoNonDeflateSerializer");
 	}
 

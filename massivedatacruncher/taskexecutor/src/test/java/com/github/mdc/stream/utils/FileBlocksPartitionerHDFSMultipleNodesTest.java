@@ -104,14 +104,13 @@ public class FileBlocksPartitionerHDFSMultipleNodesTest extends StreamPipelineBa
 			es.execute(() -> {
 				ServerSocket ssl = ss;
 				cdl.countDown();
-				AtomicInteger portinc = new AtomicInteger(teport + nodeindex * 100);
 				semaphore.release();
 				while (true) {
 					try (Socket sock = ssl.accept();) {
-						var container = new NodeRunner(sock, portinc, MDCConstants.PROPLOADERCONFIGFOLDER,
+						var container = new NodeRunner(sock, MDCConstants.PROPLOADERCONFIGFOLDER,
 								containerprocesses, hdfs, containeridthreads, containeridports);
 						Future<Boolean> containerallocated = escontainer.submit(container);
-						log.info("Containers Allocated: " + containerallocated.get() + " Next Port Allocation:" + portinc.get());
+						log.info("Containers Allocated: " + containerallocated.get());
 					} catch (Exception e) {
 					}
 				}

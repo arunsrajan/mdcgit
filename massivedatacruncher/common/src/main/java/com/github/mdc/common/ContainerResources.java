@@ -25,7 +25,7 @@ public class ContainerResources {
 	private long maxmemory;
 	private long directheap;
 	private String gctype;
-	private long cpu;
+	private int cpu;
 	private int port;
 	private boolean islaunched;
 
@@ -53,11 +53,11 @@ public class ContainerResources {
 		this.gctype = gctype;
 	}
 
-	public long getCpu() {
+	public int getCpu() {
 		return cpu;
 	}
 
-	public void setCpu(long cpu) {
+	public void setCpu(int cpu) {
 		this.cpu = cpu;
 	}
 

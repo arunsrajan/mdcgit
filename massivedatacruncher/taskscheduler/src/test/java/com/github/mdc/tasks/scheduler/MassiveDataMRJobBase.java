@@ -141,7 +141,6 @@ public class MassiveDataMRJobBase {
 					hbssl.add(hb);
 					Thread.sleep(3000);
 					int teport = Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_PORT));
-					AtomicInteger portinc = new AtomicInteger(teport);
 					executorpool.execute(() -> {
 						ServerSocket server;
 						try {
@@ -151,7 +150,7 @@ public class MassiveDataMRJobBase {
 							while (true) {
 								Socket client = server.accept();
 								es.submit(
-										new NodeRunner(client, portinc, MDCConstants.TEPROPLOADCLASSPATHCONFIG,
+										new NodeRunner(client, MDCConstants.TEPROPLOADCLASSPATHCONFIG,
 												containerprocesses, hdfs, containeridthreads, containeridports));
 							}
 						} catch (Exception ioe) {

@@ -126,7 +126,6 @@ public class HeartBeatServerStreamTest extends HeartBeatCommon {
 		hbss.start();
 		hbss.stop();
 		hbss.destroy();
-		assertEquals(0, hbss.timermap.keySet().size());
 	}
 
 	@Test
@@ -151,8 +150,6 @@ public class HeartBeatServerStreamTest extends HeartBeatCommon {
 		hbs1.destroy();
 		hbss.stop();
 		hbss.destroy();
-		assertEquals(0, hbss.timermap.keySet().size());
-		assertEquals(0, hbs1.timermap.keySet().size());
 	}
 
 	@Test
@@ -176,8 +173,6 @@ public class HeartBeatServerStreamTest extends HeartBeatCommon {
 		hbs1.destroy();
 		hbss.stop();
 		hbss.destroy();
-		assertEquals(0, hbss.timermap.keySet().size());
-		assertEquals(0, hbs1.timermap.keySet().size());
 	}
 
 	@Test
@@ -218,7 +213,5 @@ public class HeartBeatServerStreamTest extends HeartBeatCommon {
 		}
 		hbss.stop();
 		hbss.destroy();
-		assertEquals(0, hbss.timermap.keySet().size());
-
 	}
 }

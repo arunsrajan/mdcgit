@@ -99,12 +99,14 @@ import com.github.mdc.common.JobStage;
 import com.github.mdc.common.LoadJar;
 import com.github.mdc.common.MDCCache;
 import com.github.mdc.common.MDCConstants;
+import com.github.mdc.common.MDCNodesResources;
 import com.github.mdc.common.MDCProperties;
 import com.github.mdc.common.PipelineConstants;
 import com.github.mdc.common.NetworkUtil;
 import com.github.mdc.common.PipelineConfig;
 import com.github.mdc.common.RemoteDataFetch;
 import com.github.mdc.common.RemoteDataFetcher;
+import com.github.mdc.common.Resources;
 import com.github.mdc.common.Stage;
 import com.github.mdc.common.Task;
 import com.github.mdc.common.TasksGraphExecutor;
@@ -631,6 +633,11 @@ public class StreamJobScheduler {
 							containers.remove(container);
 							Utils.writeObject(node, dc);
 							ContainerResources cr = chpcres.remove(container);
+							Resources allocresources = MDCNodesResources.get().get(node);
+							long maxmemory = cr.getMaxmemory() * MDCConstants.MB;
+							long directheap = cr.getDirectheap() *  MDCConstants.MB;
+							allocresources.setFreememory(allocresources.getFreememory()+maxmemory+directheap);
+							allocresources.setNumberofprocessors(allocresources.getNumberofprocessors()+cr.getCpu());
 						} else {
 							deallocateall = false;
 						}

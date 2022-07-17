@@ -158,7 +158,6 @@ public class StreamPipelineBaseException {
 				ConcurrentMap<String, Map<String, List<Thread>>> containeridthreads = new ConcurrentHashMap<>();
 				hdfste = FileSystem.get(new URI(MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL)),
 						configuration);
-				AtomicInteger portinc = new AtomicInteger(port);
 				var containeridports = new ConcurrentHashMap<String, List<Integer>>();
 				while (executorsindex < numberofnodes) {
 					hb = new HeartBeatServerStream();
@@ -176,9 +175,9 @@ public class StreamPipelineBaseException {
 							while (true) {
 								Socket client = server.accept();
 								Future<Boolean> containerallocated = threadpool.submit(
-										new NodeRunner(client, portinc, MDCConstants.TEPROPLOADCLASSPATHCONFIGEXCEPTION,
+										new NodeRunner(client, MDCConstants.TEPROPLOADCLASSPATHCONFIGEXCEPTION,
 												containerprocesses, hdfste, containeridthreads, containeridports));
-								log.info("Containers Allocated: " + containerallocated.get() + " Next Port Allocation:" + portinc.get());
+								log.info("Containers Allocated: " + containerallocated.get());
 							}
 						} catch (Exception ioe) {
 						}

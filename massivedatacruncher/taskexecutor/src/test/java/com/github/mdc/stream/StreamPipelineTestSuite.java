@@ -49,9 +49,8 @@ import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.MDCProperties;
 import com.github.mdc.common.NetworkUtil;
 import com.github.mdc.common.Utils;
-import com.github.mdc.tasks.executor.NodeRunner;
 import com.github.mdc.tasks.executor.MassiveDataCruncherMRApiTest;
-import com.github.sakserv.minicluster.impl.HdfsLocalCluster;
+import com.github.mdc.tasks.executor.NodeRunner;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
@@ -131,7 +130,6 @@ public class StreamPipelineTestSuite extends StreamPipelineBase {
 					hb.init(rescheduledelay, nodeport, host, initialdelay, pingdelay, "");
 					hb.ping();
 					hbssl.add(hb);
-					AtomicInteger portinc = new AtomicInteger(port);
 					executorpool.execute(() -> {
 						ServerSocket server;
 						try {
@@ -141,10 +139,10 @@ public class StreamPipelineTestSuite extends StreamPipelineBase {
 							cdl.countDown();
 							while (true) {
 								try (Socket sock = server.accept();) {
-									var container = new NodeRunner(sock, portinc, MDCConstants.TEPROPLOADCLASSPATHCONFIG,
+									var container = new NodeRunner(sock, MDCConstants.TEPROPLOADCLASSPATHCONFIG,
 											containerprocesses, hdfs, containeridthreads, containeridports);
 									Future<Boolean> containerallocated = threadpool.submit(container);
-									log.info("Containers Allocated: " + containerallocated.get() + " Next Port Allocation:" + portinc.get());
+									log.info("Containers Allocated: " + containerallocated.get());
 								} catch (Exception e) {
 								}
 							}

@@ -298,6 +298,11 @@ public class FileBlocksPartitionerHDFS {
 							//Remove the container from the node and destroy it.  
 							Utils.writeObject(node, dc);
 							ContainerResources cr = chpcres.remove(container);
+							Resources allocresources = MDCNodesResources.get().get(node);
+							long maxmemory = cr.getMaxmemory() * MDCConstants.MB;
+							long directheap = cr.getDirectheap() *  MDCConstants.MB;
+							allocresources.setFreememory(allocresources.getFreememory()+maxmemory+directheap);
+							allocresources.setNumberofprocessors(allocresources.getNumberofprocessors()+cr.getCpu());
 						} else {
 							deallocateall = false;
 						}
@@ -559,18 +564,17 @@ public class FileBlocksPartitionerHDFS {
 				var cla = new ContainerLaunchAttributes();
 				AtomicLong totalallocated =  new AtomicLong();
 				//Get Reused containers to be allocated by current job.
-				var cr = getTotalMemoryContainersReuseAllocation(node, nodestotalblockmem.get(host), totalallocated);
 				//Calculate the remaining to allocate. 
 				long totalallocatedremaining = nodestotalblockmem.get(host) - totalallocated.get();
 				List<ContainerResources> contres = null;
-				if (totalallocatedremaining > 0 && cr.isEmpty()) {
-					if (Objects.isNull(resources.get(node))) {
-						throw new PipelineException(PipelineConstants.RESOURCESDOWNRESUBMIT.replace("%s", node));
-					}
-					//Allocate the remaining memory from total allocated on the host.
-					contres = getContainersByNodeResourcesRemainingMemory(pipelineconfig.getGctype(), nodestotalblockmem.get(host),
-							resources.get(node));
+
+				if (Objects.isNull(resources.get(node))) {
+					throw new PipelineException(PipelineConstants.RESOURCESDOWNRESUBMIT.replace("%s", node));
 				}
+				// Allocate the remaining memory from total allocated on the host.
+				contres = getContainersByNodeResourcesRemainingMemory(pipelineconfig.getGctype(),
+						nodestotalblockmem.get(host), resources.get(node));
+
 				job.lcs.add(lc);
 				ports = null;
 				if (!Objects.isNull(contres) && !contres.isEmpty()) {
@@ -583,34 +587,17 @@ public class FileBlocksPartitionerHDFS {
 					//Allocate the containers via node and return the allocated port.
 					ports = (List<Integer>) Utils.getResultObjectByInput(node, ac);
 				}
-				if (!Objects.isNull(cr)) {
-					if (Objects.isNull(ports)) {
-						ports = new ArrayList<>();
-					}
-					//Add all the remaining container ports that already allocated
-					//from another job
-					for (ContainerResources r :cr) {
-						ports.add(r.getPort());
-					}
-					if (!Objects.isNull(contres)) {
-						contres.addAll(cr);
-						cla.setNumberofcontainers(contres.size());
-						cla.setCr(contres);
-						lc.setCla(cla);
-					} else {
-						contres = cr;
-						cla.setNumberofcontainers(cr.size());
-						cla.setCr(cr);
-						lc.setCla(cla);
-
-					}
-				}
 				if (Objects.isNull(ports) || ports.isEmpty()) {
 					continue;
 				}
+				Resources allocresources = resources.get(node);
 				//Iterate containers to add the containers to global allocation.
 				for (int containercount = 0; containercount < ports.size(); containercount++) {
 					ContainerResources crs = contres.get(containercount);
+					long maxmemory = crs.getMaxmemory() * MDCConstants.MB;
+					long directheap = crs.getDirectheap() *  MDCConstants.MB;
+					allocresources.setFreememory(allocresources.getFreememory()-maxmemory-directheap);
+					allocresources.setNumberofprocessors(allocresources.getNumberofprocessors()-crs.getCpu());
 					crs.setPort(ports.get(containercount));
 					String conthp = host + MDCConstants.UNDERSCORE + ports.get(containercount);
 					containers.add(conthp);

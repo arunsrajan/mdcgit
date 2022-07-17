@@ -15,6 +15,10 @@
  */
 package com.github.mdc.common;
 
-public class Dummy {
+import java.io.Serializable;
+
+public class Dummy implements Serializable{
+
+	private static final long serialVersionUID = 1L;
 
 }

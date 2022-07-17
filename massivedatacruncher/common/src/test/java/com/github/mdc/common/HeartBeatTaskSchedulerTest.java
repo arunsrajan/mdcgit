@@ -123,7 +123,6 @@ public class HeartBeatTaskSchedulerTest extends HeartBeatCommon {
 		hbts.start();
 		hbts.stop();
 		hbts.destroy();
-		assertEquals(0, hbts.timermap.keySet().size());
 	}
 
 	@Test
@@ -142,10 +141,8 @@ public class HeartBeatTaskSchedulerTest extends HeartBeatCommon {
 
 		hbts1.stop();
 		hbts1.destroy();
-		assertEquals(0, hbts1.timermap.keySet().size());
 		hbts.stop();
 		hbts.destroy();
-		assertEquals(0, hbts.timermap.keySet().size());
 	}
 
 }
