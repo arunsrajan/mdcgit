@@ -156,8 +156,8 @@ public class FileBlocksPartitionerHDFSTest extends StreamPipelineBase {
 		assertEquals(2, bls.size());
 		assertEquals(4270834, fbp.totallength);
 		fbp.allocateContainersLoadBalanced(bls);
-		assertEquals("127.0.0.1_10101", bls.get(0).executorhp);
-		assertEquals("127.0.0.1_10101", bls.get(1).executorhp);
+		assertEquals("127.0.0.1_10101", bls.get(0).getExecutorhp());
+		assertEquals("127.0.0.1_10101", bls.get(1).getExecutorhp());
 	}
 
 	@Test
@@ -181,8 +181,8 @@ public class FileBlocksPartitionerHDFSTest extends StreamPipelineBase {
 		assertEquals(2, bls.size());
 		assertEquals(4270834, fbp.totallength);
 		fbp.allocateContainersLoadBalanced(bls);
-		assertEquals("127.0.0.1_10101", bls.get(0).executorhp);
-		assertEquals("127.0.0.1_10102", bls.get(1).executorhp);
+		assertEquals("127.0.0.1_10101", bls.get(0).getExecutorhp());
+		assertEquals("127.0.0.1_10102", bls.get(1).getExecutorhp());
 	}
 
 	@Test

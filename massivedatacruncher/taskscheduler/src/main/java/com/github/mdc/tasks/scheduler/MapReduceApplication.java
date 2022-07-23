@@ -157,13 +157,13 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 		var containerallocatecount = (Map<String, Long>) containers.stream().parallel().collect(Collectors.toMap(container -> container, container -> 0l));
 		List<String> hostportcontainer;
 		for (var b : bls) {
-			hostportcontainer = hostcontainermap.get(b.block[0].hp.split(MDCConstants.COLON)[0]);
+			hostportcontainer = hostcontainermap.get(b.getBlock()[0].getHp().split(MDCConstants.COLON)[0]);
 			var optional = hostportcontainer.stream().sorted((xref1, xref2) -> {
 				return containerallocatecount.get(xref1).compareTo(containerallocatecount.get(xref2));
 			}).findFirst();
 			if (optional.isPresent()) {
 				var container = optional.get();
-				b.executorhp = container;
+				b.setExecutorhp(container);
 				containerallocatecount.put(container, containerallocatecount.get(container) + 1);
 			} else {
 				throw new MapReduceException(MDCConstants.CONTAINERALLOCATIONERROR);
@@ -231,12 +231,12 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 		log.debug("Entered MdcJob.getDnXref");
 		var dnxrefs = bls.stream().parallel().flatMap(bl -> {
 			var xrefs = new LinkedHashSet<String>();
-			Iterator<Set<String>> xref = bl.block[0].dnxref.values().iterator();
+			Iterator<Set<String>> xref = bl.getBlock()[0].getDnxref().values().iterator();
 			for (; xref.hasNext(); ) {
 				xrefs.addAll(xref.next());
 			}
-			if (bl.block.length > 1 && !Objects.isNull(bl.block[1])) {
-				xref = bl.block[0].dnxref.values().iterator();
+			if (bl.getBlock().length > 1 && !Objects.isNull(bl.getBlock()[1])) {
+				xref = bl.getBlock()[0].getDnxref().values().iterator();
 				for (; xref.hasNext(); ) {
 					xrefs.addAll(xref.next());
 				}
@@ -252,54 +252,54 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 			var computingnodes = resources.keySet().stream().map(node -> node.split(MDCConstants.UNDERSCORE)[0])
 					.collect(Collectors.toList());
 			for (var b : bls) {
-				var xrefselected = b.block[0].dnxref.keySet().stream()
+				var xrefselected = b.getBlock()[0].getDnxref().keySet().stream()
 						.filter(xrefhost -> computingnodes.contains(xrefhost))
-						.flatMap(xrefhost -> b.block[0].dnxref.get(xrefhost).stream()).sorted((xref1, xref2) -> {
+						.flatMap(xrefhost -> b.getBlock()[0].getDnxref().get(xrefhost).stream()).sorted((xref1, xref2) -> {
 					return dnxrefallocatecount.get(xref1).compareTo(dnxrefallocatecount.get(xref2));
 				}).findFirst();
 				if (xrefselected.isEmpty()) {
 					throw new MapReduceException(
 							PipelineConstants.INSUFFNODESERROR + " Available computing nodes are "
-									+ computingnodes + " Available Data Nodes are " + b.block[0].dnxref.keySet());
+									+ computingnodes + " Available Data Nodes are " + b.getBlock()[0].getDnxref().keySet());
 				}
 				final var xref = xrefselected.get();
 				dnxrefallocatecount.put(xref, dnxrefallocatecount.get(xref) + 1);
-				b.block[0].hp = xref;
-				if (b.block.length > 1 && !Objects.isNull(b.block[1])) {
-					xrefselected = b.block[1].dnxref.keySet().stream()
-							.flatMap(xrefhost -> b.block[1].dnxref.get(xrefhost).stream())
+				b.getBlock()[0].setHp(xref);
+				if (b.getBlock().length > 1 && !Objects.isNull(b.getBlock()[1])) {
+					xrefselected = b.getBlock()[1].getDnxref().keySet().stream()
+							.flatMap(xrefhost -> b.getBlock()[1].getDnxref().get(xrefhost).stream())
 							.filter(xrefhp -> xrefhp.split(MDCConstants.COLON)[0]
 									.equals(xref.split(MDCConstants.COLON)[0]))
 							.findFirst();
 					if (xrefselected.isEmpty()) {
-						xrefselected = b.block[1].dnxref.keySet().stream()
-								.flatMap(xrefhost -> b.block[1].dnxref.get(xrefhost).stream()).findFirst();
+						xrefselected = b.getBlock()[1].getDnxref().keySet().stream()
+								.flatMap(xrefhost -> b.getBlock()[1].getDnxref().get(xrefhost).stream()).findFirst();
 						if (xrefselected.isEmpty()) {
 							throw new MapReduceException(PipelineConstants.INSUFFNODESERROR
 									+ " Available computing nodes are " + computingnodes + " Available Data Nodes are "
-									+ b.block[1].dnxref.keySet());
+									+ b.getBlock()[1].getDnxref().keySet());
 						}
 					}
 					var xref1 = xrefselected.get();
-					b.block[1].hp = xref1;
+					b.getBlock()[1].setHp(xref1);
 				}
 			}
 		} else {
 			for (var b : bls) {
-				var xrefselected = b.block[0].dnxref.keySet().stream()
-						.flatMap(xrefhost -> b.block[0].dnxref.get(xrefhost).stream()).sorted((xref1, xref2) -> {
+				var xrefselected = b.getBlock()[0].getDnxref().keySet().stream()
+						.flatMap(xrefhost -> b.getBlock()[0].getDnxref().get(xrefhost).stream()).sorted((xref1, xref2) -> {
 					return dnxrefallocatecount.get(xref1).compareTo(dnxrefallocatecount.get(xref2));
 				}).findFirst();
 				var xref = xrefselected.get();
 				dnxrefallocatecount.put(xref, dnxrefallocatecount.get(xref) + 1);
-				b.block[0].hp = xref;
-				if (b.block.length > 1 && !Objects.isNull(b.block[1])) {
-					xrefselected = b.block[1].dnxref.keySet().stream()
-							.flatMap(xrefhost -> b.block[1].dnxref.get(xrefhost).stream()).sorted((xref1, xref2) -> {
+				b.getBlock()[0].setHp(xref);
+				if (b.getBlock().length > 1 && !Objects.isNull(b.getBlock()[1])) {
+					xrefselected = b.getBlock()[1].getDnxref().keySet().stream()
+							.flatMap(xrefhost -> b.getBlock()[1].getDnxref().get(xrefhost).stream()).sorted((xref1, xref2) -> {
 						return dnxrefallocatecount.get(xref1).compareTo(dnxrefallocatecount.get(xref2));
 					}).findFirst();
 					xref = xrefselected.get();
-					b.block[1].hp = xref;
+					b.getBlock()[1].setHp(xref);
 				}
 			}
 		}
@@ -310,28 +310,28 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 		resources = MDCNodesResources.get();
 
 		var nodeswithhostonly = bls.stream().flatMap(bl -> {
-			var block1 = bl.block[0];
+			var block1 = bl.getBlock()[0];
 			Block block2 = null;
-			if (bl.block.length > 1) {
-				block2 = bl.block[1];
+			if (bl.getBlock().length > 1) {
+				block2 = bl.getBlock()[1];
 			}
 			var xref = new HashSet<String>();
 			if (!Objects.isNull(block1)) {
-				xref.add(block1.hp.split(MDCConstants.COLON)[0]);
-				var value = nodestotalblockmem.get(block1.hp.split(MDCConstants.COLON)[0]);
+				xref.add(block1.getHp().split(MDCConstants.COLON)[0]);
+				var value = nodestotalblockmem.get(block1.getHp().split(MDCConstants.COLON)[0]);
 				if (value != null) {
-					nodestotalblockmem.put(block1.hp.split(MDCConstants.COLON)[0], value + (block1.blockend - block1.blockstart));
+					nodestotalblockmem.put(block1.getHp().split(MDCConstants.COLON)[0], value + (block1.getBlockend() - block1.getBlockstart()));
 				} else {
-					nodestotalblockmem.put(block1.hp.split(MDCConstants.COLON)[0], block1.blockend - block1.blockstart);
+					nodestotalblockmem.put(block1.getHp().split(MDCConstants.COLON)[0], block1.getBlockend() - block1.getBlockstart());
 				}
 			}
 			if (!Objects.isNull(block2)) {
-				xref.add(block2.hp.split(MDCConstants.COLON)[0]);
-				var value = nodestotalblockmem.get(block2.hp.split(MDCConstants.COLON)[0]);
+				xref.add(block2.getHp().split(MDCConstants.COLON)[0]);
+				var value = nodestotalblockmem.get(block2.getHp().split(MDCConstants.COLON)[0]);
 				if (value != null) {
-					nodestotalblockmem.put(block2.hp.split(MDCConstants.COLON)[0], value + (block2.blockend - block2.blockstart));
+					nodestotalblockmem.put(block2.getHp().split(MDCConstants.COLON)[0], value + (block2.getBlockend() - block2.getBlockstart()));
 				} else {
-					nodestotalblockmem.put(block2.hp.split(MDCConstants.COLON)[0], block2.blockend - block2.blockstart);
+					nodestotalblockmem.put(block2.getHp().split(MDCConstants.COLON)[0], block2.getBlockend() - block2.getBlockstart());
 				}
 			}
 			return xref.stream();
@@ -584,8 +584,8 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 					for (var bl :bls) {
 						var taskid = MDCConstants.TASK + MDCConstants.HYPHEN	+ (mrtaskcount + 1);
 						var apptask = new ApplicationTask();
-						apptask.applicationid = applicationid;
-						apptask.taskid = taskid;
+						apptask.setApplicationid(applicationid);
+						apptask.setTaskid(taskid);
 						var mdtstm = (TaskSchedulerMapperCombinerSubmitter) getMassiveDataTaskSchedulerThreadMapperCombiner(
 								mapclzname, hbts, combiner, bl, apptask);
 						if (containermappercombinermap.get(mdtstm.getHostPort()) == null) {
@@ -659,7 +659,7 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 				if (!completed) {
 					erroredresult.forEach(exec -> {
 						Utils.writeKryoOutput(kryo, jobconf.getOutput(), MDCConstants.NEWLINE);
-						Utils.writeKryoOutput(kryo, jobconf.getOutput(), exec.getId().apptask.apperrormessage);
+						Utils.writeKryoOutput(kryo, jobconf.getOutput(), exec.getId().apptask.getApperrormessage());
 					});
 				}
 				hbts.getHbo().clearQueue();
@@ -790,14 +790,14 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 	public void reConfigureContainerForStageExecution(TaskSchedulerMapperCombinerSubmitter mdtsstm,
 			List<String> availablecontainers) {
 		var bsl = (BlocksLocation) mdtsstm.blockslocation;
-		bsl.containers.retainAll(availablecontainers);
+		bsl.getContainers().retainAll(availablecontainers);
 		var containersgrouped = availablecontainers.stream()
 				.collect(Collectors.groupingBy(key -> key.split(MDCConstants.UNDERSCORE)[0],
 						Collectors.mapping(value -> value, Collectors.toCollection(Vector::new))));
-		for (var block : bsl.block) {
+		for (var block : bsl.getBlock()) {
 			if (!Objects.isNull(block)) {
-				var xrefaddrs = block.dnxref.keySet().stream().map(dnxrefkey -> {
-					return block.dnxref.get(dnxrefkey);
+				var xrefaddrs = block.getDnxref().keySet().stream().map(dnxrefkey -> {
+					return block.getDnxref().get(dnxrefkey);
 				}).flatMap(xrefaddr -> xrefaddr.stream()).collect(Collectors.toList());
 
 				var containerdnaddr = (List<Tuple2<String, String>>) xrefaddrs.stream()
@@ -812,9 +812,9 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 							return (List<Tuple2<String, String>>) containerlist;
 						}).flatMap(containerlist -> containerlist.stream()).collect(Collectors.toList());
 				var containerdn = containerdnaddr.get(containercount++ % containerdnaddr.size());
-				block.hp = containerdn.v1;
-				bsl.executorhp = containerdn.v2;
-				mdtsstm.setHostPort(bsl.executorhp);
+				block.setHp(containerdn.v1);
+				bsl.setExecutorhp(containerdn.v2);
+				mdtsstm.setHostPort(bsl.getExecutorhp());
 			}
 		}
 	}
@@ -848,39 +848,39 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 						final PropertyChangeListener reducercompleteobserver = evt -> {
 							var apptask = (ApplicationTask) evt.getNewValue();
 							if (apptask != null
-									&& apptask.tasktype == TaskType.REDUCER
-									&& apptask.applicationid.equals(tsrs.applicationid)
-									&& apptask.taskid.equals(tsrs.taskid)) {
+									&& apptask.getTasktype() == TaskType.REDUCER
+									&& apptask.getApplicationid().equals(tsrs.applicationid)
+									&& apptask.getTaskid().equals(tsrs.taskid)) {
 								try {
-									log.debug("Received App And Task Before mutex acquire:" + apptask.applicationid
-											+ apptask.taskid);
+									log.debug("Received App And Task Before mutex acquire:" + apptask.getApplicationid()
+											+ apptask.getTaskid());
 									if (!Objects.isNull(jobconf.getOutput())) {
 										Utils.writeKryoOutput(Utils.getKryoNonDeflateSerializer(), jobconf.getOutput(),
-												"Received App And Task Before mutex acquire:" + apptask.applicationid
-														+ apptask.taskid);
+												"Received App And Task Before mutex acquire:" + apptask.getApplicationid()
+														+ apptask.getTaskid());
 									}
-									if (apptask != null && apptask.taskstatus == TaskStatus.COMPLETED
-											&& apptask.tasktype == TaskType.REDUCER) {
+									if (apptask != null && apptask.getTaskstatus() == TaskStatus.COMPLETED
+											&& apptask.getTasktype() == TaskType.REDUCER) {
 										semaphorereducerresult.acquire();
-										log.debug("Received App And Task After mutex acquire:" + apptask.applicationid
-												+ apptask.taskid);
+										log.debug("Received App And Task After mutex acquire:" + apptask.getApplicationid()
+												+ apptask.getTaskid());
 										var objects = new ArrayList<>();
 										objects.add(new RetrieveData());
-										objects.add(apptask.applicationid);
-										objects.add(apptask.taskid);
-										log.debug("Received App And Task:" + apptask.applicationid + apptask.taskid);
+										objects.add(apptask.getApplicationid());
+										objects.add(apptask.getTaskid());
+										log.debug("Received App And Task:" + apptask.getApplicationid() + apptask.getTaskid());
 										if (!Objects.isNull(jobconf.getOutput())) {
 											Utils.writeKryoOutput(Utils.getKryoNonDeflateSerializer(), jobconf.getOutput(),
-													"Received App And Task:" + apptask.applicationid + apptask.taskid);
+													"Received App And Task:" + apptask.getApplicationid() + apptask.getTaskid());
 										}
 
-										var ctxreducer = (Context) Utils.getResultObjectByInput(apptask.hp, objects);
+										var ctxreducer = (Context) Utils.getResultObjectByInput(apptask.getHp(), objects);
 										dccred.add((DataCruncherContext) ctxreducer);
 										tsrs.iscompleted = true;
-									} else if (apptask != null && apptask.taskstatus == TaskStatus.FAILED
-											&& apptask.tasktype == TaskType.REDUCER) {
+									} else if (apptask != null && apptask.getTaskstatus() == TaskStatus.FAILED
+											&& apptask.getTasktype() == TaskType.REDUCER) {
 										isexception = true;
-										exceptionmsg = apptask.apperrormessage;
+										exceptionmsg = apptask.getApperrormessage();
 										tsrs.iscompleted = false;
 									}
 									cdlreducercomplete.countDown();
@@ -949,17 +949,17 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 				public Boolean execute() {
 					try {
 						semaphorebatch.acquire();
-						hbts.apptaskmdtstmmap.put(mdtstmc.apptask.applicationid + mdtstmc.apptask.taskid, mdtstmc);
-						log.info("Submitting to host " + mdtstmc.getHostPort() + " " + mdtstmc.apptask.applicationid
-								+ MDCConstants.HYPHEN + mdtstmc.apptask.taskid);
-						cdls.put(mdtstmc.apptask.applicationid
-								+ mdtstmc.apptask.taskid, new CountDownLatch(1));
-						mdstsmap.put(mdtstmc.apptask.applicationid
-								+ mdtstmc.apptask.taskid, mdtstmc);
+						hbts.apptaskmdtstmmap.put(mdtstmc.apptask.getApplicationid() + mdtstmc.apptask.getTaskid(), mdtstmc);
+						log.info("Submitting to host " + mdtstmc.getHostPort() + " " + mdtstmc.apptask.getApplicationid()
+								+ MDCConstants.HYPHEN + mdtstmc.apptask.getTaskid());
+						cdls.put(mdtstmc.apptask.getApplicationid()
+								+ mdtstmc.apptask.getTaskid(), new CountDownLatch(1));
+						mdstsmap.put(mdtstmc.apptask.getApplicationid()
+								+ mdtstmc.apptask.getTaskid(), mdtstmc);
 						submitMapper(mdtstmc);
 						var timer = new Timer();
-						timermap.put(mdtstmc.apptask.applicationid
-								+ mdtstmc.apptask.taskid, timer);
+						timermap.put(mdtstmc.apptask.getApplicationid()
+								+ mdtstmc.apptask.getTaskid(), timer);
 						var delay = Long.parseLong(jobconf.getTsinitialdelay());
 						timer.scheduleAtFixedRate(new TimerTask() {
 							int count = 0;
@@ -967,10 +967,10 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 							public void run() {
 								try {
 									if (++count > 3 || !hbs.containers.contains(mdtstmc.getHostPort())) {
-										log.info(mdtstmc.getHostPort() + " Task Failed:" + mdtstmc.apptask.applicationid
-												+ mdtstmc.apptask.taskid);
-										var apptimer = timermap.remove(mdtstmc.apptask.applicationid
-												+ mdtstmc.apptask.taskid);
+										log.info(mdtstmc.getHostPort() + " Task Failed:" + mdtstmc.apptask.getApplicationid()
+												+ mdtstmc.apptask.getTaskid());
+										var apptimer = timermap.remove(mdtstmc.apptask.getApplicationid()
+												+ mdtstmc.apptask.getTaskid());
 										apptimer.cancel();
 										apptimer.purge();
 										hbts.pingOnce(mdtstmc.apptask, ApplicationTask.TaskStatus.FAILED, ApplicationTask.TaskType.MAPPERCOMBINER, MDCConstants.TSEXCEEDEDEXECUTIONCOUNT);
@@ -993,8 +993,8 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 						}
 
 						totalsubmittedmutex.release();
-						cdls.get(mdtstmc.apptask.applicationid
-								+ mdtstmc.apptask.taskid).await();
+						cdls.get(mdtstmc.apptask.getApplicationid()
+								+ mdtstmc.apptask.getTaskid()).await();
 
 					} catch (InterruptedException e) {
 						log.warn("Interrupted!", e);
@@ -1024,32 +1024,32 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 				while (totalouputobtained < totaltasks) {
 					try {
 						var apptask = (ApplicationTask) bq.take();
-						var mdtstm = mdstsmap.remove(apptask.applicationid + apptask.taskid);
+						var mdtstm = mdstsmap.remove(apptask.getApplicationid() + apptask.getTaskid());
 						if (!Objects.isNull(mdtstm)) {
-							var timer = timermap.remove(apptask.applicationid + apptask.taskid);
+							var timer = timermap.remove(apptask.getApplicationid() + apptask.getTaskid());
 							if (!Objects.isNull(timer)) {
 								timer.cancel();
 								timer.purge();
 							}
-							if (apptask.taskstatus == ApplicationTask.TaskStatus.COMPLETED) {
+							if (apptask.getTaskstatus() == ApplicationTask.TaskStatus.COMPLETED) {
 								log.info("Processing the App Task: " + apptask);
 								var objects = new ArrayList<>();
 								objects.add(new RetrieveKeys());
-								objects.add(apptask.applicationid);
-								objects.add(apptask.taskid);
-								var rk = (RetrieveKeys) Utils.getResultObjectByInput(apptask.hp, objects);
+								objects.add(apptask.getApplicationid());
+								objects.add(apptask.getTaskid());
+								var rk = (RetrieveKeys) Utils.getResultObjectByInput(apptask.getHp(), objects);
 								dccmapphase.putAll(rk.keys, rk.applicationid + rk.taskid);
 								mdtstm.iscompleted = true;
-								mdtstm.apptask.apperrormessage = null;
-							} else if (apptask.taskstatus == ApplicationTask.TaskStatus.FAILED) {
-								mdtstm.apptask.apperrormessage = apptask.apperrormessage;
+								mdtstm.apptask.setApperrormessage(null);
+							} else if (apptask.getTaskstatus() == ApplicationTask.TaskStatus.FAILED) {
+								mdtstm.apptask.setApperrormessage(apptask.getApperrormessage());
 								mdtstm.iscompleted = false;
 							}
 							totalouputobtained++;
 							if (jobconf.getOutput() != null) {
-								Utils.writeKryoOutput(kryo, jobconf.getOutput(), apptask.taskid + " " + apptask.hp + "'s Mapper Task Status: " + apptask.taskstatus + " Execution Status = " + totalouputobtained + "/" + totaltasks + " = " + Math.floor(totalouputobtained / (double) totaltasks * 100.0) + "%");
+								Utils.writeKryoOutput(kryo, jobconf.getOutput(), apptask.getTaskid() + " " + apptask.getHp() + "'s Mapper Task Status: " + apptask.getTaskstatus() + " Execution Status = " + totalouputobtained + "/" + totaltasks + " = " + Math.floor(totalouputobtained / (double) totaltasks * 100.0) + "%");
 							}
-							cdls.get(apptask.applicationid + apptask.taskid).countDown();
+							cdls.get(apptask.getApplicationid() + apptask.getTaskid()).countDown();
 							semaphorebatch.release();
 							cdl.countDown();
 						}
@@ -1107,8 +1107,8 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 		var mdtstmc = new TaskSchedulerMapperCombinerSubmitter(
 				blockslocation, true, new LinkedHashSet<>(Arrays.asList(mapclsname)), combiners,
 				cf, containers, hbts, apptask);
-		apptask.hp = blockslocation.executorhp;
-		hbts.apptaskmdtstmmap.put(apptask.applicationid + apptask.taskid, mdtstmc);
+		apptask.setHp(blockslocation.getExecutorhp());
+		hbts.apptaskmdtstmmap.put(apptask.getApplicationid() + apptask.getTaskid(), mdtstmc);
 		blocklocationindex++;
 		return mdtstmc;
 	}

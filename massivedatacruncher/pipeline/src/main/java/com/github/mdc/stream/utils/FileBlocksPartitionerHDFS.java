@@ -388,9 +388,9 @@ public class FileBlocksPartitionerHDFS {
 		List<String> hostportcontainer;
 		//Iterate over the blocks location 
 		for (var b : bls) {
-			hostportcontainer = hostcontainermap.get(b.block[0].hp.split(MDCConstants.COLON)[0]);
+			hostportcontainer = hostcontainermap.get(b.getBlock()[0].getHp().split(MDCConstants.COLON)[0]);
 			if (Objects.isNull(hostportcontainer)) {
-				throw new PipelineException(PipelineConstants.INSUFFNODESFORDATANODEERROR.replace("%s", b.block[0].hp).replace("%d", hostcontainermap.toString()));
+				throw new PipelineException(PipelineConstants.INSUFFNODESFORDATANODEERROR.replace("%s", b.getBlock()[0].getHp()).replace("%d", hostcontainermap.toString()));
 			}
 			//Find the container from minimum to maximum in ascending sorted order.
 			var optional = hostportcontainer.stream().sorted((xref1, xref2) -> {
@@ -399,7 +399,7 @@ public class FileBlocksPartitionerHDFS {
 			if (optional.isPresent()) {
 				var container = optional.get();
 				//Assign the minimal allocated container host port to blocks location.
-				b.executorhp = container;
+				b.setExecutorhp(container);
 				containerallocatecount.put(container, containerallocatecount.get(container) + 1);
 			} else {
 				throw new PipelineException(PipelineConstants.CONTAINERALLOCATIONERROR);
@@ -419,12 +419,12 @@ public class FileBlocksPartitionerHDFS {
 		//Get all the datanode's host port for the job hdfs folder
 		var dnxrefs = bls.stream().parallel().flatMap(bl -> {
 			var xrefs = new LinkedHashSet<String>();
-			Iterator<Set<String>> xref = bl.block[0].dnxref.values().iterator();
+			Iterator<Set<String>> xref = bl.getBlock()[0].getDnxref().values().iterator();
 			for (; xref.hasNext(); ) {
 				xrefs.addAll(xref.next());
 			}
-			if (bl.block.length > 1 && !Objects.isNull(bl.block[1])) {
-				xref = bl.block[0].dnxref.values().iterator();
+			if (bl.getBlock().length > 1 && !Objects.isNull(bl.getBlock()[1])) {
+				xref = bl.getBlock()[0].getDnxref().values().iterator();
 				for (; xref.hasNext(); ) {
 					xrefs.addAll(xref.next());
 				}
@@ -445,39 +445,39 @@ public class FileBlocksPartitionerHDFS {
 			//Iterate the blocks location and assigned the balanced allocated datanode hostport to blocks object.
 			for (var b : bls) {
 				//Get first minimal allocated datanode hostport; 
-				var xrefselected = b.block[0].dnxref.keySet().stream()
+				var xrefselected = b.getBlock()[0].getDnxref().keySet().stream()
 						.filter(xrefhost -> computingnodes.contains(xrefhost))
-						.flatMap(xrefhost -> b.block[0].dnxref.get(xrefhost).stream()).sorted((xref1, xref2) -> {
+						.flatMap(xrefhost -> b.getBlock()[0].getDnxref().get(xrefhost).stream()).sorted((xref1, xref2) -> {
 					return dnxrefallocatecount.get(xref1).compareTo(dnxrefallocatecount.get(xref2));
 				}).findFirst();
 				if (xrefselected.isEmpty()) {
 					throw new PipelineException(
 							PipelineConstants.INSUFFNODESERROR + " Available computing nodes are "
-									+ computingnodes + " Available Data Nodes are " + b.block[0].dnxref.keySet());
+									+ computingnodes + " Available Data Nodes are " + b.getBlock()[0].getDnxref().keySet());
 				}
 				//Get the datanode selected
 				final var xref = xrefselected.get();
 				dnxrefallocatecount.put(xref, dnxrefallocatecount.get(xref) + 1);
-				//Assign the datanode hp to blocks. 
-				b.block[0].hp = xref;
+				//Assign the datanode hp to blocks.
+				b.getBlock()[0].setHp(xref);
 				//Perform the same steps for second block.
-				if (b.block.length > 1 && !Objects.isNull(b.block[1])) {
-					xrefselected = b.block[1].dnxref.keySet().stream()
-							.flatMap(xrefhost -> b.block[1].dnxref.get(xrefhost).stream())
+				if (b.getBlock().length > 1 && !Objects.isNull(b.getBlock()[1])) {
+					xrefselected = b.getBlock()[1].getDnxref().keySet().stream()
+							.flatMap(xrefhost -> b.getBlock()[1].getDnxref().get(xrefhost).stream())
 							.filter(xrefhp -> xrefhp.split(MDCConstants.COLON)[0]
 									.equals(xref.split(MDCConstants.COLON)[0]))
 							.findFirst();
 					if (xrefselected.isEmpty()) {
-						xrefselected = b.block[1].dnxref.keySet().stream()
-								.flatMap(xrefhost -> b.block[1].dnxref.get(xrefhost).stream()).findFirst();
+						xrefselected = b.getBlock()[1].getDnxref().keySet().stream()
+								.flatMap(xrefhost -> b.getBlock()[1].getDnxref().get(xrefhost).stream()).findFirst();
 						if (xrefselected.isEmpty()) {
 							throw new PipelineException(PipelineConstants.INSUFFNODESERROR
 									+ " Available computing nodes are " + computingnodes + " Available Data Nodes are "
-									+ b.block[1].dnxref.keySet());
+									+ b.getBlock()[1].getDnxref().keySet());
 						}
 					}
 					var xref1 = xrefselected.get();
-					b.block[1].hp = xref1;
+					b.getBlock()[1].setHp(xref1);
 				}
 			}
 		}
@@ -485,20 +485,20 @@ public class FileBlocksPartitionerHDFS {
 		//where allocation about the containers are not known
 		else {
 			for (var b : bls) {
-				var xrefselected = b.block[0].dnxref.keySet().stream()
-						.flatMap(xrefhost -> b.block[0].dnxref.get(xrefhost).stream()).sorted((xref1, xref2) -> {
+				var xrefselected = b.getBlock()[0].getDnxref().keySet().stream()
+						.flatMap(xrefhost -> b.getBlock()[0].getDnxref().get(xrefhost).stream()).sorted((xref1, xref2) -> {
 					return dnxrefallocatecount.get(xref1).compareTo(dnxrefallocatecount.get(xref2));
 				}).findFirst();
 				var xref = xrefselected.get();
 				dnxrefallocatecount.put(xref, dnxrefallocatecount.get(xref) + 1);
-				b.block[0].hp = xref;
-				if (b.block.length > 1 && !Objects.isNull(b.block[1])) {
-					xrefselected = b.block[1].dnxref.keySet().stream()
-							.flatMap(xrefhost -> b.block[1].dnxref.get(xrefhost).stream()).sorted((xref1, xref2) -> {
+				b.getBlock()[0].setHp(xref);
+				if (b.getBlock().length > 1 && !Objects.isNull(b.getBlock()[1])) {
+					xrefselected = b.getBlock()[1].getDnxref().keySet().stream()
+							.flatMap(xrefhost -> b.getBlock()[1].getDnxref().get(xrefhost).stream()).sorted((xref1, xref2) -> {
 						return dnxrefallocatecount.get(xref1).compareTo(dnxrefallocatecount.get(xref2));
 					}).findFirst();
 					xref = xrefselected.get();
-					b.block[1].hp = xref;
+					b.getBlock()[1].setHp(xref);
 				}
 			}
 		}
@@ -506,7 +506,7 @@ public class FileBlocksPartitionerHDFS {
 	}
 
 	/**
-	 * Reuse allocated containers for new job. 
+	 * Reuse allocated containers for new job.
 	 * @param nodehp
 	 * @param totalmemorytoalloc
 	 * @param totalallocated
@@ -564,7 +564,7 @@ public class FileBlocksPartitionerHDFS {
 				var cla = new ContainerLaunchAttributes();
 				AtomicLong totalallocated =  new AtomicLong();
 				//Get Reused containers to be allocated by current job.
-				//Calculate the remaining to allocate. 
+				//Calculate the remaining to allocate.
 				long totalallocatedremaining = nodestotalblockmem.get(host) - totalallocated.get();
 				List<ContainerResources> contres = null;
 
@@ -645,7 +645,7 @@ public class FileBlocksPartitionerHDFS {
 	}
 
 	/**
-	 * Get container and nodes from LaunchContainers list object. 
+	 * Get container and nodes from LaunchContainers list object.
 	 */
 	protected void getContainersGlobal() {
 		job.lcs = GlobalContainerLaunchers.getAll();
@@ -672,28 +672,28 @@ public class FileBlocksPartitionerHDFS {
 		resources = MDCNodesResources.get();
 
 		var nodeswithhostonly = bls.stream().flatMap(bl -> {
-			var block1 = bl.block[0];
+			var block1 = bl.getBlock()[0];
 			Block block2 = null;
-			if (bl.block.length > 1) {
-				block2 = bl.block[1];
+			if (bl.getBlock().length > 1) {
+				block2 = bl.getBlock()[1];
 			}
 			var xref = new HashSet<String>();
 			if (!Objects.isNull(block1)) {
-				xref.add(block1.hp.split(MDCConstants.COLON)[0]);
-				var value = nodestotalblockmem.get(block1.hp.split(MDCConstants.COLON)[0]);
+				xref.add(block1.getHp().split(MDCConstants.COLON)[0]);
+				var value = nodestotalblockmem.get(block1.getHp().split(MDCConstants.COLON)[0]);
 				if (value != null) {
-					nodestotalblockmem.put(block1.hp.split(MDCConstants.COLON)[0], value + (block1.blockend - block1.blockstart));
+					nodestotalblockmem.put(block1.getHp().split(MDCConstants.COLON)[0], value + (block1.getBlockend() - block1.getBlockstart()));
 				} else {
-					nodestotalblockmem.put(block1.hp.split(MDCConstants.COLON)[0], block1.blockend - block1.blockstart);
+					nodestotalblockmem.put(block1.getHp().split(MDCConstants.COLON)[0], block1.getBlockend() - block1.getBlockstart());
 				}
 			}
 			if (!Objects.isNull(block2)) {
-				xref.add(block2.hp.split(MDCConstants.COLON)[0]);
-				var value = nodestotalblockmem.get(block2.hp.split(MDCConstants.COLON)[0]);
+				xref.add(block2.getHp().split(MDCConstants.COLON)[0]);
+				var value = nodestotalblockmem.get(block2.getHp().split(MDCConstants.COLON)[0]);
 				if (value != null) {
-					nodestotalblockmem.put(block2.hp.split(MDCConstants.COLON)[0], value + (block2.blockend - block2.blockstart));
+					nodestotalblockmem.put(block2.getHp().split(MDCConstants.COLON)[0], value + (block2.getBlockend() - block2.getBlockstart()));
 				} else {
-					nodestotalblockmem.put(block2.hp.split(MDCConstants.COLON)[0], block2.blockend - block2.blockstart);
+					nodestotalblockmem.put(block2.getHp().split(MDCConstants.COLON)[0], block2.getBlockend() - block2.getBlockstart());
 				}
 			}
 			return xref.stream();

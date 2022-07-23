@@ -133,8 +133,8 @@ public class MapReduceYarnContainer extends AbstractIntegrationYarnContainer {
 							var fc = (Future<Context>) es.submit(mdcmc);
 							var ctx = fc.get();
 							es.shutdown();
-							RemoteDataFetcher.writerIntermediatePhaseOutputToDFS(ctx, mc.apptask.applicationid,
-									(mc.apptask.applicationid + mc.apptask.taskid));
+							RemoteDataFetcher.writerIntermediatePhaseOutputToDFS(ctx, mc.apptask.getApplicationid(),
+									(mc.apptask.getApplicationid() + mc.apptask.getTaskid()));
 							ctx = null;
 							request = new JobRequest();
 							request.setState(JobRequest.State.JOBDONE);
@@ -159,7 +159,7 @@ public class MapReduceYarnContainer extends AbstractIntegrationYarnContainer {
 									currentctx = apptaskcontextmap.get(apptaskids);
 								}
 								else {
-									currentctx = (Context) RemoteDataFetcher.readIntermediatePhaseOutputFromDFS(red.apptask.applicationid,
+									currentctx = (Context) RemoteDataFetcher.readIntermediatePhaseOutputFromDFS(red.apptask.getApplicationid(),
 											apptaskids, false);
 									apptaskcontextmap.put(apptaskids, currentctx);
 								}
@@ -173,8 +173,8 @@ public class MapReduceYarnContainer extends AbstractIntegrationYarnContainer {
 							complete.add(results);
 							log.info("Complete Result: " + complete);
 						}
-						RemoteDataFetcher.writerIntermediatePhaseOutputToDFS(complete, red.apptask.applicationid,
-								(red.apptask.applicationid + red.apptask.taskid));
+						RemoteDataFetcher.writerIntermediatePhaseOutputToDFS(complete, red.apptask.getApplicationid(),
+								(red.apptask.getApplicationid() + red.apptask.getTaskid()));
 						es.shutdown();
 						request = new JobRequest();
 						request.setState(JobRequest.State.JOBDONE);

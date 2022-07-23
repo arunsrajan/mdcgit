@@ -42,10 +42,9 @@ public class AirlineDataMapper implements Mapper<Long, String, Context>, Combine
 	public void map(Long index, String line, Context context) {
 
 		String[] contents = line.split(",");
-		if (contents[0] != null && !"Year".equals(contents[0])) {
-			if (contents != null && contents.length > 14 && contents[14] != null && !"NA".equals(contents[14])) {
+		if (contents != null && contents.length > 14 && contents[0] != null && !"Year".equals(contents[0])
+				 && contents[14] != null && !"NA".equals(contents[14])) {
 				context.put(contents[8], Long.parseLong(contents[14]));
-			}
 		}
 
 

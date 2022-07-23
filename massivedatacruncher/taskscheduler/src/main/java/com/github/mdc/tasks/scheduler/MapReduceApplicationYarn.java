@@ -109,12 +109,12 @@ public class MapReduceApplicationYarn implements Callable<List<DataCruncherConte
 		log.debug("Entered MdcJob.getDnXref");
 		var dnxrefs = bls.stream().parallel().flatMap(bl -> {
 			var xrefs = new LinkedHashSet<String>();
-			Iterator<Set<String>> xref = bl.block[0].dnxref.values().iterator();
+			Iterator<Set<String>> xref = bl.getBlock()[0].getDnxref().values().iterator();
 			for (; xref.hasNext(); ) {
 				xrefs.addAll(xref.next());
 			}
-			if (bl.block.length > 1 && !Objects.isNull(bl.block[1])) {
-				xref = bl.block[0].dnxref.values().iterator();
+			if (bl.getBlock().length > 1 && !Objects.isNull(bl.getBlock()[1])) {
+				xref = bl.getBlock()[0].getDnxref().values().iterator();
 				for (; xref.hasNext(); ) {
 					xrefs.addAll(xref.next());
 				}
@@ -127,21 +127,21 @@ public class MapReduceApplicationYarn implements Callable<List<DataCruncherConte
 		}).collect(Collectors.toMap(xref -> xref, xref -> 0l));
 
 		for (var b : bls) {
-			var xrefselected = b.block[0].dnxref.keySet().stream()
-					.flatMap(xrefhost -> b.block[0].dnxref.get(xrefhost).stream()).sorted((xref1, xref2) -> {
+			var xrefselected = b.getBlock()[0].getDnxref().keySet().stream()
+					.flatMap(xrefhost -> b.getBlock()[0].getDnxref().get(xrefhost).stream()).sorted((xref1, xref2) -> {
 				return dnxrefallocatecount.get(xref1).compareTo(dnxrefallocatecount.get(xref2));
 			}).findFirst();
 			var xref = xrefselected.get();
 			dnxrefallocatecount.put(xref, dnxrefallocatecount.get(xref) + 1);
-			b.block[0].hp = xref;
-			if (b.block.length > 1 && !Objects.isNull(b.block[1])) {
-				xrefselected = b.block[1].dnxref.keySet().stream()
-						.flatMap(xrefhost -> b.block[1].dnxref.get(xrefhost).stream()).sorted((xref1, xref2) -> {
+			b.getBlock()[0].setHp(xref);
+			if (b.getBlock().length > 1 && !Objects.isNull(b.getBlock()[1])) {
+				xrefselected = b.getBlock()[1].getDnxref().keySet().stream()
+						.flatMap(xrefhost -> b.getBlock()[1].getDnxref().get(xrefhost).stream()).sorted((xref1, xref2) -> {
 					return dnxrefallocatecount.get(xref1).compareTo(dnxrefallocatecount.get(xref2));
 				}).findFirst();
 				xref = xrefselected.get();
 				dnxrefallocatecount.put(xref, dnxrefallocatecount.get(xref) + 1);
-				b.block[1].hp = xref;
+				b.getBlock()[1].setHp(xref);
 			}
 		}
 
@@ -282,9 +282,6 @@ public class MapReduceApplicationYarn implements Callable<List<DataCruncherConte
 	/**
 	 * Calculate the container count via number of processors and container
 	 * memory
-	 * 
-	 * @param blocksize
-	 * @param stagecount
 	 */
 	private void decideContainerCountAndPhysicalMemoryByBlockSize() {
 		long processors = Integer.parseInt(jobconf.getNumberofcontainers());

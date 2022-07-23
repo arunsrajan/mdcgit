@@ -21,12 +21,12 @@ import java.util.Map;
 import com.github.mdc.common.Context;
 import com.github.mdc.tasks.executor.Mapper;
 
-public class AirlineArrDelayDataMapper implements Mapper<Long, String, Context<String, Map>> {
+public class AirlineArrDelayDataMapper implements Mapper<Long, String, Context<String, Map<String, Long>>> {
 
 	@Override
-	public void map(Long chunkid, String line, Context<String, Map> ctx) {
+	public void map(Long chunkid, String line, Context<String, Map<String, Long>> ctx) {
 		var contents = line.split(",");
-		var map = new HashMap<>();
+		var map = new HashMap<String, Long>();
 
 		if (contents != null && contents.length > 14 && contents[14] != null && !"NA".equals(contents[14]) && !"ArrDelay".equals(contents[14])) {
 			map.put("AIRLINEARRDELAY", Long.parseLong(contents[14]));

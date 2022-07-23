@@ -23,6 +23,7 @@ import java.net.URL;
 import java.util.List;
 import java.util.Objects;
 
+import com.github.mdc.tasks.scheduler.exception.ApplicationSubmitterException;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
@@ -78,7 +79,7 @@ public class ApplicationSubmitter {
 		var hostport = MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULER_HOSTPORT);
 		var taskschedulers = (List<String>) ZookeeperOperations.nodesdata.invoke(cf,
 				MDCConstants.ZK_BASE_PATH + MDCConstants.FORWARD_SLASH + MDCConstants.TASKSCHEDULER, null, null);
-		if (hostport != null || taskschedulers.size() > 0) {
+		if (hostport != null || !taskschedulers.isEmpty()) {
 			String currenttaskscheduler;
 			if (hostport != null) {
 				currenttaskscheduler = hostport;
@@ -121,18 +122,26 @@ public class ApplicationSubmitter {
 		cf.close();
 	}
 
-	public static void writeInt(OutputStream os, Integer value) throws Exception {
-		var kryo = Utils.getKryoNonDeflateSerializer();
-		var output = new Output(os);
-		kryo.writeClassAndObject(output, value);
-		output.flush();
+	public static void writeInt(OutputStream os, Integer value) throws ApplicationSubmitterException {
+		try {
+			var kryo = Utils.getKryoNonDeflateSerializer();
+			var output = new Output(os);
+			kryo.writeClassAndObject(output, value);
+			output.flush();
+		} catch(Exception exception){
+			throw new ApplicationSubmitterException(exception, "Unable to write Integer value to the output stream");
+		}
 	}
 
-	public static void writeDataStream(OutputStream os, byte[] outbyt) throws Exception {
-		var kryo = Utils.getKryoNonDeflateSerializer();
-		var output = new Output(os);
-		kryo.writeClassAndObject(output, outbyt);
-		output.flush();
+	public static void writeDataStream(OutputStream os, byte[] outbyt) throws ApplicationSubmitterException {
+		try {
+			var kryo = Utils.getKryoNonDeflateSerializer();
+			var output = new Output(os);
+			kryo.writeClassAndObject(output, outbyt);
+			output.flush();
+		} catch(Exception exception){
+			throw new ApplicationSubmitterException(exception, "Unable to write Integer value to the output stream");
+		}
 	}
 
 

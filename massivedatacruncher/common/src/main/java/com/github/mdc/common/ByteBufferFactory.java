@@ -28,8 +28,7 @@ public class ByteBufferFactory extends BasePooledObjectFactory<ByteBuffer> {
 	@Override
 	public ByteBuffer create() throws Exception {
 		try {
-			ByteBuffer bb = ByteBuffer.allocateDirect(128 * MDCConstants.MB);
-			return bb;
+			return ByteBuffer.allocateDirect(128 * MDCConstants.MB);
 		} catch (Exception ex) {
 			log.error(MDCConstants.EMPTY, ex);
 			return null;
@@ -39,15 +38,7 @@ public class ByteBufferFactory extends BasePooledObjectFactory<ByteBuffer> {
 
 	@Override
 	public PooledObject<ByteBuffer> wrap(ByteBuffer bbf) {
-		return new DefaultPooledObject<ByteBuffer>(bbf);
+		return new DefaultPooledObject<>(bbf);
 	}
 
-	@Override
-	public void passivateObject(PooledObject<ByteBuffer> pooledObject) {
-
-	}
-
-	@Override
-	public void destroyObject(PooledObject<ByteBuffer> poolobj) throws Exception {
-	}
 }

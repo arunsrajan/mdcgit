@@ -102,18 +102,18 @@ public final class HeartBeatTaskScheduler extends HeartBeatServer implements Hea
 					try (var bais = new ByteArrayInputStream(rawbuffer);
 							var input = new Input(bais);) {
 						var apptask = (ApplicationTask) Utils.readKryoInputObjectWithClass(kryo, input);
-						if (applicationid.equals(apptask.applicationid)) {
-							if ((apptask.taskstatus == ApplicationTask.TaskStatus.COMPLETED
-									|| apptask.taskstatus == ApplicationTask.TaskStatus.FAILED)
-									&& !apptasks.contains(apptask.taskid)) {
+						if (applicationid.equals(apptask.getApplicationid())) {
+							if ((apptask.getTaskstatus() == ApplicationTask.TaskStatus.COMPLETED
+									|| apptask.getTaskstatus() == ApplicationTask.TaskStatus.FAILED)
+									&& !apptasks.contains(apptask.getTaskid())) {
 								log.info("AppTask Before adding to queue: " + apptask);
 								hbo.addToQueue(apptask);
-								apptasks.add(apptask.taskid);
-							} else if (apptask.taskstatus == ApplicationTask.TaskStatus.COMPLETED
-									|| apptask.taskstatus == ApplicationTask.TaskStatus.FAILED) {
+								apptasks.add(apptask.getTaskid());
+							} else if (apptask.getTaskstatus() == ApplicationTask.TaskStatus.COMPLETED
+									|| apptask.getTaskstatus() == ApplicationTask.TaskStatus.FAILED) {
 								var mrjr = new MRJobResponse();
-								mrjr.setAppid(apptask.applicationid);
-								mrjr.setTaskid(apptask.taskid);
+								mrjr.setAppid(apptask.getApplicationid());
+								mrjr.setTaskid(apptask.getTaskid());
 								try (var baos = new ByteArrayOutputStream();
 										var output = new Output(baos);) {
 									Utils.writeKryoOutputClassObject(kryo, output, mrjr);
@@ -155,12 +155,12 @@ public final class HeartBeatTaskScheduler extends HeartBeatServer implements Hea
 			channel.setName(applicationid + taskid);
 			channel.connect(applicationid);
 			var apptask = new ApplicationTask();
-			apptask.applicationid = applicationid;
-			apptask.taskid = taskid;
-			apptask.taskstatus = taskstatus;
-			apptask.tasktype = tasktype;
-			apptask.hp = this.networkaddress + MDCConstants.UNDERSCORE + this.serverport;
-			apptask.apperrormessage = taskstatus == ApplicationTask.TaskStatus.FAILED ? apperrormessage : "";
+			apptask.setApplicationid(applicationid);
+			apptask.setTaskid(taskid);
+			apptask.setTaskstatus(taskstatus);
+			apptask.setTasktype(tasktype);
+			apptask.setHp(this.networkaddress + MDCConstants.UNDERSCORE + this.serverport);
+			apptask.setApperrormessage(taskstatus == ApplicationTask.TaskStatus.FAILED ? apperrormessage : "");
 			try (var baos = new ByteArrayOutputStream(); var output = new Output(baos);) {
 				Utils.writeKryoOutputClassObject(Utils.getKryoNonDeflateSerializer(), output, apptask);
 				if (taskstatus == TaskStatus.COMPLETED) {
@@ -216,11 +216,11 @@ public final class HeartBeatTaskScheduler extends HeartBeatServer implements Hea
 		log.debug("Entered HeartBeatTaskScheduler.pingOnce");
 		try (var channel = Utils.getChannelWithPStack(
 				NetworkUtil.getNetworkAddress(MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_HOST)))) {
-			channel.setName(apptask.applicationid + apptask.taskid);
-			channel.connect(apptask.applicationid);
-			apptask.taskstatus = taskstatus;
-			apptask.tasktype = tasktype;
-			apptask.apperrormessage = taskstatus == ApplicationTask.TaskStatus.FAILED ? apperrormessage : "";
+			channel.setName(apptask.getApplicationid() + apptask.getTaskid());
+			channel.connect(apptask.getApplicationid());
+			apptask.setTaskstatus(taskstatus);
+			apptask.setTasktype(tasktype);
+			apptask.setApperrormessage(taskstatus == ApplicationTask.TaskStatus.FAILED ? apperrormessage : "");
 			try (var baos = new ByteArrayOutputStream(); var output = new Output(baos);) {
 				Utils.writeKryoOutputClassObject(Utils.getKryoNonDeflateSerializer(), output, apptask);
 				if (taskstatus == TaskStatus.COMPLETED) {

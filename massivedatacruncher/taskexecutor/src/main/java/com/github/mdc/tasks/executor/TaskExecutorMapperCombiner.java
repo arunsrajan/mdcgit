@@ -58,14 +58,14 @@ public class TaskExecutorMapperCombiner implements Runnable {
 		this.port = port;
 		Class<?> clz = null;
 		try {
-			if (blockslocation.mapperclasses != null) {
-				for (var mapperclass :blockslocation.mapperclasses) {
+			if (blockslocation.getMapperclasses() != null) {
+				for (var mapperclass :blockslocation.getMapperclasses()) {
 					clz = cl.loadClass(mapperclass);
 					cm.add((Mapper) clz.getDeclaredConstructor().newInstance());
 				}
 			}
-			if (blockslocation.combinerclasses != null) {
-				for (var combinerclass :blockslocation.combinerclasses) {
+			if (blockslocation.getCombinerclasses() != null) {
+				for (var combinerclass :blockslocation.getCombinerclasses()) {
 					clz = cl.loadClass(combinerclass);
 					cc.add((Combiner) clz.getDeclaredConstructor().newInstance());
 				}

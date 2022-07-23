@@ -151,14 +151,14 @@ public class MapReduceYarnAppmaster extends StaticEventingAppmaster implements C
 				var taskid = MDCConstants.TASK + MDCConstants.HYPHEN + MDCConstants.MAPPER + MDCConstants.HYPHEN
 						+ (taskcount + 1);
 				var apptask = new ApplicationTask();
-				apptask.applicationid = applicationid;
-				apptask.taskid = taskid;
+				apptask.setApplicationid(applicationid);
+				apptask.setTaskid(taskid);
 				var mc = (MapperCombiner) getMapperCombiner(mapclzchunkfile, combiner, bl, apptask);
-				var xrefdnaddrs = new ArrayList<>(bl.block[0].dnxref.keySet());
+				var xrefdnaddrs = new ArrayList<>(bl.getBlock()[0].getDnxref().keySet());
 				var key = xrefdnaddrs.get(taskcount % xrefdnaddrs.size());
-				var dnxrefaddr = new ArrayList<>(bl.block[0].dnxref.get(key));
-				bl.block[0].hp = dnxrefaddr.get(taskcount % dnxrefaddr.size());
-				var host = bl.block[0].hp.split(":")[0];
+				var dnxrefaddr = new ArrayList<>(bl.getBlock()[0].getDnxref().get(key));
+				bl.getBlock()[0].setHp(dnxrefaddr.get(taskcount % dnxrefaddr.size()));
+				var host = bl.getBlock()[0].getHp().split(":")[0];
 				if (Objects.isNull(ipmcs.get(host))) {
 					mappercombiners = new ArrayList<>();
 					ipmcs.put(host, mappercombiners);
@@ -176,8 +176,8 @@ public class MapReduceYarnAppmaster extends StaticEventingAppmaster implements C
 				var taskid = MDCConstants.TASK + MDCConstants.HYPHEN + MDCConstants.REDUCER + MDCConstants.HYPHEN
 						+ (taskcount + 1);
 				var apptask = new ApplicationTask();
-				apptask.applicationid = applicationid;
-				apptask.taskid = taskid;
+				apptask.setApplicationid(applicationid);
+				apptask.setTaskid(taskid);
 				red.apptask = apptask;
 				rs.add(red);
 				taskcount++;
@@ -200,7 +200,7 @@ public class MapReduceYarnAppmaster extends StaticEventingAppmaster implements C
 	public MapperCombiner getMapperCombiner(
 			Map<String, Set<String>> mapclzchunkfile,
 			Set<String> combiners, BlocksLocation blockslocation, ApplicationTask apptask) {
-		var rawpath = blockslocation.block[0].filename.split(MDCConstants.FORWARD_SLASH);
+		var rawpath = blockslocation.getBlock()[0].getFilename().split(MDCConstants.FORWARD_SLASH);
 		var mapcombiner = new MapperCombiner(blockslocation, mapclzchunkfile.get(MDCConstants.FORWARD_SLASH + rawpath[3]), apptask,
 				combiners);
 		return mapcombiner;
@@ -289,23 +289,25 @@ public class MapReduceYarnAppmaster extends StaticEventingAppmaster implements C
 
 	/**
 	 * Update the job statuses if job status is completed.
-	 * @param job
+	 *
+	 * @param mc
 	 * @param success
+	 * @param containerid
 	 */
 	@SuppressWarnings("unchecked")
 	public void reportJobStatus(MapperCombiner mc, boolean success, String containerid) {
 		try {
 			lock.acquire();
 			if (success) {
-				log.info(mc.apptask.applicationid + mc.apptask.taskid + " Updated");
-				var keys = (Set<Object>) RemoteDataFetcher.readIntermediatePhaseOutputFromDFS(mc.apptask.applicationid,
-						(mc.apptask.applicationid + mc.apptask.taskid), true);
-				dcc.putAll(keys, mc.apptask.applicationid + mc.apptask.taskid);
+				log.info(mc.apptask.getApplicationid() + mc.apptask.getTaskid() + " Updated");
+				var keys = (Set<Object>) RemoteDataFetcher.readIntermediatePhaseOutputFromDFS(mc.apptask.getApplicationid(),
+						(mc.apptask.getApplicationid() + mc.apptask.getTaskid()), true);
+				dcc.putAll(keys, mc.apptask.getApplicationid() + mc.apptask.getTaskid());
 				log.info("dcc: " + dcc);
-				pendingjobs.remove(mc.apptask.applicationid + mc.apptask.taskid);
+				pendingjobs.remove(mc.apptask.getApplicationid() + mc.apptask.getTaskid());
 				taskcompleted++;
 			} else {
-				pendingjobs.put(mc.apptask.applicationid + mc.apptask.taskid, mc);
+				pendingjobs.put(mc.apptask.getApplicationid() + mc.apptask.getTaskid(), mc);
 			}
 		}
 		catch (InterruptedException e) {
@@ -330,8 +332,8 @@ public class MapReduceYarnAppmaster extends StaticEventingAppmaster implements C
 					for (var redcount = 0; redcount < numreducers; redcount++) {
 						var red = rs.get(redcount);
 						var ctxreducerpart = (Context) RemoteDataFetcher.readIntermediatePhaseOutputFromDFS(
-								red.apptask.applicationid,
-								(red.apptask.applicationid + red.apptask.taskid), false);
+								red.apptask.getApplicationid(),
+								(red.apptask.getApplicationid() + red.apptask.getTaskid()), false);
 						var keysreducers = ctxreducerpart.keys();
 						sb.append(MDCConstants.NEWLINE);
 						sb.append("Partition " + (redcount + 1) + "-------------------------------------------------");
@@ -355,11 +357,11 @@ public class MapReduceYarnAppmaster extends StaticEventingAppmaster implements C
 						log.error(MDCConstants.EMPTY, ex);
 					}
 				}
-				log.info(r.apptask.applicationid + r.apptask.taskid + " Updated");
-				pendingjobs.remove(r.apptask.applicationid + r.apptask.taskid);
+				log.info(r.apptask.getApplicationid() + r.apptask.getTaskid() + " Updated");
+				pendingjobs.remove(r.apptask.getApplicationid() + r.apptask.getTaskid());
 				redtaskcompleted++;
 			} else {
-				pendingjobs.put(r.apptask.applicationid + r.apptask.taskid, r);
+				pendingjobs.put(r.apptask.getApplicationid() + r.apptask.getTaskid(), r);
 			}
 		}
 		catch (InterruptedException e) {

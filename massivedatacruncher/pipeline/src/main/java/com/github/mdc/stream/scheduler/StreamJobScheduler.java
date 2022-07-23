@@ -1043,14 +1043,14 @@ public class StreamJobScheduler {
 		if (!Objects.isNull(inputs)) {
 			for (var input : inputs) {
 				if (input instanceof BlocksLocation bsl) {
-					bsl.containers.retainAll(availablecontainers);
-					var containersgrouped = bsl.containers.stream()
+					bsl.getContainers().retainAll(availablecontainers);
+					var containersgrouped = bsl.getContainers().stream()
 							.collect(Collectors.groupingBy(key -> key.split(MDCConstants.UNDERSCORE)[0],
 									Collectors.mapping(value -> value, Collectors.toCollection(Vector::new))));
-					for (var block : bsl.block) {
+					for (var block : bsl.getBlock()) {
 						if (!Objects.isNull(block)) {
-							var xrefaddrs = block.dnxref.keySet().stream().map(dnxrefkey -> {
-								return block.dnxref.get(dnxrefkey);
+							var xrefaddrs = block.getDnxref().keySet().stream().map(dnxrefkey -> {
+								return block.getDnxref().get(dnxrefkey);
 							}).flatMap(xrefaddr -> xrefaddr.stream()).collect(Collectors.toList());
 
 							var containerdnaddr = (List<Tuple2<String, String>>) xrefaddrs.stream()
@@ -1065,10 +1065,10 @@ public class StreamJobScheduler {
 										return (List<Tuple2<String, String>>) containerlist;
 									}).flatMap(containerlist -> containerlist.stream()).collect(Collectors.toList());
 							var containerdn = containerdnaddr.get(containercount++ % containerdnaddr.size());
-							block.hp = containerdn.v1;
-							bsl.executorhp = containerdn.v2;
-							mstst.setHostPort(bsl.executorhp);
-							mstst.getTask().hostport = bsl.executorhp;
+							block.setHp(containerdn.v1);
+							bsl.setExecutorhp(containerdn.v2);
+							mstst.setHostPort(bsl.getExecutorhp());
+							mstst.getTask().hostport = bsl.getExecutorhp();
 						}
 					}
 					mstst.setCompletedexecution(false);
@@ -1958,9 +1958,9 @@ public class StreamJobScheduler {
 			if (currentstage == 0 || parentthreads == null) {
 				if (input instanceof List inputl) {
 					task.input = inputl.toArray();
-					hp = ((BlocksLocation) task.input[0]).executorhp;
+					hp = ((BlocksLocation) task.input[0]).getExecutorhp();
 				} else if (input instanceof BlocksLocation bl) {
-					hp = bl.executorhp;
+					hp = bl.getExecutorhp();
 					task.input = new Object[]{input};
 				}
 				task.parentremotedatafetch = null;
@@ -1988,7 +1988,7 @@ public class StreamJobScheduler {
 						}
 					} else if (parentthreads.get(parentcount) instanceof BlocksLocation bl) {
 						task.input[parentcount] = bl;
-						hp = bl.executorhp;
+						hp = bl.getExecutorhp();
 					} else if (isignite && parentthreads.get(parentcount) instanceof Task insttask) {
 						task.input[parentcount] = insttask;
 					}

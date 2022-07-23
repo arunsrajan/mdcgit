@@ -58,9 +58,9 @@ public class TaskSchedulerMapperSubmitter implements TaskSchedulerMapperSubmitte
 
 	public BlocksLocation initializeobject(Set<String> mapperclasses, Set<String> combinerclasses)
 			throws Exception, UnknownHostException, IOException {
-		this.hostport = blockslocation.executorhp.split(MDCConstants.UNDERSCORE);
-		blockslocation.mapperclasses = mapperclasses;
-		blockslocation.combinerclasses = combinerclasses;
+		this.hostport = blockslocation.getExecutorhp().split(MDCConstants.UNDERSCORE);
+		blockslocation.setMapperclasses(mapperclasses);
+		blockslocation.setCombinerclasses(combinerclasses);
 		return blockslocation;
 	}
 
@@ -68,9 +68,9 @@ public class TaskSchedulerMapperSubmitter implements TaskSchedulerMapperSubmitte
 		try {
 			var objects = new ArrayList<>();
 			objects.add(blockslocation);
-			objects.add(apptask.applicationid);
-			objects.add(apptask.taskid);
-			Utils.writeObject(blockslocation.executorhp, objects);
+			objects.add(apptask.getApplicationid());
+			objects.add(apptask.getTaskid());
+			Utils.writeObject(blockslocation.getExecutorhp(), objects);
 		}
 		catch (IOException ex) {
 			var baos = new ByteArrayOutputStream();
@@ -83,12 +83,12 @@ public class TaskSchedulerMapperSubmitter implements TaskSchedulerMapperSubmitte
 
 	@Override
 	public void setHostPort(String hp) {
-		blockslocation.executorhp = hp;
+		blockslocation.setExecutorhp(hp);
 	}
 
 	@Override
 	public String getHostPort() {
-		return blockslocation.executorhp;
+		return blockslocation.getExecutorhp();
 	}
 
 	@Override

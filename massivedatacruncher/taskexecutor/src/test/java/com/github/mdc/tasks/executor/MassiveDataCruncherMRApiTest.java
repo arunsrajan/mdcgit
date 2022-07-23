@@ -123,8 +123,8 @@ public class MassiveDataCruncherMRApiTest extends StreamPipelineBase {
 		lzos.flush();
 		SnappyInputStream lzis = new SnappyInputStream(new ByteArrayInputStream(baos.toByteArray()));
 		BlocksLocation bls = new BlocksLocation();
-		bls.mapperclasses = new LinkedHashSet<>(Arrays.asList(AirlineDataMapper.class.getName()));
-		bls.combinerclasses = new LinkedHashSet<>(Arrays.asList(AirlineDataMapper.class.getName()));
+		bls.setMapperclasses(new LinkedHashSet<>(Arrays.asList(AirlineDataMapper.class.getName())));
+		bls.setCombinerclasses(new LinkedHashSet<>(Arrays.asList(AirlineDataMapper.class.getName())));
 		ExecutorService es = Executors.newWorkStealingPool();
 		HeartBeatTaskScheduler hbtsreceiver = new HeartBeatTaskScheduler();
 		HeartBeatTaskScheduler hbts = new HeartBeatTaskScheduler();
@@ -165,7 +165,7 @@ public class MassiveDataCruncherMRApiTest extends StreamPipelineBase {
 		lzos.flush();
 		SnappyInputStream lzis = new SnappyInputStream(new ByteArrayInputStream(baos.toByteArray()));
 		BlocksLocation bls = new BlocksLocation();
-		bls.mapperclasses = new LinkedHashSet<>(Arrays.asList(AirlineDataMapper.class.getName()));
+		bls.setMapperclasses(new LinkedHashSet<>(Arrays.asList(AirlineDataMapper.class.getName())));
 		ExecutorService es = Executors.newWorkStealingPool();
 		HeartBeatTaskScheduler hbtsreceiver = new HeartBeatTaskScheduler();
 		HeartBeatTaskScheduler hbts = new HeartBeatTaskScheduler();

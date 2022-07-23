@@ -24,7 +24,8 @@ import java.util.concurrent.Semaphore;
 import org.apache.log4j.Logger;
 
 public class ByteBufferInputStream extends InputStream {
-	static int allocation,deallocation;
+	static int allocation;
+	static int deallocation;
 	static Logger log = Logger.getLogger(ByteBufferInputStream.class);
 	private ByteBuffer bb;
 	static Semaphore printallocdealloc = new Semaphore(1);
@@ -55,6 +56,7 @@ public class ByteBufferInputStream extends InputStream {
 		return bb.get() & 0xFF;
 	}
 
+	@Override
 	public synchronized int read(byte[] bytes, int off, int len) throws IOException {
 		if (!bb.hasRemaining()) {
 			return -1;

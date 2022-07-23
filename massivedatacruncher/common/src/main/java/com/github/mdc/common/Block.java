@@ -15,6 +15,11 @@
  */
 package com.github.mdc.common;
 
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
 import java.io.Serializable;
 import java.util.Map;
 import java.util.Set;
@@ -24,18 +29,17 @@ import java.util.Set;
  * @author Arun
  * File Split Block Information
  */
+@EqualsAndHashCode
+@Getter
+@Setter
+@ToString
 public class Block implements Serializable {
 	private static final long serialVersionUID = 1641172215309142006L;
-	public long blockOffset;
-	public long blockstart;
-	public long blockend;
-	public String filename;
-	public String hp;
-	public Map<String, Set<String>> dnxref;
+	private long blockOffset;
+	private long blockstart;
+	private long blockend;
+	private String filename;
+	private String hp;
+	private Map<String, Set<String>> dnxref;
 
-	@Override
-	public String toString() {
-		return "Block [blockOffset=" + blockOffset + ", blockstart=" + blockstart + ", blockend=" + blockend
-				+ ", filename=" + filename + ", hp=" + hp + ", dnxref=" + dnxref + "]";
-	}
 }

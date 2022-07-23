@@ -74,16 +74,16 @@ public class HDFSBlockUtils {
 						var bls = new BlocksLocation();
 						var block = new Block[2];
 						block[0] = new Block();
-						block[0].blockstart = startoffset;
+						block[0].setBlockstart(startoffset);
 						startoffset = blocksize + startoffset < lb.getBlockSize() ? startoffset + blocksize : lb.getBlockSize();
-						block[0].blockend = startoffset;
-						block[0].blockOffset = lb.getStartOffset();
-						block[0].filename = filepath.toUri().toString();
+						block[0].setBlockend(startoffset);
+						block[0].setBlockOffset(lb.getStartOffset());
+						block[0].setFilename(filepath.toUri().toString());
 						Map<String, Set<String>> dnxref = dninfos.stream().map(dninfo -> dninfo.getXferAddr())
 								.collect(Collectors.groupingBy(xrefaddr -> xrefaddr.split(MDCConstants.COLON)[0], Collectors
 										.mapping(xrefaddr -> xrefaddr, Collectors.toCollection(LinkedHashSet::new))));
-						block[0].dnxref = dnxref;
-						bls.block = block;
+						block[0].setDnxref(dnxref);
+						bls.setBlock(block);
 						blsl.add(bls);
 						skipbytes = 0;
 						boolean isnewline = isNewLineAtEnd(hdfs, lb, lb.getStartOffset() + startoffset - 1, dninfos.get(0).getXferAddr());
@@ -92,15 +92,15 @@ public class HDFSBlockUtils {
 								skipbytes = skipBlockToNewLine(hdfs, lb, lb.getStartOffset() + startoffset, dninfos.get(0).getXferAddr());
 								if (skipbytes > 0) {
 									bls = blsl.get(blsl.size() - 1);
-									bls.block[1] = new Block();
-									bls.block[1].blockstart = startoffset;
-									bls.block[1].blockend = startoffset + skipbytes;
-									bls.block[1].blockOffset = lb.getStartOffset();
-									bls.block[1].filename = filepath.toUri().toString();
-									bls.block[1].dnxref = dninfos.stream().map(dninfo -> dninfo.getXferAddr())
+									bls.getBlock()[1] = new Block();
+									bls.getBlock()[1].setBlockstart(startoffset);
+									bls.getBlock()[1].setBlockend(startoffset + skipbytes);
+									bls.getBlock()[1].setBlockOffset(lb.getStartOffset());
+									bls.getBlock()[1].setFilename(filepath.toUri().toString());
+									bls.getBlock()[1].setDnxref(dninfos.stream().map(dninfo -> dninfo.getXferAddr())
 											.collect(Collectors.groupingBy(xrefaddr -> xrefaddr.split(MDCConstants.COLON)[0],
 													Collectors.mapping(xrefaddr -> xrefaddr,
-															Collectors.toCollection(LinkedHashSet::new))));
+															Collectors.toCollection(LinkedHashSet::new)))));
 									startoffset += skipbytes;
 								}
 							} else if (lbindex < locatedblocks.size() - 1) {
@@ -110,15 +110,15 @@ public class HDFSBlockUtils {
 								skipbytes = skipBlockToNewLine(hdfs, lb, lb.getStartOffset() + startoffset, dninfos.get(0).getXferAddr());
 								if (skipbytes > 0) {
 									bls = blsl.get(blsl.size() - 1);
-									bls.block[1] = new Block();
-									bls.block[1].blockstart = startoffset;
-									bls.block[1].blockend = startoffset + skipbytes;
-									bls.block[1].blockOffset = lb.getStartOffset();
-									bls.block[1].filename = filepath.toUri().toString();
-									bls.block[1].dnxref = dninfos.stream().map(dninfo -> dninfo.getXferAddr())
+									bls.getBlock()[1] = new Block();
+									bls.getBlock()[1].setBlockstart(startoffset);
+									bls.getBlock()[1].setBlockend(startoffset + skipbytes);
+									bls.getBlock()[1].setBlockOffset(lb.getStartOffset());
+									bls.getBlock()[1].setFilename(filepath.toUri().toString());
+									bls.getBlock()[1].setDnxref(dninfos.stream().map(dninfo -> dninfo.getXferAddr())
 											.collect(Collectors.groupingBy(xrefaddr -> xrefaddr.split(MDCConstants.COLON)[0],
 													Collectors.mapping(xrefaddr -> xrefaddr,
-															Collectors.toCollection(LinkedHashSet::new))));
+															Collectors.toCollection(LinkedHashSet::new)))));
 									startoffset += skipbytes;
 								}
 							} else {

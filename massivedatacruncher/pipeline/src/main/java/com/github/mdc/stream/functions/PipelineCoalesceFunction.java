@@ -13,25 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.mdc.common;
+package com.github.mdc.stream.functions;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import java.io.Serializable;
 
-/**
- * 
- * @author arun
- *
- * The Object to check whether cache is available in executor or not.
- */
-@EqualsAndHashCode
-@Getter
-@Setter
-@ToString
-public class CacheAvailability {
-	private BlocksLocation bl;
-	private boolean available;
-	private boolean response;
+@FunctionalInterface
+public interface PipelineCoalesceFunction<I> extends CoalesceFunction<I>,Serializable {
+
 }

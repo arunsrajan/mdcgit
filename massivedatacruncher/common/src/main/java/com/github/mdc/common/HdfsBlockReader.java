@@ -78,19 +78,19 @@ public class HdfsBlockReader {
 			log.debug("Entered HdfsBlockReader.getBlockDataMR");
 			var baos = new ByteArrayOutputStream();
 			var mapfilenamelb = new HashMap<String, List<LocatedBlock>>();
-			for (var block : bl.block) {
+			for (var block : bl.getBlock()) {
 				log.debug("In getBlockDataMR block: " + block);
-				if (!Objects.isNull(block) && Objects.isNull(mapfilenamelb.get(block.filename))) {
-					try (var fsinput = (HdfsDataInputStream) hdfs.open(new Path(block.filename));) {
-						mapfilenamelb.put(block.filename, new ArrayList<>(fsinput.getAllBlocks()));
+				if (!Objects.isNull(block) && Objects.isNull(mapfilenamelb.get(block.getFilename()))) {
+					try (var fsinput = (HdfsDataInputStream) hdfs.open(new Path(block.getFilename()));) {
+						mapfilenamelb.put(block.getFilename(), new ArrayList<>(fsinput.getAllBlocks()));
 					}
 				}
 				if (!Objects.isNull(block)) {
-					var locatedBlocks = mapfilenamelb.get(block.filename);
+					var locatedBlocks = mapfilenamelb.get(block.getFilename());
 					for (var lb : locatedBlocks) {
-						if (lb.getStartOffset() == block.blockOffset) {
+						if (lb.getStartOffset() == block.getBlockOffset()) {
 							log.debug("Obtaining Data for the " + block + " with offset: " + lb.getStartOffset());
-							getDataBlock(block, lb, hdfs, baos, block.hp.split(MDCConstants.UNDERSCORE)[0]);
+							getDataBlock(block, lb, hdfs, baos, block.getHp().split(MDCConstants.UNDERSCORE)[0]);
 							break;
 						}
 					}
@@ -126,8 +126,8 @@ public class HdfsBlockReader {
 		try {
 			log.debug("Entered HdfsBlockReader.getDataBlock");
 			// Block reader to get file block bytes
-			var totalbytestoread = (int) (block.blockend - block.blockstart);
-			var breader = getBlockReader((DistributedFileSystem) hdfs, lb, lb.getStartOffset() + block.blockstart, containerhost);
+			var totalbytestoread = (int) (block.getBlockend() - block.getBlockstart());
+			var breader = getBlockReader((DistributedFileSystem) hdfs, lb, lb.getStartOffset() + block.getBlockstart(), containerhost);
 			log.debug("In getDataBlock Read Bytes: " + totalbytestoread);
 			var readsize = 1024;
 			var byt = new byte[readsize];
@@ -184,19 +184,19 @@ public class HdfsBlockReader {
 
 
 			var mapfilenamelb = new HashMap<String, List<LocatedBlock>>();
-			for (var block : bl.block) {
+			for (var block : bl.getBlock()) {
 				log.debug("In getBlockDataMR block: " + block);
-				if (!Objects.isNull(block) && Objects.isNull(mapfilenamelb.get(block.filename))) {
-					try (var fsinput = (HdfsDataInputStream) hdfs.open(new Path(block.filename));) {
-						mapfilenamelb.put(block.filename, new ArrayList<>(fsinput.getAllBlocks()));
+				if (!Objects.isNull(block) && Objects.isNull(mapfilenamelb.get(block.getFilename()))) {
+					try (var fsinput = (HdfsDataInputStream) hdfs.open(new Path(block.getFilename()));) {
+						mapfilenamelb.put(block.getFilename(), new ArrayList<>(fsinput.getAllBlocks()));
 					}
 				}
 				if (!Objects.isNull(block)) {
-					var locatedBlocks = mapfilenamelb.get(block.filename);
+					var locatedBlocks = mapfilenamelb.get(block.getFilename());
 					for (var lb : locatedBlocks) {
-						if (lb.getStartOffset() == block.blockOffset) {
+						if (lb.getStartOffset() == block.getBlockOffset()) {
 							log.debug("Obtaining Data for the " + block + " with offset: " + lb.getStartOffset());
-							getDataBlock(block, lb, hdfs, lzfos, block.hp.split(MDCConstants.UNDERSCORE)[0]);
+							getDataBlock(block, lb, hdfs, lzfos, block.getHp().split(MDCConstants.UNDERSCORE)[0]);
 							break;
 						}
 					}

@@ -93,15 +93,15 @@ public class FileBlocksPartitioner {
 			for (destIx = 1; destIx <= numSplits; destIx++) {
 				try (var baos = new ByteArrayOutputStream(); var lzfos = new SnappyOutputStream(baos);) {
 					var bl = new BlocksLocation();
-					bl.block[0] = new Block();
-					bl.block[0].blockstart = totalbytes;
+					bl.getBlock()[0] = new Block();
+					bl.getBlock()[0].setBlockstart(totalbytes);
 					readWrite(raf, lzfos, bytesPerSplit);
 					skip = addBytesToNewline(raf, lzfos);
 					totalskip += skip;
 					totalbytes += bytesPerSplit + skip;
 					lzfos.flush();
-					bl.block[0].blockend = totalbytes;
-					bl.block[0].filename = filepath;
+					bl.getBlock()[0].setBlockend(totalbytes);
+					bl.getBlock()[0].setFilename(filepath);
 					cache.putIfAbsent(bl, baos.toByteArray());
 					bls.add(bl);
 				}
@@ -111,12 +111,12 @@ public class FileBlocksPartitioner {
 				numSplits++;
 				try (var baos = new ByteArrayOutputStream(); var lzfos = new SnappyOutputStream(baos);) {
 					var bl = new BlocksLocation();
-					bl.block[0] = new Block();
-					bl.block[0].blockstart = totalbytes;
+					bl.getBlock()[0] = new Block();
+					bl.getBlock()[0].setBlockstart(totalbytes);
 					readWrite(raf, lzfos, remaining);
 					totalbytes += remaining;
-					bl.block[0].blockend = totalbytes;
-					bl.block[0].filename = filepath;
+					bl.getBlock()[0].setBlockend(totalbytes);
+					bl.getBlock()[0].setFilename(filepath);
 					cache.putIfAbsent(bl, baos.toByteArray());
 					bls.add(bl);
 				}

@@ -220,9 +220,10 @@ public class StreamPipelineYarnAppmaster extends StaticEventingAppmaster impleme
 
 	/**
 	 * Update the job statuses if job status is completed.
-	 * 
-	 * @param job
+	 *
+	 * @param task
 	 * @param success
+	 * @param containerid
 	 */
 	@SuppressWarnings("ucd")
 	public void reportJobStatus(Task task, boolean success, String containerid) {
@@ -275,8 +276,8 @@ public class StreamPipelineYarnAppmaster extends StaticEventingAppmaster impleme
 				if (!Objects.isNull(task.input)) {
 					if (task.input[0] instanceof BlocksLocation) {
 						var bl = (BlocksLocation) task.input[0];
-						if (!Objects.isNull(bl.block) && bl.block.length > 0) {
-							String[] blockip = bl.block[0].hp.split(MDCConstants.COLON);
+						if (!Objects.isNull(bl.getBlock()) && bl.getBlock().length > 0) {
+							String[] blockip = bl.getBlock()[0].getHp().split(MDCConstants.COLON);
 							if (!ip.equals(blockip[0])) {
 								return null;
 							}

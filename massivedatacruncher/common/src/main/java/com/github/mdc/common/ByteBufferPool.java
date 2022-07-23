@@ -35,7 +35,7 @@ public class ByteBufferPool {
 							.getProperty(MDCConstants.BYTEBUFFERPOOL_BLOCK
 							, MDCConstants.BYTEBUFFERPOOL_BLOCK_DEFAULT)));
 			var factory = new ByteBufferFactory();
-			ByteBufferPool.pool = new GenericObjectPool<ByteBuffer>(factory, config);
+			ByteBufferPool.pool = new GenericObjectPool<>(factory, config);
 		}
 	}
 

@@ -21,10 +21,10 @@ import java.util.Map;
 import com.github.mdc.common.Context;
 import com.github.mdc.tasks.executor.Mapper;
 
-public class AirlineDepDelayDataMapper implements Mapper<Long, String, Context<String, Map>> {
+public class AirlineDepDelayDataMapper implements Mapper<Long, String, Context<String, Map<String, Long>>> {
 
 	@Override
-	public void map(Long chunkid, String line, Context<String, Map> ctx) {
+	public void map(Long chunkid, String line, Context<String, Map<String, Long>> ctx) {
 		try {
 			if (line != null) {
 				var contents = line.split(",");
@@ -34,11 +34,13 @@ public class AirlineDepDelayDataMapper implements Mapper<Long, String, Context<S
 				} else {
 					map.put("AIRLINEDEPDELAY", null);
 				}
-				ctx.put(contents[8], map);
+				if(java.util.Objects.nonNull(contents[8])) {
+					ctx.put(contents[8], map);
+				}
 			}
 		}
 		catch (Exception ex) {
-
+			ex.printStackTrace();
 		}
 	}
 

@@ -247,16 +247,16 @@ public class TaskExecutor implements Runnable {
 
 				log.info("Exiting RemoteDataFetch: ");
 			} else if (deserobj instanceof CacheAvailability ca) {
-				var bl = ca.bl;
-				ca.available = true;
-				for (var block : bl.block) {
-					var blockkey = block.filename + "-" + block.blockstart + "-" + block.blockend;
+				var bl = ca.getBl();
+				ca.setAvailable(true);
+				for (var block : bl.getBlock()) {
+					var blockkey = block.getFilename() + "-" + block.getBlockstart() + "-" + block.getBlockend();
 					if (!inmemorycache.containsKey(blockkey) || inmemorycache.get(blockkey) == null) {
-						ca.available = false;
+						ca.setAvailable(false);
 						break;
 					}
 				}
-				ca.response = true;
+				ca.setResponse(true);
 				Utils.writeObjectByStream(s.getOutputStream(), ca);
 			} else if (deserobj instanceof List objects) {
 				var object = objects.get(0);
