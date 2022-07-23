@@ -868,7 +868,38 @@ public class Utils {
 			kryo.writeClassAndObject(output, inputobj);
 			output.flush();
 		} catch (Exception ex) {
-			log.error("Unable to write Object Stream: " + inputobj);
+			log.error("Unable to write Object Stream: " + inputobj, ex);
+		}
+	}
+	
+	
+	public static void writeObject(String hp, Object inputobj, Kryo kryo) throws Exception {
+		var hostport = hp.split(MDCConstants.UNDERSCORE);
+		try (var socket = new Socket(hostport[0], Integer.parseInt(hostport[1]));) {
+
+			writeObjectByStream(socket.getOutputStream(), inputobj);
+		} catch (IOException ex) {
+			log.error("Unable to write Object: " + inputobj);
+			throw ex;
+		} catch (Exception ex) {
+			log.error("Unable to write Object: " + inputobj);
+		}
+	}
+
+	/**
+	 * This method writes the object via sockets outputstream of server.
+	 * 
+	 * @param ostream
+	 * @param inputobj
+	 * @throws Exception
+	 */
+	public static void writeObjectByStream(OutputStream ostream, Object inputobj, Kryo kryo) {
+		try {
+			var output = new Output(ostream);
+			kryo.writeClassAndObject(output, inputobj);
+			output.flush();
+		} catch (Exception ex) {
+			log.error("Unable to write Object Stream: " + inputobj, ex);
 		}
 	}
 

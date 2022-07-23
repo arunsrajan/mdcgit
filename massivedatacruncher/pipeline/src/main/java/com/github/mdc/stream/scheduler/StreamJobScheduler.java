@@ -200,6 +200,7 @@ public class StreamJobScheduler {
 			this.hdfs = hdfs;
 			this.hbtss = hbtss;
 			this.hbss = hbss;
+			TasksGraphExecutor[] tasksgraphexecutor = null;
 			// If not yarn and mesos start the resources and task scheduler
 			// heart beats
 			// for standalone MDC task schedulers and executors to communicate
@@ -365,7 +366,7 @@ public class StreamJobScheduler {
 					taskexecutors.add(task.hostport);
 					tasks.add(task);
 				}
-				var tasksgraphexecutor = new TasksGraphExecutor[taskexecutors.size()];
+				tasksgraphexecutor = new TasksGraphExecutor[taskexecutors.size()];
 				var taskgraphexecutormap = new ConcurrentHashMap<String, TasksGraphExecutor>();
 				var stagegraphexecutorindex = 0;
 				broadcastJobStageToTaskExecutors();
@@ -443,8 +444,7 @@ public class StreamJobScheduler {
 						}
 					}
 					stagepartidstatusmapresp.clear();
-					stagepartidstatusmapreq.clear();
-					closeResourcesTaskExecutor(tasksgraphexecutor);
+					stagepartidstatusmapreq.clear();					
 				} catch (InterruptedException e) {
 					log.warn("Interrupted!", e);
 					// Restore interrupted state...
@@ -464,6 +464,9 @@ public class StreamJobScheduler {
 			// completed.
 			var finalstageoutput = getLastStageOutput(mdstts, graph, mdststs, ismesos, isyarn, islocal, isjgroups,
 					resultstream);
+			if(Boolean.TRUE.equals(isjgroups)) {
+				closeResourcesTaskExecutor(tasksgraphexecutor);
+			}
 			job.iscompleted = true;
 			job.jm.jobcompletiontime = System.currentTimeMillis();
 			Utils.writeKryoOutput(kryo, pipelineconfig.getOutput(),
@@ -524,11 +527,13 @@ public class StreamJobScheduler {
 	}
 
 	public void broadcastJobStageToTaskExecutors() throws Exception {
+		Kryo kryo = Utils.getKryoNonDeflateSerializer();
 		jsidjsmap.keySet().stream().forEach(key -> {
 			for (String te : taskexecutors) {
 				try {
 					JobStage js = jsidjsmap.get(key);
-					Utils.writeObject(te, js);
+					js.stage.tasks.stream().forEach(task->kryo.register(task.getClass()));
+					Utils.writeObject(te, js, kryo);
 				} catch (Exception e) {
 					log.error(MDCConstants.EMPTY, e);
 				}

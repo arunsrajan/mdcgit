@@ -67,7 +67,7 @@ import com.github.mdc.stream.functions.PredicateSerializable;
 import com.github.mdc.stream.functions.ReduceByKeyFunction;
 import com.github.mdc.stream.functions.RightOuterJoinPredicate;
 
-public class StreamPipelineSqlBuilder {
+public class StreamPipelineSqlBuilder implements Serializable{
 	String sql;
 	String hdfs;
 	transient PipelineConfig pc;
@@ -502,7 +502,7 @@ public class StreamPipelineSqlBuilder {
 		}
 	}
 
-	class OperandSqlFunction {
+	class OperandSqlFunction implements Serializable{
 		private String column;
 		private String sqltype;
 

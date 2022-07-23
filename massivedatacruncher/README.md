@@ -12,7 +12,7 @@ In order to skip tests the following needs to be set in MAVEN_OPTS
 
 To compile only tests
 ---------------------------------------------------------------
-mvn -Dmaven.antrun.skip=true -Pmodules clean test-compile
+mvn -Dmaven.antrun.skip=true -Pmodules clean compile test-compile
 
 To run tests
 ------------
