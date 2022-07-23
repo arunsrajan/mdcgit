@@ -2365,8 +2365,8 @@ public class StreamPipelineTaskExecutorJGroupsTest extends StreamPipelineTestCom
 		coalescetask.stageid = js.stageid;
 		js.stage.tasks.clear();
 		Coalesce<Integer> coalesce = new Coalesce();
-		coalesce.coalescepartition = 1;
-		coalesce.coalescefuncion = (a, b) -> a + b;
+		coalesce.setCoalescepartition(1);
+		coalesce.setCoalescefunction((a, b) -> a + b);
 		coalescetask.input = new Object[]{fsdis1, fsdis2};
 		js.stage.tasks.add(coalesce);
 		mdsjte.setTask(coalescetask);

@@ -1520,7 +1520,7 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 				}
 			}
 			var out = keyvaluepairs.parallelStream().collect(Collectors.toMap(Tuple2::v1, Tuple2::v2,
-					(input1, input2) -> coalescefunction.get(0).coalescefuncion.apply(input1, input2)));
+					(input1, input2) -> coalescefunction.get(0).getCoalescefunction().apply(input1, input2)));
 			var outpairs = (List) out.entrySet().parallelStream()
 					.map(entry -> Tuple.tuple(((Entry) entry).getKey(), ((Entry) entry).getValue()))
 					.collect(Collectors.toCollection(Vector::new));

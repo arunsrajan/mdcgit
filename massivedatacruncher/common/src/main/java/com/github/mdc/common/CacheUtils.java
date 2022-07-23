@@ -42,7 +42,7 @@ public class CacheUtils {
 	private CacheUtils() {
 	}
 
-	public static enum CacheExpiry {
+	public enum CacheExpiry {
 		HOURS, MINUTES, SECONDS
 	}
 

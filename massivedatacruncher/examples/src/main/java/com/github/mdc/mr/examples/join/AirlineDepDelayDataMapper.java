@@ -34,7 +34,7 @@ public class AirlineDepDelayDataMapper implements Mapper<Long, String, Context<S
 				} else {
 					map.put("AIRLINEDEPDELAY", null);
 				}
-				if(java.util.Objects.nonNull(contents[8])) {
+				if(contents != null && contents.length > 8 && java.util.Objects.nonNull(contents[8])) {
 					ctx.put(contents[8], map);
 				}
 			}

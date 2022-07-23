@@ -145,7 +145,7 @@ public sealed class StreamPipeline<I1> extends AbstractPipeline permits CsvStrea
 	}
 	
 	
-	public static CsvStream<CSVRecord, CSVRecord> newCsvStreamHDFS(String hdfspath, String folder,PipelineConfig pipelineconfig,String[] header) throws PipelineException {
+	public static CsvStream<CSVRecord> newCsvStreamHDFS(String hdfspath, String folder,PipelineConfig pipelineconfig,String[] header) throws PipelineException {
 		return new StreamPipeline<String>(hdfspath,folder,pipelineconfig).csvWithHeader(header);
 		
 	}
@@ -175,7 +175,7 @@ public sealed class StreamPipeline<I1> extends AbstractPipeline permits CsvStrea
 	 * @param header
 	 * @return CsvStream object.
 	 */
-	private CsvStream<CSVRecord,CSVRecord> csvWithHeader(String[] header) {
+	private CsvStream<CSVRecord> csvWithHeader(String[] header) {
 		return new CsvStream<>(this,new CsvOptions(header));
 	}
 	

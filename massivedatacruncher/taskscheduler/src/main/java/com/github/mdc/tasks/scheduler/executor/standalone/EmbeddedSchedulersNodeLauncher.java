@@ -34,6 +34,8 @@ import com.github.mdc.tasks.scheduler.TaskScheduler;
 public class EmbeddedSchedulersNodeLauncher {
 	static Logger log = Logger.getLogger(EmbeddedSchedulersNodeLauncher.class);
 
+	public static final String STOPPINGANDCLOSECONNECTION = "Stopping and closes all the connections...";
+
 	public static void main(String[] args) throws Exception {
 		URL.setURLStreamHandlerFactory(new FsUrlStreamHandlerFactory());
 		log.info(MDCScalaConstants.SCALA_VERSION());
@@ -86,7 +88,6 @@ public class EmbeddedSchedulersNodeLauncher {
 			hb.init(0, port, host, 0, pingdelay, "");
 			hbss.ping();
 			var server = new ServerSocket(port, 256, InetAddress.getByAddress(new byte[] { 0x00, 0x00, 0x00, 0x00 }));
-			var teport = Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_PORT));
 			var es = Executors.newFixedThreadPool(1);
 			var escontainer = Executors.newWorkStealingPool();
 
@@ -130,7 +131,7 @@ public class EmbeddedSchedulersNodeLauncher {
 								log.debug("Destroying the Container Process: " + proc);
 								proc.destroy();
 							});
-					log.debug("Stopping and closes all the connections...");
+					log.debug(STOPPINGANDCLOSECONNECTION);
 					log.debug("Destroying...");
 					if (!Objects.isNull(hbss)) {
 						hbss.close();
@@ -240,7 +241,7 @@ public class EmbeddedSchedulersNodeLauncher {
 		});
 		Utils.addShutdownHook(() -> {
 			try {
-				log.debug("Stopping and closes all the connections...");
+				log.debug(STOPPINGANDCLOSECONNECTION);
 				log.debug("Destroying...");
 				if (!Objects.isNull(hbss)) {
 					try {
@@ -329,7 +330,7 @@ public class EmbeddedSchedulersNodeLauncher {
 						var mrjar = baoss.remove(0);
 						var filename = baoss.remove(0);
 						String[] argues = null;
-						if (baoss.size() > 0) {
+						if (!baoss.isEmpty()) {
 							var argsl = new ArrayList<>();
 							for (var arg : baoss) {
 								argsl.add(new String(arg));
@@ -345,7 +346,7 @@ public class EmbeddedSchedulersNodeLauncher {
 		});
 		Utils.addShutdownHook(() -> {
 			try {
-				log.debug("Stopping and closes all the connections...");
+				log.debug(STOPPINGANDCLOSECONNECTION);
 				hbs.stop();
 				hbs.destroy();
 				log.debug("Destroying...");

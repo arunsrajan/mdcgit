@@ -66,8 +66,8 @@ public class FileBlocksPartitionerTest extends StreamPipelineTestCommon {
 		List<BlocksLocation> bls = (List<BlocksLocation>) job.stageoutputmap
 				.get(job.stageoutputmap.keySet().iterator().next());
 		assertEquals(1, bls.size());
-		assertEquals(2, bls.get(0).block.length);
-		assertEquals(4270834, bls.get(0).block[0].blockend);
+		assertEquals(2, bls.get(0).getBlock().length);
+		assertEquals(4270834, bls.get(0).getBlock()[0].getBlockend());
 	}
 
 	@SuppressWarnings({"rawtypes", "unchecked"})
@@ -88,7 +88,7 @@ public class FileBlocksPartitionerTest extends StreamPipelineTestCommon {
 		var sum = 0;
 		for (int index = 0; index < bls.size(); index++) {
 			BlocksLocation bl = bls.get(index);
-			sum += bl.block[0].blockend - bl.block[0].blockstart;
+			sum += bl.getBlock()[0].getBlockend() - bl.getBlock()[0].getBlockstart();
 		}
 		assertEquals(127162942, sum);
 	}
@@ -111,7 +111,7 @@ public class FileBlocksPartitionerTest extends StreamPipelineTestCommon {
 		var sum = 0;
 		for (int index = 0; index < bls.size(); index++) {
 			BlocksLocation bl = bls.get(index);
-			sum += bl.block[0].blockend - bl.block[0].blockstart;
+			sum += bl.getBlock()[0].getBlockend() - bl.getBlock()[0].getBlockstart();
 		}
 		assertEquals(486518821, sum);
 	}

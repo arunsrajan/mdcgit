@@ -1556,7 +1556,7 @@ public class StreamJobScheduler {
 			}
 			// Form the nodes and edges for aggregate function.
 			else if ((function instanceof Coalesce coalesce)) {
-				var partkeys = Iterables.partition(outputparent1, (outputparent1.size()) / coalesce.coalescepartition)
+				var partkeys = Iterables.partition(outputparent1, (outputparent1.size()) / coalesce.getCoalescepartition())
 						.iterator();
 				for (; partkeys.hasNext(); ) {
 					var parentpartitioned = (List) partkeys.next();

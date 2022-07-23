@@ -152,7 +152,7 @@ public class MassiveDataCruncherMRApiTest extends StreamPipelineBase {
 		hbts.stop();
 		hbts.destroy();
 		es.shutdown();
-		assertEquals(-63267, (long) (ctx.get("AQ").iterator().next()));
+		assertEquals(-63278, (long) (ctx.get("AQ").iterator().next()));
 	}
 
 	@SuppressWarnings({"resource", "rawtypes", "unchecked"})

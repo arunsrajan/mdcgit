@@ -24,7 +24,8 @@ import java.util.concurrent.Semaphore;
 import org.apache.log4j.Logger;
 
 public class CloseableByteBufferOutputStream extends OutputStream {
-	static int allocation,deallocation;
+	static int allocation;
+	static int deallocation;
 	private ByteBuffer bb;
 	static Semaphore printallocdealloc = new Semaphore(1);
 	static Logger log = Logger.getLogger(CloseableByteBufferOutputStream.class);

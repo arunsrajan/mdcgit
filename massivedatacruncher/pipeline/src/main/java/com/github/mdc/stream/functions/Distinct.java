@@ -15,6 +15,8 @@
  */
 package com.github.mdc.stream.functions;
 
-public class Distinct {
+import java.io.Serializable;
+
+public class Distinct implements Serializable {
 
 }

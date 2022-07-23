@@ -68,9 +68,9 @@ public class HDFSBlockUtilsTest extends StreamPipelineBaseTestCommon {
 		for (BlocksLocation bl :bls) {
 			int sum = 0;
 			log.info(bl);
-			for (Block b :bl.block) {
+			for (Block b :bl.getBlock()) {
 				if (!Objects.isNull(b)) {
-					sum += b.blockend - b.blockstart;
+					sum += b.getBlockend() - b.getBlockstart();
 				}
 			}
 			totalbytes += sum;
@@ -95,9 +95,9 @@ public class HDFSBlockUtilsTest extends StreamPipelineBaseTestCommon {
 		for (BlocksLocation bl : bls) {
 			int sum = 0;
 			log.info(bl);
-			for (Block b : bl.block) {
+			for (Block b : bl.getBlock()) {
 				if (!Objects.isNull(b)) {
-					sum += b.blockend - b.blockstart;
+					sum += b.getBlockend() - b.getBlockstart();
 				}
 			}
 			totalbytes += sum;
@@ -122,9 +122,9 @@ public class HDFSBlockUtilsTest extends StreamPipelineBaseTestCommon {
 		for (BlocksLocation bl : bls) {
 			int sum = 0;
 			log.info(bl);
-			for (Block b : bl.block) {
+			for (Block b : bl.getBlock()) {
 				if (!Objects.isNull(b)) {
-					sum += b.blockend - b.blockstart;
+					sum += b.getBlockend() - b.getBlockstart();
 				}
 			}
 			totalbytes += sum;
@@ -149,9 +149,9 @@ public class HDFSBlockUtilsTest extends StreamPipelineBaseTestCommon {
 		for (BlocksLocation bl : bls) {
 			int sum = 0;
 			log.info(bl);
-			for (Block b : bl.block) {
+			for (Block b : bl.getBlock()) {
 				if (!Objects.isNull(b)) {
-					sum += b.blockend - b.blockstart;
+					sum += b.getBlockend() - b.getBlockstart();
 				}
 			}
 			totalbytes += sum;
@@ -177,9 +177,9 @@ public class HDFSBlockUtilsTest extends StreamPipelineBaseTestCommon {
 		for (BlocksLocation bl : bls) {
 			int sum = 0;
 			log.info(bl);
-			for (Block b : bl.block) {
+			for (Block b : bl.getBlock()) {
 				if (!Objects.isNull(b)) {
-					sum += b.blockend - b.blockstart;
+					sum += b.getBlockend() - b.getBlockstart();
 				}
 			}
 			totalbytes += sum;
@@ -204,9 +204,9 @@ public class HDFSBlockUtilsTest extends StreamPipelineBaseTestCommon {
 		for (BlocksLocation bl : bls) {
 			int sum = 0;
 			log.info(bl);
-			for (Block b : bl.block) {
+			for (Block b : bl.getBlock()) {
 				if (!Objects.isNull(b)) {
-					sum += b.blockend - b.blockstart;
+					sum += b.getBlockend() - b.getBlockstart();
 				}
 			}
 			totalbytes += sum;
@@ -231,9 +231,9 @@ public class HDFSBlockUtilsTest extends StreamPipelineBaseTestCommon {
 		for (BlocksLocation bl : bls) {
 			int sum = 0;
 			log.info(bl);
-			for (Block b : bl.block) {
+			for (Block b : bl.getBlock()) {
 				if (!Objects.isNull(b)) {
-					sum += b.blockend - b.blockstart;
+					sum += b.getBlockend() - b.getBlockstart();
 				}
 			}
 			totalbytes += sum;
@@ -258,9 +258,9 @@ public class HDFSBlockUtilsTest extends StreamPipelineBaseTestCommon {
 		for (BlocksLocation bl : bls) {
 			int sum = 0;
 			log.info(bl);
-			for (Block b : bl.block) {
+			for (Block b : bl.getBlock()) {
 				if (!Objects.isNull(b)) {
-					sum += b.blockend - b.blockstart;
+					sum += b.getBlockend() - b.getBlockstart();
 				}
 			}
 			totalbytes += sum;
@@ -285,9 +285,9 @@ public class HDFSBlockUtilsTest extends StreamPipelineBaseTestCommon {
 		for (BlocksLocation bl : bls) {
 			int sum = 0;
 			log.info(bl);
-			for (Block b : bl.block) {
+			for (Block b : bl.getBlock()) {
 				if (!Objects.isNull(b)) {
-					sum += b.blockend - b.blockstart;
+					sum += b.getBlockend() - b.getBlockstart();
 				}
 			}
 			totalbytes += sum;
@@ -312,9 +312,9 @@ public class HDFSBlockUtilsTest extends StreamPipelineBaseTestCommon {
 		for (BlocksLocation bl : bls) {
 			int sum = 0;
 			log.info(bl);
-			for (Block b : bl.block) {
+			for (Block b : bl.getBlock()) {
 				if (!Objects.isNull(b)) {
-					sum += b.blockend - b.blockstart;
+					sum += b.getBlockend() - b.getBlockstart();
 				}
 			}
 			totalbytes += sum;
@@ -340,9 +340,9 @@ public class HDFSBlockUtilsTest extends StreamPipelineBaseTestCommon {
 		for (BlocksLocation bl :bls) {
 			int sum = 0;
 			log.info(bl);
-			for (Block b :bl.block) {
+			for (Block b :bl.getBlock()) {
 				if (!Objects.isNull(b)) {
-					sum += b.blockend - b.blockstart;
+					sum += b.getBlockend() - b.getBlockstart();
 				}
 			}
 			totalbytes += sum;
@@ -369,9 +369,9 @@ public class HDFSBlockUtilsTest extends StreamPipelineBaseTestCommon {
 		for (BlocksLocation bl :bls) {
 			int sum = 0;
 			log.info(bl);
-			for (Block b :bl.block) {
+			for (Block b :bl.getBlock()) {
 				if (!Objects.isNull(b)) {
-					sum += b.blockend - b.blockstart;
+					sum += b.getBlockend() - b.getBlockstart();
 				}
 			}
 			totalbytes += sum;
@@ -397,9 +397,9 @@ public class HDFSBlockUtilsTest extends StreamPipelineBaseTestCommon {
 		for (BlocksLocation bl :bls) {
 			int sum = 0;
 			log.info(bl);
-			for (Block b :bl.block) {
+			for (Block b :bl.getBlock()) {
 				if (!Objects.isNull(b)) {
-					sum += b.blockend - b.blockstart;
+					sum += b.getBlockend() - b.getBlockstart();
 				}
 			}
 			totalbytes += sum;

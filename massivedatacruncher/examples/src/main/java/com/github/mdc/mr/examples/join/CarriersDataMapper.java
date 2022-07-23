@@ -27,13 +27,17 @@ import com.github.mdc.tasks.executor.Reducer;
 public class CarriersDataMapper implements Mapper<Long, String, Context<String, Map>>,
 		Reducer<String, Map, Context<String, String>>, Combiner<String, Map, Context<String, Map>> {
 
+	public static final String CARRIERS = "CARRIERS";
+	public static final String ARRIVALDELAY = "AIRLINEARRDELAY";
+	public static final String AIRLINEDEPDELAY = "AIRLINEDEPDELAY";
+
 	@Override
 	public void map(Long chunkid, String line, Context<String, Map> ctx) {
 		var contents = line.split(",");
 		if (contents[0] != null && !"Code".equals(contents[0])) {
 			if (contents != null && contents.length > 1) {
 				var map = new HashMap<String, String>();
-				map.put("CARRIERS", contents[1].substring(1, contents[1].length() - 1));
+				map.put(CARRIERS, contents[1].substring(1, contents[1].length() - 1));
 				ctx.put(contents[0].substring(1, contents[0].length() - 1), map);
 			}
 		}
@@ -45,14 +49,14 @@ public class CarriersDataMapper implements Mapper<Long, String, Context<String, 
 		var depdelaysum = 0l;
 		var carrierName = "";
 		for (var map : values) {
-			if (map.get("CARRIERS") != null) {
-				carrierName = (String) map.get("CARRIERS");
+			if (map.get(CARRIERS) != null) {
+				carrierName = (String) map.get(CARRIERS);
 			}
-			if (map.get("AIRLINEARRDELAY") != null) {
-				arrdelaysum += (long) map.get("AIRLINEARRDELAY");
+			if (map.get(ARRIVALDELAY) != null) {
+				arrdelaysum += (long) map.get(ARRIVALDELAY);
 			}
-			if (map.get("AIRLINEDEPDELAY") != null) {
-				depdelaysum += (long) map.get("AIRLINEDEPDELAY");
+			if (map.get(AIRLINEDEPDELAY) != null) {
+				depdelaysum += (long) map.get(AIRLINEDEPDELAY);
 			}
 		}
 		var map1 = new HashMap<>();
@@ -69,19 +73,19 @@ public class CarriersDataMapper implements Mapper<Long, String, Context<String, 
 		var depdelaysum = 0l;
 		var mapdelaywithcarrier = new HashMap<>();
 		for (var map : values) {
-			if (map.get("CARRIERS") != null) {
-				mapdelaywithcarrier.put("CARRIERS", map.get("CARRIERS"));
+			if (map.get(CARRIERS) != null) {
+				mapdelaywithcarrier.put(CARRIERS, map.get(CARRIERS));
 			}
-			if (map.get("AIRLINEARRDELAY") != null) {
-				arrdelaysum += (long) map.get("AIRLINEARRDELAY");
+			if (map.get(ARRIVALDELAY) != null) {
+				arrdelaysum += (long) map.get(ARRIVALDELAY);
 			}
-			if (map.get("AIRLINEDEPDELAY") != null) {
-				depdelaysum += (long) map.get("AIRLINEDEPDELAY");
+			if (map.get(AIRLINEDEPDELAY) != null) {
+				depdelaysum += (long) map.get(AIRLINEDEPDELAY);
 			}
 		}
 
-		mapdelaywithcarrier.put("AIRLINEARRDELAY", arrdelaysum);
-		mapdelaywithcarrier.put("AIRLINEDEPDELAY", depdelaysum);
+		mapdelaywithcarrier.put(ARRIVALDELAY, arrdelaysum);
+		mapdelaywithcarrier.put(AIRLINEDEPDELAY, depdelaysum);
 		context.put(key, mapdelaywithcarrier);
 	}
 

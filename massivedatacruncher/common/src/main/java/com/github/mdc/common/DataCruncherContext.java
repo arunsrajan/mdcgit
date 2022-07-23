@@ -38,14 +38,14 @@ public class DataCruncherContext<K, V> implements Context<K, V>, Serializable {
 	@Override
 	public void put(K k, V v) {
 		if (htkv.get(k) == null) {
-			htkv.put(k, new Vector<V>());
+			htkv.put(k, new Vector<>());
 		}
 		htkv.get(k).add(v);
 	}
 
 	@Override
 	public Collection<V> get(K k) {
-		return (Collection<V>) htkv.get(k);
+		return htkv.get(k);
 	}
 
 	@Override
@@ -58,7 +58,7 @@ public class DataCruncherContext<K, V> implements Context<K, V>, Serializable {
 		if (htkv.get(k) != null) {
 			htkv.get(k).addAll(v);
 		} else if (v == null) {
-			htkv.put(k, new Vector<V>());
+			htkv.put(k, new Vector<>());
 		} else {
 			htkv.put(k, v);
 		}
@@ -69,7 +69,7 @@ public class DataCruncherContext<K, V> implements Context<K, V>, Serializable {
 	public void putAll(Set<K> k, V v) {
 		k.stream().forEach(key -> {
 			if (htkv.get(key) == null) {
-				htkv.put(key, new LinkedHashSet<V>());
+				htkv.put(key, new LinkedHashSet<>());
 			}
 			put(key, v);
 		});
@@ -77,9 +77,7 @@ public class DataCruncherContext<K, V> implements Context<K, V>, Serializable {
 
 	@Override
 	public void add(Context<K, V> ctx) {
-		ctx.keys().stream().forEach(key -> {
-			addAll(key, ctx.get(key));
-		});
+		ctx.keys().stream().forEach(key -> addAll(key, ctx.get(key)));
 
 	}
 

@@ -70,14 +70,14 @@ public class FileBlocksPartitioner {
 			var bls = new ArrayList<BlocksLocation>();
 			for (var csvfile : files) {
 				if (csvfile.isFile()) {
-					partitionFiles(ignitecache, csvfile.getAbsolutePath(), totalsplits, bls);
+					partitionFiles(ignitecache, csvfile.getAbsolutePath(), bls);
 				}
 			}
 			job.stageoutputmap.put(rootstage, bls);
 		}
 	}
 
-	protected void partitionFiles(IgniteCache<Object, byte[]> cache, String filepath, int id,
+	protected void partitionFiles(IgniteCache<Object, byte[]> cache, String filepath,
 			List<BlocksLocation> bls) throws PipelineException {
 		try (var raf = new RandomAccessFile(filepath, "r");) {
 			var sourceSize = raf.length();

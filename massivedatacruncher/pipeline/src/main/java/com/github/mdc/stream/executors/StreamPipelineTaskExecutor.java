@@ -2608,14 +2608,14 @@ public sealed class StreamPipelineTaskExecutor implements
 			log.debug("Coalesce Data Size:" + keyvaluepairs.size());
 			// Parallel execution of reduce by key stream execution.
 			List out = null;
-			if (Objects.nonNull(coalescefunction.get(0).coalescefuncion)) {
-				if(coalescefunction.get(0).coalescefuncion instanceof PipelineCoalesceFunction pcf) {
+			if (Objects.nonNull(coalescefunction.get(0))) {
+				if(coalescefunction.get(0).getCoalescefunction() instanceof PipelineCoalesceFunction pcf) {
 					out = Arrays.asList(keyvaluepairs.parallelStream().reduce(pcf)
 							.get());
 				}
 				else {
 					out = keyvaluepairs.parallelStream().collect(Collectors.toMap(Tuple2::v1, Tuple2::v2,
-							(input1, input2) -> coalescefunction.get(0).coalescefuncion.apply(input1, input2)))
+							(input1, input2) -> coalescefunction.get(0).getCoalescefunction().apply(input1, input2)))
 							.entrySet()
 							.stream()
 							.map(entry -> Tuple.tuple(((Entry) entry).getKey(), ((Entry) entry).getValue()))

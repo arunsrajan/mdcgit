@@ -59,8 +59,8 @@ public class ContainerLauncher {
 			argumentsForSpawn.add(prop);
 			argumentsForSpawn.add("" + cr.getDirectheap());
 			log.debug("Launching Container Daemon Process: " + argumentsForSpawn);
-			var process = Runtime.getRuntime().exec(argumentsForSpawn.toArray(new String[argumentsForSpawn.size()]));
-			return process;
+			return Runtime.getRuntime().exec(argumentsForSpawn.toArray(new String[argumentsForSpawn.size()]));
+
 
 		} catch (Exception ex) {
 			log.error("Unable able to spawn container: " + cr.getMinmemory() + " " + cr.getMaxmemory() + " " + port + " " + cr.getCpu() + " " + cr.getGctype() + " " + cls.getName(), ex);
@@ -68,8 +68,7 @@ public class ContainerLauncher {
 		return null;
 	}
 
-	public static Process spawnMDCContainerIgnite(String port,
-			String diskcache, Class<?> cls, String prop, ContainerResources cr) {
+	public static Process spawnMDCContainerIgnite(String port, Class<?> cls, String prop, ContainerResources cr) {
 		try {
 			var argumentsForSpawn = new ArrayList<String>();
 			argumentsForSpawn.add(System.getProperty("java.home").replace("\\", "/") + "/bin/java");
@@ -85,8 +84,7 @@ public class ContainerLauncher {
 			argumentsForSpawn.add(prop);
 			argumentsForSpawn.add(port);
 			log.debug("Launching Ignite Container Daemon Process: " + argumentsForSpawn);
-			var process = Runtime.getRuntime().exec(argumentsForSpawn.toArray(new String[argumentsForSpawn.size()]));
-			return process;
+			return Runtime.getRuntime().exec(argumentsForSpawn.toArray(new String[argumentsForSpawn.size()]));
 
 		} catch (Exception ex) {
 			log.error("Unable able to spawn container: " + cr.getMinmemory() + " " + cr.getMaxmemory() + " " + port + " " + cr.getCpu() + " " + cr.getGctype() + " " + cls.getName(), ex);

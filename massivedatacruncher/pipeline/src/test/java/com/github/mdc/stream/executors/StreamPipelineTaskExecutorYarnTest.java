@@ -2269,8 +2269,8 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		coalescetask.stageid = js.stageid;
 		js.stage.tasks.clear();
 		Coalesce<Integer> coalesce = new Coalesce();
-		coalesce.coalescepartition = 1;
-		coalesce.coalescefuncion = (a, b) -> a + b;
+		coalesce.setCoalescepartition(1);
+		coalesce.setCoalescefunction((a, b) -> a + b);
 		coalescetask.input = new Object[]{is1, is2};
 		js.stage.tasks.add(coalesce);
 		RightOuterJoinPredicate<Tuple2<String, Long>, Tuple2<String, Long>> jp = (Tuple2<String, Long> tup1,

@@ -37,6 +37,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.xerial.snappy.SnappyInputStream;
 
+import static org.junit.Assert.assertNotNull;
+
 public class CacheUtilsTest {
 
 	String hdfsurl = "hdfs://127.0.0.1:9000";
@@ -61,6 +63,7 @@ public class CacheUtilsTest {
 			blockpath.addAll(Arrays.asList(paths));
 		}
 		List<BlocksLocation> bls = HDFSBlockUtils.getBlocksLocationByFixedBlockSizeAuto(hdfs, blockpath, true, 128 * MDCConstants.MB);
+		assertNotNull(bls);
 		getDnXref(bls);
 		String cacheblock = "cacheblock";
 		int blscount = 0;
@@ -79,12 +82,12 @@ public class CacheUtilsTest {
 
 		var dnxrefs = bls.stream().parallel().flatMap(bl -> {
 			var xrefs = new LinkedHashSet<String>();
-			Iterator<Set<String>> xref = bl.block[0].dnxref.values().iterator();
+			Iterator<Set<String>> xref = bl.getBlock()[0].getDnxref().values().iterator();
 			for (; xref.hasNext(); ) {
 				xrefs.addAll(xref.next());
 			}
-			if(bl.block.length > 1 && !Objects.isNull(bl.block[1])) {
-				xref = bl.block[0].dnxref.values().iterator();
+			if(bl.getBlock().length > 1 && !Objects.isNull(bl.getBlock()[1])) {
+				xref = bl.getBlock()[0].getDnxref().values().iterator();
 				for (; xref.hasNext(); ) {
 					xrefs.addAll(xref.next());
 				}
@@ -97,20 +100,20 @@ public class CacheUtilsTest {
 		}).collect(Collectors.toMap(xref -> xref, xref -> 0l));
 
 		for (var b : bls) {
-			var xrefselected = b.block[0].dnxref.keySet().stream()
-					.flatMap(xrefhost -> b.block[0].dnxref.get(xrefhost).stream()).sorted((xref1, xref2) -> {
+			var xrefselected = b.getBlock()[0].getDnxref().keySet().stream()
+					.flatMap(xrefhost -> b.getBlock()[0].getDnxref().get(xrefhost).stream()).sorted((xref1, xref2) -> {
 				return dnxrefallocatecount.get(xref1).compareTo(dnxrefallocatecount.get(xref2));
 			}).findFirst();
 			var xref = xrefselected.get();
 			dnxrefallocatecount.put(xref, dnxrefallocatecount.get(xref) + 1);
-			b.block[0].hp = xref;
-			if(b.block.length > 1 && !Objects.isNull(b.block[1])) {
-				xrefselected = b.block[1].dnxref.keySet().stream()
-						.flatMap(xrefhost -> b.block[1].dnxref.get(xrefhost).stream()).sorted((xref1, xref2) -> {
+			b.getBlock()[0].setHp(xref);
+			if(b.getBlock().length > 1 && !Objects.isNull(b.getBlock()[1])) {
+				xrefselected = b.getBlock()[1].getDnxref().keySet().stream()
+						.flatMap(xrefhost -> b.getBlock()[1].getDnxref().get(xrefhost).stream()).sorted((xref1, xref2) -> {
 					return dnxrefallocatecount.get(xref1).compareTo(dnxrefallocatecount.get(xref2));
 				}).findFirst();
 				xref = xrefselected.get();
-				b.block[1].hp = xref;
+				b.getBlock()[1].setHp(xref);
 			}
 		}
 	}

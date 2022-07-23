@@ -91,7 +91,7 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 	@Test
 	public void testCsvStreamFilterCollect() throws Throwable {
 		log.info("testCsvStreamFilterCollect Before---------------------------------------");
-		CsvStream<CSVRecord, CSVRecord> datastream = StreamPipeline.newCsvStreamHDFS(hdfsfilepath, airlinesample,
+		CsvStream<CSVRecord> datastream = StreamPipeline.newCsvStreamHDFS(hdfsfilepath, airlinesample,
 				pipelineconfig, airlineheader);
 		List<List<CSVRecord>> result = (List) datastream
 				.filter(record -> !"ArrDelay".equals(record.get("ArrDelay")) && !"NA".equals(record.get("ArrDelay"))
@@ -109,7 +109,7 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 	@Test
 	public void testCsvStreamFlatMapLong() throws Throwable {
 		log.info("testCsvStreamFlatMapLong Before---------------------------------------");
-		CsvStream<CSVRecord, CSVRecord> datastream = StreamPipeline.newCsvStreamHDFS(hdfsfilepath, airlinesample,
+		CsvStream<CSVRecord> datastream = StreamPipeline.newCsvStreamHDFS(hdfsfilepath, airlinesample,
 				pipelineconfig, airlineheader);
 		List<List<Long>> results = (List) datastream
 				.flatMapToLong(csvrec -> Arrays
@@ -126,7 +126,7 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 	@Test
 	public void testCsvStreamFlatMapPair() throws Throwable {
 		log.info("testCsvStreamFlatMapPair Before---------------------------------------");
-		CsvStream<CSVRecord, CSVRecord> datastream = StreamPipeline.newCsvStreamHDFS(hdfsfilepath, airlinesample,
+		CsvStream<CSVRecord> datastream = StreamPipeline.newCsvStreamHDFS(hdfsfilepath, airlinesample,
 				pipelineconfig, airlineheader);
 		List<List<Tuple2>> results = (List) datastream
 				.flatMapToTuple2(csvrec -> Arrays.asList(Tuple.tuple(csvrec.get("ArrDelay"), csvrec.get("DayofMonth"))))
@@ -142,9 +142,9 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 	@Test
 	public void testCsvStreamIntersection() throws Throwable {
 		log.info("testCsvStreamIntersection Before---------------------------------------");
-		CsvStream<CSVRecord, CSVRecord> datastream = StreamPipeline.newCsvStreamHDFS(hdfsfilepath, airlinesample,
+		CsvStream<CSVRecord> datastream = StreamPipeline.newCsvStreamHDFS(hdfsfilepath, airlinesample,
 				pipelineconfig, airlineheader);
-		CsvStream<CSVRecord, CSVRecord> csvStream = (CsvStream) datastream;
+		CsvStream<CSVRecord> csvStream = (CsvStream) datastream;
 		StreamPipeline filter9 = csvStream.filter(
 				record -> !"ArrDelay".equals(record.get("ArrDelay")) && Long.parseLong(record.get("Month")) > 9l);
 		StreamPipeline filter11 = csvStream.filter(
@@ -163,9 +163,9 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 	@Test
 	public void testCsvStreamIntersection10_8UnionGt10() throws Throwable {
 		log.info("testCsvStreamIntersection10_8UnionGt10 Before---------------------------------------");
-		CsvStream<CSVRecord, CSVRecord> datastream = StreamPipeline.newCsvStreamHDFS(hdfsfilepath, airlinesample,
+		CsvStream<CSVRecord> datastream = StreamPipeline.newCsvStreamHDFS(hdfsfilepath, airlinesample,
 				pipelineconfig, airlineheader);
-		CsvStream<CSVRecord, CSVRecord> csvStream = (CsvStream) datastream;
+		CsvStream<CSVRecord> csvStream = (CsvStream) datastream;
 		StreamPipeline filter10 = csvStream.filter(record -> !"ArrDelay".equals(record.get("ArrDelay"))
 				&& Long.parseLong(record.get("Month")) == 10l);
 		StreamPipeline filter8 = csvStream.filter(record -> !"ArrDelay".equals(record.get("ArrDelay"))
@@ -185,9 +185,9 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 	@Test
 	public void testCsvStreamIntersectionIntersection() throws Throwable {
 		log.info("testCsvStreamIntersectionIntersection Before---------------------------------------");
-		CsvStream<CSVRecord, CSVRecord> datastream = StreamPipeline.newCsvStreamHDFS(hdfsfilepath, airlinesample,
+		CsvStream<CSVRecord> datastream = StreamPipeline.newCsvStreamHDFS(hdfsfilepath, airlinesample,
 				pipelineconfig, airlineheader);
-		CsvStream<CSVRecord, CSVRecord> csvStream = (CsvStream) datastream;
+		CsvStream<CSVRecord> csvStream = (CsvStream) datastream;
 		StreamPipeline filter9 = csvStream.filter(
 				record -> !"ArrDelay".equals(record.get("ArrDelay")) && Long.parseLong(record.get("Month")) > 9l);
 		StreamPipeline filter8 = csvStream.filter(
@@ -207,7 +207,7 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 	@Test
 	public void testCsvStreamMapPair() throws Throwable {
 		log.info("testCsvStreamMapPair Before---------------------------------------");
-		CsvStream<CSVRecord, CSVRecord> datastream = StreamPipeline.newCsvStreamHDFS(hdfsfilepath, airlinesample,
+		CsvStream<CSVRecord> datastream = StreamPipeline.newCsvStreamHDFS(hdfsfilepath, airlinesample,
 				pipelineconfig, airlineheader);
 		List<List<Tuple2>> results = (List) datastream
 				.mapToPair(csvrec -> Tuple.tuple(csvrec.get("ArrDelay"), csvrec.get("DayofMonth")))
@@ -223,9 +223,9 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 	@Test
 	public void testCsvStreamUnion() throws Throwable {
 		log.info("testCsvStreamUnion Before---------------------------------------");
-		CsvStream<CSVRecord, CSVRecord> datastream = StreamPipeline.newCsvStreamHDFS(hdfsfilepath, airlinesample,
+		CsvStream<CSVRecord> datastream = StreamPipeline.newCsvStreamHDFS(hdfsfilepath, airlinesample,
 				pipelineconfig, airlineheader);
-		CsvStream<CSVRecord, CSVRecord> csvStream = (CsvStream) datastream;
+		CsvStream<CSVRecord> csvStream = (CsvStream) datastream;
 		StreamPipeline filter9 = csvStream.filter(record -> !"ArrDelay".equals(record.get("ArrDelay"))
 				&& Long.parseLong(record.get("Month")) == 9l);
 		StreamPipeline filter8 = csvStream.filter(record -> !"ArrDelay".equals(record.get("ArrDelay"))
@@ -242,9 +242,9 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 	@Test
 	public void testCsvStreamUnion10_8Intersectiongt8() throws Throwable {
 		log.info("testCsvStreamUnion10_8Intersectiongt8 Before---------------------------------------");
-		CsvStream<CSVRecord, CSVRecord> datastream = StreamPipeline.newCsvStreamHDFS(hdfsfilepath, airlinesample,
+		CsvStream<CSVRecord> datastream = StreamPipeline.newCsvStreamHDFS(hdfsfilepath, airlinesample,
 				pipelineconfig, airlineheader);
-		CsvStream<CSVRecord, CSVRecord> csvStream = (CsvStream) datastream;
+		CsvStream<CSVRecord> csvStream = (CsvStream) datastream;
 		StreamPipeline filter10 = csvStream.filter(record -> !"ArrDelay".equals(record.get("ArrDelay"))
 				&& Long.parseLong(record.get("Month")) == 10l);
 		StreamPipeline filter8 = csvStream.filter(record -> !"ArrDelay".equals(record.get("ArrDelay"))
@@ -264,9 +264,9 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 	@Test
 	public void testCsvStreamUnion10_8Union8_10() throws Throwable {
 		log.info("testCsvStreamUnion10_8Union8_10 Before---------------------------------------");
-		CsvStream<CSVRecord, CSVRecord> datastream = StreamPipeline.newCsvStreamHDFS(hdfsfilepath, airlinesample,
+		CsvStream<CSVRecord> datastream = StreamPipeline.newCsvStreamHDFS(hdfsfilepath, airlinesample,
 				pipelineconfig, airlineheader);
-		CsvStream<CSVRecord, CSVRecord> csvStream = (CsvStream) datastream;
+		CsvStream<CSVRecord> csvStream = (CsvStream) datastream;
 		StreamPipeline filter10 = csvStream.filter(record -> !"ArrDelay".equals(record.get("ArrDelay"))
 				&& Long.parseLong(record.get("Month")) == 10l);
 		StreamPipeline filter8 = csvStream.filter(record -> !"ArrDelay".equals(record.get("ArrDelay"))
@@ -285,9 +285,9 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 	@Test
 	public void testCsvStreamUnion10_8Union8_12() throws Throwable {
 		log.info("testCsvStreamUnion10_8Union8_12 Before---------------------------------------");
-		CsvStream<CSVRecord, CSVRecord> datastream = StreamPipeline.newCsvStreamHDFS(hdfsfilepath, airlinesample,
+		CsvStream<CSVRecord> datastream = StreamPipeline.newCsvStreamHDFS(hdfsfilepath, airlinesample,
 				pipelineconfig, airlineheader);
-		CsvStream<CSVRecord, CSVRecord> csvStream = (CsvStream) datastream;
+		CsvStream<CSVRecord> csvStream = (CsvStream) datastream;
 		StreamPipeline filter10 = csvStream.filter(record -> !"ArrDelay".equals(record.get("ArrDelay"))
 				&& Long.parseLong(record.get("Month")) == 10l);
 		StreamPipeline filter8 = csvStream.filter(record -> !"ArrDelay".equals(record.get("ArrDelay"))
@@ -1037,7 +1037,7 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 	@Test
 	public void testMapCsvStream() throws Throwable {
 		log.info("testMapCsvStream Before---------------------------------------");
-		CsvStream<CSVRecord, CSVRecord> datastream = StreamPipeline.newCsvStreamHDFS(hdfsfilepath, airlinepairjoin,
+		CsvStream<CSVRecord> datastream = StreamPipeline.newCsvStreamHDFS(hdfsfilepath, airlinepairjoin,
 				pipelineconfig, airlineheader);
 		java.util.List<List<Tuple2>> listreducebykey = (List) datastream.filter(
 				dat -> dat != null && !"ArrDelay".equals(dat.get("ArrDelay")) && !"NA".equals(dat.get("ArrDelay")))
@@ -1623,7 +1623,7 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 	@Test
 	public void testReduceByKeyCsvStream() throws Throwable {
 		log.info("testReduceByKeyCsvStream Before---------------------------------------");
-		CsvStream<CSVRecord, CSVRecord> datastream = StreamPipeline.newCsvStreamHDFS(hdfsfilepath, airlinesample,
+		CsvStream<CSVRecord> datastream = StreamPipeline.newCsvStreamHDFS(hdfsfilepath, airlinesample,
 				pipelineconfig, airlineheader);
 		java.util.List<List<Tuple2>> listreducebykey = (List) datastream.filter(
 				dat -> dat != null && !"ArrDelay".equals(dat.get("ArrDelay")) && !"NA".equals(dat.get("ArrDelay")))

@@ -15,23 +15,21 @@
  */
 package com.github.mdc.stream.functions;
 
+import lombok.*;
+
 import java.io.Serializable;
 import java.util.function.BinaryOperator;
 
+@EqualsAndHashCode
+@Getter
+@Setter
+@ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class Coalesce<I1> implements Serializable {
 
 	private static final long serialVersionUID = 458889144182953938L;
-
-	public Coalesce() {
-		super();
-	}
-	public int coalescepartition;
-	public CoalesceFunction<I1> coalescefuncion;
-
-	public Coalesce(int coalescepartition, CoalesceFunction<I1> coalescefuncion) {
-		super();
-		this.coalescepartition = coalescepartition;
-		this.coalescefuncion = coalescefuncion;
-	}
+	private int coalescepartition;
+	private CoalesceFunction<I1> coalescefunction;
 
 }

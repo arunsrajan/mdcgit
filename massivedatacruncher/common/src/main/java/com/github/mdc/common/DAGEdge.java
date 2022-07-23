@@ -26,11 +26,13 @@ public class DAGEdge extends DefaultWeightedEdge {
 
 	private static final long serialVersionUID = 2853307464354054088L;
 
+	@Override
 	public Object getSource()
 	{
 		return super.getSource();
 	}
 
+	@Override
 	public Object getTarget()
 	{
 		return super.getTarget();
