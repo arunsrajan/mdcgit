@@ -1824,6 +1824,8 @@ public class StreamJobScheduler {
 			rdf.stageid = task.stageid;
 			rdf.taskid = task.taskid;
 			rdf.hp = task.hostport;
+			boolean isJGroups = Boolean.parseBoolean(pipelineconfig.getJgroups());
+			rdf.mode = isJGroups ? MDCConstants.JGROUPS : MDCConstants.STANDALONE;
 			RemoteDataFetcher.remoteInMemoryDataFetch(rdf);
 			return new SnappyInputStream(new ByteArrayInputStream(rdf.data));
 		} catch (Exception ex) {
@@ -1882,6 +1884,8 @@ public class StreamJobScheduler {
 			rdf.stageid = task.stageid;
 			rdf.taskid = task.taskid;
 			rdf.hp = task.hostport;
+			boolean isJGroups = Boolean.parseBoolean(pipelineconfig.getJgroups());
+			rdf.mode = isJGroups ? MDCConstants.JGROUPS : MDCConstants.STANDALONE;
 			return rdf;
 		} catch (Exception ex) {
 			log.error(PipelineConstants.JOBSCHEDULERINMEMORYDATAFETCHERROR, ex);
