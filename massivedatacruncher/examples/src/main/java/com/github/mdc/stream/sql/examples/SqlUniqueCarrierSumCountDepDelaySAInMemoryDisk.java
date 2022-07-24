@@ -17,6 +17,7 @@ package com.github.mdc.stream.sql.examples;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.calcite.sql.type.SqlTypeName;
 import org.apache.commons.csv.CSVRecord;
@@ -69,12 +70,12 @@ public class SqlUniqueCarrierSumCountDepDelaySAInMemoryDisk implements Serializa
 		StreamPipelineSql mdpsql = StreamPipelineSqlBuilder.newBuilder().add(args[1], "airline", airlineheader, airsqltype)
 				.setHdfs(args[0])
 				.setPipelineConfig(pipelineconfig).setSql(statement).build();
-		List<List<CSVRecord>> records = (List<List<CSVRecord>>) mdpsql.collect(true, null);
+		List<List<Map<String, Object>>> records = (List<List<Map<String, Object>>>) mdpsql.collect(true, null);
 		long sum = 0;
-		for (List<CSVRecord> recs : records) {
-			for (CSVRecord rec : recs) {
+		for (List<Map<String, Object>> recs : records) {
+			for (Map<String, Object> rec : recs) {
 				log.info(rec);
-				sum += Long.valueOf(rec.get(1));
+				sum += (Long) rec.get("sum(DepDelay)");
 			}
 		}
 		log.info("Sum = " + sum);
