@@ -38,6 +38,13 @@ public class ByteBufferPool {
 			ByteBufferPool.pool = new GenericObjectPool<>(factory, config);
 		}
 	}
+	
+	public static void destroyByteBuffer() {
+		if(Objects.nonNull(pool)) {
+			pool.clear();
+			pool.close();
+		}
+	}
 
 	public static GenericObjectPool<ByteBuffer> get() {
 		return ByteBufferPool.pool;

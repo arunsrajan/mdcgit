@@ -438,5 +438,9 @@ public class MDCConstants {
 	public static final String COLOR_PICKER_PRIMARY_DEFAULT = "#6E5CDB";
 	public static final String COLOR_PICKER_ALTERNATE = "ui.color.alternate";
 	public static final String COLOR_PICKER_ALTERNATE_DEFAULT = "#ddddddd";
+	
+	public static final String MDC_JKS = "mdc.jks.path";
+	public static final String MDC_KEYSTORE_PASSWORD = "mdc.jks.pass";
+	public static final String MDC_JKS_ALGO = "mdc.jks.algo";
 
 }

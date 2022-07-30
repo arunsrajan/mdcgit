@@ -402,7 +402,7 @@ public class StreamJobScheduler {
 				for (var stagesgraphexecutor : tasksgraphexecutor) {
 					if (!stagesgraphexecutor.getTasks().isEmpty()) {
 						var hp = stagesgraphexecutor.getHostport().split(MDCConstants.UNDERSCORE);
-						var client = new Socket(hp[0], Integer.parseInt(hp[1]));
+						var client = Utils.createSSLSocket(hp[0], Integer.parseInt(hp[1]));
 						var kryo = Utils.getKryoNonDeflateSerializer();
 						var output = new Output(client.getOutputStream());
 						kryo.writeClassAndObject(output, stagesgraphexecutor);
@@ -565,7 +565,7 @@ public class StreamJobScheduler {
 				String tehost = lc.getNodehostport().split("_")[0];
 				while (index < ports.size()) {
 					while (true) {
-						try (var sock = new Socket(tehost, ports.get(index));) {
+						try (var sock = Utils.createSSLSocket(tehost, ports.get(index));) {
 							if (!Objects.isNull(loadjar.mrjar)) {
 								Utils.writeObject(sock, loadjar);
 							} else {

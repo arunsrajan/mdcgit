@@ -87,7 +87,7 @@ public class EmbeddedSchedulersNodeLauncher {
 			var hb = new HeartBeatServer();
 			hb.init(0, port, host, 0, pingdelay, "");
 			hbss.ping();
-			var server = new ServerSocket(port, 256, InetAddress.getByAddress(new byte[] { 0x00, 0x00, 0x00, 0x00 }));
+			var server = Utils.createSSLServerSocket(port);
 			var es = Executors.newFixedThreadPool(1);
 			var escontainer = Executors.newWorkStealingPool();
 
@@ -202,9 +202,8 @@ public class EmbeddedSchedulersNodeLauncher {
 
 		// Execute when request arrives.
 		esstream.execute(() -> {
-			try (var ss = new ServerSocket(
-					Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULERSTREAM_PORT)), 256,
-					InetAddress.getByAddress(new byte[] { 0x00, 0x00, 0x00, 0x00 }));) {
+			try (var ss = Utils.createSSLServerSocket(
+					Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULERSTREAM_PORT)));) {
 				while (true) {
 					try {
 						var s = ss.accept();
@@ -310,8 +309,7 @@ public class EmbeddedSchedulersNodeLauncher {
 						+ MDCConstants.UNDERSCORE + MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULER_PORT));
 
 		boolean ishdfs = Boolean.parseBoolean(MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULER_ISHDFS));
-		var ss = new ServerSocket(Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULER_PORT)),
-				256, InetAddress.getByAddress(new byte[] { 0x00, 0x00, 0x00, 0x00 }));
+		var ss = Utils.createSSLServerSocket(Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULER_PORT)));
 		essingle.execute(() -> {
 			while (true) {
 				try {

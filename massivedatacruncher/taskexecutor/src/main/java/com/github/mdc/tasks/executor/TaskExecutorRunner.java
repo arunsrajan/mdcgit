@@ -114,13 +114,15 @@ public class TaskExecutorRunner implements TaskExecutorRunnerMBean {
 		var mdted = new TaskExecutorRunner();
 		mdted.init();
 		mdted.start();
-		log.info("MassiveDataTaskExecutorDeamon started at port....."
+		log.info("TaskExecuterRunner started at port....."
 				+ System.getProperty(MDCConstants.TASKEXECUTOR_PORT));
 		log.info("Adding Shutdown Hook...");
 		Utils.addShutdownHook(() -> {
 			try {
 				log.info("Stopping and closes all the connections...");
 				mdted.destroy();
+				ByteBufferPoolDirect.destroy();
+				ByteBufferPool.destroyByteBuffer();
 				log.info("Freed the resources...");
 				Runtime.getRuntime().halt(0);
 			} catch (Exception e) {
@@ -178,7 +180,7 @@ public class TaskExecutorRunner implements TaskExecutorRunnerMBean {
 				new ResourcesMetricsServlet(), MDCConstants.FORWARD_SLASH + MDCConstants.DATA + MDCConstants.FORWARD_SLASH + MDCConstants.ASTERIX
 		);
 		su.start();
-		server = new ServerSocket(port, 256, InetAddress.getByAddress(new byte[]{0x00, 0x00, 0x00, 0x00}));
+		server = Utils.createSSLServerSocket(port);
 		var configuration = new Configuration();
 
 		var inmemorycache = MDCCache.get();

@@ -59,9 +59,13 @@ import java.lang.management.MemoryPoolMXBean;
 import java.lang.management.MemoryType;
 import java.lang.management.MemoryUsage;
 import java.lang.reflect.InvocationHandler;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.URI;
+import java.security.KeyManagementException;
+import java.security.KeyStore;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Semaphore;
@@ -71,6 +75,15 @@ import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLServerSocket;
+import javax.net.ssl.SSLServerSocketFactory;
+import javax.net.ssl.SSLSocket;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.TrustManagerFactory;
 
 /**
  * 
@@ -766,7 +779,7 @@ public class Utils {
 	 */
 	public static Object getResultObjectByInput(String hp, Object inputobj) {
 		var hostport = hp.split(MDCConstants.UNDERSCORE);
-		try (var socket = new Socket(hostport[0], Integer.parseInt(hostport[1]));
+		try (var socket = Utils.createSSLSocket(hostport[0], Integer.parseInt(hostport[1]));
 				var input = new Input(socket.getInputStream());
 				var output = new Output(socket.getOutputStream());) {
 			var kryo = Utils.getKryoNonDeflateSerializer();
@@ -843,7 +856,7 @@ public class Utils {
 	 */
 	public static void writeObject(String hp, Object inputobj) throws Exception {
 		var hostport = hp.split(MDCConstants.UNDERSCORE);
-		try (var socket = new Socket(hostport[0], Integer.parseInt(hostport[1]));) {
+		try (var socket = Utils.createSSLSocket(hostport[0], Integer.parseInt(hostport[1]));) {
 
 			writeObjectByStream(socket.getOutputStream(), inputobj);
 		} catch (IOException ex) {
@@ -875,7 +888,7 @@ public class Utils {
 	
 	public static void writeObject(String hp, Object inputobj, Kryo kryo) throws Exception {
 		var hostport = hp.split(MDCConstants.UNDERSCORE);
-		try (var socket = new Socket(hostport[0], Integer.parseInt(hostport[1]));) {
+		try (var socket = Utils.createSSLSocket(hostport[0], Integer.parseInt(hostport[1]));) {
 
 			writeObjectByStream(socket.getOutputStream(), inputobj);
 		} catch (IOException ex) {
@@ -1117,7 +1130,7 @@ public class Utils {
 			while (index < launchedcontainerports.size()) {
 				while (true) {
 					String tehost = lc.getNodehostport().split("_")[0];
-					try (var sock = new Socket(tehost, launchedcontainerports.get(index));) {
+					try (var sock = Utils.createSSLSocket(tehost, launchedcontainerports.get(index));) {
 						break;
 					} catch (Exception ex) {
 						try {
@@ -1156,5 +1169,45 @@ public class Utils {
 		});
 		GlobalContainerLaunchers.remove(containerid);
 	}
+	
+	public static ServerSocket createSSLServerSocket(int port) throws Exception {
+		KeyStore ks = KeyStore.getInstance("JKS");
+		String password = MDCProperties.get().getProperty(MDCConstants.MDC_KEYSTORE_PASSWORD);
+		ks.load(new FileInputStream(MDCProperties.get().getProperty(MDCConstants.MDC_JKS)), password.toCharArray());
 
+		KeyManagerFactory kmf = KeyManagerFactory.getInstance(MDCProperties.get().getProperty(MDCConstants.MDC_JKS_ALGO));
+		kmf.init(ks, password.toCharArray());
+
+		TrustManagerFactory tmf = TrustManagerFactory.getInstance(MDCProperties.get().getProperty(MDCConstants.MDC_JKS_ALGO)); 
+		tmf.init(ks);
+
+		SSLContext sc = SSLContext.getInstance("TLS"); 
+		TrustManager[] trustManagers = tmf.getTrustManagers(); 
+		sc.init(kmf.getKeyManagers(), trustManagers, null); 
+
+		SSLServerSocketFactory ssf = sc.getServerSocketFactory(); 
+		SSLServerSocket sslserversocket = (SSLServerSocket) ssf.createServerSocket(port, 256, InetAddress.getByAddress(new byte[]{0x00, 0x00, 0x00, 0x00}));
+		return sslserversocket;
+	}
+	
+	public static Socket createSSLSocket(String host, int port) throws Exception {
+		KeyStore ks = KeyStore.getInstance("JKS");
+		String password = MDCProperties.get().getProperty(MDCConstants.MDC_KEYSTORE_PASSWORD);
+		ks.load(new FileInputStream(MDCProperties.get().getProperty(MDCConstants.MDC_JKS)), password.toCharArray());
+
+		KeyManagerFactory kmf = KeyManagerFactory.getInstance(MDCProperties.get().getProperty(MDCConstants.MDC_JKS_ALGO));
+		kmf.init(ks, password.toCharArray());
+
+		TrustManagerFactory tmf = TrustManagerFactory.getInstance(MDCProperties.get().getProperty(MDCConstants.MDC_JKS_ALGO)); 
+		tmf.init(ks);
+
+		SSLContext sc = SSLContext.getInstance("TLS"); 
+		TrustManager[] trustManagers = tmf.getTrustManagers(); 
+		sc.init(kmf.getKeyManagers(), trustManagers, null); 
+
+		SSLSocketFactory sf = sc.getSocketFactory();
+		SSLSocket sslsocket = (SSLSocket) sf.createSocket(host, port);
+		sslsocket.startHandshake();
+		return sslsocket;
+	}
 }

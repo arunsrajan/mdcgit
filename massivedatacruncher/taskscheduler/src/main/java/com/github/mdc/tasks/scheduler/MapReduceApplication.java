@@ -447,7 +447,7 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 			int index = 0;
 			String tehost = lc.getNodehostport().split("_")[0];
 			while (index < ports.size()) {
-				try (var sock = new Socket(tehost, ports.get(index));) {
+				try (var sock = Utils.createSSLSocket(tehost, ports.get(index));) {
 					JobApp jobapp = new JobApp();
 					jobapp.setContainerid(lc.getContainerid());
 					jobapp.setJobappid(appid);

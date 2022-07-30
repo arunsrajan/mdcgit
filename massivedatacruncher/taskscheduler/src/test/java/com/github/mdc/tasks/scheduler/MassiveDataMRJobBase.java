@@ -144,7 +144,7 @@ public class MassiveDataMRJobBase {
 					executorpool.execute(() -> {
 						ServerSocket server;
 						try {
-							server = new ServerSocket(port, 256, InetAddress.getByAddress(new byte[]{0x00, 0x00, 0x00, 0x00}));
+							server = Utils.createSSLServerSocket(port);
 							cdlport.countDown();
 							cdl.countDown();
 							while (true) {

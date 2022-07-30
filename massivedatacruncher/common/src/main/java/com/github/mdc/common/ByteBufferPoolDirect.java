@@ -31,6 +31,12 @@ public class ByteBufferPoolDirect {
 	public static DirectByteBufferPool get() {
 		return ByteBufferPoolDirect.pool;
 	}
+	
+	public static void destroy() {
+		if(Objects.nonNull(pool)) {
+			pool.close();
+		}		
+	}
 
 	private ByteBufferPoolDirect() {
 	}

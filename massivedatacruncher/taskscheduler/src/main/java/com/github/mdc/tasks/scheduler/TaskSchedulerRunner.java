@@ -39,9 +39,8 @@ public class TaskSchedulerRunner {
 		try (var cf = CuratorFrameworkFactory.newClient(MDCProperties.get().getProperty(MDCConstants.ZOOKEEPER_HOSTPORT),
 				20000, 50000,
 				new RetryForever(Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.ZOOKEEPER_RETRYDELAY))));
-				var ss = new ServerSocket(
-						Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULER_PORT)), 256,
-						InetAddress.getByAddress(new byte[] { 0x00, 0x00, 0x00, 0x00 }));) {
+				var ss = Utils.createSSLServerSocket(
+						Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULER_PORT)));) {
 			cf.start();
 			var hbs = new HeartBeatServer();
 			hbs.init(Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULER_RESCHEDULEDELAY)),

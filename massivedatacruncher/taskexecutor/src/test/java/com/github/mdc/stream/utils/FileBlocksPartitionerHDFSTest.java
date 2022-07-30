@@ -89,7 +89,7 @@ public class FileBlocksPartitionerHDFSTest extends StreamPipelineBase {
 		var containeridports = new ConcurrentHashMap<String, List<Integer>>();
 		for (int nodeindex = 0; nodeindex < NOOFNODES; nodeindex++) {
 			semaphore.acquire();
-			ss = new ServerSocket(20000 + nodeindex, 256, InetAddress.getByAddress(new byte[]{0x00, 0x00, 0x00, 0x00}));
+			ss = Utils.createSSLServerSocket(20000 + nodeindex);
 			containerlauncher.add(ss);
 
 			es.execute(() -> {

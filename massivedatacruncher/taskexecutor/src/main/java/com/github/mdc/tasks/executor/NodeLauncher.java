@@ -53,7 +53,7 @@ public class NodeLauncher {
 		Utils.loadLog4JSystemProperties(MDCConstants.PREV_FOLDER + MDCConstants.FORWARD_SLASH
 				+ MDCConstants.DIST_CONFIG_FOLDER + MDCConstants.FORWARD_SLASH, MDCConstants.MDC_PROPERTIES);
 		var port = Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.NODE_PORT));
-		try (var hbss = new HeartBeatServerStream();var server = new ServerSocket(port, 256, InetAddress.getByAddress(new byte[]{0x00, 0x00, 0x00, 0x00}));) {
+		try (var hbss = new HeartBeatServerStream();var server = Utils.createSSLServerSocket(port);) {
 			var pingdelay = Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULER_PINGDELAY));
 			var host = NetworkUtil.getNetworkAddress(MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_HOST));
 			hbss.init(0, port, host, 0, pingdelay, "");

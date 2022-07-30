@@ -15,7 +15,10 @@
  */
 package com.github.mdc.tasks.executor;
 
+import java.io.BufferedWriter;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
@@ -153,8 +156,8 @@ public class NodeRunner implements Callable<Boolean> {
 				log.debug("Destroying the Container Processes: " + processes);
 				if (!Objects.isNull(processes)) {
 					processes.keySet().stream().map(key -> processes.get(key)).forEach(proc -> {
-						log.debug("Destroying the Container Process: " + proc);
-						proc.destroy();
+						log.info("Destroying the Container Process: " + proc);
+						destroyProcess(proc);
 					});
 				}
 				Map<String, List<Thread>> threads = containeridcontainerthreads.remove(dc.getContainerid());
@@ -170,8 +173,8 @@ public class NodeRunner implements Callable<Boolean> {
 					processes.keySet().stream()
 							.filter(key -> key.equals(dc.getContainerhp().split(MDCConstants.UNDERSCORE)[1]))
 							.map(key -> processes.get(key)).forEach(proc -> {
-						log.debug("Destroying the Container Process: " + proc);
-						proc.destroy();
+						log.info("Destroying the Container Process: " + proc);
+						destroyProcess(proc);
 					});
 					processes.remove(dc.getContainerhp().split(MDCConstants.UNDERSCORE)[1]);
 				} else {
@@ -179,8 +182,8 @@ public class NodeRunner implements Callable<Boolean> {
 						containerprocesses.get(key).keySet().stream().filter(port -> port.equals(dc.getContainerhp().split(MDCConstants.UNDERSCORE)[1]))
 								.map(port -> containerprocesses.get(key).get(port))
 								.filter(proc -> !Objects.isNull(proc)).forEach(proc -> {
-							log.debug("Destroying the Container Process: " + proc);
-							proc.destroy();
+							log.info("Destroying the Container Process: " + proc);
+							destroyProcess(proc);
 						});
 						;
 					});
@@ -202,6 +205,16 @@ public class NodeRunner implements Callable<Boolean> {
 			log.info("MRJob Execution Problem", ex);
 		}
 		return false;
+	}
+	
+	public void destroyProcess(Process proc) {
+		try {
+			long pid = proc.pid();
+			proc.destroy();
+		}
+		catch(Exception ex) {
+			log.error("Destroy failed for the process: "+proc);
+		}
 	}
 
 }

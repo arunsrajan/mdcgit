@@ -86,7 +86,7 @@ public class StreamPipelineJobSubmitter {
 
 
 	public static void writeToTaskScheduler(String[] ts, String mrjarpath, String[] args) {
-		try (var s = new Socket(ts[0], Integer.parseInt(ts[1]));
+		try (var s = Utils.createSSLSocket(ts[0], Integer.parseInt(ts[1]));
 				var is = s.getInputStream();
 				var os = s.getOutputStream();
 				var baos = new ByteArrayOutputStream();

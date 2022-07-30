@@ -88,7 +88,7 @@ public class ApplicationSubmitter {
 				currenttaskscheduler = taskschedulers.get(0);
 			}
 			var ts = currenttaskscheduler.split(MDCConstants.UNDERSCORE);
-			try (var s = new Socket(ts[0], Integer.parseInt(ts[1]));
+			try (var s = Utils.createSSLSocket(ts[0], Integer.parseInt(ts[1]));
 					var is = s.getInputStream();
 					var os = s.getOutputStream();
 					var fis = new FileInputStream(jarpath);

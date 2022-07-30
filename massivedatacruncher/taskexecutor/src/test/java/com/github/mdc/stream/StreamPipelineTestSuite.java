@@ -133,7 +133,7 @@ public class StreamPipelineTestSuite extends StreamPipelineBase {
 					executorpool.execute(() -> {
 						ServerSocket server;
 						try {
-							server = new ServerSocket(nodeport, 256, InetAddress.getByAddress(new byte[]{0x00, 0x00, 0x00, 0x00}));
+							server = Utils.createSSLServerSocket(nodeport);
 							sss.add(server);
 							cdlport.countDown();
 							cdl.countDown();

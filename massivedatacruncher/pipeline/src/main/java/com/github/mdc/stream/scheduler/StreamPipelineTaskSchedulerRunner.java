@@ -74,9 +74,8 @@ public class StreamPipelineTaskSchedulerRunner {
 		try (var cf = CuratorFrameworkFactory.newClient(
 				MDCProperties.get().getProperty(MDCConstants.ZOOKEEPER_HOSTPORT), 20000, 50000,
 				new RetryForever(Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.ZOOKEEPER_RETRYDELAY))));
-				final ServerSocket server = new ServerSocket(
-						Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULERSTREAM_PORT)) + 20,
-						256, InetAddress.getByAddress(new byte[] { 0x00, 0x00, 0x00, 0x00 }));) {
+				final ServerSocket server = Utils.createSSLServerSocket(
+						Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULERSTREAM_PORT)) + 20);) {
 
 			cf.start();
 			cf.blockUntilConnected();
@@ -148,10 +147,9 @@ public class StreamPipelineTaskSchedulerRunner {
 							// Start Resources gathering via heart beat resources
 							// status update.
 							hbss.start();
-							ss = new ServerSocket(
+							ss = Utils.createSSLServerSocket(
 									Integer.parseInt(
-											MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULERSTREAM_PORT)),
-									256, InetAddress.getByAddress(new byte[] { 0x00, 0x00, 0x00, 0x00 }));
+											MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULERSTREAM_PORT)));
 							// Execute when request arrives.
 							esstream.execute(() -> {
 								while (true) {

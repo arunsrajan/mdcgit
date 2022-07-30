@@ -94,7 +94,7 @@ public class FileBlocksPartitionerHDFSMultipleNodesTest extends StreamPipelineBa
 		MDCNodesResources.put(noderesourcesmap);
 		for (; nodeindex < NOOFNODES; nodeindex++) {
 			semaphore.acquire();
-			ServerSocket ss = new ServerSocket(20000 + nodeindex, 256, InetAddress.getByAddress(new byte[]{0x00, 0x00, 0x00, 0x00}));
+			ServerSocket ss = Utils.createSSLServerSocket(20000+nodeindex);
 			containerlauncher.add(ss);
 			Resources resource = new Resources();
 			int memory = 64;
