@@ -15,44 +15,21 @@
  */
 package com.github.mdc.common;
 
-import com.esotericsoftware.kryo.Kryo;
-import com.esotericsoftware.kryo.io.Input;
-import com.esotericsoftware.kryo.io.Output;
-import com.esotericsoftware.kryo.serializers.ClosureSerializer;
-import com.esotericsoftware.kryo.serializers.CompatibleFieldSerializer;
-import com.esotericsoftware.kryo.serializers.CompatibleFieldSerializer.CompatibleFieldSerializerConfig;
-import com.esotericsoftware.kryo.serializers.DefaultSerializers.EnumSerializer;
-import com.esotericsoftware.kryo.serializers.JavaSerializer;
-import com.esotericsoftware.kryo.util.DefaultInstantiatorStrategy;
-
-import de.javakaffee.kryoserializers.*;
-import de.javakaffee.kryoserializers.cglib.CGLibProxySerializer;
-import de.javakaffee.kryoserializers.guava.*;
-import org.apache.commons.csv.CSVParser;
-import org.apache.commons.csv.CSVRecord;
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.FileSystem;
-import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.hdfs.DistributedFileSystem;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
-import org.apache.zookeeper.server.ServerCnxnFactory;
-import org.apache.zookeeper.server.ZooKeeperServer;
-import org.jgrapht.Graph;
-import org.jgrapht.graph.SimpleDirectedGraph;
-import org.jgrapht.io.ComponentNameProvider;
-import org.jgrapht.io.DOTExporter;
-import org.jgrapht.io.ExportException;
-import org.jgrapht.io.GraphExporter;
-import org.jgroups.*;
-import org.jgroups.util.UUID;
-import org.jooq.lambda.tuple.Tuple2;
-import org.json.simple.JSONObject;
-import org.objenesis.strategy.StdInstantiatorStrategy;
-import org.reflections.Reflections;
-import org.reflections.scanners.SubTypesScanner;
-
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.lang.invoke.SerializedLambda;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryPoolMXBean;
@@ -64,9 +41,19 @@ import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.URI;
-import java.security.KeyManagementException;
 import java.security.KeyStore;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.GregorianCalendar;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Properties;
+import java.util.Set;
+import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Semaphore;
 import java.util.jar.Attributes;
@@ -84,6 +71,73 @@ import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
+
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVRecord;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.hdfs.DistributedFileSystem;
+import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
+import org.apache.zookeeper.server.ServerCnxnFactory;
+import org.apache.zookeeper.server.ZooKeeperServer;
+import org.jgrapht.Graph;
+import org.jgrapht.graph.SimpleDirectedGraph;
+import org.jgrapht.io.ComponentNameProvider;
+import org.jgrapht.io.DOTExporter;
+import org.jgrapht.io.ExportException;
+import org.jgrapht.io.GraphExporter;
+import org.jgroups.Address;
+import org.jgroups.JChannel;
+import org.jgroups.Message;
+import org.jgroups.ObjectMessage;
+import org.jgroups.Receiver;
+import org.jgroups.View;
+import org.jgroups.util.UUID;
+import org.jooq.lambda.tuple.Tuple2;
+import org.json.simple.JSONObject;
+import org.objenesis.strategy.StdInstantiatorStrategy;
+import org.reflections.Reflections;
+import org.reflections.scanners.SubTypesScanner;
+
+import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.io.Input;
+import com.esotericsoftware.kryo.io.Output;
+import com.esotericsoftware.kryo.serializers.ClosureSerializer;
+import com.esotericsoftware.kryo.serializers.CompatibleFieldSerializer;
+import com.esotericsoftware.kryo.serializers.CompatibleFieldSerializer.CompatibleFieldSerializerConfig;
+import com.esotericsoftware.kryo.serializers.DefaultSerializers.EnumSerializer;
+import com.esotericsoftware.kryo.serializers.JavaSerializer;
+import com.esotericsoftware.kryo.util.DefaultInstantiatorStrategy;
+
+import de.javakaffee.kryoserializers.ArraysAsListSerializer;
+import de.javakaffee.kryoserializers.CollectionsEmptyListSerializer;
+import de.javakaffee.kryoserializers.CollectionsEmptyMapSerializer;
+import de.javakaffee.kryoserializers.CollectionsEmptySetSerializer;
+import de.javakaffee.kryoserializers.CollectionsSingletonListSerializer;
+import de.javakaffee.kryoserializers.CollectionsSingletonMapSerializer;
+import de.javakaffee.kryoserializers.CollectionsSingletonSetSerializer;
+import de.javakaffee.kryoserializers.GregorianCalendarSerializer;
+import de.javakaffee.kryoserializers.JdkProxySerializer;
+import de.javakaffee.kryoserializers.SynchronizedCollectionsSerializer;
+import de.javakaffee.kryoserializers.UnmodifiableCollectionsSerializer;
+import de.javakaffee.kryoserializers.cglib.CGLibProxySerializer;
+import de.javakaffee.kryoserializers.guava.ArrayListMultimapSerializer;
+import de.javakaffee.kryoserializers.guava.ArrayTableSerializer;
+import de.javakaffee.kryoserializers.guava.HashBasedTableSerializer;
+import de.javakaffee.kryoserializers.guava.HashMultimapSerializer;
+import de.javakaffee.kryoserializers.guava.ImmutableListSerializer;
+import de.javakaffee.kryoserializers.guava.ImmutableMapSerializer;
+import de.javakaffee.kryoserializers.guava.ImmutableMultimapSerializer;
+import de.javakaffee.kryoserializers.guava.ImmutableSetSerializer;
+import de.javakaffee.kryoserializers.guava.ImmutableTableSerializer;
+import de.javakaffee.kryoserializers.guava.LinkedHashMultimapSerializer;
+import de.javakaffee.kryoserializers.guava.LinkedListMultimapSerializer;
+import de.javakaffee.kryoserializers.guava.ReverseListSerializer;
+import de.javakaffee.kryoserializers.guava.TreeBasedTableSerializer;
+import de.javakaffee.kryoserializers.guava.TreeMultimapSerializer;
+import de.javakaffee.kryoserializers.guava.UnmodifiableNavigableSetSerializer;
 
 /**
  * 
@@ -313,7 +367,27 @@ public class Utils {
 		kryo.register(Dummy.class, new JavaSerializer());
 		log.debug("Exiting Utils.registerKryoNonDeflateSerializer");
 	}
+	static SSLServerSocketFactory ssf = null;
+	static SSLSocketFactory sf = null;
+	private static void initializeSSLContext() throws Exception {
 
+		KeyStore ks = KeyStore.getInstance("JKS");
+		String password = MDCProperties.get().getProperty(MDCConstants.MDC_KEYSTORE_PASSWORD);
+		ks.load(new FileInputStream(MDCProperties.get().getProperty(MDCConstants.MDC_JKS)), password.toCharArray());
+
+		KeyManagerFactory kmf = KeyManagerFactory.getInstance(MDCProperties.get().getProperty(MDCConstants.MDC_JKS_ALGO));
+		kmf.init(ks, password.toCharArray());
+
+		TrustManagerFactory tmf = TrustManagerFactory.getInstance(MDCProperties.get().getProperty(MDCConstants.MDC_JKS_ALGO)); 
+		tmf.init(ks);
+
+		sc = SSLContext.getInstance("TLS"); 
+		TrustManager[] trustManagers = tmf.getTrustManagers(); 
+		sc.init(kmf.getKeyManagers(), trustManagers, null); 
+		ssf = sc.getServerSocketFactory(); 
+		sf = sc.getSocketFactory();
+	}
+	
 	/**
 	 * This method configures the log4j properties and obtains the properties from
 	 * the config folder in the binary distribution.
@@ -322,7 +396,7 @@ public class Utils {
 	 * @throws Exception
 	 */
 	public static void loadLog4JSystemProperties(String propertiesfilepath, String propertyfile) throws Exception {
-		log.debug("Entered Utils.loadLog4JSystemProperties");
+		log.debug("Entered Utils.loadLog4JSystemProperties");		
 		if (Objects.isNull(propertyfile)) {
 			throw new Exception("Property File Name cannot be null");
 		}
@@ -340,6 +414,7 @@ public class Utils {
 			log.error("Problem in loading properties, See the cause below", ex);
 			throw new Exception("Unable To Load Properties", ex);
 		}
+		initializeSSLContext();
 		log.debug("Exiting Utils.loadLog4JSystemProperties");
 	}
 
@@ -369,6 +444,7 @@ public class Utils {
 			log.error("Problem in loading properties, See the cause below", ex);
 			throw new Exception("Unable To Load Properties", ex);
 		}
+		initializeSSLContext();
 		log.debug("Exiting Utils.loadLog4JSystemPropertiesClassPath");
 	}
 
@@ -377,9 +453,11 @@ public class Utils {
 	 * the classpath in the binary distribution for mesos.
 	 * 
 	 * @param propertyfile
+	 * @throws Exception 
 	 */
-	public static void loadPropertiesMesos(String propertyfile) {
+	public static void loadPropertiesMesos(String propertyfile) throws Exception {
 		log.debug("Entered Utils.loadPropertiesMesos");
+		initializeSSLContext();
 		PropertyConfigurator.configure(
 				Utils.class.getResourceAsStream(MDCConstants.FORWARD_SLASH + MDCConstants.LOG4J_PROPERTIES));
 		var prop = new Properties();
@@ -391,6 +469,7 @@ public class Utils {
 		} catch (Exception ex) {
 			log.error("Problem in loading properties, See the cause below", ex);
 		}
+		initializeSSLContext();
 		log.debug("Exiting Utils.loadPropertiesMesos");
 	}
 
@@ -778,10 +857,10 @@ public class Utils {
 	 * @return object
 	 */
 	public static Object getResultObjectByInput(String hp, Object inputobj) {
+		log.error("getResultObjectByInput: "+inputobj);
 		var hostport = hp.split(MDCConstants.UNDERSCORE);
 		try (var socket = Utils.createSSLSocket(hostport[0], Integer.parseInt(hostport[1]));
-				var input = new Input(socket.getInputStream());
-				var output = new Output(socket.getOutputStream());) {
+				var input = new Input(socket.getInputStream());) {
 			var kryo = Utils.getKryoNonDeflateSerializer();
 			writeObjectByStream(socket.getOutputStream(), inputobj);
 			var obj = kryo.readClassAndObject(input);
@@ -837,6 +916,7 @@ public class Utils {
 	 * @param object
 	 */
 	public static void writeObject(Socket socket, Object object) {
+		log.error("writeObject(Socket socket, Object object): "+object);
 		try (var output = new Output(socket.getOutputStream());) {
 			var kryo = Utils.getKryoNonDeflateSerializer();
 			kryo.writeClassAndObject(output, object);
@@ -855,6 +935,7 @@ public class Utils {
 	 * @throws Exception
 	 */
 	public static void writeObject(String hp, Object inputobj) throws Exception {
+		log.error("writeObject(String hp, Object inputobj): "+inputobj);
 		var hostport = hp.split(MDCConstants.UNDERSCORE);
 		try (var socket = Utils.createSSLSocket(hostport[0], Integer.parseInt(hostport[1]));) {
 
@@ -876,10 +957,12 @@ public class Utils {
 	 */
 	public static void writeObjectByStream(OutputStream ostream, Object inputobj) {
 		try {
+			log.error("writeObjectByStream(OutputStream ostream, Object inputobj): "+inputobj);
 			var output = new Output(ostream);
 			var kryo = Utils.getKryoNonDeflateSerializer();
 			kryo.writeClassAndObject(output, inputobj);
 			output.flush();
+			ostream.flush();
 		} catch (Exception ex) {
 			log.error("Unable to write Object Stream: " + inputobj, ex);
 		}
@@ -887,6 +970,7 @@ public class Utils {
 	
 	
 	public static void writeObject(String hp, Object inputobj, Kryo kryo) throws Exception {
+		log.error("writeObject(String hp, Object inputobj, Kryo kryo): "+inputobj);
 		var hostport = hp.split(MDCConstants.UNDERSCORE);
 		try (var socket = Utils.createSSLSocket(hostport[0], Integer.parseInt(hostport[1]));) {
 
@@ -908,9 +992,11 @@ public class Utils {
 	 */
 	public static void writeObjectByStream(OutputStream ostream, Object inputobj, Kryo kryo) {
 		try {
+			log.error(inputobj);
 			var output = new Output(ostream);
 			kryo.writeClassAndObject(output, inputobj);
 			output.flush();
+			ostream.flush();
 		} catch (Exception ex) {
 			log.error("Unable to write Object Stream: " + inputobj, ex);
 		}
@@ -1169,43 +1255,13 @@ public class Utils {
 		});
 		GlobalContainerLaunchers.remove(containerid);
 	}
-	
+	static SSLContext sc = null;
 	public static ServerSocket createSSLServerSocket(int port) throws Exception {
-		KeyStore ks = KeyStore.getInstance("JKS");
-		String password = MDCProperties.get().getProperty(MDCConstants.MDC_KEYSTORE_PASSWORD);
-		ks.load(new FileInputStream(MDCProperties.get().getProperty(MDCConstants.MDC_JKS)), password.toCharArray());
-
-		KeyManagerFactory kmf = KeyManagerFactory.getInstance(MDCProperties.get().getProperty(MDCConstants.MDC_JKS_ALGO));
-		kmf.init(ks, password.toCharArray());
-
-		TrustManagerFactory tmf = TrustManagerFactory.getInstance(MDCProperties.get().getProperty(MDCConstants.MDC_JKS_ALGO)); 
-		tmf.init(ks);
-
-		SSLContext sc = SSLContext.getInstance("TLS"); 
-		TrustManager[] trustManagers = tmf.getTrustManagers(); 
-		sc.init(kmf.getKeyManagers(), trustManagers, null); 
-
-		SSLServerSocketFactory ssf = sc.getServerSocketFactory(); 
 		SSLServerSocket sslserversocket = (SSLServerSocket) ssf.createServerSocket(port, 256, InetAddress.getByAddress(new byte[]{0x00, 0x00, 0x00, 0x00}));
 		return sslserversocket;
 	}
 	
 	public static Socket createSSLSocket(String host, int port) throws Exception {
-		KeyStore ks = KeyStore.getInstance("JKS");
-		String password = MDCProperties.get().getProperty(MDCConstants.MDC_KEYSTORE_PASSWORD);
-		ks.load(new FileInputStream(MDCProperties.get().getProperty(MDCConstants.MDC_JKS)), password.toCharArray());
-
-		KeyManagerFactory kmf = KeyManagerFactory.getInstance(MDCProperties.get().getProperty(MDCConstants.MDC_JKS_ALGO));
-		kmf.init(ks, password.toCharArray());
-
-		TrustManagerFactory tmf = TrustManagerFactory.getInstance(MDCProperties.get().getProperty(MDCConstants.MDC_JKS_ALGO)); 
-		tmf.init(ks);
-
-		SSLContext sc = SSLContext.getInstance("TLS"); 
-		TrustManager[] trustManagers = tmf.getTrustManagers(); 
-		sc.init(kmf.getKeyManagers(), trustManagers, null); 
-
-		SSLSocketFactory sf = sc.getSocketFactory();
 		SSLSocket sslsocket = (SSLSocket) sf.createSocket(host, port);
 		sslsocket.startHandshake();
 		return sslsocket;

@@ -104,7 +104,8 @@ public class MassiveDataMRJobBase {
 			System.setProperty("HIBCFG", "../config/mdchibernate.cfg.xml");
 			System.setProperty("HADOOP_HOME", "C:\\DEVELOPMENT\\hadoop\\hadooplocal\\hadoop-3.3.1");
 			PropertyConfigurator.configure(istream);
-			Utils.loadLog4JSystemPropertiesClassPath("mdctest.properties");
+			Utils.loadLog4JSystemProperties(MDCConstants.PREV_FOLDER + MDCConstants.FORWARD_SLASH
+					+ MDCConstants.DIST_CONFIG_FOLDER + MDCConstants.FORWARD_SLASH, "mdctest.properties");
 			ByteBufferPoolDirect.init();
 			ByteBufferPool.init(4);
 			CacheUtils.initCache();
@@ -150,7 +151,7 @@ public class MassiveDataMRJobBase {
 							while (true) {
 								Socket client = server.accept();
 								es.submit(
-										new NodeRunner(client, MDCConstants.TEPROPLOADCLASSPATHCONFIG,
+										new NodeRunner(client, MDCConstants.TEPROPLOADDISTROCONFIG,
 												containerprocesses, hdfs, containeridthreads, containeridports));
 							}
 						} catch (Exception ioe) {

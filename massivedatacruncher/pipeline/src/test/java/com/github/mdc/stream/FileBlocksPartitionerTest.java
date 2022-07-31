@@ -44,7 +44,8 @@ public class FileBlocksPartitionerTest extends StreamPipelineTestCommon {
 	@BeforeClass
 	public static void launchNodes() throws Exception {
 		if (isNull(server)) {
-			Utils.loadLog4JSystemPropertiesClassPath("mdctest.properties");
+			Utils.loadLog4JSystemProperties(MDCConstants.PREV_FOLDER + MDCConstants.FORWARD_SLASH
+					+ MDCConstants.DIST_CONFIG_FOLDER + MDCConstants.FORWARD_SLASH, "mdctest.properties");
 			// Starting the node
 			server = MDCIgniteServer.instance();
 		}

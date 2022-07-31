@@ -99,7 +99,8 @@ public class StreamPipelineIgniteBase {
 	@BeforeClass
 	public static void setServerUp() throws Exception {
 		try {
-			Utils.loadLog4JSystemPropertiesClassPath("mdctest.properties");
+			Utils.loadLog4JSystemProperties(MDCConstants.PREV_FOLDER + MDCConstants.FORWARD_SLASH
+					+ MDCConstants.DIST_CONFIG_FOLDER + MDCConstants.FORWARD_SLASH, "mdctest.properties");
 			Output out = new Output(System.out);
 			pipelineconfig.setKryoOutput(out);
 			pipelineconfig.setLocal("false");

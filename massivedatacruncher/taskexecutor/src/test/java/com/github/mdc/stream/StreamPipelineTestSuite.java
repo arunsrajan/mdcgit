@@ -16,7 +16,6 @@
 package com.github.mdc.stream;
 
 import java.io.InputStream;
-import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.URI;
@@ -28,7 +27,6 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.curator.test.TestingServer;
@@ -53,34 +51,21 @@ import com.github.mdc.tasks.executor.MassiveDataCruncherMRApiTest;
 import com.github.mdc.tasks.executor.NodeRunner;
 
 @RunWith(Suite.class)
-@Suite.SuiteClasses({
-		StreamPipelineTestSuite2.class,
-		StreamPipelineTest.class,
-		StreamPipelineContinuedTest.class,
-		StreamPipelineFoldByKeyKeyByTest.class,
-		StreamPipelineTransformationsCollectTest.class,
-		StreamPipelineTransformationsNullTest.class,
-		StreamPipelineDepth2Test.class,
-		StreamPipelineDepth31Test.class,
-		StreamPipelineDepth32Test.class,
-		StreamPipelineDepth32ContinuedTest.class,
-		StreamPipelineDepth33Test.class,
-		StreamPipelineDepth34Test.class,
-		StreamPipelineUtilsTest.class,
-		StreamPipelineFunctionsTest.class,
-		StreamPipelineCoalesceTest.class,
-		StreamPipelineJsonTest.class,
-		StreamPipelineTransformationFunctionsTest.class,
-		HDFSBlockUtilsTest.class,
-		StreamPipelineStatisticsTest.class,
-		MassiveDataCruncherMRApiTest.class,
-		StreamPipelineSqlTest.class})
+@Suite.SuiteClasses({ StreamPipelineTestSuite2.class, StreamPipelineTest.class, StreamPipelineContinuedTest.class,
+		StreamPipelineFoldByKeyKeyByTest.class, StreamPipelineTransformationsCollectTest.class,
+		StreamPipelineTransformationsNullTest.class, StreamPipelineDepth2Test.class, StreamPipelineDepth31Test.class,
+		StreamPipelineDepth32Test.class, StreamPipelineDepth32ContinuedTest.class, StreamPipelineDepth33Test.class,
+		StreamPipelineDepth34Test.class, StreamPipelineUtilsTest.class, StreamPipelineFunctionsTest.class,
+		StreamPipelineCoalesceTest.class, StreamPipelineJsonTest.class, StreamPipelineTransformationFunctionsTest.class,
+		HDFSBlockUtilsTest.class, StreamPipelineStatisticsTest.class, MassiveDataCruncherMRApiTest.class,
+		StreamPipelineSqlTest.class })
 public class StreamPipelineTestSuite extends StreamPipelineBase {
-	@SuppressWarnings({"unused"})
+	@SuppressWarnings({ "unused" })
 	@BeforeClass
 	public static void setServerUp() throws Exception {
 		try {
-			Utils.loadLog4JSystemPropertiesClassPath("mdctest.properties");
+			Utils.loadLog4JSystemProperties(MDCConstants.PREV_FOLDER + MDCConstants.FORWARD_SLASH
+					+ MDCConstants.DIST_CONFIG_FOLDER + MDCConstants.FORWARD_SLASH, "mdctest.properties");
 			Output out = new Output(System.out);
 			pipelineconfig.setKryoOutput(out);
 			pipelineconfig.setMaxmem("1024");
@@ -91,7 +76,8 @@ public class StreamPipelineTestSuite extends StreamPipelineBase {
 			pipelineconfig.setBatchsize("1");
 			System.setProperty("HADOOP_HOME", "C:\\DEVELOPMENT\\hadoop\\hadoop-3.3.1");
 			ByteBufferPoolDirect.init();
-			ByteBufferPool.init(Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.BYTEBUFFERPOOL_MAX, MDCConstants.BYTEBUFFERPOOL_MAX_DEFAULT)));
+			ByteBufferPool.init(Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.BYTEBUFFERPOOL_MAX,
+					MDCConstants.BYTEBUFFERPOOL_MAX_DEFAULT)));
 			pipelineconfig.setBlocksize("20");
 			testingserver = new TestingServer(zookeeperport);
 			testingserver.start();
@@ -105,15 +91,16 @@ public class StreamPipelineTestSuite extends StreamPipelineBase {
 				hb = new HeartBeatServerStream();
 				int rescheduledelay = Integer
 						.parseInt(MDCProperties.get().getProperty("taskschedulerstream.rescheduledelay"));
-				int initialdelay = Integer.parseInt(MDCProperties.get().getProperty("taskschedulerstream.initialdelay"));
+				int initialdelay = Integer
+						.parseInt(MDCProperties.get().getProperty("taskschedulerstream.initialdelay"));
 				int pingdelay = Integer.parseInt(MDCProperties.get().getProperty("taskschedulerstream.pingdelay"));
 				host = NetworkUtil.getNetworkAddress(MDCProperties.get().getProperty("taskschedulerstream.host"));
-				port =  Integer.parseInt(MDCProperties.get().getProperty("taskschedulerstream.port"));
+				port = Integer.parseInt(MDCProperties.get().getProperty("taskschedulerstream.port"));
 				int nodeport = Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.NODE_PORT));
 				hb.init(rescheduledelay, port, host, initialdelay, pingdelay, "");
 				hb.start();
-				threadpool = Executors.newWorkStealingPool();
-				executorpool = Executors.newWorkStealingPool();
+				threadpool = Executors.newSingleThreadExecutor();
+				executorpool = Executors.newSingleThreadExecutor();
 				ClassLoader cl = Thread.currentThread().getContextClassLoader();
 				port = Integer.parseInt(MDCProperties.get().getProperty("taskexecutor.port"));
 				int executorsindex = 0;
@@ -139,14 +126,16 @@ public class StreamPipelineTestSuite extends StreamPipelineBase {
 							cdl.countDown();
 							while (true) {
 								try (Socket sock = server.accept();) {
-									var container = new NodeRunner(sock, MDCConstants.TEPROPLOADCLASSPATHCONFIG,
+									var container = new NodeRunner(sock, MDCConstants.TEPROPLOADDISTROCONFIG,
 											containerprocesses, hdfs, containeridthreads, containeridports);
 									Future<Boolean> containerallocated = threadpool.submit(container);
 									log.info("Containers Allocated: " + containerallocated.get());
 								} catch (Exception e) {
+									e.printStackTrace();
 								}
 							}
 						} catch (Exception ioe) {
+							ioe.printStackTrace();
 						}
 					});
 					cdlport.await();
@@ -172,7 +161,6 @@ public class StreamPipelineTestSuite extends StreamPipelineBase {
 			uploadfile(hdfs, airlinemultiplefilesfolder, airlinenoheader + csvfileextn);
 			uploadfile(hdfs, githubevents, githubevents + jsonfileextn);
 
-
 		} catch (Throwable e) {
 			log.info("Error Uploading file", e);
 		}
@@ -194,7 +182,6 @@ public class StreamPipelineTestSuite extends StreamPipelineBase {
 		is.close();
 		fsdos.close();
 	}
-
 
 	@AfterClass
 	public static void closeResources() throws Exception {

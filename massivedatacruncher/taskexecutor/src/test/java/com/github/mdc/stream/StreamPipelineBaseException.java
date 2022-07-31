@@ -125,7 +125,8 @@ public class StreamPipelineBaseException {
 			pipelineconfig.setNumberofcontainers("3");
 			pipelineconfig.setMode(MDCConstants.MODE_NORMAL);
 			System.setProperty("HADOOP_HOME", "E:\\DEVELOPMENT\\hadoop\\hadoop-3.2.1");
-			Utils.loadLog4JSystemPropertiesClassPath("mdctestexception.properties");
+			Utils.loadLog4JSystemProperties(MDCConstants.PREV_FOLDER + MDCConstants.FORWARD_SLASH
+					+ MDCConstants.DIST_CONFIG_FOLDER + MDCConstants.FORWARD_SLASH, "mdctestexception.properties");
 			CacheUtils.initCache();
 			pipelineconfig.setBlocksize("20");
 			testingserver = new TestingServer(zookeeperport);

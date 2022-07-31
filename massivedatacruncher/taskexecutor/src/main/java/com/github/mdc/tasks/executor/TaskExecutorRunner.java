@@ -16,7 +16,6 @@
 package com.github.mdc.tasks.executor;
 
 import java.io.OutputStream;
-import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.URL;
 import java.util.List;
@@ -99,10 +98,6 @@ public class TaskExecutorRunner implements TaskExecutorRunnerMBean {
 		if (args[0].equals(MDCConstants.TEPROPLOADDISTROCONFIG)) {
 			Utils.loadLog4JSystemProperties(MDCConstants.PREV_FOLDER + MDCConstants.FORWARD_SLASH
 					+ MDCConstants.DIST_CONFIG_FOLDER + MDCConstants.FORWARD_SLASH, MDCConstants.MDC_PROPERTIES);
-		} else if (args[0].equals(MDCConstants.TEPROPLOADCLASSPATHCONFIG)) {
-			Utils.loadLog4JSystemPropertiesClassPath(MDCConstants.MDC_TEST_PROPERTIES);
-		} else if (args[0].equals(MDCConstants.TEPROPLOADCLASSPATHCONFIGEXCEPTION)) {
-			Utils.loadLog4JSystemPropertiesClassPath(MDCConstants.MDC_TEST_EXCEPTION_PROPERTIES);
 		}
 		ByteBufferPoolDirect.init();
 		log.info("Direct Memory Allocated: " + args[1]);
@@ -238,6 +233,7 @@ public class TaskExecutorRunner implements TaskExecutorRunnerMBean {
 							hbss.ping();
 							containeridhbss.put(containerid, hbss);
 						}
+						socket.close();
 						semaphore.release();
 					} else if (!Objects.isNull(deserobj)) {
 						launchtaskpool.execute(new TaskExecutor(socket, cl, port, es, configuration,

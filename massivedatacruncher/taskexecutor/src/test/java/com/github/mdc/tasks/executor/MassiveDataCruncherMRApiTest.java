@@ -44,7 +44,8 @@ import com.github.mdc.stream.StreamPipelineBase;
 public class MassiveDataCruncherMRApiTest extends StreamPipelineBase {
 	@BeforeClass
 	public static void setServerUp() throws Exception {
-		Utils.loadLog4JSystemPropertiesClassPath("mdctest.properties");
+		Utils.loadLog4JSystemProperties(MDCConstants.PREV_FOLDER + MDCConstants.FORWARD_SLASH
+				+ MDCConstants.DIST_CONFIG_FOLDER + MDCConstants.FORWARD_SLASH, "mdctest.properties");
 	}
 
 	@SuppressWarnings({"rawtypes", "unchecked"})

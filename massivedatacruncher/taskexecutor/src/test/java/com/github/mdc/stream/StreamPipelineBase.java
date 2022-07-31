@@ -82,7 +82,7 @@ public class StreamPipelineBase {
 	static String bicyclecrash = "/bicyclecrash";
 	static String airlinemultiplefilesfolder = "/airlinemultiplefilesfolder";
 	static String githubevents = "/githubevents";
-	static int zookeeperport = 2182;
+	static int zookeeperport = 2181;
 	static int namenodeport = 9000;
 	static int namenodehttpport = 60070;
 	public static final String ZK_BASE_PATH = "/mdc/cluster1";

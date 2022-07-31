@@ -41,7 +41,8 @@ public class LaunchContainersTest extends StreamPipelineBaseTestCommon {
 	@Test
 	public void testLaunchContainersDestroy() throws Exception {
 		PipelineConfig pc = new PipelineConfig();
-		Utils.loadLog4JSystemPropertiesClassPath(MDCConstants.MDC_TEST_PROPERTIES);
+		Utils.loadLog4JSystemProperties(MDCConstants.PREV_FOLDER + MDCConstants.FORWARD_SLASH
+				+ MDCConstants.DIST_CONFIG_FOLDER + MDCConstants.FORWARD_SLASH, MDCConstants.MDC_TEST_PROPERTIES);
 		pc.setBlocksize("64");
 		pc.setNumberofcontainers("1");
 		pc.setMaxmem("1024");
@@ -101,6 +102,7 @@ public class LaunchContainersTest extends StreamPipelineBaseTestCommon {
 		joinresult = mstll.collect(true, null);
 		joinresult.stream().forEach(log::info);
 		Utils.destroyContainers(lc);
+		pc.setLocal("true");
 	}
 
 

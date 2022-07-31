@@ -20,7 +20,7 @@ mvn -Dmaven.antrun.skip=true  -f pom.xml -Pmodules clean test
 
 To run specific test cases to specific module
 ----------------------------------------------------------
-mvn -Dmaven.antrun.skip=true -DfailIfNoTests=false -Dtest="PipelineExecutorsTestSuite"  -f pom.xml -Pmodules clean test
+mvn -Dmaven.antrun.skip=true -DfailIfNoTests=false -Dtest="StreamPipelineTestSuite"  -f pom.xml -Pmodules clean test
 
 In order to build docker images please execute the following maven goals
 ------------------------------------------------------------------------

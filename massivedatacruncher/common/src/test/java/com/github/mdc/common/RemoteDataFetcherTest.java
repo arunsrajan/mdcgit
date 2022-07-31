@@ -43,7 +43,8 @@ public class RemoteDataFetcherTest {
 	public static void setUpHdfs() throws Exception {
 		System.setProperty("HADOOP_HOME", "C:\\DEVELOPMENT\\hadoop\\hadoop-3.3.1");
 
-		Utils.loadLog4JSystemPropertiesClassPath(MDCConstants.MDC_TEST_PROPERTIES);
+		Utils.loadLog4JSystemProperties(MDCConstants.PREV_FOLDER + MDCConstants.FORWARD_SLASH
+				+ MDCConstants.DIST_CONFIG_FOLDER + MDCConstants.FORWARD_SLASH, MDCConstants.MDC_TEST_PROPERTIES);
 		System.setProperty(MDCConstants.HDFSNAMENODEURL, MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL));
 	}
 

@@ -84,7 +84,8 @@ public class StreamPipelineTestCommon {
 	public static void setUp() throws Throwable {
 		System.setProperty("HADOOP_HOME", "C:\\DEVELOPMENT\\hadoop\\hadooplocal\\hadoop-3.3.1");
 		Configuration conf = new Configuration();
-		Utils.loadLog4JSystemPropertiesClassPath("mdctest.properties");
+		Utils.loadLog4JSystemProperties(MDCConstants.PREV_FOLDER + MDCConstants.FORWARD_SLASH
+				+ MDCConstants.DIST_CONFIG_FOLDER + MDCConstants.FORWARD_SLASH, "mdctest.properties");
 		ByteBufferPoolDirect.init();
 		CacheUtils.initCache();
 		ByteBufferPool.init(Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.BYTEBUFFERPOOL_MAX, MDCConstants.BYTEBUFFERPOOL_MAX_DEFAULT)));
@@ -96,7 +97,6 @@ public class StreamPipelineTestCommon {
 		uploadfile(hdfs, airlinesampleunion1, airlinesampleunion1 + csvfileextn);
 		uploadfile(hdfs, airlinesampleunion2, airlinesampleunion2 + csvfileextn);
 		uploadfile(hdfs, githubevents, githubevents + jsonfileextn);
-		Utils.loadLog4JSystemPropertiesClassPath("mdctest.properties");
 	}
 
 	public static void uploadfile(FileSystem hdfs, String dir, String filename) throws Throwable {

@@ -831,6 +831,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 		assertEquals(job.containers.size(), js.taskexecutors.size());
 		assertTrue(job.containers.containsAll(js.taskexecutors));
 		js.destroyContainers();
+		pc.setLocal("true");
 	}
 
 	@SuppressWarnings({"rawtypes", "unchecked", "resource"})
@@ -920,6 +921,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 		js.hbss.stop();
 		js.hbss.destroy();
 		js.destroyContainers();
+		pc.setLocal("true");
 	}
 
 	@SuppressWarnings({"rawtypes", "unchecked"})
@@ -1143,6 +1145,8 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 		List<List> result = (List<List>) js.schedule(job);
 		assertEquals(1, result.size());
 		assertEquals(46361, result.get(0).size());
+		pc.setJgroups("false");
+		pc.setLocal("true");
 	}
 
 	@SuppressWarnings({"rawtypes", "unchecked"})
@@ -1188,6 +1192,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 		List<List> result = (List<List>) js.schedule(job);
 		assertEquals(1, result.size());
 		assertEquals(46361, result.get(0).size());
+		pc.setLocal("true");
 	}
 
 	@SuppressWarnings({"unchecked", "rawtypes"})
@@ -1209,6 +1214,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 		List<List> result = (List<List>) js.schedule(job);
 		assertEquals(1, result.size());
 		assertEquals(46361, result.get(0).size());
+		pc.setLocal("true");
 	}
 
 }

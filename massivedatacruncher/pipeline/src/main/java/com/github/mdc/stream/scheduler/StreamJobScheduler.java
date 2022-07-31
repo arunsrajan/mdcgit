@@ -15,6 +15,8 @@
  */
 package com.github.mdc.stream.scheduler;
 
+import static java.util.Objects.nonNull;
+
 import java.beans.PropertyChangeListener;
 import java.io.BufferedInputStream;
 import java.io.BufferedWriter;
@@ -28,7 +30,6 @@ import java.io.OutputStreamWriter;
 import java.io.StringWriter;
 import java.lang.ref.SoftReference;
 import java.net.MalformedURLException;
-import java.net.Socket;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
@@ -101,9 +102,9 @@ import com.github.mdc.common.MDCCache;
 import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.MDCNodesResources;
 import com.github.mdc.common.MDCProperties;
-import com.github.mdc.common.PipelineConstants;
 import com.github.mdc.common.NetworkUtil;
 import com.github.mdc.common.PipelineConfig;
+import com.github.mdc.common.PipelineConstants;
 import com.github.mdc.common.RemoteDataFetch;
 import com.github.mdc.common.RemoteDataFetcher;
 import com.github.mdc.common.Resources;
@@ -116,8 +117,8 @@ import com.github.mdc.common.Utils;
 import com.github.mdc.common.WhoIsResponse;
 import com.github.mdc.stream.PipelineException;
 import com.github.mdc.stream.executors.StreamPipelineTaskExecutor;
-import com.github.mdc.stream.executors.StreamPipelineTaskExecutorLocal;
 import com.github.mdc.stream.executors.StreamPipelineTaskExecutorIgnite;
+import com.github.mdc.stream.executors.StreamPipelineTaskExecutorLocal;
 import com.github.mdc.stream.functions.AggregateReduceFunction;
 import com.github.mdc.stream.functions.Coalesce;
 import com.github.mdc.stream.functions.IntersectionFunction;
@@ -130,8 +131,6 @@ import com.github.mdc.stream.functions.RightOuterJoinPredicate;
 import com.github.mdc.stream.functions.UnionFunction;
 import com.github.mdc.stream.mesos.scheduler.MesosScheduler;
 import com.google.common.collect.Iterables;
-
-import static java.util.Objects.*;
 
 /**
  * 

@@ -77,7 +77,8 @@ public class FileBlocksPartitionerHDFSTest extends StreamPipelineBase {
 
 	@BeforeClass
 	public static void launchNodes() throws Exception {
-		Utils.loadLog4JSystemPropertiesClassPath("mdctest.properties");
+		Utils.loadLog4JSystemProperties(MDCConstants.PREV_FOLDER + MDCConstants.FORWARD_SLASH
+				+ MDCConstants.DIST_CONFIG_FOLDER + MDCConstants.FORWARD_SLASH, "mdctest.properties");
 		containers = new ConcurrentHashMap<>();
 		tes = new ConcurrentHashMap<>();
 		es = Executors.newWorkStealingPool();

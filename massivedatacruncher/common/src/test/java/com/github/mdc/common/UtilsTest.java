@@ -66,29 +66,4 @@ public class UtilsTest {
 		}
 	}
 
-	@Test
-	public void testloadLog4JSystemPropertiesClassPathImproperFileName() {
-		try {
-			Utils.loadLog4JSystemPropertiesClassPath(null);
-		}
-		catch (Exception ex) {
-			assertEquals("Property File Name cannot be null", ex.getMessage());
-		}
-	}
-
-	@Test
-	public void testloadLog4JSystemPropertiesClassPathEmptyFileName() {
-		try {
-			Utils.loadLog4JSystemPropertiesClassPath("");
-		}
-		catch (Exception ex) {
-			assertEquals("Unable To Load Properties", ex.getMessage());
-			assertTrue(ex.getCause().getMessage().contains("Access is denied"));
-		}
-	}
-
-	@Test
-	public void testloadLog4JSystemPropertiesClassPathProperInput() throws Exception {
-		Utils.loadLog4JSystemPropertiesClassPath(MDCConstants.MDC_TEST_PROPERTIES);
-	}
 }

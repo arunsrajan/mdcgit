@@ -21,6 +21,7 @@ import java.util.List;
 
 import org.junit.Test;
 
+import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.PipelineConfig;
 import com.github.mdc.common.Utils;
 
@@ -147,7 +148,8 @@ public class PipelineConfigValidatorTest {
 	}
 
 	public PipelineConfig getPipelineConfig() throws Exception {
-		Utils.loadLog4JSystemPropertiesClassPath("mdctest.properties");
+		Utils.loadLog4JSystemProperties(MDCConstants.PREV_FOLDER + MDCConstants.FORWARD_SLASH
+				+ MDCConstants.DIST_CONFIG_FOLDER + MDCConstants.FORWARD_SLASH, "mdctest.properties");
 		PipelineConfig config = new PipelineConfig();
 		return config;
 	}
