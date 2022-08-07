@@ -138,7 +138,7 @@ public class MapReduceApplicationIgnite implements Callable<List<DataCruncherCon
 			blocksize = Integer.parseInt(jobconf.getBlocksize());
 			hdfs = FileSystem.get(new URI(MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL)),
 					configuration);
-			var kryo = Utils.getKryoNonDeflateSerializer();
+			var kryo = Utils.getKryoSerializerDeserializer();
 			var combiner = new HashSet<>();
 			var reducer = new HashSet<>();
 			var mapclzchunkfile = new HashMap<String, Set<Class>>();

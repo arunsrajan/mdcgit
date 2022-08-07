@@ -239,7 +239,7 @@ public sealed class StreamPipelineTaskExecutor implements
 			cf = (CompletableFuture) streamfirst.distinct().filter(setsecond::contains)
 					.collect(ParallelCollectors.parallel(value -> value, Collectors.toCollection(Vector::new), executor,
 							Runtime.getRuntime().availableProcessors()));
-			var kryo = Utils.getKryoNonDeflateSerializer();
+			var kryo = Utils.getKryoSerializerDeserializer();
 			Object result = cf.get();
 			kryo.writeClassAndObject(output, result);
 			output.flush();
@@ -281,7 +281,7 @@ public sealed class StreamPipelineTaskExecutor implements
 				var bais2 = HdfsBlockReader.getBlockDataSnappyStream(blockssecond.get(0), hdfs);
 				var buffer2 = new BufferedReader(new InputStreamReader(bais2));
 				var streamsecond = buffer2.lines();) {
-			var kryo = Utils.getKryoNonDeflateSerializer();
+			var kryo = Utils.getKryoSerializerDeserializer();
 			var datafirst = (List) kryo.readClassAndObject(inputfirst);
 			var cf = (CompletableFuture) streamsecond.distinct().collect(ParallelCollectors.parallel(value -> value,
 					Collectors.toCollection(LinkedHashSet::new), executor, Runtime.getRuntime().availableProcessors()));
@@ -348,7 +348,7 @@ public sealed class StreamPipelineTaskExecutor implements
 
 		) {
 
-			var kryo = Utils.getKryoNonDeflateSerializer();
+			var kryo = Utils.getKryoSerializerDeserializer();
 			var datafirst = (List) kryo.readClassAndObject(inputfirst);
 			var datasecond = (List) kryo.readClassAndObject(inputsecond);
 			if (task.finalphase && task.saveresulttohdfs) {
@@ -492,7 +492,7 @@ public sealed class StreamPipelineTaskExecutor implements
 								executor, Runtime.getRuntime().availableProcessors()));
 				result = (List) cf.get();
 			}
-			var kryo = Utils.getKryoNonDeflateSerializer();
+			var kryo = Utils.getKryoSerializerDeserializer();
 			kryo.writeClassAndObject(output, result);
 			output.flush();
 			cacheAble(fsdos);
@@ -532,7 +532,7 @@ public sealed class StreamPipelineTaskExecutor implements
 				var bais2 = HdfsBlockReader.getBlockDataSnappyStream(blockssecond.get(0), hdfs);
 				var buffer2 = new BufferedReader(new InputStreamReader(bais2));
 				var streamsecond = buffer2.lines();) {
-			var kryo = Utils.getKryoNonDeflateSerializer();
+			var kryo = Utils.getKryoSerializerDeserializer();
 
 			var datafirst = (List) kryo.readClassAndObject(inputfirst);
 			boolean terminalCount = false;
@@ -610,7 +610,7 @@ public sealed class StreamPipelineTaskExecutor implements
 				var inputfirst = new Input(new BufferedInputStream(fsstreamfirst.iterator().next()));
 				var inputsecond = new Input(new BufferedInputStream(fsstreamsecond.iterator().next()));) {
 
-			var kryo = Utils.getKryoNonDeflateSerializer();
+			var kryo = Utils.getKryoSerializerDeserializer();
 
 			var datafirst = (List) kryo.readClassAndObject(inputfirst);
 			var datasecond = (List) kryo.readClassAndObject(inputsecond);
@@ -692,7 +692,7 @@ public sealed class StreamPipelineTaskExecutor implements
 				var bais = HdfsBlockReader.getBlockDataSnappyStream(blockslocation, hdfs);
 				var buffer = new BufferedReader(new InputStreamReader(bais));) {
 
-			var kryo = Utils.getKryoNonDeflateSerializer();
+			var kryo = Utils.getKryoSerializerDeserializer();
 			Stream intermediatestreamobject;
 			if (jobstage.stage.tasks.get(0) instanceof Json) {
 				intermediatestreamobject = buffer.lines();
@@ -857,7 +857,7 @@ public sealed class StreamPipelineTaskExecutor implements
 		log.debug("Entered MassiveDataStreamTaskDExecutor.processBlockHDFSMap");
 		try (var fsdos = createIntermediateDataToFS(task);
 				var output = new Output(new SnappyOutputStream(new BufferedOutputStream(fsdos)));) {
-			var kryo = Utils.getKryoNonDeflateSerializer();
+			var kryo = Utils.getKryoSerializerDeserializer();
 			var functions = getFunctions();
 
 			List out = new ArrayList<>();
@@ -975,7 +975,7 @@ public sealed class StreamPipelineTaskExecutor implements
 				var bais = HdfsBlockReader.getBlockDataSnappyStream(blockslocation, hdfs);
 				var buffer = new BufferedReader(new InputStreamReader(bais));
 				var stringdata = buffer.lines();) {
-			Kryo kryo = Utils.getKryoNonDeflateSerializer();
+			Kryo kryo = Utils.getKryoSerializerDeserializer();
 			// Limit the sample using the limit method.
 			boolean terminalCount = false;
 			if (jobstage.stage.tasks.get(jobstage.stage.tasks.size() - 1) instanceof CalculateCount) {
@@ -1045,7 +1045,7 @@ public sealed class StreamPipelineTaskExecutor implements
 		try (var fsdos = createIntermediateDataToFS(task);
 				var output = new Output(new SnappyOutputStream(new BufferedOutputStream(fsdos)));
 				var inputfirst = new Input(new BufferedInputStream(((InputStream) (fsstreams.iterator().next()))));) {
-			var kryo = Utils.getKryoNonDeflateSerializer();
+			var kryo = Utils.getKryoSerializerDeserializer();
 			var datafirst = (List) kryo.readClassAndObject(inputfirst);
 			var terminalCount = false;
 			if (jobstage.stage.tasks.get(0) instanceof CalculateCount) {
@@ -1450,7 +1450,7 @@ public sealed class StreamPipelineTaskExecutor implements
 
 		) {
 
-			var kryo = Utils.getKryoNonDeflateSerializer();
+			var kryo = Utils.getKryoSerializerDeserializer();
 			final List<Tuple2> inputs1, inputs2;
 			;
 			if (Objects.isNull(buffreader1)) {
@@ -1556,7 +1556,7 @@ public sealed class StreamPipelineTaskExecutor implements
 
 		) {
 
-			var kryo = Utils.getKryoNonDeflateSerializer();
+			var kryo = Utils.getKryoSerializerDeserializer();
 			final List<Tuple2> inputs1, inputs2;
 			;
 			if (Objects.isNull(buffreader1)) {
@@ -1665,7 +1665,7 @@ public sealed class StreamPipelineTaskExecutor implements
 
 		) {
 
-			var kryo = Utils.getKryoNonDeflateSerializer();
+			var kryo = Utils.getKryoSerializerDeserializer();
 			final List<Tuple2> inputs1, inputs2;
 			;
 			if (Objects.isNull(buffreader1)) {
@@ -1773,7 +1773,7 @@ public sealed class StreamPipelineTaskExecutor implements
 
 		) {
 
-			var kryo = Utils.getKryoNonDeflateSerializer();
+			var kryo = Utils.getKryoSerializerDeserializer();
 			List inputs1 = null, inputs2 = null;
 			;
 			if (Objects.isNull(buffreader1)) {
@@ -1909,7 +1909,7 @@ public sealed class StreamPipelineTaskExecutor implements
 
 		) {
 
-			var kryo = Utils.getKryoNonDeflateSerializer();
+			var kryo = Utils.getKryoSerializerDeserializer();
 			List inputs1 = null, inputs2 = null;
 			;
 			if (Objects.isNull(buffreader1)) {
@@ -2044,7 +2044,7 @@ public sealed class StreamPipelineTaskExecutor implements
 
 		) {
 
-			var kryo = Utils.getKryoNonDeflateSerializer();
+			var kryo = Utils.getKryoSerializerDeserializer();
 			List inputs1 = null, inputs2 = null;
 			;
 			if (Objects.isNull(buffreader1)) {
@@ -2176,7 +2176,7 @@ public sealed class StreamPipelineTaskExecutor implements
 
 		try (var fsdos = createIntermediateDataToFS(task);
 				var output = new Output(new SnappyOutputStream(new BufferedOutputStream(fsdos)));) {
-			var kryo = Utils.getKryoNonDeflateSerializer();
+			var kryo = Utils.getKryoSerializerDeserializer();
 
 			var allpairs = new ArrayList<>();
 			var mapgpbykey = new LinkedHashSet<Map>();
@@ -2281,7 +2281,7 @@ public sealed class StreamPipelineTaskExecutor implements
 
 		try (var fsdos = createIntermediateDataToFS(task);
 				var output = new Output(new SnappyOutputStream(new BufferedOutputStream(fsdos)));) {
-			var kryo = Utils.getKryoNonDeflateSerializer();			
+			var kryo = Utils.getKryoSerializerDeserializer();			
 			var allpairs = new ArrayList<Tuple2>();
 			var mapgpbykey = new LinkedHashSet<Map>();
 			for (var fs : task.input) {
@@ -2403,7 +2403,7 @@ public sealed class StreamPipelineTaskExecutor implements
 		log.debug("Entered MassiveDataStreamTaskDExecutor.processCountByKeyTuple2");
 		try (var fsdos = createIntermediateDataToFS(task);
 				var output = new Output(new SnappyOutputStream(new BufferedOutputStream(fsdos)));) {
-			var kryo = Utils.getKryoNonDeflateSerializer();
+			var kryo = Utils.getKryoSerializerDeserializer();
 
 			var allpairs = new ArrayList<Tuple2<Object, Object>>();
 			for (var fs : task.input) {
@@ -2495,7 +2495,7 @@ public sealed class StreamPipelineTaskExecutor implements
 		log.debug("Entered MassiveDataStreamTaskDExecutor.processCountByValueTuple2");
 		try (var fsdos = createIntermediateDataToFS(task);
 				var output = new Output(new SnappyOutputStream(new BufferedOutputStream(fsdos)));) {
-			var kryo = Utils.getKryoNonDeflateSerializer();
+			var kryo = Utils.getKryoSerializerDeserializer();
 
 			var allpairs = new ArrayList<Tuple2<Object, Object>>();
 			for (var fs : task.input) {
@@ -2598,7 +2598,7 @@ public sealed class StreamPipelineTaskExecutor implements
 		var coalescefunction = (List<Coalesce>) getFunctions();
 		try (var fsdos = createIntermediateDataToFS(task);
 				var currentoutput = new Output(new SnappyOutputStream(new BufferedOutputStream(fsdos)));) {
-			var kryo = Utils.getKryoNonDeflateSerializer();
+			var kryo = Utils.getKryoSerializerDeserializer();
 			var keyvaluepairs = new ArrayList<Tuple2>();
 			for (var fs : task.input) {
 				try (var fsis = (InputStream) fs; Input input = new Input(new BufferedInputStream(fsis));) {

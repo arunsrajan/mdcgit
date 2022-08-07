@@ -236,11 +236,11 @@ public class Utils {
 	 * 
 	 * @return kryo object with the registered classes with serializers.
 	 */
-	public static Kryo getKryoNonDeflateSerializer() {
-		log.debug("Entered Utils.getKryoNonDeflateSerializer");
+	public static Kryo getKryoSerializerDeserializer() {
+		log.debug("Entered Utils.getKryoSerializerDeserializer");
 		var kryo = new Kryo();
-		registerKryoNonDeflateSerializer(kryo);
-		log.debug("Exiting Utils.getKryoNonDeflateSerializer");
+		registerKryoSerializerDeserializer(kryo);
+		log.debug("Exiting Utils.getKryoSerializerDeserializer");
 		return kryo;
 	}
 
@@ -294,7 +294,7 @@ public class Utils {
 	 * 
 	 * @param kryo
 	 */
-	public static void registerKryoNonDeflateSerializer(Kryo kryo) {
+	public static void registerKryoSerializerDeserializer(Kryo kryo) {
 		log.debug("Entered Utils.registerKryoNonDeflateSerializer");
 		kryo.setRegistrationRequired(false);
 		kryo.setReferences(true);
@@ -333,7 +333,11 @@ public class Utils {
 		kryo.register(RemoteDataFetch.class);
 		kryo.register(Stage.class, new JavaSerializer());
 		kryo.register(Task.class, new JavaSerializer());
-		kryo.register(TasksGraphExecutor.class);
+		CompatibleFieldSerializerConfig cfsc = new CompatibleFieldSerializerConfig();
+		cfsc.setFieldsCanBeNull(true);
+		cfsc.setFieldsAsAccessible(true);
+		CompatibleFieldSerializer<TasksGraphExecutor> cfstge = new CompatibleFieldSerializer<>(kryo, TasksGraphExecutor.class, cfsc);
+		kryo.register(TasksGraphExecutor.class, cfstge);
 		kryo.register(DAGEdge.class);
 		kryo.register(DataCruncherContext.class);
 		kryo.register(JSONObject.class);
@@ -367,8 +371,7 @@ public class Utils {
 		kryo.register(Dummy.class, new JavaSerializer());
 		log.debug("Exiting Utils.registerKryoNonDeflateSerializer");
 	}
-	static SSLServerSocketFactory ssf = null;
-	static SSLSocketFactory sf = null;
+	
 	private static void initializeSSLContext() throws Exception {
 
 		KeyStore ks = KeyStore.getInstance("JKS");
@@ -384,8 +387,6 @@ public class Utils {
 		sc = SSLContext.getInstance("TLS"); 
 		TrustManager[] trustManagers = tmf.getTrustManagers(); 
 		sc.init(kmf.getKeyManagers(), trustManagers, null); 
-		ssf = sc.getServerSocketFactory(); 
-		sf = sc.getSocketFactory();
 	}
 	
 	/**
@@ -857,13 +858,11 @@ public class Utils {
 	 * @return object
 	 */
 	public static Object getResultObjectByInput(String hp, Object inputobj) {
-		log.error("getResultObjectByInput: "+inputobj);
+		log.error("getResultObjectByInput: " + inputobj);
 		var hostport = hp.split(MDCConstants.UNDERSCORE);
-		try (var socket = Utils.createSSLSocket(hostport[0], Integer.parseInt(hostport[1]));
-				var input = new Input(socket.getInputStream());) {
-			var kryo = Utils.getKryoNonDeflateSerializer();
+		try (var socket = Utils.createSSLSocket(hostport[0], Integer.parseInt(hostport[1]));) {
 			writeObjectByStream(socket.getOutputStream(), inputobj);
-			var obj = kryo.readClassAndObject(input);
+			var obj = readObject(socket);
 			return obj;
 		} catch (Exception ex) {
 			log.error("Unable to read result Object: " + inputobj + " " + hp, ex);
@@ -880,9 +879,8 @@ public class Utils {
 	public static Object readObject(Socket socket) {
 		try {
 			var input = new Input(socket.getInputStream());
-			var kryo = Utils.getKryoNonDeflateSerializer();
+			var kryo = Utils.getKryoSerializerDeserializer();
 			return kryo.readClassAndObject(input);
-
 		} catch (Exception ex) {
 			log.error("Unable to read Object: ", ex);
 		}
@@ -899,10 +897,9 @@ public class Utils {
 	public static Object readObject(Socket socket, ClassLoader cl) {
 		try {
 			var input = new Input(socket.getInputStream());
-			var kryo = Utils.getKryoNonDeflateSerializer();
+			var kryo = Utils.getKryoSerializerDeserializer();
 			kryo.setClassLoader(cl);
 			return kryo.readClassAndObject(input);
-
 		} catch (Exception ex) {
 			log.error("Unable to read Object: ", ex);
 		}
@@ -918,7 +915,7 @@ public class Utils {
 	public static void writeObject(Socket socket, Object object) {
 		log.error("writeObject(Socket socket, Object object): "+object);
 		try (var output = new Output(socket.getOutputStream());) {
-			var kryo = Utils.getKryoNonDeflateSerializer();
+			var kryo = Utils.getKryoSerializerDeserializer();
 			kryo.writeClassAndObject(output, object);
 			output.flush();
 		} catch (Exception ex) {
@@ -957,9 +954,9 @@ public class Utils {
 	 */
 	public static void writeObjectByStream(OutputStream ostream, Object inputobj) {
 		try {
-			log.error("writeObjectByStream(OutputStream ostream, Object inputobj): "+inputobj);
 			var output = new Output(ostream);
-			var kryo = Utils.getKryoNonDeflateSerializer();
+			log.error("writeObjectByStream(OutputStream ostream, Object inputobj): "+inputobj);			
+			var kryo = Utils.getKryoSerializerDeserializer();
 			kryo.writeClassAndObject(output, inputobj);
 			output.flush();
 			ostream.flush();
@@ -974,7 +971,7 @@ public class Utils {
 		var hostport = hp.split(MDCConstants.UNDERSCORE);
 		try (var socket = Utils.createSSLSocket(hostport[0], Integer.parseInt(hostport[1]));) {
 
-			writeObjectByStream(socket.getOutputStream(), inputobj);
+			writeObjectByStream(socket.getOutputStream(), inputobj, kryo);
 		} catch (IOException ex) {
 			log.error("Unable to write Object: " + inputobj);
 			throw ex;
@@ -992,8 +989,8 @@ public class Utils {
 	 */
 	public static void writeObjectByStream(OutputStream ostream, Object inputobj, Kryo kryo) {
 		try {
-			log.error(inputobj);
 			var output = new Output(ostream);
+			log.error(inputobj);
 			kryo.writeClassAndObject(output, inputobj);
 			output.flush();
 			ostream.flush();
@@ -1115,7 +1112,7 @@ public class Utils {
 						Short.parseShort(MDCProperties.get().getProperty(MDCConstants.DFSOUTPUTFILEREPLICATION,
 								MDCConstants.DFSOUTPUTFILEREPLICATION_DEFAULT)))));
 				Input input = new Input(is)) {
-			Kryo kryo = getKryoNonDeflateSerializer();
+			Kryo kryo = getKryoSerializerDeserializer();
 			while (input.available() > 0) {
 				Object result = kryo.readClassAndObject(input);
 				if (result instanceof List res) {
@@ -1256,13 +1253,17 @@ public class Utils {
 		GlobalContainerLaunchers.remove(containerid);
 	}
 	static SSLContext sc = null;
-	public static ServerSocket createSSLServerSocket(int port) throws Exception {
-		SSLServerSocket sslserversocket = (SSLServerSocket) ssf.createServerSocket(port, 256, InetAddress.getByAddress(new byte[]{0x00, 0x00, 0x00, 0x00}));
+	public synchronized static ServerSocket createSSLServerSocket(int port) throws Exception {
+		SSLServerSocketFactory ssf = sc.getServerSocketFactory();
+		SSLServerSocket sslserversocket = (SSLServerSocket) ssf.createServerSocket();
+		sslserversocket.bind(new InetSocketAddress(InetAddress.getByAddress(new byte[]{0x00, 0x00, 0x00, 0x00}), port), port);
 		return sslserversocket;
 	}
 	
-	public static Socket createSSLSocket(String host, int port) throws Exception {
-		SSLSocket sslsocket = (SSLSocket) sf.createSocket(host, port);
+	public synchronized static Socket createSSLSocket(String host, int port) throws Exception {
+		SSLSocketFactory sf = sc.getSocketFactory();
+		SSLSocket sslsocket = (SSLSocket) sf.createSocket();		
+		sslsocket.connect(new InetSocketAddress(host, port));
 		sslsocket.startHandshake();
 		return sslsocket;
 	}

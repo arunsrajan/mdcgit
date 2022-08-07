@@ -778,7 +778,7 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 	@SuppressWarnings({"rawtypes", "unchecked"})
 	public void saveAsTextFile(URI uri, String path) throws PipelineException  {
 		log.debug("Caching...");
-		var kryo = Utils.getKryoNonDeflateSerializer();
+		var kryo = Utils.getKryoSerializerDeserializer();
 		var mdp = (IgnitePipeline) root;
 		Utils.writeKryoOutput(kryo, mdp.pipelineconfig.getOutput(), "Caching...");
 		var mdscollect = (IgnitePipeline) root;
@@ -804,7 +804,7 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 	public IgnitePipeline<I1> cache(boolean isresults) throws PipelineException  {
 		try {
 			log.debug("Caching...");
-			var kryo = Utils.getKryoNonDeflateSerializer();
+			var kryo = Utils.getKryoSerializerDeserializer();
 			var mdp = (IgnitePipeline) root;
 			Utils.writeKryoOutput(kryo, mdp.pipelineconfig.getOutput(), "Caching...");
 			var mdscollect = (IgnitePipeline) root;
@@ -837,7 +837,7 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 	public List collect(boolean toexecute, IntSupplier supplier) throws PipelineException {
 		try {
 			log.debug("Caching...");
-			var kryo = Utils.getKryoNonDeflateSerializer();
+			var kryo = Utils.getKryoSerializerDeserializer();
 			var mdp = (IgnitePipeline) root;
 			Utils.writeKryoOutput(kryo, mdp.pipelineconfig.getOutput(), "Caching...");
 			var mdscollect = (IgnitePipeline) root;

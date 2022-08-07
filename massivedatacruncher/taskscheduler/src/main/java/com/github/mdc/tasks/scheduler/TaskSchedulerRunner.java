@@ -90,7 +90,7 @@ public class TaskSchedulerRunner {
 						var is = s.getInputStream();
 						var os = s.getOutputStream();
 						var baoss = new ArrayList<byte[]>();
-						var kryo = Utils.getKryoNonDeflateSerializer();
+						var kryo = Utils.getKryoSerializerDeserializer();
 						var input = new Input(s.getInputStream());
 						while (true) {
 							var obj = kryo.readClassAndObject(input);

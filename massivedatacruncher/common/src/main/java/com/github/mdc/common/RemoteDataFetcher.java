@@ -96,7 +96,7 @@ public class RemoteDataFetcher {
 				var output = new Output(fsdos);) {
 
 			// Create a kryo serializer object.
-			var kryo = Utils.getKryoNonDeflateSerializer();
+			var kryo = Utils.getKryoSerializerDeserializer();
 			// Write object output to DFS using kryo serializer.
 			kryo.writeObject(output, new LinkedHashSet<>(serobj.keys()));
 			output.flush();
@@ -127,7 +127,7 @@ public class RemoteDataFetcher {
 				var output = new Output(fsdos);) {
 
 			// Create a kryo serializer object.
-			var kryo = Utils.getKryoNonDeflateSerializer();
+			var kryo = Utils.getKryoSerializerDeserializer();
 			// Write object output to DFS using kryo serializer.
 			kryo.writeClassAndObject(output, serobj);
 			output.flush();
@@ -195,7 +195,7 @@ public class RemoteDataFetcher {
 				var fs = (DistributedFileSystem) hdfs;
 				var dis = fs.getClient().open(new Path(path).toUri().getPath());
 				var input = new Input(dis);) {
-			var kryo = Utils.getKryoNonDeflateSerializer();
+			var kryo = Utils.getKryoSerializerDeserializer();
 			log.debug("Exiting RemoteDataFetcher.readYarnAppmasterServiceDataFromDFS");
 			// Read object information from kryo.
 			return kryo.readClassAndObject(input);
@@ -224,7 +224,7 @@ public class RemoteDataFetcher {
 				var fs = (DistributedFileSystem) hdfs;
 				var dis = fs.getClient().open(new Path(path).toUri().getPath());
 				var input = new Input(dis);) {
-			var kryo = Utils.getKryoNonDeflateSerializer();
+			var kryo = Utils.getKryoSerializerDeserializer();
 			var keysobj = kryo.readObject(input, LinkedHashSet.class);
 			if (keys) {
 				return keysobj;
@@ -273,12 +273,14 @@ public class RemoteDataFetcher {
 			String jobid, String filename) throws RemoteDataFetcherException {
 		log.debug("Entered RemoteDataFetcher.readIntermediatePhaseOutputFromDFS");
 		try {
-			var path = MDCConstants.FORWARD_SLASH + FileSystemSupport.MDS + MDCConstants.FORWARD_SLASH + jobid + MDCConstants.FORWARD_SLASH + filename;
-			log.debug("Exiting RemoteDataFetcher.readIntermediatePhaseOutputFromDFS");
+			var path = MDCConstants.FORWARD_SLASH + FileSystemSupport.MDS + MDCConstants.FORWARD_SLASH + jobid + MDCConstants.FORWARD_SLASH + filename;			
+			log.info("RemoteDataFetcher.readIntermediatePhaseOutputFromDFS: "+MDCProperties.get().getProperty(MDCConstants.TMPDIR) + path);
 			File file = new File(MDCProperties.get().getProperty(MDCConstants.TMPDIR) + path);
-			if (file.exists()) {
+			log.debug("Exiting RemoteDataFetcher.readIntermediatePhaseOutputFromDFS");
+			if (file.isFile() && file.exists()) {
 				return new SnappyInputStream(new BufferedInputStream(new FileInputStream(file)));
 			}
+			log.info("RemoteDataFetcher.readIntermediatePhaseOutputFromDFS: "+(file.isFile() && file.exists()));
 			return null;
 		}
 		catch (Exception ioe) {

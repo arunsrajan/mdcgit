@@ -125,7 +125,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		fbp.getDnXref(bls, false);
 		sendDataBlockToIgniteServer(bls.get(0));
 		mdsti.processBlockHDFSIntersection(bls.get(0), bls.get(0), hdfs);
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 
 		InputStream is = mdsti.getIntermediateInputStreamFS(task.jobid + task.stageid + task.taskid);
 		List<String> intersectiondata = (List<String>) kryo.readClassAndObject(new Input(is));
@@ -184,7 +184,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		fbp.getDnXref(bls2, false);
 		sendDataBlockToIgniteServer(bls2.get(0));
 		mdsti.processBlockHDFSIntersection(bls1.get(0), bls2.get(0), hdfs);
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 
 		InputStream is = mdsti.getIntermediateInputStreamFS(task.jobid + task.stageid + task.taskid);
 		List<String> intersectiondata = (List<String>) kryo.readClassAndObject(new Input(is));
@@ -232,7 +232,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		fbp.getDnXref(bls2, false);
 		sendDataBlockToIgniteServer(bls2.get(0));
 		mdsti.processBlockHDFSIntersection(bls1.get(0), bls1.get(0), hdfs);
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 
 		InputStream is = mdsti.getIntermediateInputStreamFS(task.jobid + task.stageid + task.taskid);
 		Set<InputStream> istreams = new LinkedHashSet<>(Arrays.asList(is));
@@ -304,7 +304,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		List<InputStream> istreams1 = Arrays.asList(is1);
 		mdsti.setTask(task2);
 		mdsti.processBlockHDFSIntersection(bls2.get(0), bls2.get(0), hdfs);
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		mdsti.setTask(task2);
 		InputStream is2 = mdsti.getIntermediateInputStreamFS(task2.jobid + task2.stageid + task2.taskid);
 		List<InputStream> istreams2 = Arrays.asList(is2);
@@ -358,7 +358,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		fbp.getDnXref(bls, false);
 		sendDataBlockToIgniteServer(bls.get(0));
 		mdsti.processBlockHDFSUnion(bls.get(0), bls.get(0), hdfs);
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 
 		InputStream is = mdsti.getIntermediateInputStreamFS(task.jobid + task.stageid + task.taskid);
 		List<String> uniondata = (List<String>) kryo.readClassAndObject(new Input(is));
@@ -406,7 +406,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		sendDataBlockToIgniteServer(bls1.get(0));
 		sendDataBlockToIgniteServer(bls2.get(0));
 		mdsti.processBlockHDFSUnion(bls1.get(0), bls2.get(0), hdfs);
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 
 		InputStream is = mdsti.getIntermediateInputStreamFS(task.jobid + task.stageid + task.taskid);
 		List<String> uniondata = (List<String>) kryo.readClassAndObject(new Input(is));
@@ -454,7 +454,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		sendDataBlockToIgniteServer(bls1.get(0));
 		sendDataBlockToIgniteServer(bls2.get(0));
 		mdsti.processBlockHDFSUnion(bls1.get(0), bls1.get(0), hdfs);
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 
 		InputStream is = mdsti.getIntermediateInputStreamFS(task.jobid + task.stageid + task.taskid);
 		Set<InputStream> istreams = new LinkedHashSet<>(Arrays.asList(is));
@@ -523,7 +523,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		js.stage.tasks.add(function);
 		mdsti.setTask(task2);
 		mdsti.processBlockHDFSUnion(bls2.get(0), bls2.get(0), hdfs);
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		InputStream is1 = mdsti.getIntermediateInputStreamFS(task1.jobid + task1.stageid + task1.taskid);
 		List<InputStream> istreams1 = Arrays.asList(is1);
 
@@ -580,7 +580,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		fbp.getDnXref(bls1, false);
 		sendDataBlockToIgniteServer(bls1.get(0));
 		mdsti.processBlockHDFSMap(bls1.get(0), hdfs);
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		InputStream is = mdsti.getIntermediateInputStreamFS(filtertask.jobid + filtertask.stageid + filtertask.taskid);
 		List<String[]> mapfilterdata = (List<String[]>) kryo.readClassAndObject(new Input(is));
 		assertEquals(45957, mapfilterdata.size());
@@ -621,7 +621,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		fbp.getDnXref(bls1, false);
 		sendDataBlockToIgniteServer(bls1.get(0));
 		mdsti.processBlockHDFSMap(bls1.get(0), hdfs);
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		InputStream is = mdsti.getIntermediateInputStreamFS(
 				calculatecounttask.jobid + calculatecounttask.stageid + calculatecounttask.taskid);
 		List<Long> mapfiltercountdata = (List<Long>) kryo.readClassAndObject(new Input(is));
@@ -665,7 +665,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		fbp.getDnXref(bls1, false);
 		sendDataBlockToIgniteServer(bls1.get(0));
 		mdsti.processBlockHDFSMap(bls1.get(0), hdfs);
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		InputStream is = mdsti.getIntermediateInputStreamFS(sstask.jobid + sstask.stageid + sstask.taskid);
 		List<IntSummaryStatistics> mapfilterssdata = (List<IntSummaryStatistics>) kryo
 				.readClassAndObject(new Input(is));
@@ -714,7 +714,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		fbp.getDnXref(bls1, false);
 		sendDataBlockToIgniteServer(bls1.get(0));
 		mdsti.processBlockHDFSMap(bls1.get(0), hdfs);
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		InputStream is = mdsti.getIntermediateInputStreamFS(maxtask.jobid + maxtask.stageid + maxtask.taskid);
 		List<Integer> mapfiltermaxdata = (List<Integer>) kryo.readClassAndObject(new Input(is));
 		is.close();
@@ -756,7 +756,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		fbp.getDnXref(bls1, false);
 		sendDataBlockToIgniteServer(bls1.get(0));
 		mdsti.processBlockHDFSMap(bls1.get(0), hdfs);
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		InputStream is = mdsti.getIntermediateInputStreamFS(mintask.jobid + mintask.stageid + mintask.taskid);
 		List<Integer> mapfiltermaxdata = (List<Integer>) kryo.readClassAndObject(new Input(is));
 		is.close();
@@ -799,7 +799,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		fbp.getDnXref(bls1, false);
 		sendDataBlockToIgniteServer(bls1.get(0));
 		mdsti.processBlockHDFSMap(bls1.get(0), hdfs);
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		InputStream is = mdsti.getIntermediateInputStreamFS(sumtask.jobid + sumtask.stageid + sumtask.taskid);
 		List<Integer> mapfiltermaxdata = (List<Integer>) kryo.readClassAndObject(new Input(is));
 		is.close();
@@ -842,7 +842,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		fbp.getDnXref(bls1, false);
 		sendDataBlockToIgniteServer(bls1.get(0));
 		mdsti.processBlockHDFSMap(bls1.get(0), hdfs);
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		InputStream is = mdsti.getIntermediateInputStreamFS(sdtask.jobid + sdtask.stageid + sdtask.taskid);
 		List<Double> mapfiltermaxdata = (List<Double>) kryo.readClassAndObject(new Input(is));
 		is.close();
@@ -884,7 +884,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		fbp.getDnXref(bls1, false);
 		sendDataBlockToIgniteServer(bls1.get(0));
 		mdsti.processBlockHDFSMap(bls1.get(0), hdfs);
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		InputStream is = mdsti.getIntermediateInputStreamFS(
 				calcultecounttask.jobid + calcultecounttask.stageid + calcultecounttask.taskid);
 		List<Long> mapfiltercountdata = (List<Long>) kryo.readClassAndObject(new Input(is));
@@ -926,7 +926,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		fbp.getDnXref(bls1, false);
 		sendDataBlockToIgniteServer(bls1.get(0));
 		mdsti.processBlockHDFSMap(bls1.get(0), hdfs);
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		InputStream is = mdsti.getIntermediateInputStreamFS(filtertask.jobid + filtertask.stageid + filtertask.taskid);
 		List<CSVRecord> filterdata = (List<CSVRecord>) kryo.readClassAndObject(new Input(is));
 		assertEquals(45957l, (long) filterdata.size());
@@ -970,7 +970,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		fbp.getDnXref(bls1, false);
 		sendDataBlockToIgniteServer(bls1.get(0));
 		mdsti.processBlockHDFSMap(bls1.get(0), hdfs);
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		InputStream is = mdsti.getIntermediateInputStreamFS(
 				summarystaticstask.jobid + summarystaticstask.stageid + summarystaticstask.taskid);
 		List<IntSummaryStatistics> mapfilterssdata = (List<IntSummaryStatistics>) kryo
@@ -1020,7 +1020,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		fbp.getDnXref(bls1, false);
 		sendDataBlockToIgniteServer(bls1.get(0));
 		mdsti.processBlockHDFSMap(bls1.get(0), hdfs);
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		InputStream is = mdsti.getIntermediateInputStreamFS(maxtask.jobid + maxtask.stageid + maxtask.taskid);
 		List<Integer> mapfilterssdata = (List<Integer>) kryo.readClassAndObject(new Input(is));
 		assertEquals(623, (long) mapfilterssdata.get(0));
@@ -1064,7 +1064,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		fbp.getDnXref(bls1, false);
 		sendDataBlockToIgniteServer(bls1.get(0));
 		mdsti.processBlockHDFSMap(bls1.get(0), hdfs);
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		InputStream is = mdsti.getIntermediateInputStreamFS(mintask.jobid + mintask.stageid + mintask.taskid);
 		List<Integer> mapfilterssdata = (List<Integer>) kryo.readClassAndObject(new Input(is));
 		assertEquals(-89, (long) mapfilterssdata.get(0));
@@ -1108,7 +1108,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		fbp.getDnXref(bls1, false);
 		sendDataBlockToIgniteServer(bls1.get(0));
 		mdsti.processBlockHDFSMap(bls1.get(0), hdfs);
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		InputStream is = mdsti.getIntermediateInputStreamFS(sumtask.jobid + sumtask.stageid + sumtask.taskid);
 		List<Integer> mapfilterssdata = (List<Integer>) kryo.readClassAndObject(new Input(is));
 		assertEquals(-63278, (long) mapfilterssdata.get(0));
@@ -1152,7 +1152,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		fbp.getDnXref(bls1, false);
 		sendDataBlockToIgniteServer(bls1.get(0));
 		mdsti.processBlockHDFSMap(bls1.get(0), hdfs);
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		InputStream is = mdsti.getIntermediateInputStreamFS(sdtask.jobid + sdtask.stageid + sdtask.taskid);
 		List<Double> mapfiltersddata = (List<Double>) kryo.readClassAndObject(new Input(is));
 		assertEquals(1, (long) mapfiltersddata.size());
@@ -1203,7 +1203,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		js.stage.tasks.add(new CalculateCount());
 		mdsti.processBlockHDFSMap(inputtocount);
 		is.close();
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		is = mdsti.getIntermediateInputStreamFS(
 				calcultecounttask.jobid + calcultecounttask.stageid + calcultecounttask.taskid);
 		List<Long> csvreccount = (List<Long>) kryo.readClassAndObject(new Input(is));
@@ -1257,7 +1257,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		mdsti.setTask(summarystaticstask);
 		mdsti.processBlockHDFSMap(inputtocount);
 		is.close();
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		is = mdsti.getIntermediateInputStreamFS(
 				summarystaticstask.jobid + summarystaticstask.stageid + summarystaticstask.taskid);
 		List<IntSummaryStatistics> mapfilterssdata = (List<IntSummaryStatistics>) kryo
@@ -1321,7 +1321,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		mdsti.cache = ignitecache;
 		mdsti.processBlockHDFSMap(inputtocount);
 		is.close();
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		is = mdsti.getIntermediateInputStreamFS(maxtask.jobid + maxtask.stageid + maxtask.taskid);
 		List<Integer> mapfiltermaxdata = (List<Integer>) kryo.readClassAndObject(new Input(is));
 		assertEquals(623, (int) mapfiltermaxdata.get(0));
@@ -1379,7 +1379,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		mdsti.cache = ignitecache;
 		mdsti.processBlockHDFSMap(inputtocount);
 		is.close();
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		is = mdsti.getIntermediateInputStreamFS(mintask.jobid + mintask.stageid + mintask.taskid);
 		List<Integer> mapfiltermindata = (List<Integer>) kryo.readClassAndObject(new Input(is));
 		assertEquals(-89, (int) mapfiltermindata.get(0));
@@ -1437,7 +1437,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		mdsti.cache = ignitecache;
 		mdsti.processBlockHDFSMap(inputtocount);
 		is.close();
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		is = mdsti.getIntermediateInputStreamFS(sumtask.jobid + sumtask.stageid + sumtask.taskid);
 		List<Integer> mapfiltersumdata = (List<Integer>) kryo.readClassAndObject(new Input(is));
 		assertEquals(-63278, (int) mapfiltersumdata.get(0));
@@ -1495,7 +1495,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		mdsti.cache = ignitecache;
 		mdsti.processBlockHDFSMap(inputtocount);
 		is.close();
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		is = mdsti.getIntermediateInputStreamFS(sdtask.jobid + sdtask.stageid + sdtask.taskid);
 		List<Integer> mapfiltersddata = (List<Integer>) kryo.readClassAndObject(new Input(is));
 		assertEquals(1, (int) mapfiltersddata.size());
@@ -1538,7 +1538,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		fbp.getDnXref(bls1, false);
 		sendDataBlockToIgniteServer(bls1.get(0));
 		mdsti.processSamplesBlocks(100, bls1.get(0), hdfs);
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		InputStream is = mdsti.getIntermediateInputStreamFS(filtertask.jobid + filtertask.stageid + filtertask.taskid);
 		List<Long> csvreccount = (List<Long>) kryo.readClassAndObject(new Input(is));
 		assertEquals(100, (long) csvreccount.size());
@@ -1581,7 +1581,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		fbp.getDnXref(bls1, false);
 		sendDataBlockToIgniteServer(bls1.get(0));
 		mdsti.processSamplesBlocks(150, bls1.get(0), hdfs);
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		InputStream is = mdsti.getIntermediateInputStreamFS(counttask.jobid + counttask.stageid + counttask.taskid);
 		List<Long> csvreccount = (List<Long>) kryo.readClassAndObject(new Input(is));
 		assertEquals(150l, (long) csvreccount.get(0));
@@ -1635,7 +1635,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		mdsti.setTask(sample);
 		mdsti.processSamplesObjects(150, inputtocount);
 		is.close();
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		is = mdsti.getIntermediateInputStreamFS(sample.jobid + sample.stageid + sample.taskid);
 		List<Integer> mapfiltersddata = (List<Integer>) kryo.readClassAndObject(new Input(is));
 		assertEquals(150, (int) mapfiltersddata.size());
@@ -1689,7 +1689,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		mdsti.setTask(counttask);
 		mdsti.processSamplesObjects(150, inputtocount);
 		is.close();
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		is = mdsti.getIntermediateInputStreamFS(counttask.jobid + counttask.stageid + counttask.taskid);
 		List<Long> mapfiltersddata = (List<Long>) kryo.readClassAndObject(new Input(is));
 		assertEquals(150l, (long) mapfiltersddata.get(0));
@@ -1758,7 +1758,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		mdsti.setTask(reducebykeytask2);
 		mdsti.processBlockHDFSMap(bls2.get(0), hdfs);
 
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		InputStream is1 = mdsti.getIntermediateInputStreamFS(
 				reducebykeytask1.jobid + reducebykeytask1.stageid + reducebykeytask1.taskid);
 		InputStream is2 = mdsti.getIntermediateInputStreamFS(
@@ -1780,7 +1780,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		is1.close();
 		is2.close();
 
-		kryo = Utils.getKryoNonDeflateSerializer();
+		kryo = Utils.getKryoSerializerDeserializer();
 		InputStream is = mdsti.getIntermediateInputStreamFS(jointask.jobid + jointask.stageid + jointask.taskid);
 		List<Tuple2<Tuple2<String, Integer>, Tuple2<String, Integer>>> mapfiltersddata = (List) kryo
 				.readClassAndObject(new Input(is));
@@ -1852,7 +1852,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		mdsti.cache = ignitecache;
 		mdsti.processBlockHDFSMap(bls2.get(0), hdfs);
 
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		InputStream is1 = mdsti.getIntermediateInputStreamFS(
 				reducebykeytask1.jobid + reducebykeytask1.stageid + reducebykeytask1.taskid);
 		InputStream is2 = mdsti.getIntermediateInputStreamFS(
@@ -1874,7 +1874,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		is1.close();
 		is2.close();
 
-		kryo = Utils.getKryoNonDeflateSerializer();
+		kryo = Utils.getKryoSerializerDeserializer();
 		InputStream is = mdsti.getIntermediateInputStreamFS(jointask.jobid + jointask.stageid + jointask.taskid);
 		List<Tuple2<Tuple2<String, Integer>, Tuple2<String, Integer>>> mapfiltersddata = (List) kryo
 				.readClassAndObject(new Input(is));
@@ -1953,7 +1953,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		mdsti.cache = ignitecache;
 		mdsti.processBlockHDFSMap(bls2.get(0), hdfs);
 
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		InputStream is1 = mdsti.getIntermediateInputStreamFS(
 				reducebykeytask1.jobid + reducebykeytask1.stageid + reducebykeytask1.taskid);
 		InputStream is2 = mdsti.getIntermediateInputStreamFS(
@@ -1973,7 +1973,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		is1.close();
 		is2.close();
 
-		kryo = Utils.getKryoNonDeflateSerializer();
+		kryo = Utils.getKryoSerializerDeserializer();
 		InputStream is = mdsti.getIntermediateInputStreamFS(jointask.jobid + jointask.stageid + jointask.taskid);
 		List<Tuple2<Tuple2<String, Integer>, Tuple2<String, Integer>>> mapfiltersddata = (List) kryo
 				.readClassAndObject(new Input(is));
@@ -2024,7 +2024,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		sendDataBlockToIgniteServer(bls1.get(0));
 		mdsti.processBlockHDFSMap(bls1.get(0), hdfs);
 
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		InputStream is1 = mdsti
 				.getIntermediateInputStreamFS(mappairtask1.jobid + mappairtask1.stageid + mappairtask1.taskid);
 		Task gbktask = new Task();
@@ -2042,7 +2042,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		mdsti.processGroupByKeyTuple2();
 		is1.close();
 
-		kryo = Utils.getKryoNonDeflateSerializer();
+		kryo = Utils.getKryoSerializerDeserializer();
 
 		InputStream is = mdsti.getIntermediateInputStreamFS(gbktask.jobid + gbktask.stageid + gbktask.taskid);
 		List<Tuple2<String, List<Integer>>> mapfiltersddata = (List) kryo.readClassAndObject(new Input(is));
@@ -2089,7 +2089,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		sendDataBlockToIgniteServer(bls1.get(0));
 		mdsti.processBlockHDFSMap(bls1.get(0), hdfs);
 
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		InputStream is1 = mdsti
 				.getIntermediateInputStreamFS(mappairtask1.jobid + mappairtask1.stageid + mappairtask1.taskid);
 		Task fbktask = new Task();
@@ -2104,7 +2104,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		mdsti.processFoldByKeyTuple2();
 		is1.close();
 
-		kryo = Utils.getKryoNonDeflateSerializer();
+		kryo = Utils.getKryoSerializerDeserializer();
 		InputStream is = mdsti.getIntermediateInputStreamFS(fbktask.jobid + fbktask.stageid + fbktask.taskid);
 		List<Tuple2<String, Long>> mapfiltersddata = (List) kryo.readClassAndObject(new Input(is));
 
@@ -2150,7 +2150,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		sendDataBlockToIgniteServer(bls1.get(0));
 		mdsti.processBlockHDFSMap(bls1.get(0), hdfs);
 
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 
 		InputStream is1 = mdsti
 				.getIntermediateInputStreamFS(mappairtask1.jobid + mappairtask1.stageid + mappairtask1.taskid);
@@ -2169,7 +2169,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		mdsti.processFoldByKeyTuple2();
 		is1.close();
 
-		kryo = Utils.getKryoNonDeflateSerializer();
+		kryo = Utils.getKryoSerializerDeserializer();
 		InputStream is = mdsti.getIntermediateInputStreamFS(fbktask.jobid + fbktask.stageid + fbktask.taskid);
 		List<Tuple2<String, Long>> mapfiltersddata = (List) kryo.readClassAndObject(new Input(is));
 
@@ -2216,7 +2216,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		sendDataBlockToIgniteServer(bls1.get(0));
 		mdsti.processBlockHDFSMap(bls1.get(0), hdfs);
 
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		InputStream is1 = mdsti
 				.getIntermediateInputStreamFS(mappairtask1.jobid + mappairtask1.stageid + mappairtask1.taskid);
 		Task cbktask = new Task();
@@ -2231,7 +2231,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		mdsti.processCountByKeyTuple2();
 		is1.close();
 
-		kryo = Utils.getKryoNonDeflateSerializer();
+		kryo = Utils.getKryoSerializerDeserializer();
 		InputStream is = mdsti.getIntermediateInputStreamFS(cbktask.jobid + cbktask.stageid + cbktask.taskid);
 		List<Tuple2<String, Long>> mapfiltersddata = (List) kryo.readClassAndObject(new Input(is));
 
@@ -2277,7 +2277,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		sendDataBlockToIgniteServer(bls1.get(0));
 		mdsti.processBlockHDFSMap(bls1.get(0), hdfs);
 
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		InputStream is1 = mdsti
 				.getIntermediateInputStreamFS(mappairtask1.jobid + mappairtask1.stageid + mappairtask1.taskid);
 		Task cbktask = new Task();
@@ -2293,7 +2293,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		mdsti.processCountByValueTuple2();
 		is1.close();
 
-		kryo = Utils.getKryoNonDeflateSerializer();
+		kryo = Utils.getKryoSerializerDeserializer();
 		InputStream is = mdsti.getIntermediateInputStreamFS(cbktask.jobid + cbktask.stageid + cbktask.taskid);
 		List<Tuple2<Tuple2<String, Long>, Long>> mapfiltersddata = (List) kryo.readClassAndObject(new Input(is));
 		int sum = 0;
@@ -2368,7 +2368,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		mdsti.cache = ignitecache;
 		mdsti.processBlockHDFSMap(bls2.get(0), hdfs);
 
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		InputStream is1 = mdsti.getIntermediateInputStreamFS(
 				reducebykeytask1.jobid + reducebykeytask1.stageid + reducebykeytask1.taskid);
 		InputStream is2 = mdsti.getIntermediateInputStreamFS(
@@ -2392,7 +2392,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		is1.close();
 		is2.close();
 
-		kryo = Utils.getKryoNonDeflateSerializer();
+		kryo = Utils.getKryoSerializerDeserializer();
 		InputStream is = mdsti
 				.getIntermediateInputStreamFS(coalescetask.jobid + coalescetask.stageid + coalescetask.taskid);
 		List<Tuple2<String, Integer>> mapfiltersddata = (List) kryo.readClassAndObject(new Input(is));
@@ -2440,7 +2440,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		fbp.getDnXref(bls1, false);
 		sendDataBlockToIgniteServer(bls1.get(0));
 		mdsti.processBlockHDFSMap(bls1.get(0), hdfs);
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		InputStream is = mdsti.getIntermediateInputStreamFS(filtertask.jobid + filtertask.stageid + filtertask.taskid);
 		List<JSONObject> jsonfilterdata = (List<JSONObject>) kryo.readClassAndObject(new Input(is));
 		assertEquals(11l, (long) jsonfilterdata.size());

@@ -156,7 +156,7 @@ public class StreamPipelineTaskSchedulerRunner {
 									try {
 										var s = ss.accept();
 										var bytesl = new ArrayList<byte[]>();
-										var kryo = Utils.getKryoNonDeflateSerializer();
+										var kryo = Utils.getKryoSerializerDeserializer();
 										var input = new Input(s.getInputStream());
 										log.debug("Obtaining Input Objects From Submitter");
 										while (true) {
@@ -273,7 +273,7 @@ public class StreamPipelineTaskSchedulerRunner {
 									try {
 										log.info("Entered MassiveDataStreamTaskSchedulerDaemon.Receiver.receive");
 										var rawbuffer = (byte[]) ((ObjectMessage) msg).getObject();
-										var kryo = Utils.getKryoNonDeflateSerializer();
+										var kryo = Utils.getKryoSerializerDeserializer();
 										kryo.register(StreamPipelineTaskSubmitter.class);
 										kryo.setClassLoader(cl);
 										try (var bais = new ByteArrayInputStream(rawbuffer);

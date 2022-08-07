@@ -1275,7 +1275,7 @@ public sealed class StreamPipeline<I1> extends AbstractPipeline permits CsvStrea
 	public List collect(boolean toexecute, IntSupplier supplier) throws PipelineException  {
 		try {
 			log.debug("Collect task begin...");
-			var kryo = Utils.getKryoNonDeflateSerializer();
+			var kryo = Utils.getKryoSerializerDeserializer();
 			var mdp = (StreamPipeline)root;
 			Utils.writeKryoOutput(kryo, mdp.pipelineconfig.getOutput(), "Collect task begin...");
 			var mdscollect = (StreamPipeline) root;

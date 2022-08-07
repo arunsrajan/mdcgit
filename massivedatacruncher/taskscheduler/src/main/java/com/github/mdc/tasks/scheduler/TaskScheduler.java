@@ -52,7 +52,7 @@ public class TaskScheduler implements Runnable {
 			fos.write(mrjar);
 			var clsloader = MDCMapReducePhaseClassLoader.newInstance(mrjar, loader);
 			Thread.currentThread().setContextClassLoader(clsloader);
-			var kryo = Utils.getKryoNonDeflateSerializer();
+			var kryo = Utils.getKryoSerializerDeserializer();
 			String[] argscopy;
 			//Get the main class to execute.
 			String mainclass;

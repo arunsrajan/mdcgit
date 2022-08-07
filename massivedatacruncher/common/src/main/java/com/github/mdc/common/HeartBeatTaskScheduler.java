@@ -97,7 +97,7 @@ public final class HeartBeatTaskScheduler extends HeartBeatServer implements Hea
 			public void receive(Message msg) {
 				try {
 					log.debug("Entered Receiver.receive");
-					var kryo = Utils.getKryoNonDeflateSerializer();
+					var kryo = Utils.getKryoSerializerDeserializer();
 					var rawbuffer = (byte[]) ((ObjectMessage) msg).getObject();
 					try (var bais = new ByteArrayInputStream(rawbuffer);
 							var input = new Input(bais);) {
@@ -162,7 +162,7 @@ public final class HeartBeatTaskScheduler extends HeartBeatServer implements Hea
 			apptask.setHp(this.networkaddress + MDCConstants.UNDERSCORE + this.serverport);
 			apptask.setApperrormessage(taskstatus == ApplicationTask.TaskStatus.FAILED ? apperrormessage : "");
 			try (var baos = new ByteArrayOutputStream(); var output = new Output(baos);) {
-				Utils.writeKryoOutputClassObject(Utils.getKryoNonDeflateSerializer(), output, apptask);
+				Utils.writeKryoOutputClassObject(Utils.getKryoSerializerDeserializer(), output, apptask);
 				if (taskstatus == TaskStatus.COMPLETED) {
 					responsereceived = false;
 					channel.setReceiver(new Receiver() {
@@ -171,7 +171,7 @@ public final class HeartBeatTaskScheduler extends HeartBeatServer implements Hea
 
 						public void receive(Message msg) {
 							var rawbuffer = (byte[]) ((ObjectMessage) msg).getObject();
-							var kryo = Utils.getKryoNonDeflateSerializer();
+							var kryo = Utils.getKryoSerializerDeserializer();
 							try (var bais = new ByteArrayInputStream(rawbuffer);
 									var input = new Input(bais);) {
 								var obj = Utils.readKryoInputObjectWithClass(kryo, input);
@@ -222,7 +222,7 @@ public final class HeartBeatTaskScheduler extends HeartBeatServer implements Hea
 			apptask.setTasktype(tasktype);
 			apptask.setApperrormessage(taskstatus == ApplicationTask.TaskStatus.FAILED ? apperrormessage : "");
 			try (var baos = new ByteArrayOutputStream(); var output = new Output(baos);) {
-				Utils.writeKryoOutputClassObject(Utils.getKryoNonDeflateSerializer(), output, apptask);
+				Utils.writeKryoOutputClassObject(Utils.getKryoSerializerDeserializer(), output, apptask);
 				if (taskstatus == TaskStatus.COMPLETED) {
 					responsereceived = false;
 					channel.setReceiver(new Receiver() {
@@ -231,7 +231,7 @@ public final class HeartBeatTaskScheduler extends HeartBeatServer implements Hea
 
 						public void receive(Message msg) {
 							var rawbuffer = (byte[]) ((ObjectMessage) msg).getObject();
-							var kryo = Utils.getKryoNonDeflateSerializer();
+							var kryo = Utils.getKryoSerializerDeserializer();
 							try (var bais = new ByteArrayInputStream(rawbuffer);
 									var input = new Input(bais);) {
 								var obj = Utils.readKryoInputObjectWithClass(kryo, input);

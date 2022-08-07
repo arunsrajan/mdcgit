@@ -108,7 +108,7 @@ public class StreamPipelineJobSubmitter {
 				}
 			}
 			writeInt(os, -1);
-			var kryo = Utils.getKryoNonDeflateSerializer();
+			var kryo = Utils.getKryoSerializerDeserializer();
 			// Wait for tasks to get completed.
 			while (true) {
 				var messagetasksscheduler = (String) kryo.readObject(input, String.class);
@@ -129,7 +129,7 @@ public class StreamPipelineJobSubmitter {
 	 * @throws Exception
 	 */
 	public static void writeInt(OutputStream os, Integer value) {
-		var kryo = Utils.getKryoNonDeflateSerializer();
+		var kryo = Utils.getKryoSerializerDeserializer();
 		var output = new Output(os);
 		kryo.writeClassAndObject(output, value);
 		output.flush();
@@ -142,7 +142,7 @@ public class StreamPipelineJobSubmitter {
 	 * @throws Exception
 	 */
 	public static void writeDataStream(OutputStream os, byte[] outbyt) {
-		var kryo = Utils.getKryoNonDeflateSerializer();
+		var kryo = Utils.getKryoSerializerDeserializer();
 		var output = new Output(os);
 		kryo.writeClassAndObject(output, outbyt);
 		output.flush();

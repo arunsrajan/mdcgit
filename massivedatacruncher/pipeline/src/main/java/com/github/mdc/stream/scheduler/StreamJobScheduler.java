@@ -151,7 +151,7 @@ public class StreamJobScheduler {
 	public Semaphore semaphore;
 	public HeartBeatTaskSchedulerStream hbtss;
 	public HeartBeatServerStream hbss;
-	private Kryo kryo = Utils.getKryoNonDeflateSerializer();
+	private Kryo kryo = Utils.getKryoSerializerDeserializer();
 	public PipelineConfig pipelineconfig;
 	AtomicBoolean istaskcancelled = new AtomicBoolean();
 	public Map<String, JobStage> jsidjsmap = new ConcurrentHashMap<>();
@@ -400,13 +400,7 @@ public class StreamJobScheduler {
 				log.debug(Arrays.asList(tasksgraphexecutor));
 				for (var stagesgraphexecutor : tasksgraphexecutor) {
 					if (!stagesgraphexecutor.getTasks().isEmpty()) {
-						var hp = stagesgraphexecutor.getHostport().split(MDCConstants.UNDERSCORE);
-						var client = Utils.createSSLSocket(hp[0], Integer.parseInt(hp[1]));
-						var kryo = Utils.getKryoNonDeflateSerializer();
-						var output = new Output(client.getOutputStream());
-						kryo.writeClassAndObject(output, stagesgraphexecutor);
-						output.flush();
-						client.close();
+						Utils.writeObject(stagesgraphexecutor.getHostport(), stagesgraphexecutor);
 					}
 				}
 				var stagepartids = tasks.parallelStream().map(taskpart -> taskpart.taskid).collect(Collectors.toSet());
@@ -526,7 +520,7 @@ public class StreamJobScheduler {
 	}
 
 	public void broadcastJobStageToTaskExecutors() throws Exception {
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		jsidjsmap.keySet().stream().forEach(key -> {
 			for (String te : taskexecutors) {
 				try {
@@ -1690,7 +1684,7 @@ public class StreamJobScheduler {
 			Boolean isyarn, Boolean islocal, Boolean isjgroups,
 			ConcurrentMap<String, OutputStream> resultstream) throws PipelineException {
 		log.debug("HDFS Path TO Retrieve Final Task Output: " + hdfsfilepath);
-		var kryofinal = Utils.getKryoNonDeflateSerializer();
+		var kryofinal = Utils.getKryoSerializerDeserializer();
 		try {
 			log.debug("Final Stages: " + mdstts);
 			Utils.writeKryoOutput(kryo, pipelineconfig.getOutput(), "Final Stages: " + mdstts);
@@ -2009,7 +2003,7 @@ public class StreamJobScheduler {
 
 	public void ping(Job job) throws Exception {
 		chtssha = TssHAChannel.tsshachannel;
-		var kryo = Utils.getKryoNonDeflateSerializer();
+		var kryo = Utils.getKryoSerializerDeserializer();
 		kryo.register(StreamPipelineTaskSubmitter.class);
 		jobping.execute(() -> {
 			while (!istaskcancelled.get()) {

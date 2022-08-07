@@ -106,7 +106,8 @@ public class EmbeddedSchedulersNodeLauncher {
 			su.start();
 			es.execute(() -> {
 				while (true) {
-					try (Socket sock = server.accept();) {
+					try {
+						Socket sock = server.accept();
 						var container = new NodeRunner(sock, MDCConstants.PROPLOADERCONFIGFOLDER,
 								containerprocesses, hdfs, containeridthreads, containeridports);
 						Future<Boolean> containerallocated = escontainer.submit(container);
@@ -208,7 +209,7 @@ public class EmbeddedSchedulersNodeLauncher {
 					try {
 						var s = ss.accept();
 						var bytesl = new ArrayList<byte[]>();
-						var kryo = Utils.getKryoNonDeflateSerializer();
+						var kryo = Utils.getKryoSerializerDeserializer();
 						var input = new Input(s.getInputStream());
 						log.debug("Obtaining Input Objects From Submitter");
 						while (true) {
@@ -315,7 +316,7 @@ public class EmbeddedSchedulersNodeLauncher {
 				try {
 					var s = ss.accept();
 					var baoss = new ArrayList<byte[]>();
-					var kryo = Utils.getKryoNonDeflateSerializer();
+					var kryo = Utils.getKryoSerializerDeserializer();
 					var input = new Input(s.getInputStream());
 					while (true) {
 						var obj = kryo.readClassAndObject(input);

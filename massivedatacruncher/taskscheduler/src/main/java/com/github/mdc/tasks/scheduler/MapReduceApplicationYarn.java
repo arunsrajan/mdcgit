@@ -162,7 +162,7 @@ public class MapReduceApplicationYarn implements Callable<List<DataCruncherConte
 			MDCJobMetrics.put(jm);
 			hdfs = FileSystem.get(new URI(MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL)),
 					configuration);
-			var kryo = Utils.getKryoNonDeflateSerializer();
+			var kryo = Utils.getKryoSerializerDeserializer();
 			var combiner = new HashSet<String>();
 			var reducer = new HashSet<>();
 			var mapclzchunkfile = new HashMap<String, Set<String>>();

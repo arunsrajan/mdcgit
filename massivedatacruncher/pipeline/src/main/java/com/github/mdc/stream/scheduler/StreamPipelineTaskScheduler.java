@@ -56,7 +56,7 @@ public class StreamPipelineTaskScheduler implements Runnable {
 
 	@Override
 	public void run() {
-		var kryo = Utils.getKryoNonDeflateSerializer();
+		var kryo = Utils.getKryoSerializerDeserializer();
 		var message = "";
 		try {
 			//ClassLoader to load the jar file.

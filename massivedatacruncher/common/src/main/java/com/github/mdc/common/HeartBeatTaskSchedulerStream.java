@@ -106,7 +106,7 @@ public final class HeartBeatTaskSchedulerStream extends HeartBeatServerStream im
 				try {
 					log.debug("Entered Receiver.receive");
 					var rawbuffer = (byte[]) ((ObjectMessage) msg).getObject();
-					var kryo = Utils.getKryoNonDeflateSerializer();
+					var kryo = Utils.getKryoSerializerDeserializer();
 					try (var bais = new ByteArrayInputStream(rawbuffer); var input = new Input(bais);) {
 						var task = (Task) Utils.readKryoInputObjectWithClass(kryo, input);
 						log.info("Task Status: " + task + MDCConstants.SINGLESPACE + task.taskstatus);
@@ -185,7 +185,7 @@ public final class HeartBeatTaskSchedulerStream extends HeartBeatServerStream im
 			// Initiate the tasks execution by sending the job stage
 			// information.
 			try (var baos = new ByteArrayOutputStream(); var output = new Output(baos);) {
-				Utils.writeKryoOutputClassObject(Utils.getKryoNonDeflateSerializer(), output, task);
+				Utils.writeKryoOutputClassObject(Utils.getKryoSerializerDeserializer(), output, task);
 				if (taskstatus == TaskStatus.COMPLETED) {
 					responsereceived = false;
 					channel.setReceiver(new Receiver() {
@@ -194,7 +194,7 @@ public final class HeartBeatTaskSchedulerStream extends HeartBeatServerStream im
 
 						public void receive(Message msg) {
 							var rawbuffer = (byte[]) ((ObjectMessage) msg).getObject();
-							var kryo = Utils.getKryoNonDeflateSerializer();
+							var kryo = Utils.getKryoSerializerDeserializer();
 							try (var bais = new ByteArrayInputStream(rawbuffer);
 									var input = new Input(bais);) {
 								var obj = Utils.readKryoInputObjectWithClass(kryo, input);

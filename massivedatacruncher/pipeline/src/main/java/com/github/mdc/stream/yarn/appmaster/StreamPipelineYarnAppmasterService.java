@@ -78,7 +78,7 @@ public class StreamPipelineYarnAppmasterService extends MindAppmasterService {
 		response.setContainerid(request.getContainerid());
 		try {
 			//Kryo for object serialization and deserialization.
-			var kryo = Utils.getKryoNonDeflateSerializer();
+			var kryo = Utils.getKryoSerializerDeserializer();
 			if (request.getJob() != null) {
 				try (var input = new Input(new ByteArrayInputStream(request.getJob()));) {
 					var object = kryo.readClassAndObject(input);

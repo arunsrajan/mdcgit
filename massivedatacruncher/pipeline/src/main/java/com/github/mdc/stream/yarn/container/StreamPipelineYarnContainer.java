@@ -100,7 +100,7 @@ public class StreamPipelineYarnContainer extends AbstractIntegrationYarnContaine
 				}
 				else if (response.getState().equals(JobResponse.State.STOREJOBSTAGE)) {
 					job = response.getJob();
-					var kryo = Utils.getKryoNonDeflateSerializer();
+					var kryo = Utils.getKryoSerializerDeserializer();
 					var input = new Input(new ByteArrayInputStream(job));
 					var object = kryo.readClassAndObject(input);
 					this.jsidjsmap = (Map<String, JobStage>) object;
@@ -109,7 +109,7 @@ public class StreamPipelineYarnContainer extends AbstractIntegrationYarnContaine
 				else if (response.getState().equals(JobResponse.State.RUNJOB)) {
 					log.debug(containerid + ": Environment " + getEnvironment());
 					job = response.getJob();
-					var kryo = Utils.getKryoNonDeflateSerializer();
+					var kryo = Utils.getKryoSerializerDeserializer();
 					var input = new Input(new ByteArrayInputStream(job));
 					var object = kryo.readClassAndObject(input);
 					task = (Task) object;

@@ -98,7 +98,7 @@ public class ApplicationSubmitter {
 					baos.write(ch);
 				}
 				baos.flush();
-				var kryo = Utils.getKryoNonDeflateSerializer();
+				var kryo = Utils.getKryoSerializerDeserializer();
 				writeDataStream(os, baos.toByteArray());
 				writeDataStream(os, new File(jarpath).getName().getBytes());
 				if (!Objects.isNull(argue)) {
@@ -124,7 +124,7 @@ public class ApplicationSubmitter {
 
 	public static void writeInt(OutputStream os, Integer value) throws ApplicationSubmitterException {
 		try {
-			var kryo = Utils.getKryoNonDeflateSerializer();
+			var kryo = Utils.getKryoSerializerDeserializer();
 			var output = new Output(os);
 			kryo.writeClassAndObject(output, value);
 			output.flush();
@@ -135,7 +135,7 @@ public class ApplicationSubmitter {
 
 	public static void writeDataStream(OutputStream os, byte[] outbyt) throws ApplicationSubmitterException {
 		try {
-			var kryo = Utils.getKryoNonDeflateSerializer();
+			var kryo = Utils.getKryoSerializerDeserializer();
 			var output = new Output(os);
 			kryo.writeClassAndObject(output, outbyt);
 			output.flush();

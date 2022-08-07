@@ -15,10 +15,7 @@
  */
 package com.github.mdc.tasks.executor;
 
-import java.io.BufferedWriter;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
@@ -29,7 +26,6 @@ import java.util.Objects;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.hadoop.fs.FileSystem;
@@ -72,7 +68,7 @@ public class NodeRunner implements Callable<Boolean> {
 	ClassLoader cl;
 
 	public Boolean call() {
-		try {
+		try (var socket = sock;) {
 			Object deserobj = Utils.readObject(sock);
 			if (deserobj instanceof AllocateContainers ac) {
 				List<Integer> ports = new ArrayList<>();

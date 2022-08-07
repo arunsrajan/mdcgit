@@ -15,8 +15,6 @@
  */
 package com.github.mdc.tasks.executor;
 
-import java.net.InetAddress;
-import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.URI;
 import java.net.URL;
@@ -26,7 +24,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import org.apache.hadoop.conf.Configuration;
@@ -78,7 +75,8 @@ public class NodeLauncher {
 			su.start();
 			es.execute(() -> {
 				while (true) {
-					try (Socket sock = server.accept();) {
+					try {
+						Socket sock = server.accept();
 						var container = new NodeRunner(sock, MDCConstants.PROPLOADERCONFIGFOLDER,
 								containerprocesses, hdfs, containeridthreads, containeridports);
 						Future<Boolean> containerallocated = escontainer.submit(container);
