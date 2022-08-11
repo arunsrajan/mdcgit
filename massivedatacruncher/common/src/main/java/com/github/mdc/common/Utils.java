@@ -299,9 +299,6 @@ public class Utils {
 		kryo.setRegistrationRequired(false);
 		kryo.setReferences(true);
 		kryo.setWarnUnregisteredClasses(true);
-		kryo.setOptimizedGenerics(true);
-		kryo.setAutoReset(true);
-		RegisterKyroSerializers.register(kryo);
 		var dis = new com.esotericsoftware.kryo.util.DefaultInstantiatorStrategy(new StdInstantiatorStrategy());
 		kryo.setInstantiatorStrategy(dis);
 		dis.setFallbackInstantiatorStrategy(new StdInstantiatorStrategy());
@@ -355,7 +352,6 @@ public class Utils {
 				CSVRecord.class, config);
 		kryo.register(CSVRecord.class, transientcsvser);
 		kryo.register(ReducerValues.class);
-		kryo.register(Task.class);
 		kryo.register(SkipToNewLine.class);
 		kryo.register(CloseStagesGraphExecutor.class);
 		kryo.register(CloseStagesGraphExecutor.class,
@@ -823,7 +819,7 @@ public class Utils {
 		kryo.register(ConcurrentHashMap.class);
 		kryo.register(java.util.AbstractList.class);
 		kryo.register(LoadJar.class);
-		kryo.register(JobStage.class);
+		kryo.register(JobStage.class, new JavaSerializer());
 		kryo.register(RemoteDataFetch[].class);
 		kryo.register(RemoteDataFetch.class);
 		kryo.register(Stage.class);
@@ -914,7 +910,8 @@ public class Utils {
 	 */
 	public static void writeObject(Socket socket, Object object) {
 		log.error("writeObject(Socket socket, Object object): "+object);
-		try (var output = new Output(socket.getOutputStream());) {
+		try {
+			var output = new Output(socket.getOutputStream());
 			var kryo = Utils.getKryoSerializerDeserializer();
 			kryo.writeClassAndObject(output, object);
 			output.flush();
@@ -959,7 +956,6 @@ public class Utils {
 			var kryo = Utils.getKryoSerializerDeserializer();
 			kryo.writeClassAndObject(output, inputobj);
 			output.flush();
-			ostream.flush();
 		} catch (Exception ex) {
 			log.error("Unable to write Object Stream: " + inputobj, ex);
 		}
@@ -992,8 +988,7 @@ public class Utils {
 			var output = new Output(ostream);
 			log.error(inputobj);
 			kryo.writeClassAndObject(output, inputobj);
-			output.flush();
-			ostream.flush();
+			output.flush();			
 		} catch (Exception ex) {
 			log.error("Unable to write Object Stream: " + inputobj, ex);
 		}

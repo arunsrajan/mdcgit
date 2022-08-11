@@ -525,7 +525,6 @@ public class StreamJobScheduler {
 			for (String te : taskexecutors) {
 				try {
 					JobStage js = jsidjsmap.get(key);
-					js.stage.tasks.stream().forEach(task->kryo.register(task.getClass()));
 					Utils.writeObject(te, js, kryo);
 				} catch (Exception e) {
 					log.error(MDCConstants.EMPTY, e);
@@ -558,22 +557,21 @@ public class StreamJobScheduler {
 				String tehost = lc.getNodehostport().split("_")[0];
 				while (index < ports.size()) {
 					while (true) {
-						try (var sock = Utils.createSSLSocket(tehost, ports.get(index));) {
-							if (!Objects.isNull(loadjar.mrjar)) {
-								Utils.writeObject(sock, loadjar);
-							} else {
-								Utils.writeObject(sock, new Dummy());
-							}
+						try (var socket = Utils.createSSLSocket(tehost, ports.get(index))) {
+							Utils.writeObject(socket, new Dummy());
 							break;
 						} catch (Exception ex) {
 							Thread.sleep(1000);
 						}
 					}
+					if (!Objects.isNull(loadjar.mrjar)) {
+						log.info(Utils.getResultObjectByInput(tehost+MDCConstants.UNDERSCORE+ports.get(index), loadjar));
+					}
 					JobApp jobapp = new JobApp();
 					jobapp.setContainerid(lc.getContainerid());
 					jobapp.setJobappid(job.id);
 					jobapp.setJobtype(JobApp.JOBAPP.STREAM);
-					Utils.writeObject(tehost + MDCConstants.UNDERSCORE + ports.get(index), jobapp);
+					Utils.getResultObjectByInput(tehost + MDCConstants.UNDERSCORE + ports.get(index), jobapp);
 					index++;
 				}
 			}

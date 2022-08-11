@@ -179,21 +179,24 @@ public class TaskExecutorRunner implements TaskExecutorRunnerMBean {
 		var configuration = new Configuration();
 
 		var inmemorycache = MDCCache.get();
-		Semaphore semaphore = new Semaphore(1);
-		cl = Thread.currentThread().getContextClassLoader();
+		Semaphore semaphore = new Semaphore(1);		
+		cl = TaskExecutorRunner.class.getClassLoader();
+		log.info("Default Class Loader: "+cl);
 		threadpool.execute(() -> {
 			while (true) {
-				try {
-					var socket = server.accept();
+				try {					
+					var socket = server.accept();					
+					log.info("Default Class Loader: "+cl);
 					var deserobj = Utils.readObject(socket, cl);
+					
 					if (deserobj instanceof LoadJar loadjar) {
-						log.info("Loading the Required jars");
-						synchronized (deserobj) {
-							var clsloader = MDCMapReducePhaseClassLoader
+						log.info("Loading the Required jars: "+loadjar.mrjar);
+						semaphore.acquire();
+						cl = MDCMapReducePhaseClassLoader
 									.newInstance(loadjar.mrjar, cl);
-							cl = clsloader;
-						}
 						log.info("Loaded the Required jars");
+						Utils.writeObject(socket, LoadJar.class.getSimpleName());
+						semaphore.release();	
 						socket.close();
 					} else if (deserobj instanceof JobApp jobapp) {
 						semaphore.acquire();
@@ -233,6 +236,7 @@ public class TaskExecutorRunner implements TaskExecutorRunnerMBean {
 							hbss.ping();
 							containeridhbss.put(containerid, hbss);
 						}
+						Utils.writeObject(socket, JobApp.class.getSimpleName());
 						socket.close();
 						semaphore.release();
 					} else if (!Objects.isNull(deserobj)) {
@@ -241,6 +245,8 @@ public class TaskExecutorRunner implements TaskExecutorRunnerMBean {
 								hbtsappid, hbtssjobid, containeridhbss,
 								jobidstageidexecutormap,
 								taskqueue, jobidstageidjobstagemap));
+					} else {
+						socket.close();
 					}
 				} catch (InterruptedException e) {
 					log.warn("Interrupted!", e);

@@ -74,6 +74,7 @@ import com.github.mdc.common.ContainerResources;
 import com.github.mdc.common.Context;
 import com.github.mdc.common.DataCruncherContext;
 import com.github.mdc.common.DestroyContainers;
+import com.github.mdc.common.Dummy;
 import com.github.mdc.common.HDFSBlockUtils;
 import com.github.mdc.common.HeartBeatServer;
 import com.github.mdc.common.HeartBeatTaskScheduler;
@@ -172,6 +173,8 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 		log.debug("Exiting MdcJob.getContainersBalanced");
 	}
 
+	Map<String,List<ContainerResources>> nodecrsmap = new ConcurrentHashMap<>();
+	
 	public void getTaskExecutors(List<BlocksLocation> bls, String appid, String containerid) throws PipelineException {
 		try {
 			containers = new ArrayList<>();
@@ -206,6 +209,7 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 					containers.add(host + MDCConstants.UNDERSCORE + ports.get(containercount));
 				}
 				totalcontainersallocated += cr.size();
+				nodecrsmap.put(te, cr);
 			}
 			jm.containerresources = lcs.stream().flatMap(lc -> {
 				var crs = lc.getCla().getCr();
@@ -360,7 +364,7 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 
 	protected List<ContainerResources> getNumberOfContainers(String gctype, long totalmem, Resources resources)
 			throws PipelineException {
-		var cpu = resources.getNumberofprocessors() - 2;
+		var cpu = resources.getNumberofprocessors() - 1;
 		var cr = new ArrayList<ContainerResources>();
 		if (jobconf.getContaineralloc().equals(MDCConstants.CONTAINER_ALLOC_DEFAULT)) {
 			var res = new ContainerResources();
@@ -442,41 +446,33 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 	public void getContainers(String containerid, String appid) throws Exception {
 		var loadjar = new LoadJar();
 		loadjar.mrjar = jobconf.getMrjar();
+		List<String> containers = new ArrayList<>();
 		for (var lc : lcs) {
 			List<Integer> ports = (List<Integer>) Utils.getResultObjectByInput(lc.getNodehostport(), lc);
 			int index = 0;
-			String tehost = lc.getNodehostport().split("_")[0];
+			String tehost = lc.getNodehostport().split(MDCConstants.UNDERSCORE)[0];
 			while (index < ports.size()) {
-				try (var sock = Utils.createSSLSocket(tehost, ports.get(index));) {
+					containers.add(tehost+MDCConstants.UNDERSCORE+ports.get(index));
+					while (true) {
+						try (var socket = Utils.createSSLSocket(tehost, ports.get(index))) {
+							Utils.writeObject(socket, new Dummy());
+							break;
+						} catch (Exception ex) {
+							Thread.sleep(1000);
+						}
+					}
+					if (!Objects.isNull(loadjar.mrjar)) {
+						log.info(Utils.getResultObjectByInput(tehost+MDCConstants.UNDERSCORE+ports.get(index), loadjar));
+					}
 					JobApp jobapp = new JobApp();
 					jobapp.setContainerid(lc.getContainerid());
 					jobapp.setJobappid(appid);
 					jobapp.setJobtype(JobApp.JOBAPP.MR);
-					Utils.writeObject(tehost + MDCConstants.UNDERSCORE + ports.get(index), jobapp);
-					if (!Objects.isNull(loadjar.mrjar)) {
-						Utils.writeObject(sock, loadjar);
-					}
+					Utils.getResultObjectByInput(tehost + MDCConstants.UNDERSCORE + ports.get(index), jobapp);
 					index++;
-				} catch (Exception ex) {
-					Thread.sleep(1000);
-				}
 			}
 		}
-		hbs = new HeartBeatServer();
-		hbs.init(Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULER_RESCHEDULEDELAY)),
-				Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULER_PORT)),
-				NetworkUtil.getNetworkAddress(MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULER_HOST)),
-				Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULER_INITIALDELAY)),
-				Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULER_PINGDELAY)),
-				containerid);
-		// Start Resources gathering via heart beat resources status update.
-		hbs.start();
-		var taskexecutors = new LinkedHashSet<>(hbs.containers);
-		while (taskexecutors.size() != containers.size() && !taskexecutors.containsAll(containers)) {
-			taskexecutors = new LinkedHashSet<>(hbs.containers);
-			Thread.sleep(500);
-		}
-		containers = hbs.containers;
+		this.containers = containers;
 	}
 	boolean isexception;
 	String exceptionmsg = MDCConstants.EMPTY;
@@ -640,7 +636,7 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 				ExecutionResults<DefaultDexecutor, List<ExecutionResult<TaskSchedulerMapperCombinerSubmitter, Boolean>>> execresults = executor.execute(ExecutionConfig.NON_TERMINATING);
 				List<ExecutionResult<DefaultDexecutor, List<ExecutionResult<TaskSchedulerMapperCombinerSubmitter, Boolean>>>> errorresults =  execresults.getAll();
 				completed = true;
-				var currentcontainers = new ArrayList<String>(hbs.containers);
+				var currentcontainers = new ArrayList<String>(containers);
 				var containersremoved = new ArrayList<String>(containers);
 				containersremoved.removeAll(currentcontainers);
 				currentcontainers.stream().forEach(containerhp -> containermappercombinermap.get(containerhp).clear());
@@ -966,7 +962,7 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 							@Override
 							public void run() {
 								try {
-									if (++count > 3 || !hbs.containers.contains(mdtstmc.getHostPort())) {
+									if (++count > 3 ) {
 										log.info(mdtstmc.getHostPort() + " Task Failed:" + mdtstmc.apptask.getApplicationid()
 												+ mdtstmc.apptask.getTaskid());
 										var apptimer = timermap.remove(mdtstmc.apptask.getApplicationid()
@@ -1091,13 +1087,22 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 	}
 
 	protected void destroyContainers(String containerid) throws Exception {
-		var nodes = MDCNodes.get();
+		var nodes = nodessorted;
 		log.debug("Destroying Containers with id:" + containerid + " for the hosts: " + nodes);
 		var dc = new DestroyContainers();
 		for (var node : nodes) {
 			dc.setContainerid(containerid);
 			Utils.writeObject(node, dc);
+			Resources allocresources = MDCNodesResources.get().get(node);
+			var crs = nodecrsmap.get(node);
+			for(ContainerResources cr: crs) {
+				long maxmemory = cr.getMaxmemory() * MDCConstants.MB;
+				long directheap = cr.getDirectheap() *  MDCConstants.MB;
+				allocresources.setFreememory(allocresources.getFreememory()+maxmemory+directheap);
+				allocresources.setNumberofprocessors(allocresources.getNumberofprocessors()+cr.getCpu());
+			}
 		}
+		
 	}
 
 	public TaskSchedulerMapperCombinerSubmitter getMassiveDataTaskSchedulerThreadMapperCombiner(
@@ -1114,7 +1119,7 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 	}
 
 	public String getTaskExecutor(long blocklocationindex) {
-		return hbs.containers.get((int) blocklocationindex % hbs.containers.size());
+		return containers.get((int) blocklocationindex % containers.size());
 	}
 
 	public synchronized void submitMapper(TaskSchedulerMapperCombinerSubmitter mdtstmc) throws Exception {

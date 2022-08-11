@@ -15,6 +15,7 @@
  */
 package com.github.mdc.common;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 import com.esotericsoftware.kryo.io.Output;
@@ -25,7 +26,8 @@ import com.github.mdc.common.MDCConstants.STORAGE;
  * @author arun
  * The configuration for pipeline interfaces.
  */
-public class PipelineConfig implements Cloneable {
+public class PipelineConfig implements Serializable, Cloneable {
+	private static final long serialVersionUID = 1L;
 	private Output output;
 	private String blocksize;
 	private String isblocksuserdefined;

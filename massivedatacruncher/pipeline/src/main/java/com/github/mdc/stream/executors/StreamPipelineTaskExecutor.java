@@ -2608,7 +2608,7 @@ public sealed class StreamPipelineTaskExecutor implements
 			log.debug("Coalesce Data Size:" + keyvaluepairs.size());
 			// Parallel execution of reduce by key stream execution.
 			List out = null;
-			if (Objects.nonNull(coalescefunction.get(0))) {
+			if (Objects.nonNull(coalescefunction.get(0)) && Objects.nonNull(coalescefunction.get(0).getCoalescefunction())) {
 				if(coalescefunction.get(0).getCoalescefunction() instanceof PipelineCoalesceFunction pcf) {
 					out = Arrays.asList(keyvaluepairs.parallelStream().reduce(pcf)
 							.get());
