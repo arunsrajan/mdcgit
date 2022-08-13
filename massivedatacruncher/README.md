@@ -4,7 +4,7 @@ mvn -Dmaven.antrun.skip=true -Dmaven.test.skip=true -Pmodules clean rewrite:run
 
 mvn -Dmaven.antrun.skip=true -Dmaven.test.skip=true -DskipMavenParsing=true -Pmodules clean package assembly:assembly
 
-mvn -f pomjar.xml -Pmdc exec:exec antrun:run@prepare compile jib:dockerBuild@buildstandalone jib:dockerBuild@buildcontainer
+mvn -f pomjar.xml -Pmdc exec:exec antrun:run@prepare compile jib:dockerBuild@buildstandalone jib:dockerBuild@buildcontainer jib:dockerBuild@buildtaskschedulerstream jib:dockerBuild@buildtaskscheduler
 
 In order to skip tests the following needs to be set in MAVEN_OPTS
 ------------------------------------------------------------------
@@ -78,12 +78,12 @@ docker run --network mdc -v "C:/DEVELOPMENT/dockershare/container:/opt/dockersha
 To run task scheduler stream in network mdc
 -------------------------------------------
 
-docker run --network mdc -v "E:/DEVELOPMENT/dockershare:/opt/dockershare" --link mdccontainer:mdccontainer --link namenode:namenode --link zoo:zoo --hostname mdctss --name mdctaskschedulerstream --ip 172.30.0.22 -e ZKHOSTPORT=zoo:2181 -e HOST=172.30.0.22 -e PORT=22222 -p 22222:22222 -p 22223:22223 -e DEBUGPORT=*:4005 -p 4005:4005 --memory 3g  -e MEMCONFIGLOW=-Xms2G -e MEMCONFIGHIGH=-Xmx2G -d arunsrajan/mdctaskschedulerstream
+docker run --network mdc -v "C:/DEVELOPMENT/dockershare:/opt/dockershare" --link namenode:namenode --link zoo:zoo --hostname mdctss --name mdctaskschedulerstream --ip 172.30.0.22 -e ZKHOSTPORT=zoo:2181 -e HOST=172.30.0.22 -e PORT=22222 -p 22222:22222 -p 22223:22223 -e DEBUGPORT=*:4005 -p 4005:4005 --memory 3g  -e MEMCONFIGLOW=-Xms2G -e MEMCONFIGHIGH=-Xmx2G -d arunsrajan/mdctaskschedulerstream
 
 To run task scheduler in network mdc
 -------------------------------------------
 
-docker run --network mdc -v "E:/DEVELOPMENT/dockershare:/opt/dockershare" --name mdctaskscheduler --link mdccontainer:mdccontainer --link namenode:namenode --link zoo:zoo --hostname mdcts --ip 172.30.0.23 -e ZKHOSTPORT=zoo:2181 -e HOST=172.30.0.23 -e PORT=11111 -p 11111:11111 -p 11112:11112 -e DPORT=*:4000 -p 4000:4000 --memory 3g -e MEMCONFIGLOW=-Xms2G -e MEMCONFIGHIGH=-Xmx2G -d arunsrajan/mdctaskscheduler
+docker run --network mdc -v "C:/DEVELOPMENT/dockershare:/opt/dockershare" --name mdctaskscheduler --link namenode:namenode --link zoo:zoo --hostname mdcts --ip 172.30.0.23 -e ZKHOSTPORT=zoo:2181 -e HOST=172.30.0.23 -e PORT=11111 -p 11111:11111 -p 11112:11112 -e DPORT=*:4000 -p 4000:4000 --memory 3g -e MEMCONFIGLOW=-Xms2G -e MEMCONFIGHIGH=-Xmx2G -d arunsrajan/mdctaskscheduler
 
 To run standalone in network mdc
 ------------------------------------------- 
