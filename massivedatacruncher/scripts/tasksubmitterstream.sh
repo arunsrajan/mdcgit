@@ -7,4 +7,4 @@ MEMCONFIG="-Xms2G -Xmx2G"
 GCCONFIG="-XX:+UseG1GC"
 IPV4="-Djava.net.preferIPv4Stack=true"
 CLASSNAME=com.github.mdc.stream.submitter.StreamPipelineJobSubmitter
-java --add-opens java.base/java.util=ALL-UNNAMED --add-opens java.base/java.lang.invoke=ALL-UNNAMED -classpath ".:../lib/*:../modules/*" ${MEMCONFIG} ${GCCCONFIG} ${IPV4} ${CLASSNAME} $@
+/usr/local/java/jdk-17.0.2/bin/java --enable-preview --add-opens java.base/java.util=ALL-UNNAMED --add-opens java.base/java.lang.invoke=ALL-UNNAMED --add-opens java.base/java.nio=ALL-UNNAMED --add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.util.concurrent.atomic=ALL-UNNAMED -classpath ".:../lib/*:../modules/*" ${MEMCONFIG} ${GCCCONFIG} ${IPV4} ${CLASSNAME} $@

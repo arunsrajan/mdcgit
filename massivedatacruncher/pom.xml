@@ -755,7 +755,7 @@
                                             <path>
                                                 <from>dockermdcstandalone</from>
                                                 <into>/opt/mdc/config</into>
-                                                <includes>mdcstandalone.properties</includes>
+                                                <includes>mdc.properties</includes>
                                             </path>
                                             <path>
                                                 <from>target/mdcstandalone</from>
@@ -841,7 +841,7 @@
                                             <path>
                                                 <from>dockermdccontainer</from>
                                                 <into>/opt/mdc/config</into>
-                                                <includes>mdctes.properties</includes>
+                                                <includes>mdc.properties</includes>
                                             </path>
                                             <path>
                                                 <from>target/mdccontainer</from>
