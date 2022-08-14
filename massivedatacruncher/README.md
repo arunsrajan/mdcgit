@@ -659,3 +659,21 @@ Running Job In Linux
 ./tasksubmitter.sh -jar ../modules/examples.jar -args  'com.github.mdc.mr.examples.join.MrJobArrivalDelayNormal /airline1989 /carriers /examplesmdc 128 3'
 
 ./tasksubmitterstream.sh ../modules/examples.jar com.github.mdc.stream.examples.StreamReduceJGroups  hdfs://namenode:9000 /airlines1989 /carriers /examplesmdc
+
+
+podman example for standalone
+-----------------------------
+
+podman network create --driver=bridge --subnet=172.30.0.0/16 --ip-range=172.30.0.0/16 mdc
+
+podman run --network mdc --name namenode --hostname namenode -v "C:/DEVELOPMENT/dockershare:/opt/dockershare" -e "CORE_CONF_fs_defaultFS=hdfs://namenode:9000" -e "HDFS_CONF_dfs_namenode_name_dir=file:///opt/dockershare/name" -e "HDFS_CONF_dfs_namenode_datanode_registration_ip___hostname___check=false" -e "CLUSTER_NAME=hadooptest" -p 9870:9870 -p 9000:9000 -d docker.io/bde2020/hadoop-namenode
+
+podman run --network mdc -e "HDFS_CONF_dfs_namenode_datanode_registration_ip___hostname___check=false" -v "C:/DEVELOPMENT/dockershare:/opt/dockershare" --name mdcstandalone --hostname mdcstandalone --ip 172.30.0.10 -e ZKHOSTPORT=172.30.0.10:2181 -p 2181:2181 -e TEHOST=172.30.0.10 -e TEPORT=10101 -e NODEPORT=12121 -e TSSHOST=172.30.0.10 --link namenode:namenode -e TSSPORT=22222 -e TSHOST=172.30.0.10 -e TSPORT=11111 -p 22222:22222 -p 22223:22223 -p 11111:11111 -p 11112:11112 -e DPORT=*:4000 -p 4000:4000 --memory 4g -e MEMCONFIGLOW=-Xms512m -e MEMCONFIGHIGH=-Xmx512m -d arunsrajan/mdcstandalone
+
+
+Modify distribution config mdc.properties
+-----------------------------------------
+
+taskschedulerstream.hostport=127.0.0.1_22222
+
+tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.examples.StreamReduceJGroupsDivided  hdfs://namenode:9000 /airline1989 /carriers /examplesmdc

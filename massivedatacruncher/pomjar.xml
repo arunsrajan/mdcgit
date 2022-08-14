@@ -633,7 +633,7 @@
 						    <image>bde2020/hadoop-datanode</image>
 						  </from>
 						  <to>
-						    <image>arunsrajan/mdcstandalone</image>
+						    <image>localhost:5000/arunsrajan/mdcstandalone</image>
 						    <tags>
 						      <tag>latest</tag>
 						    </tags>
@@ -695,7 +695,7 @@
               					<arg>/entry.sh</arg>
               				</entrypoint>
 						  	<format>Docker</format>
-						  	<user>root</user>
+						  	<user>arun</user>
 						  </container>
 						</configuration>
 					    </execution>
@@ -713,7 +713,7 @@
 						    <image>bde2020/hadoop-datanode</image>
 						  </from>
 						  <to>
-						    <image>arunsrajan/mdccontainer</image>
+						    <image>localhost:5000/arunsrajan/mdccontainer</image>
 						    <tags>
 						      <tag>latest</tag>
 						    </tags>
@@ -775,7 +775,7 @@
               					<arg>/entry.sh</arg>
               				</entrypoint>
 						  	<format>Docker</format>
-						  	<user>root</user>
+						  	<user>arun</user>
 						  </container>
 						</configuration>
 					    </execution>
@@ -792,7 +792,7 @@
                                       <image>ubuntu</image>
                                   </from>
                                   <to>
-                                      <image>arunsrajan/mdctaskschedulerstream</image>
+                                      <image>localhost:5000/arunsrajan/mdctaskschedulerstream</image>
                                       <tags>
                                           <tag>latest</tag>
                                       </tags>
@@ -837,7 +837,7 @@
                                           <arg>./opt/mdc/bin/taskschedulerstream.sh</arg>
                                       </entrypoint>
                                       <format>Docker</format>
-                                      <user>root</user>
+                                      <user>arun</user>
                                   </container>
                               </configuration>
                           </execution>
@@ -853,7 +853,7 @@
                                       <image>ubuntu</image>
                                   </from>
                                   <to>
-                                      <image>arunsrajan/mdctaskscheduler</image>
+                                      <image>localhost:5000/arunsrajan/mdctaskscheduler</image>
                                       <tags>
                                           <tag>latest</tag>
                                       </tags>
@@ -903,7 +903,7 @@
                                           <arg>/opt/mdc/bin/taskscheduler.sh</arg>
                                       </entrypoint>
                                       <format>Docker</format>
-                                      <user>root</user>
+                                      <user>arun</user>
                                   </container>
                               </configuration>
                           </execution>
