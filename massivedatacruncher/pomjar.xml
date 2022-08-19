@@ -681,6 +681,14 @@
 						        <file>/usr/local/java/jdk-17.0.2/**/**</file>
 						        <mode>755</mode> <!-- Read/write/execute for owner, read/execute for group/other -->
 						      </permission>
+							  <permission>
+						        <file>/etc/hadoop/**/**</file>
+						        <mode>777</mode> <!-- Read/write/execute for owner, read/execute for group/other -->
+						      </permission>
+							  <permission>
+						        <file>/opt/hadoop-3.2.1/**/**</file>
+						        <mode>777</mode> <!-- Read/write/execute for owner, read/execute for group/other -->
+						      </permission>
 						  	</permissions>
 						  </extraDirectories>
 						  <container>
@@ -761,6 +769,14 @@
 						        <file>/usr/local/java/jdk-17.0.2/**/**</file>
 						        <mode>755</mode> <!-- Read/write/execute for owner, read/execute for group/other -->
 						      </permission>
+							  <permission>
+						        <file>/etc/hadoop/**/**</file>
+						        <mode>777</mode> <!-- Read/write/execute for owner, read/execute for group/other -->
+						      </permission>
+							  <permission>
+						        <file>/opt/hadoop-3.2.1/**/**</file>
+						        <mode>777</mode> <!-- Read/write/execute for owner, read/execute for group/other -->
+						      </permission>
 						  	</permissions>
 						  </extraDirectories>
 						  <container>
@@ -792,7 +808,7 @@
                                       <image>ubuntu</image>
                                   </from>
                                   <to>
-                                      <image>localhost:5000/arunsrajan/mdctaskschedulerstream</image>
+                                      <image>192.168.59.101:32225/arunsrajan/mdctaskschedulerstream</image>
                                       <tags>
                                           <tag>latest</tag>
                                       </tags>
@@ -853,7 +869,7 @@
                                       <image>ubuntu</image>
                                   </from>
                                   <to>
-                                      <image>localhost:5000/arunsrajan/mdctaskscheduler</image>
+                                      <image>192.168.59.101:32225/arunsrajan/mdctaskscheduler</image>
                                       <tags>
                                           <tag>latest</tag>
                                       </tags>

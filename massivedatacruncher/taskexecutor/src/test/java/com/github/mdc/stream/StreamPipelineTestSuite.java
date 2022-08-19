@@ -28,6 +28,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import com.github.mdc.common.*;
 import org.apache.commons.io.IOUtils;
 import org.apache.curator.test.TestingServer;
 import org.apache.hadoop.conf.Configuration;
@@ -40,13 +41,6 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
 import com.esotericsoftware.kryo.io.Output;
-import com.github.mdc.common.ByteBufferPool;
-import com.github.mdc.common.ByteBufferPoolDirect;
-import com.github.mdc.common.HeartBeatServerStream;
-import com.github.mdc.common.MDCConstants;
-import com.github.mdc.common.MDCProperties;
-import com.github.mdc.common.NetworkUtil;
-import com.github.mdc.common.Utils;
 import com.github.mdc.tasks.executor.MassiveDataCruncherMRApiTest;
 import com.github.mdc.tasks.executor.NodeRunner;
 
@@ -110,7 +104,7 @@ public class StreamPipelineTestSuite extends StreamPipelineBase {
 				ConcurrentMap<String, Map<String, List<Thread>>> containeridthreads = new ConcurrentHashMap<>();
 				hdfste = FileSystem.get(new URI(MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL)),
 						configuration);
-				var containeridports = new ConcurrentHashMap<String, List<Integer>>();
+				var containeridports = new ConcurrentHashMap<String, List<TaskExecutorPorts>>();
 				while (executorsindex < numberofnodes) {
 					hb = new HeartBeatServerStream();
 					host = NetworkUtil.getNetworkAddress(MDCProperties.get().getProperty("taskexecutor.host"));

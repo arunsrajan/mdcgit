@@ -298,7 +298,8 @@ public class Utils {
 		log.debug("Entered Utils.registerKryoNonDeflateSerializer");
 		kryo.setRegistrationRequired(false);
 		kryo.setReferences(true);
-		kryo.setWarnUnregisteredClasses(true);
+		kryo.setWarnUnregisteredClasses(false);
+		RegisterKyroSerializers.register(kryo);
 		var dis = new com.esotericsoftware.kryo.util.DefaultInstantiatorStrategy(new StdInstantiatorStrategy());
 		kryo.setInstantiatorStrategy(dis);
 		dis.setFallbackInstantiatorStrategy(new StdInstantiatorStrategy());
@@ -365,24 +366,8 @@ public class Utils {
 		kryo.register(JobApp.class, new JavaSerializer());
 		kryo.register(JobApp.JOBAPP.class, new EnumSerializer(JobApp.JOBAPP.class));
 		kryo.register(Dummy.class, new JavaSerializer());
+		kryo.register(TaskExecutorShutdown.class, new JavaSerializer());
 		log.debug("Exiting Utils.registerKryoNonDeflateSerializer");
-	}
-	
-	private static void initializeSSLContext() throws Exception {
-
-		KeyStore ks = KeyStore.getInstance("JKS");
-		String password = MDCProperties.get().getProperty(MDCConstants.MDC_KEYSTORE_PASSWORD);
-		ks.load(new FileInputStream(MDCProperties.get().getProperty(MDCConstants.MDC_JKS)), password.toCharArray());
-
-		KeyManagerFactory kmf = KeyManagerFactory.getInstance(MDCProperties.get().getProperty(MDCConstants.MDC_JKS_ALGO));
-		kmf.init(ks, password.toCharArray());
-
-		TrustManagerFactory tmf = TrustManagerFactory.getInstance(MDCProperties.get().getProperty(MDCConstants.MDC_JKS_ALGO)); 
-		tmf.init(ks);
-
-		sc = SSLContext.getInstance("TLS"); 
-		TrustManager[] trustManagers = tmf.getTrustManagers(); 
-		sc.init(kmf.getKeyManagers(), trustManagers, null); 
 	}
 	
 	/**
@@ -411,7 +396,6 @@ public class Utils {
 			log.error("Problem in loading properties, See the cause below", ex);
 			throw new Exception("Unable To Load Properties", ex);
 		}
-		initializeSSLContext();
 		log.debug("Exiting Utils.loadLog4JSystemProperties");
 	}
 
@@ -441,7 +425,6 @@ public class Utils {
 			log.error("Problem in loading properties, See the cause below", ex);
 			throw new Exception("Unable To Load Properties", ex);
 		}
-		initializeSSLContext();
 		log.debug("Exiting Utils.loadLog4JSystemPropertiesClassPath");
 	}
 
@@ -454,7 +437,6 @@ public class Utils {
 	 */
 	public static void loadPropertiesMesos(String propertyfile) throws Exception {
 		log.debug("Entered Utils.loadPropertiesMesos");
-		initializeSSLContext();
 		PropertyConfigurator.configure(
 				Utils.class.getResourceAsStream(MDCConstants.FORWARD_SLASH + MDCConstants.LOG4J_PROPERTIES));
 		var prop = new Properties();
@@ -466,7 +448,6 @@ public class Utils {
 		} catch (Exception ex) {
 			log.error("Problem in loading properties, See the cause below", ex);
 		}
-		initializeSSLContext();
 		log.debug("Exiting Utils.loadPropertiesMesos");
 	}
 
@@ -852,9 +833,10 @@ public class Utils {
 	 * @param hp
 	 * @param inputobj
 	 * @return object
+	 * @throws Exception 
 	 */
-	public static Object getResultObjectByInput(String hp, Object inputobj) {
-		log.error("getResultObjectByInput: " + inputobj);
+	public static Object getResultObjectByInput(String hp, Object inputobj) throws Exception {
+		log.info("getResultObjectByInput: " + inputobj);
 		var hostport = hp.split(MDCConstants.UNDERSCORE);
 		try (var socket = Utils.createSSLSocket(hostport[0], Integer.parseInt(hostport[1]));) {
 			writeObjectByStream(socket.getOutputStream(), inputobj);
@@ -862,8 +844,8 @@ public class Utils {
 			return obj;
 		} catch (Exception ex) {
 			log.error("Unable to read result Object: " + inputobj + " " + hp, ex);
+			throw ex;
 		}
-		return null;
 	}
 
 	/**
@@ -871,16 +853,17 @@ public class Utils {
 	 * 
 	 * @param socket
 	 * @return object
+	 * @throws Exception 
 	 */
-	public static Object readObject(Socket socket) {
+	public static Object readObject(Socket socket) throws Exception {
 		try {
 			var input = new Input(socket.getInputStream());
 			var kryo = Utils.getKryoSerializerDeserializer();
 			return kryo.readClassAndObject(input);
 		} catch (Exception ex) {
 			log.error("Unable to read Object: ", ex);
+			throw ex;
 		}
-		return null;
 	}
 
 	/**
@@ -889,8 +872,9 @@ public class Utils {
 	 * @param socket
 	 * @param cl
 	 * @return object
+	 * @throws Exception 
 	 */
-	public static Object readObject(Socket socket, ClassLoader cl) {
+	public static Object readObject(Socket socket, ClassLoader cl) throws Exception {
 		try {
 			var input = new Input(socket.getInputStream());
 			var kryo = Utils.getKryoSerializerDeserializer();
@@ -898,8 +882,8 @@ public class Utils {
 			return kryo.readClassAndObject(input);
 		} catch (Exception ex) {
 			log.error("Unable to read Object: ", ex);
+			throw ex;
 		}
-		return null;
 	}
 
 	/**
@@ -907,9 +891,10 @@ public class Utils {
 	 * 
 	 * @param socket
 	 * @param object
+	 * @throws Exception 
 	 */
-	public static void writeObject(Socket socket, Object object) {
-		log.error("writeObject(Socket socket, Object object): "+object);
+	public static void writeObject(Socket socket, Object object) throws Exception {
+		log.info("writeObject(Socket socket, Object object): "+object);
 		try {
 			var output = new Output(socket.getOutputStream());
 			var kryo = Utils.getKryoSerializerDeserializer();
@@ -917,6 +902,7 @@ public class Utils {
 			output.flush();
 		} catch (Exception ex) {
 			log.error("Unable to write Object: ", ex);
+			throw ex;
 		}
 	}
 
@@ -929,16 +915,17 @@ public class Utils {
 	 * @throws Exception
 	 */
 	public static void writeObject(String hp, Object inputobj) throws Exception {
-		log.error("writeObject(String hp, Object inputobj): "+inputobj);
 		var hostport = hp.split(MDCConstants.UNDERSCORE);
 		try (var socket = Utils.createSSLSocket(hostport[0], Integer.parseInt(hostport[1]));) {
-
+			log.info("writeObject(String hp, Object inputobj): "+hp+" "+inputobj);
 			writeObjectByStream(socket.getOutputStream(), inputobj);
+			log.info("writeObject(String hp, Object inputobj): "+hp+" "+inputobj+" completed");
 		} catch (IOException ex) {
 			log.error("Unable to write Object: " + inputobj);
 			throw ex;
 		} catch (Exception ex) {
 			log.error("Unable to write Object: " + inputobj);
+			throw ex;
 		}
 	}
 
@@ -952,18 +939,19 @@ public class Utils {
 	public static void writeObjectByStream(OutputStream ostream, Object inputobj) {
 		try {
 			var output = new Output(ostream);
-			log.error("writeObjectByStream(OutputStream ostream, Object inputobj): "+inputobj);			
+			log.info("writeObjectByStream(OutputStream ostream, Object inputobj): "+inputobj);			
 			var kryo = Utils.getKryoSerializerDeserializer();
 			kryo.writeClassAndObject(output, inputobj);
 			output.flush();
 		} catch (Exception ex) {
 			log.error("Unable to write Object Stream: " + inputobj, ex);
+			throw ex;
 		}
 	}
 	
 	
 	public static void writeObject(String hp, Object inputobj, Kryo kryo) throws Exception {
-		log.error("writeObject(String hp, Object inputobj, Kryo kryo): "+inputobj);
+		log.info("writeObject(String hp, Object inputobj, Kryo kryo): "+inputobj);
 		var hostport = hp.split(MDCConstants.UNDERSCORE);
 		try (var socket = Utils.createSSLSocket(hostport[0], Integer.parseInt(hostport[1]));) {
 
@@ -986,11 +974,12 @@ public class Utils {
 	public static void writeObjectByStream(OutputStream ostream, Object inputobj, Kryo kryo) {
 		try {
 			var output = new Output(ostream);
-			log.error(inputobj);
+			log.info(inputobj);
 			kryo.writeClassAndObject(output, inputobj);
 			output.flush();			
 		} catch (Exception ex) {
 			log.error("Unable to write Object Stream: " + inputobj, ex);
+			throw ex;
 		}
 	}
 
@@ -1247,19 +1236,47 @@ public class Utils {
 		});
 		GlobalContainerLaunchers.remove(containerid);
 	}
-	static SSLContext sc = null;
-	public synchronized static ServerSocket createSSLServerSocket(int port) throws Exception {
+	public static ServerSocket createSSLServerSocket(int port) throws Exception {
+		KeyStore ks = KeyStore.getInstance("JKS");
+		String password = MDCProperties.get().getProperty(MDCConstants.MDC_KEYSTORE_PASSWORD);
+		ks.load(new FileInputStream(MDCProperties.get().getProperty(MDCConstants.MDC_JKS)), password.toCharArray());
+
+		KeyManagerFactory kmf = KeyManagerFactory.getInstance(MDCProperties.get().getProperty(MDCConstants.MDC_JKS_ALGO));
+		kmf.init(ks, password.toCharArray());
+
+		TrustManagerFactory tmf = TrustManagerFactory.getInstance(MDCProperties.get().getProperty(MDCConstants.MDC_JKS_ALGO));
+		tmf.init(ks);
+
+		SSLContext sc = SSLContext.getInstance("TLS");
+		TrustManager[] trustManagers = tmf.getTrustManagers();
+		sc.init(kmf.getKeyManagers(), trustManagers, null);
 		SSLServerSocketFactory ssf = sc.getServerSocketFactory();
 		SSLServerSocket sslserversocket = (SSLServerSocket) ssf.createServerSocket();
-		sslserversocket.bind(new InetSocketAddress(InetAddress.getByAddress(new byte[]{0x00, 0x00, 0x00, 0x00}), port), port);
+		sslserversocket.bind(new InetSocketAddress(InetAddress.getByAddress(new byte[]{0x00, 0x00, 0x00, 0x00}), port), 256);
 		return sslserversocket;
 	}
-	
-	public synchronized static Socket createSSLSocket(String host, int port) throws Exception {
+	public static Socket createSSLSocket(String host, int port) throws Exception {
+		log.info("Creating Socket Factory for the (host,port): ("+host+"," +port+")");
+		KeyStore ks = KeyStore.getInstance("JKS");
+		String password = MDCProperties.get().getProperty(MDCConstants.MDC_KEYSTORE_PASSWORD);
+		ks.load(new FileInputStream(MDCProperties.get().getProperty(MDCConstants.MDC_JKS)), password.toCharArray());
+
+		KeyManagerFactory kmf = KeyManagerFactory.getInstance(MDCProperties.get().getProperty(MDCConstants.MDC_JKS_ALGO));
+		kmf.init(ks, password.toCharArray());
+
+		TrustManagerFactory tmf = TrustManagerFactory.getInstance(MDCProperties.get().getProperty(MDCConstants.MDC_JKS_ALGO));
+		tmf.init(ks);
+
+		SSLContext sc = SSLContext.getInstance("TLS");
+		TrustManager[] trustManagers = tmf.getTrustManagers();
+		sc.init(kmf.getKeyManagers(), trustManagers, null);
+
 		SSLSocketFactory sf = sc.getSocketFactory();
-		SSLSocket sslsocket = (SSLSocket) sf.createSocket();		
-		sslsocket.connect(new InetSocketAddress(host, port));
+		log.info("Creating SSLSocket for the (host,port): ("+host+"," +port+")");
+		SSLSocket sslsocket = (SSLSocket) sf.createSocket(host, port);
+		log.info("Starting SSLHandshake for the (host,port): ("+host+"," +port+")");
 		sslsocket.startHandshake();
+		log.info("SSLHandshake completed for the (host,port): ("+host+"," +port+")");
 		return sslsocket;
 	}
 }

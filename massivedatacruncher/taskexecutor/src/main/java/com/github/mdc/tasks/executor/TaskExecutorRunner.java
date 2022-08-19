@@ -22,16 +22,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Queue;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.Semaphore;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
+import com.github.mdc.common.*;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.state.ConnectionState;
@@ -40,24 +33,6 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FsUrlStreamHandlerFactory;
 import org.apache.log4j.Logger;
 
-import com.github.mdc.common.ByteBufferPool;
-import com.github.mdc.common.ByteBufferPoolDirect;
-import com.github.mdc.common.CacheUtils;
-import com.github.mdc.common.HeartBeatServerStream;
-import com.github.mdc.common.HeartBeatTaskScheduler;
-import com.github.mdc.common.HeartBeatTaskSchedulerStream;
-import com.github.mdc.common.JobApp;
-import com.github.mdc.common.JobStage;
-import com.github.mdc.common.LoadJar;
-import com.github.mdc.common.MDCCache;
-import com.github.mdc.common.MDCConstants;
-import com.github.mdc.common.MDCMapReducePhaseClassLoader;
-import com.github.mdc.common.MDCProperties;
-import com.github.mdc.common.NetworkUtil;
-import com.github.mdc.common.ServerUtils;
-import com.github.mdc.common.Utils;
-import com.github.mdc.common.WebResourcesServlet;
-import com.github.mdc.common.ZookeeperOperations;
 import com.github.mdc.tasks.executor.web.NodeWebServlet;
 import com.github.mdc.tasks.executor.web.ResourcesMetricsServlet;
 
@@ -76,6 +51,7 @@ public class TaskExecutorRunner implements TaskExecutorRunnerMBean {
 	CuratorFramework cf;
 	ServerSocket server;
 	static ExecutorService es;
+	static CountDownLatch shutdown = new CountDownLatch(1);
 
 	public static void main(String[] args) throws Exception {
 		URL.setURLStreamHandlerFactory(new FsUrlStreamHandlerFactory());
@@ -112,18 +88,18 @@ public class TaskExecutorRunner implements TaskExecutorRunnerMBean {
 		log.info("TaskExecuterRunner started at port....."
 				+ System.getProperty(MDCConstants.TASKEXECUTOR_PORT));
 		log.info("Adding Shutdown Hook...");
-		Utils.addShutdownHook(() -> {
-			try {
-				log.info("Stopping and closes all the connections...");
-				mdted.destroy();
-				ByteBufferPoolDirect.destroy();
-				ByteBufferPool.destroyByteBuffer();
-				log.info("Freed the resources...");
-				Runtime.getRuntime().halt(0);
-			} catch (Exception e) {
-				log.debug("", e);
-			}
-		});
+		shutdown.await();
+		try {
+			log.info("Stopping and closes all the connections...");
+			mdted.destroy();
+			ByteBufferPoolDirect.destroy();
+			ByteBufferPool.destroyByteBuffer();
+			log.info("Freed the resources...");
+			Runtime.getRuntime().halt(0);
+		} catch (Exception e) {
+			log.error("", e);
+		}
+
 	}
 
 	@SuppressWarnings("unchecked")
@@ -188,8 +164,13 @@ public class TaskExecutorRunner implements TaskExecutorRunnerMBean {
 					var socket = server.accept();					
 					log.info("Default Class Loader: "+cl);
 					var deserobj = Utils.readObject(socket, cl);
-					
-					if (deserobj instanceof LoadJar loadjar) {
+					log.info("Deserialized Object: "+deserobj);
+					if(deserobj instanceof TaskExecutorShutdown){
+						shutdown.countDown();
+						socket.close();
+						break;
+					}
+					else if (deserobj instanceof LoadJar loadjar) {
 						log.info("Loading the Required jars: "+loadjar.mrjar);
 						semaphore.acquire();
 						cl = MDCMapReducePhaseClassLoader

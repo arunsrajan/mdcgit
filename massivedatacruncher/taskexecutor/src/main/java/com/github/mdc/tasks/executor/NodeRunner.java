@@ -27,22 +27,14 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import com.github.mdc.common.*;
 import org.apache.commons.io.IOUtils;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.log4j.Logger;
 import org.jooq.lambda.tuple.Tuple;
 import org.jooq.lambda.tuple.Tuple2;
 
-import com.github.mdc.common.AllocateContainers;
-import com.github.mdc.common.ContainerLauncher;
-import com.github.mdc.common.DestroyContainer;
-import com.github.mdc.common.DestroyContainers;
-import com.github.mdc.common.HDFSBlockUtils;
-import com.github.mdc.common.LaunchContainers;
-import com.github.mdc.common.MDCConstants;
-import com.github.mdc.common.MDCProperties;
-import com.github.mdc.common.SkipToNewLine;
-import com.github.mdc.common.Utils;
+import static java.util.Objects.nonNull;
 
 public class NodeRunner implements Callable<Boolean> {
 	private static Logger log = Logger.getLogger(NodeRunner.class);
@@ -147,13 +139,13 @@ public class NodeRunner implements Callable<Boolean> {
 				containerprocesses.put(lc.getContainerid(), processes);
 				Utils.writeObjectByStream(sock.getOutputStream(), ports);
 			} else if (deserobj instanceof DestroyContainers dc) {
-				log.debug("Destroying the Containers with id: " + dc.getContainerid());
+				log.debug("In DCs Destroying the Containers with id: " + dc.getContainerid());
 				Map<String, Process> processes = containerprocesses.remove(dc.getContainerid());
-				log.debug("Destroying the Container Processes: " + processes);
+				log.info("In DCs Destroying the Container Processes: " + processes);
 				if (!Objects.isNull(processes)) {
-					processes.keySet().stream().map(key -> processes.get(key)).forEach(proc -> {
-						log.info("Destroying the Container Process: " + proc);
-						destroyProcess(proc);
+					processes.entrySet().stream().forEach(entry -> {
+						log.info("In DCs Destroying the Container Process: " + entry);
+						destroyProcess(entry.getKey(),entry.getValue());
 					});
 				}
 				Map<String, List<Thread>> threads = containeridcontainerthreads.remove(dc.getContainerid());
@@ -162,26 +154,28 @@ public class NodeRunner implements Callable<Boolean> {
 							.forEach(thr -> thr.stop());
 				}
 			} else if (deserobj instanceof DestroyContainer dc) {
-				log.debug("Destroying the Container with id: " + dc.getContainerid());
+				log.debug("In DC Destroying the Container with id: " + dc.getContainerid());
 				Map<String, Process> processes = containerprocesses.get(dc.getContainerid());
-				log.debug("Destroying the Container Processes: " + processes);
+				log.info("In DC Destroying the Container Processes: " + processes);
 				if (!Objects.isNull(processes)) {
+					String taskexecutorport = dc.getContainerhp().split(MDCConstants.UNDERSCORE)[1];
 					processes.keySet().stream()
-							.filter(key -> key.equals(dc.getContainerhp().split(MDCConstants.UNDERSCORE)[1]))
+							.filter(key -> key.equals(taskexecutorport))
 							.map(key -> processes.get(key)).forEach(proc -> {
-						log.info("Destroying the Container Process: " + proc);
-						destroyProcess(proc);
+						log.info("In DC Destroying the Container Process: " + proc);
+						destroyProcess(taskexecutorport, proc);
 					});
-					processes.remove(dc.getContainerhp().split(MDCConstants.UNDERSCORE)[1]);
+					processes.remove(taskexecutorport);
 				} else {
 					containerprocesses.keySet().stream().forEach(key -> {
 						containerprocesses.get(key).keySet().stream().filter(port -> port.equals(dc.getContainerhp().split(MDCConstants.UNDERSCORE)[1]))
-								.map(port -> containerprocesses.get(key).get(port))
-								.filter(proc -> !Objects.isNull(proc)).forEach(proc -> {
-							log.info("Destroying the Container Process: " + proc);
-							destroyProcess(proc);
-						});
-						;
+								.forEach(port -> {
+									Process proc = containerprocesses.get(key).get(port);
+									if (nonNull(proc)) {
+										log.info("In DC else Destroying the Container Process: " + proc);
+										destroyProcess(port, proc);
+									}
+								});
 					});
 				}
 				Map<String, List<Thread>> threads = containeridcontainerthreads.get(dc.getContainerid());
@@ -203,10 +197,17 @@ public class NodeRunner implements Callable<Boolean> {
 		return false;
 	}
 	
-	public void destroyProcess(Process proc) {
+	public void destroyProcess(String port, Process proc) {
 		try {
-			long pid = proc.pid();
-			proc.destroy();
+			TaskExecutorShutdown taskExecutorshutdown = new TaskExecutorShutdown();
+			log.info("Destroying the TaskExecutor: "+MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_HOST)+MDCConstants.UNDERSCORE+port);
+			Utils.writeObject(MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_HOST)+MDCConstants.UNDERSCORE+port, taskExecutorshutdown);
+			log.info("Checking the Process is Alive for: "+MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_HOST)+MDCConstants.UNDERSCORE+port);
+			while(proc.isAlive()){
+				log.info("Destroying the TaskExecutor: "+MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_HOST)+MDCConstants.UNDERSCORE+port);
+				Thread.sleep(500);
+			}
+			log.info("Process Destroyed: "+proc+" for the port "+port);
 		}
 		catch(Exception ex) {
 			log.error("Destroy failed for the process: "+proc);
