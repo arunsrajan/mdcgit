@@ -20,6 +20,7 @@ import java.net.URI;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
@@ -31,6 +32,10 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.FsUrlStreamHandlerFactory;
 import org.apache.log4j.Logger;
 
+import com.esotericsoftware.kryonetty.ServerEndpoint;
+import com.esotericsoftware.kryonetty.network.ReceiveEvent;
+import com.esotericsoftware.kryonetty.network.handler.NetworkHandler;
+import com.esotericsoftware.kryonetty.network.handler.NetworkListener;
 import com.github.mdc.common.HeartBeatServer;
 import com.github.mdc.common.HeartBeatServerStream;
 import com.github.mdc.common.MDCConstants;
@@ -44,13 +49,13 @@ import com.github.mdc.tasks.executor.web.ResourcesMetricsServlet;
 
 public class NodeLauncher {
 	static Logger log = Logger.getLogger(NodeLauncher.class);
-
+	static ServerEndpoint server = null;
 	public static void main(String[] args) throws Exception {
 		URL.setURLStreamHandlerFactory(new FsUrlStreamHandlerFactory());
 		Utils.loadLog4JSystemProperties(MDCConstants.PREV_FOLDER + MDCConstants.FORWARD_SLASH
 				+ MDCConstants.DIST_CONFIG_FOLDER + MDCConstants.FORWARD_SLASH, MDCConstants.MDC_PROPERTIES);
 		var port = Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.NODE_PORT));
-		try (var hbss = new HeartBeatServerStream();var server = Utils.createSSLServerSocket(port);) {
+		try (var hbss = new HeartBeatServerStream();) {
 			var pingdelay = Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULER_PINGDELAY));
 			var host = NetworkUtil.getNetworkAddress(MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_HOST));
 			hbss.init(0, port, host, 0, pingdelay, "");
@@ -59,7 +64,6 @@ public class NodeLauncher {
 			hbss.ping();
 			hb.ping();
 			var teport = Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_PORT));
-			var es = Executors.newFixedThreadPool(1);
 			var escontainer = Executors.newFixedThreadPool(1);
 
 			var hdfs = FileSystem.get(new URI(MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL, MDCConstants.HDFSNAMENODEURL)), new Configuration());
@@ -73,12 +77,15 @@ public class NodeLauncher {
 					new ResourcesMetricsServlet(), MDCConstants.FORWARD_SLASH + MDCConstants.DATA + MDCConstants.FORWARD_SLASH + MDCConstants.ASTERIX
 			);
 			su.start();
-			es.execute(() -> {
-				while (true) {
+			server = Utils.getServerKryoNetty(port,
+				new NetworkListener() {
+				@NetworkHandler
+	            public void onReceive(ReceiveEvent event) {
 					try {
-						Socket sock = server.accept();
-						var container = new NodeRunner(sock, MDCConstants.PROPLOADERCONFIGFOLDER,
-								containerprocesses, hdfs, containeridthreads, containeridports);
+						Object object = event.getObject();
+						var container = new NodeRunner(server, MDCConstants.PROPLOADERCONFIGFOLDER,
+								containerprocesses, hdfs, containeridthreads, containeridports,
+								object, event);
 						Future<Boolean> containerallocated = escontainer.submit(container);
 						log.info("Containers Allocated: " + containerallocated.get());
 					} catch (InterruptedException e) {
@@ -104,7 +111,9 @@ public class NodeLauncher {
 					log.debug("Stopping and closes all the connections...");
 					log.debug("Destroying...");
 					hdfs.close();
-					es.shutdown();
+					if(Objects.nonNull(server)) {
+						server.close();
+					}
 					cdl.countDown();
 					Runtime.getRuntime().halt(0);
 				} catch (Exception e) {

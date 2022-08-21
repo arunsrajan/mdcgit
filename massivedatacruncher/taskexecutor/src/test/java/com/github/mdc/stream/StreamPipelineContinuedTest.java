@@ -30,7 +30,7 @@ import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
-import com.github.mdc.stream.functions.MapFunction;
+import com.github.mdc.common.functions.MapFunction;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class StreamPipelineContinuedTest extends StreamPipelineBaseTestCommon {

@@ -57,15 +57,15 @@ import com.github.mdc.common.PipelineConfig;
 import com.github.mdc.stream.MapPair;
 import com.github.mdc.stream.StreamPipeline;
 import com.github.mdc.stream.PipelineException;
-import com.github.mdc.stream.functions.BiPredicateSerializable;
-import com.github.mdc.stream.functions.CoalesceFunction;
-import com.github.mdc.stream.functions.JoinPredicate;
-import com.github.mdc.stream.functions.LeftOuterJoinPredicate;
-import com.github.mdc.stream.functions.MapFunction;
-import com.github.mdc.stream.functions.MapToPairFunction;
-import com.github.mdc.stream.functions.PredicateSerializable;
-import com.github.mdc.stream.functions.ReduceByKeyFunction;
-import com.github.mdc.stream.functions.RightOuterJoinPredicate;
+import com.github.mdc.common.functions.BiPredicateSerializable;
+import com.github.mdc.common.functions.CoalesceFunction;
+import com.github.mdc.common.functions.JoinPredicate;
+import com.github.mdc.common.functions.LeftOuterJoinPredicate;
+import com.github.mdc.common.functions.MapFunction;
+import com.github.mdc.common.functions.MapToPairFunction;
+import com.github.mdc.common.functions.PredicateSerializable;
+import com.github.mdc.common.functions.ReduceByKeyFunction;
+import com.github.mdc.common.functions.RightOuterJoinPredicate;
 
 public class StreamPipelineSqlBuilder implements Serializable{
 	String sql;

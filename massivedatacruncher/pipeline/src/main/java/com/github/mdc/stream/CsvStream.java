@@ -15,7 +15,7 @@
  */
 package com.github.mdc.stream;
 
-import com.github.mdc.stream.functions.PeekConsumer;
+import com.github.mdc.common.functions.PeekConsumer;
 
 /**
  * 

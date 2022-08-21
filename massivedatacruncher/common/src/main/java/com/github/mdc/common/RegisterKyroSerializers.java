@@ -25,6 +25,7 @@ import java.util.Set;
 
 import com.esotericsoftware.kryo.Kryo;
 
+import com.esotericsoftware.kryonetty.kryo.KryoNetty;
 import de.javakaffee.kryoserializers.ArraysAsListSerializer;
 import de.javakaffee.kryoserializers.CollectionsEmptyListSerializer;
 import de.javakaffee.kryoserializers.CollectionsEmptyMapSerializer;
@@ -95,6 +96,21 @@ public class RegisterKyroSerializers {
 		ArrayTableSerializer.registerSerializers(kryo);
 		HashBasedTableSerializer.registerSerializers(kryo);
 		TreeBasedTableSerializer.registerSerializers(kryo);
+	}
+
+	static void register(KryoNetty kryo) {
+		kryo.register(Arrays.asList().getClass(), new ArraysAsListSerializer());
+		kryo.register(Collections.EMPTY_LIST.getClass(), new CollectionsEmptyListSerializer());
+		kryo.register(Collections.EMPTY_MAP.getClass(), new CollectionsEmptyMapSerializer());
+		kryo.register(Collections.EMPTY_SET.getClass(), new CollectionsEmptySetSerializer());
+		kryo.register(List.of(MDCConstants.EMPTY).getClass(), new CollectionsSingletonListSerializer());
+		kryo.register(Set.of(MDCConstants.EMPTY).getClass(), new CollectionsSingletonSetSerializer());
+		kryo.register(Map.of(MDCConstants.EMPTY, MDCConstants.EMPTY).getClass(), new CollectionsSingletonMapSerializer());
+		kryo.register(GregorianCalendar.class, new GregorianCalendarSerializer());
+		kryo.register(InvocationHandler.class, new JdkProxySerializer());
+
+		kryo.register(CGLibProxySerializer.CGLibProxyMarker.class, new CGLibProxySerializer( ));
+		// guava ImmutableList, ImmutableSet, ImmutableMap, ImmutableMultimap, ImmutableTable, ReverseList, UnmodifiableNavigableSet
 	}
 
 	private RegisterKyroSerializers() {

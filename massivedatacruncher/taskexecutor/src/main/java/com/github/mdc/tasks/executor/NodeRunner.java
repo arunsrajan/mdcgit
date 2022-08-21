@@ -27,6 +27,8 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import com.esotericsoftware.kryonetty.ServerEndpoint;
+import com.esotericsoftware.kryonetty.network.ReceiveEvent;
 import com.github.mdc.common.*;
 import org.apache.commons.io.IOUtils;
 import org.apache.hadoop.fs.FileSystem;
@@ -38,30 +40,35 @@ import static java.util.Objects.nonNull;
 
 public class NodeRunner implements Callable<Boolean> {
 	private static Logger log = Logger.getLogger(NodeRunner.class);
-	Socket sock;
+	ServerEndpoint server;
 	String proploaderpath;
 	ConcurrentMap<String, Map<String, Process>> containerprocesses;
 	FileSystem hdfs;
 	ConcurrentMap<String, Map<String, List<Thread>>> containeridcontainerthreads;
 	ConcurrentMap<String, List<Integer>> containeridports;
-
-	public NodeRunner(Socket sock, String proploaderpath,
+	Object receivedobject;
+	ReceiveEvent event;
+	public NodeRunner(ServerEndpoint server, String proploaderpath,
 			ConcurrentMap<String, Map<String, Process>> containerprocesses, FileSystem hdfs,
 			ConcurrentMap<String, Map<String, List<Thread>>> containeridcontainerthreads,
-			ConcurrentMap<String, List<Integer>> containeridports) {
-		this.sock = sock;
+			ConcurrentMap<String, List<Integer>> containeridports,
+			Object receivedobject,
+			ReceiveEvent event) {
+		this.server = server;
 		this.proploaderpath = proploaderpath;
 		this.containerprocesses = containerprocesses;
 		this.hdfs = hdfs;
 		this.containeridcontainerthreads = containeridcontainerthreads;
 		this.containeridports = containeridports;
+		this.receivedobject= receivedobject;
+		this.event = event;
 	}
 
 	ClassLoader cl;
 
 	public Boolean call() {
-		try (var socket = sock;) {
-			Object deserobj = Utils.readObject(sock);
+		try {
+			Object deserobj = receivedobject;
 			if (deserobj instanceof AllocateContainers ac) {
 				List<Integer> ports = new ArrayList<>();
 				for (int numport = 0; numport < ac.getNumberofcontainers(); numport++) {
@@ -72,7 +79,7 @@ public class NodeRunner implements Callable<Boolean> {
 					}
 				}
 				containeridports.put(ac.getContainerid(), ports);
-				Utils.writeObjectByStream(sock.getOutputStream(), ports);
+				server.send(event.getCtx(), ports);
 			} else if (deserobj instanceof LaunchContainers lc) {
 				Map<String, Process> processes = new ConcurrentHashMap<>();
 				Map<String, List<Thread>> threads = new ConcurrentHashMap<>();
@@ -137,7 +144,7 @@ public class NodeRunner implements Callable<Boolean> {
 						});
 				containeridcontainerthreads.put(lc.getContainerid(), threads);
 				containerprocesses.put(lc.getContainerid(), processes);
-				Utils.writeObjectByStream(sock.getOutputStream(), ports);
+				server.send(event.getCtx(), ports);
 			} else if (deserobj instanceof DestroyContainers dc) {
 				log.debug("In DCs Destroying the Containers with id: " + dc.getContainerid());
 				Map<String, Process> processes = containerprocesses.remove(dc.getContainerid());
@@ -188,7 +195,7 @@ public class NodeRunner implements Callable<Boolean> {
 			} else if (deserobj instanceof SkipToNewLine stnl) {
 				long numberofbytesskipped = HDFSBlockUtils.skipBlockToNewLine(hdfs, stnl.lblock, stnl.l,
 						stnl.xrefaddress);
-				Utils.writeObjectByStream(sock.getOutputStream(), numberofbytesskipped);
+				server.send(event.getCtx(), numberofbytesskipped);
 			}
 			return true;
 		} catch (Exception ex) {

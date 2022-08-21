@@ -29,6 +29,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutorService;
 
+import com.esotericsoftware.kryonetty.ServerEndpoint;
+import com.esotericsoftware.kryonetty.network.ReceiveEvent;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.log4j.Logger;
@@ -64,7 +66,7 @@ import com.github.mdc.stream.executors.StreamPipelineTaskExecutorJGroups;
 
 public class TaskExecutor implements Runnable {
 	private static Logger log = Logger.getLogger(TaskExecutor.class);
-	Socket s;
+	ServerEndpoint s;
 	int port;
 	ExecutorService es;
 	ConcurrentMap<String, OutputStream> resultstream;
@@ -79,15 +81,15 @@ public class TaskExecutor implements Runnable {
 	Map<String, HeartBeatServerStream> containeridhbss = new ConcurrentHashMap<>();
 	Map<String, JobStage> jobidstageidjobstagemap;
 	Queue<Object> taskqueue;
-
+	ReceiveEvent event;
 	@SuppressWarnings({"rawtypes"})
-	public TaskExecutor(Socket s, ClassLoader cl, int port, ExecutorService es, Configuration configuration,
+	public TaskExecutor(ServerEndpoint s, ClassLoader cl, int port, ExecutorService es, Configuration configuration,
 			Map<String, Object> apptaskexecutormap, Map<String, Object> jobstageexecutormap,
 			ConcurrentMap<String, OutputStream> resultstream, Cache inmemorycache, Object deserobj,
 			Map<String, HeartBeatTaskScheduler> hbtsappid, Map<String, HeartBeatTaskSchedulerStream> hbtssjobid,
 			Map<String, HeartBeatServerStream> containeridhbss,
 			Map<String, Map<String, Object>> jobidstageidexecutormap, Queue<Object> taskqueue,
-			Map<String, JobStage> jobidstageidjobstagemap) {
+			Map<String, JobStage> jobidstageidjobstagemap, ReceiveEvent event) {
 		this.s = s;
 		this.cl = cl;
 		this.port = port;
@@ -104,6 +106,7 @@ public class TaskExecutor implements Runnable {
 		this.jobidstageidexecutormap = jobidstageidexecutormap;
 		this.taskqueue = taskqueue;
 		this.jobidstageidjobstagemap = jobidstageidjobstagemap;
+		this.event = event;
 	}
 
 	ClassLoader cl;
@@ -111,12 +114,12 @@ public class TaskExecutor implements Runnable {
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	public void run() {
 		log.debug("Started the run------------------------------------------------------");
-		try (Socket sock = s) {
-			log.debug("Framework Message: " + deserobj);
+		try {
 			if (deserobj instanceof JobStage jobstage) {
+				log.info("Received Job Stage: " + jobstage);
 				jobidstageidjobstagemap.put(jobstage.jobid + jobstage.stageid, jobstage);
 			} else if (deserobj instanceof Task task) {
-				log.info("Received Job Stage: " + deserobj);
+				log.info("Received Task: " + task);
 				var taskexecutor = jobstageexecutormap.get(task.jobid + task.stageid + task.taskid);
 				var hbtss = hbtssjobid.get(task.jobid);
 				var mdste = (StreamPipelineTaskExecutor) taskexecutor;
@@ -181,7 +184,7 @@ public class TaskExecutor implements Runnable {
 							jobtmpdir.delete();
 						}
 					}
-					Utils.writeObject(sock,  true);
+					s.send(event.getCtx(), true);
 				}
 			} else if (deserobj instanceof FreeResourcesCompletedJob cce) {
 				var jsem = jobidstageidexecutormap.remove(cce.jobid);
@@ -226,13 +229,13 @@ public class TaskExecutor implements Runnable {
 								rdf.data = (byte[]) is.readAllBytes();
 							}
 						}
-						Utils.writeObjectByStream(s.getOutputStream(), rdf);
+						s.send(event.getCtx(), rdf);
 					}
 				}
 				else if (rdf.mode.equals(MDCConstants.JGROUPS)) {
 					try (var is = RemoteDataFetcher.readIntermediatePhaseOutputFromFS(rdf.jobid, rdf.taskid);) {
 						rdf.data = (byte[]) is.readAllBytes();
-						Utils.writeObjectByStream(s.getOutputStream(), rdf);
+						s.send(event.getCtx(), rdf);
 					}
 				} else {
 					if (taskexecutor != null) {
@@ -240,7 +243,7 @@ public class TaskExecutor implements Runnable {
 								.readIntermediatePhaseOutputFromFS(rdf.jobid,
 										mdstde.getIntermediateDataRDF(rdf.taskid));) {
 							rdf.data = (byte[]) is.readAllBytes();
-							Utils.writeObjectByStream(s.getOutputStream(), rdf);
+							s.send(event.getCtx(), rdf);
 						}
 					}
 				}
@@ -257,7 +260,7 @@ public class TaskExecutor implements Runnable {
 					}
 				}
 				ca.setResponse(true);
-				Utils.writeObjectByStream(s.getOutputStream(), ca);
+				s.send(event.getCtx(), ca);
 			} else if (deserobj instanceof List objects) {
 				var object = objects.get(0);
 				var applicationid = (String) objects.get(1);
@@ -310,7 +313,7 @@ public class TaskExecutor implements Runnable {
 							ctx = (Context) RemoteDataFetcher.readIntermediatePhaseOutputFromDFS(applicationid,
 									apptaskid, false);
 						}
-						Utils.writeObjectByStream(s.getOutputStream(), ctx);
+						s.send(event.getCtx(), ctx);
 						s.close();
 						apptaskexecutormap.remove(apptaskid);
 					} else if (object instanceof RetrieveKeys rk) {
@@ -320,7 +323,7 @@ public class TaskExecutor implements Runnable {
 						rk.applicationid = applicationid;
 						rk.taskid = taskid;
 						rk.response = true;
-						Utils.writeObjectByStream(s.getOutputStream(), rk);
+						s.send(event.getCtx(), rk);
 						s.close();
 						if (taskexecutor instanceof TaskExecutorMapperCombiner mdtemc) {
 							mdtemc.getHbts().stop();

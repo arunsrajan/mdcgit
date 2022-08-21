@@ -25,6 +25,10 @@ import org.apache.log4j.Logger;
 import org.apache.zookeeper.server.ServerCnxnFactory;
 
 import com.esotericsoftware.kryo.io.Input;
+import com.esotericsoftware.kryonetty.ServerEndpoint;
+import com.esotericsoftware.kryonetty.network.ReceiveEvent;
+import com.esotericsoftware.kryonetty.network.handler.NetworkHandler;
+import com.esotericsoftware.kryonetty.network.handler.NetworkListener;
 import com.github.mdc.stream.scheduler.StreamPipelineTaskScheduler;
 import com.github.mdc.tasks.executor.NodeRunner;
 import com.github.mdc.tasks.executor.web.NodeWebServlet;
@@ -75,7 +79,7 @@ public class EmbeddedSchedulersNodeLauncher {
 		}
 		Runtime.getRuntime().halt(0);
 	}
-
+	static ServerEndpoint server = null;
 	@SuppressWarnings("resource")
 	public static void startContainerLauncher(CountDownLatch cdl) {
 		HeartBeatServerStream hbss = new HeartBeatServerStream();
@@ -87,8 +91,6 @@ public class EmbeddedSchedulersNodeLauncher {
 			var hb = new HeartBeatServer();
 			hb.init(0, port, host, 0, pingdelay, "");
 			hbss.ping();
-			var server = Utils.createSSLServerSocket(port);
-			var es = Executors.newFixedThreadPool(1);
 			var escontainer = Executors.newWorkStealingPool();
 
 			var hdfs = FileSystem.get(new URI(MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL)),
@@ -104,23 +106,26 @@ public class EmbeddedSchedulersNodeLauncher {
 					new ResourcesMetricsServlet(), MDCConstants.FORWARD_SLASH + MDCConstants.DATA
 							+ MDCConstants.FORWARD_SLASH + MDCConstants.ASTERIX);
 			su.start();
-			es.execute(() -> {
-				while (true) {
-					try {
-						Socket sock = server.accept();
-						var container = new NodeRunner(sock, MDCConstants.PROPLOADERCONFIGFOLDER,
-								containerprocesses, hdfs, containeridthreads, containeridports);
-						Future<Boolean> containerallocated = escontainer.submit(container);
-						log.info("Containers Allocated: " + containerallocated.get());
-					} catch (InterruptedException e) {
-						log.warn("Interrupted!", e);
-						// Restore interrupted state...
-						Thread.currentThread().interrupt();
-					} catch (Exception e) {
-						log.error(MDCConstants.EMPTY, e);
+			server = Utils.getServerKryoNetty(port,
+					new NetworkListener() {
+					@NetworkHandler
+		            public void onReceive(ReceiveEvent event) {
+						try {
+							Object object = event.getObject();
+							var container = new NodeRunner(server, MDCConstants.PROPLOADERCONFIGFOLDER,
+									containerprocesses, hdfs, containeridthreads, containeridports,
+									object, event);
+							Future<Boolean> containerallocated = escontainer.submit(container);
+							log.info("Containers Allocated: " + containerallocated.get());
+						} catch (InterruptedException e) {
+							log.warn("Interrupted!", e);
+							// Restore interrupted state...
+							Thread.currentThread().interrupt();
+						} catch (Exception e) {
+							log.error(MDCConstants.EMPTY, e);
+						}
 					}
-				}
-			});
+				});
 			log.debug("NodeLauncher started at port....." + MDCProperties.get().getProperty(MDCConstants.NODE_PORT));
 			log.debug("Adding Shutdown Hook...");
 			Utils.addShutdownHook(() -> {
@@ -140,8 +145,8 @@ public class EmbeddedSchedulersNodeLauncher {
 					if (!Objects.isNull(hdfs)) {
 						hdfs.close();
 					}
-					if (!Objects.isNull(es)) {
-						es.shutdown();
+					if (!Objects.isNull(server)) {
+						server.close();
 					}
 					cdl.countDown();
 				} catch (Exception e) {

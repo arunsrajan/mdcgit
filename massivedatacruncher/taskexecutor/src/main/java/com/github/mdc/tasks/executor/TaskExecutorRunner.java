@@ -24,7 +24,14 @@ import java.util.Objects;
 import java.util.Queue;
 import java.util.concurrent.*;
 
+import com.esotericsoftware.kryonetty.ServerEndpoint;
+import com.esotericsoftware.kryonetty.network.ConnectEvent;
+import com.esotericsoftware.kryonetty.network.DisconnectEvent;
+import com.esotericsoftware.kryonetty.network.ReceiveEvent;
+import com.esotericsoftware.kryonetty.network.handler.NetworkHandler;
+import com.esotericsoftware.kryonetty.network.handler.NetworkListener;
 import com.github.mdc.common.*;
+import io.netty.channel.ChannelHandlerContext;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.state.ConnectionState;
@@ -35,6 +42,8 @@ import org.apache.log4j.Logger;
 
 import com.github.mdc.tasks.executor.web.NodeWebServlet;
 import com.github.mdc.tasks.executor.web.ResourcesMetricsServlet;
+
+import static java.util.Objects.nonNull;
 
 public class TaskExecutorRunner implements TaskExecutorRunnerMBean {
 
@@ -49,7 +58,6 @@ public class TaskExecutorRunner implements TaskExecutorRunnerMBean {
 	Map<String, JobStage> jobidstageidjobstagemap = new ConcurrentHashMap<>();
 	Queue<Object> taskqueue = new LinkedBlockingQueue<Object>();
 	CuratorFramework cf;
-	ServerSocket server;
 	static ExecutorService es;
 	static CountDownLatch shutdown = new CountDownLatch(1);
 
@@ -90,6 +98,9 @@ public class TaskExecutorRunner implements TaskExecutorRunnerMBean {
 		log.info("Adding Shutdown Hook...");
 		shutdown.await();
 		try {
+			if(nonNull(server)){
+				server.close();
+			}
 			log.info("Stopping and closes all the connections...");
 			mdted.destroy();
 			ByteBufferPoolDirect.destroy();
@@ -135,7 +146,7 @@ public class TaskExecutorRunner implements TaskExecutorRunnerMBean {
 
 	}
 	ClassLoader cl;
-
+	static ServerEndpoint server = null;
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Override
 	public void start() throws Exception {
@@ -151,36 +162,42 @@ public class TaskExecutorRunner implements TaskExecutorRunnerMBean {
 				new ResourcesMetricsServlet(), MDCConstants.FORWARD_SLASH + MDCConstants.DATA + MDCConstants.FORWARD_SLASH + MDCConstants.ASTERIX
 		);
 		su.start();
-		server = Utils.createSSLServerSocket(port);
 		var configuration = new Configuration();
 
 		var inmemorycache = MDCCache.get();
-		Semaphore semaphore = new Semaphore(1);		
 		cl = TaskExecutorRunner.class.getClassLoader();
 		log.info("Default Class Loader: "+cl);
-		threadpool.execute(() -> {
-			while (true) {
-				try {					
-					var socket = server.accept();					
-					log.info("Default Class Loader: "+cl);
-					var deserobj = Utils.readObject(socket, cl);
+
+		server = Utils.getServerKryoNetty(port, new NetworkListener() {
+
+			@NetworkHandler
+			public void onConnect(ConnectEvent event) {
+				ChannelHandlerContext ctx = event.getCtx();
+				log.info("Client: Connected to server: " + ctx.channel().remoteAddress());
+			}
+
+			@NetworkHandler
+			public void onDisconnect(DisconnectEvent event) {
+				ChannelHandlerContext ctx = event.getCtx();
+				log.info("Server: Client disconnected: " + ctx.channel().remoteAddress());
+			}
+
+			@NetworkHandler
+			public void onReceive(ReceiveEvent event) {
+				try{
+					Object deserobj =event.getObject();
 					log.info("Deserialized Object: "+deserobj);
 					if(deserobj instanceof TaskExecutorShutdown){
 						shutdown.countDown();
-						socket.close();
-						break;
 					}
 					else if (deserobj instanceof LoadJar loadjar) {
 						log.info("Loading the Required jars: "+loadjar.mrjar);
-						semaphore.acquire();
 						cl = MDCMapReducePhaseClassLoader
 									.newInstance(loadjar.mrjar, cl);
 						log.info("Loaded the Required jars");
-						Utils.writeObject(socket, LoadJar.class.getSimpleName());
-						semaphore.release();	
-						socket.close();
+						server.getKryoSerialization().obtainKryo().setClassLoader(cl);
+						server.send(event.getCtx(),  MDCConstants.JARLOADED);
 					} else if (deserobj instanceof JobApp jobapp) {
-						semaphore.acquire();
 						if (jobapp.getJobtype() == JobApp.JOBAPP.MR) {
 							if (!Objects.isNull(jobapp.getJobappid()) && Objects.isNull(hbtsappid.get(jobapp.getJobappid()))) {
 								var hbts = new HeartBeatTaskScheduler();
@@ -217,17 +234,12 @@ public class TaskExecutorRunner implements TaskExecutorRunnerMBean {
 							hbss.ping();
 							containeridhbss.put(containerid, hbss);
 						}
-						Utils.writeObject(socket, JobApp.class.getSimpleName());
-						socket.close();
-						semaphore.release();
 					} else if (!Objects.isNull(deserobj)) {
-						launchtaskpool.execute(new TaskExecutor(socket, cl, port, es, configuration,
+						launchtaskpool.execute(new TaskExecutor(server, cl, port, es, configuration,
 								apptaskexecutormap, jobstageexecutormap, resultstream, inmemorycache, deserobj,
 								hbtsappid, hbtssjobid, containeridhbss,
 								jobidstageidexecutormap,
-								taskqueue, jobidstageidjobstagemap));
-					} else {
-						socket.close();
+								taskqueue, jobidstageidjobstagemap, event));
 					}
 				} catch (InterruptedException e) {
 					log.warn("Interrupted!", e);

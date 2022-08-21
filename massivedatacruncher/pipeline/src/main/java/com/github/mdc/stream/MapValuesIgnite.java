@@ -17,8 +17,8 @@ package com.github.mdc.stream;
 
 import org.jooq.lambda.tuple.Tuple2;
 
-import com.github.mdc.stream.functions.MapValuesFunction;
-import com.github.mdc.stream.functions.ReduceByKeyFunctionValues;
+import com.github.mdc.common.functions.MapValuesFunction;
+import com.github.mdc.common.functions.ReduceByKeyFunctionValues;
 
 /**
  * 

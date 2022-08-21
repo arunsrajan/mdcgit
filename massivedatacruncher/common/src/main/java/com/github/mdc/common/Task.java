@@ -19,6 +19,7 @@ import java.io.Serializable;
 import java.util.List;
 
 import com.github.mdc.common.MDCConstants.STORAGE;
+import lombok.*;
 
 /**
  * 
@@ -26,12 +27,13 @@ import com.github.mdc.common.MDCConstants.STORAGE;
  * Holds the task information such as execution function, parent and child tasks 
  * in the form graph for the streaming API.
  */
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class Task implements Serializable,Cloneable {
 	private static final long serialVersionUID = 4608751332110497234L;
 
-	public Task() {
-		super();
-	}
 	public Object[] input;
 	public RemoteDataFetch[] parentremotedatafetch;
 
@@ -87,14 +89,6 @@ public class Task implements Serializable,Cloneable {
 	@Override
 	public String toString() {
 		return "Task [taskid=" + taskid + "]";
-	}
-
-	public String getTaskname() {
-		return taskname;
-	}
-
-	public void setTaskname(String taskname) {
-		this.taskname = taskname;
 	}
 
 	@Override

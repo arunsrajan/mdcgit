@@ -119,16 +119,16 @@ import com.github.mdc.stream.PipelineException;
 import com.github.mdc.stream.executors.StreamPipelineTaskExecutor;
 import com.github.mdc.stream.executors.StreamPipelineTaskExecutorIgnite;
 import com.github.mdc.stream.executors.StreamPipelineTaskExecutorLocal;
-import com.github.mdc.stream.functions.AggregateReduceFunction;
-import com.github.mdc.stream.functions.Coalesce;
-import com.github.mdc.stream.functions.IntersectionFunction;
-import com.github.mdc.stream.functions.Join;
-import com.github.mdc.stream.functions.JoinPredicate;
-import com.github.mdc.stream.functions.LeftJoin;
-import com.github.mdc.stream.functions.LeftOuterJoinPredicate;
-import com.github.mdc.stream.functions.RightJoin;
-import com.github.mdc.stream.functions.RightOuterJoinPredicate;
-import com.github.mdc.stream.functions.UnionFunction;
+import com.github.mdc.common.functions.AggregateReduceFunction;
+import com.github.mdc.common.functions.Coalesce;
+import com.github.mdc.common.functions.IntersectionFunction;
+import com.github.mdc.common.functions.Join;
+import com.github.mdc.common.functions.JoinPredicate;
+import com.github.mdc.common.functions.LeftJoin;
+import com.github.mdc.common.functions.LeftOuterJoinPredicate;
+import com.github.mdc.common.functions.RightJoin;
+import com.github.mdc.common.functions.RightOuterJoinPredicate;
+import com.github.mdc.common.functions.UnionFunction;
 import com.github.mdc.stream.mesos.scheduler.MesosScheduler;
 import com.google.common.collect.Iterables;
 
@@ -524,8 +524,13 @@ public class StreamJobScheduler {
 		jsidjsmap.keySet().stream().forEach(key -> {
 			for (String te : taskexecutors) {
 				try {
-					JobStage js = jsidjsmap.get(key);
-					Utils.writeObject(te, js, kryo);
+					JobStage js = (JobStage) jsidjsmap.get(key);
+					JobStage clonedjs = (JobStage) js.clone();
+					clonedjs.stage = new Stage(js.stage.id,js.stage.getStageid(),js.stage.number,
+							null,null,null,js.stage.isstagecompleted,js.stage.tovisit,js.stage.tasksdescription);
+					clonedjs.stage.tasks = new ArrayList<>();
+					clonedjs.stage.tasks.addAll(js.stage.tasks);
+					Utils.writeObject(te, clonedjs);
 				} catch (Exception e) {
 					log.error(MDCConstants.EMPTY, e);
 				}
@@ -557,8 +562,9 @@ public class StreamJobScheduler {
 				String tehost = lc.getNodehostport().split("_")[0];
 				while (index < ports.size()) {
 					while (true) {
-						try (var socket = Utils.createSSLSocket(tehost, ports.get(index))) {
-							Utils.writeObject(socket, new Dummy());
+						try {
+							var client = Utils.getClientKryoNetty(tehost, ports.get(index), null);
+							client.send(new Dummy());
 							break;
 						} catch (Exception ex) {
 							Thread.sleep(1000);
@@ -571,7 +577,7 @@ public class StreamJobScheduler {
 					jobapp.setContainerid(lc.getContainerid());
 					jobapp.setJobappid(job.id);
 					jobapp.setJobtype(JobApp.JOBAPP.STREAM);
-					Utils.getResultObjectByInput(tehost + MDCConstants.UNDERSCORE + ports.get(index), jobapp);
+					Utils.writeObject(tehost + MDCConstants.UNDERSCORE + ports.get(index), jobapp);
 					index++;
 				}
 			}
@@ -778,7 +784,6 @@ public class StreamJobScheduler {
 			var chpcres = GlobalContainerAllocDealloc.getHportcrs();
 			while (!completed && numexecute < executioncount) {
 				temdstdtmap.clear();
-				;
 				var configexec = new DexecutorConfig<StreamPipelineTaskSubmitter, Boolean>(es,
 						new DAGScheduler(graph.vertexSet().size(), batchsize));
 				var dexecutor = new DefaultDexecutor<StreamPipelineTaskSubmitter, Boolean>(configexec);
@@ -1833,7 +1838,6 @@ public class StreamJobScheduler {
 	 * Get the file streams from HDFS and jobid and stageid.
 	 * 
 	 * @param hdfs
-	 * @param jobstage
 	 * @return
 	 * @throws Exception
 	 */

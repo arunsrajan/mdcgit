@@ -20,16 +20,16 @@ import java.util.function.IntUnaryOperator;
 
 import org.apache.log4j.Logger;
 
-import com.github.mdc.stream.functions.AtomicBiConsumer;
-import com.github.mdc.stream.functions.AtomicIntegerSupplier;
-import com.github.mdc.stream.functions.AtomicObjIntConsumer;
-import com.github.mdc.stream.functions.Distinct;
-import com.github.mdc.stream.functions.Max;
-import com.github.mdc.stream.functions.Min;
-import com.github.mdc.stream.functions.SToIntFunction;
-import com.github.mdc.stream.functions.StandardDeviation;
-import com.github.mdc.stream.functions.Sum;
-import com.github.mdc.stream.functions.SummaryStatistics;
+import com.github.mdc.common.functions.AtomicBiConsumer;
+import com.github.mdc.common.functions.AtomicIntegerSupplier;
+import com.github.mdc.common.functions.AtomicObjIntConsumer;
+import com.github.mdc.common.functions.Distinct;
+import com.github.mdc.common.functions.Max;
+import com.github.mdc.common.functions.Min;
+import com.github.mdc.common.functions.SToIntFunction;
+import com.github.mdc.common.functions.StandardDeviation;
+import com.github.mdc.common.functions.Sum;
+import com.github.mdc.common.functions.SummaryStatistics;
 
 public final class PipelineIntStream<I1> extends AbstractPipeline {
 	private static Logger log = Logger.getLogger(PipelineIntStream.class);

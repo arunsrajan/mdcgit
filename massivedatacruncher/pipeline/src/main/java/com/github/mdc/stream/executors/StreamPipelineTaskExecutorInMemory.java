@@ -133,13 +133,16 @@ public sealed class StreamPipelineTaskExecutorInMemory extends StreamPipelineTas
 	
 	@Override
 	public StreamPipelineTaskExecutorInMemory call() {
-		log.debug("Entered MassiveDataStreamTaskExecutorInMemory.call");
-		var stageTasks = getStagesTask();
-		var hdfsfilepath = MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL, MDCConstants.HDFSNAMENODEURL);
+		log.info("Entered MassiveDataStreamTaskExecutorInMemory.call for task "+task);
+		String stageTasks = "";
+		log.info("Init Stage tasks");
+		var hdfsfilepath = MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL, MDCConstants.HDFSNAMENODEURL_DEFAULT);
+		log.info("Obtaining Namenode URL "+hdfsfilepath);
 		var configuration = new Configuration();
 		try(var hdfs = FileSystem.newInstance(new URI(hdfsfilepath), configuration);) {
-			log.debug("Submitted Stage " + stageTasks);
-			log.debug("Running Stage " + stageTasks);
+			stageTasks = getStagesTask();
+			log.info("Submitted Task " + task);
+			log.info("Running Task " + task);
 			if (task.input != null && task.parentremotedatafetch != null) {
 				var numinputs = task.parentremotedatafetch.length;
 				for (var inputindex = 0; inputindex<numinputs;inputindex++) {
@@ -161,7 +164,7 @@ public sealed class StreamPipelineTaskExecutorInMemory extends StreamPipelineTas
 			timetaken = computeTasks(task, hdfs);
 			if(!Objects.isNull(hbtss))
 			hbtss.pingOnce(task.stageid, task.taskid, task.hostport, Task.TaskStatus.COMPLETED, timetaken, null);
-			log.debug("Completed Stage " + stageTasks);
+			log.info("Completed Task: " + task);
 		} catch (Exception ex) {
 			log.error("Failed Stage " + stageTasks, ex);
 			completed = true;

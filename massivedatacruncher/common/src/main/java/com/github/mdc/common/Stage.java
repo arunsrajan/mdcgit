@@ -15,6 +15,8 @@
  */
 package com.github.mdc.common;
 
+import lombok.*;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -26,6 +28,10 @@ import java.util.Set;
  * @author Arun
  * Stage information of the streaming MR api.
  */
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class Stage implements Serializable,Cloneable {
 
 	private static final long serialVersionUID = 2272815602378403537L;
@@ -47,14 +53,5 @@ public class Stage implements Serializable,Cloneable {
 	public String toString() {
 		return stageid + tasksdescription;
 	}
-
-	public String getStageid() {
-		return stageid;
-	}
-
-	public void setStageid(String stageid) {
-		this.stageid = stageid;
-	}
-
 
 }

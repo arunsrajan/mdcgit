@@ -32,24 +32,24 @@ import org.jooq.lambda.tuple.Tuple2;
 
 import com.github.mdc.common.PipelineConstants;
 import com.github.mdc.stream.PipelineException;
-import com.github.mdc.stream.functions.CoalesceFunction;
-import com.github.mdc.stream.functions.Distinct;
-import com.github.mdc.stream.functions.DoubleFlatMapFunction;
-import com.github.mdc.stream.functions.DoubleTupleFlatMapFunction;
-import com.github.mdc.stream.functions.FlatMapFunction;
-import com.github.mdc.stream.functions.KeyByFunction;
-import com.github.mdc.stream.functions.LongFlatMapFunction;
-import com.github.mdc.stream.functions.LongTupleFlatMapFunction;
-import com.github.mdc.stream.functions.MapFunction;
-import com.github.mdc.stream.functions.MapToPairFunction;
-import com.github.mdc.stream.functions.MapValuesFunction;
-import com.github.mdc.stream.functions.PeekConsumer;
-import com.github.mdc.stream.functions.PredicateSerializable;
-import com.github.mdc.stream.functions.ReduceByKeyFunction;
-import com.github.mdc.stream.functions.ReduceByKeyFunctionValues;
-import com.github.mdc.stream.functions.ReduceFunction;
-import com.github.mdc.stream.functions.SortedComparator;
-import com.github.mdc.stream.functions.TupleFlatMapFunction;
+import com.github.mdc.common.functions.CoalesceFunction;
+import com.github.mdc.common.functions.Distinct;
+import com.github.mdc.common.functions.DoubleFlatMapFunction;
+import com.github.mdc.common.functions.DoubleTupleFlatMapFunction;
+import com.github.mdc.common.functions.FlatMapFunction;
+import com.github.mdc.common.functions.KeyByFunction;
+import com.github.mdc.common.functions.LongFlatMapFunction;
+import com.github.mdc.common.functions.LongTupleFlatMapFunction;
+import com.github.mdc.common.functions.MapFunction;
+import com.github.mdc.common.functions.MapToPairFunction;
+import com.github.mdc.common.functions.MapValuesFunction;
+import com.github.mdc.common.functions.PeekConsumer;
+import com.github.mdc.common.functions.PredicateSerializable;
+import com.github.mdc.common.functions.ReduceByKeyFunction;
+import com.github.mdc.common.functions.ReduceByKeyFunctionValues;
+import com.github.mdc.common.functions.ReduceFunction;
+import com.github.mdc.common.functions.SortedComparator;
+import com.github.mdc.common.functions.TupleFlatMapFunction;
 
 public class StreamUtils {
 	private StreamUtils() {

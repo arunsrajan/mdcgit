@@ -15,63 +15,25 @@
  */
 package com.github.mdc.common;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
-import java.lang.invoke.SerializedLambda;
-import java.lang.management.ManagementFactory;
-import java.lang.management.MemoryPoolMXBean;
-import java.lang.management.MemoryType;
-import java.lang.management.MemoryUsage;
-import java.lang.reflect.InvocationHandler;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.net.URI;
-import java.security.KeyStore;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.GregorianCalendar;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Properties;
-import java.util.Set;
-import java.util.Vector;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Semaphore;
-import java.util.jar.Attributes;
-import java.util.jar.JarEntry;
-import java.util.jar.JarOutputStream;
-import java.util.jar.Manifest;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import javax.net.ssl.KeyManagerFactory;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLServerSocket;
-import javax.net.ssl.SSLServerSocketFactory;
-import javax.net.ssl.SSLSocket;
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.TrustManagerFactory;
-
+import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.SerializerFactory;
+import com.esotericsoftware.kryo.io.Input;
+import com.esotericsoftware.kryo.io.Output;
+import com.esotericsoftware.kryo.serializers.ClosureSerializer;
+import com.esotericsoftware.kryo.serializers.CompatibleFieldSerializer;
+import com.esotericsoftware.kryo.serializers.CompatibleFieldSerializer.CompatibleFieldSerializerConfig;
+import com.esotericsoftware.kryo.serializers.DefaultSerializers.EnumSerializer;
+import com.esotericsoftware.kryo.serializers.JavaSerializer;
+import com.esotericsoftware.kryo.util.DefaultInstantiatorStrategy;
+import com.esotericsoftware.kryonetty.ClientEndpoint;
+import com.esotericsoftware.kryonetty.ServerEndpoint;
+import com.esotericsoftware.kryonetty.kryo.KryoNetty;
+import com.esotericsoftware.kryonetty.network.ReceiveEvent;
+import com.esotericsoftware.kryonetty.network.handler.NetworkHandler;
+import com.esotericsoftware.kryonetty.network.handler.NetworkListener;
+import de.javakaffee.kryoserializers.*;
+import de.javakaffee.kryoserializers.cglib.CGLibProxySerializer;
+import de.javakaffee.kryoserializers.guava.*;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import org.apache.hadoop.conf.Configuration;
@@ -88,56 +50,34 @@ import org.jgrapht.io.ComponentNameProvider;
 import org.jgrapht.io.DOTExporter;
 import org.jgrapht.io.ExportException;
 import org.jgrapht.io.GraphExporter;
-import org.jgroups.Address;
-import org.jgroups.JChannel;
-import org.jgroups.Message;
-import org.jgroups.ObjectMessage;
-import org.jgroups.Receiver;
-import org.jgroups.View;
+import org.jgroups.*;
 import org.jgroups.util.UUID;
 import org.jooq.lambda.tuple.Tuple2;
 import org.json.simple.JSONObject;
 import org.objenesis.strategy.StdInstantiatorStrategy;
-import org.reflections.Reflections;
-import org.reflections.scanners.SubTypesScanner;
 
-import com.esotericsoftware.kryo.Kryo;
-import com.esotericsoftware.kryo.io.Input;
-import com.esotericsoftware.kryo.io.Output;
-import com.esotericsoftware.kryo.serializers.ClosureSerializer;
-import com.esotericsoftware.kryo.serializers.CompatibleFieldSerializer;
-import com.esotericsoftware.kryo.serializers.CompatibleFieldSerializer.CompatibleFieldSerializerConfig;
-import com.esotericsoftware.kryo.serializers.DefaultSerializers.EnumSerializer;
-import com.esotericsoftware.kryo.serializers.JavaSerializer;
-import com.esotericsoftware.kryo.util.DefaultInstantiatorStrategy;
+import javax.net.ssl.*;
+import java.io.*;
+import java.lang.invoke.SerializedLambda;
+import java.lang.management.ManagementFactory;
+import java.lang.management.MemoryPoolMXBean;
+import java.lang.management.MemoryType;
+import java.lang.management.MemoryUsage;
+import java.lang.reflect.InvocationHandler;
+import java.net.*;
+import java.security.KeyStore;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.Semaphore;
+import java.util.jar.Attributes;
+import java.util.jar.JarEntry;
+import java.util.jar.JarOutputStream;
+import java.util.jar.Manifest;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import de.javakaffee.kryoserializers.ArraysAsListSerializer;
-import de.javakaffee.kryoserializers.CollectionsEmptyListSerializer;
-import de.javakaffee.kryoserializers.CollectionsEmptyMapSerializer;
-import de.javakaffee.kryoserializers.CollectionsEmptySetSerializer;
-import de.javakaffee.kryoserializers.CollectionsSingletonListSerializer;
-import de.javakaffee.kryoserializers.CollectionsSingletonMapSerializer;
-import de.javakaffee.kryoserializers.CollectionsSingletonSetSerializer;
-import de.javakaffee.kryoserializers.GregorianCalendarSerializer;
-import de.javakaffee.kryoserializers.JdkProxySerializer;
-import de.javakaffee.kryoserializers.SynchronizedCollectionsSerializer;
-import de.javakaffee.kryoserializers.UnmodifiableCollectionsSerializer;
-import de.javakaffee.kryoserializers.cglib.CGLibProxySerializer;
-import de.javakaffee.kryoserializers.guava.ArrayListMultimapSerializer;
-import de.javakaffee.kryoserializers.guava.ArrayTableSerializer;
-import de.javakaffee.kryoserializers.guava.HashBasedTableSerializer;
-import de.javakaffee.kryoserializers.guava.HashMultimapSerializer;
-import de.javakaffee.kryoserializers.guava.ImmutableListSerializer;
-import de.javakaffee.kryoserializers.guava.ImmutableMapSerializer;
-import de.javakaffee.kryoserializers.guava.ImmutableMultimapSerializer;
-import de.javakaffee.kryoserializers.guava.ImmutableSetSerializer;
-import de.javakaffee.kryoserializers.guava.ImmutableTableSerializer;
-import de.javakaffee.kryoserializers.guava.LinkedHashMultimapSerializer;
-import de.javakaffee.kryoserializers.guava.LinkedListMultimapSerializer;
-import de.javakaffee.kryoserializers.guava.ReverseListSerializer;
-import de.javakaffee.kryoserializers.guava.TreeBasedTableSerializer;
-import de.javakaffee.kryoserializers.guava.TreeMultimapSerializer;
-import de.javakaffee.kryoserializers.guava.UnmodifiableNavigableSetSerializer;
+import static java.util.Objects.nonNull;
 
 /**
  * 
@@ -274,18 +214,6 @@ public class Utils {
 		kryo.register(ClosureSerializer.Closure.class, new ClosureSerializer());
 		kryo.setRegistrationRequired(false);
 		kryo.setReferences(true);
-	}
-
-	/**
-	 * The method which finds all the classes in a package
-	 * @param packageName
-	 * @return set of class
-	 */
-	public static Set<Class> findAllClassesUsingReflectionsLibrary(String packageName) {
-	    Reflections reflections = new Reflections(packageName, new SubTypesScanner(false));
-	    return reflections.getSubTypesOf(Object.class)
-	      .stream()
-	      .collect(Collectors.toSet());
 	}
 	
 	/**
@@ -838,30 +766,23 @@ public class Utils {
 	public static Object getResultObjectByInput(String hp, Object inputobj) throws Exception {
 		log.info("getResultObjectByInput: " + inputobj);
 		var hostport = hp.split(MDCConstants.UNDERSCORE);
-		try (var socket = Utils.createSSLSocket(hostport[0], Integer.parseInt(hostport[1]));) {
-			writeObjectByStream(socket.getOutputStream(), inputobj);
-			var obj = readObject(socket);
-			return obj;
+		var queue = new LinkedBlockingQueue<Object>();
+		ClientEndpoint client = null;
+		try {
+			final Object obj;
+			client = Utils.getClientKryoNetty(hostport[0], Integer.parseInt(hostport[1]), new NetworkListener() {
+				@NetworkHandler
+	            public void onReceive(ReceiveEvent event) {
+					queue.offer(event.getObject()) ;
+	            }
+			});
+			client.send(inputobj);
+			while(queue.isEmpty()) {
+				Thread.sleep(400);
+			}
+			return queue.poll();
 		} catch (Exception ex) {
 			log.error("Unable to read result Object: " + inputobj + " " + hp, ex);
-			throw ex;
-		}
-	}
-
-	/**
-	 * This function returns the objects by socket.
-	 * 
-	 * @param socket
-	 * @return object
-	 * @throws Exception 
-	 */
-	public static Object readObject(Socket socket) throws Exception {
-		try {
-			var input = new Input(socket.getInputStream());
-			var kryo = Utils.getKryoSerializerDeserializer();
-			return kryo.readClassAndObject(input);
-		} catch (Exception ex) {
-			log.error("Unable to read Object: ", ex);
 			throw ex;
 		}
 	}
@@ -872,7 +793,7 @@ public class Utils {
 	 * @param socket
 	 * @param cl
 	 * @return object
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	public static Object readObject(Socket socket, ClassLoader cl) throws Exception {
 		try {
@@ -916,16 +837,19 @@ public class Utils {
 	 */
 	public static void writeObject(String hp, Object inputobj) throws Exception {
 		var hostport = hp.split(MDCConstants.UNDERSCORE);
-		try (var socket = Utils.createSSLSocket(hostport[0], Integer.parseInt(hostport[1]));) {
+		ClientEndpoint client = null;
+		try {
+			client = Utils.getClientKryoNetty(hostport[0], Integer.parseInt(hostport[1]), null);
 			log.info("writeObject(String hp, Object inputobj): "+hp+" "+inputobj);
-			writeObjectByStream(socket.getOutputStream(), inputobj);
+			client.send(inputobj);
 			log.info("writeObject(String hp, Object inputobj): "+hp+" "+inputobj+" completed");
-		} catch (IOException ex) {
-			log.error("Unable to write Object: " + inputobj);
-			throw ex;
 		} catch (Exception ex) {
 			log.error("Unable to write Object: " + inputobj);
 			throw ex;
+		} finally {
+			if(nonNull(client)) {
+				client.close();
+			}
 		}
 	}
 
@@ -943,40 +867,6 @@ public class Utils {
 			var kryo = Utils.getKryoSerializerDeserializer();
 			kryo.writeClassAndObject(output, inputobj);
 			output.flush();
-		} catch (Exception ex) {
-			log.error("Unable to write Object Stream: " + inputobj, ex);
-			throw ex;
-		}
-	}
-	
-	
-	public static void writeObject(String hp, Object inputobj, Kryo kryo) throws Exception {
-		log.info("writeObject(String hp, Object inputobj, Kryo kryo): "+inputobj);
-		var hostport = hp.split(MDCConstants.UNDERSCORE);
-		try (var socket = Utils.createSSLSocket(hostport[0], Integer.parseInt(hostport[1]));) {
-
-			writeObjectByStream(socket.getOutputStream(), inputobj, kryo);
-		} catch (IOException ex) {
-			log.error("Unable to write Object: " + inputobj);
-			throw ex;
-		} catch (Exception ex) {
-			log.error("Unable to write Object: " + inputobj);
-		}
-	}
-
-	/**
-	 * This method writes the object via sockets outputstream of server.
-	 * 
-	 * @param ostream
-	 * @param inputobj
-	 * @throws Exception
-	 */
-	public static void writeObjectByStream(OutputStream ostream, Object inputobj, Kryo kryo) {
-		try {
-			var output = new Output(ostream);
-			log.info(inputobj);
-			kryo.writeClassAndObject(output, inputobj);
-			output.flush();			
 		} catch (Exception ex) {
 			log.error("Unable to write Object Stream: " + inputobj, ex);
 			throw ex;
@@ -1236,6 +1126,91 @@ public class Utils {
 		});
 		GlobalContainerLaunchers.remove(containerid);
 	}
+
+	public static ServerEndpoint getServerKryoNetty(int port, NetworkListener listener){
+		KryoNetty kryoNetty = new KryoNetty()
+				.useLogging()
+				.useExecution()
+				.threadSize(Runtime.getRuntime().availableProcessors())
+				.inputSize(4096)
+				.outputSize(4096)
+				.maxOutputSize(-1);
+		registerKryoNetty(kryoNetty);
+		var server = new ServerEndpoint(kryoNetty, 10);
+		server.getEventHandler().register(listener);		
+		server.start(port);
+		return server;
+	}
+
+	
+	public static void registerKryoNetty(KryoNetty kryonetty) {
+		log.debug("Entered Utils.registerKryoNetty");
+		RegisterKyroSerializers.register(kryonetty);
+		kryonetty.register(Object[].class);
+		kryonetty.register(Object.class);
+		kryonetty.register(Class.class);
+		kryonetty.register(MDCConstants.STORAGE.class);
+		kryonetty.register(SerializedLambda.class);
+		kryonetty.register(ClosureSerializer.Closure.class, new ClosureSerializer());
+		kryonetty.register(Vector.class);
+		kryonetty.register(ArrayList.class);
+		kryonetty.register(Tuple2.class);
+		kryonetty.register(LinkedHashSet.class);
+		kryonetty.register(Tuple2Serializable.class);
+		kryonetty.register(BlocksLocation.class);
+		kryonetty.register(RetrieveData.class);
+		kryonetty.register(RetrieveKeys.class);
+		kryonetty.register(Block.class);
+		kryonetty.register(Block[].class);
+		kryonetty.register(ConcurrentHashMap.class);
+		kryonetty.register(byte[].class);
+		kryonetty.register(LoadJar.class);
+		kryonetty.register(JobStage.class, new JavaSerializer());
+		kryonetty.register(RemoteDataFetch[].class);
+		kryonetty.register(RemoteDataFetch.class);
+		kryonetty.register(Stage.class, new JavaSerializer());
+		kryonetty.register(Task.class, new JavaSerializer());
+		kryonetty.register(TasksGraphExecutor.class);
+		kryonetty.register(DAGEdge.class);
+		kryonetty.register(DataCruncherContext.class);
+		kryonetty.register(JSONObject.class);
+		kryonetty.register(PipelineConfig.class);
+		kryonetty.register(SimpleDirectedGraph.class);
+		kryonetty.register(CSVParser.class);
+		kryonetty.register(CSVRecord.class);
+		kryonetty.register(ReducerValues.class);
+		kryonetty.register(SkipToNewLine.class);
+		kryonetty.register(CloseStagesGraphExecutor.class);
+		kryonetty.register(AllocateContainers.class);
+		kryonetty.register(LaunchContainers.class);
+		kryonetty.register(AllocateContainers.class);
+		kryonetty.register(ContainerLaunchAttributes.class);
+		kryonetty.register(ContainerResources.class);
+		kryonetty.register(LaunchContainers.MODE.class);
+		kryonetty.register(JobApp.class, new JavaSerializer());
+		kryonetty.register(JobApp.JOBAPP.class, new EnumSerializer(JobApp.JOBAPP.class));
+		kryonetty.register(Dummy.class, new JavaSerializer());
+		kryonetty.register(TaskExecutorShutdown.class, new JavaSerializer());
+		log.debug("Exiting Utils.registerKryoNetty");
+	}
+
+	public static ClientEndpoint getClientKryoNetty(String host, int port, NetworkListener listener){
+		KryoNetty kryoNetty = new KryoNetty()
+				.useLogging()
+				.useExecution()
+				.threadSize(Runtime.getRuntime().availableProcessors())
+				.inputSize(4096)
+				.outputSize(4096)
+				.maxOutputSize(-1);
+		registerKryoNetty(kryoNetty);
+		var client = new ClientEndpoint(kryoNetty,10);
+		if(nonNull(listener)){
+			client.getEventHandler().register(listener);
+		}
+		client.connect(host, port);
+		return client;
+	}
+
 	public static ServerSocket createSSLServerSocket(int port) throws Exception {
 		KeyStore ks = KeyStore.getInstance("JKS");
 		String password = MDCProperties.get().getProperty(MDCConstants.MDC_KEYSTORE_PASSWORD);

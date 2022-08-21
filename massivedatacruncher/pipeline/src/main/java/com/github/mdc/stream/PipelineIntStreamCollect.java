@@ -19,9 +19,9 @@ import java.util.function.BiConsumer;
 import java.util.function.ObjIntConsumer;
 import java.util.function.Supplier;
 
-import com.github.mdc.stream.functions.AtomicBiConsumer;
-import com.github.mdc.stream.functions.AtomicIntegerSupplier;
-import com.github.mdc.stream.functions.AtomicObjIntConsumer;
+import com.github.mdc.common.functions.AtomicBiConsumer;
+import com.github.mdc.common.functions.AtomicIntegerSupplier;
+import com.github.mdc.common.functions.AtomicObjIntConsumer;
 
 public class PipelineIntStreamCollect {
 	@SuppressWarnings("rawtypes")
