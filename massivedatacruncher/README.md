@@ -319,6 +319,10 @@ tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.examples.S
 
 tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.examples.StreamReduceYARN hdfs://127.0.0.1:9000 /airline1989 /carriers /examplesmdc
 
+tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.examples.StreamReduceNormalInMemorySortByDelayResourceDivided hdfs://127.0.0.1:9000 /airline1989 /carriers /examplesmdc
+
+tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.examples.StreamReduceNormalInMemorySortByAirlinesResourceDivided hdfs://127.0.0.1:9000 /airline1989 /carriers /examplesmdc
+
 Stream Reduce LOJ
 -----------------
 

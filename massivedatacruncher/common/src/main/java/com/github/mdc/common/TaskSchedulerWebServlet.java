@@ -117,7 +117,7 @@ public class TaskSchedulerWebServlet extends HttpServlet {
 				<th>Total<Br/>Files<Br/>Size (MB)</th>
 				<th>Total<Br/>Files<Br/>Blocks</th>
 				<th>Container<Br/>Resources</th>
-				<th>Containers<Br/>Allocated</th>
+				<th>Job<Br/>Status</th>
 				<th>Nodes</th>
 				<th>Job<Br/>Start<Br/>Time</th>
 				<th>Job<Br/>Completion<Br/>Time</th>
