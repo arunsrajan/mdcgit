@@ -740,7 +740,7 @@ public class FileBlocksPartitionerHDFS {
 			}
 			if (totalmem < (512 * MDCConstants.MB) && totalmem > 0 && cpu >= 1) {
 				if (actualmemory >= totalmem) {
-					res.setCpu(1);
+					res.setCpu(cpu);
 					var heapmem = 1024 * Integer.valueOf(pipelineconfig.getHeappercent()) / 100;
 					res.setMinmemory(heapmem);
 					res.setMaxmemory(heapmem);

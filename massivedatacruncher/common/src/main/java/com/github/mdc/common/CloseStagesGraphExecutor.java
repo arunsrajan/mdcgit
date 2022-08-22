@@ -15,6 +15,11 @@
  */
 package com.github.mdc.common;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import java.util.List;
 
 /**
@@ -23,20 +28,10 @@ import java.util.List;
  *
  * This class is like marker to close the Executor JGroups Channel
  */
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class CloseStagesGraphExecutor {
-
-	public CloseStagesGraphExecutor(List<Task> tasks) {
-		this.tasks = tasks;
-	}
-
 	private List<Task> tasks;
-
-	public List<Task> getTasks() {
-		return tasks;
-	}
-
-	public void setTasks(List<Task> tasks) {
-		this.tasks = tasks;
-	}
-
 }
