@@ -454,8 +454,9 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 			while (index < ports.size()) {
 					containers.add(tehost+MDCConstants.UNDERSCORE+ports.get(index));
 					while (true) {
-						try (var socket = Utils.createSSLSocket(tehost, ports.get(index))) {
-							Utils.writeObject(socket, new Dummy());
+						try {
+							var client = Utils.getClientKryoNetty(tehost, ports.get(index), null);
+							client.send(new Dummy());
 							break;
 						} catch (Exception ex) {
 							Thread.sleep(1000);
@@ -468,7 +469,7 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 					jobapp.setContainerid(lc.getContainerid());
 					jobapp.setJobappid(appid);
 					jobapp.setJobtype(JobApp.JOBAPP.MR);
-					Utils.getResultObjectByInput(tehost + MDCConstants.UNDERSCORE + ports.get(index), jobapp);
+					Utils.writeObject(tehost + MDCConstants.UNDERSCORE + ports.get(index), jobapp);
 					index++;
 			}
 		}

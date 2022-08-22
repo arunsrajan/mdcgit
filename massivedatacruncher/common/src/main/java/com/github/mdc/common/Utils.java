@@ -1155,6 +1155,7 @@ public class Utils {
 		kryonetty.register(ClosureSerializer.Closure.class, new ClosureSerializer());
 		kryonetty.register(Vector.class);
 		kryonetty.register(ArrayList.class);
+		kryonetty.register(Hashtable.class);
 		kryonetty.register(Tuple2.class);
 		kryonetty.register(LinkedHashSet.class);
 		kryonetty.register(Tuple2Serializable.class);

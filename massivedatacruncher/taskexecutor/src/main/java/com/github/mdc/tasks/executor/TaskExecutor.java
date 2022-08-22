@@ -309,12 +309,11 @@ public class TaskExecutor implements Runnable {
 						if (taskexecutor instanceof TaskExecutorReducer mdter) {
 							mdter.getHbts().stop();
 							mdter.getHbts().destroy();
-							log.debug("Obtaining reducer Context: " + apptaskid);
+							log.info("Obtaining reducer Context: " + apptaskid);
 							ctx = (Context) RemoteDataFetcher.readIntermediatePhaseOutputFromDFS(applicationid,
 									apptaskid, false);
 						}
 						s.send(event.getCtx(), ctx);
-						s.close();
 						apptaskexecutormap.remove(apptaskid);
 					} else if (object instanceof RetrieveKeys rk) {
 						var keys = RemoteDataFetcher.readIntermediatePhaseOutputFromDFS(applicationid,
@@ -324,7 +323,6 @@ public class TaskExecutor implements Runnable {
 						rk.taskid = taskid;
 						rk.response = true;
 						s.send(event.getCtx(), rk);
-						s.close();
 						if (taskexecutor instanceof TaskExecutorMapperCombiner mdtemc) {
 							mdtemc.getHbts().stop();
 							mdtemc.getHbts().destroy();
