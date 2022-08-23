@@ -1,3 +1,18 @@
+/*
+ * Copyright 2021 the original author or authors.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p>
+ * https://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.github.mdc.stream;
 
 import static org.junit.Assert.assertEquals;
@@ -12,22 +27,18 @@ import com.github.mdc.common.DAGEdge;
 import com.github.mdc.common.Job;
 import com.github.mdc.common.JobMetrics;
 import com.github.mdc.common.PipelineConfig;
-import com.github.mdc.stream.MapPair;
-import com.github.mdc.stream.StreamPipeline;
-import com.github.mdc.stream.PipelineIntStream;
-import com.github.mdc.stream.SampleSupplierInteger;
-import com.github.mdc.stream.functions.Distinct;
-import com.github.mdc.stream.functions.IntersectionFunction;
-import com.github.mdc.stream.functions.KeyByFunction;
-import com.github.mdc.stream.functions.LeftOuterJoinPredicate;
-import com.github.mdc.stream.functions.MapFunction;
-import com.github.mdc.stream.functions.MapToPairFunction;
-import com.github.mdc.stream.functions.PeekConsumer;
-import com.github.mdc.stream.functions.PredicateSerializable;
-import com.github.mdc.stream.functions.RightOuterJoinPredicate;
-import com.github.mdc.stream.functions.SToIntFunction;
-import com.github.mdc.stream.functions.SortedComparator;
-import com.github.mdc.stream.functions.UnionFunction;
+import com.github.mdc.common.functions.Distinct;
+import com.github.mdc.common.functions.IntersectionFunction;
+import com.github.mdc.common.functions.KeyByFunction;
+import com.github.mdc.common.functions.LeftOuterJoinPredicate;
+import com.github.mdc.common.functions.MapFunction;
+import com.github.mdc.common.functions.MapToPairFunction;
+import com.github.mdc.common.functions.PeekConsumer;
+import com.github.mdc.common.functions.PredicateSerializable;
+import com.github.mdc.common.functions.RightOuterJoinPredicate;
+import com.github.mdc.common.functions.SToIntFunction;
+import com.github.mdc.common.functions.SortedComparator;
+import com.github.mdc.common.functions.UnionFunction;
 
 public class StreamPipelineTransformationFunctionsTest extends StreamPipelineBaseTestCommon {
 	PipelineConfig pipelineconfig = new PipelineConfig();
@@ -192,7 +203,7 @@ public class StreamPipelineTransformationFunctionsTest extends StreamPipelineBas
 	@Test
 	public void testMassiveDataPipelineMapPair() throws Exception {
 		StreamPipeline<String> mdp = new StreamPipeline<String>();
-		MapToPairFunction<String, Tuple2<String, String>> mappairfunction = (data) -> new Tuple2<>(data, data);
+		MapToPairFunction<String, Tuple2<String, String>> mappairfunction = data -> new Tuple2<>(data, data);
 		MapPair<String, String> mappair = mdp.mapToPair(mappairfunction);
 		assertTrue(mappair.parents.get(0) == mdp);
 		assertTrue(mdp.childs.get(0) == mappair);
@@ -202,7 +213,7 @@ public class StreamPipelineTransformationFunctionsTest extends StreamPipelineBas
 	@Test
 	public void testMassiveDataPipelineMapPairFormDAGAbsFunc() throws Exception {
 		StreamPipeline<String> mdp = new StreamPipeline<String>();
-		MapToPairFunction<String, Tuple2<String, String>> mappairfunction = (data) -> new Tuple2<>(data, data);
+		MapToPairFunction<String, Tuple2<String, String>> mappairfunction = data -> new Tuple2<>(data, data);
 		MapPair<String, String> mdpchild = mdp.mapToPair(mappairfunction);
 		mdp.graph.addVertex(mdp);
 		mdp.formDAGAbstractFunction(mdp, mdp.childs);
@@ -379,7 +390,7 @@ public class StreamPipelineTransformationFunctionsTest extends StreamPipelineBas
 	@Test
 	public void testMassiveDataPipelineMaptoInt() throws Exception {
 		StreamPipeline<String> mdp = new StreamPipeline<String>();
-		SToIntFunction<String> tointfunction = (dat) -> Integer.parseInt(dat);
+		SToIntFunction<String> tointfunction = dat -> Integer.parseInt(dat);
 		PipelineIntStream<String> mdpchild = mdp.mapToInt(tointfunction);
 		assertTrue(mdpchild.parents.get(0) == mdp);
 		assertTrue(mdp.childs.get(0) == mdpchild);
@@ -390,7 +401,7 @@ public class StreamPipelineTransformationFunctionsTest extends StreamPipelineBas
 	@Test
 	public void testMassiveDataPipelineMaptoIntFormDAGAbsFunc() throws Exception {
 		StreamPipeline<String> mdp = new StreamPipeline<String>();
-		SToIntFunction<String> tointfunction = (dat) -> Integer.parseInt(dat);
+		SToIntFunction<String> tointfunction = dat -> Integer.parseInt(dat);
 		PipelineIntStream<String> mdpchild = mdp.mapToInt(tointfunction);
 		mdp.graph.addVertex(mdp);
 		mdp.formDAGAbstractFunction(mdp, mdp.childs);
@@ -406,7 +417,7 @@ public class StreamPipelineTransformationFunctionsTest extends StreamPipelineBas
 	@Test
 	public void testMassiveDataPipelineKeyBy() throws Exception {
 		StreamPipeline<String> mdp = new StreamPipeline<String>();
-		KeyByFunction<String, String> keybyfunction = (dat) -> dat;
+		KeyByFunction<String, String> keybyfunction = dat -> dat;
 		MapPair<String, String> mdpchild = mdp.keyBy(keybyfunction);
 		assertTrue(mdpchild.parents.get(0) == mdp);
 		assertTrue(mdp.childs.get(0) == mdpchild);
@@ -417,7 +428,7 @@ public class StreamPipelineTransformationFunctionsTest extends StreamPipelineBas
 	@Test
 	public void testMassiveDataPipelineKeyByFormDAGAbsFunc() throws Exception {
 		StreamPipeline<String> mdp = new StreamPipeline<String>();
-		KeyByFunction<String, String> keybyfunction = (dat) -> dat;
+		KeyByFunction<String, String> keybyfunction = dat -> dat;
 		MapPair<String, String> mdpchild = mdp.keyBy(keybyfunction);
 		mdp.graph.addVertex(mdp);
 		mdp.formDAGAbstractFunction(mdp, mdp.childs);

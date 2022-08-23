@@ -1,3 +1,18 @@
+/*
+ * Copyright 2021 the original author or authors.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p>
+ * https://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.github.mdc.tasks.scheduler.yarn;
 
 import java.io.ByteArrayInputStream;
@@ -22,7 +37,7 @@ public class MapReduceYarnAppmasterService extends MindAppmasterService {
 
 	private static final Log log = LogFactory.getLog(MapReduceYarnAppmasterService.class);
 
-	
+
 	private MapReduceYarnAppmaster yarnAppMaster;
 
 	/**
@@ -33,11 +48,11 @@ public class MapReduceYarnAppmasterService extends MindAppmasterService {
 	@Override
 	protected MindRpcMessageHolder handleMindMessageInternal(MindRpcMessageHolder message) {
 		var request = getConversionService().convert(message, BaseObject.class);
-		var jobrequest = (JobRequest)request;
-		log.info("Request from container: "+jobrequest.getContainerid()+" "+jobrequest.getTimerequested());
+		var jobrequest = (JobRequest) request;
+		log.info("Request from container: " + jobrequest.getContainerid() + " " + jobrequest.getTimerequested());
 		var response = handleJob(jobrequest);
 		var mindrpcmessageholder = getConversionService().convert(response, MindRpcMessageHolder.class);
-		log.info("Response to container: "+response.getContainerid()+" :"+mindrpcmessageholder);
+		log.info("Response to container: " + response.getContainerid() + " :" + mindrpcmessageholder);
 		return mindrpcmessageholder;
 	}
 
@@ -57,15 +72,15 @@ public class MapReduceYarnAppmasterService extends MindAppmasterService {
 	private JobResponse handleJob(JobRequest request) {
 		var response = new JobResponse(JobResponse.State.STANDBY, null);
 		response.setResstate(JobResponse.State.STANDBY.name());
-		response.setResmsg(""+request.getTimerequested());
+		response.setResmsg("" + request.getTimerequested());
 		response.setContainerid(request.getContainerid());
 		try {
 			//Kryo for object serialization and deserialization.
-			var kryo = Utils.getKryoNonDeflateSerializer();
+			var kryo = Utils.getKryoSerializerDeserializer();
 			if (request.getJob() != null) {
 				try (var input = new Input(new ByteArrayInputStream(request.getJob()));) {
 					var object = kryo.readClassAndObject(input);
-					if(object instanceof MapperCombiner mc) {
+					if (object instanceof MapperCombiner mc) {
 						// Update statuses to App Master if job has been completed.
 						if (request.getState().equals(JobRequest.State.JOBDONE)) {
 							yarnAppMaster.reportJobStatus(mc, true, request.getContainerid());
@@ -74,9 +89,9 @@ public class MapReduceYarnAppmasterService extends MindAppmasterService {
 						// Update statuses to App Master if job has been Failed.
 						else if (request.getState().equals(JobRequest.State.JOBFAILED)) {
 							yarnAppMaster.reportJobStatus(mc, false, request.getContainerid());
-						} 
+						}
 					}
-					else if(object instanceof YarnReducer red) {
+					else if (object instanceof YarnReducer red) {
 						// Update statuses to App Master if job has been completed.
 						if (request.getState().equals(JobRequest.State.JOBDONE)) {
 							yarnAppMaster.reportJobStatus(red, true, request.getContainerid());
@@ -85,15 +100,15 @@ public class MapReduceYarnAppmasterService extends MindAppmasterService {
 						// Update statuses to App Master if job has been Failed.
 						else if (request.getState().equals(JobRequest.State.JOBFAILED)) {
 							yarnAppMaster.reportJobStatus(red, false, request.getContainerid());
-						} 
+						}
 					}
 				} catch (Exception ex) {
 					log.info("Handle job request error, See cause below \n", ex);
 				}
 			}
-			
+
 			var job = yarnAppMaster.getJob(request.getContainerid());
-			log.info(request.getContainerid()+": "+job);
+			log.info(request.getContainerid() + ": " + job);
 			//Job is available
 			if (job != null) {
 				var baos = new ByteArrayOutputStream();
@@ -104,7 +119,7 @@ public class MapReduceYarnAppmasterService extends MindAppmasterService {
 				response.setJob(baos.toByteArray());
 				response.setState(JobResponse.State.RUNJOB);
 				response.setResstate(JobResponse.State.RUNJOB.name());
-			} 
+			}
 			//If there is no jobs to executor return the status for
 			//container to DIE.
 			else if (!yarnAppMaster.hasJobs()) {
@@ -112,7 +127,7 @@ public class MapReduceYarnAppmasterService extends MindAppmasterService {
 				response.setResstate(JobResponse.State.DIE.name());
 			}
 		}
-		catch(Exception ex) {
+		catch (Exception ex) {
 			log.error("Handle job request error, See cause below \n", ex);
 		}
 		finally {

@@ -1,3 +1,18 @@
+/*
+ * Copyright 2021 the original author or authors.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p>
+ * https://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.github.mdc.tasks.scheduler.yarn;
 
 import java.io.ByteArrayInputStream;
@@ -47,16 +62,14 @@ public class MapReduceYarnContainer extends AbstractIntegrationYarnContainer {
 
 	private static final Log log = LogFactory.getLog(MapReduceYarnContainer.class);
 
-	
-	
-	
+
 	/**
 	 * Pull the Job to perform MR operation execution requesting the Yarn App Master
 	 * Service. The various Yarn operation What operation to execute i.e
 	 * WHATTODO,JOBDONE,JOBFAILED. The various operations response from Yarn App
 	 * master are STANDBY,RUNJOB or DIE.
 	 */
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	@Override
 	protected void runInternal() {
 		log.info("Container Started...");
@@ -88,15 +101,15 @@ public class MapReduceYarnContainer extends AbstractIntegrationYarnContainer {
 				} else if (response.getState().equals(JobResponse.State.RUNJOB)) {
 					log.info(containerid + ": Environment " + getEnvironment());
 					job = response.getJob();
-					var kryo = Utils.getKryoNonDeflateSerializer();
+					var kryo = Utils.getKryoSerializerDeserializer();
 					var input = new Input(new ByteArrayInputStream(job));
 					var object = kryo.readClassAndObject(input);
-					if(object instanceof MapperCombiner mc) {
+					if (object instanceof MapperCombiner mc) {
 						System.setProperty(MDCConstants.HDFSNAMENODEURL,
 								containerprops.get(MDCConstants.HDFSNAMENODEURL));
 						var cm = new ArrayList<Mapper>();
 						var cc = new ArrayList<Combiner>();
-						prop.putAll(containerprops);						
+						prop.putAll(containerprops);
 						try (var hdfs = FileSystem.newInstance(
 								new URI(MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL)),
 								new Configuration());) {
@@ -113,15 +126,15 @@ public class MapReduceYarnContainer extends AbstractIntegrationYarnContainer {
 									cc.add((Combiner) clz.newInstance());
 								}
 							}
-	
+
 							var es = Executors.newWorkStealingPool();
 							var mdcmc = new MapperCombinerExecutor(
 									mc.blockslocation, CacheUtils.getBlockData(mc.blockslocation, hdfs), cm, cc);
 							var fc = (Future<Context>) es.submit(mdcmc);
 							var ctx = fc.get();
 							es.shutdown();
-							RemoteDataFetcher.writerIntermediatePhaseOutputToDFS(ctx, mc.apptask.applicationid,
-									((mc.apptask.applicationid + mc.apptask.taskid)));
+							RemoteDataFetcher.writerIntermediatePhaseOutputToDFS(ctx, mc.apptask.getApplicationid(),
+									(mc.apptask.getApplicationid() + mc.apptask.getTaskid()));
 							ctx = null;
 							request = new JobRequest();
 							request.setState(JobRequest.State.JOBDONE);
@@ -131,37 +144,37 @@ public class MapReduceYarnContainer extends AbstractIntegrationYarnContainer {
 							log.info(containerid + ": Task Completed=" + mc);
 							sleep(1);
 						}
-					}else if(object instanceof YarnReducer red) {
+					} else if (object instanceof YarnReducer red) {
 						Class<?> clz = null;
 						clz = getClass().getClassLoader().loadClass(red.reducerclasses.iterator().next());
-						var cr = (Reducer) clz.newInstance();
+						var cr = (Reducer) clz.getDeclaredConstructor().newInstance();
 						var complete = new DataCruncherContext();
-						var apptaskcontextmap = new ConcurrentHashMap<String,Context>();
+						var apptaskcontextmap = new ConcurrentHashMap<String, Context>();
 						Context currentctx;
 						var es = Executors.newWorkStealingPool();
-						for (var tuple2 : (List<Tuple2>)red.tuples) {
+						for (var tuple2 : (List<Tuple2>) red.tuples) {
 							var ctx = new DataCruncherContext();
 							for (var apptaskids : (Collection<String>) tuple2.v2) {
-								if(apptaskcontextmap.get(apptaskids)!=null) {
+								if (apptaskcontextmap.get(apptaskids) != null) {
 									currentctx = apptaskcontextmap.get(apptaskids);
 								}
 								else {
-									currentctx = (Context) RemoteDataFetcher.readIntermediatePhaseOutputFromDFS(red.apptask.applicationid,
-											(apptaskids), false);
+									currentctx = (Context) RemoteDataFetcher.readIntermediatePhaseOutputFromDFS(red.apptask.getApplicationid(),
+											apptaskids, false);
 									apptaskcontextmap.put(apptaskids, currentctx);
 								}
 								ctx.addAll(tuple2.v1, currentctx.get(tuple2.v1));
 							}
-							log.info("In Reducer ctx: "+ctx);
+							log.info("In Reducer ctx: " + ctx);
 							var mdcr = new ReducerExecutor((DataCruncherContext) ctx, cr,
 									tuple2.v1);
 							var fc = (Future<Context>) es.submit(mdcr);
 							Context results = fc.get();
 							complete.add(results);
-							log.info("Complete Result: "+complete);
+							log.info("Complete Result: " + complete);
 						}
-						RemoteDataFetcher.writerIntermediatePhaseOutputToDFS(complete, red.apptask.applicationid,
-								((red.apptask.applicationid + red.apptask.taskid)));
+						RemoteDataFetcher.writerIntermediatePhaseOutputToDFS(complete, red.apptask.getApplicationid(),
+								(red.apptask.getApplicationid() + red.apptask.getTaskid()));
 						es.shutdown();
 						request = new JobRequest();
 						request.setState(JobRequest.State.JOBDONE);
@@ -189,7 +202,7 @@ public class MapReduceYarnContainer extends AbstractIntegrationYarnContainer {
 				JobResponse response = (JobResponse) client.doMindRequest(request);
 				log.info("Job Completion Error..." + response.getState() + "..., See cause below \n", ex);
 			}
-			if(Objects.isNull(ByteBufferPoolDirect.get())) {
+			if (Objects.isNull(ByteBufferPoolDirect.get())) {
 				ByteBufferPoolDirect.get().close();
 			}
 			System.exit(-1);
@@ -209,8 +222,8 @@ public class MapReduceYarnContainer extends AbstractIntegrationYarnContainer {
 			Thread.sleep(1000l * seconds);
 		} catch (InterruptedException e) {
 			log.warn("Interrupted!", e);
-		    // Restore interrupted state...
-		    Thread.currentThread().interrupt();
+			// Restore interrupted state...
+			Thread.currentThread().interrupt();
 		} catch (Exception ex) {
 			log.info("Delay error, See cause below \n", ex);
 		}

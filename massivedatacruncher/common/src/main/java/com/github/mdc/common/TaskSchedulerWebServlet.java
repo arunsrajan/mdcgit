@@ -1,3 +1,18 @@
+/*
+ * Copyright 2021 the original author or authors.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p>
+ * https://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.github.mdc.common;
 
 import java.io.IOException;
@@ -43,15 +58,15 @@ public class TaskSchedulerWebServlet extends HttpServlet {
 					<script src="%s/resources/jquery.canvasjs.min.js"></script>
 					<script src="%s/resources/jquery-ui.js"></script>
 					</head>
-					<body>""",contextpath,contextpath,contextpath,contextpath));
-			
-			if (!Objects.isNull(lists)&&lists.keySet().size()>0) {
+					<body>""", contextpath, contextpath, contextpath, contextpath));
+
+			if (!Objects.isNull(lists) && lists.keySet().size() > 0) {
 				builder.append(
-					"""
+						"""
 						<table style=\"color:#000000;border-collapse:collapse;width:800px;height:30px\" align=\"center\" border=\"1.0\">
 				<thead><th>Node</th><th>FreeMemory</th><th>TotalProcessors</th><th>Physicalmemorysize</th><th>Totaldisksize</th><th>Totalmemory</th><th>Usabledisksize</th></thead>
 				<tbody>""");
-				int i=0;
+				int i = 0;
 				for (var node : lists.keySet()) {
 					Resources resources = lists.get(node);
 					String[] nodeport = node.split(MDCConstants.UNDERSCORE);
@@ -87,9 +102,9 @@ public class TaskSchedulerWebServlet extends HttpServlet {
 				}
 				builder.append("</tbody></table>");
 			}
-			
-			if(MDCJobMetrics.get().keySet().size()>0) {
-				int i=0;
+
+			if (MDCJobMetrics.get().keySet().size() > 0) {
+				int i = 0;
 				builder.append("<br/>");
 				builder.append(
 						"""
@@ -102,7 +117,7 @@ public class TaskSchedulerWebServlet extends HttpServlet {
 				<th>Total<Br/>Files<Br/>Size (MB)</th>
 				<th>Total<Br/>Files<Br/>Blocks</th>
 				<th>Container<Br/>Resources</th>
-				<th>Containers<Br/>Allocated</th>
+				<th>Job<Br/>Status</th>
 				<th>Nodes</th>
 				<th>Job<Br/>Start<Br/>Time</th>
 				<th>Job<Br/>Completion<Br/>Time</th>
@@ -110,8 +125,8 @@ public class TaskSchedulerWebServlet extends HttpServlet {
 				</thead>
 				<tbody>""");
 				var jms = MDCJobMetrics.get();
-				var jobmetrics = jms.keySet().stream().map(key->jms.get(key)).sorted((jm1,jm2)->{
-					return (int) (jm2.jobstarttime-jm1.jobstarttime);
+				var jobmetrics = jms.keySet().stream().map(key -> jms.get(key)).sorted((jm1, jm2) -> {
+					return (int) (jm2.jobstarttime - jm1.jobstarttime);
 				}).collect(Collectors.toList());
 				for (var jm : jobmetrics) {
 					builder.append("<tr bgcolor=\"" + getColor(i++) + "\">");
@@ -119,7 +134,7 @@ public class TaskSchedulerWebServlet extends HttpServlet {
 					builder.append(jm.jobid);
 					builder.append("</td>");
 					builder.append("<td>");
-					builder.append(Objects.isNull(jm.jobname)?MDCConstants.EMPTY:jm.jobname);
+					builder.append(Objects.isNull(jm.jobname) ? MDCConstants.EMPTY : jm.jobname);
 					builder.append("</td>");
 					builder.append("<td>");
 					builder.append(toHtml(jm.files));
@@ -140,21 +155,21 @@ public class TaskSchedulerWebServlet extends HttpServlet {
 					builder.append(toHtml(jm.containersallocated));
 					builder.append("</td>");
 					builder.append("<td>");
-					builder.append(!Objects.isNull(jm.nodes)?toHtml(new ArrayList<>(jm.nodes)):"");
+					builder.append(!Objects.isNull(jm.nodes) ? toHtml(new ArrayList<>(jm.nodes)) : "");
 					builder.append("</td>");
 					builder.append("<td>");
 					builder.append(new Date(jm.jobstarttime));
 					builder.append("</td>");
 					builder.append("<td>");
-					builder.append(jm.jobcompletiontime==0?"":new Date(jm.jobcompletiontime));
+					builder.append(jm.jobcompletiontime == 0 ? "" : new Date(jm.jobcompletiontime));
 					builder.append("</td>");
 					builder.append("<td>");
-					builder.append(jm.totaltimetaken==0?"":jm.totaltimetaken);
+					builder.append(jm.totaltimetaken == 0 ? "" : jm.totaltimetaken);
 					builder.append("</td>");
 					builder.append("</tr>");
 				}
 				builder.append("</tbody></table>");
-				
+
 			}
 			builder.append("</body></html>");
 			writer.write(builder.toString());
@@ -172,8 +187,8 @@ public class TaskSchedulerWebServlet extends HttpServlet {
 			}
 		}
 	}
-	
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	public String toHtml(Object data) {
 		StringBuilder builder = new StringBuilder();
 		builder.append("<p>");
@@ -183,8 +198,8 @@ public class TaskSchedulerWebServlet extends HttpServlet {
 					builder.append(file);
 					builder.append("<br/>");
 				}
-			}else if(data instanceof Map map) {
-				map.keySet().stream().forEach(key->{
+			} else if (data instanceof Map map) {
+				map.keySet().stream().forEach(key -> {
 					builder.append(key);
 					builder.append(MDCConstants.COLON);
 					builder.append("Percentage Completed (");
@@ -197,5 +212,5 @@ public class TaskSchedulerWebServlet extends HttpServlet {
 		builder.append("</p>");
 		return builder.toString();
 	}
-	
+
 }

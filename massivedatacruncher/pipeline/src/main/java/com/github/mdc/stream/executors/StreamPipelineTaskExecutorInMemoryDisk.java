@@ -1,3 +1,18 @@
+/*
+ * Copyright 2021 the original author or authors.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p>
+ * https://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.github.mdc.stream.executors;
 
 import java.io.ByteArrayInputStream;
@@ -37,29 +52,27 @@ import com.github.mdc.stream.PipelineException;
 @SuppressWarnings("rawtypes")
 public final class StreamPipelineTaskExecutorInMemoryDisk extends StreamPipelineTaskExecutorInMemory {
 	private static Logger log = Logger.getLogger(StreamPipelineTaskExecutorInMemoryDisk.class);
-	
+
 	public StreamPipelineTaskExecutorInMemoryDisk(JobStage jobstage,
-			ConcurrentMap<String,OutputStream> resultstream,
-			Cache cache,HeartBeatTaskSchedulerStream hbtss) throws Exception {
+			ConcurrentMap<String, OutputStream> resultstream,
+			Cache cache, HeartBeatTaskSchedulerStream hbtss) throws Exception {
 		super(jobstage, resultstream, cache);
 		iscacheable = true;
 		this.hbtss = hbtss;
 	}
-	
-	
-	
+
+
 	/**
 	 * Get the HDFS file path using the job and stage id.
 	 * @return
 	 */
 	@Override
 	public String getIntermediateDataFSFilePath(Task task) {
-		return (task.jobid + MDCConstants.HYPHEN +
-				task.stageid + MDCConstants.HYPHEN +task.taskid
-						);
+		return task.jobid + MDCConstants.HYPHEN
+				+ task.stageid + MDCConstants.HYPHEN + task.taskid;
 	}
-	
-	
+
+
 	/**
 	 * Create a file in HDFS and return the stream.
 	 * @param hdfs
@@ -81,7 +94,6 @@ public final class StreamPipelineTaskExecutorInMemoryDisk extends StreamPipeline
 		}
 	}
 
-	
 
 	/**
 	 * Open the already existing file using the job and stageid.
@@ -95,11 +107,11 @@ public final class StreamPipelineTaskExecutorInMemoryDisk extends StreamPipeline
 		var path = getIntermediateDataFSFilePath(task);
 		OutputStream os = resultstream.get(path);
 		log.debug("Exiting MassiveDataStreamTaskExecutorInMemory.getIntermediateInputStreamFS");
-		if(Objects.isNull(os)) {
-			log.info("Unable to get Result Stream for path: "+path+" Fetching Remotely");
+		if (Objects.isNull(os)) {
+			log.info("Unable to get Result Stream for path: " + path + " Fetching Remotely");
 			return null;
 		}
-		else if(os instanceof ByteArrayOutputStream baos) {
+		else if (os instanceof ByteArrayOutputStream baos) {
 			return new ByteArrayInputStream((byte[]) cache.get(path));
 		}
 		else {
@@ -115,11 +127,11 @@ public final class StreamPipelineTaskExecutorInMemoryDisk extends StreamPipeline
 	 */
 	public byte[] getCachedRDF(RemoteDataFetch rdf) throws Exception {
 		log.debug("Entered MassiveDataStreamTaskExecutorInMemory.getIntermediateInputStreamRDF");
-		var path = (rdf.jobid + MDCConstants.HYPHEN +
-				rdf.stageid + MDCConstants.HYPHEN +rdf.taskid
-				);
+		var path = rdf.jobid + MDCConstants.HYPHEN
+				+ rdf.stageid + MDCConstants.HYPHEN + rdf.taskid;
 		return (byte[]) cache.get(path);
 	}
+
 	@Override
 	public StreamPipelineTaskExecutorInMemoryDisk call() {
 		log.debug("Entered MassiveDataStreamTaskExecutorInMemory.call");
@@ -127,16 +139,16 @@ public final class StreamPipelineTaskExecutorInMemoryDisk extends StreamPipeline
 		var hdfsfilepath = MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL, MDCConstants.HDFSNAMENODEURL);
 		var configuration = new Configuration();
 		var timetakenseconds = 0.0;
-		try(var hdfs = FileSystem.newInstance(new URI(hdfsfilepath), configuration);) {
-			
+		try (var hdfs = FileSystem.newInstance(new URI(hdfsfilepath), configuration);) {
+
 			hbtss.setTimetakenseconds(timetakenseconds);
 			hbtss.pingOnce(task.stageid, task.taskid, task.hostport, Task.TaskStatus.SUBMITTED, timetakenseconds, null);
-			log.debug("Submitted JobStage " + task.jobid+" "+task.stageid+" "+jobstage);
+			log.debug("Submitted JobStage " + task.jobid + " " + task.stageid + " " + jobstage);
 			log.debug("Running Stage " + stageTasks);
 			hbtss.setTaskstatus(Task.TaskStatus.RUNNING);
 			if (task.input != null && task.parentremotedatafetch != null) {
 				var numinputs = task.parentremotedatafetch.length;
-				for (var inputindex = 0; inputindex<numinputs;inputindex++) {
+				for (var inputindex = 0; inputindex < numinputs; inputindex++) {
 					var input = task.parentremotedatafetch[inputindex];
 					if (input != null) {
 						var rdf = (RemoteDataFetch) input;
@@ -150,25 +162,25 @@ public final class StreamPipelineTaskExecutorInMemoryDisk extends StreamPipeline
 					}
 				}
 			}
-			log.debug("Running Stage " + task.jobid+" "+task.stageid+" "+jobstage);
+			log.debug("Running Stage " + task.jobid + " " + task.stageid + " " + jobstage);
 			timetakenseconds = computeTasks(task, hdfs);
 			completed = true;
 			hbtss.setTimetakenseconds(timetakenseconds);
 			hbtss.pingOnce(task.stageid, task.taskid, task.hostport, Task.TaskStatus.COMPLETED, timetakenseconds, null);
-			log.debug("Completed JobStage " + task.jobid+" "+task.stageid+" in "+timetakenseconds);
+			log.debug("Completed JobStage " + task.jobid + " " + task.stageid + " in " + timetakenseconds);
 		} catch (Exception ex) {
 			completed = true;
-			log.error("Failed Stage: "+task.stageid, ex);
+			log.error("Failed Stage: " + task.stageid, ex);
 			try {
 				var baos = new ByteArrayOutputStream();
 				var failuremessage = new PrintWriter(baos, true, StandardCharsets.UTF_8);
 				ex.printStackTrace(failuremessage);
 				hbtss.pingOnce(task.stageid, task.taskid, task.hostport, Task.TaskStatus.FAILED, 0.0, new String(baos.toByteArray()));
 			} catch (Exception e) {
-				log.error("Message Send Failed for Task Failed: ",e);
+				log.error("Message Send Failed for Task Failed: ", e);
 			}
 		} finally {
-			if(!Objects.isNull(hdfs)) {
+			if (!Objects.isNull(hdfs)) {
 				try {
 					hdfs.close();
 				} catch (Exception e) {
@@ -179,5 +191,5 @@ public final class StreamPipelineTaskExecutorInMemoryDisk extends StreamPipeline
 		log.debug("Exiting MassiveDataStreamTaskExecutorInMemory.call");
 		return this;
 	}
-	
+
 }

@@ -1,59 +1,46 @@
+/*
+ * Copyright 2021 the original author or authors.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p>
+ * https://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.github.mdc.stream;
 
-import java.util.ArrayList;
-import java.util.Stack;
-import java.util.stream.Collectors;
-
-import com.github.mdc.stream.functions.MapFunction;
-import com.github.mdc.stream.functions.PeekConsumer;
-import com.github.mdc.stream.functions.PredicateSerializable;
-
-import net.sf.jsqlparser.expression.LongValue;
-import net.sf.jsqlparser.expression.StringValue;
-import net.sf.jsqlparser.expression.operators.arithmetic.Addition;
-import net.sf.jsqlparser.expression.operators.arithmetic.Subtraction;
-import net.sf.jsqlparser.expression.operators.conditional.AndExpression;
-import net.sf.jsqlparser.expression.operators.conditional.OrExpression;
-import net.sf.jsqlparser.expression.operators.relational.EqualsTo;
-import net.sf.jsqlparser.expression.operators.relational.GreaterThanEquals;
-import net.sf.jsqlparser.expression.operators.relational.NotEqualsTo;
-import net.sf.jsqlparser.parser.CCJSqlParserUtil;
-import net.sf.jsqlparser.schema.Column;
-import net.sf.jsqlparser.statement.select.PlainSelect;
-import net.sf.jsqlparser.statement.select.Select;
-import net.sf.jsqlparser.statement.select.SelectBody;
-import net.sf.jsqlparser.statement.select.SelectExpressionItem;
-import net.sf.jsqlparser.statement.select.SelectVisitor;
-import net.sf.jsqlparser.statement.select.SetOperationList;
-import net.sf.jsqlparser.statement.select.WithItem;
-import net.sf.jsqlparser.statement.values.ValuesStatement;
-import net.sf.jsqlparser.util.deparser.ExpressionDeParser;
+import com.github.mdc.common.functions.PeekConsumer;
 
 /**
  * 
  * @author arun
  * This class is a stream with parametered types for pipeline api to process csv files.
  * @param <I1>
- * @param <I2>
  */
-public final class CsvStream<I1,I2> extends StreamPipeline<I1> {
+public final class CsvStream<I1> extends StreamPipeline<I1> {
 
-	@SuppressWarnings({ "rawtypes" })
-	public CsvStream(StreamPipeline root,CsvOptions csvOptions) {
+	@SuppressWarnings({"rawtypes"})
+	public CsvStream(StreamPipeline root, CsvOptions csvOptions) {
 		this.root = root;
 		this.task = csvOptions;
 		root.childs.add(this);
 		this.parents.add(root);
 		this.protocol = root.protocol;
 	}
-	
-	@SuppressWarnings({ "rawtypes" })
-	public CsvStream(StreamPipeline root,PeekConsumer peekconsumer) {
+
+	@SuppressWarnings({"rawtypes"})
+	public CsvStream(StreamPipeline root, PeekConsumer peekconsumer) {
 		this.root = root;
 		this.task = peekconsumer;
 		root.childs.add(this);
 		this.parents.add(root);
 		this.protocol = root.protocol;
 	}
-	
+
 }

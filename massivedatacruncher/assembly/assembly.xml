@@ -162,6 +162,12 @@
 			<directoryMode>0777</directoryMode>
 		</fileSet>
 		<fileSet>
+			<directory>kryolib</directory>
+			<outputDirectory>lib</outputDirectory>
+			<fileMode>0777</fileMode>
+			<directoryMode>0777</directoryMode>
+		</fileSet>
+		<fileSet>
 			<directory>web</directory>
 			<outputDirectory>web</outputDirectory>
 			<fileMode>0777</fileMode>

@@ -1,3 +1,18 @@
+/*
+ * Copyright 2021 the original author or authors.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p>
+ * https://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.github.mdc.stream.executors;
 
 import static org.junit.Assert.assertEquals;
@@ -10,7 +25,6 @@ import java.util.Arrays;
 import java.util.IntSummaryStatistics;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -24,17 +38,8 @@ import org.apache.hadoop.fs.FileUtil;
 import org.apache.hadoop.fs.Path;
 import org.apache.ignite.Ignite;
 import org.apache.ignite.IgniteCache;
-import org.apache.ignite.Ignition;
-import org.apache.ignite.cache.CacheAtomicityMode;
-import org.apache.ignite.cache.CacheMode;
-import org.apache.ignite.configuration.CacheConfiguration;
-import org.apache.ignite.configuration.DeploymentMode;
-import org.apache.ignite.configuration.IgniteConfiguration;
-import org.apache.ignite.spi.discovery.tcp.TcpDiscoverySpi;
-import org.apache.ignite.spi.discovery.tcp.ipfinder.multicast.TcpDiscoveryMulticastIpFinder;
 import org.jooq.lambda.tuple.Tuple2;
 import org.json.simple.JSONObject;
-import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.xerial.snappy.SnappyOutputStream;
@@ -46,31 +51,30 @@ import com.github.mdc.common.HDFSBlockUtils;
 import com.github.mdc.common.HdfsBlockReader;
 import com.github.mdc.common.JobStage;
 import com.github.mdc.common.MDCConstants;
-import com.github.mdc.common.MDCProperties;
 import com.github.mdc.common.Stage;
 import com.github.mdc.common.Task;
 import com.github.mdc.common.Utils;
 import com.github.mdc.stream.CsvOptions;
 import com.github.mdc.stream.Json;
 import com.github.mdc.stream.StreamPipelineTestCommon;
-import com.github.mdc.stream.functions.CalculateCount;
-import com.github.mdc.stream.functions.Coalesce;
-import com.github.mdc.stream.functions.CountByKeyFunction;
-import com.github.mdc.stream.functions.FoldByKey;
-import com.github.mdc.stream.functions.IntersectionFunction;
-import com.github.mdc.stream.functions.JoinPredicate;
-import com.github.mdc.stream.functions.LeftOuterJoinPredicate;
-import com.github.mdc.stream.functions.MapFunction;
-import com.github.mdc.stream.functions.MapToPairFunction;
-import com.github.mdc.stream.functions.Max;
-import com.github.mdc.stream.functions.Min;
-import com.github.mdc.stream.functions.PredicateSerializable;
-import com.github.mdc.stream.functions.ReduceByKeyFunction;
-import com.github.mdc.stream.functions.RightOuterJoinPredicate;
-import com.github.mdc.stream.functions.StandardDeviation;
-import com.github.mdc.stream.functions.Sum;
-import com.github.mdc.stream.functions.SummaryStatistics;
-import com.github.mdc.stream.functions.UnionFunction;
+import com.github.mdc.common.functions.CalculateCount;
+import com.github.mdc.common.functions.Coalesce;
+import com.github.mdc.common.functions.CountByKeyFunction;
+import com.github.mdc.common.functions.FoldByKey;
+import com.github.mdc.common.functions.IntersectionFunction;
+import com.github.mdc.common.functions.JoinPredicate;
+import com.github.mdc.common.functions.LeftOuterJoinPredicate;
+import com.github.mdc.common.functions.MapFunction;
+import com.github.mdc.common.functions.MapToPairFunction;
+import com.github.mdc.common.functions.Max;
+import com.github.mdc.common.functions.Min;
+import com.github.mdc.common.functions.PredicateSerializable;
+import com.github.mdc.common.functions.ReduceByKeyFunction;
+import com.github.mdc.common.functions.RightOuterJoinPredicate;
+import com.github.mdc.common.functions.StandardDeviation;
+import com.github.mdc.common.functions.Sum;
+import com.github.mdc.common.functions.SummaryStatistics;
+import com.github.mdc.common.functions.UnionFunction;
 import com.github.mdc.stream.utils.FileBlocksPartitionerHDFS;
 import com.github.mdc.stream.utils.MDCIgniteServer;
 
@@ -81,8 +85,9 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 
 	@BeforeClass
 	public static void launchNodes() throws Exception {
-		Utils.loadLog4JSystemPropertiesClassPath("mdctest.properties");
-		
+		Utils.loadLog4JSystemProperties(MDCConstants.PREV_FOLDER + MDCConstants.FORWARD_SLASH
+				+ MDCConstants.DIST_CONFIG_FOLDER + MDCConstants.FORWARD_SLASH, "mdctest.properties");
+
 		// Starting the node
 		igniteserver = MDCIgniteServer.instance();
 		ignitecache = igniteserver.getOrCreateCache(MDCConstants.MDCCACHE);
@@ -120,7 +125,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		fbp.getDnXref(bls, false);
 		sendDataBlockToIgniteServer(bls.get(0));
 		mdsti.processBlockHDFSIntersection(bls.get(0), bls.get(0), hdfs);
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 
 		InputStream is = mdsti.getIntermediateInputStreamFS(task.jobid + task.stageid + task.taskid);
 		List<String> intersectiondata = (List<String>) kryo.readClassAndObject(new Input(is));
@@ -179,7 +184,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		fbp.getDnXref(bls2, false);
 		sendDataBlockToIgniteServer(bls2.get(0));
 		mdsti.processBlockHDFSIntersection(bls1.get(0), bls2.get(0), hdfs);
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 
 		InputStream is = mdsti.getIntermediateInputStreamFS(task.jobid + task.stageid + task.taskid);
 		List<String> intersectiondata = (List<String>) kryo.readClassAndObject(new Input(is));
@@ -227,7 +232,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		fbp.getDnXref(bls2, false);
 		sendDataBlockToIgniteServer(bls2.get(0));
 		mdsti.processBlockHDFSIntersection(bls1.get(0), bls1.get(0), hdfs);
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 
 		InputStream is = mdsti.getIntermediateInputStreamFS(task.jobid + task.stageid + task.taskid);
 		Set<InputStream> istreams = new LinkedHashSet<>(Arrays.asList(is));
@@ -299,7 +304,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		List<InputStream> istreams1 = Arrays.asList(is1);
 		mdsti.setTask(task2);
 		mdsti.processBlockHDFSIntersection(bls2.get(0), bls2.get(0), hdfs);
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		mdsti.setTask(task2);
 		InputStream is2 = mdsti.getIntermediateInputStreamFS(task2.jobid + task2.stageid + task2.taskid);
 		List<InputStream> istreams2 = Arrays.asList(is2);
@@ -353,7 +358,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		fbp.getDnXref(bls, false);
 		sendDataBlockToIgniteServer(bls.get(0));
 		mdsti.processBlockHDFSUnion(bls.get(0), bls.get(0), hdfs);
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 
 		InputStream is = mdsti.getIntermediateInputStreamFS(task.jobid + task.stageid + task.taskid);
 		List<String> uniondata = (List<String>) kryo.readClassAndObject(new Input(is));
@@ -401,7 +406,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		sendDataBlockToIgniteServer(bls1.get(0));
 		sendDataBlockToIgniteServer(bls2.get(0));
 		mdsti.processBlockHDFSUnion(bls1.get(0), bls2.get(0), hdfs);
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 
 		InputStream is = mdsti.getIntermediateInputStreamFS(task.jobid + task.stageid + task.taskid);
 		List<String> uniondata = (List<String>) kryo.readClassAndObject(new Input(is));
@@ -449,7 +454,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		sendDataBlockToIgniteServer(bls1.get(0));
 		sendDataBlockToIgniteServer(bls2.get(0));
 		mdsti.processBlockHDFSUnion(bls1.get(0), bls1.get(0), hdfs);
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 
 		InputStream is = mdsti.getIntermediateInputStreamFS(task.jobid + task.stageid + task.taskid);
 		Set<InputStream> istreams = new LinkedHashSet<>(Arrays.asList(is));
@@ -518,7 +523,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		js.stage.tasks.add(function);
 		mdsti.setTask(task2);
 		mdsti.processBlockHDFSUnion(bls2.get(0), bls2.get(0), hdfs);
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		InputStream is1 = mdsti.getIntermediateInputStreamFS(task1.jobid + task1.stageid + task1.taskid);
 		List<InputStream> istreams1 = Arrays.asList(is1);
 
@@ -555,7 +560,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		filtertask.jobid = js.jobid;
 		filtertask.stageid = js.stageid;
 		MapFunction<String, String[]> map = (String str) -> str.split(MDCConstants.COMMA);
-		PredicateSerializable<String[]> filter = (String str[]) -> !str[14].equals("ArrDelay") && !str[14].equals("NA");
+		PredicateSerializable<String[]> filter = (String str[]) -> !"ArrDelay".equals(str[14]) && !"NA".equals(str[14]);
 		js.stage.tasks.add(map);
 		js.stage.tasks.add(filter);
 
@@ -575,7 +580,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		fbp.getDnXref(bls1, false);
 		sendDataBlockToIgniteServer(bls1.get(0));
 		mdsti.processBlockHDFSMap(bls1.get(0), hdfs);
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		InputStream is = mdsti.getIntermediateInputStreamFS(filtertask.jobid + filtertask.stageid + filtertask.taskid);
 		List<String[]> mapfilterdata = (List<String[]>) kryo.readClassAndObject(new Input(is));
 		assertEquals(45957, mapfilterdata.size());
@@ -595,7 +600,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		calculatecounttask.jobid = js.jobid;
 		calculatecounttask.stageid = js.stageid;
 		MapFunction<String, String[]> map = (String str) -> str.split(MDCConstants.COMMA);
-		PredicateSerializable<String[]> filter = (String str[]) -> !str[14].equals("ArrDelay") && !str[14].equals("NA");
+		PredicateSerializable<String[]> filter = (String str[]) -> !"ArrDelay".equals(str[14]) && !"NA".equals(str[14]);
 		js.stage.tasks.add(map);
 		js.stage.tasks.add(filter);
 		js.stage.tasks.add(new CalculateCount());
@@ -616,7 +621,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		fbp.getDnXref(bls1, false);
 		sendDataBlockToIgniteServer(bls1.get(0));
 		mdsti.processBlockHDFSMap(bls1.get(0), hdfs);
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		InputStream is = mdsti.getIntermediateInputStreamFS(
 				calculatecounttask.jobid + calculatecounttask.stageid + calculatecounttask.taskid);
 		List<Long> mapfiltercountdata = (List<Long>) kryo.readClassAndObject(new Input(is));
@@ -637,7 +642,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		sstask.jobid = js.jobid;
 		sstask.stageid = js.stageid;
 		MapFunction<String, String[]> map = (String str) -> str.split(MDCConstants.COMMA);
-		PredicateSerializable<String[]> filter = (String str[]) -> !str[14].equals("ArrDelay") && !str[14].equals("NA");
+		PredicateSerializable<String[]> filter = (String str[]) -> !"ArrDelay".equals(str[14]) && !"NA".equals(str[14]);
 		ToIntFunction<String[]> toint = (String str[]) -> Integer.parseInt(str[14]);
 		js.stage.tasks.add(map);
 		js.stage.tasks.add(filter);
@@ -660,7 +665,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		fbp.getDnXref(bls1, false);
 		sendDataBlockToIgniteServer(bls1.get(0));
 		mdsti.processBlockHDFSMap(bls1.get(0), hdfs);
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		InputStream is = mdsti.getIntermediateInputStreamFS(sstask.jobid + sstask.stageid + sstask.taskid);
 		List<IntSummaryStatistics> mapfilterssdata = (List<IntSummaryStatistics>) kryo
 				.readClassAndObject(new Input(is));
@@ -686,7 +691,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		maxtask.jobid = js.jobid;
 		maxtask.stageid = js.stageid;
 		MapFunction<String, String[]> map = (String str) -> str.split(MDCConstants.COMMA);
-		PredicateSerializable<String[]> filter = (String str[]) -> !str[14].equals("ArrDelay") && !str[14].equals("NA");
+		PredicateSerializable<String[]> filter = (String str[]) -> !"ArrDelay".equals(str[14]) && !"NA".equals(str[14]);
 		ToIntFunction<String[]> toint = (String str[]) -> Integer.parseInt(str[14]);
 		js.stage.tasks.add(map);
 		js.stage.tasks.add(filter);
@@ -709,7 +714,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		fbp.getDnXref(bls1, false);
 		sendDataBlockToIgniteServer(bls1.get(0));
 		mdsti.processBlockHDFSMap(bls1.get(0), hdfs);
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		InputStream is = mdsti.getIntermediateInputStreamFS(maxtask.jobid + maxtask.stageid + maxtask.taskid);
 		List<Integer> mapfiltermaxdata = (List<Integer>) kryo.readClassAndObject(new Input(is));
 		is.close();
@@ -728,7 +733,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		mintask.jobid = js.jobid;
 		mintask.stageid = js.stageid;
 		MapFunction<String, String[]> map = (String str) -> str.split(MDCConstants.COMMA);
-		PredicateSerializable<String[]> filter = (String str[]) -> !str[14].equals("ArrDelay") && !str[14].equals("NA");
+		PredicateSerializable<String[]> filter = (String str[]) -> !"ArrDelay".equals(str[14]) && !"NA".equals(str[14]);
 		ToIntFunction<String[]> toint = (String str[]) -> Integer.parseInt(str[14]);
 		js.stage.tasks.add(map);
 		js.stage.tasks.add(filter);
@@ -751,7 +756,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		fbp.getDnXref(bls1, false);
 		sendDataBlockToIgniteServer(bls1.get(0));
 		mdsti.processBlockHDFSMap(bls1.get(0), hdfs);
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		InputStream is = mdsti.getIntermediateInputStreamFS(mintask.jobid + mintask.stageid + mintask.taskid);
 		List<Integer> mapfiltermaxdata = (List<Integer>) kryo.readClassAndObject(new Input(is));
 		is.close();
@@ -771,7 +776,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		sumtask.jobid = js.jobid;
 		sumtask.stageid = js.stageid;
 		MapFunction<String, String[]> map = (String str) -> str.split(MDCConstants.COMMA);
-		PredicateSerializable<String[]> filter = (String str[]) -> !str[14].equals("ArrDelay") && !str[14].equals("NA");
+		PredicateSerializable<String[]> filter = (String str[]) -> !"ArrDelay".equals(str[14]) && !"NA".equals(str[14]);
 		ToIntFunction<String[]> toint = (String str[]) -> Integer.parseInt(str[14]);
 		js.stage.tasks.add(map);
 		js.stage.tasks.add(filter);
@@ -794,7 +799,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		fbp.getDnXref(bls1, false);
 		sendDataBlockToIgniteServer(bls1.get(0));
 		mdsti.processBlockHDFSMap(bls1.get(0), hdfs);
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		InputStream is = mdsti.getIntermediateInputStreamFS(sumtask.jobid + sumtask.stageid + sumtask.taskid);
 		List<Integer> mapfiltermaxdata = (List<Integer>) kryo.readClassAndObject(new Input(is));
 		is.close();
@@ -814,7 +819,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		sdtask.jobid = js.jobid;
 		sdtask.stageid = js.stageid;
 		MapFunction<String, String[]> map = (String str) -> str.split(MDCConstants.COMMA);
-		PredicateSerializable<String[]> filter = (String str[]) -> !str[14].equals("ArrDelay") && !str[14].equals("NA");
+		PredicateSerializable<String[]> filter = (String str[]) -> !"ArrDelay".equals(str[14]) && !"NA".equals(str[14]);
 		ToIntFunction<String[]> toint = (String str[]) -> Integer.parseInt(str[14]);
 		js.stage.tasks.add(map);
 		js.stage.tasks.add(filter);
@@ -837,7 +842,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		fbp.getDnXref(bls1, false);
 		sendDataBlockToIgniteServer(bls1.get(0));
 		mdsti.processBlockHDFSMap(bls1.get(0), hdfs);
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		InputStream is = mdsti.getIntermediateInputStreamFS(sdtask.jobid + sdtask.stageid + sdtask.taskid);
 		List<Double> mapfiltermaxdata = (List<Double>) kryo.readClassAndObject(new Input(is));
 		is.close();
@@ -857,8 +862,8 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		Task calcultecounttask = new Task();
 		calcultecounttask.jobid = js.jobid;
 		calcultecounttask.stageid = js.stageid;
-		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !csvrecord.get(14).equals("ArrDelay")
-				&& !csvrecord.get(14).equals("NA");
+		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !"ArrDelay".equals(csvrecord.get(14))
+				&& !"NA".equals(csvrecord.get(14));
 		js.stage.tasks.add(csvoptions);
 		js.stage.tasks.add(filter);
 		js.stage.tasks.add(new CalculateCount());
@@ -879,7 +884,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		fbp.getDnXref(bls1, false);
 		sendDataBlockToIgniteServer(bls1.get(0));
 		mdsti.processBlockHDFSMap(bls1.get(0), hdfs);
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		InputStream is = mdsti.getIntermediateInputStreamFS(
 				calcultecounttask.jobid + calcultecounttask.stageid + calcultecounttask.taskid);
 		List<Long> mapfiltercountdata = (List<Long>) kryo.readClassAndObject(new Input(is));
@@ -900,8 +905,8 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		Task filtertask = new Task();
 		filtertask.jobid = js.jobid;
 		filtertask.stageid = js.stageid;
-		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !csvrecord.get("ArrDelay").equals("ArrDelay")
-				&& !csvrecord.get("ArrDelay").equals("NA");
+		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !"ArrDelay".equals(csvrecord.get("ArrDelay"))
+				&& !"NA".equals(csvrecord.get("ArrDelay"));
 		js.stage.tasks.add(csvoptions);
 		js.stage.tasks.add(filter);
 
@@ -921,7 +926,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		fbp.getDnXref(bls1, false);
 		sendDataBlockToIgniteServer(bls1.get(0));
 		mdsti.processBlockHDFSMap(bls1.get(0), hdfs);
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		InputStream is = mdsti.getIntermediateInputStreamFS(filtertask.jobid + filtertask.stageid + filtertask.taskid);
 		List<CSVRecord> filterdata = (List<CSVRecord>) kryo.readClassAndObject(new Input(is));
 		assertEquals(45957l, (long) filterdata.size());
@@ -941,8 +946,8 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		Task summarystaticstask = new Task();
 		summarystaticstask.jobid = js.jobid;
 		summarystaticstask.stageid = js.stageid;
-		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !csvrecord.get("ArrDelay").equals("ArrDelay")
-				&& !csvrecord.get("ArrDelay").equals("NA");
+		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !"ArrDelay".equals(csvrecord.get("ArrDelay"))
+				&& !"NA".equals(csvrecord.get("ArrDelay"));
 		ToIntFunction<CSVRecord> csvint = (CSVRecord csvrecord) -> Integer.parseInt(csvrecord.get("ArrDelay"));
 		js.stage.tasks.add(csvoptions);
 		js.stage.tasks.add(filter);
@@ -965,7 +970,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		fbp.getDnXref(bls1, false);
 		sendDataBlockToIgniteServer(bls1.get(0));
 		mdsti.processBlockHDFSMap(bls1.get(0), hdfs);
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		InputStream is = mdsti.getIntermediateInputStreamFS(
 				summarystaticstask.jobid + summarystaticstask.stageid + summarystaticstask.taskid);
 		List<IntSummaryStatistics> mapfilterssdata = (List<IntSummaryStatistics>) kryo
@@ -991,8 +996,8 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		Task maxtask = new Task();
 		maxtask.jobid = js.jobid;
 		maxtask.stageid = js.stageid;
-		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !csvrecord.get("ArrDelay").equals("ArrDelay")
-				&& !csvrecord.get("ArrDelay").equals("NA");
+		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !"ArrDelay".equals(csvrecord.get("ArrDelay"))
+				&& !"NA".equals(csvrecord.get("ArrDelay"));
 		ToIntFunction<CSVRecord> csvint = (CSVRecord csvrecord) -> Integer.parseInt(csvrecord.get("ArrDelay"));
 		js.stage.tasks.add(csvoptions);
 		js.stage.tasks.add(filter);
@@ -1015,7 +1020,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		fbp.getDnXref(bls1, false);
 		sendDataBlockToIgniteServer(bls1.get(0));
 		mdsti.processBlockHDFSMap(bls1.get(0), hdfs);
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		InputStream is = mdsti.getIntermediateInputStreamFS(maxtask.jobid + maxtask.stageid + maxtask.taskid);
 		List<Integer> mapfilterssdata = (List<Integer>) kryo.readClassAndObject(new Input(is));
 		assertEquals(623, (long) mapfilterssdata.get(0));
@@ -1035,8 +1040,8 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		Task mintask = new Task();
 		mintask.jobid = js.jobid;
 		mintask.stageid = js.stageid;
-		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !csvrecord.get("ArrDelay").equals("ArrDelay")
-				&& !csvrecord.get("ArrDelay").equals("NA");
+		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !"ArrDelay".equals(csvrecord.get("ArrDelay"))
+				&& !"NA".equals(csvrecord.get("ArrDelay"));
 		ToIntFunction<CSVRecord> csvint = (CSVRecord csvrecord) -> Integer.parseInt(csvrecord.get("ArrDelay"));
 		js.stage.tasks.add(csvoptions);
 		js.stage.tasks.add(filter);
@@ -1059,7 +1064,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		fbp.getDnXref(bls1, false);
 		sendDataBlockToIgniteServer(bls1.get(0));
 		mdsti.processBlockHDFSMap(bls1.get(0), hdfs);
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		InputStream is = mdsti.getIntermediateInputStreamFS(mintask.jobid + mintask.stageid + mintask.taskid);
 		List<Integer> mapfilterssdata = (List<Integer>) kryo.readClassAndObject(new Input(is));
 		assertEquals(-89, (long) mapfilterssdata.get(0));
@@ -1079,8 +1084,8 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		Task sumtask = new Task();
 		sumtask.jobid = js.jobid;
 		sumtask.stageid = js.stageid;
-		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !csvrecord.get("ArrDelay").equals("ArrDelay")
-				&& !csvrecord.get("ArrDelay").equals("NA");
+		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !"ArrDelay".equals(csvrecord.get("ArrDelay"))
+				&& !"NA".equals(csvrecord.get("ArrDelay"));
 		ToIntFunction<CSVRecord> csvint = (CSVRecord csvrecord) -> Integer.parseInt(csvrecord.get("ArrDelay"));
 		js.stage.tasks.add(csvoptions);
 		js.stage.tasks.add(filter);
@@ -1103,7 +1108,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		fbp.getDnXref(bls1, false);
 		sendDataBlockToIgniteServer(bls1.get(0));
 		mdsti.processBlockHDFSMap(bls1.get(0), hdfs);
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		InputStream is = mdsti.getIntermediateInputStreamFS(sumtask.jobid + sumtask.stageid + sumtask.taskid);
 		List<Integer> mapfilterssdata = (List<Integer>) kryo.readClassAndObject(new Input(is));
 		assertEquals(-63278, (long) mapfilterssdata.get(0));
@@ -1123,8 +1128,8 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		Task sdtask = new Task();
 		sdtask.jobid = js.jobid;
 		sdtask.stageid = js.stageid;
-		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !csvrecord.get("ArrDelay").equals("ArrDelay")
-				&& !csvrecord.get("ArrDelay").equals("NA");
+		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !"ArrDelay".equals(csvrecord.get("ArrDelay"))
+				&& !"NA".equals(csvrecord.get("ArrDelay"));
 		ToIntFunction<CSVRecord> csvint = (CSVRecord csvrecord) -> Integer.parseInt(csvrecord.get("ArrDelay"));
 		js.stage.tasks.add(csvoptions);
 		js.stage.tasks.add(filter);
@@ -1147,7 +1152,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		fbp.getDnXref(bls1, false);
 		sendDataBlockToIgniteServer(bls1.get(0));
 		mdsti.processBlockHDFSMap(bls1.get(0), hdfs);
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		InputStream is = mdsti.getIntermediateInputStreamFS(sdtask.jobid + sdtask.stageid + sdtask.taskid);
 		List<Double> mapfiltersddata = (List<Double>) kryo.readClassAndObject(new Input(is));
 		assertEquals(1, (long) mapfiltersddata.size());
@@ -1167,8 +1172,8 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		Task filtertask = new Task();
 		filtertask.jobid = js.jobid;
 		filtertask.stageid = js.stageid;
-		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !csvrecord.get(14).equals("ArrDelay")
-				&& !csvrecord.get(14).equals("NA");
+		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !"ArrDelay".equals(csvrecord.get(14))
+				&& !"NA".equals(csvrecord.get(14));
 		js.stage.tasks.add(csvoptions);
 		js.stage.tasks.add(filter);
 
@@ -1198,7 +1203,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		js.stage.tasks.add(new CalculateCount());
 		mdsti.processBlockHDFSMap(inputtocount);
 		is.close();
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		is = mdsti.getIntermediateInputStreamFS(
 				calcultecounttask.jobid + calcultecounttask.stageid + calcultecounttask.taskid);
 		List<Long> csvreccount = (List<Long>) kryo.readClassAndObject(new Input(is));
@@ -1219,8 +1224,8 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		Task filtertask = new Task();
 		filtertask.jobid = js.jobid;
 		filtertask.stageid = js.stageid;
-		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !csvrecord.get(14).equals("ArrDelay")
-				&& !csvrecord.get(14).equals("NA");
+		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !"ArrDelay".equals(csvrecord.get(14))
+				&& !"NA".equals(csvrecord.get(14));
 		js.stage.tasks.add(csvoptions);
 		js.stage.tasks.add(filter);
 
@@ -1252,7 +1257,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		mdsti.setTask(summarystaticstask);
 		mdsti.processBlockHDFSMap(inputtocount);
 		is.close();
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		is = mdsti.getIntermediateInputStreamFS(
 				summarystaticstask.jobid + summarystaticstask.stageid + summarystaticstask.taskid);
 		List<IntSummaryStatistics> mapfilterssdata = (List<IntSummaryStatistics>) kryo
@@ -1280,8 +1285,8 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		filtertask.jobid = js.jobid;
 		filtertask.stageid = js.stageid;
 
-		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !csvrecord.get(14).equals("ArrDelay")
-				&& !csvrecord.get(14).equals("NA");
+		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !"ArrDelay".equals(csvrecord.get(14))
+				&& !"NA".equals(csvrecord.get(14));
 		js.stage.tasks.add(csvoptions);
 		js.stage.tasks.add(filter);
 
@@ -1316,7 +1321,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		mdsti.cache = ignitecache;
 		mdsti.processBlockHDFSMap(inputtocount);
 		is.close();
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		is = mdsti.getIntermediateInputStreamFS(maxtask.jobid + maxtask.stageid + maxtask.taskid);
 		List<Integer> mapfiltermaxdata = (List<Integer>) kryo.readClassAndObject(new Input(is));
 		assertEquals(623, (int) mapfiltermaxdata.get(0));
@@ -1338,8 +1343,8 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		filtertask.jobid = js.jobid;
 		filtertask.stageid = js.stageid;
 
-		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !csvrecord.get(14).equals("ArrDelay")
-				&& !csvrecord.get(14).equals("NA");
+		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !"ArrDelay".equals(csvrecord.get(14))
+				&& !"NA".equals(csvrecord.get(14));
 		js.stage.tasks.add(csvoptions);
 		js.stage.tasks.add(filter);
 
@@ -1374,7 +1379,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		mdsti.cache = ignitecache;
 		mdsti.processBlockHDFSMap(inputtocount);
 		is.close();
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		is = mdsti.getIntermediateInputStreamFS(mintask.jobid + mintask.stageid + mintask.taskid);
 		List<Integer> mapfiltermindata = (List<Integer>) kryo.readClassAndObject(new Input(is));
 		assertEquals(-89, (int) mapfiltermindata.get(0));
@@ -1396,8 +1401,8 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		filtertask.jobid = js.jobid;
 		filtertask.stageid = js.stageid;
 
-		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !csvrecord.get(14).equals("ArrDelay")
-				&& !csvrecord.get(14).equals("NA");
+		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !"ArrDelay".equals(csvrecord.get(14))
+				&& !"NA".equals(csvrecord.get(14));
 		js.stage.tasks.add(csvoptions);
 		js.stage.tasks.add(filter);
 
@@ -1432,7 +1437,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		mdsti.cache = ignitecache;
 		mdsti.processBlockHDFSMap(inputtocount);
 		is.close();
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		is = mdsti.getIntermediateInputStreamFS(sumtask.jobid + sumtask.stageid + sumtask.taskid);
 		List<Integer> mapfiltersumdata = (List<Integer>) kryo.readClassAndObject(new Input(is));
 		assertEquals(-63278, (int) mapfiltersumdata.get(0));
@@ -1454,8 +1459,8 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		filtertask.jobid = js.jobid;
 		filtertask.stageid = js.stageid;
 
-		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !csvrecord.get(14).equals("ArrDelay")
-				&& !csvrecord.get(14).equals("NA");
+		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !"ArrDelay".equals(csvrecord.get(14))
+				&& !"NA".equals(csvrecord.get(14));
 		js.stage.tasks.add(csvoptions);
 		js.stage.tasks.add(filter);
 
@@ -1490,7 +1495,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		mdsti.cache = ignitecache;
 		mdsti.processBlockHDFSMap(inputtocount);
 		is.close();
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		is = mdsti.getIntermediateInputStreamFS(sdtask.jobid + sdtask.stageid + sdtask.taskid);
 		List<Integer> mapfiltersddata = (List<Integer>) kryo.readClassAndObject(new Input(is));
 		assertEquals(1, (int) mapfiltersddata.size());
@@ -1512,8 +1517,8 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		filtertask.jobid = js.jobid;
 		filtertask.stageid = js.stageid;
 
-		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !csvrecord.get(14).equals("ArrDelay")
-				&& !csvrecord.get(14).equals("NA");
+		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !"ArrDelay".equals(csvrecord.get(14))
+				&& !"NA".equals(csvrecord.get(14));
 		js.stage.tasks.add(csvoptions);
 		js.stage.tasks.add(filter);
 
@@ -1533,7 +1538,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		fbp.getDnXref(bls1, false);
 		sendDataBlockToIgniteServer(bls1.get(0));
 		mdsti.processSamplesBlocks(100, bls1.get(0), hdfs);
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		InputStream is = mdsti.getIntermediateInputStreamFS(filtertask.jobid + filtertask.stageid + filtertask.taskid);
 		List<Long> csvreccount = (List<Long>) kryo.readClassAndObject(new Input(is));
 		assertEquals(100, (long) csvreccount.size());
@@ -1554,8 +1559,8 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		Task counttask = new Task();
 		counttask.jobid = js.jobid;
 		counttask.stageid = js.stageid;
-		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !csvrecord.get(14).equals("ArrDelay")
-				&& !csvrecord.get(14).equals("NA");
+		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !"ArrDelay".equals(csvrecord.get(14))
+				&& !"NA".equals(csvrecord.get(14));
 		Object function = new CalculateCount();
 		js.stage.tasks.add(csvoptions);
 		js.stage.tasks.add(filter);
@@ -1576,14 +1581,14 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		fbp.getDnXref(bls1, false);
 		sendDataBlockToIgniteServer(bls1.get(0));
 		mdsti.processSamplesBlocks(150, bls1.get(0), hdfs);
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		InputStream is = mdsti.getIntermediateInputStreamFS(counttask.jobid + counttask.stageid + counttask.taskid);
 		List<Long> csvreccount = (List<Long>) kryo.readClassAndObject(new Input(is));
 		assertEquals(150l, (long) csvreccount.get(0));
 		is.close();
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testProcessStreamSample() throws Exception {
 		JobStage js = new JobStage();
@@ -1598,8 +1603,8 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		filtertask.jobid = js.jobid;
 		filtertask.stageid = js.stageid;
 
-		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !csvrecord.get(14).equals("ArrDelay")
-				&& !csvrecord.get(14).equals("NA");
+		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !"ArrDelay".equals(csvrecord.get(14))
+				&& !"NA".equals(csvrecord.get(14));
 		js.stage.tasks.add(csvoptions);
 		js.stage.tasks.add(filter);
 
@@ -1624,13 +1629,13 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		Task sample = new Task();
 		sample.jobid = js.jobid;
 		sample.stageid = js.stageid;
-		Function samplefn = (val) -> val;
+		Function samplefn = val -> val;
 		js.stage.tasks.clear();
 		js.stage.tasks.add(samplefn);
 		mdsti.setTask(sample);
 		mdsti.processSamplesObjects(150, inputtocount);
 		is.close();
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		is = mdsti.getIntermediateInputStreamFS(sample.jobid + sample.stageid + sample.taskid);
 		List<Integer> mapfiltersddata = (List<Integer>) kryo.readClassAndObject(new Input(is));
 		assertEquals(150, (int) mapfiltersddata.size());
@@ -1652,8 +1657,8 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		filtertask.jobid = js.jobid;
 		filtertask.stageid = js.stageid;
 
-		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !csvrecord.get(14).equals("ArrDelay")
-				&& !csvrecord.get(14).equals("NA");
+		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !"ArrDelay".equals(csvrecord.get(14))
+				&& !"NA".equals(csvrecord.get(14));
 		js.stage.tasks.add(csvoptions);
 		js.stage.tasks.add(filter);
 
@@ -1684,7 +1689,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		mdsti.setTask(counttask);
 		mdsti.processSamplesObjects(150, inputtocount);
 		is.close();
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		is = mdsti.getIntermediateInputStreamFS(counttask.jobid + counttask.stageid + counttask.taskid);
 		List<Long> mapfiltersddata = (List<Long>) kryo.readClassAndObject(new Input(is));
 		assertEquals(150l, (long) mapfiltersddata.get(0));
@@ -1704,8 +1709,8 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		reducebykeytask1.jobid = js.jobid;
 		reducebykeytask1.stageid = js.stageid;
 		MapFunction<String, String[]> map = (String str) -> str.split(MDCConstants.COMMA);
-		PredicateSerializable<String[]> filter = (String str[]) -> !str[14].equals("ArrDelay") && !str[14].equals("NA");
-		MapToPairFunction<String[], Tuple2<String, Integer>> pair = (val) -> new Tuple2<String, Integer>(
+		PredicateSerializable<String[]> filter = (String str[]) -> !"ArrDelay".equals(str[14]) && !"NA".equals(str[14]);
+		MapToPairFunction<String[], Tuple2<String, Integer>> pair = val -> new Tuple2<String, Integer>(
 				(String) val[8], (Integer) Integer.parseInt(val[14]));
 		ReduceByKeyFunction<Integer> redfunc = (input1, input2) -> input1 + input2;
 		js.stage.tasks.add(map);
@@ -1753,7 +1758,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		mdsti.setTask(reducebykeytask2);
 		mdsti.processBlockHDFSMap(bls2.get(0), hdfs);
 
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		InputStream is1 = mdsti.getIntermediateInputStreamFS(
 				reducebykeytask1.jobid + reducebykeytask1.stageid + reducebykeytask1.taskid);
 		InputStream is2 = mdsti.getIntermediateInputStreamFS(
@@ -1762,7 +1767,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		jointask.jobid = js.jobid;
 		jointask.stageid = js.stageid;
 		js.stage.tasks.clear();
-		Consumer<String> dummy = (val) -> {
+		Consumer<String> dummy = val -> {
 		};
 		js.stage.tasks.add(dummy);
 		JoinPredicate<Tuple2<String, Long>, Tuple2<String, Long>> jp = (Tuple2<String, Long> tup1,
@@ -1775,7 +1780,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		is1.close();
 		is2.close();
 
-		kryo = Utils.getKryoNonDeflateSerializer();
+		kryo = Utils.getKryoSerializerDeserializer();
 		InputStream is = mdsti.getIntermediateInputStreamFS(jointask.jobid + jointask.stageid + jointask.taskid);
 		List<Tuple2<Tuple2<String, Integer>, Tuple2<String, Integer>>> mapfiltersddata = (List) kryo
 				.readClassAndObject(new Input(is));
@@ -1798,8 +1803,8 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		reducebykeytask1.jobid = js.jobid;
 		reducebykeytask1.stageid = js.stageid;
 		MapFunction<String, String[]> map = (String str) -> str.split(MDCConstants.COMMA);
-		PredicateSerializable<String[]> filter = (String str[]) -> !str[14].equals("ArrDelay") && !str[14].equals("NA");
-		MapToPairFunction<String[], Tuple2<String, Integer>> pair = (val) -> new Tuple2<String, Integer>(
+		PredicateSerializable<String[]> filter = (String str[]) -> !"ArrDelay".equals(str[14]) && !"NA".equals(str[14]);
+		MapToPairFunction<String[], Tuple2<String, Integer>> pair = val -> new Tuple2<String, Integer>(
 				(String) val[8], (Integer) Integer.parseInt(val[14]));
 		ReduceByKeyFunction<Integer> redfunc = (input1, input2) -> input1 + input2;
 		js.stage.tasks.add(map);
@@ -1847,7 +1852,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		mdsti.cache = ignitecache;
 		mdsti.processBlockHDFSMap(bls2.get(0), hdfs);
 
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		InputStream is1 = mdsti.getIntermediateInputStreamFS(
 				reducebykeytask1.jobid + reducebykeytask1.stageid + reducebykeytask1.taskid);
 		InputStream is2 = mdsti.getIntermediateInputStreamFS(
@@ -1856,7 +1861,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		jointask.jobid = js.jobid;
 		jointask.stageid = js.stageid;
 		js.stage.tasks.clear();
-		Consumer<String> dummy = (val) -> {
+		Consumer<String> dummy = val -> {
 		};
 		js.stage.tasks.add(dummy);
 		LeftOuterJoinPredicate<Tuple2<String, Long>, Tuple2<String, Long>> jp = (Tuple2<String, Long> tup1,
@@ -1869,7 +1874,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		is1.close();
 		is2.close();
 
-		kryo = Utils.getKryoNonDeflateSerializer();
+		kryo = Utils.getKryoSerializerDeserializer();
 		InputStream is = mdsti.getIntermediateInputStreamFS(jointask.jobid + jointask.stageid + jointask.taskid);
 		List<Tuple2<Tuple2<String, Integer>, Tuple2<String, Integer>>> mapfiltersddata = (List) kryo
 				.readClassAndObject(new Input(is));
@@ -1883,7 +1888,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		assertEquals("AQ", tupleresult.v2.v1);
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testProcessRightOuterJoin() throws Exception {
 		JobStage js = new JobStage();
@@ -1897,8 +1902,8 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		reducebykeytask1.jobid = js.jobid;
 		reducebykeytask1.stageid = js.stageid;
 		MapFunction<String, String[]> map = (String str) -> str.split(MDCConstants.COMMA);
-		PredicateSerializable<String[]> filter = (String str[]) -> !str[14].equals("ArrDelay") && !str[14].equals("NA");
-		MapToPairFunction<String[], Tuple2<String, Integer>> pair = (val) -> new Tuple2<String, Integer>(
+		PredicateSerializable<String[]> filter = (String str[]) -> !"ArrDelay".equals(str[14]) && !"NA".equals(str[14]);
+		MapToPairFunction<String[], Tuple2<String, Integer>> pair = val -> new Tuple2<String, Integer>(
 				(String) val[8], (Integer) Integer.parseInt(val[14]));
 		ReduceByKeyFunction<Integer> redfunc = (input1, input2) -> input1 + input2;
 
@@ -1948,7 +1953,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		mdsti.cache = ignitecache;
 		mdsti.processBlockHDFSMap(bls2.get(0), hdfs);
 
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		InputStream is1 = mdsti.getIntermediateInputStreamFS(
 				reducebykeytask1.jobid + reducebykeytask1.stageid + reducebykeytask1.taskid);
 		InputStream is2 = mdsti.getIntermediateInputStreamFS(
@@ -1959,7 +1964,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		mdsti.setTask(jointask);
 		js.stage.tasks.clear();
 
-		Consumer<String> dummy = (val) -> {
+		Consumer<String> dummy = val -> {
 		};
 		js.stage.tasks.add(dummy);
 		RightOuterJoinPredicate<Tuple2<String, Long>, Tuple2<String, Long>> jp = (Tuple2<String, Long> tup1,
@@ -1968,7 +1973,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		is1.close();
 		is2.close();
 
-		kryo = Utils.getKryoNonDeflateSerializer();
+		kryo = Utils.getKryoSerializerDeserializer();
 		InputStream is = mdsti.getIntermediateInputStreamFS(jointask.jobid + jointask.stageid + jointask.taskid);
 		List<Tuple2<Tuple2<String, Integer>, Tuple2<String, Integer>>> mapfiltersddata = (List) kryo
 				.readClassAndObject(new Input(is));
@@ -1982,7 +1987,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		assertEquals("AQ", tupleresult.v2.v1);
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testProcessGroupByKey() throws Exception {
 		JobStage js = new JobStage();
@@ -1995,8 +2000,8 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		mappairtask1.jobid = js.jobid;
 		mappairtask1.stageid = js.stageid;
 		MapFunction<String, String[]> map = (String str) -> str.split(MDCConstants.COMMA);
-		PredicateSerializable<String[]> filter = (String str[]) -> !str[14].equals("ArrDelay") && !str[14].equals("NA");
-		MapToPairFunction<String[], Tuple2<String, Integer>> pair = (val) -> new Tuple2<String, Integer>(
+		PredicateSerializable<String[]> filter = (String str[]) -> !"ArrDelay".equals(str[14]) && !"NA".equals(str[14]);
+		MapToPairFunction<String[], Tuple2<String, Integer>> pair = val -> new Tuple2<String, Integer>(
 				(String) val[8], (Integer) Integer.parseInt(val[14]));
 		js.stage.tasks.add(map);
 		js.stage.tasks.add(filter);
@@ -2019,17 +2024,17 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		sendDataBlockToIgniteServer(bls1.get(0));
 		mdsti.processBlockHDFSMap(bls1.get(0), hdfs);
 
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		InputStream is1 = mdsti
 				.getIntermediateInputStreamFS(mappairtask1.jobid + mappairtask1.stageid + mappairtask1.taskid);
 		Task gbktask = new Task();
 		gbktask.jobid = js.jobid;
 		gbktask.stageid = js.stageid;
 		js.stage.tasks.clear();
-		Consumer<String> dummy = (val) -> {
+		Consumer<String> dummy = val -> {
 		};
 		js.stage.tasks.add(dummy);
-		gbktask.input = new Object[] { is1 };
+		gbktask.input = new Object[]{is1};
 		mdsti = new StreamPipelineTaskExecutorIgnite(js, gbktask);
 		mdsti.setHdfs(hdfs);
 		mdsti.ignite = igniteserver;
@@ -2037,7 +2042,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		mdsti.processGroupByKeyTuple2();
 		is1.close();
 
-		kryo = Utils.getKryoNonDeflateSerializer();
+		kryo = Utils.getKryoSerializerDeserializer();
 
 		InputStream is = mdsti.getIntermediateInputStreamFS(gbktask.jobid + gbktask.stageid + gbktask.taskid);
 		List<Tuple2<String, List<Integer>>> mapfiltersddata = (List) kryo.readClassAndObject(new Input(is));
@@ -2047,7 +2052,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		assertEquals("AQ", tupleresult.v1);
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testProcessFoldLeft() throws Exception {
 		JobStage js = new JobStage();
@@ -2060,8 +2065,8 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		mappairtask1.jobid = js.jobid;
 		mappairtask1.stageid = js.stageid;
 		MapFunction<String, String[]> map = (String str) -> str.split(MDCConstants.COMMA);
-		PredicateSerializable<String[]> filter = (String str[]) -> !str[14].equals("ArrDelay") && !str[14].equals("NA");
-		MapToPairFunction<String[], Tuple2<String, Long>> pair = (val) -> new Tuple2<String, Long>((String) val[8],
+		PredicateSerializable<String[]> filter = (String str[]) -> !"ArrDelay".equals(str[14]) && !"NA".equals(str[14]);
+		MapToPairFunction<String[], Tuple2<String, Long>> pair = val -> new Tuple2<String, Long>((String) val[8],
 				(Long) Long.parseLong(val[14]));
 		js.stage.tasks.add(map);
 		js.stage.tasks.add(filter);
@@ -2084,7 +2089,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		sendDataBlockToIgniteServer(bls1.get(0));
 		mdsti.processBlockHDFSMap(bls1.get(0), hdfs);
 
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		InputStream is1 = mdsti
 				.getIntermediateInputStreamFS(mappairtask1.jobid + mappairtask1.stageid + mappairtask1.taskid);
 		Task fbktask = new Task();
@@ -2094,12 +2099,12 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		ReduceByKeyFunction<Long> redfunc = (a, b) -> a + b;
 		FoldByKey fbk = new FoldByKey(0l, redfunc, true);
 		js.stage.tasks.add(fbk);
-		fbktask.input = new Object[] { is1 };
+		fbktask.input = new Object[]{is1};
 		mdsti.setTask(fbktask);
 		mdsti.processFoldByKeyTuple2();
 		is1.close();
 
-		kryo = Utils.getKryoNonDeflateSerializer();
+		kryo = Utils.getKryoSerializerDeserializer();
 		InputStream is = mdsti.getIntermediateInputStreamFS(fbktask.jobid + fbktask.stageid + fbktask.taskid);
 		List<Tuple2<String, Long>> mapfiltersddata = (List) kryo.readClassAndObject(new Input(is));
 
@@ -2108,7 +2113,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		assertEquals("AQ", tupleresult.v1);
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testProcessFoldRight() throws Exception {
 		JobStage js = new JobStage();
@@ -2121,8 +2126,8 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		mappairtask1.jobid = js.jobid;
 		mappairtask1.stageid = js.stageid;
 		MapFunction<String, String[]> map = (String str) -> str.split(MDCConstants.COMMA);
-		PredicateSerializable<String[]> filter = (String str[]) -> !str[14].equals("ArrDelay") && !str[14].equals("NA");
-		MapToPairFunction<String[], Tuple2<String, Long>> pair = (val) -> new Tuple2<String, Long>((String) val[8],
+		PredicateSerializable<String[]> filter = (String str[]) -> !"ArrDelay".equals(str[14]) && !"NA".equals(str[14]);
+		MapToPairFunction<String[], Tuple2<String, Long>> pair = val -> new Tuple2<String, Long>((String) val[8],
 				(Long) Long.parseLong(val[14]));
 		js.stage.tasks.add(map);
 		js.stage.tasks.add(filter);
@@ -2145,7 +2150,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		sendDataBlockToIgniteServer(bls1.get(0));
 		mdsti.processBlockHDFSMap(bls1.get(0), hdfs);
 
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 
 		InputStream is1 = mdsti
 				.getIntermediateInputStreamFS(mappairtask1.jobid + mappairtask1.stageid + mappairtask1.taskid);
@@ -2156,7 +2161,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		ReduceByKeyFunction<Long> redfunc = (a, b) -> a + b;
 		FoldByKey fbk = new FoldByKey(0l, redfunc, false);
 		js.stage.tasks.add(fbk);
-		fbktask.input = new Object[] { is1 };
+		fbktask.input = new Object[]{is1};
 		mdsti = new StreamPipelineTaskExecutorIgnite(js, fbktask);
 		mdsti.setHdfs(hdfs);
 		mdsti.ignite = igniteserver;
@@ -2164,7 +2169,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		mdsti.processFoldByKeyTuple2();
 		is1.close();
 
-		kryo = Utils.getKryoNonDeflateSerializer();
+		kryo = Utils.getKryoSerializerDeserializer();
 		InputStream is = mdsti.getIntermediateInputStreamFS(fbktask.jobid + fbktask.stageid + fbktask.taskid);
 		List<Tuple2<String, Long>> mapfiltersddata = (List) kryo.readClassAndObject(new Input(is));
 
@@ -2173,7 +2178,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		assertEquals("AQ", tupleresult.v1);
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testProcessCountByKey() throws Exception {
 		JobStage js = new JobStage();
@@ -2186,8 +2191,8 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		mappairtask1.jobid = js.jobid;
 		mappairtask1.stageid = js.stageid;
 		MapFunction<String, String[]> map = (String str) -> str.split(MDCConstants.COMMA);
-		PredicateSerializable<String[]> filter = (String str[]) -> !str[14].equals("ArrDelay") && !str[14].equals("NA");
-		MapToPairFunction<String[], Tuple2<String, Long>> pair = (val) -> new Tuple2<String, Long>((String) val[8],
+		PredicateSerializable<String[]> filter = (String str[]) -> !"ArrDelay".equals(str[14]) && !"NA".equals(str[14]);
+		MapToPairFunction<String[], Tuple2<String, Long>> pair = val -> new Tuple2<String, Long>((String) val[8],
 				(Long) Long.parseLong(val[14]));
 
 		js.stage.tasks.add(map);
@@ -2211,13 +2216,13 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		sendDataBlockToIgniteServer(bls1.get(0));
 		mdsti.processBlockHDFSMap(bls1.get(0), hdfs);
 
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		InputStream is1 = mdsti
 				.getIntermediateInputStreamFS(mappairtask1.jobid + mappairtask1.stageid + mappairtask1.taskid);
 		Task cbktask = new Task();
 		js.stage.tasks.clear();
 		js.stage.tasks.add(new CountByKeyFunction());
-		cbktask.input = new Object[] { is1 };
+		cbktask.input = new Object[]{is1};
 		mdsti = new StreamPipelineTaskExecutorIgnite(js, cbktask);
 		mdsti.setHdfs(hdfs);
 		mdsti.ignite = igniteserver;
@@ -2226,7 +2231,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		mdsti.processCountByKeyTuple2();
 		is1.close();
 
-		kryo = Utils.getKryoNonDeflateSerializer();
+		kryo = Utils.getKryoSerializerDeserializer();
 		InputStream is = mdsti.getIntermediateInputStreamFS(cbktask.jobid + cbktask.stageid + cbktask.taskid);
 		List<Tuple2<String, Long>> mapfiltersddata = (List) kryo.readClassAndObject(new Input(is));
 
@@ -2235,7 +2240,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		assertEquals("AQ", tupleresult.v1);
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testProcessCountByValue() throws Exception {
 		JobStage js = new JobStage();
@@ -2248,8 +2253,8 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		mappairtask1.jobid = js.jobid;
 		mappairtask1.stageid = js.stageid;
 		MapFunction<String, String[]> map = (String str) -> str.split(MDCConstants.COMMA);
-		PredicateSerializable<String[]> filter = (String str[]) -> !str[14].equals("ArrDelay") && !str[14].equals("NA");
-		MapToPairFunction<String[], Tuple2<String, Long>> pair = (val) -> new Tuple2<String, Long>((String) val[8],
+		PredicateSerializable<String[]> filter = (String str[]) -> !"ArrDelay".equals(str[14]) && !"NA".equals(str[14]);
+		MapToPairFunction<String[], Tuple2<String, Long>> pair = val -> new Tuple2<String, Long>((String) val[8],
 				(Long) Long.parseLong(val[14]));
 		js.stage.tasks.add(map);
 		js.stage.tasks.add(filter);
@@ -2272,7 +2277,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		sendDataBlockToIgniteServer(bls1.get(0));
 		mdsti.processBlockHDFSMap(bls1.get(0), hdfs);
 
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		InputStream is1 = mdsti
 				.getIntermediateInputStreamFS(mappairtask1.jobid + mappairtask1.stageid + mappairtask1.taskid);
 		Task cbktask = new Task();
@@ -2280,7 +2285,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		cbktask.stageid = js.stageid;
 		js.stage.tasks.clear();
 		js.stage.tasks.add(new CountByKeyFunction());
-		cbktask.input = new Object[] { is1 };
+		cbktask.input = new Object[]{is1};
 		mdsti = new StreamPipelineTaskExecutorIgnite(js, cbktask);
 		mdsti.setHdfs(hdfs);
 		mdsti.ignite = igniteserver;
@@ -2288,7 +2293,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		mdsti.processCountByValueTuple2();
 		is1.close();
 
-		kryo = Utils.getKryoNonDeflateSerializer();
+		kryo = Utils.getKryoSerializerDeserializer();
 		InputStream is = mdsti.getIntermediateInputStreamFS(cbktask.jobid + cbktask.stageid + cbktask.taskid);
 		List<Tuple2<Tuple2<String, Long>, Long>> mapfiltersddata = (List) kryo.readClassAndObject(new Input(is));
 		int sum = 0;
@@ -2300,7 +2305,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testProcessCoalesce() throws Exception {
 		JobStage js = new JobStage();
@@ -2313,8 +2318,8 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		reducebykeytask1.jobid = js.jobid;
 		reducebykeytask1.stageid = js.stageid;
 		MapFunction<String, String[]> map = (String str) -> str.split(MDCConstants.COMMA);
-		PredicateSerializable<String[]> filter = (String str[]) -> !str[14].equals("ArrDelay") && !str[14].equals("NA");
-		MapToPairFunction<String[], Tuple2<String, Integer>> pair = (val) -> new Tuple2<String, Integer>(
+		PredicateSerializable<String[]> filter = (String str[]) -> !"ArrDelay".equals(str[14]) && !"NA".equals(str[14]);
+		MapToPairFunction<String[], Tuple2<String, Integer>> pair = val -> new Tuple2<String, Integer>(
 				(String) val[8], (Integer) Integer.parseInt(val[14]));
 		ReduceByKeyFunction<Integer> redfunc = (input1, input2) -> input1 + input2;
 
@@ -2363,7 +2368,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		mdsti.cache = ignitecache;
 		mdsti.processBlockHDFSMap(bls2.get(0), hdfs);
 
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		InputStream is1 = mdsti.getIntermediateInputStreamFS(
 				reducebykeytask1.jobid + reducebykeytask1.stageid + reducebykeytask1.taskid);
 		InputStream is2 = mdsti.getIntermediateInputStreamFS(
@@ -2373,10 +2378,10 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		coalescetask.stageid = js.stageid;
 		js.stage.tasks.clear();
 		Coalesce<Integer> coalesce = new Coalesce();
-		coalesce.coalescepartition = 1;
-		coalesce.coalescefuncion = (a, b) -> a + b;
+		coalesce.setCoalescepartition(1);
+		coalesce.setCoalescefunction((a, b) -> a + b);
 		js.stage.tasks.add(coalesce);
-		coalescetask.input = new Object[] { is1, is2 };
+		coalescetask.input = new Object[]{is1, is2};
 		RightOuterJoinPredicate<Tuple2<String, Long>, Tuple2<String, Long>> jp = (Tuple2<String, Long> tup1,
 				Tuple2<String, Long> tup2) -> tup1.v1.equals(tup2.v1);
 		mdsti = new StreamPipelineTaskExecutorIgnite(js, coalescetask);
@@ -2387,7 +2392,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		is1.close();
 		is2.close();
 
-		kryo = Utils.getKryoNonDeflateSerializer();
+		kryo = Utils.getKryoSerializerDeserializer();
 		InputStream is = mdsti
 				.getIntermediateInputStreamFS(coalescetask.jobid + coalescetask.stageid + coalescetask.taskid);
 		List<Tuple2<String, Integer>> mapfiltersddata = (List) kryo.readClassAndObject(new Input(is));
@@ -2397,6 +2402,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		assertEquals("AQ", tupleresult.v1);
 
 	}
+
 	// CSV Test Cases End
 
 	// JSON Test cases Start
@@ -2434,7 +2440,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		fbp.getDnXref(bls1, false);
 		sendDataBlockToIgniteServer(bls1.get(0));
 		mdsti.processBlockHDFSMap(bls1.get(0), hdfs);
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		InputStream is = mdsti.getIntermediateInputStreamFS(filtertask.jobid + filtertask.stageid + filtertask.taskid);
 		List<JSONObject> jsonfilterdata = (List<JSONObject>) kryo.readClassAndObject(new Input(is));
 		assertEquals(11l, (long) jsonfilterdata.size());

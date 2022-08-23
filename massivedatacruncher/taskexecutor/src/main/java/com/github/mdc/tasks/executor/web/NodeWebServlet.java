@@ -1,3 +1,18 @@
+/*
+ * Copyright 2021 the original author or authors.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p>
+ * https://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.github.mdc.tasks.executor.web;
 
 import java.io.IOException;
@@ -126,8 +141,8 @@ public class NodeWebServlet extends HttpServlet {
 					</div>""" + getIframe() + """
 					</body>
 					</html>
-										""", contextpath, contextpath, contextpath, contextpath, contextpath,request.getServerName() + MDCConstants.COLON
-				+ request.getLocalPort()));
+										""", contextpath, contextpath, contextpath, contextpath, contextpath, request.getServerName() + MDCConstants.COLON
+					+ request.getLocalPort()));
 		} catch (Exception ex) {
 			log.debug("TaskScheduler Web servlet error, See cause below \n", ex);
 		}
@@ -143,7 +158,7 @@ public class NodeWebServlet extends HttpServlet {
 				""");
 		containersipport.keySet().stream().flatMap(container -> containersipport.get(container).keySet().stream())
 				.map(port -> (MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_HOST)
-						+ MDCConstants.UNDERSCORE + (Integer.parseInt(port) + 50))+"<BR/><iframe src=\"http://" + MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_HOST)
+						+ MDCConstants.UNDERSCORE + (Integer.parseInt(port) + 50)) + "<BR/><iframe src=\"http://" + MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_HOST)
 						+ MDCConstants.COLON + (Integer.parseInt(port) + 50)
 						+ "\" width=\"900px\" height=\"800px\" style=\"border:1px solid black;\">\r\n" + "</iframe>")
 				.forEach(iframe -> {

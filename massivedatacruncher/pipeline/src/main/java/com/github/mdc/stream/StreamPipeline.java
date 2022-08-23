@@ -51,35 +51,36 @@ import com.github.mdc.common.PipelineConstants;
 import com.github.mdc.common.PipelineConfig;
 import com.github.mdc.common.Stage;
 import com.github.mdc.common.Utils;
-import com.github.mdc.stream.functions.AggregateFunction;
-import com.github.mdc.stream.functions.AggregateReduceFunction;
-import com.github.mdc.stream.functions.CalculateCount;
-import com.github.mdc.stream.functions.Coalesce;
-import com.github.mdc.stream.functions.CountByKeyFunction;
-import com.github.mdc.stream.functions.CountByValueFunction;
-import com.github.mdc.stream.functions.Distinct;
-import com.github.mdc.stream.functions.DoubleFlatMapFunction;
-import com.github.mdc.stream.functions.FlatMapFunction;
-import com.github.mdc.stream.functions.FoldByKey;
-import com.github.mdc.stream.functions.GroupByKeyFunction;
-import com.github.mdc.stream.functions.IntersectionFunction;
-import com.github.mdc.stream.functions.Join;
-import com.github.mdc.stream.functions.JoinPredicate;
-import com.github.mdc.stream.functions.KeyByFunction;
-import com.github.mdc.stream.functions.LeftJoin;
-import com.github.mdc.stream.functions.LeftOuterJoinPredicate;
-import com.github.mdc.stream.functions.LongFlatMapFunction;
-import com.github.mdc.stream.functions.MapFunction;
-import com.github.mdc.stream.functions.MapToPairFunction;
-import com.github.mdc.stream.functions.PeekConsumer;
-import com.github.mdc.stream.functions.PredicateSerializable;
-import com.github.mdc.stream.functions.ReduceFunction;
-import com.github.mdc.stream.functions.RightJoin;
-import com.github.mdc.stream.functions.RightOuterJoinPredicate;
-import com.github.mdc.stream.functions.SToIntFunction;
-import com.github.mdc.stream.functions.SortedComparator;
-import com.github.mdc.stream.functions.TupleFlatMapFunction;
-import com.github.mdc.stream.functions.UnionFunction;
+import com.github.mdc.common.functions.AggregateFunction;
+import com.github.mdc.common.functions.AggregateReduceFunction;
+import com.github.mdc.common.functions.CalculateCount;
+import com.github.mdc.common.functions.Coalesce;
+import com.github.mdc.common.functions.CountByKeyFunction;
+import com.github.mdc.common.functions.CountByValueFunction;
+import com.github.mdc.common.functions.Distinct;
+import com.github.mdc.common.functions.DoubleFlatMapFunction;
+import com.github.mdc.common.functions.FlatMapFunction;
+import com.github.mdc.common.functions.FoldByKey;
+import com.github.mdc.common.functions.GroupByKeyFunction;
+import com.github.mdc.common.functions.IntersectionFunction;
+import com.github.mdc.common.functions.Join;
+import com.github.mdc.common.functions.JoinPredicate;
+import com.github.mdc.common.functions.KeyByFunction;
+import com.github.mdc.common.functions.LeftJoin;
+import com.github.mdc.common.functions.LeftOuterJoinPredicate;
+import com.github.mdc.common.functions.LongFlatMapFunction;
+import com.github.mdc.common.functions.MapFunction;
+import com.github.mdc.common.functions.MapToPairFunction;
+import com.github.mdc.common.functions.PeekConsumer;
+import com.github.mdc.common.functions.PipelineCoalesceFunction;
+import com.github.mdc.common.functions.PredicateSerializable;
+import com.github.mdc.common.functions.ReduceFunction;
+import com.github.mdc.common.functions.RightJoin;
+import com.github.mdc.common.functions.RightOuterJoinPredicate;
+import com.github.mdc.common.functions.SToIntFunction;
+import com.github.mdc.common.functions.SortedComparator;
+import com.github.mdc.common.functions.TupleFlatMapFunction;
+import com.github.mdc.common.functions.UnionFunction;
 import com.github.mdc.stream.scheduler.StreamJobScheduler;
 import com.github.mdc.stream.utils.FileBlocksPartitionerHDFS;
 import com.github.mdc.stream.utils.PipelineConfigValidator;
@@ -143,7 +144,7 @@ public sealed class StreamPipeline<I1> extends AbstractPipeline permits CsvStrea
 	}
 	
 	
-	public static CsvStream<CSVRecord, CSVRecord> newCsvStreamHDFS(String hdfspath, String folder,PipelineConfig pipelineconfig,String[] header) throws PipelineException {
+	public static CsvStream<CSVRecord> newCsvStreamHDFS(String hdfspath, String folder,PipelineConfig pipelineconfig,String[] header) throws PipelineException {
 		return new StreamPipeline<String>(hdfspath,folder,pipelineconfig).csvWithHeader(header);
 		
 	}
@@ -159,7 +160,7 @@ public sealed class StreamPipeline<I1> extends AbstractPipeline permits CsvStrea
 		try {
 			url = new URL(filepathwithscheme);
 			if (url.getProtocol().equals(FileSystemSupport.HDFS)) {
-				mdp = newStreamHDFS(url.getProtocol() + MDCConstants.COLON+MDCConstants.BACKWARD_SLASH+MDCConstants.BACKWARD_SLASH+ url.getHost() + MDCConstants.COLON + url.getPort(), url.getPath(), pipelineconfig);
+				mdp = newStreamHDFS(url.getProtocol() + MDCConstants.COLON+MDCConstants.FORWARD_SLASH+MDCConstants.FORWARD_SLASH+ url.getHost() + MDCConstants.COLON + url.getPort(), url.getPath(), pipelineconfig);
 			} 
 			return mdp;
 		}
@@ -173,7 +174,7 @@ public sealed class StreamPipeline<I1> extends AbstractPipeline permits CsvStrea
 	 * @param header
 	 * @return CsvStream object.
 	 */
-	private CsvStream<CSVRecord,CSVRecord> csvWithHeader(String[] header) {
+	private CsvStream<CSVRecord> csvWithHeader(String[] header) {
 		return new CsvStream<>(this,new CsvOptions(header));
 	}
 	
@@ -846,6 +847,36 @@ public sealed class StreamPipeline<I1> extends AbstractPipeline permits CsvStrea
 		return mdp;
 	}
 	
+	/**
+	 * StreamPipeline constructor for the Coalesce function.
+	 * @param <O1>
+	 * @param root
+	 * @param cf
+	 */
+	private <O1> StreamPipeline(AbstractPipeline root,
+			Coalesce<I1> cf)  {
+		this.task = cf;
+		this.root = root;
+		root.finaltask=task;
+	}
+	
+	/**
+	 * StreamPipeline accepts the coalesce function.
+	 * @param partition
+	 * @param cf
+	 * @return MapPair object.
+	 * @throws PipelineException
+	 */
+	@SuppressWarnings({ "unchecked" })
+	public StreamPipeline<I1> coalesce(int partition,PipelineCoalesceFunction<I1> cf) throws PipelineException  {
+		if(Objects.isNull(cf)) {
+			throw new PipelineException(PipelineConstants.COALESCENULL);
+		}
+		var streampipelinecoalesce = new StreamPipeline<I1>(root, new Coalesce(partition, cf));
+		this.childs.add(streampipelinecoalesce);
+		streampipelinecoalesce.parents.add(this);
+		return streampipelinecoalesce;
+	}
 	
 	protected DirectedAcyclicGraph<AbstractPipeline, DAGEdge> graph = new DirectedAcyclicGraph<>(DAGEdge.class);
 	
@@ -1243,7 +1274,7 @@ public sealed class StreamPipeline<I1> extends AbstractPipeline permits CsvStrea
 	public List collect(boolean toexecute, IntSupplier supplier) throws PipelineException  {
 		try {
 			log.debug("Collect task begin...");
-			var kryo = Utils.getKryoNonDeflateSerializer();
+			var kryo = Utils.getKryoSerializerDeserializer();
 			var mdp = (StreamPipeline)root;
 			Utils.writeKryoOutput(kryo, mdp.pipelineconfig.getOutput(), "Collect task begin...");
 			var mdscollect = (StreamPipeline) root;

@@ -1,8 +1,22 @@
+/*
+ * Copyright 2021 the original author or authors.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p>
+ * https://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.github.mdc.stream.executors;
 
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Objects;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
@@ -26,29 +40,32 @@ public final class StreamPipelineTaskExecutorMesos extends StreamPipelineTaskExe
 	private ExecutorDriver driver;
 	TaskID taskid;
 	private static Logger log = Logger.getLogger(StreamPipelineTaskExecutorMesos.class);
-	public StreamPipelineTaskExecutorMesos(JobStage jobstage,ExecutorDriver driver,
+
+	public StreamPipelineTaskExecutorMesos(JobStage jobstage, ExecutorDriver driver,
 			TaskID taskid) {
-		super(jobstage,null);
+		super(jobstage, null);
 		this.driver = driver;
 		this.taskid = taskid;
 	}
+
 	/**
 	 * Execute the tasks via run method.
 	 */
 	@Override
 	public StreamPipelineTaskExecutor call() {
-		
+
 		log.debug("Entered MassiveDataStreamTaskExecutorMesos.run");
-		var configuration = new Configuration();;
+		var configuration = new Configuration();
+		;
 		var hdfsfilepath = MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL, MDCConstants.HDFSNAMENODEURL);
-		try(var hdfs = FileSystem.newInstance(new URI(hdfsfilepath), configuration);) {
-			
-			
+		try (var hdfs = FileSystem.newInstance(new URI(hdfsfilepath), configuration);) {
+
+
 			var output = new ArrayList<>();
 			var status = Protos.TaskStatus.newBuilder().setTaskId(taskid)
 					.setState(Protos.TaskState.TASK_RUNNING).build();
 			driver.sendStatusUpdate(status);
-			
+
 			if (task.input != null && task.parentremotedatafetch != null) {
 				var numinputs = task.parentremotedatafetch.length;
 				for (var inputindex = 0; inputindex < numinputs; inputindex++) {
@@ -56,13 +73,13 @@ public final class StreamPipelineTaskExecutorMesos extends StreamPipelineTaskExe
 					if (input != null) {
 						var rdf = (RemoteDataFetch) input;
 						task.input[inputindex] = RemoteDataFetcher.readIntermediatePhaseOutputFromDFS(rdf.jobid,
-								getIntermediateDataFSFilePath(rdf.jobid, rdf.stageid,rdf.taskid), hdfs);
+								getIntermediateDataFSFilePath(rdf.jobid, rdf.stageid, rdf.taskid), hdfs);
 					}
 				}
 			}
 
 			double timetakenseconds = computeTasks(task, hdfs);
-			log.info("Total Time Taken: "+timetakenseconds+" Seconds");
+			log.info("Total Time Taken: " + timetakenseconds + " Seconds");
 			status = Protos.TaskStatus.newBuilder().setTaskId(taskid).setState(Protos.TaskState.TASK_FINISHED).build();
 			driver.sendStatusUpdate(status);
 			output.clear();
@@ -75,6 +92,6 @@ public final class StreamPipelineTaskExecutorMesos extends StreamPipelineTaskExe
 		log.debug("Exiting MassiveDataStreamTaskExecutorMesos.run");
 		return this;
 	}
-	
-	
+
+
 }
