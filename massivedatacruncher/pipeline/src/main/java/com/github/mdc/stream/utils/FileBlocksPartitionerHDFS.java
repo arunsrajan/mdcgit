@@ -628,10 +628,14 @@ public class FileBlocksPartitionerHDFS {
 					var node = lc.getNodehostport().split(MDCConstants.UNDERSCORE)[0];
 					var cpu = cr.getCpu();
 					var maxmemory = cr.getMaxmemory();
+					var directmemory = cr.getDirectheap();
 					var port = cr.getPort();
 					return MDCConstants.BR + node + MDCConstants.UNDERSCORE + port + MDCConstants.COLON + MDCConstants.BR + MDCConstants.CPUS
 							+ MDCConstants.EQUAL + cpu + MDCConstants.BR + MDCConstants.MEM + MDCConstants.EQUAL
-							+ maxmemory;
+							+ maxmemory + MDCConstants.ROUNDED_BRACKET_OPEN + (Math.floor(maxmemory / (double) (maxmemory + directmemory) * 100.0))
+							+ MDCConstants.ROUNDED_BRACKET_CLOSE + MDCConstants.BR + MDCConstants.DIRECTMEM + MDCConstants.EQUAL + directmemory
+							+ MDCConstants.ROUNDED_BRACKET_OPEN + (Math.floor(directmemory / (double) (maxmemory + directmemory) * 100.0))
+							+ MDCConstants.ROUNDED_BRACKET_CLOSE;
 
 				}).collect(Collectors.toList()).stream();
 			}).collect(Collectors.toList());

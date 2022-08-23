@@ -652,6 +652,7 @@ Running MR Job examples
 
 tasksubmitter.cmd -jar ../modules/examples.jar -args "com.github.mdc.mr.examples.join.MrJobArrivalDelayNormal /airline1989 /carriers /examplesmdc 128 10"
 
+tasksubmitter.cmd -jar ../modules/examples.jar -args "com.github.mdc.mr.examples.join.MrJobArrivalDelayResourceDividedNormal /airline1989 /carriers /examplesmdc 128 10"
 
 tasksubmitter.cmd -jar ../modules/examples.jar -args "com.github.mdc.mr.examples.join.MrJobArrivalDelayYARN /airline1989 /carriers /examplesmdc 3 1024" 
 

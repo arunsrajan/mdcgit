@@ -30,6 +30,8 @@ public class MDCConstants {
 	static final String SLASH = "\\";
 	public static final String FORWARD_SLASH = "/";
 	public static final String BACKWARD_SLASH = "\\";
+	public static final String ROUNDED_BRACKET_OPEN = "(";
+	public static final String ROUNDED_BRACKET_CLOSE = ")";
 	public static final String COLON = ":";
 	public static final String EQUAL = "=";
 	public static final String UNDERSCORE = "_";
@@ -197,6 +199,7 @@ public class MDCConstants {
 	public static final String MESOS_TASK = "task ";
 	public static final String CPUS = "cpus";
 	public static final String MEM = "mem";
+	public static final String DIRECTMEM = "directmem";
 
 	public static final String MESOS_CONFIGDIR = "../config/";
 
