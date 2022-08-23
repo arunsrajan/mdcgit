@@ -1,3 +1,18 @@
+/*
+ * Copyright 2021 the original author or authors.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p>
+ * https://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.github.mdc.tasks.scheduler;
 
 import com.github.mdc.common.MDCConstants;
@@ -31,6 +46,11 @@ public class JobConfigurationBuilder {
 	String yarnscheduler;
 	String containeralloc;
 	String heappercentage;
+	String implicitcontainerallocanumber;
+	String implicitcontainercpu;
+	String implicitcontainermemory;
+	String implicitcontainermemorysize;
+
 	private JobConfigurationBuilder() {
 		hdfsurl = MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL);
 		tstempdir = MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULER_TMP_DIR);
@@ -56,10 +76,14 @@ public class JobConfigurationBuilder {
 		taskexeccount = MDCProperties.get().getProperty(MDCConstants.EXECUTIONCOUNT, MDCConstants.EXECUTIONCOUNT_DEFAULT);
 		ignitemulticastgroup = MDCProperties.get().getProperty(MDCConstants.IGNITEMULTICASTGROUP, MDCConstants.IGNITEMULTICASTGROUP_DEFAULT);
 		ignitebackup = MDCProperties.get().getProperty(MDCConstants.IGNITEBACKUP, MDCConstants.IGNITEBACKUP_DEFAULT);
-		yarnrm = MDCProperties.get().getProperty(MDCConstants.YARNRM, MDCConstants.YARNRM_DEFAULT);;
-		yarnscheduler = MDCProperties.get().getProperty(MDCConstants.YARNSCHEDULER, MDCConstants.YARNSCHEDULER_DEFAULT);;;
+		yarnrm = MDCProperties.get().getProperty(MDCConstants.YARNRM, MDCConstants.YARNRM_DEFAULT);
+		yarnscheduler = MDCProperties.get().getProperty(MDCConstants.YARNSCHEDULER, MDCConstants.YARNSCHEDULER_DEFAULT);
 		containeralloc = MDCProperties.get().getProperty(MDCConstants.CONTAINER_ALLOC, MDCConstants.CONTAINER_ALLOC_DEFAULT);
 		heappercentage = MDCProperties.get().getProperty(MDCConstants.HEAP_PERCENTAGE, MDCConstants.HEAP_PERCENTAGE_DEFAULT);
+		implicitcontainerallocanumber = MDCProperties.get().getProperty(MDCConstants.IMPLICIT_CONTAINER_ALLOC_NUMBER, MDCConstants.IMPLICIT_CONTAINER_ALLOC_NUMBER_DEFAULT);
+		implicitcontainercpu = MDCProperties.get().getProperty(MDCConstants.IMPLICIT_CONTAINER_ALLOC_CPU, MDCConstants.IMPLICIT_CONTAINER_ALLOC_CPU_DEFAULT);
+		implicitcontainermemory = MDCProperties.get().getProperty(MDCConstants.IMPLICIT_CONTAINER_ALLOC_MEMORY, MDCConstants.IMPLICIT_CONTAINER_ALLOC_MEMORY_DEFAULT);
+		implicitcontainermemorysize = MDCProperties.get().getProperty(MDCConstants.IMPLICIT_CONTAINER_ALLOC_MEMORY_SIZE, MDCConstants.IMPLICIT_CONTAINER_ALLOC_MEMORY_SIZE_DEFAULT);
 	}
 
 	public static JobConfigurationBuilder newBuilder() {
@@ -137,11 +161,8 @@ public class JobConfigurationBuilder {
 	}
 
 	public JobConfiguration build() {
-		return new JobConfiguration(hdfsurl, tstempdir, tshost, tsport, zkport, zkretrydelay, tspingdelay,
-				tsrescheduledelay, tsinitialdelay, tepingdelay, hdfs, blocksize, batchsize, numofreducers, minmem,
-				maxmem, gctype, numberofcontainers, isblocksuserdefined, execmode, taskexeccount, 
-				ignitemulticastgroup, ignitebackup, yarnrm, yarnscheduler, containeralloc, heappercentage);
-		
+		return new JobConfiguration(this);
+
 	}
 
 	public String getMinmem() {
@@ -175,8 +196,7 @@ public class JobConfigurationBuilder {
 		return numberofcontainers;
 	}
 
-	
-	
+
 	public JobConfigurationBuilder setIsblocksuserdefined(String isblocksuserdefined) {
 		this.isblocksuserdefined = isblocksuserdefined;
 		return this;
@@ -230,7 +250,24 @@ public class JobConfigurationBuilder {
 		this.heappercentage = heappercentage;
 		return this;
 	}
-	
-	
-	
+
+	public JobConfigurationBuilder setImplicitcontainerallocanumber(String implicitcontainerallocanumber) {
+		this.implicitcontainerallocanumber = implicitcontainerallocanumber;
+		return this;
+	}
+
+	public JobConfigurationBuilder setImplicitcontainercpu(String implicitcontainercpu) {
+		this.implicitcontainercpu = implicitcontainercpu;
+		return this;
+	}
+
+	public JobConfigurationBuilder setImplicitcontainermemory(String implicitcontainermemory) {
+		this.implicitcontainermemory = implicitcontainermemory;
+		return this;
+	}
+
+	public JobConfigurationBuilder setImplicitcontainermemorysize(String implicitcontainermemorysize) {
+		this.implicitcontainermemorysize = implicitcontainermemorysize;
+		return this;
+	}
 }

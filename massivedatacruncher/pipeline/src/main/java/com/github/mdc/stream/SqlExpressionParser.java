@@ -5,8 +5,8 @@ import java.util.function.Function;
 import org.apache.commons.csv.CSVRecord;
 import org.jooq.lambda.tuple.Tuple;
 
-import com.github.mdc.stream.functions.MapToPairFunction;
-import com.github.mdc.stream.functions.PredicateSerializable;
+import com.github.mdc.common.functions.MapToPairFunction;
+import com.github.mdc.common.functions.PredicateSerializable;
 
 import net.sf.jsqlparser.expression.DoubleValue;
 import net.sf.jsqlparser.expression.LongValue;

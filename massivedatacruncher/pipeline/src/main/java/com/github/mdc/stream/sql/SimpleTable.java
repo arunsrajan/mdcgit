@@ -1,3 +1,18 @@
+/*
+ * Copyright 2021 the original author or authors.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p>
+ * https://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.github.mdc.stream.sql;
 
 import org.apache.calcite.DataContext;
@@ -18,101 +33,101 @@ import java.util.List;
 
 public class SimpleTable extends AbstractTable implements ScannableTable {
 
-    private final String tableName;
-    private final List<String> fieldNames;
-    private final List<SqlTypeName> fieldTypes;
-    private final SimpleTableStatistic statistic;
+	private final String tableName;
+	private final List<String> fieldNames;
+	private final List<SqlTypeName> fieldTypes;
+	private final SimpleTableStatistic statistic;
 
-    private RelDataType rowType;
+	private RelDataType rowType;
 
-    private SimpleTable(String tableName, List<String> fieldNames, List<SqlTypeName> fieldTypes, SimpleTableStatistic statistic) {
-        this.tableName = tableName;
-        this.fieldNames = fieldNames;
-        this.fieldTypes = fieldTypes;
-        this.statistic = statistic;
-    }
+	private SimpleTable(String tableName, List<String> fieldNames, List<SqlTypeName> fieldTypes, SimpleTableStatistic statistic) {
+		this.tableName = tableName;
+		this.fieldNames = fieldNames;
+		this.fieldTypes = fieldTypes;
+		this.statistic = statistic;
+	}
 
-    public String getTableName() {
-        return tableName;
-    }
+	public String getTableName() {
+		return tableName;
+	}
 
-    @Override
-    public RelDataType getRowType(RelDataTypeFactory typeFactory) {
-        if (rowType == null) {
-            List<RelDataTypeField> fields = new ArrayList<>(fieldNames.size());
+	@Override
+	public RelDataType getRowType(RelDataTypeFactory typeFactory) {
+		if (rowType == null) {
+			List<RelDataTypeField> fields = new ArrayList<>(fieldNames.size());
 
-            for (int i = 0; i < fieldNames.size(); i++) {
-                RelDataType fieldType = typeFactory.createSqlType(fieldTypes.get(i));
-                RelDataTypeField field = new RelDataTypeFieldImpl(fieldNames.get(i), i, fieldType);
-                fields.add(field);
-            }
+			for (int i = 0; i < fieldNames.size(); i++) {
+				RelDataType fieldType = typeFactory.createSqlType(fieldTypes.get(i));
+				RelDataTypeField field = new RelDataTypeFieldImpl(fieldNames.get(i), i, fieldType);
+				fields.add(field);
+			}
 
-            rowType = new RelRecordType(StructKind.PEEK_FIELDS, fields, false);
-        }
+			rowType = new RelRecordType(StructKind.PEEK_FIELDS, fields, false);
+		}
 
-        return rowType;
-    }
+		return rowType;
+	}
 
-    @Override
-    public Statistic getStatistic() {
-        return statistic;
-    }
+	@Override
+	public Statistic getStatistic() {
+		return statistic;
+	}
 
-    @Override
-    public Enumerable<Object[]> scan(DataContext root) {
-        throw new UnsupportedOperationException("Not implemented");
-    }
+	@Override
+	public Enumerable<Object[]> scan(DataContext root) {
+		throw new UnsupportedOperationException("Not implemented");
+	}
 
-    public static Builder newBuilder(String tableName) {
-        return new Builder(tableName);
-    }
+	public static Builder newBuilder(String tableName) {
+		return new Builder(tableName);
+	}
 
-    public static final class Builder {
+	public static final class Builder {
 
-        private final String tableName;
-        private final List<String> fieldNames = new ArrayList<>();
-        private final List<SqlTypeName> fieldTypes = new ArrayList<>();
-        private long rowCount;
+		private final String tableName;
+		private final List<String> fieldNames = new ArrayList<>();
+		private final List<SqlTypeName> fieldTypes = new ArrayList<>();
+		private long rowCount;
 
-        private Builder(String tableName) {
-            if (tableName == null || tableName.isEmpty()) {
-                throw new IllegalArgumentException("Table name cannot be null or empty");
-            }
+		private Builder(String tableName) {
+			if (tableName == null || tableName.isEmpty()) {
+				throw new IllegalArgumentException("Table name cannot be null or empty");
+			}
 
-            this.tableName = tableName;
-        }
+			this.tableName = tableName;
+		}
 
-        public Builder addField(String name, SqlTypeName typeName) {
-            if (name == null || name.isEmpty()) {
-                throw new IllegalArgumentException("Field name cannot be null or empty");
-            }
+		public Builder addField(String name, SqlTypeName typeName) {
+			if (name == null || name.isEmpty()) {
+				throw new IllegalArgumentException("Field name cannot be null or empty");
+			}
 
-            if (fieldNames.contains(name)) {
-                throw new IllegalArgumentException("Field already defined: " + name);
-            }
+			if (fieldNames.contains(name)) {
+				throw new IllegalArgumentException("Field already defined: " + name);
+			}
 
-            fieldNames.add(name);
-            fieldTypes.add(typeName);
+			fieldNames.add(name);
+			fieldTypes.add(typeName);
 
-            return this;
-        }
+			return this;
+		}
 
-        public Builder withRowCount(long rowCount) {
-            this.rowCount = rowCount;
+		public Builder withRowCount(long rowCount) {
+			this.rowCount = rowCount;
 
-            return this;
-        }
+			return this;
+		}
 
-        public SimpleTable build() {
-            if (fieldNames.isEmpty()) {
-                throw new IllegalStateException("Table must have at least one field");
-            }
+		public SimpleTable build() {
+			if (fieldNames.isEmpty()) {
+				throw new IllegalStateException("Table must have at least one field");
+			}
 
-            if (rowCount == 0L) {
-                throw new IllegalStateException("Table must have positive row count");
-            }
+			if (rowCount == 0L) {
+				throw new IllegalStateException("Table must have positive row count");
+			}
 
-            return new SimpleTable(tableName, fieldNames, fieldTypes, new SimpleTableStatistic(rowCount));
-        }
-    }
+			return new SimpleTable(tableName, fieldNames, fieldTypes, new SimpleTableStatistic(rowCount));
+		}
+	}
 }

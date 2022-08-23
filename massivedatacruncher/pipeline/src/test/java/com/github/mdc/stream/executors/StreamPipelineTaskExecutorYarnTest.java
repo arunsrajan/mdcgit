@@ -1,3 +1,18 @@
+/*
+ * Copyright 2021 the original author or authors.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p>
+ * https://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.github.mdc.stream.executors;
 
 import static org.junit.Assert.assertEquals;
@@ -36,24 +51,24 @@ import com.github.mdc.common.Utils;
 import com.github.mdc.stream.CsvOptions;
 import com.github.mdc.stream.Json;
 import com.github.mdc.stream.StreamPipelineTestCommon;
-import com.github.mdc.stream.functions.CalculateCount;
-import com.github.mdc.stream.functions.Coalesce;
-import com.github.mdc.stream.functions.CountByKeyFunction;
-import com.github.mdc.stream.functions.FoldByKey;
-import com.github.mdc.stream.functions.IntersectionFunction;
-import com.github.mdc.stream.functions.JoinPredicate;
-import com.github.mdc.stream.functions.LeftOuterJoinPredicate;
-import com.github.mdc.stream.functions.MapFunction;
-import com.github.mdc.stream.functions.MapToPairFunction;
-import com.github.mdc.stream.functions.Max;
-import com.github.mdc.stream.functions.Min;
-import com.github.mdc.stream.functions.PredicateSerializable;
-import com.github.mdc.stream.functions.ReduceByKeyFunction;
-import com.github.mdc.stream.functions.RightOuterJoinPredicate;
-import com.github.mdc.stream.functions.StandardDeviation;
-import com.github.mdc.stream.functions.Sum;
-import com.github.mdc.stream.functions.SummaryStatistics;
-import com.github.mdc.stream.functions.UnionFunction;
+import com.github.mdc.common.functions.CalculateCount;
+import com.github.mdc.common.functions.Coalesce;
+import com.github.mdc.common.functions.CountByKeyFunction;
+import com.github.mdc.common.functions.FoldByKey;
+import com.github.mdc.common.functions.IntersectionFunction;
+import com.github.mdc.common.functions.JoinPredicate;
+import com.github.mdc.common.functions.LeftOuterJoinPredicate;
+import com.github.mdc.common.functions.MapFunction;
+import com.github.mdc.common.functions.MapToPairFunction;
+import com.github.mdc.common.functions.Max;
+import com.github.mdc.common.functions.Min;
+import com.github.mdc.common.functions.PredicateSerializable;
+import com.github.mdc.common.functions.ReduceByKeyFunction;
+import com.github.mdc.common.functions.RightOuterJoinPredicate;
+import com.github.mdc.common.functions.StandardDeviation;
+import com.github.mdc.common.functions.Sum;
+import com.github.mdc.common.functions.SummaryStatistics;
+import com.github.mdc.common.functions.UnionFunction;
 import com.github.mdc.stream.utils.FileBlocksPartitionerHDFS;
 
 public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon {
@@ -75,7 +90,8 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		js.stage.tasks.add(function);
 
 		StreamPipelineTaskExecutor mdstde = new StreamPipelineTaskExecutorYarn(hdfsurl, js);
-		mdstde.setHdfs(hdfs);mdstde.setExecutor(es);
+		mdstde.setHdfs(hdfs);
+		mdstde.setExecutor(es);
 		List<Path> filepaths = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -88,7 +104,7 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		fbp.getDnXref(bls, false);
 		mdstde.setTask(task);
 		mdstde.processBlockHDFSIntersection(bls.get(0), bls.get(0), hdfs);
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		String path = mdstde.getIntermediateDataFSFilePath(task);
 		InputStream is = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path))));
 		List<String> intersectiondata = (List<String>) kryo.readClassAndObject(new Input(is));
@@ -112,7 +128,8 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		js.stage.tasks.add(function);
 
 		StreamPipelineTaskExecutor mdstde = new StreamPipelineTaskExecutorYarn(hdfsurl, js);
-		mdstde.setHdfs(hdfs);mdstde.setExecutor(es);
+		mdstde.setHdfs(hdfs);
+		mdstde.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>(), filepaths2 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -133,7 +150,7 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		fbp.getDnXref(bls2, false);
 		mdstde.setTask(task);
 		mdstde.processBlockHDFSIntersection(bls1.get(0), bls2.get(0), hdfs);
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		String path = mdstde.getIntermediateDataFSFilePath(task);
 		InputStream is = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path))));
 		List<String> intersectiondata = (List<String>) kryo.readClassAndObject(new Input(is));
@@ -157,7 +174,8 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		js.stage.tasks.add(function);
 
 		StreamPipelineTaskExecutor mdstde = new StreamPipelineTaskExecutorYarn(hdfsurl, js);
-		mdstde.setHdfs(hdfs);mdstde.setExecutor(es);
+		mdstde.setHdfs(hdfs);
+		mdstde.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>(), filepaths2 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -178,7 +196,7 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		fbp.getDnXref(bls2, false);
 		mdstde.setTask(task);
 		mdstde.processBlockHDFSIntersection(bls1.get(0), bls1.get(0), hdfs);
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		String path = mdstde.getIntermediateDataFSFilePath(task);
 		InputStream is = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path))));
 		Set<InputStream> istreams = new LinkedHashSet<>(Arrays.asList(is));
@@ -213,7 +231,8 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		js.stage.tasks.add(function);
 
 		StreamPipelineTaskExecutor mdstde = new StreamPipelineTaskExecutorYarn(hdfsurl, js);
-		mdstde.setHdfs(hdfs);mdstde.setExecutor(es);
+		mdstde.setHdfs(hdfs);
+		mdstde.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>(), filepaths2 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -242,7 +261,7 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		js.stage.tasks.add(function);
 		mdstde.setTask(task2);
 		mdstde.processBlockHDFSIntersection(bls2.get(0), bls2.get(0), hdfs);
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		String path = mdstde.getIntermediateDataFSFilePath(task1);
 		InputStream is1 = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path))));
 		List<InputStream> istreams1 = Arrays.asList(is1);
@@ -284,7 +303,8 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		js.stage.tasks.add(function);
 
 		StreamPipelineTaskExecutor mdstde = new StreamPipelineTaskExecutorYarn(hdfsurl, js);
-		mdstde.setHdfs(hdfs);mdstde.setExecutor(es);
+		mdstde.setHdfs(hdfs);
+		mdstde.setExecutor(es);
 		List<Path> filepaths = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -297,7 +317,7 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		fbp.getDnXref(bls, false);
 		mdstde.setTask(task);
 		mdstde.processBlockHDFSUnion(bls.get(0), bls.get(0), hdfs);
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		String path = mdstde.getIntermediateDataFSFilePath(task);
 		InputStream is = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path))));
 		List<String> uniondata = (List<String>) kryo.readClassAndObject(new Input(is));
@@ -321,7 +341,8 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		js.stage.tasks.add(function);
 
 		StreamPipelineTaskExecutor mdstde = new StreamPipelineTaskExecutorYarn(hdfsurl, js);
-		mdstde.setHdfs(hdfs);mdstde.setExecutor(es);
+		mdstde.setHdfs(hdfs);
+		mdstde.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>(), filepaths2 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths3) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -342,7 +363,7 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		fbp.getDnXref(bls2, false);
 		mdstde.setTask(task);
 		mdstde.processBlockHDFSUnion(bls1.get(0), bls2.get(0), hdfs);
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		String path = mdstde.getIntermediateDataFSFilePath(task);
 		InputStream is = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path))));
 		List<String> uniondata = (List<String>) kryo.readClassAndObject(new Input(is));
@@ -366,7 +387,8 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		js.stage.tasks.add(task);
 
 		StreamPipelineTaskExecutor mdstde = new StreamPipelineTaskExecutorYarn(hdfsurl, js);
-		mdstde.setHdfs(hdfs);mdstde.setExecutor(es);
+		mdstde.setHdfs(hdfs);
+		mdstde.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>(), filepaths2 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths3) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -387,7 +409,7 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		fbp.getDnXref(bls2, false);
 		mdstde.setTask(task);
 		mdstde.processBlockHDFSUnion(bls1.get(0), bls1.get(0), hdfs);
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		String path = mdstde.getIntermediateDataFSFilePath(task);
 		InputStream is = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path))));
 		Set<InputStream> istreams = new LinkedHashSet<>(Arrays.asList(is));
@@ -423,7 +445,8 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		js.stage.tasks.add(function);
 
 		StreamPipelineTaskExecutor mdstde = new StreamPipelineTaskExecutorYarn(hdfsurl, js);
-		mdstde.setHdfs(hdfs);mdstde.setExecutor(es);
+		mdstde.setHdfs(hdfs);
+		mdstde.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>(), filepaths2 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths3) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -452,7 +475,7 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		js.stage.tasks.add(function);
 		mdstde.setTask(task2);
 		mdstde.processBlockHDFSUnion(bls2.get(0), bls2.get(0), hdfs);
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		String path = mdstde.getIntermediateDataFSFilePath(task1);
 		InputStream is1 = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path))));
 		List<InputStream> istreams1 = Arrays.asList(is1);
@@ -492,12 +515,13 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		filtertask.jobid = js.jobid;
 		filtertask.stageid = js.stageid;
 		MapFunction<String, String[]> map = (String str) -> str.split(MDCConstants.COMMA);
-		PredicateSerializable<String[]> filter = (String str[]) -> !str[14].equals("ArrDelay") && !str[14].equals("NA");
+		PredicateSerializable<String[]> filter = (String str[]) -> !"ArrDelay".equals(str[14]) && !"NA".equals(str[14]);
 		js.stage.tasks.add(map);
 		js.stage.tasks.add(filter);
 
 		StreamPipelineTaskExecutor mdstde = new StreamPipelineTaskExecutorYarn(hdfsurl, js);
-		mdstde.setHdfs(hdfs);mdstde.setExecutor(es);
+		mdstde.setHdfs(hdfs);
+		mdstde.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -511,7 +535,7 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		mdstde.setTask(filtertask);
 
 		mdstde.processBlockHDFSMap(bls1.get(0), hdfs);
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		String path = mdstde.getIntermediateDataFSFilePath(filtertask);
 		InputStream is = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path))));
 		List<String[]> mapfilterdata = (List<String[]>) kryo.readClassAndObject(new Input(is));
@@ -532,13 +556,14 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		calculatecounttask.jobid = js.jobid;
 		calculatecounttask.stageid = js.stageid;
 		MapFunction<String, String[]> map = (String str) -> str.split(MDCConstants.COMMA);
-		PredicateSerializable<String[]> filter = (String str[]) -> !str[14].equals("ArrDelay") && !str[14].equals("NA");
+		PredicateSerializable<String[]> filter = (String str[]) -> !"ArrDelay".equals(str[14]) && !"NA".equals(str[14]);
 		js.stage.tasks.add(map);
 		js.stage.tasks.add(filter);
 		js.stage.tasks.add(new CalculateCount());
 
 		StreamPipelineTaskExecutor mdstde = new StreamPipelineTaskExecutorYarn(hdfsurl, js);
-		mdstde.setHdfs(hdfs);mdstde.setExecutor(es);
+		mdstde.setHdfs(hdfs);
+		mdstde.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -551,7 +576,7 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		fbp.getDnXref(bls1, false);
 		mdstde.setTask(calculatecounttask);
 		mdstde.processBlockHDFSMap(bls1.get(0), hdfs);
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		String path = mdstde.getIntermediateDataFSFilePath(calculatecounttask);
 		InputStream is = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path))));
 		List<Long> mapfiltercountdata = (List<Long>) kryo.readClassAndObject(new Input(is));
@@ -572,7 +597,7 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		sstask.jobid = js.jobid;
 		sstask.stageid = js.stageid;
 		MapFunction<String, String[]> map = (String str) -> str.split(MDCConstants.COMMA);
-		PredicateSerializable<String[]> filter = (String str[]) -> !str[14].equals("ArrDelay") && !str[14].equals("NA");
+		PredicateSerializable<String[]> filter = (String str[]) -> !"ArrDelay".equals(str[14]) && !"NA".equals(str[14]);
 		ToIntFunction<String[]> toint = (String str[]) -> Integer.parseInt(str[14]);
 		js.stage.tasks.add(map);
 		js.stage.tasks.add(filter);
@@ -580,7 +605,8 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		js.stage.tasks.add(new SummaryStatistics());
 
 		StreamPipelineTaskExecutor mdstde = new StreamPipelineTaskExecutorYarn(hdfsurl, js);
-		mdstde.setHdfs(hdfs);mdstde.setExecutor(es);
+		mdstde.setHdfs(hdfs);
+		mdstde.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -593,7 +619,7 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		fbp.getDnXref(bls1, false);
 		mdstde.setTask(sstask);
 		mdstde.processBlockHDFSMap(bls1.get(0), hdfs);
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		String path = mdstde.getIntermediateDataFSFilePath(sstask);
 		InputStream is = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path))));
 		List<IntSummaryStatistics> mapfilterssdata = (List<IntSummaryStatistics>) kryo
@@ -620,7 +646,7 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		maxtask.jobid = js.jobid;
 		maxtask.stageid = js.stageid;
 		MapFunction<String, String[]> map = (String str) -> str.split(MDCConstants.COMMA);
-		PredicateSerializable<String[]> filter = (String str[]) -> !str[14].equals("ArrDelay") && !str[14].equals("NA");
+		PredicateSerializable<String[]> filter = (String str[]) -> !"ArrDelay".equals(str[14]) && !"NA".equals(str[14]);
 		ToIntFunction<String[]> toint = (String str[]) -> Integer.parseInt(str[14]);
 		js.stage.tasks.add(map);
 		js.stage.tasks.add(filter);
@@ -628,7 +654,8 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		js.stage.tasks.add(new Max());
 
 		StreamPipelineTaskExecutor mdstde = new StreamPipelineTaskExecutorYarn(hdfsurl, js);
-		mdstde.setHdfs(hdfs);mdstde.setExecutor(es);
+		mdstde.setHdfs(hdfs);
+		mdstde.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -641,7 +668,7 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		fbp.getDnXref(bls1, false);
 		mdstde.setTask(maxtask);
 		mdstde.processBlockHDFSMap(bls1.get(0), hdfs);
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		String path = mdstde.getIntermediateDataFSFilePath(maxtask);
 		InputStream is = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path))));
 		List<Integer> mapfiltermaxdata = (List<Integer>) kryo.readClassAndObject(new Input(is));
@@ -662,7 +689,7 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		mintask.jobid = js.jobid;
 		mintask.stageid = js.stageid;
 		MapFunction<String, String[]> map = (String str) -> str.split(MDCConstants.COMMA);
-		PredicateSerializable<String[]> filter = (String str[]) -> !str[14].equals("ArrDelay") && !str[14].equals("NA");
+		PredicateSerializable<String[]> filter = (String str[]) -> !"ArrDelay".equals(str[14]) && !"NA".equals(str[14]);
 		ToIntFunction<String[]> toint = (String str[]) -> Integer.parseInt(str[14]);
 		js.stage.tasks.add(map);
 		js.stage.tasks.add(filter);
@@ -670,7 +697,8 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		js.stage.tasks.add(new Min());
 
 		StreamPipelineTaskExecutor mdstde = new StreamPipelineTaskExecutorYarn(hdfsurl, js);
-		mdstde.setHdfs(hdfs);mdstde.setExecutor(es);
+		mdstde.setHdfs(hdfs);
+		mdstde.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -683,7 +711,7 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		fbp.getDnXref(bls1, false);
 		mdstde.setTask(mintask);
 		mdstde.processBlockHDFSMap(bls1.get(0), hdfs);
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		String path = mdstde.getIntermediateDataFSFilePath(mintask);
 		InputStream is = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path))));
 		List<Integer> mapfiltermaxdata = (List<Integer>) kryo.readClassAndObject(new Input(is));
@@ -704,7 +732,7 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		sumtask.jobid = js.jobid;
 		sumtask.stageid = js.stageid;
 		MapFunction<String, String[]> map = (String str) -> str.split(MDCConstants.COMMA);
-		PredicateSerializable<String[]> filter = (String str[]) -> !str[14].equals("ArrDelay") && !str[14].equals("NA");
+		PredicateSerializable<String[]> filter = (String str[]) -> !"ArrDelay".equals(str[14]) && !"NA".equals(str[14]);
 		ToIntFunction<String[]> toint = (String str[]) -> Integer.parseInt(str[14]);
 		js.stage.tasks.add(map);
 		js.stage.tasks.add(filter);
@@ -712,7 +740,8 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		js.stage.tasks.add(new Sum());
 
 		StreamPipelineTaskExecutor mdstde = new StreamPipelineTaskExecutorYarn(hdfsurl, js);
-		mdstde.setHdfs(hdfs);mdstde.setExecutor(es);
+		mdstde.setHdfs(hdfs);
+		mdstde.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -725,7 +754,7 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		fbp.getDnXref(bls1, false);
 		mdstde.setTask(sumtask);
 		mdstde.processBlockHDFSMap(bls1.get(0), hdfs);
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		String path = mdstde.getIntermediateDataFSFilePath(sumtask);
 		InputStream is = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path))));
 		List<Integer> mapfiltermaxdata = (List<Integer>) kryo.readClassAndObject(new Input(is));
@@ -746,7 +775,7 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		sdtask.jobid = js.jobid;
 		sdtask.stageid = js.stageid;
 		MapFunction<String, String[]> map = (String str) -> str.split(MDCConstants.COMMA);
-		PredicateSerializable<String[]> filter = (String str[]) -> !str[14].equals("ArrDelay") && !str[14].equals("NA");
+		PredicateSerializable<String[]> filter = (String str[]) -> !"ArrDelay".equals(str[14]) && !"NA".equals(str[14]);
 		ToIntFunction<String[]> toint = (String str[]) -> Integer.parseInt(str[14]);
 		js.stage.tasks.add(map);
 		js.stage.tasks.add(filter);
@@ -754,7 +783,8 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		js.stage.tasks.add(new StandardDeviation());
 
 		StreamPipelineTaskExecutor mdstde = new StreamPipelineTaskExecutorYarn(hdfsurl, js);
-		mdstde.setHdfs(hdfs);mdstde.setExecutor(es);
+		mdstde.setHdfs(hdfs);
+		mdstde.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -767,7 +797,7 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		fbp.getDnXref(bls1, false);
 		mdstde.setTask(sdtask);
 		mdstde.processBlockHDFSMap(bls1.get(0), hdfs);
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		String path = mdstde.getIntermediateDataFSFilePath(sdtask);
 		InputStream is = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path))));
 		List<Double> mapfiltermaxdata = (List<Double>) kryo.readClassAndObject(new Input(is));
@@ -788,14 +818,15 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		Task calcultecounttask = new Task();
 		calcultecounttask.jobid = js.jobid;
 		calcultecounttask.stageid = js.stageid;
-		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !csvrecord.get(14).equals("ArrDelay")
-				&& !csvrecord.get(14).equals("NA");
+		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !"ArrDelay".equals(csvrecord.get(14))
+				&& !"NA".equals(csvrecord.get(14));
 		js.stage.tasks.add(csvoptions);
 		js.stage.tasks.add(filter);
 		js.stage.tasks.add(new CalculateCount());
 
 		StreamPipelineTaskExecutor mdstde = new StreamPipelineTaskExecutorYarn(hdfsurl, js);
-		mdstde.setHdfs(hdfs);mdstde.setExecutor(es);
+		mdstde.setHdfs(hdfs);
+		mdstde.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -808,7 +839,7 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		fbp.getDnXref(bls1, false);
 		mdstde.setTask(calcultecounttask);
 		mdstde.processBlockHDFSMap(bls1.get(0), hdfs);
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		String path = mdstde.getIntermediateDataFSFilePath(calcultecounttask);
 		InputStream is = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path))));
 		List<Long> mapfiltercountdata = (List<Long>) kryo.readClassAndObject(new Input(is));
@@ -829,13 +860,14 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		Task filtertask = new Task();
 		filtertask.jobid = js.jobid;
 		filtertask.stageid = js.stageid;
-		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !csvrecord.get("ArrDelay").equals("ArrDelay")
-				&& !csvrecord.get("ArrDelay").equals("NA");
+		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !"ArrDelay".equals(csvrecord.get("ArrDelay"))
+				&& !"NA".equals(csvrecord.get("ArrDelay"));
 		js.stage.tasks.add(csvoptions);
 		js.stage.tasks.add(filter);
 
 		StreamPipelineTaskExecutor mdstde = new StreamPipelineTaskExecutorYarn(hdfsurl, js);
-		mdstde.setHdfs(hdfs);mdstde.setExecutor(es);
+		mdstde.setHdfs(hdfs);
+		mdstde.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -848,7 +880,7 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		fbp.getDnXref(bls1, false);
 		mdstde.setTask(filtertask);
 		mdstde.processBlockHDFSMap(bls1.get(0), hdfs);
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		String path = mdstde.getIntermediateDataFSFilePath(filtertask);
 		InputStream is = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path))));
 		List<CSVRecord> filterdata = (List<CSVRecord>) kryo.readClassAndObject(new Input(is));
@@ -869,8 +901,8 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		Task summarystaticstask = new Task();
 		summarystaticstask.jobid = js.jobid;
 		summarystaticstask.stageid = js.stageid;
-		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !csvrecord.get("ArrDelay").equals("ArrDelay")
-				&& !csvrecord.get("ArrDelay").equals("NA");
+		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !"ArrDelay".equals(csvrecord.get("ArrDelay"))
+				&& !"NA".equals(csvrecord.get("ArrDelay"));
 		ToIntFunction<CSVRecord> csvint = (CSVRecord csvrecord) -> Integer.parseInt(csvrecord.get("ArrDelay"));
 		js.stage.tasks.add(csvoptions);
 		js.stage.tasks.add(filter);
@@ -878,7 +910,8 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		js.stage.tasks.add(new SummaryStatistics());
 
 		StreamPipelineTaskExecutor mdstde = new StreamPipelineTaskExecutorYarn(hdfsurl, js);
-		mdstde.setHdfs(hdfs);mdstde.setExecutor(es);
+		mdstde.setHdfs(hdfs);
+		mdstde.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -891,7 +924,7 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		fbp.getDnXref(bls1, false);
 		mdstde.setTask(summarystaticstask);
 		mdstde.processBlockHDFSMap(bls1.get(0), hdfs);
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		String path = mdstde.getIntermediateDataFSFilePath(summarystaticstask);
 		InputStream is = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path))));
 		List<IntSummaryStatistics> mapfilterssdata = (List<IntSummaryStatistics>) kryo
@@ -917,8 +950,8 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		Task maxtask = new Task();
 		maxtask.jobid = js.jobid;
 		maxtask.stageid = js.stageid;
-		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !csvrecord.get("ArrDelay").equals("ArrDelay")
-				&& !csvrecord.get("ArrDelay").equals("NA");
+		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !"ArrDelay".equals(csvrecord.get("ArrDelay"))
+				&& !"NA".equals(csvrecord.get("ArrDelay"));
 		ToIntFunction<CSVRecord> csvint = (CSVRecord csvrecord) -> Integer.parseInt(csvrecord.get("ArrDelay"));
 		js.stage.tasks.add(csvoptions);
 		js.stage.tasks.add(filter);
@@ -926,7 +959,8 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		js.stage.tasks.add(new Max());
 
 		StreamPipelineTaskExecutor mdstde = new StreamPipelineTaskExecutorYarn(hdfsurl, js);
-		mdstde.setHdfs(hdfs);mdstde.setExecutor(es);
+		mdstde.setHdfs(hdfs);
+		mdstde.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -939,7 +973,7 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		fbp.getDnXref(bls1, false);
 		mdstde.setTask(maxtask);
 		mdstde.processBlockHDFSMap(bls1.get(0), hdfs);
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		String path = mdstde.getIntermediateDataFSFilePath(maxtask);
 		InputStream is = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path))));
 		List<Integer> mapfilterssdata = (List<Integer>) kryo.readClassAndObject(new Input(is));
@@ -960,8 +994,8 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		Task mintask = new Task();
 		mintask.jobid = js.jobid;
 		mintask.stageid = js.stageid;
-		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !csvrecord.get("ArrDelay").equals("ArrDelay")
-				&& !csvrecord.get("ArrDelay").equals("NA");
+		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !"ArrDelay".equals(csvrecord.get("ArrDelay"))
+				&& !"NA".equals(csvrecord.get("ArrDelay"));
 		ToIntFunction<CSVRecord> csvint = (CSVRecord csvrecord) -> Integer.parseInt(csvrecord.get("ArrDelay"));
 		js.stage.tasks.add(csvoptions);
 		js.stage.tasks.add(filter);
@@ -969,7 +1003,8 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		js.stage.tasks.add(new Min());
 
 		StreamPipelineTaskExecutor mdstde = new StreamPipelineTaskExecutorYarn(hdfsurl, js);
-		mdstde.setHdfs(hdfs);mdstde.setExecutor(es);
+		mdstde.setHdfs(hdfs);
+		mdstde.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -982,7 +1017,7 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		fbp.getDnXref(bls1, false);
 		mdstde.setTask(mintask);
 		mdstde.processBlockHDFSMap(bls1.get(0), hdfs);
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		String path = mdstde.getIntermediateDataFSFilePath(mintask);
 		InputStream is = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path))));
 		List<Integer> mapfilterssdata = (List<Integer>) kryo.readClassAndObject(new Input(is));
@@ -1003,8 +1038,8 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		Task sumtask = new Task();
 		sumtask.jobid = js.jobid;
 		sumtask.stageid = js.stageid;
-		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !csvrecord.get("ArrDelay").equals("ArrDelay")
-				&& !csvrecord.get("ArrDelay").equals("NA");
+		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !"ArrDelay".equals(csvrecord.get("ArrDelay"))
+				&& !"NA".equals(csvrecord.get("ArrDelay"));
 		ToIntFunction<CSVRecord> csvint = (CSVRecord csvrecord) -> Integer.parseInt(csvrecord.get("ArrDelay"));
 		js.stage.tasks.add(csvoptions);
 		js.stage.tasks.add(filter);
@@ -1012,7 +1047,8 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		js.stage.tasks.add(new Sum());
 
 		StreamPipelineTaskExecutor mdstde = new StreamPipelineTaskExecutorYarn(hdfsurl, js);
-		mdstde.setHdfs(hdfs);mdstde.setExecutor(es);
+		mdstde.setHdfs(hdfs);
+		mdstde.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -1025,7 +1061,7 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		fbp.getDnXref(bls1, false);
 		mdstde.setTask(sumtask);
 		mdstde.processBlockHDFSMap(bls1.get(0), hdfs);
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		String path = mdstde.getIntermediateDataFSFilePath(sumtask);
 		InputStream is = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path))));
 		List<Integer> mapfilterssdata = (List<Integer>) kryo.readClassAndObject(new Input(is));
@@ -1046,8 +1082,8 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		Task sdtask = new Task();
 		sdtask.jobid = js.jobid;
 		sdtask.stageid = js.stageid;
-		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !csvrecord.get("ArrDelay").equals("ArrDelay")
-				&& !csvrecord.get("ArrDelay").equals("NA");
+		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !"ArrDelay".equals(csvrecord.get("ArrDelay"))
+				&& !"NA".equals(csvrecord.get("ArrDelay"));
 		ToIntFunction<CSVRecord> csvint = (CSVRecord csvrecord) -> Integer.parseInt(csvrecord.get("ArrDelay"));
 		js.stage.tasks.add(csvoptions);
 		js.stage.tasks.add(filter);
@@ -1055,7 +1091,8 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		js.stage.tasks.add(new StandardDeviation());
 
 		StreamPipelineTaskExecutor mdstde = new StreamPipelineTaskExecutorYarn(hdfsurl, js);
-		mdstde.setHdfs(hdfs);mdstde.setExecutor(es);
+		mdstde.setHdfs(hdfs);
+		mdstde.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -1068,7 +1105,7 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		fbp.getDnXref(bls1, false);
 		mdstde.setTask(sdtask);
 		mdstde.processBlockHDFSMap(bls1.get(0), hdfs);
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		String path = mdstde.getIntermediateDataFSFilePath(sdtask);
 		InputStream is = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path))));
 		List<Double> mapfiltersddata = (List<Double>) kryo.readClassAndObject(new Input(is));
@@ -1090,13 +1127,14 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		filtertask.jobid = js.jobid;
 		filtertask.stageid = js.stageid;
 
-		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !csvrecord.get(14).equals("ArrDelay")
-				&& !csvrecord.get(14).equals("NA");
+		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !"ArrDelay".equals(csvrecord.get(14))
+				&& !"NA".equals(csvrecord.get(14));
 		js.stage.tasks.add(csvoptions);
 		js.stage.tasks.add(filter);
 
 		StreamPipelineTaskExecutor mdstde = new StreamPipelineTaskExecutorYarn(hdfsurl, js);
-		mdstde.setHdfs(hdfs);mdstde.setExecutor(es);
+		mdstde.setHdfs(hdfs);
+		mdstde.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -1120,7 +1158,7 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		mdstde.setTask(calcultecounttask);
 		mdstde.processBlockHDFSMap(inputtocount);
 		is.close();
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		path = mdstde.getIntermediateDataFSFilePath(calcultecounttask);
 		is = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path))));
 		List<Long> csvreccount = (List<Long>) kryo.readClassAndObject(new Input(is));
@@ -1142,13 +1180,14 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		filtertask.jobid = js.jobid;
 		filtertask.stageid = js.stageid;
 
-		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !csvrecord.get(14).equals("ArrDelay")
-				&& !csvrecord.get(14).equals("NA");
+		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !"ArrDelay".equals(csvrecord.get(14))
+				&& !"NA".equals(csvrecord.get(14));
 		js.stage.tasks.add(csvoptions);
 		js.stage.tasks.add(filter);
 
 		StreamPipelineTaskExecutor mdstde = new StreamPipelineTaskExecutorYarn(hdfsurl, js);
-		mdstde.setHdfs(hdfs);mdstde.setExecutor(es);
+		mdstde.setHdfs(hdfs);
+		mdstde.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -1174,7 +1213,7 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		mdstde.setTask(summarystaticstask);
 		mdstde.processBlockHDFSMap(inputtocount);
 		is.close();
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		path = mdstde.getIntermediateDataFSFilePath(summarystaticstask);
 		is = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path))));
 		List<IntSummaryStatistics> mapfilterssdata = (List<IntSummaryStatistics>) kryo
@@ -1201,13 +1240,14 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		filtertask.jobid = js.jobid;
 		filtertask.stageid = js.stageid;
 
-		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !csvrecord.get(14).equals("ArrDelay")
-				&& !csvrecord.get(14).equals("NA");
+		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !"ArrDelay".equals(csvrecord.get(14))
+				&& !"NA".equals(csvrecord.get(14));
 		js.stage.tasks.add(csvoptions);
 		js.stage.tasks.add(filter);
 
 		StreamPipelineTaskExecutor mdstde = new StreamPipelineTaskExecutorYarn(hdfsurl, js);
-		mdstde.setHdfs(hdfs);mdstde.setExecutor(es);
+		mdstde.setHdfs(hdfs);
+		mdstde.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -1233,7 +1273,7 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		mdstde.setTask(maxtask);
 		mdstde.processBlockHDFSMap(inputtocount);
 		is.close();
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		path = mdstde.getIntermediateDataFSFilePath(maxtask);
 		is = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path))));
 		List<Integer> mapfiltermaxdata = (List<Integer>) kryo.readClassAndObject(new Input(is));
@@ -1254,13 +1294,14 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		Task filtertask = new Task();
 		filtertask.jobid = js.jobid;
 		filtertask.stageid = js.stageid;
-		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !csvrecord.get(14).equals("ArrDelay")
-				&& !csvrecord.get(14).equals("NA");
+		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !"ArrDelay".equals(csvrecord.get(14))
+				&& !"NA".equals(csvrecord.get(14));
 		js.stage.tasks.add(csvoptions);
 		js.stage.tasks.add(filter);
 
 		StreamPipelineTaskExecutor mdstde = new StreamPipelineTaskExecutorYarn(hdfsurl, js);
-		mdstde.setHdfs(hdfs);mdstde.setExecutor(es);
+		mdstde.setHdfs(hdfs);
+		mdstde.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -1286,7 +1327,7 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		mdstde.setTask(mintask);
 		mdstde.processBlockHDFSMap(inputtocount);
 		is.close();
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		path = mdstde.getIntermediateDataFSFilePath(mintask);
 		is = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path))));
 		List<Integer> mapfiltermindata = (List<Integer>) kryo.readClassAndObject(new Input(is));
@@ -1308,13 +1349,14 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		filtertask.jobid = js.jobid;
 		filtertask.stageid = js.stageid;
 
-		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !csvrecord.get(14).equals("ArrDelay")
-				&& !csvrecord.get(14).equals("NA");
+		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !"ArrDelay".equals(csvrecord.get(14))
+				&& !"NA".equals(csvrecord.get(14));
 		js.stage.tasks.add(csvoptions);
 		js.stage.tasks.add(filter);
 
 		StreamPipelineTaskExecutor mdstde = new StreamPipelineTaskExecutorYarn(hdfsurl, js);
-		mdstde.setHdfs(hdfs);mdstde.setExecutor(es);
+		mdstde.setHdfs(hdfs);
+		mdstde.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -1340,7 +1382,7 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		mdstde.setTask(sumtask);
 		mdstde.processBlockHDFSMap(inputtocount);
 		is.close();
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		path = mdstde.getIntermediateDataFSFilePath(sumtask);
 		is = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path))));
 		List<Integer> mapfiltersumdata = (List<Integer>) kryo.readClassAndObject(new Input(is));
@@ -1362,13 +1404,14 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		filtertask.jobid = js.jobid;
 		filtertask.stageid = js.stageid;
 
-		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !csvrecord.get(14).equals("ArrDelay")
-				&& !csvrecord.get(14).equals("NA");
+		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !"ArrDelay".equals(csvrecord.get(14))
+				&& !"NA".equals(csvrecord.get(14));
 		js.stage.tasks.add(csvoptions);
 		js.stage.tasks.add(filter);
 
 		StreamPipelineTaskExecutor mdstde = new StreamPipelineTaskExecutorYarn(hdfsurl, js);
-		mdstde.setHdfs(hdfs);mdstde.setExecutor(es);
+		mdstde.setHdfs(hdfs);
+		mdstde.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -1394,7 +1437,7 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		mdstde.setTask(sdtask);
 		mdstde.processBlockHDFSMap(inputtocount);
 		is.close();
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		path = mdstde.getIntermediateDataFSFilePath(sdtask);
 		is = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path))));
 		List<Integer> mapfiltersddata = (List<Integer>) kryo.readClassAndObject(new Input(is));
@@ -1416,13 +1459,14 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		filtertask.jobid = js.jobid;
 		filtertask.stageid = js.stageid;
 
-		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !csvrecord.get(14).equals("ArrDelay")
-				&& !csvrecord.get(14).equals("NA");
+		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !"ArrDelay".equals(csvrecord.get(14))
+				&& !"NA".equals(csvrecord.get(14));
 		js.stage.tasks.add(csvoptions);
 		js.stage.tasks.add(filter);
 
 		StreamPipelineTaskExecutor mdstde = new StreamPipelineTaskExecutorYarn(hdfsurl, js);
-		mdstde.setHdfs(hdfs);mdstde.setExecutor(es);
+		mdstde.setHdfs(hdfs);
+		mdstde.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -1436,7 +1480,7 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		mdstde.setTask(filtertask);
 		mdstde.processSamplesBlocks(100, bls1.get(0), hdfs);
 		String path = mdstde.getIntermediateDataFSFilePath(filtertask);
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		InputStream is = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path))));
 		List<Long> csvreccount = (List<Long>) kryo.readClassAndObject(new Input(is));
 		assertEquals(100, (long) csvreccount.size());
@@ -1456,13 +1500,14 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		counttask.jobid = js.jobid;
 		counttask.stageid = js.stageid;
 		CsvOptions csvoptions = new CsvOptions(airlineheader);
-		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !csvrecord.get(14).equals("ArrDelay")
-				&& !csvrecord.get(14).equals("NA");
+		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !"ArrDelay".equals(csvrecord.get(14))
+				&& !"NA".equals(csvrecord.get(14));
 		js.stage.tasks.add(csvoptions);
 		js.stage.tasks.add(filter);
 		js.stage.tasks.add(new CalculateCount());
 		StreamPipelineTaskExecutor mdstde = new StreamPipelineTaskExecutorYarn(hdfsurl, js);
-		mdstde.setHdfs(hdfs);mdstde.setExecutor(es);
+		mdstde.setHdfs(hdfs);
+		mdstde.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -1476,14 +1521,14 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		mdstde.setTask(counttask);
 		mdstde.processSamplesBlocks(150, bls1.get(0), hdfs);
 		String path = mdstde.getIntermediateDataFSFilePath(counttask);
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		InputStream is = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path))));
 		List<Long> csvreccount = (List<Long>) kryo.readClassAndObject(new Input(is));
 		assertEquals(150l, (long) csvreccount.get(0));
 		is.close();
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testProcessStreamSample() throws Exception {
 		JobStage js = new JobStage();
@@ -1497,13 +1542,14 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		filtertask.jobid = js.jobid;
 		filtertask.stageid = js.stageid;
 
-		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !csvrecord.get(14).equals("ArrDelay")
-				&& !csvrecord.get(14).equals("NA");
+		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !"ArrDelay".equals(csvrecord.get(14))
+				&& !"NA".equals(csvrecord.get(14));
 		js.stage.tasks.add(csvoptions);
 		js.stage.tasks.add(filter);
 
 		StreamPipelineTaskExecutor mdstde = new StreamPipelineTaskExecutorYarn(hdfsurl, js);
-		mdstde.setHdfs(hdfs);mdstde.setExecutor(es);
+		mdstde.setHdfs(hdfs);
+		mdstde.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -1522,13 +1568,13 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		Task sample = new Task();
 		sample.jobid = js.jobid;
 		sample.stageid = js.stageid;
-		Function samplefn = (val) -> val;
+		Function samplefn = val -> val;
 		js.stage.tasks.clear();
 		js.stage.tasks.add(samplefn);
 		mdstde.setTask(sample);
 		mdstde.processSamplesObjects(150, inputtocount);
 		is.close();
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		path = mdstde.getIntermediateDataFSFilePath(sample);
 		is = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path))));
 		List<Integer> mapfiltersddata = (List<Integer>) kryo.readClassAndObject(new Input(is));
@@ -1550,13 +1596,14 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		filtertask.jobid = js.jobid;
 		filtertask.stageid = js.stageid;
 
-		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !csvrecord.get(14).equals("ArrDelay")
-				&& !csvrecord.get(14).equals("NA");
+		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !"ArrDelay".equals(csvrecord.get(14))
+				&& !"NA".equals(csvrecord.get(14));
 		js.stage.tasks.add(csvoptions);
 		js.stage.tasks.add(filter);
 
 		StreamPipelineTaskExecutor mdstde = new StreamPipelineTaskExecutorYarn(hdfsurl, js);
-		mdstde.setHdfs(hdfs);mdstde.setExecutor(es);
+		mdstde.setHdfs(hdfs);
+		mdstde.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -1580,7 +1627,7 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		mdstde.setTask(count);
 		mdstde.processSamplesObjects(150, inputtocount);
 		is.close();
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		path = mdstde.getIntermediateDataFSFilePath(count);
 		is = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path))));
 		List<Long> mapfiltersddata = (List<Long>) kryo.readClassAndObject(new Input(is));
@@ -1601,8 +1648,8 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		reducebykeytask1.jobid = js.jobid;
 		reducebykeytask1.stageid = js.stageid;
 		MapFunction<String, String[]> map = (String str) -> str.split(MDCConstants.COMMA);
-		PredicateSerializable<String[]> filter = (String str[]) -> !str[14].equals("ArrDelay") && !str[14].equals("NA");
-		MapToPairFunction<String[], Tuple2<String, Integer>> pair = (val) -> new Tuple2<String, Integer>(
+		PredicateSerializable<String[]> filter = (String str[]) -> !"ArrDelay".equals(str[14]) && !"NA".equals(str[14]);
+		MapToPairFunction<String[], Tuple2<String, Integer>> pair = val -> new Tuple2<String, Integer>(
 				(String) val[8], (Integer) Integer.parseInt(val[14]));
 		ReduceByKeyFunction<Integer> redfunc = (input1, input2) -> input1 + input2;
 		js.stage.tasks.add(map);
@@ -1611,7 +1658,8 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		js.stage.tasks.add(redfunc);
 
 		StreamPipelineTaskExecutor mdstde = new StreamPipelineTaskExecutorYarn(hdfsurl, js);
-		mdstde.setHdfs(hdfs);mdstde.setExecutor(es);
+		mdstde.setHdfs(hdfs);
+		mdstde.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>(), filepaths2 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -1644,7 +1692,7 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		mdstde.setTask(reducebykeytask2);
 		mdstde.processBlockHDFSMap(bls2.get(0), hdfs);
 
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		String path1 = mdstde.getIntermediateDataFSFilePath(reducebykeytask1);
 		InputStream is1 = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path1))));
 		String path2 = mdstde.getIntermediateDataFSFilePath(reducebykeytask2);
@@ -1653,7 +1701,7 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		jointask.jobid = js.jobid;
 		jointask.stageid = js.stageid;
 		js.stage.tasks.clear();
-		Consumer<String> dummy = (val) -> {
+		Consumer<String> dummy = val -> {
 		};
 		js.stage.tasks.add(dummy);
 		JoinPredicate<Tuple2<String, Long>, Tuple2<String, Long>> jp = (Tuple2<String, Long> tup1,
@@ -1663,7 +1711,7 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		is1.close();
 		is2.close();
 
-		kryo = Utils.getKryoNonDeflateSerializer();
+		kryo = Utils.getKryoSerializerDeserializer();
 		String path = mdstde.getIntermediateDataFSFilePath(jointask);
 		InputStream is = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path))));
 		List<Tuple2<Tuple2<String, Integer>, Tuple2<String, Integer>>> mapfiltersddata = (List) kryo
@@ -1687,8 +1735,8 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		reducebykeytask1.jobid = js.jobid;
 		reducebykeytask1.stageid = js.stageid;
 		MapFunction<String, String[]> map = (String str) -> str.split(MDCConstants.COMMA);
-		PredicateSerializable<String[]> filter = (String str[]) -> !str[14].equals("ArrDelay") && !str[14].equals("NA");
-		MapToPairFunction<String[], Tuple2<String, Integer>> pair = (val) -> new Tuple2<String, Integer>(
+		PredicateSerializable<String[]> filter = (String str[]) -> !"ArrDelay".equals(str[14]) && !"NA".equals(str[14]);
+		MapToPairFunction<String[], Tuple2<String, Integer>> pair = val -> new Tuple2<String, Integer>(
 				(String) val[8], (Integer) Integer.parseInt(val[14]));
 		ReduceByKeyFunction<Integer> redfunc = (input1, input2) -> input1 + input2;
 		js.stage.tasks.add(map);
@@ -1697,7 +1745,8 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		js.stage.tasks.add(redfunc);
 
 		StreamPipelineTaskExecutor mdstde = new StreamPipelineTaskExecutorYarn(hdfsurl, js);
-		mdstde.setHdfs(hdfs);mdstde.setExecutor(es);
+		mdstde.setHdfs(hdfs);
+		mdstde.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>(), filepaths2 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -1730,7 +1779,7 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		mdstde.setTask(reducebykeytask2);
 		mdstde.processBlockHDFSMap(bls2.get(0), hdfs);
 
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		String path1 = mdstde.getIntermediateDataFSFilePath(reducebykeytask1);
 		InputStream is1 = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path1))));
 		String path2 = mdstde.getIntermediateDataFSFilePath(reducebykeytask2);
@@ -1739,7 +1788,7 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		jointask.jobid = js.jobid;
 		jointask.stageid = js.stageid;
 		js.stage.tasks.clear();
-		Consumer<String> dummy = (val) -> {
+		Consumer<String> dummy = val -> {
 		};
 		js.stage.tasks.add(dummy);
 
@@ -1750,7 +1799,7 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		is1.close();
 		is2.close();
 
-		kryo = Utils.getKryoNonDeflateSerializer();
+		kryo = Utils.getKryoSerializerDeserializer();
 		String path = mdstde.getIntermediateDataFSFilePath(jointask);
 		InputStream is = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path))));
 		List<Tuple2<Tuple2<String, Integer>, Tuple2<String, Integer>>> mapfiltersddata = (List) kryo
@@ -1765,7 +1814,7 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		assertEquals("AQ", tupleresult.v2.v1);
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testProcessRightOuterJoin() throws Exception {
 		JobStage js = new JobStage();
@@ -1778,8 +1827,8 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		reducebykeytask1.jobid = js.jobid;
 		reducebykeytask1.stageid = js.stageid;
 		MapFunction<String, String[]> map = (String str) -> str.split(MDCConstants.COMMA);
-		PredicateSerializable<String[]> filter = (String str[]) -> !str[14].equals("ArrDelay") && !str[14].equals("NA");
-		MapToPairFunction<String[], Tuple2<String, Integer>> pair = (val) -> new Tuple2<String, Integer>(
+		PredicateSerializable<String[]> filter = (String str[]) -> !"ArrDelay".equals(str[14]) && !"NA".equals(str[14]);
+		MapToPairFunction<String[], Tuple2<String, Integer>> pair = val -> new Tuple2<String, Integer>(
 				(String) val[8], (Integer) Integer.parseInt(val[14]));
 		ReduceByKeyFunction<Integer> redfunc = (input1, input2) -> input1 + input2;
 		js.stage.tasks.add(map);
@@ -1788,7 +1837,8 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		js.stage.tasks.add(redfunc);
 
 		StreamPipelineTaskExecutor mdstde = new StreamPipelineTaskExecutorYarn(hdfsurl, js);
-		mdstde.setHdfs(hdfs);mdstde.setExecutor(es);
+		mdstde.setHdfs(hdfs);
+		mdstde.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>(), filepaths2 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -1821,7 +1871,7 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		mdstde.setTask(reducebykeytask2);
 		mdstde.processBlockHDFSMap(bls2.get(0), hdfs);
 
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		String path1 = mdstde.getIntermediateDataFSFilePath(reducebykeytask1);
 		InputStream is1 = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path1))));
 		String path2 = mdstde.getIntermediateDataFSFilePath(reducebykeytask2);
@@ -1830,7 +1880,7 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		jointask.jobid = js.jobid;
 		jointask.stageid = js.stageid;
 		js.stage.tasks.clear();
-		Consumer<String> dummy = (val) -> {
+		Consumer<String> dummy = val -> {
 		};
 		js.stage.tasks.add(dummy);
 
@@ -1841,7 +1891,7 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		is1.close();
 		is2.close();
 
-		kryo = Utils.getKryoNonDeflateSerializer();
+		kryo = Utils.getKryoSerializerDeserializer();
 		String path = mdstde.getIntermediateDataFSFilePath(jointask);
 		InputStream is = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path))));
 		List<Tuple2<Tuple2<String, Integer>, Tuple2<String, Integer>>> mapfiltersddata = (List) kryo
@@ -1856,7 +1906,7 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		assertEquals("AQ", tupleresult.v2.v1);
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testProcessGroupByKey() throws Exception {
 		JobStage js = new JobStage();
@@ -1869,15 +1919,16 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		mappairtask1.jobid = js.jobid;
 		mappairtask1.stageid = js.stageid;
 		MapFunction<String, String[]> map = (String str) -> str.split(MDCConstants.COMMA);
-		PredicateSerializable<String[]> filter = (String str[]) -> !str[14].equals("ArrDelay") && !str[14].equals("NA");
-		MapToPairFunction<String[], Tuple2<String, Integer>> pair = (val) -> new Tuple2<String, Integer>(
+		PredicateSerializable<String[]> filter = (String str[]) -> !"ArrDelay".equals(str[14]) && !"NA".equals(str[14]);
+		MapToPairFunction<String[], Tuple2<String, Integer>> pair = val -> new Tuple2<String, Integer>(
 				(String) val[8], (Integer) Integer.parseInt(val[14]));
 		js.stage.tasks.add(map);
 		js.stage.tasks.add(filter);
 		js.stage.tasks.add(pair);
 
 		StreamPipelineTaskExecutor mdstde = new StreamPipelineTaskExecutorYarn(hdfsurl, js);
-		mdstde.setHdfs(hdfs);mdstde.setExecutor(es);
+		mdstde.setHdfs(hdfs);
+		mdstde.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -1891,7 +1942,7 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		mdstde.setTask(mappairtask1);
 		mdstde.processBlockHDFSMap(bls1.get(0), hdfs);
 
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		String path1 = mdstde.getIntermediateDataFSFilePath(mappairtask1);
 		InputStream is1 = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path1))));
 		Task gbktask = new Task();
@@ -1899,14 +1950,14 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		gbktask.stageid = js.stageid;
 		js.stage.tasks.clear();
 		js.stage.tasks.add(gbktask);
-		Consumer<String> dummy = (val) -> {
+		Consumer<String> dummy = val -> {
 		};
-		gbktask.input = new Object[] { is1 };
+		gbktask.input = new Object[]{is1};
 		mdstde.setTask(gbktask);
 		mdstde.processGroupByKeyTuple2();
 		is1.close();
 
-		kryo = Utils.getKryoNonDeflateSerializer();
+		kryo = Utils.getKryoSerializerDeserializer();
 		String path = mdstde.getIntermediateDataFSFilePath(gbktask);
 		InputStream is = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path))));
 		List<Tuple2<String, List<Integer>>> mapfiltersddata = (List) kryo.readClassAndObject(new Input(is));
@@ -1916,7 +1967,7 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		assertEquals("AQ", tupleresult.v1);
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testProcessFoldLeft() throws Exception {
 		JobStage js = new JobStage();
@@ -1929,15 +1980,16 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		mappairtask1.jobid = js.jobid;
 		mappairtask1.stageid = js.stageid;
 		MapFunction<String, String[]> map = (String str) -> str.split(MDCConstants.COMMA);
-		PredicateSerializable<String[]> filter = (String str[]) -> !str[14].equals("ArrDelay") && !str[14].equals("NA");
-		MapToPairFunction<String[], Tuple2<String, Long>> pair = (val) -> new Tuple2<String, Long>((String) val[8],
+		PredicateSerializable<String[]> filter = (String str[]) -> !"ArrDelay".equals(str[14]) && !"NA".equals(str[14]);
+		MapToPairFunction<String[], Tuple2<String, Long>> pair = val -> new Tuple2<String, Long>((String) val[8],
 				(Long) Long.parseLong(val[14]));
 		js.stage.tasks.add(map);
 		js.stage.tasks.add(filter);
 		js.stage.tasks.add(pair);
 
 		StreamPipelineTaskExecutor mdstde = new StreamPipelineTaskExecutorYarn(hdfsurl, js);
-		mdstde.setHdfs(hdfs);mdstde.setExecutor(es);
+		mdstde.setHdfs(hdfs);
+		mdstde.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -1951,7 +2003,7 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		mdstde.setTask(mappairtask1);
 		mdstde.processBlockHDFSMap(bls1.get(0), hdfs);
 
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		String path1 = mdstde.getIntermediateDataFSFilePath(mappairtask1);
 		InputStream is1 = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path1))));
 		Task fbktask = new Task();
@@ -1961,12 +2013,12 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		ReduceByKeyFunction<Long> redfunc = (a, b) -> a + b;
 		FoldByKey fbk = new FoldByKey(0l, redfunc, true);
 		js.stage.tasks.add(fbk);
-		fbktask.input = new Object[] { is1 };
+		fbktask.input = new Object[]{is1};
 		mdstde.setTask(fbktask);
 		mdstde.processFoldByKeyTuple2();
 		is1.close();
 
-		kryo = Utils.getKryoNonDeflateSerializer();
+		kryo = Utils.getKryoSerializerDeserializer();
 		String path = mdstde.getIntermediateDataFSFilePath(fbktask);
 		InputStream is = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path))));
 		List<Tuple2<String, Long>> mapfiltersddata = (List) kryo.readClassAndObject(new Input(is));
@@ -1976,7 +2028,7 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		assertEquals("AQ", tupleresult.v1);
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testProcessFoldRight() throws Exception {
 		JobStage js = new JobStage();
@@ -1987,15 +2039,16 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		js.stage.tasks = new ArrayList<>();
 		Task mappairtask1 = new Task();
 		MapFunction<String, String[]> map = (String str) -> str.split(MDCConstants.COMMA);
-		PredicateSerializable<String[]> filter = (String str[]) -> !str[14].equals("ArrDelay") && !str[14].equals("NA");
-		MapToPairFunction<String[], Tuple2<String, Long>> pair = (val) -> new Tuple2<String, Long>((String) val[8],
+		PredicateSerializable<String[]> filter = (String str[]) -> !"ArrDelay".equals(str[14]) && !"NA".equals(str[14]);
+		MapToPairFunction<String[], Tuple2<String, Long>> pair = val -> new Tuple2<String, Long>((String) val[8],
 				(Long) Long.parseLong(val[14]));
 		js.stage.tasks.add(map);
 		js.stage.tasks.add(filter);
 		js.stage.tasks.add(pair);
 
 		StreamPipelineTaskExecutor mdstde = new StreamPipelineTaskExecutorYarn(hdfsurl, js);
-		mdstde.setHdfs(hdfs);mdstde.setExecutor(es);
+		mdstde.setHdfs(hdfs);
+		mdstde.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -2009,7 +2062,7 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		mdstde.setTask(mappairtask1);
 		mdstde.processBlockHDFSMap(bls1.get(0), hdfs);
 
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		String path1 = mdstde.getIntermediateDataFSFilePath(mappairtask1);
 		InputStream is1 = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path1))));
 		Task fbktask = new Task();
@@ -2020,12 +2073,12 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		js.stage.tasks.clear();
 		js.stage.tasks.add(fbk);
 
-		fbktask.input = new Object[] { is1 };
+		fbktask.input = new Object[]{is1};
 		mdstde.setTask(fbktask);
 		mdstde.processFoldByKeyTuple2();
 		is1.close();
 
-		kryo = Utils.getKryoNonDeflateSerializer();
+		kryo = Utils.getKryoSerializerDeserializer();
 		String path = mdstde.getIntermediateDataFSFilePath(fbktask);
 		InputStream is = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path))));
 		List<Tuple2<String, Long>> mapfiltersddata = (List) kryo.readClassAndObject(new Input(is));
@@ -2035,7 +2088,7 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		assertEquals("AQ", tupleresult.v1);
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testProcessCountByKey() throws Exception {
 		JobStage js = new JobStage();
@@ -2046,15 +2099,16 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		js.stage.tasks = new ArrayList<>();
 		Task mappairtask1 = new Task();
 		MapFunction<String, String[]> map = (String str) -> str.split(MDCConstants.COMMA);
-		PredicateSerializable<String[]> filter = (String str[]) -> !str[14].equals("ArrDelay") && !str[14].equals("NA");
-		MapToPairFunction<String[], Tuple2<String, Long>> pair = (val) -> new Tuple2<String, Long>((String) val[8],
+		PredicateSerializable<String[]> filter = (String str[]) -> !"ArrDelay".equals(str[14]) && !"NA".equals(str[14]);
+		MapToPairFunction<String[], Tuple2<String, Long>> pair = val -> new Tuple2<String, Long>((String) val[8],
 				(Long) Long.parseLong(val[14]));
 		js.stage.tasks.add(map);
 		js.stage.tasks.add(filter);
 		js.stage.tasks.add(pair);
 
 		StreamPipelineTaskExecutor mdstde = new StreamPipelineTaskExecutorYarn(hdfsurl, js);
-		mdstde.setHdfs(hdfs);mdstde.setExecutor(es);
+		mdstde.setHdfs(hdfs);
+		mdstde.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -2068,7 +2122,7 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		mdstde.setTask(mappairtask1);
 		mdstde.processBlockHDFSMap(bls1.get(0), hdfs);
 
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		String path1 = mdstde.getIntermediateDataFSFilePath(mappairtask1);
 		InputStream is1 = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path1))));
 		Task cbktask = new Task();
@@ -2076,12 +2130,12 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		cbktask.stageid = js.stageid;
 		js.stage.tasks.clear();
 		js.stage.tasks.add(new CountByKeyFunction());
-		cbktask.input = new Object[] { is1 };
+		cbktask.input = new Object[]{is1};
 		mdstde.setTask(cbktask);
 		mdstde.processCountByKeyTuple2();
 		is1.close();
 
-		kryo = Utils.getKryoNonDeflateSerializer();
+		kryo = Utils.getKryoSerializerDeserializer();
 		String path = mdstde.getIntermediateDataFSFilePath(cbktask);
 		InputStream is = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path))));
 		List<Tuple2<String, Long>> mapfiltersddata = (List) kryo.readClassAndObject(new Input(is));
@@ -2091,7 +2145,7 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		assertEquals("AQ", tupleresult.v1);
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testProcessCountByValue() throws Exception {
 		JobStage js = new JobStage();
@@ -2102,15 +2156,16 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		js.stage.tasks = new ArrayList<>();
 		Task mappairtask1 = new Task();
 		MapFunction<String, String[]> map = (String str) -> str.split(MDCConstants.COMMA);
-		PredicateSerializable<String[]> filter = (String str[]) -> !str[14].equals("ArrDelay") && !str[14].equals("NA");
-		MapToPairFunction<String[], Tuple2<String, Long>> pair = (val) -> new Tuple2<String, Long>((String) val[8],
+		PredicateSerializable<String[]> filter = (String str[]) -> !"ArrDelay".equals(str[14]) && !"NA".equals(str[14]);
+		MapToPairFunction<String[], Tuple2<String, Long>> pair = val -> new Tuple2<String, Long>((String) val[8],
 				(Long) Long.parseLong(val[14]));
 		js.stage.tasks.add(map);
 		js.stage.tasks.add(filter);
 		js.stage.tasks.add(pair);
 
 		StreamPipelineTaskExecutor mdstde = new StreamPipelineTaskExecutorYarn(hdfsurl, js);
-		mdstde.setHdfs(hdfs);mdstde.setExecutor(es);
+		mdstde.setHdfs(hdfs);
+		mdstde.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -2124,7 +2179,7 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		mdstde.setTask(mappairtask1);
 		mdstde.processBlockHDFSMap(bls1.get(0), hdfs);
 
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		String path1 = mdstde.getIntermediateDataFSFilePath(mappairtask1);
 		InputStream is1 = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path1))));
 		Task cbktask = new Task();
@@ -2132,12 +2187,12 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		cbktask.stageid = js.stageid;
 		js.stage.tasks.clear();
 		js.stage.tasks.add(new CountByKeyFunction());
-		cbktask.input = new Object[] { is1 };
+		cbktask.input = new Object[]{is1};
 		mdstde.setTask(cbktask);
 		mdstde.processCountByValueTuple2();
 		is1.close();
 
-		kryo = Utils.getKryoNonDeflateSerializer();
+		kryo = Utils.getKryoSerializerDeserializer();
 		String path = mdstde.getIntermediateDataFSFilePath(cbktask);
 		InputStream is = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path))));
 		List<Tuple2<Tuple2<String, Long>, Long>> mapfiltersddata = (List) kryo.readClassAndObject(new Input(is));
@@ -2150,7 +2205,7 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void testProcessCoalesce() throws Exception {
 		JobStage js = new JobStage();
@@ -2161,8 +2216,8 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		js.stage.tasks = new ArrayList<>();
 		Task reducebykeytask1 = new Task();
 		MapFunction<String, String[]> map = (String str) -> str.split(MDCConstants.COMMA);
-		PredicateSerializable<String[]> filter = (String str[]) -> !str[14].equals("ArrDelay") && !str[14].equals("NA");
-		MapToPairFunction<String[], Tuple2<String, Integer>> pair = (val) -> new Tuple2<String, Integer>(
+		PredicateSerializable<String[]> filter = (String str[]) -> !"ArrDelay".equals(str[14]) && !"NA".equals(str[14]);
+		MapToPairFunction<String[], Tuple2<String, Integer>> pair = val -> new Tuple2<String, Integer>(
 				(String) val[8], (Integer) Integer.parseInt(val[14]));
 		ReduceByKeyFunction<Integer> redfunc = (input1, input2) -> input1 + input2;
 		js.stage.tasks.add(map);
@@ -2171,7 +2226,8 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		js.stage.tasks.add(redfunc);
 
 		StreamPipelineTaskExecutor mdstde = new StreamPipelineTaskExecutorYarn(hdfsurl, js);
-		mdstde.setHdfs(hdfs);mdstde.setExecutor(es);
+		mdstde.setHdfs(hdfs);
+		mdstde.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>(), filepaths2 = new ArrayList<>();
 		for (String hdfsdir : hdfsdirpaths1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -2202,20 +2258,20 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		mdstde.setTask(reducebykeytask2);
 		mdstde.processBlockHDFSMap(bls2.get(0), hdfs);
 
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		String path1 = mdstde.getIntermediateDataFSFilePath(reducebykeytask1);
 		InputStream is1 = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path1))));
 		String path2 = mdstde.getIntermediateDataFSFilePath(reducebykeytask2);
 		InputStream is2 = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path2))));
-		reducebykeytask2.input = new Object[] { is1, is2 };
+		reducebykeytask2.input = new Object[]{is1, is2};
 		Task coalescetask = new Task();
 		coalescetask.jobid = js.jobid;
 		coalescetask.stageid = js.stageid;
 		js.stage.tasks.clear();
 		Coalesce<Integer> coalesce = new Coalesce();
-		coalesce.coalescepartition = 1;
-		coalesce.coalescefuncion = (a, b) -> a + b;
-		coalescetask.input = new Object[] { is1, is2 };
+		coalesce.setCoalescepartition(1);
+		coalesce.setCoalescefunction((a, b) -> a + b);
+		coalescetask.input = new Object[]{is1, is2};
 		js.stage.tasks.add(coalesce);
 		RightOuterJoinPredicate<Tuple2<String, Long>, Tuple2<String, Long>> jp = (Tuple2<String, Long> tup1,
 				Tuple2<String, Long> tup2) -> tup1.v1.equals(tup2.v1);
@@ -2224,7 +2280,7 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		is1.close();
 		is2.close();
 
-		kryo = Utils.getKryoNonDeflateSerializer();
+		kryo = Utils.getKryoSerializerDeserializer();
 		String path = mdstde.getIntermediateDataFSFilePath(coalescetask);
 		InputStream is = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path))));
 		List<Tuple2<String, Integer>> mapfiltersddata = (List) kryo.readClassAndObject(new Input(is));
@@ -2234,6 +2290,7 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		assertEquals("AQ", tupleresult.v1);
 
 	}
+
 	// CSV Test Cases End
 
 	// JSON Test cases Start
@@ -2256,7 +2313,8 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		js.stage.tasks.add(filter);
 
 		StreamPipelineTaskExecutor mdstde = new StreamPipelineTaskExecutorYarn(hdfsurl, js);
-		mdstde.setHdfs(hdfs);mdstde.setExecutor(es);
+		mdstde.setHdfs(hdfs);
+		mdstde.setExecutor(es);
 		List<Path> filepaths1 = new ArrayList<>();
 		for (String hdfsdir : githubevents1) {
 			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsurl + hdfsdir));
@@ -2269,7 +2327,7 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		fbp.getDnXref(bls1, false);
 		mdstde.setTask(filtertask);
 		mdstde.processBlockHDFSMap(bls1.get(0), hdfs);
-		Kryo kryo = Utils.getKryoNonDeflateSerializer();
+		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		String path = mdstde.getIntermediateDataFSFilePath(filtertask);
 		InputStream is = new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path))));
 		List<JSONObject> jsonfilterdata = (List<JSONObject>) kryo.readClassAndObject(new Input(is));

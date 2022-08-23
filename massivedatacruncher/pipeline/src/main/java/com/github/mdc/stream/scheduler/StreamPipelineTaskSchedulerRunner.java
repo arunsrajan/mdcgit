@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Objects;
@@ -18,6 +19,7 @@ import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.recipes.leader.LeaderLatch;
 import org.apache.curator.framework.recipes.leader.LeaderLatchListener;
 import org.apache.curator.retry.RetryForever;
+import org.apache.hadoop.fs.FsUrlStreamHandlerFactory;
 import org.apache.log4j.Logger;
 import org.jgroups.JChannel;
 import org.jgroups.Message;
@@ -61,19 +63,19 @@ public class StreamPipelineTaskSchedulerRunner {
 	static ExecutorService threadpool = null;
 
 	public static void main(String[] args) throws Exception {
+		URL.setURLStreamHandlerFactory(new FsUrlStreamHandlerFactory());
 		threadpool = Executors.newWorkStealingPool();
 		// Load log4j properties.
-		Utils.loadLog4JSystemProperties(MDCConstants.PREV_FOLDER + MDCConstants.BACKWARD_SLASH
-				+ MDCConstants.DIST_CONFIG_FOLDER + MDCConstants.BACKWARD_SLASH, MDCConstants.MDC_PROPERTIES);
+		Utils.loadLog4JSystemProperties(MDCConstants.PREV_FOLDER + MDCConstants.FORWARD_SLASH
+				+ MDCConstants.DIST_CONFIG_FOLDER + MDCConstants.FORWARD_SLASH, MDCConstants.MDC_PROPERTIES);
 		CacheUtils.initCache();
 		var cdl = new CountDownLatch(1);
 
 		try (var cf = CuratorFrameworkFactory.newClient(
 				MDCProperties.get().getProperty(MDCConstants.ZOOKEEPER_HOSTPORT), 20000, 50000,
 				new RetryForever(Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.ZOOKEEPER_RETRYDELAY))));
-				final ServerSocket server = new ServerSocket(
-						Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULERSTREAM_PORT)) + 20,
-						256, InetAddress.getByAddress(new byte[] { 0x00, 0x00, 0x00, 0x00 }));) {
+				final ServerSocket server = Utils.createSSLServerSocket(
+						Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULERSTREAM_PORT)) + 20);) {
 
 			cf.start();
 			cf.blockUntilConnected();
@@ -81,8 +83,8 @@ public class StreamPipelineTaskSchedulerRunner {
 			ByteBufferPool.init(Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.BYTEBUFFERPOOL_MAX,
 					MDCConstants.BYTEBUFFERPOOL_MAX_DEFAULT)));
 			try (LeaderLatch ll = new LeaderLatch(cf,
-					MDCConstants.BACKWARD_SLASH + MDCProperties.get().getProperty(MDCConstants.CLUSTERNAME)
-							+ MDCConstants.BACKWARD_SLASH + MDCConstants.TSS)) {
+					MDCConstants.FORWARD_SLASH + MDCProperties.get().getProperty(MDCConstants.CLUSTERNAME)
+							+ MDCConstants.FORWARD_SLASH + MDCConstants.TSS)) {
 				LeaderLatchListener lllistener = new LeaderLatchListener() {
 					@Override
 					public void isLeader() {
@@ -95,13 +97,13 @@ public class StreamPipelineTaskSchedulerRunner {
 							var su = new ServerUtils();
 							su.init(Integer.parseInt(
 									MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULERSTREAM_WEB_PORT)),
-									new TaskSchedulerWebServlet(), MDCConstants.BACKWARD_SLASH + MDCConstants.ASTERIX,
-									new WebResourcesServlet(), MDCConstants.BACKWARD_SLASH + MDCConstants.RESOURCES
-											+ MDCConstants.BACKWARD_SLASH + MDCConstants.ASTERIX);
+									new TaskSchedulerWebServlet(), MDCConstants.FORWARD_SLASH + MDCConstants.ASTERIX,
+									new WebResourcesServlet(), MDCConstants.FORWARD_SLASH + MDCConstants.RESOURCES
+											+ MDCConstants.FORWARD_SLASH + MDCConstants.ASTERIX);
 							su.start();
 							if (!(boolean) ZookeeperOperations.checkexists.invoke(cf,
-									MDCConstants.BACKWARD_SLASH + MDCProperties.get().getProperty(
-											MDCConstants.CLUSTERNAME) + MDCConstants.BACKWARD_SLASH + MDCConstants.TSS,
+									MDCConstants.FORWARD_SLASH + MDCProperties.get().getProperty(
+											MDCConstants.CLUSTERNAME) + MDCConstants.FORWARD_SLASH + MDCConstants.TSS,
 									MDCConstants.LEADER,
 									NetworkUtil.getNetworkAddress(
 											MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULERSTREAM_HOST))
@@ -109,9 +111,9 @@ public class StreamPipelineTaskSchedulerRunner {
 											+ MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULERSTREAM_PORT))) {
 								ZookeeperOperations.persistentCreate
 										.invoke(cf,
-												MDCConstants.BACKWARD_SLASH
+												MDCConstants.FORWARD_SLASH
 														+ MDCProperties.get().getProperty(MDCConstants.CLUSTERNAME)
-														+ MDCConstants.BACKWARD_SLASH + MDCConstants.TSS,
+														+ MDCConstants.FORWARD_SLASH + MDCConstants.TSS,
 												MDCConstants.LEADER,
 												NetworkUtil
 														.getNetworkAddress(MDCProperties.get()
@@ -120,9 +122,9 @@ public class StreamPipelineTaskSchedulerRunner {
 																.getProperty(MDCConstants.TASKSCHEDULERSTREAM_PORT));
 							} else {
 								ZookeeperOperations.writedata.invoke(cf,
-										MDCConstants.BACKWARD_SLASH + MDCProperties.get()
-												.getProperty(MDCConstants.CLUSTERNAME) + MDCConstants.BACKWARD_SLASH
-												+ MDCConstants.TSS + MDCConstants.BACKWARD_SLASH + MDCConstants.LEADER,
+										MDCConstants.FORWARD_SLASH + MDCProperties.get()
+												.getProperty(MDCConstants.CLUSTERNAME) + MDCConstants.FORWARD_SLASH
+												+ MDCConstants.TSS + MDCConstants.FORWARD_SLASH + MDCConstants.LEADER,
 										MDCConstants.EMPTY,
 										NetworkUtil.getNetworkAddress(
 												MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULERSTREAM_HOST))
@@ -145,17 +147,16 @@ public class StreamPipelineTaskSchedulerRunner {
 							// Start Resources gathering via heart beat resources
 							// status update.
 							hbss.start();
-							ss = new ServerSocket(
+							ss = Utils.createSSLServerSocket(
 									Integer.parseInt(
-											MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULERSTREAM_PORT)),
-									256, InetAddress.getByAddress(new byte[] { 0x00, 0x00, 0x00, 0x00 }));
+											MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULERSTREAM_PORT)));
 							// Execute when request arrives.
 							esstream.execute(() -> {
 								while (true) {
 									try {
 										var s = ss.accept();
 										var bytesl = new ArrayList<byte[]>();
-										var kryo = Utils.getKryoNonDeflateSerializer();
+										var kryo = Utils.getKryoSerializerDeserializer();
 										var input = new Input(s.getInputStream());
 										log.debug("Obtaining Input Objects From Submitter");
 										while (true) {
@@ -272,7 +273,7 @@ public class StreamPipelineTaskSchedulerRunner {
 									try {
 										log.info("Entered MassiveDataStreamTaskSchedulerDaemon.Receiver.receive");
 										var rawbuffer = (byte[]) ((ObjectMessage) msg).getObject();
-										var kryo = Utils.getKryoNonDeflateSerializer();
+										var kryo = Utils.getKryoSerializerDeserializer();
 										kryo.register(StreamPipelineTaskSubmitter.class);
 										kryo.setClassLoader(cl);
 										try (var bais = new ByteArrayInputStream(rawbuffer);

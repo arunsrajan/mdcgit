@@ -1,3 +1,18 @@
+/*
+ * Copyright 2021 the original author or authors.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p>
+ * https://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.github.mdc.stream;
 
 import static org.junit.Assert.assertEquals;
@@ -12,15 +27,15 @@ import com.github.mdc.stream.sql.StreamPipelineSql;
 import com.github.mdc.stream.sql.StreamPipelineSqlBuilder;
 
 public class StreamPipelineSqlBiggerFilesTest extends StreamPipelineBaseTestCommon {
-	String[] airlineheader = new String[] { "AirlineYear", "MonthOfYear", "DayofMonth", "DayOfWeek", "DepTime",
+	String[] airlineheader = new String[]{"AirlineYear", "MonthOfYear", "DayofMonth", "DayOfWeek", "DepTime",
 			"CRSDepTime", "ArrTime", "CRSArrTime", "UniqueCarrier", "FlightNum", "TailNum", "ActualElapsedTime",
 			"CRSElapsedTime", "AirTime", "ArrDelay", "DepDelay", "Origin", "Dest", "Distance", "TaxiIn", "TaxiOut",
 			"Cancelled", "CancellationCode", "Diverted", "CarrierDelay", "WeatherDelay", "NASDelay", "SecurityDelay",
-			"LateAircraftDelay" };
-	String[] carrierheader = { "Code", "Description" };
+			"LateAircraftDelay"};
+	String[] carrierheader = {"Code", "Description"};
 	Logger log = Logger.getLogger(StreamPipelineSqlBiggerFilesTest.class);
 
-	@SuppressWarnings({ "unchecked" })
+	@SuppressWarnings({"unchecked"})
 	@Test
 	public void testMDPSqlBuilderSumArrivalDelayInMemory() throws Exception {
 		pipelineconfig.setLocal("false");
@@ -45,9 +60,9 @@ public class StreamPipelineSqlBiggerFilesTest extends StreamPipelineBaseTestComm
 		log.info("In testMDPSqlBuilderSumArrivalDelayInMemory() method Exit");
 		pipelineconfig.setLocal("true");
 	}
-	
-	
-	@SuppressWarnings({ "unchecked" })
+
+
+	@SuppressWarnings({"unchecked"})
 	@Test
 	public void testMDPSqlBuilderSumArrivalDelayInMemoryLocal() throws Exception {
 		pipelineconfig.setLocal("true");
@@ -71,9 +86,9 @@ public class StreamPipelineSqlBiggerFilesTest extends StreamPipelineBaseTestComm
 		log.info("In testMDPSqlBuilderSumArrivalDelayInMemoryLocal() method Exit");
 		pipelineconfig.setLocal("true");
 	}
-	
-	
-	@SuppressWarnings({ "unchecked" })
+
+
+	@SuppressWarnings({"unchecked"})
 	@Test
 	public void testMDPSqlBuilderCountArrivalDelayBiggerFiles() throws Exception {
 		pipelineconfig.setLocal("false");
@@ -98,9 +113,9 @@ public class StreamPipelineSqlBiggerFilesTest extends StreamPipelineBaseTestComm
 		assertEquals(120947440l, sum);
 		log.info("In testMDPSqlBuilderCountArrivalDelayBiggerFiles() method Exit");
 	}
-	
-	
-	@SuppressWarnings({ "unchecked" })
+
+
+	@SuppressWarnings({"unchecked"})
 	@Test
 	public void testMDPSqlBuilderSumArrivalDelayDisk() throws Exception {
 		pipelineconfig.setLocal("false");

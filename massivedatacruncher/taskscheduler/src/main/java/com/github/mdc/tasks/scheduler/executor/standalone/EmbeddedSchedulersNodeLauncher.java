@@ -1,10 +1,7 @@
 package com.github.mdc.tasks.scheduler.executor.standalone;
 
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.net.URI;
+import java.net.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -23,10 +20,15 @@ import org.apache.curator.framework.state.ConnectionState;
 import org.apache.curator.retry.RetryForever;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.FsUrlStreamHandlerFactory;
 import org.apache.log4j.Logger;
 import org.apache.zookeeper.server.ServerCnxnFactory;
 
 import com.esotericsoftware.kryo.io.Input;
+import com.esotericsoftware.kryonetty.ServerEndpoint;
+import com.esotericsoftware.kryonetty.network.ReceiveEvent;
+import com.esotericsoftware.kryonetty.network.handler.NetworkHandler;
+import com.esotericsoftware.kryonetty.network.handler.NetworkListener;
 import com.github.mdc.stream.scheduler.StreamPipelineTaskScheduler;
 import com.github.mdc.tasks.executor.NodeRunner;
 import com.github.mdc.tasks.executor.web.NodeWebServlet;
@@ -36,10 +38,13 @@ import com.github.mdc.tasks.scheduler.TaskScheduler;
 public class EmbeddedSchedulersNodeLauncher {
 	static Logger log = Logger.getLogger(EmbeddedSchedulersNodeLauncher.class);
 
+	public static final String STOPPINGANDCLOSECONNECTION = "Stopping and closes all the connections...";
+
 	public static void main(String[] args) throws Exception {
+		URL.setURLStreamHandlerFactory(new FsUrlStreamHandlerFactory());
 		log.info(MDCScalaConstants.SCALA_VERSION());
-		Utils.loadLog4JSystemProperties(MDCConstants.PREV_FOLDER + MDCConstants.BACKWARD_SLASH
-				+ MDCConstants.DIST_CONFIG_FOLDER + MDCConstants.BACKWARD_SLASH, MDCConstants.MDC_PROPERTIES);
+		Utils.loadLog4JSystemProperties(MDCConstants.PREV_FOLDER + MDCConstants.FORWARD_SLASH
+				+ MDCConstants.DIST_CONFIG_FOLDER + MDCConstants.FORWARD_SLASH, MDCConstants.MDC_PROPERTIES);
 		var cdl = new CountDownLatch(3);
 		var clientport = Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.ZOOKEEPER_STANDALONE_CLIENTPORT,
 				MDCConstants.ZOOKEEPER_STANDALONE_CLIENTPORT_DEFAULT));
@@ -74,7 +79,7 @@ public class EmbeddedSchedulersNodeLauncher {
 		}
 		Runtime.getRuntime().halt(0);
 	}
-
+	static ServerEndpoint server = null;
 	@SuppressWarnings("resource")
 	public static void startContainerLauncher(CountDownLatch cdl) {
 		HeartBeatServerStream hbss = new HeartBeatServerStream();
@@ -86,9 +91,6 @@ public class EmbeddedSchedulersNodeLauncher {
 			var hb = new HeartBeatServer();
 			hb.init(0, port, host, 0, pingdelay, "");
 			hbss.ping();
-			var server = new ServerSocket(port, 256, InetAddress.getByAddress(new byte[] { 0x00, 0x00, 0x00, 0x00 }));
-			var teport = Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_PORT));
-			var es = Executors.newFixedThreadPool(1);
 			var escontainer = Executors.newWorkStealingPool();
 
 			var hdfs = FileSystem.get(new URI(MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL)),
@@ -98,30 +100,32 @@ public class EmbeddedSchedulersNodeLauncher {
 			var containeridports = new ConcurrentHashMap<String, List<Integer>>();
 			var su = new ServerUtils();
 			su.init(port + 50, new NodeWebServlet(containerprocesses),
-					MDCConstants.BACKWARD_SLASH + MDCConstants.ASTERIX, new WebResourcesServlet(),
-					MDCConstants.BACKWARD_SLASH + MDCConstants.RESOURCES + MDCConstants.BACKWARD_SLASH
+					MDCConstants.FORWARD_SLASH + MDCConstants.ASTERIX, new WebResourcesServlet(),
+					MDCConstants.FORWARD_SLASH + MDCConstants.RESOURCES + MDCConstants.FORWARD_SLASH
 							+ MDCConstants.ASTERIX,
-					new ResourcesMetricsServlet(), MDCConstants.BACKWARD_SLASH + MDCConstants.DATA
-							+ MDCConstants.BACKWARD_SLASH + MDCConstants.ASTERIX);
+					new ResourcesMetricsServlet(), MDCConstants.FORWARD_SLASH + MDCConstants.DATA
+							+ MDCConstants.FORWARD_SLASH + MDCConstants.ASTERIX);
 			su.start();
-			AtomicInteger portinc = new AtomicInteger(teport);
-			es.execute(() -> {
-				while (true) {
-					try (Socket sock = server.accept();) {
-						var container = new NodeRunner(sock, portinc, MDCConstants.PROPLOADERCONFIGFOLDER,
-								containerprocesses, hdfs, containeridthreads, containeridports);
-						Future<Boolean> containerallocated = escontainer.submit(container);
-						log.info("Containers Allocated: " + containerallocated.get() + " Next Port Allocation:"
-								+ portinc.get());
-					} catch (InterruptedException e) {
-						log.warn("Interrupted!", e);
-						// Restore interrupted state...
-						Thread.currentThread().interrupt();
-					} catch (Exception e) {
-						log.error(MDCConstants.EMPTY, e);
+			server = Utils.getServerKryoNetty(port,
+					new NetworkListener() {
+					@NetworkHandler
+		            public void onReceive(ReceiveEvent event) {
+						try {
+							Object object = event.getObject();
+							var container = new NodeRunner(server, MDCConstants.PROPLOADERCONFIGFOLDER,
+									containerprocesses, hdfs, containeridthreads, containeridports,
+									object, event);
+							Future<Boolean> containerallocated = escontainer.submit(container);
+							log.info("Containers Allocated: " + containerallocated.get());
+						} catch (InterruptedException e) {
+							log.warn("Interrupted!", e);
+							// Restore interrupted state...
+							Thread.currentThread().interrupt();
+						} catch (Exception e) {
+							log.error(MDCConstants.EMPTY, e);
+						}
 					}
-				}
-			});
+				});
 			log.debug("NodeLauncher started at port....." + MDCProperties.get().getProperty(MDCConstants.NODE_PORT));
 			log.debug("Adding Shutdown Hook...");
 			Utils.addShutdownHook(() -> {
@@ -133,7 +137,7 @@ public class EmbeddedSchedulersNodeLauncher {
 								log.debug("Destroying the Container Process: " + proc);
 								proc.destroy();
 							});
-					log.debug("Stopping and closes all the connections...");
+					log.debug(STOPPINGANDCLOSECONNECTION);
 					log.debug("Destroying...");
 					if (!Objects.isNull(hbss)) {
 						hbss.close();
@@ -141,8 +145,8 @@ public class EmbeddedSchedulersNodeLauncher {
 					if (!Objects.isNull(hdfs)) {
 						hdfs.close();
 					}
-					if (!Objects.isNull(es)) {
-						es.shutdown();
+					if (!Objects.isNull(server)) {
+						server.close();
 					}
 					cdl.countDown();
 				} catch (Exception e) {
@@ -159,20 +163,20 @@ public class EmbeddedSchedulersNodeLauncher {
 		var es = Executors.newWorkStealingPool();
 		var su = new ServerUtils();
 		su.init(Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULERSTREAM_WEB_PORT)),
-				new TaskSchedulerWebServlet(), MDCConstants.BACKWARD_SLASH + MDCConstants.ASTERIX,
-				new WebResourcesServlet(), MDCConstants.BACKWARD_SLASH + MDCConstants.RESOURCES
-						+ MDCConstants.BACKWARD_SLASH + MDCConstants.ASTERIX);
+				new TaskSchedulerWebServlet(), MDCConstants.FORWARD_SLASH + MDCConstants.ASTERIX,
+				new WebResourcesServlet(), MDCConstants.FORWARD_SLASH + MDCConstants.RESOURCES
+						+ MDCConstants.FORWARD_SLASH + MDCConstants.ASTERIX);
 		su.start();
 		if (!(boolean) ZookeeperOperations.checkexists.invoke(cf,
-				MDCConstants.BACKWARD_SLASH + MDCProperties.get().getProperty(MDCConstants.CLUSTERNAME)
-						+ MDCConstants.BACKWARD_SLASH + MDCConstants.TSS,
+				MDCConstants.FORWARD_SLASH + MDCProperties.get().getProperty(MDCConstants.CLUSTERNAME)
+						+ MDCConstants.FORWARD_SLASH + MDCConstants.TSS,
 				MDCConstants.LEADER,
 				NetworkUtil.getNetworkAddress(MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULERSTREAM_HOST))
 						+ MDCConstants.UNDERSCORE
 						+ MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULERSTREAM_PORT))) {
 			ZookeeperOperations.persistentCreate.invoke(cf,
-					MDCConstants.BACKWARD_SLASH + MDCProperties.get()
-							.getProperty(MDCConstants.CLUSTERNAME) + MDCConstants.BACKWARD_SLASH + MDCConstants.TSS,
+					MDCConstants.FORWARD_SLASH + MDCProperties.get()
+							.getProperty(MDCConstants.CLUSTERNAME) + MDCConstants.FORWARD_SLASH + MDCConstants.TSS,
 					MDCConstants.LEADER,
 					NetworkUtil
 							.getNetworkAddress(MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULERSTREAM_HOST))
@@ -181,10 +185,10 @@ public class EmbeddedSchedulersNodeLauncher {
 		} else {
 			ZookeeperOperations.writedata
 					.invoke(cf,
-							MDCConstants.BACKWARD_SLASH
+							MDCConstants.FORWARD_SLASH
 									+ MDCProperties.get()
 											.getProperty(MDCConstants.CLUSTERNAME)
-									+ MDCConstants.BACKWARD_SLASH + MDCConstants.TSS + MDCConstants.BACKWARD_SLASH
+									+ MDCConstants.FORWARD_SLASH + MDCConstants.TSS + MDCConstants.FORWARD_SLASH
 									+ MDCConstants.LEADER,
 							MDCConstants.EMPTY,
 							NetworkUtil.getNetworkAddress(
@@ -204,14 +208,13 @@ public class EmbeddedSchedulersNodeLauncher {
 
 		// Execute when request arrives.
 		esstream.execute(() -> {
-			try (var ss = new ServerSocket(
-					Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULERSTREAM_PORT)), 256,
-					InetAddress.getByAddress(new byte[] { 0x00, 0x00, 0x00, 0x00 }));) {
+			try (var ss = Utils.createSSLServerSocket(
+					Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULERSTREAM_PORT)));) {
 				while (true) {
 					try {
 						var s = ss.accept();
 						var bytesl = new ArrayList<byte[]>();
-						var kryo = Utils.getKryoNonDeflateSerializer();
+						var kryo = Utils.getKryoSerializerDeserializer();
 						var input = new Input(s.getInputStream());
 						log.debug("Obtaining Input Objects From Submitter");
 						while (true) {
@@ -243,7 +246,7 @@ public class EmbeddedSchedulersNodeLauncher {
 		});
 		Utils.addShutdownHook(() -> {
 			try {
-				log.debug("Stopping and closes all the connections...");
+				log.debug(STOPPINGANDCLOSECONNECTION);
 				log.debug("Destroying...");
 				if (!Objects.isNull(hbss)) {
 					try {
@@ -281,9 +284,9 @@ public class EmbeddedSchedulersNodeLauncher {
 		hbs.start();
 		var su = new ServerUtils();
 		su.init(Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULER_WEB_PORT)),
-				new TaskSchedulerWebServlet(), MDCConstants.BACKWARD_SLASH + MDCConstants.ASTERIX,
-				new WebResourcesServlet(), MDCConstants.BACKWARD_SLASH + MDCConstants.RESOURCES
-						+ MDCConstants.BACKWARD_SLASH + MDCConstants.ASTERIX);
+				new TaskSchedulerWebServlet(), MDCConstants.FORWARD_SLASH + MDCConstants.ASTERIX,
+				new WebResourcesServlet(), MDCConstants.FORWARD_SLASH + MDCConstants.RESOURCES
+						+ MDCConstants.FORWARD_SLASH + MDCConstants.ASTERIX);
 		su.start();
 		var es = Executors.newWorkStealingPool();
 		var essingle = Executors.newSingleThreadExecutor();
@@ -296,30 +299,29 @@ public class EmbeddedSchedulersNodeLauncher {
 								+ MDCConstants.UNDERSCORE
 								+ MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULER_PORT);
 						var nodesdata = (List<String>) ZookeeperOperations.nodesdata.invoke(cf,
-								MDCConstants.ZK_BASE_PATH + MDCConstants.BACKWARD_SLASH + MDCConstants.TASKSCHEDULER,
+								MDCConstants.ZK_BASE_PATH + MDCConstants.FORWARD_SLASH + MDCConstants.TASKSCHEDULER,
 								null, null);
 						if (!nodesdata.contains(nodedata))
 							ZookeeperOperations.ephemeralSequentialCreate.invoke(cfclient,
-									MDCConstants.ZK_BASE_PATH + MDCConstants.BACKWARD_SLASH
+									MDCConstants.ZK_BASE_PATH + MDCConstants.FORWARD_SLASH
 											+ MDCConstants.TASKSCHEDULER,
 									MDCConstants.TS + MDCConstants.HYPHEN, nodedata);
 					}
 				});
 		ZookeeperOperations.ephemeralSequentialCreate.invoke(cf,
-				MDCConstants.ZK_BASE_PATH + MDCConstants.BACKWARD_SLASH + MDCConstants.TASKSCHEDULER,
+				MDCConstants.ZK_BASE_PATH + MDCConstants.FORWARD_SLASH + MDCConstants.TASKSCHEDULER,
 				MDCConstants.TS + MDCConstants.HYPHEN,
 				NetworkUtil.getNetworkAddress(MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULER_HOST))
 						+ MDCConstants.UNDERSCORE + MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULER_PORT));
 
 		boolean ishdfs = Boolean.parseBoolean(MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULER_ISHDFS));
-		var ss = new ServerSocket(Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULER_PORT)),
-				256, InetAddress.getByAddress(new byte[] { 0x00, 0x00, 0x00, 0x00 }));
+		var ss = Utils.createSSLServerSocket(Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULER_PORT)));
 		essingle.execute(() -> {
 			while (true) {
 				try {
 					var s = ss.accept();
 					var baoss = new ArrayList<byte[]>();
-					var kryo = Utils.getKryoNonDeflateSerializer();
+					var kryo = Utils.getKryoSerializerDeserializer();
 					var input = new Input(s.getInputStream());
 					while (true) {
 						var obj = kryo.readClassAndObject(input);
@@ -332,7 +334,7 @@ public class EmbeddedSchedulersNodeLauncher {
 						var mrjar = baoss.remove(0);
 						var filename = baoss.remove(0);
 						String[] argues = null;
-						if (baoss.size() > 0) {
+						if (!baoss.isEmpty()) {
 							var argsl = new ArrayList<>();
 							for (var arg : baoss) {
 								argsl.add(new String(arg));
@@ -348,7 +350,7 @@ public class EmbeddedSchedulersNodeLauncher {
 		});
 		Utils.addShutdownHook(() -> {
 			try {
-				log.debug("Stopping and closes all the connections...");
+				log.debug(STOPPINGANDCLOSECONNECTION);
 				hbs.stop();
 				hbs.destroy();
 				log.debug("Destroying...");

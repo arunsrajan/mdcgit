@@ -1,3 +1,18 @@
+/*
+ * Copyright 2021 the original author or authors.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p>
+ * https://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.github.mdc.common;
 
 /**
@@ -7,12 +22,16 @@ package com.github.mdc.common;
  * Data replicator, Yarn and mesos schedulers and exectors.
  */
 public class MDCConstants {
-	private MDCConstants() {}
+	private MDCConstants() {
+	}
 	static final String MDC = "MDC";
 	public static final String NEWLINE = "\n";
 	public static final String HYPHEN = "-";
 	static final String SLASH = "\\";
-	public static final String BACKWARD_SLASH = "/";
+	public static final String FORWARD_SLASH = "/";
+	public static final String BACKWARD_SLASH = "\\";
+	public static final String ROUNDED_BRACKET_OPEN = "(";
+	public static final String ROUNDED_BRACKET_CLOSE = ")";
 	public static final String COLON = ":";
 	public static final String EQUAL = "=";
 	public static final String UNDERSCORE = "_";
@@ -25,9 +44,9 @@ public class MDCConstants {
 	static final String CLASS = "class";
 	public static final String NULL = "null";
 	public static final String NULLSTRING = null;
-	
+
 	public static final String PROPERTIESEXTN = ".properties";
-	
+
 	static final String LOCALHOST = "localhost";
 	public static final String TASKEXECUTOR = "taskexecutor";
 	static final String ZKOPERATION_CREATED = " created";
@@ -36,7 +55,7 @@ public class MDCConstants {
 	public static final String MAIN_CLASS = "Main-Class";
 	public static final String RUNMRJOB_METHOD = "runMRJob";
 	public static final String RUNPIPELINE_METHOD = "runPipeline";
-	
+
 	public static final String LOCAL_FS_APPJRPATH = "../appjar/";
 	public static final String DIST_CONFIG_FOLDER = "config";
 	public static final String PREV_FOLDER = "..";
@@ -121,8 +140,8 @@ public class MDCConstants {
 	public static final String TASKEXECUTOR_PINGDELAY = "taskexecutor.pingdelay";
 	public static final String TASKEXECUTOR_PORT = "taskexecutor.port";
 	public static final String TASKEXECUTOR_HOST = "taskexecutor.host";
-	public static final String NUMOFTASKSTATUSCOMPLETEDORFAILED = "jgroups.numtaskstatuscompleted";;
-	
+	public static final String NUMOFTASKSTATUSCOMPLETEDORFAILED = "jgroups.numtaskstatuscompleted";
+
 	//Node Properties
 	public static final String NODE_PORT = "node.port";
 	public static final String CONTAINER_ALLOC = "container.alloc";
@@ -130,7 +149,7 @@ public class MDCConstants {
 	public static final String CONTAINER_ALLOC_COMBINE = "COMBINE";
 	public static final String CONTAINER_ALLOC_DIVIDED = "DIVIDED";
 	public static final String CONTAINER_ALLOC_IMPLICIT = "IMPLICIT";
-	
+
 	public static final String ZOOKEEPER_HOSTPORT = "zookeeper.hostport";
 	public static final String ZOOKEEPER_RETRYDELAY = "zookeeper.retrydelay";
 	public static final String ZOOKEEPER_STANDALONE_CLIENTPORT = "zookeeper.standalone.clientport";
@@ -148,16 +167,18 @@ public class MDCConstants {
 	public static final String MINMEMORY = "container.minmem";
 	public static final String MAXMEMORY = "container.maxmem";
 	public static final String GCCONFIG = "container.gcconfig";
-	public static final String NUMBEROFCONTAINERS = "containers.number";	
+	public static final String NUMBEROFCONTAINERS = "containers.number";
 	public static final String CONTAINER_MINMEMORY_DEFAULT = "1024";
 	public static final String CONTAINER_MAXMEMORY_DEFAULT = "1024";
 	public static final String GCCONFIG_DEFAULT = "-XX:+UseG1GC";
 	public static final String NUMBEROFCONTAINERS_DEFAULT = "1";
 	public static final String ISUSERDEFINEDBLOCKSIZE_DEFAULT = "false";
-	
+
 	static final String HDFS_DEFAULTFS = "fs.defaultFS";
 	static final String HDFS_IMPL = "fs.hdfs.impl";
 	static final String HDFS_FILE_IMPL = "fs.file.impl";
+	public static final String HDFS_PROTOCOL = "hdfs";
+	public static final String FILE_PROTOCOL = "file";
 
 	public static final String ZK_BASE_PATH = "/mdc/cluster1";
 
@@ -178,7 +199,8 @@ public class MDCConstants {
 	public static final String MESOS_TASK = "task ";
 	public static final String CPUS = "cpus";
 	public static final String MEM = "mem";
-	
+	public static final String DIRECTMEM = "directmem";
+
 	public static final String MESOS_CONFIGDIR = "../config/";
 
 	public static final String YARNINPUTFOLDER = "yarninput";
@@ -251,7 +273,7 @@ public class MDCConstants {
 	public static final String DATAREPLICATOR_PINGDELAY = "datareplicator.pingdelay";
 	public static final String DATAREPLICATOR_HOST = "datareplicator.host";
 	public static final String ISUSERDEFINEDBLOCKSIZE = "block.isuserdefined";
-	
+
 	public static final String DATAREPLICATOR_PATH = "datareplicator.path";
 	public static final String TEXTHTML = "text/html";
 	public static final String TEXTJAVASCRIPT = "text/javascript";
@@ -259,7 +281,7 @@ public class MDCConstants {
 	public static final String WEB_FOLDER = "web";
 	public static final String RESOURCES = "resources";
 	public static final String DATA = "data";
-	
+
 	static final String THISHOST = "0.0.0.0";
 	public static final String HTTP = "http://";
 
@@ -281,14 +303,14 @@ public class MDCConstants {
 	static final String JGROUPSMCASTADDR = "jgroups.udp.mcast_addr";
 	static final String JGROUPSMCASTPORT = "jgroups.udp.mcast_port";
 	public static final String JGROUPSCONF = "jgroups.conffilepath";
-	
+
 	//Graph File Path
 	public static final String GRAPHSTOREENABLE = "graph.filestore.enable";
 	public static final String GRAPDIRPATH = "graph.file.dir.path";
 	public static final String GRAPHFILESTAGESPLANNAME = "graph.stages.file";
 	public static final String GRAPHFILEPEPLANNAME = "graph.peplan.file";
 	public static final String GRAPHTASKFILENAME = "graph.task.file";
-	
+
 	//Cache Properties
 	public static final String CACHESIZEGB = "cache.size";
 	public static final String CACHEEXPIRY = "cache.expiry";
@@ -297,30 +319,29 @@ public class MDCConstants {
 	public static final String CACHEDISKSIZEGB = "cache.disk";
 	public static final String CACHEDISKPATH = "cache.disk.path";
 	public static final String CACHEDISKPATH_DEFAULT = "../cache";
-	
-	
-	
+
+
 	public static final int MB = 1048576;
-	
-	
-	public static final String G1GC="-XX:+UseG1GC";
-	public static final String ZGC="-XX:+UseZGC";
-	
+
+
+	public static final String G1GC = "-XX:+UseG1GC";
+	public static final String ZGC = "-XX:+UseZGC";
+
 	public static final String PROPLOADERCONFIGFOLDER = "1";
 	public static final String PROPLOADERCLASSPATH = "2";
 	public static final long GB = 1073741824;
-	
+
 	public static final String TEPROPLOADDISTROCONFIG = "1";
 	public static final String TEPROPLOADCLASSPATHCONFIG = "2";
 	public static final String TEPROPLOADCLASSPATHCONFIGEXCEPTION = "3";
-	
+
 	public static final String USERDIR = "user.dir";
-	
+
 	public static final String DUMMYCONTAINER = "127.0.0.1_10101";
 	public static final String DUMMYNODE = "127.0.0.1_12121";
-	
+
 	public static final String EXECUTIONPHASE = "executor.phase";
-	
+
 	public static final String MODE = "executor.mode";
 	public static final String MODE_DEFAULT = "IGNITE";
 	public static final String MODE_NORMAL = "NORMAL";
@@ -333,78 +354,80 @@ public class MDCConstants {
 	public static final String FILEBLOCKSPARTITIONINGERROR = "Unable to partition file blocks";
 	public static final String IGNITEMULTICASTGROUP = "ignite.multicastgroup";
 	public static final String IGNITEMULTICASTGROUP_DEFAULT = "228.10.10.157";
-	
+
 	public static final String EXECMODE = "taskscheduler.execmode";
 	public static final String EXECMODE_DEFAULT = "standlalone";
 	public static final String EXECMODE_YARN = "yarn";
 	public static final String EXECMODE_IGNITE = "ignite";
-	
+
 	public static final String MASSIVEDATA_YARNINPUT_MAPPER = "mapper.yarn";
 	public static final String MASSIVEDATA_YARNINPUT_COMBINER = "combiner.yarn";
 	public static final String MASSIVEDATA_YARNINPUT_REDUCER = "reducer.yarn";
 	public static final String MASSIVEDATA_YARNINPUT_FILEBLOCKS = "fileblocks.yarn";
 	public static final String MASSIVEDATA_YARNINPUT_CONFIGURATION = "jobconf.yarn";
-	
+
 	public static final String CONTEXT_FILE_CLIENT = "yarn-application-context.xml";
 	public static final String MAPPER = "mapper";
 	public static final String REDUCER = "reducer";
-	
+
 	public static final String EXECUTIONCOUNT = "execution.count";
 	public static final String EXECUTIONCOUNT_DEFAULT = "2";
-	
+
 	public static final String JAR = "jar";
 	public static final String ARGS = "args";
 	public static final String MRJARREQUIRED = "MR Jar Path Is Required";
 	public static final String ARGUEMENTSOPTIONAL = "Arguments are Optional";
 	public static final String ANTFORMATTER = "ant";
-	
+
 	public static final String YARNRM = "yarn.rm";
 	public static final String YARNRM_DEFAULT = "127.0.0.1:8032";
 	public static final String YARNSCHEDULER = "yarn.scheduler";
 	public static final String YARNSCHEDULER_DEFAULT = "127.0.0.1:8030";
 	public static final String YARNFOLDER = "../yarn";
 	public static final String YARNOUTJAR = "mdchadoop.jar";
-	
+
 	public static final String FILENAME = "filename";
 	public static final String CSS = "css";
 	public static final String JAVASCRIPT = "js";
-	
+
 	public static final String YARN = "YARN";
 	public static final String MESOS = "Mesos";
 	public static final String JGROUPS = "JGroups";
 	public static final String LOCAL = "Local";
 	public static final String STANDALONE = "Standalone";
-	
+
 	public static final String TSSHA = "TSSHA";
 	public static final String JARLOADED = "Jar Loaded";
-	
-	public static final String BYTEBUFFERPOOL_MAX="bytebufferpool.size";
-	public static final String BYTEBUFFERPOOL_MAX_DEFAULT="3";
+
+	public static final String BYTEBUFFERPOOL_MAX = "bytebufferpool.size";
+	public static final String BYTEBUFFERPOOL_MAX_DEFAULT = "3";
 	public static final String BYTEBUFFERPOOL_BLOCK = "bytebufferpool.blockwhenexhausted";
-	public static final String BYTEBUFFERPOOL_BLOCK_DEFAULT="true";
-	
-	public enum STORAGE{INMEMORY,DISK,INMEMORY_DISK};
+	public static final String BYTEBUFFERPOOL_BLOCK_DEFAULT = "true";
+
+	public enum STORAGE {
+		INMEMORY,DISK,INMEMORY_DISK
+	}
 	public static final String STORAGEPROP = "storage.type";
 	public static final String STORAGEPROP_DEFAULT = STORAGE.INMEMORY.name();
-	
+
 	public static final String DFSOUTPUTFILEREPLICATION = "dfs.replication";
 	public static final String DFSOUTPUTFILEREPLICATION_DEFAULT = "1";
 	public static final String HDFSNAMENODEURL = "hdfs.namenode.url";
-	public static final String HDFSNAMENODEURL_DEFAULT = "hdfs://localhost:9000";
-	
-	
+	public static final String HDFSNAMENODEURL_DEFAULT = "hdfs://127.0.0.1:9000";
+
+
 	public static final String BR = "<BR/>";
-	
+
 	public static final String HEAP_PERCENTAGE = "heap.percent";
 	public static final String HEAP_PERCENTAGE_DEFAULT = "40";
-	
+
 	public static final String USEGLOBALTASKEXECUTORS = "taskexecutors.isglobal";
 	public static final String USEGLOBALTASKEXECUTORS_DEFAULT = "false";
-	
+
 	public static final String CONTAINERALLOCATIONERROR = "Container Allocation Error";
-	
+
 	public static final String TMPDIR = "java.io.tmpdir";
-	
+
 	public static final String IMPLICIT_CONTAINER_ALLOC_NUMBER = "containers.alloc.implicit.number";
 	public static final String IMPLICIT_CONTAINER_ALLOC_NUMBER_DEFAULT = "1";
 	public static final String IMPLICIT_CONTAINER_ALLOC_CPU = "containers.alloc.implicit.cpu";
@@ -413,10 +436,14 @@ public class MDCConstants {
 	public static final String IMPLICIT_CONTAINER_ALLOC_MEMORY_DEFAULT = "GB";
 	public static final String IMPLICIT_CONTAINER_ALLOC_MEMORY_SIZE = "containers.alloc.implicit.memory.size";
 	public static final String IMPLICIT_CONTAINER_ALLOC_MEMORY_SIZE_DEFAULT = "1";
-	
+
 	public static final String COLOR_PICKER_PRIMARY = "ui.color.primary";
 	public static final String COLOR_PICKER_PRIMARY_DEFAULT = "#6E5CDB";
 	public static final String COLOR_PICKER_ALTERNATE = "ui.color.alternate";
 	public static final String COLOR_PICKER_ALTERNATE_DEFAULT = "#ddddddd";
 	
+	public static final String MDC_JKS = "mdc.jks.path";
+	public static final String MDC_KEYSTORE_PASSWORD = "mdc.jks.pass";
+	public static final String MDC_JKS_ALGO = "mdc.jks.algo";
+
 }

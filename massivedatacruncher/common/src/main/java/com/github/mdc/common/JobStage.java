@@ -1,3 +1,18 @@
+/*
+ * Copyright 2021 the original author or authors.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p>
+ * https://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.github.mdc.common;
 
 import java.io.Serializable;
@@ -7,14 +22,14 @@ import java.io.Serializable;
  * @author Arun
  * The Holder of job with stage information and also the job statuses
  */
-public class JobStage implements Serializable,Cloneable{
-	private static final long serialVersionUID = 7292002084722232039L;	
-	public int currentstageindex;		
+public class JobStage implements Serializable,Cloneable {
+	private static final long serialVersionUID = 7292002084722232039L;
+	public int currentstageindex;
 	public String jobid;
 	public String stageid;
 	public Stage stage;
-	public boolean isalreadyprocessed=false;
-	
+	public boolean isalreadyprocessed;
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -27,23 +42,30 @@ public class JobStage implements Serializable,Cloneable{
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
+		if (this == obj) {
 			return true;
-		if (obj == null)
+		}
+		if (obj == null) {
 			return false;
-		if (getClass() != obj.getClass())
+		}
+		if (getClass() != obj.getClass()) {
 			return false;
+		}
 		JobStage other = (JobStage) obj;
 		if (jobid == null) {
-			if (other.jobid != null)
+			if (other.jobid != null) {
 				return false;
-		} else if (!jobid.equals(other.jobid))
+			}
+		} else if (!jobid.equals(other.jobid)) {
 			return false;
+		}
 		if (stageid == null) {
-			if (other.stageid != null)
+			if (other.stageid != null) {
 				return false;
-		} else if (!stageid.equals(other.stageid))
+			}
+		} else if (!stageid.equals(other.stageid)) {
 			return false;
+		}
 		return true;
 	}
 

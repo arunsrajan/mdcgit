@@ -16,7 +16,7 @@
         <maven.compiler.target>17</maven.compiler.target>
         <maven.compiler.source>17</maven.compiler.source>
         <skip.assemblyxml>true</skip.assemblyxml>
-        <ignite.version>2.11.1</ignite.version>
+        <ignite.version>2.13.0</ignite.version>
         <calcite.version>1.25.0</calcite.version>
     </properties>
 
@@ -105,7 +105,7 @@
         <dependency>
             <groupId>org.reflections</groupId>
             <artifactId>reflections</artifactId>
-            <version>0.9.11</version>
+            <version>0.9.12</version>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
@@ -150,6 +150,13 @@
         </dependency>
 
         <dependency>
+            <groupId>biz.paluch.logging</groupId>
+            <artifactId>logstash-gelf</artifactId>
+            <version>1.5.1</version>
+        </dependency>
+
+
+        <dependency>
             <groupId>org.apache.hadoop</groupId>
             <artifactId>hadoop-hdfs</artifactId>
             <version>2.9.2</version>
@@ -183,7 +190,7 @@
         <dependency>
             <groupId>com.esotericsoftware</groupId>
             <artifactId>kryo</artifactId>
-            <version>5.2.0</version>
+            <version>5.3.0</version>
         </dependency>
 
         <dependency>
@@ -288,7 +295,7 @@
         <dependency>
             <groupId>org.xerial.snappy</groupId>
             <artifactId>snappy-java</artifactId>
-            <version>1.1.8.1</version>
+            <version>1.1.8.4</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
@@ -338,8 +345,28 @@
         <dependency>
             <groupId>org.scala-lang</groupId>
             <artifactId>scala-library</artifactId>
-            <version>2.12.16</version>
+            <version>2.11.12</version>
         </dependency>
+
+		<dependency>
+			<groupId>sh.den</groupId>
+			<artifactId>scala-offheap_2.11</artifactId>
+			<version>0.1</version>
+		</dependency>
+
+        <dependency>
+            <groupId>sh.den</groupId>
+            <artifactId>scala-offheap-macros_2.11</artifactId>
+            <version>0.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.24</version>
+            <scope>provided</scope>
+        </dependency>
+
 
     </dependencies>
     <build>
@@ -606,7 +633,7 @@
 						    <image>bde2020/hadoop-datanode</image>
 						  </from>
 						  <to>
-						    <image>arunsrajan/mdcstandalone</image>
+						    <image>localhost:5000/arunsrajan/mdcstandalone</image>
 						    <tags>
 						      <tag>latest</tag>
 						    </tags>
@@ -654,6 +681,14 @@
 						        <file>/usr/local/java/jdk-17.0.2/**/**</file>
 						        <mode>755</mode> <!-- Read/write/execute for owner, read/execute for group/other -->
 						      </permission>
+							  <permission>
+						        <file>/etc/hadoop/**/**</file>
+						        <mode>777</mode> <!-- Read/write/execute for owner, read/execute for group/other -->
+						      </permission>
+							  <permission>
+						        <file>/opt/hadoop-3.2.1/**/**</file>
+						        <mode>777</mode> <!-- Read/write/execute for owner, read/execute for group/other -->
+						      </permission>
 						  	</permissions>
 						  </extraDirectories>
 						  <container>
@@ -668,7 +703,7 @@
               					<arg>/entry.sh</arg>
               				</entrypoint>
 						  	<format>Docker</format>
-						  	<user>root</user>
+						  	<user>arun</user>
 						  </container>
 						</configuration>
 					    </execution>
@@ -686,7 +721,7 @@
 						    <image>bde2020/hadoop-datanode</image>
 						  </from>
 						  <to>
-						    <image>arunsrajan/mdccontainer</image>
+						    <image>localhost:5000/arunsrajan/mdccontainer</image>
 						    <tags>
 						      <tag>latest</tag>
 						    </tags>
@@ -734,6 +769,14 @@
 						        <file>/usr/local/java/jdk-17.0.2/**/**</file>
 						        <mode>755</mode> <!-- Read/write/execute for owner, read/execute for group/other -->
 						      </permission>
+							  <permission>
+						        <file>/etc/hadoop/**/**</file>
+						        <mode>777</mode> <!-- Read/write/execute for owner, read/execute for group/other -->
+						      </permission>
+							  <permission>
+						        <file>/opt/hadoop-3.2.1/**/**</file>
+						        <mode>777</mode> <!-- Read/write/execute for owner, read/execute for group/other -->
+						      </permission>
 						  	</permissions>
 						  </extraDirectories>
 						  <container>
@@ -748,10 +791,138 @@
               					<arg>/entry.sh</arg>
               				</entrypoint>
 						  	<format>Docker</format>
-						  	<user>root</user>
+						  	<user>arun</user>
 						  </container>
 						</configuration>
 					    </execution>
+
+                          <execution>
+                              <id>buildtaskschedulerstream</id>
+                              <phase>package</phase>
+                              <goals>
+                                  <goal>dockerBuild</goal>
+                              </goals>
+                              <configuration>
+                                  <containerizingMode>exploded</containerizingMode>
+                                  <from>
+                                      <image>ubuntu</image>
+                                  </from>
+                                  <to>
+                                      <image>192.168.59.101:32225/arunsrajan/mdctaskschedulerstream</image>
+                                      <tags>
+                                          <tag>latest</tag>
+                                      </tags>
+                                  </to>
+                                  <extraDirectories>
+                                      <paths>
+                                          <path>
+                                              <from>target/unpack</from>
+                                              <into>/</into>
+                                          </path>
+                                          <path>
+                                              <from>dockermdctss</from>
+                                              <into>/opt/mdc/config</into>
+                                              <includes>mdc.properties</includes>
+                                          </path>
+                                          <path>
+                                              <from>dockermdctss</from>
+                                              <into>/opt/mdc/bin</into>
+                                              <includes>taskschedulerstream.sh</includes>
+                                          </path>
+                                      </paths>
+                                      <permissions>
+                                          <permission>
+                                              <file>/opt/mdc/bin/*</file>
+                                              <mode>777</mode> <!-- Read/write/execute for owner, read/execute for group/other -->
+                                          </permission>
+                                          <permission>
+                                              <file>/usr/local/java/jdk-17.0.2/**/**</file>
+                                              <mode>755</mode> <!-- Read/write/execute for owner, read/execute for group/other -->
+                                          </permission>
+                                      </permissions>
+                                  </extraDirectories>
+                                  <container>
+                                      <environment>
+                                          <CORE_CONF_fs_defaultFS>hdfs://namenode:9000</CORE_CONF_fs_defaultFS>
+                                          <HDFS_CONF_dfs_datanode_data_dir>file:///opt/dockershare/data</HDFS_CONF_dfs_datanode_data_dir>
+                                      </environment>
+                                      <volumes>
+                                          /opt/dockershare/data
+                                      </volumes>
+                                      <entrypoint>
+                                          <arg>./opt/mdc/bin/taskschedulerstream.sh</arg>
+                                      </entrypoint>
+                                      <format>Docker</format>
+                                      <user>arun</user>
+                                  </container>
+                              </configuration>
+                          </execution>
+                          <execution>
+                              <id>buildtaskscheduler</id>
+                              <phase>package</phase>
+                              <goals>
+                                  <goal>dockerBuild</goal>
+                              </goals>
+                              <configuration>
+                                  <containerizingMode>exploded</containerizingMode>
+                                  <from>
+                                      <image>ubuntu</image>
+                                  </from>
+                                  <to>
+                                      <image>192.168.59.101:32225/arunsrajan/mdctaskscheduler</image>
+                                      <tags>
+                                          <tag>latest</tag>
+                                      </tags>
+                                  </to>
+                                  <extraDirectories>
+                                      <paths>
+                                          <path>
+                                              <from>target/unpack</from>
+                                              <into>/</into>
+                                          </path>
+                                          <path>
+                                              <from>dockermdcts</from>
+                                              <into>/opt/mdc/config</into>
+                                              <includes>mdc.properties</includes>
+                                          </path>
+                                          <path>
+                                              <from>dockermdcts</from>
+                                              <into>/opt/mdc/bin</into>
+                                              <includes>taskscheduler.sh</includes>
+                                          </path>
+                                          <path>
+                                              <from>dockermdcts</from>
+                                              <into>/opt/mdc/bin</into>
+                                              <includes>tasksubmitter.sh</includes>
+                                          </path>
+                                      </paths>
+                                      <permissions>
+                                          <permission>
+                                              <file>/opt/mdc/bin/*</file>
+                                              <mode>777</mode> <!-- Read/write/execute for owner, read/execute for group/other -->
+                                          </permission>
+                                          <permission>
+                                              <file>/usr/local/java/jdk-17.0.2/**/**</file>
+                                              <mode>755</mode> <!-- Read/write/execute for owner, read/execute for group/other -->
+                                          </permission>
+                                      </permissions>
+                                  </extraDirectories>
+                                  <container>
+                                      <environment>
+                                          <CORE_CONF_fs_defaultFS>hdfs://namenode:9000</CORE_CONF_fs_defaultFS>
+                                          <HDFS_CONF_dfs_datanode_data_dir>file:///opt/dockershare/data</HDFS_CONF_dfs_datanode_data_dir>
+                                      </environment>
+                                      <volumes>
+                                          /opt/dockershare/data
+                                      </volumes>
+                                      <entrypoint>
+                                          <arg>/opt/mdc/bin/taskscheduler.sh</arg>
+                                      </entrypoint>
+                                      <format>Docker</format>
+                                      <user>arun</user>
+                                  </container>
+                              </configuration>
+                          </execution>
 					  </executions>
 
 					</plugin>

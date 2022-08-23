@@ -1,3 +1,18 @@
+/*
+ * Copyright 2021 the original author or authors.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p>
+ * https://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.github.mdc.stream;
 
 import static org.junit.Assert.assertEquals;
@@ -15,14 +30,15 @@ import com.github.mdc.stream.sql.StreamPipelineSql;
 import com.github.mdc.stream.sql.StreamPipelineSqlBuilder;
 
 public class StreamPipelineSqlTest extends StreamPipelineBaseTestCommon {
-	String[] airlineheader = new String[] { "AirlineYear", "MonthOfYear", "DayofMonth", "DayOfWeek", "DepTime",
+	String[] airlineheader = new String[]{"AirlineYear", "MonthOfYear", "DayofMonth", "DayOfWeek", "DepTime",
 			"CRSDepTime", "ArrTime", "CRSArrTime", "UniqueCarrier", "FlightNum", "TailNum", "ActualElapsedTime",
 			"CRSElapsedTime", "AirTime", "ArrDelay", "DepDelay", "Origin", "Dest", "Distance", "TaxiIn", "TaxiOut",
 			"Cancelled", "CancellationCode", "Diverted", "CarrierDelay", "WeatherDelay", "NASDelay", "SecurityDelay",
-			"LateAircraftDelay" };
-	String[] carrierheader = { "Code", "Description" };
+			"LateAircraftDelay"};
+	String[] carrierheader = {"Code", "Description"};
 	Logger log = Logger.getLogger(StreamPipelineSqlTest.class);
-	@SuppressWarnings({ "unchecked" })
+
+	@SuppressWarnings({"unchecked"})
 	@Test
 	public void testFilterMDPSqlBuilderAirlines() throws Exception {
 		log.info("In testFilterMDPSqlBuilderAirlines() method Entry");
@@ -31,9 +47,9 @@ public class StreamPipelineSqlTest extends StreamPipelineBaseTestCommon {
 		StreamPipelineSql mdpsql = StreamPipelineSqlBuilder.newBuilder().add(airlinesamplesql, "airline", airlineheader, airsqltype)
 				.add(carriers, "carriers", carrierheader, carriersqltype).setHdfs(hdfsfilepath)
 				.setPipelineConfig(pipelineconfig).setSql(statement).build();
-		List<List<Map<String,Object>>> records = (List<List<Map<String,Object>>>) mdpsql.collect(true, null);
-		for (List<Map<String,Object>> recs : records) {
-			for (Map<String,Object> rec : recs) {
+		List<List<Map<String, Object>>> records = (List<List<Map<String, Object>>>) mdpsql.collect(true, null);
+		for (List<Map<String, Object>> recs : records) {
+			for (Map<String, Object> rec : recs) {
 				assertEquals("8", rec.get("DayofMonth"));
 				assertEquals("12", rec.get("MonthOfYear"));
 				log.info(rec);
@@ -43,7 +59,7 @@ public class StreamPipelineSqlTest extends StreamPipelineBaseTestCommon {
 		pipelineconfig.setLocal("true");
 	}
 
-	@SuppressWarnings({ "unchecked" })
+	@SuppressWarnings({"unchecked"})
 	@Test
 	public void testFilterMDPSqlBuilderAirlinesLiteralGreaterThan() throws Exception {
 		log.info("In testFilterMDPSqlBuilderAirlinesLiteralGreaterThan() method Entry");
@@ -52,18 +68,18 @@ public class StreamPipelineSqlTest extends StreamPipelineBaseTestCommon {
 		StreamPipelineSql mdpsql = StreamPipelineSqlBuilder.newBuilder().add(airlinesamplesql, "airline", airlineheader, airsqltype)
 				.add(carriers, "carriers", carrierheader, carriersqltype).setHdfs(hdfsfilepath)
 				.setPipelineConfig(new PipelineConfig()).setSql(statement).build();
-		List<List<Map<String,Object>>> records = (List<List<Map<String,Object>>>) mdpsql.collect(true, null);
-		for (List<Map<String,Object>> recs : records) {
-			for (Map<String,Object> rec : recs) {
+		List<List<Map<String, Object>>> records = (List<List<Map<String, Object>>>) mdpsql.collect(true, null);
+		for (List<Map<String, Object>> recs : records) {
+			for (Map<String, Object> rec : recs) {
 				log.info(rec);
-				assertTrue(Long.valueOf((String)(String) rec.get("DayofMonth")) > 8);
-				assertTrue(Long.valueOf((String)(String) rec.get("MonthOfYear")) > 6);
+				assertTrue(Long.valueOf((String) (String) rec.get("DayofMonth")) > 8);
+				assertTrue(Long.valueOf((String) (String) rec.get("MonthOfYear")) > 6);
 			}
 		}
 		log.info("In testFilterMDPSqlBuilderAirlinesLiteralGreaterThan() method Exit");
 	}
 
-	@SuppressWarnings({ "unchecked" })
+	@SuppressWarnings({"unchecked"})
 	@Test
 	public void testFilterMDPSqlBuilderAirlinesLiteralLessThan() throws Exception {
 		log.info("In testFilterMDPSqlBuilderAirlinesLiteralLessThan() method Entry");
@@ -72,18 +88,18 @@ public class StreamPipelineSqlTest extends StreamPipelineBaseTestCommon {
 		StreamPipelineSql mdpsql = StreamPipelineSqlBuilder.newBuilder().add(airlinesamplesql, "airline", airlineheader, airsqltype)
 				.add(carriers, "carriers", carrierheader, carriersqltype).setHdfs(hdfsfilepath)
 				.setPipelineConfig(new PipelineConfig()).setSql(statement).build();
-		List<List<Map<String,Object>>> records = (List<List<Map<String,Object>>>) mdpsql.collect(true, null);
-		for (List<Map<String,Object>> recs : records) {
-			for (Map<String,Object> rec : recs) {
+		List<List<Map<String, Object>>> records = (List<List<Map<String, Object>>>) mdpsql.collect(true, null);
+		for (List<Map<String, Object>> recs : records) {
+			for (Map<String, Object> rec : recs) {
 				log.info(rec);
-				assertTrue(Long.valueOf((String)(String) rec.get("DayofMonth")) < 8);
-				assertTrue(Long.valueOf((String)(String) rec.get("MonthOfYear")) < 6);
+				assertTrue(Long.valueOf((String) (String) rec.get("DayofMonth")) < 8);
+				assertTrue(Long.valueOf((String) (String) rec.get("MonthOfYear")) < 6);
 			}
 		}
 		log.info("In testFilterMDPSqlBuilderAirlinesLiteralLessThan() method Exit");
 	}
 
-	@SuppressWarnings({ "unchecked" })
+	@SuppressWarnings({"unchecked"})
 	@Test
 	public void testFilterMDPSqlBuilderAirlinesLiteralGreaterThanEquals() throws Exception {
 		log.info("In testFilterMDPSqlBuilderAirlinesLiteralGreaterThanEquals() method Entry");
@@ -92,18 +108,18 @@ public class StreamPipelineSqlTest extends StreamPipelineBaseTestCommon {
 		StreamPipelineSql mdpsql = StreamPipelineSqlBuilder.newBuilder().add(airlinesamplesql, "airline", airlineheader, airsqltype)
 				.add(carriers, "carriers", carrierheader, carriersqltype).setHdfs(hdfsfilepath)
 				.setPipelineConfig(new PipelineConfig()).setSql(statement).build();
-		List<List<Map<String,Object>>> records = (List<List<Map<String,Object>>>) mdpsql.collect(true, null);
-		for (List<Map<String,Object>> recs : records) {
-			for (Map<String,Object> rec : recs) {
+		List<List<Map<String, Object>>> records = (List<List<Map<String, Object>>>) mdpsql.collect(true, null);
+		for (List<Map<String, Object>> recs : records) {
+			for (Map<String, Object> rec : recs) {
 				log.info(rec);
-				assertTrue(Long.valueOf((String)(String) rec.get("DayofMonth")) >= 8);
-				assertTrue(Long.valueOf((String)(String) rec.get("MonthOfYear")) >= 6);
+				assertTrue(Long.valueOf((String) (String) rec.get("DayofMonth")) >= 8);
+				assertTrue(Long.valueOf((String) (String) rec.get("MonthOfYear")) >= 6);
 			}
 		}
 		log.info("In testFilterMDPSqlBuilderAirlinesLiteralGreaterThanEquals() method Exit");
 	}
 
-	@SuppressWarnings({ "unchecked" })
+	@SuppressWarnings({"unchecked"})
 	@Test
 	public void testFilterMDPSqlBuilderAirlinesLiteralLessThanEquals() throws Exception {
 		log.info("In testFilterMDPSqlBuilderAirlinesLiteralLessThanEquals() method Entry");
@@ -112,18 +128,18 @@ public class StreamPipelineSqlTest extends StreamPipelineBaseTestCommon {
 		StreamPipelineSql mdpsql = StreamPipelineSqlBuilder.newBuilder().add(airlinesamplesql, "airline", airlineheader, airsqltype)
 				.add(carriers, "carriers", carrierheader, carriersqltype).setHdfs(hdfsfilepath)
 				.setPipelineConfig(new PipelineConfig()).setSql(statement).build();
-		List<List<Map<String,Object>>> records = (List<List<Map<String,Object>>>) mdpsql.collect(true, null);
-		for (List<Map<String,Object>> recs : records) {
-			for (Map<String,Object> rec : recs) {
+		List<List<Map<String, Object>>> records = (List<List<Map<String, Object>>>) mdpsql.collect(true, null);
+		for (List<Map<String, Object>> recs : records) {
+			for (Map<String, Object> rec : recs) {
 				log.info(rec);
-				assertTrue(Long.valueOf((String)(String) rec.get("DayofMonth")) <= 8);
-				assertTrue(Long.valueOf((String)(String) rec.get("MonthOfYear")) <= 6);
+				assertTrue(Long.valueOf((String) (String) rec.get("DayofMonth")) <= 8);
+				assertTrue(Long.valueOf((String) (String) rec.get("MonthOfYear")) <= 6);
 			}
 		}
 		log.info("In testFilterMDPSqlBuilderAirlinesLiteralLessThanEquals() method Exit");
 	}
 
-	@SuppressWarnings({ "unchecked" })
+	@SuppressWarnings({"unchecked"})
 	@Test
 	public void testFilterMDPSqlBuilderAirlinesLiteralGreaterThanEqualsOr() throws Exception {
 		log.info("In testFilterMDPSqlBuilderAirlinesLiteralGreaterThanEqualsOr() method Entry");
@@ -132,17 +148,17 @@ public class StreamPipelineSqlTest extends StreamPipelineBaseTestCommon {
 		StreamPipelineSql mdpsql = StreamPipelineSqlBuilder.newBuilder().add(airlinesamplesql, "airline", airlineheader, airsqltype)
 				.add(carriers, "carriers", carrierheader, carriersqltype).setHdfs(hdfsfilepath)
 				.setPipelineConfig(new PipelineConfig()).setSql(statement).build();
-		List<List<Map<String,Object>>> records = (List<List<Map<String,Object>>>) mdpsql.collect(true, null);
-		for (List<Map<String,Object>> recs : records) {
-			for (Map<String,Object> rec : recs) {
+		List<List<Map<String, Object>>> records = (List<List<Map<String, Object>>>) mdpsql.collect(true, null);
+		for (List<Map<String, Object>> recs : records) {
+			for (Map<String, Object> rec : recs) {
 				log.info(rec);
-				assertTrue(Long.valueOf((String)(String) rec.get("DayofMonth")) >= 8 || Long.valueOf((String) rec.get("MonthOfYear")) >= 6);
+				assertTrue(Long.valueOf((String) (String) rec.get("DayofMonth")) >= 8 || Long.valueOf((String) rec.get("MonthOfYear")) >= 6);
 			}
 		}
 		log.info("In testFilterMDPSqlBuilderAirlinesLiteralGreaterThanEqualsOr() method Exit");
 	}
 
-	@SuppressWarnings({ "unchecked" })
+	@SuppressWarnings({"unchecked"})
 	@Test
 	public void testFilterMDPSqlBuilderAirlinesLiteralLessThanEqualsOr() throws Exception {
 		log.info("In testFilterMDPSqlBuilderAirlinesLiteralLessThanEqualsOr() method Entry");
@@ -151,17 +167,17 @@ public class StreamPipelineSqlTest extends StreamPipelineBaseTestCommon {
 		StreamPipelineSql mdpsql = StreamPipelineSqlBuilder.newBuilder().add(airlinesamplesql, "airline", airlineheader, airsqltype)
 				.add(carriers, "carriers", carrierheader, carriersqltype).setHdfs(hdfsfilepath)
 				.setPipelineConfig(new PipelineConfig()).setSql(statement).build();
-		List<List<Map<String,Object>>> records = (List<List<Map<String,Object>>>) mdpsql.collect(true, null);
-		for (List<Map<String,Object>> recs : records) {
-			for (Map<String,Object> rec : recs) {
+		List<List<Map<String, Object>>> records = (List<List<Map<String, Object>>>) mdpsql.collect(true, null);
+		for (List<Map<String, Object>> recs : records) {
+			for (Map<String, Object> rec : recs) {
 				log.info(rec);
-				assertTrue(Long.valueOf((String)(String) rec.get("DayofMonth")) <= 8 || Long.valueOf((String)(String) rec.get("MonthOfYear")) <= 6);
+				assertTrue(Long.valueOf((String) (String) rec.get("DayofMonth")) <= 8 || Long.valueOf((String) (String) rec.get("MonthOfYear")) <= 6);
 			}
 		}
 		log.info("In testFilterMDPSqlBuilderAirlinesLiteralLessThanEqualsOr() method Exit");
 	}
 
-	@SuppressWarnings({ "unchecked" })
+	@SuppressWarnings({"unchecked"})
 	@Test
 	public void testFilterMDPSqlBuilderAirlinesLiteralFirst() throws Exception {
 		log.info("In testFilterMDPSqlBuilderAirlinesLiteralFirst() method Entry");
@@ -170,9 +186,9 @@ public class StreamPipelineSqlTest extends StreamPipelineBaseTestCommon {
 		StreamPipelineSql mdpsql = StreamPipelineSqlBuilder.newBuilder().add(airlinesamplesql, "airline", airlineheader, airsqltype)
 				.add(carriers, "carriers", carrierheader, carriersqltype).setHdfs(hdfsfilepath)
 				.setPipelineConfig(new PipelineConfig()).setSql(statement).build();
-		List<List<Map<String,Object>>> records = (List<List<Map<String,Object>>>) mdpsql.collect(true, null);
-		for (List<Map<String,Object>> recs : records) {
-			for (Map<String,Object> rec : recs) {
+		List<List<Map<String, Object>>> records = (List<List<Map<String, Object>>>) mdpsql.collect(true, null);
+		for (List<Map<String, Object>> recs : records) {
+			for (Map<String, Object> rec : recs) {
 				assertEquals("8", rec.get("DayofMonth"));
 				assertEquals("12", rec.get("MonthOfYear"));
 				log.info(rec);
@@ -181,7 +197,7 @@ public class StreamPipelineSqlTest extends StreamPipelineBaseTestCommon {
 		log.info("In testFilterMDPSqlBuilderAirlinesLiteralFirst() method Exit");
 	}
 
-	@SuppressWarnings({ "unchecked" })
+	@SuppressWarnings({"unchecked"})
 	@Test
 	public void testFilterMDPSqlBuilderAirlinesColumnEquals() throws Exception {
 		log.info("In testFilterMDPSqlBuilderAirlinesColumnEquals() method Entry");
@@ -190,9 +206,9 @@ public class StreamPipelineSqlTest extends StreamPipelineBaseTestCommon {
 		StreamPipelineSql mdpsql = StreamPipelineSqlBuilder.newBuilder().add(airlinesamplesql, "airline", airlineheader, airsqltype)
 				.add(carriers, "carriers", carrierheader, carriersqltype).setHdfs(hdfsfilepath)
 				.setPipelineConfig(new PipelineConfig()).setSql(statement).build();
-		List<List<Map<String,Object>>> records = (List<List<Map<String,Object>>>) mdpsql.collect(true, null);
-		for (List<Map<String,Object>> recs : records) {
-			for (Map<String,Object> rec : recs) {
+		List<List<Map<String, Object>>> records = (List<List<Map<String, Object>>>) mdpsql.collect(true, null);
+		for (List<Map<String, Object>> recs : records) {
+			for (Map<String, Object> rec : recs) {
 				assertTrue(rec.get("DayofMonth").equals(rec.get("MonthOfYear")));
 				log.info(rec);
 			}
@@ -200,7 +216,7 @@ public class StreamPipelineSqlTest extends StreamPipelineBaseTestCommon {
 		log.info("In testFilterMDPSqlBuilderAirlinesColumnEquals() method Exit");
 	}
 
-	@SuppressWarnings({ "unchecked" })
+	@SuppressWarnings({"unchecked"})
 	@Test
 	public void testMDPSqlBuilderAirlinesCarriersJoin() throws Exception {
 		log.info("In testMDPSqlBuilderAirlinesCarriersJoin() method Entry");
@@ -210,9 +226,9 @@ public class StreamPipelineSqlTest extends StreamPipelineBaseTestCommon {
 		StreamPipelineSql mdpsql = StreamPipelineSqlBuilder.newBuilder().add(airlinesamplesql, "airline", airlineheader, airsqltype)
 				.add(carriers, "carriers", carrierheader, carriersqltype).setHdfs(hdfsfilepath)
 				.setPipelineConfig(new PipelineConfig()).setSql(statement).build();
-		List<List<Map<String,Object>>> records = (List<List<Map<String,Object>>>) mdpsql.collect(true, null);
-		for (List<Map<String,Object>> recs : records) {
-			for (Map<String,Object> rec : recs) {
+		List<List<Map<String, Object>>> records = (List<List<Map<String, Object>>>) mdpsql.collect(true, null);
+		for (List<Map<String, Object>> recs : records) {
+			for (Map<String, Object> rec : recs) {
 				log.info(rec);
 				assertEquals("8", rec.get("DayofMonth"));
 				assertEquals("12", rec.get("MonthOfYear"));
@@ -221,7 +237,7 @@ public class StreamPipelineSqlTest extends StreamPipelineBaseTestCommon {
 		log.info("In testMDPSqlBuilderAirlinesCarriersJoin() method Exit");
 	}
 
-	@SuppressWarnings({ "unchecked" })
+	@SuppressWarnings({"unchecked"})
 	@Test
 	public void testMDPSqlBuilderAirlinesCarriersJoinCount() throws Exception {
 		log.info("In testMDPSqlBuilderAirlinesCarriersJoinCount() method Entry");
@@ -232,18 +248,18 @@ public class StreamPipelineSqlTest extends StreamPipelineBaseTestCommon {
 				.add(carriers, "carriers", carrierheader, carriersqltype).setHdfs(hdfsfilepath)
 				.setPipelineConfig(new PipelineConfig()).setSql(statement).build();
 		long totalrecords = 0;
-		List<List<Map<String,Object>>> records = (List<List<Map<String,Object>>>) mdpsql.collect(true, null);
-		for (List<Map<String,Object>> recs : records) {
-			for (Map<String,Object> rec : recs) {
+		List<List<Map<String, Object>>> records = (List<List<Map<String, Object>>>) mdpsql.collect(true, null);
+		for (List<Map<String, Object>> recs : records) {
+			for (Map<String, Object> rec : recs) {
 				log.info(rec);
-				totalrecords+=(Long)rec.get("count()");
+				totalrecords += (Long) rec.get("count()");
 			}
 		}
-		assertEquals(132,totalrecords);
+		assertEquals(132, totalrecords);
 		log.info("In testMDPSqlBuilderAirlinesCarriersJoinCount() method Exit");
 	}
-	
-	@SuppressWarnings({ "unchecked" })
+
+	@SuppressWarnings({"unchecked"})
 	@Test
 	public void testMDPSqlBuilderAirlinesCarriersJoinRecordCount() throws Exception {
 		log.info("In testMDPSqlBuilderAirlinesCarriersJoinRecordCount() method Entry");
@@ -254,19 +270,19 @@ public class StreamPipelineSqlTest extends StreamPipelineBaseTestCommon {
 				.add(carriers, "carriers", carrierheader, carriersqltype).setHdfs(hdfsfilepath)
 				.setPipelineConfig(new PipelineConfig()).setSql(statement).build();
 		long totalrecords = 0;
-		List<List<Map<String,Object>>> records = (List<List<Map<String,Object>>>) mdpsql.collect(true, null);
-		for (List<Map<String,Object>> recs : records) {
-			totalrecords+=recs.size();
-			for (Map<String,Object> rec : recs) {
+		List<List<Map<String, Object>>> records = (List<List<Map<String, Object>>>) mdpsql.collect(true, null);
+		for (List<Map<String, Object>> recs : records) {
+			totalrecords += recs.size();
+			for (Map<String, Object> rec : recs) {
 				log.info(rec);
 			}
 		}
-		assertEquals(132,totalrecords);
+		assertEquals(132, totalrecords);
 		log.info("In testMDPSqlBuilderAirlinesCarriersJoinRecordCount() method Exit");
 	}
-	
-	
-	@SuppressWarnings({ "unchecked" })
+
+
+	@SuppressWarnings({"unchecked"})
 	@Test
 	public void testMDPSqlBuilderAirlinesCarriersLeftJoinRecordCount() throws Exception {
 		log.info("In testMDPSqlBuilderAirlinesCarriersLeftJoinRecordCount() method Entry");
@@ -276,17 +292,17 @@ public class StreamPipelineSqlTest extends StreamPipelineBaseTestCommon {
 		StreamPipelineSql mdpsql = StreamPipelineSqlBuilder.newBuilder().add(airlinesamplesql, "airline", airlineheader, airsqltype)
 				.add(carriers, "carriers", carrierheader, carriersqltype).setHdfs(hdfsfilepath)
 				.setPipelineConfig(new PipelineConfig()).setSql(statement).build();
-		List<List<Map<String,Object>>> records = (List<List<Map<String,Object>>>) mdpsql.collect(true, null);
-		for (List<Map<String,Object>> recs : records) {
-			for (Map<String,Object> rec : recs) {
+		List<List<Map<String, Object>>> records = (List<List<Map<String, Object>>>) mdpsql.collect(true, null);
+		for (List<Map<String, Object>> recs : records) {
+			for (Map<String, Object> rec : recs) {
 				log.info(rec);
 			}
 		}
 		log.info("In testMDPSqlBuilderAirlinesCarriersLeftJoinRecordCount() method Exit");
 	}
-	
-	
-	@SuppressWarnings({ "unchecked" })
+
+
+	@SuppressWarnings({"unchecked"})
 	@Test
 	public void testMDPSqlBuilderAirlinesCarrierAirpJoin() throws Exception {
 		log.info("In testMDPSqlBuilderAirlinesCarrierAirpJoin() method Entry");
@@ -297,9 +313,9 @@ public class StreamPipelineSqlTest extends StreamPipelineBaseTestCommon {
 				.add(carriers, "carriers", carrierheader, carriersqltype)
 				.add(airportssample, "airports", airportsheader, airportstype).setHdfs(hdfsfilepath)
 				.setPipelineConfig(new PipelineConfig()).setSql(statement).build();
-		List<List<Map<String,Object>>> records = (List<List<Map<String,Object>>>) mdpsql.collect(true, null);
-		for (List<Map<String,Object>> recs : records) {
-			for (Map<String,Object> rec : recs) {
+		List<List<Map<String, Object>>> records = (List<List<Map<String, Object>>>) mdpsql.collect(true, null);
+		for (List<Map<String, Object>> recs : records) {
+			for (Map<String, Object> rec : recs) {
 				log.info(rec);
 				assertEquals("8", rec.get("DayofMonth"));
 				assertEquals("12", rec.get("MonthOfYear"));
@@ -309,7 +325,7 @@ public class StreamPipelineSqlTest extends StreamPipelineBaseTestCommon {
 		log.info("In testMDPSqlBuilderAirlinesCarrierAirpJoin() method Exit");
 	}
 
-	@SuppressWarnings({ "unchecked" })
+	@SuppressWarnings({"unchecked"})
 	@Test
 	public void testMDPSqlBuilderAirlinesCarrierJoinCarrierSpecific() throws Exception {
 		log.info("In testMDPSqlBuilderAirlinesCarrierJoinCarrierSpecific() method Entry");
@@ -319,9 +335,9 @@ public class StreamPipelineSqlTest extends StreamPipelineBaseTestCommon {
 		StreamPipelineSql mdpsql = StreamPipelineSqlBuilder.newBuilder().add(airlinesamplesql, "airline", airlineheader, airsqltype)
 				.add(carriers, "carriers", carrierheader, carriersqltype).setHdfs(hdfsfilepath)
 				.setPipelineConfig(new PipelineConfig()).setSql(statement).build();
-		List<List<Map<String,Object>>> records = (List<List<Map<String,Object>>>) mdpsql.collect(true, null);
-		for (List<Map<String,Object>> recs : records) {
-			for (Map<String,Object> rec : recs) {
+		List<List<Map<String, Object>>> records = (List<List<Map<String, Object>>>) mdpsql.collect(true, null);
+		for (List<Map<String, Object>> recs : records) {
+			for (Map<String, Object> rec : recs) {
 				log.info(rec);
 				assertEquals("8", rec.get("DayofMonth"));
 				assertEquals("8", rec.get("MonthOfYear"));
@@ -331,7 +347,7 @@ public class StreamPipelineSqlTest extends StreamPipelineBaseTestCommon {
 		log.info("In testMDPSqlBuilderAirlinesCarrierJoinCarrierSpecific() method Exit");
 	}
 
-	@SuppressWarnings({ "unchecked" })
+	@SuppressWarnings({"unchecked"})
 	@Test
 	public void testMDPSqlBuilderAirlinesCarriersJoinOr() throws Exception {
 		log.info("In testMDPSqlBuilderAirlinesCarriersJoinOr() method Entry");
@@ -341,9 +357,9 @@ public class StreamPipelineSqlTest extends StreamPipelineBaseTestCommon {
 		StreamPipelineSql mdpsql = StreamPipelineSqlBuilder.newBuilder().add(airlinesamplesql, "airline", airlineheader, airsqltype)
 				.add(carriers, "carriers", carrierheader, carriersqltype).setHdfs(hdfsfilepath)
 				.setPipelineConfig(new PipelineConfig()).setSql(statement).build();
-		List<List<Map<String,Object>>> records = (List<List<Map<String,Object>>>) mdpsql.collect(true, null);
-		for (List<Map<String,Object>> recs : records) {
-			for (Map<String,Object> rec : recs) {
+		List<List<Map<String, Object>>> records = (List<List<Map<String, Object>>>) mdpsql.collect(true, null);
+		for (List<Map<String, Object>> recs : records) {
+			for (Map<String, Object> rec : recs) {
 				log.info(rec);
 				assertEquals("8", rec.get("DayofMonth"));
 				assertEquals("8", rec.get("MonthOfYear"));
@@ -353,7 +369,7 @@ public class StreamPipelineSqlTest extends StreamPipelineBaseTestCommon {
 		log.info("In testMDPSqlBuilderAirlinesCarriersJoinOr() method Exit");
 	}
 
-	@SuppressWarnings({ "unchecked" })
+	@SuppressWarnings({"unchecked"})
 	@Test
 	public void testJoinMDPSqlBuilderAirlinesCarrierLeftJoin() throws Exception {
 		log.info("In testJoinMDPSqlBuilderAirlinesCarrierLeftJoin() method Entry");
@@ -362,9 +378,9 @@ public class StreamPipelineSqlTest extends StreamPipelineBaseTestCommon {
 		StreamPipelineSql mdpsql = StreamPipelineSqlBuilder.newBuilder().add(airlinesamplesql, "airline", airlineheader, airsqltype)
 				.add(carriers, "carriers", carrierheader, carriersqltype).setHdfs(hdfsfilepath)
 				.setPipelineConfig(new PipelineConfig()).setSql(statement).build();
-		List<List<Map<String,Object>>> records = (List<List<Map<String,Object>>>) mdpsql.collect(true, null);
-		for (List<Map<String,Object>> recs : records) {
-			for (Map<String,Object> rec : recs) {
+		List<List<Map<String, Object>>> records = (List<List<Map<String, Object>>>) mdpsql.collect(true, null);
+		for (List<Map<String, Object>> recs : records) {
+			for (Map<String, Object> rec : recs) {
 				log.info(rec);
 				assertEquals("8", rec.get("DayofMonth"));
 			}
@@ -372,7 +388,7 @@ public class StreamPipelineSqlTest extends StreamPipelineBaseTestCommon {
 		log.info("In testJoinMDPSqlBuilderAirlinesCarrierLeftJoin() method Exit");
 	}
 
-	@SuppressWarnings({ "unchecked" })
+	@SuppressWarnings({"unchecked"})
 	@Test
 	public void testMDPSqlBuilderCarriersAllColumns() throws Exception {
 		log.info("In testMDPSqlBuilderCarriersAllColumns() method Entry");
@@ -380,9 +396,9 @@ public class StreamPipelineSqlTest extends StreamPipelineBaseTestCommon {
 		StreamPipelineSql mdpsql = StreamPipelineSqlBuilder.newBuilder().add(airlinesamplesql, "airline", airlineheader, airsqltype)
 				.add(carriers, "carriers", carrierheader, carriersqltype).setHdfs(hdfsfilepath)
 				.setPipelineConfig(new PipelineConfig()).setSql(statement).build();
-		List<List<Map<String,Object>>> records = (List<List<Map<String,Object>>>) mdpsql.collect(true, null);
-		for (List<Map<String,Object>> recs : records) {
-			for (Map<String,Object> rec : recs) {
+		List<List<Map<String, Object>>> records = (List<List<Map<String, Object>>>) mdpsql.collect(true, null);
+		for (List<Map<String, Object>> recs : records) {
+			for (Map<String, Object> rec : recs) {
 				log.info(rec);
 				assertTrue(rec instanceof Map);
 				assertNotNull(rec.get("Code"));
@@ -392,7 +408,7 @@ public class StreamPipelineSqlTest extends StreamPipelineBaseTestCommon {
 		log.info("In testMDPSqlBuilderCarriersAllColumns() method Exit");
 	}
 
-	@SuppressWarnings({ "unchecked" })
+	@SuppressWarnings({"unchecked"})
 	@Test
 	public void testMDPSqlBuilderAirlinesAllColumns() throws Exception {
 		log.info("In testMDPSqlBuilderAirlinesAllColumns() method Entry");
@@ -400,9 +416,9 @@ public class StreamPipelineSqlTest extends StreamPipelineBaseTestCommon {
 		StreamPipelineSql mdpsql = StreamPipelineSqlBuilder.newBuilder().add(airlinesamplesql, "airline", airlineheader, airsqltype)
 				.add(carriers, "carriers", carrierheader, carriersqltype).setHdfs(hdfsfilepath)
 				.setPipelineConfig(new PipelineConfig()).setSql(statement).build();
-		List<List<Map<String,Object>>> records = (List<List<Map<String,Object>>>) mdpsql.collect(true, null);
-		for (List<Map<String,Object>> recs : records) {
-			for (Map<String,Object> rec : recs) {
+		List<List<Map<String, Object>>> records = (List<List<Map<String, Object>>>) mdpsql.collect(true, null);
+		for (List<Map<String, Object>> recs : records) {
+			for (Map<String, Object> rec : recs) {
 				log.info(rec);
 				assertTrue(rec instanceof Map);
 			}
@@ -410,7 +426,7 @@ public class StreamPipelineSqlTest extends StreamPipelineBaseTestCommon {
 		log.info("In testMDPSqlBuilderAirlinesAllColumns() method Exit");
 	}
 
-	@SuppressWarnings({ "unchecked" })
+	@SuppressWarnings({"unchecked"})
 	@Test
 	public void testMDPSqlBuilderCarriersSumArrDelay() throws Exception {
 		log.info("In testMDPSqlBuilderCarriersSumArrDelay() method Entry");
@@ -419,19 +435,19 @@ public class StreamPipelineSqlTest extends StreamPipelineBaseTestCommon {
 		StreamPipelineSql mdpsql = StreamPipelineSqlBuilder.newBuilder().add(airlinesamplesql, "airline", airlineheader, airsqltype)
 				.add(carriers, "carriers", carrierheader, carriersqltype).setHdfs(hdfsfilepath)
 				.setPipelineConfig(new PipelineConfig()).setSql(statement).build();
-		List<List<Map<String,Object>>> records = (List<List<Map<String,Object>>>) mdpsql.collect(true, null);
+		List<List<Map<String, Object>>> records = (List<List<Map<String, Object>>>) mdpsql.collect(true, null);
 		long sum = 0;
-		for (List<Map<String,Object>> recs : records) {
-			for (Map<String,Object> rec : recs) {
+		for (List<Map<String, Object>> recs : records) {
+			for (Map<String, Object> rec : recs) {
 				log.info(rec);
-				sum += (Long)rec.get("sum(ArrDelay)");
+				sum += (Long) rec.get("sum(ArrDelay)");
 			}
 		}
 		assertEquals(-63278, sum);
 		log.info("In testMDPSqlBuilderCarriersSumArrDelay() method Exit");
 	}
-	
-	@SuppressWarnings({ "unchecked" })
+
+	@SuppressWarnings({"unchecked"})
 	@Test
 	public void testMDPSqlBuilderCarriersSumArrDelayCountArrivalDelay() throws Exception {
 		log.info("In testMDPSqlBuilderCarriersSumArrDelayCountArrivalDelay() method Entry");
@@ -440,23 +456,23 @@ public class StreamPipelineSqlTest extends StreamPipelineBaseTestCommon {
 		StreamPipelineSql mdpsql = StreamPipelineSqlBuilder.newBuilder().add(airlinesamplesql, "airline", airlineheader, airsqltype)
 				.add(carriers, "carriers", carrierheader, carriersqltype).setHdfs(hdfsfilepath)
 				.setPipelineConfig(new PipelineConfig()).setSql(statement).build();
-		List<List<Map<String,Object>>> records = (List<List<Map<String,Object>>>) mdpsql.collect(true, null);
+		List<List<Map<String, Object>>> records = (List<List<Map<String, Object>>>) mdpsql.collect(true, null);
 		long sum = 0;
-		for (List<Map<String,Object>> recs : records) {
-			for (Map<String,Object> rec : recs) {
+		for (List<Map<String, Object>> recs : records) {
+			for (Map<String, Object> rec : recs) {
 				log.info(rec.get("UniqueCarrier"));
 				log.info(rec.get("AirlineYear"));
 				log.info(rec.get("sum(ArrDelay)"));
 				log.info(rec.get("count()"));
-				sum += (Long)rec.get("sum(ArrDelay)");
+				sum += (Long) rec.get("sum(ArrDelay)");
 			}
 		}
 		assertEquals(-63278, sum);
 		log.info("In testMDPSqlBuilderCarriersSumArrDelayCountArrivalDelay() method Exit");
 	}
-	
-	
-	@SuppressWarnings({ "unchecked" })
+
+
+	@SuppressWarnings({"unchecked"})
 	@Test
 	public void testMDPSqlBuilderCarriersSumArrDelayCountArrivalDelaySwap() throws Exception {
 		log.info("In testMDPSqlBuilderCarriersSumArrDelayCountArrivalDelaySwap() method Entry");
@@ -465,22 +481,22 @@ public class StreamPipelineSqlTest extends StreamPipelineBaseTestCommon {
 		StreamPipelineSql mdpsql = StreamPipelineSqlBuilder.newBuilder().add(airlinesamplesql, "airline", airlineheader, airsqltype)
 				.add(carriers, "carriers", carrierheader, carriersqltype).setHdfs(hdfsfilepath)
 				.setPipelineConfig(new PipelineConfig()).setSql(statement).build();
-		List<List<Map<String,Object>>> records = (List<List<Map<String,Object>>>) mdpsql.collect(true, null);
+		List<List<Map<String, Object>>> records = (List<List<Map<String, Object>>>) mdpsql.collect(true, null);
 		long sum = 0;
-		for (List<Map<String,Object>> recs : records) {
-			for (Map<String,Object> rec : recs) {
+		for (List<Map<String, Object>> recs : records) {
+			for (Map<String, Object> rec : recs) {
 				log.info(rec.get("UniqueCarrier"));
 				log.info(rec.get("AirlineYear"));
 				log.info(rec.get("sum(ArrDelay)"));
 				log.info(rec.get("count()"));
-				sum += (Long)rec.get("sum(ArrDelay)");
+				sum += (Long) rec.get("sum(ArrDelay)");
 			}
 		}
 		assertEquals(-63278, sum);
 		log.info("In testMDPSqlBuilderCarriersSumArrDelayCountArrivalDelaySwap() method Exit");
 	}
-	
-	@SuppressWarnings({ "unchecked" })
+
+	@SuppressWarnings({"unchecked"})
 	@Test
 	public void testMDPSqlBuilderCarriersSumArrDelayFirstColumn() throws Exception {
 		log.info("In testMDPSqlBuilderCarriersSumArrDelay() method Entry");
@@ -489,18 +505,19 @@ public class StreamPipelineSqlTest extends StreamPipelineBaseTestCommon {
 		StreamPipelineSql mdpsql = StreamPipelineSqlBuilder.newBuilder().add(airlinesamplesql, "airline", airlineheader, airsqltype)
 				.add(carriers, "carriers", carrierheader, carriersqltype).setHdfs(hdfsfilepath)
 				.setPipelineConfig(new PipelineConfig()).setSql(statement).build();
-		List<List<Map<String,Object>>> records = (List<List<Map<String,Object>>>) mdpsql.collect(true, null);
+		List<List<Map<String, Object>>> records = (List<List<Map<String, Object>>>) mdpsql.collect(true, null);
 		long sum = 0;
-		for (List<Map<String,Object>> recs : records) {
-			for (Map<String,Object> rec : recs) {
+		for (List<Map<String, Object>> recs : records) {
+			for (Map<String, Object> rec : recs) {
 				log.info(rec);
-				sum += (Long)rec.get("sum(ArrDelay)");
+				sum += (Long) rec.get("sum(ArrDelay)");
 			}
 		}
 		assertEquals(-63278, sum);
 		log.info("In testMDPSqlBuilderCarriersSumArrDelay() method Exit");
 	}
-	@SuppressWarnings({ "unchecked" })
+
+	@SuppressWarnings({"unchecked"})
 	@Test
 	public void testMDPSqlBuilderCarriersSumArrDelayFirstColumnCountSecondColumn() throws Exception {
 		log.info("In testMDPSqlBuilderCarriersSumArrDelayFirstColumnCountSecondColumn() method Entry");
@@ -509,19 +526,19 @@ public class StreamPipelineSqlTest extends StreamPipelineBaseTestCommon {
 		StreamPipelineSql mdpsql = StreamPipelineSqlBuilder.newBuilder().add(airlinesamplesql, "airline", airlineheader, airsqltype)
 				.add(carriers, "carriers", carrierheader, carriersqltype).setHdfs(hdfsfilepath)
 				.setPipelineConfig(new PipelineConfig()).setSql(statement).build();
-		List<List<Map<String,Object>>> records = (List<List<Map<String,Object>>>) mdpsql.collect(true, null);
+		List<List<Map<String, Object>>> records = (List<List<Map<String, Object>>>) mdpsql.collect(true, null);
 		long sum = 0;
-		for (List<Map<String,Object>> recs : records) {
-			for (Map<String,Object> rec : recs) {
+		for (List<Map<String, Object>> recs : records) {
+			for (Map<String, Object> rec : recs) {
 				log.info(rec);
-				sum += (Long)rec.get("sum(ArrDelay)");
+				sum += (Long) rec.get("sum(ArrDelay)");
 			}
 		}
 		assertEquals(-63278, sum);
 		log.info("In testMDPSqlBuilderCarriersSumArrDelayFirstColumnCountSecondColumn() method Exit");
 	}
-	
-	@SuppressWarnings({ "unchecked" })
+
+	@SuppressWarnings({"unchecked"})
 	@Test
 	public void testMDPSqlBuilderCarriersSumArrDelayFirstColumnCountSecondColumnSwap() throws Exception {
 		log.info("In testMDPSqlBuilderCarriersSumArrDelayFirstColumnCountSecondColumnSwap() method Entry");
@@ -530,19 +547,19 @@ public class StreamPipelineSqlTest extends StreamPipelineBaseTestCommon {
 		StreamPipelineSql mdpsql = StreamPipelineSqlBuilder.newBuilder().add(airlinesamplesql, "airline", airlineheader, airsqltype)
 				.add(carriers, "carriers", carrierheader, carriersqltype).setHdfs(hdfsfilepath)
 				.setPipelineConfig(new PipelineConfig()).setSql(statement).build();
-		List<List<Map<String,Object>>> records = (List<List<Map<String,Object>>>) mdpsql.collect(true, null);
+		List<List<Map<String, Object>>> records = (List<List<Map<String, Object>>>) mdpsql.collect(true, null);
 		long sum = 0;
-		for (List<Map<String,Object>> recs : records) {
-			for (Map<String,Object> rec : recs) {
+		for (List<Map<String, Object>> recs : records) {
+			for (Map<String, Object> rec : recs) {
 				log.info(rec);
-				sum += (Long)rec.get("sum(ArrDelay)");
+				sum += (Long) rec.get("sum(ArrDelay)");
 			}
 		}
 		assertEquals(-63278, sum);
 		log.info("In testMDPSqlBuilderCarriersSumArrDelayFirstColumnCountSecondColumnSwap() method Exit");
 	}
-	
-	@SuppressWarnings({ "unchecked" })
+
+	@SuppressWarnings({"unchecked"})
 	@Test
 	public void testMDPSqlBuilderArrDelaySumArrDelayCountMid() throws Exception {
 		log.info("In testMDPSqlBuilderArrDelaySumArrDelayCountMid() method Entry");
@@ -551,18 +568,19 @@ public class StreamPipelineSqlTest extends StreamPipelineBaseTestCommon {
 		StreamPipelineSql mdpsql = StreamPipelineSqlBuilder.newBuilder().add(airlinesamplesql, "airline", airlineheader, airsqltype)
 				.add(carriers, "carriers", carrierheader, carriersqltype).setHdfs(hdfsfilepath)
 				.setPipelineConfig(new PipelineConfig()).setSql(statement).build();
-		List<List<Map<String,Object>>> records = (List<List<Map<String,Object>>>) mdpsql.collect(true, null);
+		List<List<Map<String, Object>>> records = (List<List<Map<String, Object>>>) mdpsql.collect(true, null);
 		long sum = 0;
-		for (List<Map<String,Object>> recs : records) {
-			for (Map<String,Object> rec : recs) {
+		for (List<Map<String, Object>> recs : records) {
+			for (Map<String, Object> rec : recs) {
 				log.info(rec);
-				sum += (Long)rec.get("sum(ArrDelay)");
+				sum += (Long) rec.get("sum(ArrDelay)");
 			}
 		}
 		assertEquals(-63278, sum);
 		log.info("In testMDPSqlBuilderArrDelaySumArrDelayCountMid() method Exit");
 	}
-	@SuppressWarnings({ "unchecked" })
+
+	@SuppressWarnings({"unchecked"})
 	@Test
 	public void testMDPSqlBuilderArrDelaySumArrDelayCountMidSwap() throws Exception {
 		pipelineconfig.setBlocksize("1");
@@ -573,13 +591,13 @@ public class StreamPipelineSqlTest extends StreamPipelineBaseTestCommon {
 		StreamPipelineSql mdpsql = StreamPipelineSqlBuilder.newBuilder().add(airlinesamplesql, "airline", airlineheader, airsqltype)
 				.add(carriers, "carriers", carrierheader, carriersqltype).setHdfs(hdfsfilepath)
 				.setPipelineConfig(pipelineconfig).setSql(statement).build();
-		List<List<Map<String,Object>>> records = (List<List<Map<String,Object>>>) mdpsql.collect(true, null);
-		long sumarrdelay = 0, reccount=0;
-		for (List<Map<String,Object>> recs : records) {
-			for (Map<String,Object> rec : recs) {
+		List<List<Map<String, Object>>> records = (List<List<Map<String, Object>>>) mdpsql.collect(true, null);
+		long sumarrdelay = 0, reccount = 0;
+		for (List<Map<String, Object>> recs : records) {
+			for (Map<String, Object> rec : recs) {
 				log.info(rec);
-				sumarrdelay += (Long)rec.get("sum(ArrDelay)");
-				reccount += (Long)rec.get("count()");
+				sumarrdelay += (Long) rec.get("sum(ArrDelay)");
+				reccount += (Long) rec.get("count()");
 			}
 		}
 		assertEquals(-63278, sumarrdelay);
@@ -588,8 +606,8 @@ public class StreamPipelineSqlTest extends StreamPipelineBaseTestCommon {
 		pipelineconfig.setBlocksize("20");
 		log.info("In testMDPSqlBuilderArrDelaySumArrDelayCountMidSwap() method Exit");
 	}
-	
-	@SuppressWarnings({ "unchecked" })
+
+	@SuppressWarnings({"unchecked"})
 	@Test
 	public void testMDPSqlBuilderArrDelaySumArrDelayCountMonthMidSwap() throws Exception {
 		pipelineconfig.setBlocksize("1");
@@ -600,13 +618,13 @@ public class StreamPipelineSqlTest extends StreamPipelineBaseTestCommon {
 		StreamPipelineSql mdpsql = StreamPipelineSqlBuilder.newBuilder().add(airlinesamplesql, "airline", airlineheader, airsqltype)
 				.add(carriers, "carriers", carrierheader, carriersqltype).setHdfs(hdfsfilepath)
 				.setPipelineConfig(pipelineconfig).setSql(statement).build();
-		List<List<Map<String,Object>>> records = (List<List<Map<String,Object>>>) mdpsql.collect(true, null);
-		long sumarrdelay = 0, reccount=0;
-		for (List<Map<String,Object>> recs : records) {
-			for (Map<String,Object> rec : recs) {
+		List<List<Map<String, Object>>> records = (List<List<Map<String, Object>>>) mdpsql.collect(true, null);
+		long sumarrdelay = 0, reccount = 0;
+		for (List<Map<String, Object>> recs : records) {
+			for (Map<String, Object> rec : recs) {
 				log.info(rec);
-				sumarrdelay += (Long)rec.get("sum(ArrDelay)");
-				reccount += (Long)rec.get("count()");
+				sumarrdelay += (Long) rec.get("sum(ArrDelay)");
+				reccount += (Long) rec.get("count()");
 			}
 		}
 		assertEquals(-63278, sumarrdelay);
@@ -615,8 +633,8 @@ public class StreamPipelineSqlTest extends StreamPipelineBaseTestCommon {
 		pipelineconfig.setBlocksize("20");
 		log.info("In testMDPSqlBuilderArrDelaySumArrDelayCountMonthMidSwap() method Exit");
 	}
-	
-	@SuppressWarnings({ "unchecked" })
+
+	@SuppressWarnings({"unchecked"})
 	@Test
 	public void testMDPSqlBuilderDepDelaySumDepDelayCountMidSwap() throws Exception {
 		log.info("In testMDPSqlBuilderDepDelaySumDepDelayCountMidSwap() method Entry");
@@ -625,19 +643,19 @@ public class StreamPipelineSqlTest extends StreamPipelineBaseTestCommon {
 		StreamPipelineSql mdpsql = StreamPipelineSqlBuilder.newBuilder().add(airlinesamplesql, "airline", airlineheader, airsqltype)
 				.add(carriers, "carriers", carrierheader, carriersqltype).setHdfs(hdfsfilepath)
 				.setPipelineConfig(new PipelineConfig()).setSql(statement).build();
-		List<List<Map<String,Object>>> records = (List<List<Map<String,Object>>>) mdpsql.collect(true, null);
+		List<List<Map<String, Object>>> records = (List<List<Map<String, Object>>>) mdpsql.collect(true, null);
 		long sum = 0;
-		for (List<Map<String,Object>> recs : records) {
-			for (Map<String,Object> rec : recs) {
+		for (List<Map<String, Object>> recs : records) {
+			for (Map<String, Object> rec : recs) {
 				log.info(rec);
-				sum += (Long)rec.get("sum(DepDelay)");
+				sum += (Long) rec.get("sum(DepDelay)");
 			}
 		}
 		assertEquals(20168, sum);
 		log.info("In testMDPSqlBuilderDepDelaySumDepDelayCountMidSwap() method Exit");
 	}
-	
-	@SuppressWarnings({ "unchecked" })
+
+	@SuppressWarnings({"unchecked"})
 	@Test
 	public void testMDPSqlBuilderCarriersSumDepDelay() throws Exception {
 		log.info("In testMDPSqlBuilderCarriersSumDepDelay() method Entry");
@@ -646,20 +664,20 @@ public class StreamPipelineSqlTest extends StreamPipelineBaseTestCommon {
 		StreamPipelineSql mdpsql = StreamPipelineSqlBuilder.newBuilder().add(airlinesamplesql, "airline", airlineheader, airsqltype)
 				.add(carriers, "carriers", carrierheader, carriersqltype).setHdfs(hdfsfilepath)
 				.setPipelineConfig(new PipelineConfig()).setSql(statement).build();
-		List<List<Map<String,Object>>> records = (List<List<Map<String,Object>>>) mdpsql.collect(true, null);
+		List<List<Map<String, Object>>> records = (List<List<Map<String, Object>>>) mdpsql.collect(true, null);
 		long sum = 0;
-		for (List<Map<String,Object>> recs : records) {
-			for (Map<String,Object> rec : recs) {
+		for (List<Map<String, Object>> recs : records) {
+			for (Map<String, Object> rec : recs) {
 				log.info(rec);
-				sum += (Long)rec.get("sum(DepDelay)");
+				sum += (Long) rec.get("sum(DepDelay)");
 			}
 		}
 		assertEquals(20168, sum);
 		log.info("In testMDPSqlBuilderCarriersSumDepDelay() method Exit");
 	}
-	
-	
-	@SuppressWarnings({ "unchecked" })
+
+
+	@SuppressWarnings({"unchecked"})
 	@Test
 	public void testMDPSqlBuilderGroupByCarriersOnlySumDepDelay() throws Exception {
 		pipelineconfig.setLocal("true");
@@ -669,19 +687,19 @@ public class StreamPipelineSqlTest extends StreamPipelineBaseTestCommon {
 		StreamPipelineSql mdpsql = StreamPipelineSqlBuilder.newBuilder().add(airlinesamplesql, "airline", airlineheader, airsqltype)
 				.add(carriers, "carriers", carrierheader, carriersqltype).setHdfs(hdfsfilepath)
 				.setPipelineConfig(pipelineconfig).setSql(statement).build();
-		List<List<Map<String,Object>>> records = (List<List<Map<String,Object>>>) mdpsql.collect(true, null);
+		List<List<Map<String, Object>>> records = (List<List<Map<String, Object>>>) mdpsql.collect(true, null);
 		long sum = 0;
-		for (List<Map<String,Object>> recs : records) {
-			for (Map<String,Object> rec : recs) {
+		for (List<Map<String, Object>> recs : records) {
+			for (Map<String, Object> rec : recs) {
 				log.info(rec);
-				sum += (Long)rec.get("sum(DepDelay)");
+				sum += (Long) rec.get("sum(DepDelay)");
 			}
 		}
 		assertEquals(20168, sum);
 		log.info("In testMDPSqlBuilderGroupByCarriersOnlySumDepDelay() method Exit");
 	}
-	
-	@SuppressWarnings({ "unchecked" })
+
+	@SuppressWarnings({"unchecked"})
 	@Test
 	public void testMDPSqlBuilderGroupByCarriersOnlyArrivalDelay() throws Exception {
 		pipelineconfig.setLocal("true");
@@ -691,22 +709,20 @@ public class StreamPipelineSqlTest extends StreamPipelineBaseTestCommon {
 		StreamPipelineSql mdpsql = StreamPipelineSqlBuilder.newBuilder().add(airlinesamplesql, "airline", airlineheader, airsqltype)
 				.add(carriers, "carriers", carrierheader, carriersqltype).setHdfs(hdfsfilepath)
 				.setPipelineConfig(pipelineconfig).setSql(statement).build();
-		List<List<Map<String,Object>>> records = (List<List<Map<String,Object>>>) mdpsql.collect(true, null);
+		List<List<Map<String, Object>>> records = (List<List<Map<String, Object>>>) mdpsql.collect(true, null);
 		long sum = 0;
-		for (List<Map<String,Object>> recs : records) {
-			for (Map<String,Object> rec : recs) {
+		for (List<Map<String, Object>> recs : records) {
+			for (Map<String, Object> rec : recs) {
 				log.info(rec);
-				sum += (Long)rec.get("sum(ArrDelay)");
+				sum += (Long) rec.get("sum(ArrDelay)");
 			}
 		}
 		assertEquals(-63278, sum);
 		log.info("In testMDPSqlBuilderGroupByCarriersOnlyArrivalDelay() method Exit");
 	}
-	
-		
-	
-	
-	@SuppressWarnings({ "unchecked" })
+
+
+	@SuppressWarnings({"unchecked"})
 	@Test
 	public void testMDPSqlBuilderCountArrivalDelay() throws Exception {
 		pipelineconfig.setLocal("true");
@@ -727,8 +743,8 @@ public class StreamPipelineSqlTest extends StreamPipelineBaseTestCommon {
 		assertEquals(45957, sum);
 		log.info("In testMDPSqlBuilderCountArrivalDelay() method Exit");
 	}
-	
-	@SuppressWarnings({ "unchecked" })
+
+	@SuppressWarnings({"unchecked"})
 	@Test
 	public void testMDPSqlBuilderCountArrDelaySumArrDelayBiggerFiles() throws Exception {
 		pipelineconfig.setLocal("true");
@@ -738,20 +754,20 @@ public class StreamPipelineSqlTest extends StreamPipelineBaseTestCommon {
 		StreamPipelineSql mdpsql = StreamPipelineSqlBuilder.newBuilder().add(airlinesamplesql, "airline", airlineheader, airsqltype)
 				.add(carriers, "carriers", carrierheader, carriersqltype).setHdfs(hdfsfilepath)
 				.setPipelineConfig(pipelineconfig).setSql(statement).build();
-		List<List<Map<String,Object>>> records = (List<List<Map<String,Object>>>) mdpsql.collect(true, null);
+		List<List<Map<String, Object>>> records = (List<List<Map<String, Object>>>) mdpsql.collect(true, null);
 		long sum = 0;
-		for (List<Map<String,Object>> recs : records) {
-			for (Map<String,Object> rec : recs) {
+		for (List<Map<String, Object>> recs : records) {
+			for (Map<String, Object> rec : recs) {
 				log.info(rec);
-				sum += (Long)rec.get("sum(ArrDelay)");
+				sum += (Long) rec.get("sum(ArrDelay)");
 			}
 		}
 		assertEquals(-63278, sum);
 		log.info("In testMDPSqlBuilderCountArrDelaySumArrDelayBiggerFiles() method Exit");
 	}
-	
-	
-	@SuppressWarnings({ "unchecked" })
+
+
+	@SuppressWarnings({"unchecked"})
 	@Test
 	public void testMDPSqlBuilderUniqueCarrierCountArrDelay() throws Exception {
 		pipelineconfig.setLocal("true");
@@ -761,19 +777,19 @@ public class StreamPipelineSqlTest extends StreamPipelineBaseTestCommon {
 		StreamPipelineSql mdpsql = StreamPipelineSqlBuilder.newBuilder().add(airlinesamplesql, "airline", airlineheader, airsqltype)
 				.setHdfs(hdfsfilepath)
 				.setPipelineConfig(pipelineconfig).setSql(statement).build();
-		List<List<Map<String,Object>>> records = (List<List<Map<String,Object>>>) mdpsql.collect(true, null);
+		List<List<Map<String, Object>>> records = (List<List<Map<String, Object>>>) mdpsql.collect(true, null);
 		long sum = 0;
-		for (List<Map<String,Object>> recs : records) {
-			for (Map<String,Object> rec : recs) {
+		for (List<Map<String, Object>> recs : records) {
+			for (Map<String, Object> rec : recs) {
 				log.info(rec);
-				sum += (Long)rec.get("count()");
+				sum += (Long) rec.get("count()");
 			}
 		}
 		assertEquals(45957, sum);
 		log.info("In testMDPSqlBuilderUniqueCarrierCountArrDelay() method Exit");
 	}
-	
-	@SuppressWarnings({ "unchecked" })
+
+	@SuppressWarnings({"unchecked"})
 	@Test
 	public void testMDPSqlBuilderUniqueCarrierCountArrDelaySA() throws Exception {
 		PipelineConfig pc = new PipelineConfig();
@@ -784,12 +800,12 @@ public class StreamPipelineSqlTest extends StreamPipelineBaseTestCommon {
 		StreamPipelineSql mdpsql = StreamPipelineSqlBuilder.newBuilder().add(airlinesamplesql, "airline", airlineheader, airsqltype)
 				.setHdfs(hdfsfilepath)
 				.setPipelineConfig(pc).setSql(statement).build();
-		List<List<Map<String,Object>>> records = (List<List<Map<String,Object>>>) mdpsql.collect(true, null);
+		List<List<Map<String, Object>>> records = (List<List<Map<String, Object>>>) mdpsql.collect(true, null);
 		long sum = 0;
-		for (List<Map<String,Object>> recs : records) {
-			for (Map<String,Object> rec : recs) {
+		for (List<Map<String, Object>> recs : records) {
+			for (Map<String, Object> rec : recs) {
 				log.info(rec);
-				sum += (Long)rec.get("count()");
+				sum += (Long) rec.get("count()");
 			}
 		}
 		assertEquals(45957, sum);
