@@ -549,6 +549,7 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 				allfiles.addAll(Utils.getAllFilePaths(blockpath));
 				jm.totalfilesize += Utils.getTotalLengthByFiles(hdfs, blockpath);
 				blockpath.clear();
+				fileStatuses.clear();
 			}
 
 			getDnXref(allfilebls, true);
@@ -563,7 +564,7 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 			jm.containersallocated = containers.stream().collect(Collectors.toMap(key -> key, value -> 0d));
 			;
 			jm.mode = jobconf.execmode;
-			jm.totalblocks = bls.size();
+			jm.totalblocks = allfilebls.size();
 			for (var cls : combiners) {
 				if (cls != null) {
 					combiner.add(cls.getName());
@@ -577,21 +578,20 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 			for (var folder : hdfsdirpath) {
 				var mapclznames = mapclz.get(folder);
 				var bls = folderblocks.get(folder);
-				for (var mapclzname :mapclznames) {
-					for (var bl :bls) {
-						var taskid = MDCConstants.TASK + MDCConstants.HYPHEN	+ (mrtaskcount + 1);
-						var apptask = new ApplicationTask();
-						apptask.setApplicationid(applicationid);
-						apptask.setTaskid(taskid);
-						var mdtstm = (TaskSchedulerMapperCombinerSubmitter) getMassiveDataTaskSchedulerThreadMapperCombiner(
-								mapclzname, hbts, combiner, bl, apptask);
-						if (containermappercombinermap.get(mdtstm.getHostPort()) == null) {
-							containermappercombinermap.put(mdtstm.getHostPort(), new ArrayList<>());
-						}
-						containermappercombinermap.get(mdtstm.getHostPort()).add(mdtstm);
-						mrtaskcount++;
+				for (var bl : bls) {
+					var taskid = MDCConstants.TASK + MDCConstants.HYPHEN + (mrtaskcount + 1);
+					var apptask = new ApplicationTask();
+					apptask.setApplicationid(applicationid);
+					apptask.setTaskid(taskid);
+					var mdtstm = (TaskSchedulerMapperCombinerSubmitter) getMassiveDataTaskSchedulerThreadMapperCombiner(
+							mapclznames, hbts, combiner, bl, apptask);
+					if (containermappercombinermap.get(mdtstm.getHostPort()) == null) {
+						containermappercombinermap.put(mdtstm.getHostPort(), new ArrayList<>());
 					}
+					containermappercombinermap.get(mdtstm.getHostPort()).add(mdtstm);
+					mrtaskcount++;
 				}
+
 			}
 			log.debug("Total MapReduce Tasks: " + mrtaskcount);
 			hbts.getHbo().start();
@@ -1107,11 +1107,11 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 	}
 
 	public TaskSchedulerMapperCombinerSubmitter getMassiveDataTaskSchedulerThreadMapperCombiner(
-			String mapclsname, HeartBeatTaskScheduler hbts,
+			Set<String> mapclz, HeartBeatTaskScheduler hbts,
 			Set<String> combiners, BlocksLocation blockslocation, ApplicationTask apptask) throws Exception {
 		log.debug("Block To Read :" + blockslocation);
 		var mdtstmc = new TaskSchedulerMapperCombinerSubmitter(
-				blockslocation, true, new LinkedHashSet<>(Arrays.asList(mapclsname)), combiners,
+				blockslocation, true, new LinkedHashSet<>(mapclz), combiners,
 				cf, containers, hbts, apptask);
 		apptask.setHp(blockslocation.getExecutorhp());
 		hbts.apptaskmdtstmmap.put(apptask.getApplicationid() + apptask.getTaskid(), mdtstmc);

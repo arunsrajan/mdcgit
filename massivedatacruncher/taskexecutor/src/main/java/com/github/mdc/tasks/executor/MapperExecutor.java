@@ -47,7 +47,7 @@ public class MapperExecutor implements Callable<Context> {
 				var br =
 						new BufferedReader(new InputStreamReader(compstream));) {
 			var ctx = new DataCruncherContext();
-			br.lines().parallel().forEach(line -> {
+			br.lines().parallel().forEachOrdered(line -> {
 				for (var crunchmapper : crunchmappers) {
 					crunchmapper.map(0l, line, ctx);
 				}
