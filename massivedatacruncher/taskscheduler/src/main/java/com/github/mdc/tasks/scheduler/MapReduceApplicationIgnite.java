@@ -1,3 +1,18 @@
+/*
+ * Copyright 2021 the original author or authors.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p>
+ * https://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.github.mdc.tasks.scheduler;
 
 import java.io.ByteArrayOutputStream;
@@ -76,12 +91,12 @@ public class MapReduceApplicationIgnite implements Callable<List<DataCruncherCon
 	public String hdfsdirpath;
 	FileSystem hdfs;
 	List<Path> blockpath = new ArrayList<>();
-	int totalreadsize = 0;
+	int totalreadsize;
 	byte[] read1byt = new byte[1];
 	int blocksize;
 	Path currentfilepath;
-	int blocklocationindex = 0;
-	long redcount = 0;
+	int blocklocationindex;
+	long redcount;
 	List<BlocksLocation> bls;
 	List<String> nodes;
 	CuratorFramework cf;
@@ -89,8 +104,9 @@ public class MapReduceApplicationIgnite implements Callable<List<DataCruncherCon
 	Set<BlockExecutors> locations;
 	List<LocatedBlock> locatedBlocks;
 	Collection<String> locationsblock;
-	int executorindex = 0;
+	int executorindex;
 	ExecutorService es;
+
 	public MapReduceApplicationIgnite(String jobname, JobConfiguration jobconf, List<MapperInput> mappers,
 			List<Class<?>> combiners, List<Class<?>> reducers, String outputfolder) {
 		this.jobname = jobname;
@@ -104,13 +120,14 @@ public class MapReduceApplicationIgnite implements Callable<List<DataCruncherCon
 	HeartBeatTaskScheduler hbts;
 	List<MapReduceResult> mrresults = new ArrayList<>();
 	Map<String, ArrayBlockingQueue> containerqueue = new ConcurrentHashMap<>();
-	List<Integer> ports = null;
+	List<Integer> ports;
 	protected List<String> containers;
 	protected List<String> nodessorted;
 	private Semaphore semaphore;
 	Ignite ignite;
 	IgniteCache<Object, byte[]> ignitecache;
-	IgniteCache<Object,DataCruncherContext> cachemr;
+	IgniteCache<Object, DataCruncherContext> cachemr;
+
 	@SuppressWarnings("unchecked")
 	public List<DataCruncherContext> call() {
 		try {
@@ -121,7 +138,7 @@ public class MapReduceApplicationIgnite implements Callable<List<DataCruncherCon
 			blocksize = Integer.parseInt(jobconf.getBlocksize());
 			hdfs = FileSystem.get(new URI(MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL)),
 					configuration);
-			var kryo = Utils.getKryoNonDeflateSerializer();
+			var kryo = Utils.getKryoSerializerDeserializer();
 			var combiner = new HashSet<>();
 			var reducer = new HashSet<>();
 			var mapclzchunkfile = new HashMap<String, Set<Class>>();
@@ -139,7 +156,7 @@ public class MapReduceApplicationIgnite implements Callable<List<DataCruncherCon
 
 				}
 			}
-			
+
 			var mrtaskcount = 0;
 			var jm = new JobMetrics();
 			jm.jobstarttime = System.currentTimeMillis();
@@ -175,16 +192,16 @@ public class MapReduceApplicationIgnite implements Callable<List<DataCruncherCon
 				blockpath.addAll(Arrays.asList(paths));
 				allfiles.addAll(Utils.getAllFilePaths(blockpath));
 				jm.totalfilesize += Utils.getTotalLengthByFiles(hdfs, blockpath);
-				bls = new ArrayList<>();				
-				if(isblocksuserdefined) {
+				bls = new ArrayList<>();
+				if (isblocksuserdefined) {
 					bls.addAll(HDFSBlockUtils.getBlocksLocationByFixedBlockSizeAuto(hdfs, blockpath, isblocksuserdefined, blocksize * MDCConstants.MB));
-				}else {
+				} else {
 					bls.addAll(HDFSBlockUtils.getBlocksLocationByFixedBlockSizeAuto(hdfs, blockpath, isblocksuserdefined, 128 * MDCConstants.MB));
 				}
 				folderfileblocksmap.put(hdfsdir, bls);
 				FileBlocksPartitionerHDFS fbp = new FileBlocksPartitionerHDFS();
 				fbp.getDnXref(bls, false);
-				for(var bl:bls) {
+				for (var bl :bls) {
 					var databytes = HdfsBlockReader.getBlockDataMR(bl, hdfs);
 					var baos = new ByteArrayOutputStream();
 					var lzfos = new SnappyOutputStream(baos);
@@ -193,19 +210,19 @@ public class MapReduceApplicationIgnite implements Callable<List<DataCruncherCon
 					ignitecache.put(bl, baos.toByteArray());
 					lzfos.close();
 					for (var mapperinput : mapclzchunkfile.get(hdfsdir)) {
-						var mdcmc = new IgniteMapperCombiner(bl,(List<Mapper>)Arrays.asList((Mapper)mapperinput.newInstance()),
-								(List<Combiner>)Arrays.asList((Combiner)combiners.get(0).newInstance()));
+						var mdcmc = new IgniteMapperCombiner(bl, (List<Mapper>) Arrays.asList((Mapper) mapperinput.getDeclaredConstructor().newInstance()),
+								(List<Combiner>) Arrays.asList((Combiner) combiners.get(0).getDeclaredConstructor().newInstance()));
 						mdcmcs.add(mdcmc);
 					}
 				}
 				blockpath.clear();
 			}
-			jm.totalfilesize = jm.totalfilesize/MDCConstants.MB;
+			jm.totalfilesize = jm.totalfilesize / MDCConstants.MB;
 			jm.files = allfiles;
 			jm.mode = jobconf.execmode;
 			jm.totalblocks = bls.size();
 			log.debug("Total MapReduce Tasks: " + mdcmcs.size());
-			
+
 			for (var cls : combiners) {
 				if (cls != null) {
 					combiner.add(cls.getName());
@@ -216,7 +233,7 @@ public class MapReduceApplicationIgnite implements Callable<List<DataCruncherCon
 					reducer.add(cls.getName());
 				}
 			}
-			
+
 			DexecutorConfig<IgniteMapperCombiner, Boolean> configmc = new DexecutorConfig(newExecutor(),
 					new TaskProviderIgniteMapperCombiner());
 			DefaultDexecutor<IgniteMapperCombiner, Boolean> executormc = new DefaultDexecutor<>(configmc);
@@ -228,26 +245,26 @@ public class MapReduceApplicationIgnite implements Callable<List<DataCruncherCon
 			log.debug("Waiting for the Reducer to complete------------");
 			var dccctx = new DataCruncherContext();
 			cachemr = ignite.getOrCreateCache(MDCConstants.MDCCACHEMR);
-			for(var mrresult:mrresults) {
+			for (var mrresult :mrresults) {
 				var ctx = (Context) cachemr.get(mrresult.cachekey);
 				dccctx.add(ctx);
 			}
 			var executorser = Executors.newWorkStealingPool();
 			var ctxes = new ArrayList<Future<Context>>();
 			var result = new ArrayList<DataCruncherContext>();
-			var mdcr = new IgniteReducer(dccctx,(Reducer) reducers.get(0).newInstance());
+			var mdcr = new IgniteReducer(dccctx, (Reducer) reducers.get(0).getDeclaredConstructor().newInstance());
 			ctxes.add(executorser.submit(mdcr));
-			for(var res:ctxes) {
+			for (var res :ctxes) {
 				result.add((DataCruncherContext) res.get());
 			}
-			
+
 			log.debug("Reducer completed------------------------------");
 			var sb = new StringBuilder();
 			var partindex = 1;
-			for(var ctxreducerpart:result) {
+			for (var ctxreducerpart :result) {
 				var keysreducers = ctxreducerpart.keys();
 				sb.append(MDCConstants.NEWLINE);
-				sb.append("Partition "+partindex+"-------------------------------------------------");
+				sb.append("Partition " + partindex + "-------------------------------------------------");
 				sb.append(MDCConstants.NEWLINE);
 				for (var key : keysreducers) {
 					sb.append(key + MDCConstants.SINGLESPACE + ctxreducerpart.get(key));
@@ -261,42 +278,43 @@ public class MapReduceApplicationIgnite implements Callable<List<DataCruncherCon
 			var filename = MDCConstants.MAPRED + MDCConstants.HYPHEN + System.currentTimeMillis();
 			log.debug("Writing Results to file: " + filename);
 			try (var fsdos = hdfs.create(new Path(
-					MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL) + MDCConstants.BACKWARD_SLASH
-							+ this.outputfolder + MDCConstants.BACKWARD_SLASH + filename));) {
+					MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL) + MDCConstants.FORWARD_SLASH
+							+ this.outputfolder + MDCConstants.FORWARD_SLASH + filename));) {
 				fsdos.write(sb.toString().getBytes());
 			} catch (Exception ex) {
 				log.error(MDCConstants.EMPTY, ex);
 			}
 			jm.jobcompletiontime = System.currentTimeMillis();
-			jm.totaltimetaken = (jm.jobcompletiontime - jm.jobstarttime) /1000.0;
-			if(!Objects.isNull(jobconf.getOutput())) {
+			jm.totaltimetaken = (jm.jobcompletiontime - jm.jobstarttime) / 1000.0;
+			if (!Objects.isNull(jobconf.getOutput())) {
 				Utils.writeKryoOutput(kryo, jobconf.getOutput(),
-					"Completed Job in " + (jm.totaltimetaken) + " seconds");
+						"Completed Job in " + (jm.totaltimetaken) + " seconds");
 			}
 			return result;
 		} catch (Exception ex) {
 			log.info("Unable To Execute Job, See Cause Below:", ex);
 		} finally {
-			if(!Objects.isNull(ignitecache)) {
+			if (!Objects.isNull(ignitecache)) {
 				ignitecache.close();
 			}
-			if(!Objects.isNull(cachemr)) {
+			if (!Objects.isNull(cachemr)) {
 				cachemr.close();
 			}
-			if(!Objects.isNull(ignite)) {
+			if (!Objects.isNull(ignite)) {
 				ignite.close();
 			}
 		}
 		return null;
 	}
-	
+
 	private ExecutorService newExecutor() {
 		return Executors.newWorkStealingPool();
 	}
 	Semaphore resultsemaphore = new Semaphore(1);
+
 	public class TaskProviderIgniteMapperCombiner
 			implements TaskProvider<IgniteMapperCombiner, Boolean> {
-		
+
 		public com.github.dexecutor.core.task.Task<IgniteMapperCombiner, Boolean> provideTask(
 				final IgniteMapperCombiner mdcmc) {
 
@@ -307,7 +325,7 @@ public class MapReduceApplicationIgnite implements Callable<List<DataCruncherCon
 				public Boolean execute() {
 					try {
 						semaphore.acquire();
-						var compute = ignite.compute(ignite.cluster().forServers());						
+						var compute = ignite.compute(ignite.cluster().forServers());
 						var mrresult = compute.affinityCall(MDCConstants.MDCCACHE, mdcmc.getBlocksLocation(), mdcmc);
 						resultsemaphore.acquire();
 						mrresults.add(mrresult);
@@ -316,8 +334,8 @@ public class MapReduceApplicationIgnite implements Callable<List<DataCruncherCon
 						semaphore.release();
 					} catch (InterruptedException e) {
 						log.warn("Interrupted!", e);
-					    // Restore interrupted state...
-					    Thread.currentThread().interrupt();
+						// Restore interrupted state...
+						Thread.currentThread().interrupt();
 					} catch (Exception e) {
 						log.error("TaskProviderIgnite error", e);
 					}
@@ -327,4 +345,3 @@ public class MapReduceApplicationIgnite implements Callable<List<DataCruncherCon
 		}
 	}
 }
-

@@ -1,3 +1,18 @@
+/*
+ * Copyright 2021 the original author or authors.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p>
+ * https://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.github.mdc.stream;
 
 import java.net.ServerSocket;
@@ -19,20 +34,20 @@ import com.github.sakserv.minicluster.impl.YarnLocalCluster;
 
 public class StreamPipelineBase {
 	static HdfsLocalCluster hdfsLocalCluster;
-	String[] airlineheader = new String[] { "Year", "Month", "DayofMonth", "DayOfWeek", "DepTime", "CRSDepTime",
+	String[] airlineheader = new String[]{"Year", "Month", "DayofMonth", "DayOfWeek", "DepTime", "CRSDepTime",
 			"ArrTime", "CRSArrTime", "UniqueCarrier", "FlightNum", "TailNum", "ActualElapsedTime", "CRSElapsedTime",
 			"AirTime", "ArrDelay", "DepDelay", "Origin", "Dest", "Distance", "TaxiIn", "TaxiOut", "Cancelled",
 			"CancellationCode", "Diverted", "CarrierDelay", "WeatherDelay", "NASDelay", "SecurityDelay",
-			"LateAircraftDelay" };
-	String[] carrierheader = { "Code", "Description" };
-	static SqlTypeName[] airsqltype = {SqlTypeName.VARCHAR,SqlTypeName.VARCHAR,SqlTypeName.VARCHAR,SqlTypeName.VARCHAR,
-			SqlTypeName.VARCHAR,SqlTypeName.VARCHAR,SqlTypeName.VARCHAR,SqlTypeName.VARCHAR,SqlTypeName.VARCHAR,SqlTypeName.VARCHAR,SqlTypeName.VARCHAR,SqlTypeName.VARCHAR
-			,SqlTypeName.VARCHAR,SqlTypeName.VARCHAR,SqlTypeName.VARCHAR,SqlTypeName.VARCHAR,SqlTypeName.VARCHAR,SqlTypeName.VARCHAR,
-			SqlTypeName.VARCHAR,SqlTypeName.VARCHAR,
-			SqlTypeName.VARCHAR,SqlTypeName.VARCHAR,SqlTypeName.VARCHAR,SqlTypeName.VARCHAR,SqlTypeName.VARCHAR,SqlTypeName.VARCHAR,SqlTypeName.VARCHAR,SqlTypeName.VARCHAR,SqlTypeName.VARCHAR};
-	static String[] airportsheader = {"iata","airport","city","state","country","latitude","longitude"};
-	static SqlTypeName[] airportstype = {SqlTypeName.VARCHAR,SqlTypeName.VARCHAR,SqlTypeName.VARCHAR,SqlTypeName.VARCHAR,
-			SqlTypeName.VARCHAR,SqlTypeName.VARCHAR,SqlTypeName.VARCHAR};
+			"LateAircraftDelay"};
+	String[] carrierheader = {"Code", "Description"};
+	static SqlTypeName[] airsqltype = {SqlTypeName.VARCHAR, SqlTypeName.VARCHAR, SqlTypeName.VARCHAR, SqlTypeName.VARCHAR,
+			SqlTypeName.VARCHAR, SqlTypeName.VARCHAR, SqlTypeName.VARCHAR, SqlTypeName.VARCHAR, SqlTypeName.VARCHAR, SqlTypeName.VARCHAR, SqlTypeName.VARCHAR, SqlTypeName.VARCHAR
+	, SqlTypeName.VARCHAR, SqlTypeName.VARCHAR, SqlTypeName.VARCHAR, SqlTypeName.VARCHAR, SqlTypeName.VARCHAR, SqlTypeName.VARCHAR,
+			SqlTypeName.VARCHAR, SqlTypeName.VARCHAR,
+			SqlTypeName.VARCHAR, SqlTypeName.VARCHAR, SqlTypeName.VARCHAR, SqlTypeName.VARCHAR, SqlTypeName.VARCHAR, SqlTypeName.VARCHAR, SqlTypeName.VARCHAR, SqlTypeName.VARCHAR, SqlTypeName.VARCHAR};
+	static String[] airportsheader = {"iata", "airport", "city", "state", "country", "latitude", "longitude"};
+	static SqlTypeName[] airportstype = {SqlTypeName.VARCHAR, SqlTypeName.VARCHAR, SqlTypeName.VARCHAR, SqlTypeName.VARCHAR,
+			SqlTypeName.VARCHAR, SqlTypeName.VARCHAR, SqlTypeName.VARCHAR};
 	protected static String hdfsfilepath = "hdfs://127.0.0.1:9000";
 	protected static String airlines = "/airlines";
 	String airline = "/airline";
@@ -61,13 +76,13 @@ public class StreamPipelineBase {
 	static String wordcount = "/wordcount";
 	static String population = "/population";
 	static String carriers = "/carriers";
-	static SqlTypeName[] carriersqltype = {SqlTypeName.VARCHAR,SqlTypeName.VARCHAR};
+	static SqlTypeName[] carriersqltype = {SqlTypeName.VARCHAR, SqlTypeName.VARCHAR};
 	static String cars = "/cars";
 	String groupbykey = "/groupbykey";
 	static String bicyclecrash = "/bicyclecrash";
 	static String airlinemultiplefilesfolder = "/airlinemultiplefilesfolder";
 	static String githubevents = "/githubevents";
-	static int zookeeperport = 2182;
+	static int zookeeperport = 2181;
 	static int namenodeport = 9000;
 	static int namenodehttpport = 60070;
 	public static final String ZK_BASE_PATH = "/mdc/cluster1";
@@ -79,13 +94,13 @@ public class StreamPipelineBase {
 	static ExecutorService threadpool, executorpool;
 	static int numberofnodes = 1;
 	static Integer port;
-	YarnLocalCluster yarnLocalCluster = null;
+	YarnLocalCluster yarnLocalCluster;
 	protected static FileSystem hdfs;
-	static boolean setupdone = false,toteardownclass = false;
+	static boolean setupdone,toteardownclass;
 	static TestingServer testingserver;
 	static ConcurrentMap<String, List<Process>> containerprocesses = new ConcurrentHashMap<>();
 	static FileSystem hdfste;
 	protected static PipelineConfig pipelineconfig = new PipelineConfig();
 
-	
+
 }

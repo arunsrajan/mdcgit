@@ -1,3 +1,18 @@
+/*
+ * Copyright 2021 the original author or authors.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p>
+ * https://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.github.mdc.common;
 
 import java.io.IOException;
@@ -9,7 +24,8 @@ import java.util.concurrent.Semaphore;
 import org.apache.log4j.Logger;
 
 public class ByteBufferInputStream extends InputStream {
-	static int allocation = 0,deallocation = 0;
+	static int allocation;
+	static int deallocation;
 	static Logger log = Logger.getLogger(ByteBufferInputStream.class);
 	private ByteBuffer bb;
 	static Semaphore printallocdealloc = new Semaphore(1);
@@ -19,18 +35,18 @@ public class ByteBufferInputStream extends InputStream {
 			this.bb = bb;
 			printallocdealloc.acquire();
 			log.info("ByteBuffer Input Stream allocated:" + allocation++ + bb);
-			
-		} 
-		catch(InterruptedException ie) {
-			log.error(MDCConstants.EMPTY,ie);
+
+		}
+		catch (InterruptedException ie) {
+			log.error(MDCConstants.EMPTY, ie);
 			Thread.currentThread().interrupt();
 		}
 		catch (Exception e) {
-			log.error(MDCConstants.EMPTY,e);
+			log.error(MDCConstants.EMPTY, e);
 		} finally {
 			printallocdealloc.release();
 		}
-		
+
 	}
 
 	public synchronized int read() throws IOException {
@@ -40,6 +56,7 @@ public class ByteBufferInputStream extends InputStream {
 		return bb.get() & 0xFF;
 	}
 
+	@Override
 	public synchronized int read(byte[] bytes, int off, int len) throws IOException {
 		if (!bb.hasRemaining()) {
 			return -1;
@@ -55,22 +72,22 @@ public class ByteBufferInputStream extends InputStream {
 
 	@Override
 	public void close() {
-		if(!Objects.isNull(bb)) {			
+		if (!Objects.isNull(bb)) {
 			try {
 				printallocdealloc.acquire();
-				log.info("ByteBuffer Input Stream returning to pool: "+deallocation++ + bb);
+				log.info("ByteBuffer Input Stream returning to pool: " + deallocation++ + bb);
 				bb.clear();
 				bb.rewind();
 				ByteBufferPool.get().returnObject(bb);
-			} catch(InterruptedException ie) {
-				log.error(MDCConstants.EMPTY,ie);
+			} catch (InterruptedException ie) {
+				log.error(MDCConstants.EMPTY, ie);
 				Thread.currentThread().interrupt();
 			} catch (Exception e) {
-				log.error(MDCConstants.EMPTY,e);
+				log.error(MDCConstants.EMPTY, e);
 			} finally {
 				printallocdealloc.release();
 			}
-			bb = null;			
+			bb = null;
 		}
 	}
 }

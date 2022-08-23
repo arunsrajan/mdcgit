@@ -1,3 +1,18 @@
+/*
+ * Copyright 2021 the original author or authors.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p>
+ * https://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.github.mdc.common;
 
 /**
@@ -8,7 +23,7 @@ package com.github.mdc.common;
 public class DatanodeXfefNumAllocated {
 	String ref;
 	int numallocated;
-	
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -17,24 +32,31 @@ public class DatanodeXfefNumAllocated {
 		result = prime * result + ((ref == null) ? 0 : ref.hashCode());
 		return result;
 	}
+
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
+		if (this == obj) {
 			return true;
-		if (obj == null)
+		}
+		if (obj == null) {
 			return false;
-		if (getClass() != obj.getClass())
+		}
+		if (getClass() != obj.getClass()) {
 			return false;
+		}
 		DatanodeXfefNumAllocated other = (DatanodeXfefNumAllocated) obj;
-		if (numallocated != other.numallocated)
+		if (numallocated != other.numallocated) {
 			return false;
+		}
 		if (ref == null) {
-			if (other.ref != null)
+			if (other.ref != null) {
 				return false;
-		} else if (!ref.equals(other.ref))
+			}
+		} else if (!ref.equals(other.ref)) {
 			return false;
+		}
 		return true;
 	}
-	
-	
+
+
 }

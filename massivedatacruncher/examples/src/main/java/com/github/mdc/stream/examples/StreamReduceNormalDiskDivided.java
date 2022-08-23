@@ -1,3 +1,18 @@
+/*
+ * Copyright 2021 the original author or authors.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p>
+ * https://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.github.mdc.stream.examples;
 
 import java.io.Serializable;
@@ -29,12 +44,12 @@ public class StreamReduceNormalDiskDivided implements Serializable, Pipeline {
 		testReduce(args, pipelineconfig);
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	public void testReduce(String[] args, PipelineConfig pipelineconfig) throws Exception {
 		log.info("StreamReduceNormal.testReduce Before---------------------------------------");
 		var datastream = StreamPipeline.newStreamHDFS(args[0], args[1], pipelineconfig);
 		var mappair1 = datastream.map(dat -> dat.split(","))
-				.filter(dat -> !dat[14].equals("ArrDelay") && !dat[14].equals("NA"))
+				.filter(dat -> !"ArrDelay".equals(dat[14]) && !"NA".equals(dat[14]))
 				.mapToPair(dat -> Tuple.tuple(dat[8], Long.parseLong(dat[14])));
 
 		var airlinesamples = mappair1.reduceByKey((dat1, dat2) -> dat1 + dat2).coalesce(1,

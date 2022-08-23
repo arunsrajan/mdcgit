@@ -1,3 +1,18 @@
+/*
+ * Copyright 2021 the original author or authors.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p>
+ * https://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.github.mdc.stream;
 
 import static org.junit.Assert.assertEquals;
@@ -12,33 +27,32 @@ import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
-import com.github.mdc.stream.StreamPipeline;
-@SuppressWarnings({ "unchecked", "serial", "rawtypes" })
+@SuppressWarnings({"unchecked", "serial", "rawtypes"})
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 	boolean toexecute = true;
 	Logger log = Logger.getLogger(StreamPipelineDepth31Test.class);
-	int sum = 0;
-	
+	int sum;
+
 	@Test
 	public void testFilterFilterFilterCollect() throws Throwable {
 		log.info("testFilterFilterFilter Before---------------------------------------");
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
-					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
-					}
-				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
-					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
-					}
-				}).collect(toexecute, null);
+				}).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
+			public boolean test(java.lang.String value) {
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
+			}
+		}).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
+			public boolean test(java.lang.String value) {
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
+			}
+		}).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -55,19 +69,19 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
-					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
-					}
-				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
-					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
-					}
-				}).count(null);
+				}).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
+			public boolean test(java.lang.String value) {
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
+			}
+		}).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
+			public boolean test(java.lang.String value) {
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
+			}
+		}).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -86,17 +100,17 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		datapipeline.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
-		}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		}).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
-		}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		}).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).forEach(lis -> {
 			sum += ((List) lis).size();
@@ -113,19 +127,19 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
-					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
-					}
-				}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
-					public java.util.List<java.lang.String> apply(java.lang.String value) {
-						return Arrays.asList(value);
-					}
-				}).collect(toexecute, null);
+				}).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
+			public boolean test(java.lang.String value) {
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
+			}
+		}).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+			public java.util.List<java.lang.String> apply(java.lang.String value) {
+				return Arrays.asList(value);
+			}
+		}).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -142,19 +156,19 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
-					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
-					}
-				}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
-					public java.util.List<java.lang.String> apply(java.lang.String value) {
-						return Arrays.asList(value);
-					}
-				}).count(null);
+				}).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
+			public boolean test(java.lang.String value) {
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
+			}
+		}).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+			public java.util.List<java.lang.String> apply(java.lang.String value) {
+				return Arrays.asList(value);
+			}
+		}).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -173,15 +187,15 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		datapipeline.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
-		}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		}).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
-		}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		}).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
@@ -200,19 +214,19 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
-					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
-					}
-				}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
-					public java.lang.String[] apply(java.lang.String value) {
-						return value.split(",");
-					}
-				}).collect(toexecute, null);
+				}).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
+			public boolean test(java.lang.String value) {
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
+			}
+		}).map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+			public java.lang.String[] apply(java.lang.String value) {
+				return value.split(",");
+			}
+		}).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -229,19 +243,19 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
-					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
-					}
-				}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
-					public java.lang.String[] apply(java.lang.String value) {
-						return value.split(",");
-					}
-				}).count(null);
+				}).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
+			public boolean test(java.lang.String value) {
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
+			}
+		}).map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+			public java.lang.String[] apply(java.lang.String value) {
+				return value.split(",");
+			}
+		}).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -260,15 +274,15 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		datapipeline.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
-		}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		}).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
-		}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+		}).map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 			public java.lang.String[] apply(java.lang.String value) {
 				return value.split(",");
 			}
@@ -287,20 +301,20 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
-					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				}).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
+			public boolean test(java.lang.String value) {
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
+			}
+		}).mapToPair(
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
-				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				})
 				.collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
@@ -318,20 +332,20 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
-					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				}).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
+			public boolean test(java.lang.String value) {
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
+			}
+		}).mapToPair(
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
-				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				})
 				.count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
@@ -351,22 +365,22 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		datapipeline.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
-		}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		}).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(45957, sum);
 
@@ -379,20 +393,20 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Tuple2>> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
-					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				}).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
+			public boolean test(java.lang.String value) {
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
+			}
+		}).mapToPair(
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
-				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				})
 				.groupByKey().collect(toexecute, null);
 		int sum = 0;
 		for (List<Tuple2> lsttuples : data) {
@@ -411,25 +425,25 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		datapipeline.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
-		}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		}).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).groupByKey().forEach(lsttuples -> {
-					for (Tuple2 tuple2 : lsttuples) {
-						sum += ((List) tuple2.v2).size();
-					}
+			for (Tuple2 tuple2 : lsttuples) {
+				sum += ((List) tuple2.v2).size();
+			}
 
-				}, null);
+		}, null);
 
 		assertEquals(45957, sum);
 
@@ -442,20 +456,20 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
-					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				}).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
+			public boolean test(java.lang.String value) {
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
+			}
+		}).mapToPair(
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
-				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				})
 				.reduceByKey((a, b) -> a + b).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
@@ -473,20 +487,20 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
-					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				}).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
+			public boolean test(java.lang.String value) {
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
+			}
+		}).mapToPair(
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
-				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				})
 				.reduceByKey((a, b) -> a + b).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
@@ -506,22 +520,22 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		datapipeline.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
-		}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		}).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).reduceByKey((a, b) -> a + b).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(1, sum);
 
@@ -534,15 +548,15 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
-					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
-					}
-				}).peek(val->System.out.println(val)).collect(toexecute, null);
+				}).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
+			public boolean test(java.lang.String value) {
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
+			}
+		}).peek(val -> System.out.println(val)).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -559,15 +573,15 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
-					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
-					}
-				}).peek(val->System.out.println(val)).count(null);
+				}).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
+			public boolean test(java.lang.String value) {
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
+			}
+		}).peek(val -> System.out.println(val)).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -586,15 +600,15 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		datapipeline.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
-		}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		}).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
-		}).peek(val->System.out.println(val)).forEach(lis -> {
+		}).peek(val -> System.out.println(val)).forEach(lis -> {
 			sum += ((List) lis).size();
 		}, null);
 
@@ -609,15 +623,15 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
-					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
-					}
-				}).sample(46361).collect(toexecute, null);
+				}).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
+			public boolean test(java.lang.String value) {
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
+			}
+		}).sample(46361).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -634,15 +648,15 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
-					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
-					}
-				}).sample(46361).count(null);
+				}).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
+			public boolean test(java.lang.String value) {
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
+			}
+		}).sample(46361).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -661,13 +675,13 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		datapipeline.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
-		}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		}).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).sample(46361).forEach(lis -> {
 			sum += ((List) lis).size();
@@ -684,19 +698,19 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
-					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
-					}
-				}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
-					public int compare(java.lang.String value1, java.lang.String value2) {
-						return value1.compareTo(value2);
-					}
-				}).collect(toexecute, null);
+				}).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
+			public boolean test(java.lang.String value) {
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
+			}
+		}).sorted(new com.github.mdc.common.functions.SortedComparator<java.lang.String>() {
+			public int compare(java.lang.String value1, java.lang.String value2) {
+				return value1.compareTo(value2);
+			}
+		}).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -713,19 +727,19 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
-					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
-					}
-				}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
-					public int compare(java.lang.String value1, java.lang.String value2) {
-						return value1.compareTo(value2);
-					}
-				}).count(null);
+				}).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
+			public boolean test(java.lang.String value) {
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
+			}
+		}).sorted(new com.github.mdc.common.functions.SortedComparator<java.lang.String>() {
+			public int compare(java.lang.String value1, java.lang.String value2) {
+				return value1.compareTo(value2);
+			}
+		}).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -744,15 +758,15 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		datapipeline.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
-		}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		}).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
-		}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
+		}).sorted(new com.github.mdc.common.functions.SortedComparator<java.lang.String>() {
 			public int compare(java.lang.String value1, java.lang.String value2) {
 				return value1.compareTo(value2);
 			}
@@ -771,19 +785,19 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
-					public java.util.List<java.lang.String> apply(java.lang.String value) {
-						return Arrays.asList(value);
-					}
-				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
-					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
-					}
-				}).collect(toexecute, null);
+				}).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+			public java.util.List<java.lang.String> apply(java.lang.String value) {
+				return Arrays.asList(value);
+			}
+		}).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
+			public boolean test(java.lang.String value) {
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
+			}
+		}).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -800,19 +814,19 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
-					public java.util.List<java.lang.String> apply(java.lang.String value) {
-						return Arrays.asList(value);
-					}
-				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
-					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
-					}
-				}).count(null);
+				}).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+			public java.util.List<java.lang.String> apply(java.lang.String value) {
+				return Arrays.asList(value);
+			}
+		}).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
+			public boolean test(java.lang.String value) {
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
+			}
+		}).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -831,17 +845,17 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		datapipeline.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
-		}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		}).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
-		}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		}).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).forEach(lis -> {
 			sum += ((List) lis).size();
@@ -858,19 +872,19 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
-					public java.util.List<java.lang.String> apply(java.lang.String value) {
-						return Arrays.asList(value);
-					}
-				}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
-					public java.util.List<java.lang.String> apply(java.lang.String value) {
-						return Arrays.asList(value);
-					}
-				}).collect(toexecute, null);
+				}).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+			public java.util.List<java.lang.String> apply(java.lang.String value) {
+				return Arrays.asList(value);
+			}
+		}).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+			public java.util.List<java.lang.String> apply(java.lang.String value) {
+				return Arrays.asList(value);
+			}
+		}).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -887,19 +901,19 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
-					public java.util.List<java.lang.String> apply(java.lang.String value) {
-						return Arrays.asList(value);
-					}
-				}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
-					public java.util.List<java.lang.String> apply(java.lang.String value) {
-						return Arrays.asList(value);
-					}
-				}).count(null);
+				}).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+			public java.util.List<java.lang.String> apply(java.lang.String value) {
+				return Arrays.asList(value);
+			}
+		}).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+			public java.util.List<java.lang.String> apply(java.lang.String value) {
+				return Arrays.asList(value);
+			}
+		}).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -918,15 +932,15 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		datapipeline.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
-		}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		}).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
-		}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		}).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
@@ -945,19 +959,19 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
-					public java.util.List<java.lang.String> apply(java.lang.String value) {
-						return Arrays.asList(value);
-					}
-				}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
-					public java.lang.String[] apply(java.lang.String value) {
-						return value.split(",");
-					}
-				}).collect(toexecute, null);
+				}).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+			public java.util.List<java.lang.String> apply(java.lang.String value) {
+				return Arrays.asList(value);
+			}
+		}).map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+			public java.lang.String[] apply(java.lang.String value) {
+				return value.split(",");
+			}
+		}).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -974,19 +988,19 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
-					public java.util.List<java.lang.String> apply(java.lang.String value) {
-						return Arrays.asList(value);
-					}
-				}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
-					public java.lang.String[] apply(java.lang.String value) {
-						return value.split(",");
-					}
-				}).count(null);
+				}).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+			public java.util.List<java.lang.String> apply(java.lang.String value) {
+				return Arrays.asList(value);
+			}
+		}).map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+			public java.lang.String[] apply(java.lang.String value) {
+				return value.split(",");
+			}
+		}).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -1005,15 +1019,15 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		datapipeline.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
-		}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		}).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
-		}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+		}).map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 			public java.lang.String[] apply(java.lang.String value) {
 				return value.split(",");
 			}
@@ -1032,20 +1046,20 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
-					public java.util.List<java.lang.String> apply(java.lang.String value) {
-						return Arrays.asList(value);
+				}).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+			public java.util.List<java.lang.String> apply(java.lang.String value) {
+				return Arrays.asList(value);
+			}
+		}).mapToPair(
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
-				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				})
 				.collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
@@ -1063,20 +1077,20 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
-					public java.util.List<java.lang.String> apply(java.lang.String value) {
-						return Arrays.asList(value);
+				}).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+			public java.util.List<java.lang.String> apply(java.lang.String value) {
+				return Arrays.asList(value);
+			}
+		}).mapToPair(
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
-				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				})
 				.count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
@@ -1096,22 +1110,22 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		datapipeline.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
-		}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		}).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(45957, sum);
 
@@ -1124,20 +1138,20 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Tuple2>> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
-					public java.util.List<java.lang.String> apply(java.lang.String value) {
-						return Arrays.asList(value);
+				}).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+			public java.util.List<java.lang.String> apply(java.lang.String value) {
+				return Arrays.asList(value);
+			}
+		}).mapToPair(
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
-				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				})
 				.groupByKey().collect(toexecute, null);
 		int sum = 0;
 		for (List<Tuple2> lsttuples : data) {
@@ -1156,25 +1170,25 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		datapipeline.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
-		}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		}).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).groupByKey().forEach(lsttuples -> {
-					for (Tuple2 tuple2 : lsttuples) {
-						sum += ((List) tuple2.v2).size();
-					}
+			for (Tuple2 tuple2 : lsttuples) {
+				sum += ((List) tuple2.v2).size();
+			}
 
-				}, null);
+		}, null);
 
 		assertEquals(45957, sum);
 
@@ -1187,20 +1201,20 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
-					public java.util.List<java.lang.String> apply(java.lang.String value) {
-						return Arrays.asList(value);
+				}).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+			public java.util.List<java.lang.String> apply(java.lang.String value) {
+				return Arrays.asList(value);
+			}
+		}).mapToPair(
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
-				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				})
 				.reduceByKey((a, b) -> a + b).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
@@ -1218,20 +1232,20 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
-					public java.util.List<java.lang.String> apply(java.lang.String value) {
-						return Arrays.asList(value);
+				}).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+			public java.util.List<java.lang.String> apply(java.lang.String value) {
+				return Arrays.asList(value);
+			}
+		}).mapToPair(
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
-				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				})
 				.reduceByKey((a, b) -> a + b).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
@@ -1251,22 +1265,22 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		datapipeline.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
-		}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		}).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).reduceByKey((a, b) -> a + b).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(1, sum);
 
@@ -1279,15 +1293,15 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
-					public java.util.List<java.lang.String> apply(java.lang.String value) {
-						return Arrays.asList(value);
-					}
-				}).peek(val->System.out.println(val)).collect(toexecute, null);
+				}).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+			public java.util.List<java.lang.String> apply(java.lang.String value) {
+				return Arrays.asList(value);
+			}
+		}).peek(val -> System.out.println(val)).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -1304,15 +1318,15 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
-					public java.util.List<java.lang.String> apply(java.lang.String value) {
-						return Arrays.asList(value);
-					}
-				}).peek(val->System.out.println(val)).count(null);
+				}).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+			public java.util.List<java.lang.String> apply(java.lang.String value) {
+				return Arrays.asList(value);
+			}
+		}).peek(val -> System.out.println(val)).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -1331,15 +1345,15 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		datapipeline.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
-		}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		}).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
-		}).peek(val->System.out.println(val)).forEach(lis -> {
+		}).peek(val -> System.out.println(val)).forEach(lis -> {
 			sum += ((List) lis).size();
 		}, null);
 
@@ -1354,15 +1368,15 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
-					public java.util.List<java.lang.String> apply(java.lang.String value) {
-						return Arrays.asList(value);
-					}
-				}).sample(46361).collect(toexecute, null);
+				}).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+			public java.util.List<java.lang.String> apply(java.lang.String value) {
+				return Arrays.asList(value);
+			}
+		}).sample(46361).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -1379,15 +1393,15 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
-					public java.util.List<java.lang.String> apply(java.lang.String value) {
-						return Arrays.asList(value);
-					}
-				}).sample(46361).count(null);
+				}).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+			public java.util.List<java.lang.String> apply(java.lang.String value) {
+				return Arrays.asList(value);
+			}
+		}).sample(46361).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -1406,11 +1420,11 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		datapipeline.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
-		}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		}).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
@@ -1429,19 +1443,19 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
-					public java.util.List<java.lang.String> apply(java.lang.String value) {
-						return Arrays.asList(value);
-					}
-				}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
-					public int compare(java.lang.String value1, java.lang.String value2) {
-						return value1.compareTo(value2);
-					}
-				}).collect(toexecute, null);
+				}).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+			public java.util.List<java.lang.String> apply(java.lang.String value) {
+				return Arrays.asList(value);
+			}
+		}).sorted(new com.github.mdc.common.functions.SortedComparator<java.lang.String>() {
+			public int compare(java.lang.String value1, java.lang.String value2) {
+				return value1.compareTo(value2);
+			}
+		}).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -1458,19 +1472,19 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
-					public java.util.List<java.lang.String> apply(java.lang.String value) {
-						return Arrays.asList(value);
-					}
-				}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
-					public int compare(java.lang.String value1, java.lang.String value2) {
-						return value1.compareTo(value2);
-					}
-				}).count(null);
+				}).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+			public java.util.List<java.lang.String> apply(java.lang.String value) {
+				return Arrays.asList(value);
+			}
+		}).sorted(new com.github.mdc.common.functions.SortedComparator<java.lang.String>() {
+			public int compare(java.lang.String value1, java.lang.String value2) {
+				return value1.compareTo(value2);
+			}
+		}).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -1489,15 +1503,15 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		datapipeline.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
-		}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		}).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
-		}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
+		}).sorted(new com.github.mdc.common.functions.SortedComparator<java.lang.String>() {
 			public int compare(java.lang.String value1, java.lang.String value2) {
 				return value1.compareTo(value2);
 			}
@@ -1516,19 +1530,19 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
-					public java.lang.String[] apply(java.lang.String value) {
-						return value.split(",");
-					}
-				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String[]>() {
-					public boolean test(java.lang.String[] value) {
-						return !value[14].equals("NA") && !value[14].equals("ArrDelay");
-					}
-				}).collect(toexecute, null);
+				}).map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+			public java.lang.String[] apply(java.lang.String value) {
+				return value.split(",");
+			}
+		}).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String[]>() {
+			public boolean test(java.lang.String[] value) {
+				return !"NA".equals(value[14]) && !"ArrDelay".equals(value[14]);
+			}
+		}).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -1545,19 +1559,19 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
-					public java.lang.String[] apply(java.lang.String value) {
-						return value.split(",");
-					}
-				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String[]>() {
-					public boolean test(java.lang.String[] value) {
-						return !value[14].equals("NA") && !value[14].equals("ArrDelay");
-					}
-				}).count(null);
+				}).map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+			public java.lang.String[] apply(java.lang.String value) {
+				return value.split(",");
+			}
+		}).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String[]>() {
+			public boolean test(java.lang.String[] value) {
+				return !"NA".equals(value[14]) && !"ArrDelay".equals(value[14]);
+			}
+		}).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -1576,17 +1590,17 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		datapipeline.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
-		}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+		}).map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 			public java.lang.String[] apply(java.lang.String value) {
 				return value.split(",");
 			}
-		}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String[]>() {
+		}).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String[]>() {
 			public boolean test(java.lang.String[] value) {
-				return !value[14].equals("NA") && !value[14].equals("ArrDelay");
+				return !"NA".equals(value[14]) && !"ArrDelay".equals(value[14]);
 			}
 		}).forEach(lis -> {
 			sum += ((List) lis).size();
@@ -1603,19 +1617,19 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
-					public java.lang.String[] apply(java.lang.String value) {
-						return value.split(",");
-					}
-				}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String[], java.lang.String>() {
-					public java.util.List<java.lang.String> apply(java.lang.String[] value) {
-						return Arrays.asList(value[8] + "-" + value[14]);
-					}
-				}).collect(toexecute, null);
+				}).map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+			public java.lang.String[] apply(java.lang.String value) {
+				return value.split(",");
+			}
+		}).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String[], java.lang.String>() {
+			public java.util.List<java.lang.String> apply(java.lang.String[] value) {
+				return Arrays.asList(value[8] + "-" + value[14]);
+			}
+		}).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -1632,19 +1646,19 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
-					public java.lang.String[] apply(java.lang.String value) {
-						return value.split(",");
-					}
-				}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String[], java.lang.String>() {
-					public java.util.List<java.lang.String> apply(java.lang.String[] value) {
-						return Arrays.asList(value[8] + "-" + value[14]);
-					}
-				}).count(null);
+				}).map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+			public java.lang.String[] apply(java.lang.String value) {
+				return value.split(",");
+			}
+		}).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String[], java.lang.String>() {
+			public java.util.List<java.lang.String> apply(java.lang.String[] value) {
+				return Arrays.asList(value[8] + "-" + value[14]);
+			}
+		}).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -1663,15 +1677,15 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		datapipeline.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
-		}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+		}).map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 			public java.lang.String[] apply(java.lang.String value) {
 				return value.split(",");
 			}
-		}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String[], java.lang.String>() {
+		}).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String[], java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String[] value) {
 				return Arrays.asList(value[8] + "-" + value[14]);
 			}
@@ -1690,19 +1704,19 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
-					public java.lang.String[] apply(java.lang.String value) {
-						return value.split(",");
-					}
-				}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String[], java.lang.String>() {
-					public java.lang.String apply(java.lang.String[] value) {
-						return value[8] + "-" + value[14];
-					}
-				}).collect(toexecute, null);
+				}).map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+			public java.lang.String[] apply(java.lang.String value) {
+				return value.split(",");
+			}
+		}).map(new com.github.mdc.common.functions.MapFunction<java.lang.String[], java.lang.String>() {
+			public java.lang.String apply(java.lang.String[] value) {
+				return value[8] + "-" + value[14];
+			}
+		}).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -1719,19 +1733,19 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
-					public java.lang.String[] apply(java.lang.String value) {
-						return value.split(",");
-					}
-				}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String[], java.lang.String>() {
-					public java.lang.String apply(java.lang.String[] value) {
-						return value[8] + "-" + value[14];
-					}
-				}).count(null);
+				}).map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+			public java.lang.String[] apply(java.lang.String value) {
+				return value.split(",");
+			}
+		}).map(new com.github.mdc.common.functions.MapFunction<java.lang.String[], java.lang.String>() {
+			public java.lang.String apply(java.lang.String[] value) {
+				return value[8] + "-" + value[14];
+			}
+		}).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -1750,15 +1764,15 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		datapipeline.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
-		}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+		}).map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 			public java.lang.String[] apply(java.lang.String value) {
 				return value.split(",");
 			}
-		}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String[], java.lang.String>() {
+		}).map(new com.github.mdc.common.functions.MapFunction<java.lang.String[], java.lang.String>() {
 			public java.lang.String apply(java.lang.String[] value) {
 				return value[8] + "-" + value[14];
 			}
@@ -1777,20 +1791,20 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
-					public java.lang.String[] apply(java.lang.String value) {
-						return value.split(",");
+				}).map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+			public java.lang.String[] apply(java.lang.String value) {
+				return value.split(",");
+			}
+		}).mapToPair(
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
+						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
 					}
-				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
-								return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
-							}
-						})
+				})
 				.collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
@@ -1808,20 +1822,20 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
-					public java.lang.String[] apply(java.lang.String value) {
-						return value.split(",");
+				}).map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+			public java.lang.String[] apply(java.lang.String value) {
+				return value.split(",");
+			}
+		}).mapToPair(
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
+						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
 					}
-				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
-								return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
-							}
-						})
+				})
 				.count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
@@ -1841,22 +1855,22 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		datapipeline.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
-		}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+		}).map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 			public java.lang.String[] apply(java.lang.String value) {
 				return value.split(",");
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
 						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
 					}
 				}).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(45957, sum);
 
@@ -1869,20 +1883,20 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Tuple2>> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
-					public java.lang.String[] apply(java.lang.String value) {
-						return value.split(",");
+				}).map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+			public java.lang.String[] apply(java.lang.String value) {
+				return value.split(",");
+			}
+		}).mapToPair(
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
+						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
 					}
-				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
-								return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
-							}
-						})
+				})
 				.groupByKey().collect(toexecute, null);
 		int sum = 0;
 		for (List<Tuple2> lsttuples : data) {
@@ -1901,25 +1915,25 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		datapipeline.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
-		}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+		}).map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 			public java.lang.String[] apply(java.lang.String value) {
 				return value.split(",");
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
 						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
 					}
 				}).groupByKey().forEach(lsttuples -> {
-					for (Tuple2 tuple2 : lsttuples) {
-						sum += ((List) tuple2.v2).size();
-					}
+			for (Tuple2 tuple2 : lsttuples) {
+				sum += ((List) tuple2.v2).size();
+			}
 
-				}, null);
+		}, null);
 
 		assertEquals(45957, sum);
 
@@ -1932,20 +1946,20 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
-					public java.lang.String[] apply(java.lang.String value) {
-						return value.split(",");
+				}).map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+			public java.lang.String[] apply(java.lang.String value) {
+				return value.split(",");
+			}
+		}).mapToPair(
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
+						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
 					}
-				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
-								return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
-							}
-						})
+				})
 				.reduceByKey((a, b) -> a + b).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
@@ -1963,20 +1977,20 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
-					public java.lang.String[] apply(java.lang.String value) {
-						return value.split(",");
+				}).map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+			public java.lang.String[] apply(java.lang.String value) {
+				return value.split(",");
+			}
+		}).mapToPair(
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
+						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
 					}
-				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
-								return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
-							}
-						})
+				})
 				.reduceByKey((a, b) -> a + b).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
@@ -1996,22 +2010,22 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		datapipeline.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
-		}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+		}).map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 			public java.lang.String[] apply(java.lang.String value) {
 				return value.split(",");
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
 						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
 					}
 				}).reduceByKey((a, b) -> a + b).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(1, sum);
 
@@ -2024,15 +2038,15 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
-					public java.lang.String[] apply(java.lang.String value) {
-						return value.split(",");
-					}
-				}).peek(val->System.out.println(val)).collect(toexecute, null);
+				}).map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+			public java.lang.String[] apply(java.lang.String value) {
+				return value.split(",");
+			}
+		}).peek(val -> System.out.println(val)).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -2049,15 +2063,15 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
-					public java.lang.String[] apply(java.lang.String value) {
-						return value.split(",");
-					}
-				}).peek(val->System.out.println(val)).count(null);
+				}).map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+			public java.lang.String[] apply(java.lang.String value) {
+				return value.split(",");
+			}
+		}).peek(val -> System.out.println(val)).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -2076,15 +2090,15 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		datapipeline.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
-		}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+		}).map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 			public java.lang.String[] apply(java.lang.String value) {
 				return value.split(",");
 			}
-		}).peek(val->System.out.println(val)).forEach(lis -> {
+		}).peek(val -> System.out.println(val)).forEach(lis -> {
 			sum += ((List) lis).size();
 		}, null);
 
@@ -2099,15 +2113,15 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
-					public java.lang.String[] apply(java.lang.String value) {
-						return value.split(",");
-					}
-				}).sample(46361).collect(toexecute, null);
+				}).map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+			public java.lang.String[] apply(java.lang.String value) {
+				return value.split(",");
+			}
+		}).sample(46361).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -2124,15 +2138,15 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
-					public java.lang.String[] apply(java.lang.String value) {
-						return value.split(",");
-					}
-				}).sample(46361).count(null);
+				}).map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+			public java.lang.String[] apply(java.lang.String value) {
+				return value.split(",");
+			}
+		}).sample(46361).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -2151,11 +2165,11 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		datapipeline.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
-		}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+		}).map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 			public java.lang.String[] apply(java.lang.String value) {
 				return value.split(",");
 			}
@@ -2174,19 +2188,19 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
-					public java.lang.String[] apply(java.lang.String value) {
-						return value.split(",");
-					}
-				}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String[]>() {
-					public int compare(java.lang.String[] value1, java.lang.String[] value2) {
-						return value1[1].compareTo(value2[1]);
-					}
-				}).collect(toexecute, null);
+				}).map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+			public java.lang.String[] apply(java.lang.String value) {
+				return value.split(",");
+			}
+		}).sorted(new com.github.mdc.common.functions.SortedComparator<java.lang.String[]>() {
+			public int compare(java.lang.String[] value1, java.lang.String[] value2) {
+				return value1[1].compareTo(value2[1]);
+			}
+		}).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -2203,19 +2217,19 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
-					public java.lang.String[] apply(java.lang.String value) {
-						return value.split(",");
-					}
-				}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String[]>() {
-					public int compare(java.lang.String[] value1, java.lang.String[] value2) {
-						return value1[1].compareTo(value2[1]);
-					}
-				}).count(null);
+				}).map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+			public java.lang.String[] apply(java.lang.String value) {
+				return value.split(",");
+			}
+		}).sorted(new com.github.mdc.common.functions.SortedComparator<java.lang.String[]>() {
+			public int compare(java.lang.String[] value1, java.lang.String[] value2) {
+				return value1[1].compareTo(value2[1]);
+			}
+		}).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -2234,15 +2248,15 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		datapipeline.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
-		}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+		}).map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 			public java.lang.String[] apply(java.lang.String value) {
 				return value.split(",");
 			}
-		}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String[]>() {
+		}).sorted(new com.github.mdc.common.functions.SortedComparator<java.lang.String[]>() {
 			public int compare(java.lang.String[] value1, java.lang.String[] value2) {
 				return value1[1].compareTo(value2[1]);
 			}
@@ -2261,17 +2275,17 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<org.jooq.lambda.tuple.Tuple2>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<org.jooq.lambda.tuple.Tuple2>() {
 					public boolean test(org.jooq.lambda.tuple.Tuple2 value) {
 						return true;
 					}
@@ -2292,17 +2306,17 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<org.jooq.lambda.tuple.Tuple2>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<org.jooq.lambda.tuple.Tuple2>() {
 					public boolean test(org.jooq.lambda.tuple.Tuple2 value) {
 						return true;
 					}
@@ -2325,22 +2339,22 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		datapipeline.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
-				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<org.jooq.lambda.tuple.Tuple2>() {
-					public boolean test(org.jooq.lambda.tuple.Tuple2 value) {
-						return true;
-					}
-				}).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+				}).filter(new com.github.mdc.common.functions.PredicateSerializable<org.jooq.lambda.tuple.Tuple2>() {
+			public boolean test(org.jooq.lambda.tuple.Tuple2 value) {
+				return true;
+			}
+		}).forEach(lis -> {
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(45957, sum);
 
@@ -2353,16 +2367,16 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
 				.collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
@@ -2380,16 +2394,16 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
 				.count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
@@ -2409,18 +2423,18 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		datapipeline.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(45957, sum);
 
@@ -2433,21 +2447,21 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Tuple2>> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
-				.groupByKey().filter(new com.github.mdc.stream.functions.PredicateSerializable<org.jooq.lambda.tuple.Tuple2>() {
-					public boolean test(org.jooq.lambda.tuple.Tuple2 value) {
-						return true;
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
-				}).collect(toexecute, null);
+				})
+				.groupByKey().filter(new com.github.mdc.common.functions.PredicateSerializable<org.jooq.lambda.tuple.Tuple2>() {
+			public boolean test(org.jooq.lambda.tuple.Tuple2 value) {
+				return true;
+			}
+		}).collect(toexecute, null);
 		int sum = 0;
 		for (List<Tuple2> lsttuples : data) {
 			for (Tuple2 tuple2 : lsttuples) {
@@ -2465,26 +2479,26 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		datapipeline.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).groupByKey()
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<org.jooq.lambda.tuple.Tuple2>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<org.jooq.lambda.tuple.Tuple2>() {
 					public boolean test(org.jooq.lambda.tuple.Tuple2 value) {
 						return true;
 					}
 				}).forEach(lsttuples -> {
-					for (Tuple2 tuple2 : lsttuples) {
-						sum += ((List) tuple2.v2).size();
-					}
+			for (Tuple2 tuple2 : lsttuples) {
+				sum += ((List) tuple2.v2).size();
+			}
 
-				}, null);
+		}, null);
 
 		assertEquals(45957, sum);
 
@@ -2497,16 +2511,16 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Tuple2>> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
 				.groupByKey().collect(toexecute, null);
 		int sum = 0;
 		for (List<Tuple2> lsttuples : data) {
@@ -2525,21 +2539,21 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		datapipeline.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).groupByKey().forEach(lsttuples -> {
-					for (Tuple2 tuple2 : lsttuples) {
-						sum += ((List) tuple2.v2).size();
-					}
+			for (Tuple2 tuple2 : lsttuples) {
+				sum += ((List) tuple2.v2).size();
+			}
 
-				}, null);
+		}, null);
 
 		assertEquals(45957, sum);
 
@@ -2552,16 +2566,16 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Tuple2>> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
 				.groupByKey().collect(toexecute, null);
 		int sum = 0;
 		for (List<Tuple2> lsttuples : data) {
@@ -2580,21 +2594,21 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		datapipeline.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).groupByKey().forEach(lsttuples -> {
-					for (Tuple2 tuple2 : lsttuples) {
-						sum += ((List) tuple2.v2).size();
-					}
+			for (Tuple2 tuple2 : lsttuples) {
+				sum += ((List) tuple2.v2).size();
+			}
 
-				}, null);
+		}, null);
 
 		assertEquals(45957, sum);
 
@@ -2607,22 +2621,22 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Tuple2>> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
 				.groupByKey().mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
-								return (Tuple2<String, String>) value;
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
+						return (Tuple2<String, String>) value;
+					}
+				})
 				.collect(toexecute, null);
 		int sum = 0;
 		for (List<Tuple2> lsttuples : data) {
@@ -2641,21 +2655,21 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		datapipeline.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).groupByKey().mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
-								return (Tuple2<String, String>) value;
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
+						return (Tuple2<String, String>) value;
+					}
+				})
 				.forEach(lsttuples -> {
 					for (Tuple2 tuple2 : lsttuples) {
 						sum += ((List) tuple2.v2).size();
@@ -2674,22 +2688,22 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Tuple2>> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
 				.groupByKey().mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
-								return (Tuple2<String, String>) value;
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
+						return (Tuple2<String, String>) value;
+					}
+				})
 				.groupByKey().collect(toexecute, null);
 		int sum = 0;
 		for (List<Tuple2> lsttuples : data) {
@@ -2708,27 +2722,27 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		datapipeline.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).groupByKey().mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
-								return (Tuple2<String, String>) value;
-							}
-						})
-				.groupByKey().forEach(lsttuples -> {
-					for (Tuple2 tuple2 : lsttuples) {
-						sum += ((List) tuple2.v2).size();
+				new com.github.mdc.common.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
+						return (Tuple2<String, String>) value;
 					}
+				})
+				.groupByKey().forEach(lsttuples -> {
+			for (Tuple2 tuple2 : lsttuples) {
+				sum += ((List) tuple2.v2).size();
+			}
 
-				}, null);
+		}, null);
 
 		assertEquals(1, sum);
 
@@ -2741,22 +2755,22 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Tuple2>> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
 				.groupByKey().mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
-								return (Tuple2<String, String>) value;
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
+						return (Tuple2<String, String>) value;
+					}
+				})
 				.reduceByKey((a, b) -> a + b).collect(toexecute, null);
 		int sum = 0;
 		for (List<Tuple2> lsttuples : data) {
@@ -2775,27 +2789,27 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		datapipeline.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).groupByKey().mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
-								return (Tuple2<String, String>) value;
-							}
-						})
-				.reduceByKey((a, b) -> a + b).forEach(lsttuples -> {
-					for (Tuple2 tuple2 : lsttuples) {
-						sum += ((List) tuple2.v2).size();
+				new com.github.mdc.common.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
+						return (Tuple2<String, String>) value;
 					}
+				})
+				.reduceByKey((a, b) -> a + b).forEach(lsttuples -> {
+			for (Tuple2 tuple2 : lsttuples) {
+				sum += ((List) tuple2.v2).size();
+			}
 
-				}, null);
+		}, null);
 
 		assertEquals(45957, sum);
 
@@ -2808,17 +2822,17 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Tuple2>> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
-				.groupByKey().peek(val->System.out.println(val)).collect(toexecute, null);
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
+				.groupByKey().peek(val -> System.out.println(val)).collect(toexecute, null);
 		int sum = 0;
 		for (List<Tuple2> lsttuples : data) {
 			for (Tuple2 tuple2 : lsttuples) {
@@ -2836,21 +2850,21 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		datapipeline.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
-				}).groupByKey().peek(val->System.out.println(val)).forEach(lsttuples -> {
-					for (Tuple2 tuple2 : lsttuples) {
-						sum += ((List) tuple2.v2).size();
-					}
+				}).groupByKey().peek(val -> System.out.println(val)).forEach(lsttuples -> {
+			for (Tuple2 tuple2 : lsttuples) {
+				sum += ((List) tuple2.v2).size();
+			}
 
-				}, null);
+		}, null);
 
 		assertEquals(45957, sum);
 
@@ -2863,16 +2877,16 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Tuple2>> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
 				.groupByKey().sample(46361).collect(toexecute, null);
 		int sum = 0;
 		for (List<Tuple2> lsttuples : data) {
@@ -2891,21 +2905,21 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		datapipeline.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).groupByKey().sample(46361).forEach(lsttuples -> {
-					for (Tuple2 tuple2 : lsttuples) {
-						sum += ((List) tuple2.v2).size();
-					}
+			for (Tuple2 tuple2 : lsttuples) {
+				sum += ((List) tuple2.v2).size();
+			}
 
-				}, null);
+		}, null);
 
 		assertEquals(45957, sum);
 
@@ -2918,21 +2932,21 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Tuple2>> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
-				.groupByKey().sorted(new com.github.mdc.stream.functions.SortedComparator<org.jooq.lambda.tuple.Tuple2>() {
-					public int compare(org.jooq.lambda.tuple.Tuple2 value1, org.jooq.lambda.tuple.Tuple2 value2) {
-						return value1.compareTo(value2);
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
-				}).collect(toexecute, null);
+				})
+				.groupByKey().sorted(new com.github.mdc.common.functions.SortedComparator<org.jooq.lambda.tuple.Tuple2>() {
+			public int compare(org.jooq.lambda.tuple.Tuple2 value1, org.jooq.lambda.tuple.Tuple2 value2) {
+				return value1.compareTo(value2);
+			}
+		}).collect(toexecute, null);
 		int sum = 0;
 		for (List<Tuple2> lsttuples : data) {
 			for (Tuple2 tuple2 : lsttuples) {
@@ -2950,25 +2964,25 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		datapipeline.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
-				}).groupByKey().sorted(new com.github.mdc.stream.functions.SortedComparator<org.jooq.lambda.tuple.Tuple2>() {
-					public int compare(org.jooq.lambda.tuple.Tuple2 value1, org.jooq.lambda.tuple.Tuple2 value2) {
-						return value1.compareTo(value2);
-					}
-				}).forEach(lsttuples -> {
-					for (Tuple2 tuple2 : lsttuples) {
-						sum += ((List) tuple2.v2).size();
-					}
+				}).groupByKey().sorted(new com.github.mdc.common.functions.SortedComparator<org.jooq.lambda.tuple.Tuple2>() {
+			public int compare(org.jooq.lambda.tuple.Tuple2 value1, org.jooq.lambda.tuple.Tuple2 value2) {
+				return value1.compareTo(value2);
+			}
+		}).forEach(lsttuples -> {
+			for (Tuple2 tuple2 : lsttuples) {
+				sum += ((List) tuple2.v2).size();
+			}
 
-				}, null);
+		}, null);
 
 		assertEquals(45957, sum);
 
@@ -2981,16 +2995,16 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
 				.collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
@@ -3008,16 +3022,16 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
 				.count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
@@ -3037,18 +3051,18 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		datapipeline.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(45957, sum);
 
@@ -3061,18 +3075,18 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
 				.mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+						new com.github.mdc.common.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 							public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
 								return (Tuple2<String, String>) value;
 							}
@@ -3094,18 +3108,18 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
 				.mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+						new com.github.mdc.common.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 							public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
 								return (Tuple2<String, String>) value;
 							}
@@ -3129,21 +3143,21 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		datapipeline.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
-								return (Tuple2<String, String>) value;
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
+						return (Tuple2<String, String>) value;
+					}
+				})
 				.forEach(lis -> {
 					sum += ((List) lis).size();
 				}, null);
@@ -3159,18 +3173,18 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Tuple2>> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
 				.mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+						new com.github.mdc.common.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 							public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
 								return (Tuple2<String, String>) value;
 							}
@@ -3193,27 +3207,27 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		datapipeline.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
-								return (Tuple2<String, String>) value;
-							}
-						})
-				.groupByKey().forEach(lsttuples -> {
-					for (Tuple2 tuple2 : lsttuples) {
-						sum += ((List) tuple2.v2).size();
+				new com.github.mdc.common.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
+						return (Tuple2<String, String>) value;
 					}
+				})
+				.groupByKey().forEach(lsttuples -> {
+			for (Tuple2 tuple2 : lsttuples) {
+				sum += ((List) tuple2.v2).size();
+			}
 
-				}, null);
+		}, null);
 
 		assertEquals(45957, sum);
 
@@ -3226,18 +3240,18 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
 				.mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+						new com.github.mdc.common.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 							public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
 								return (Tuple2<String, String>) value;
 							}
@@ -3259,18 +3273,18 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
 				.mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+						new com.github.mdc.common.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 							public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
 								return (Tuple2<String, String>) value;
 							}
@@ -3294,24 +3308,24 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		datapipeline.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
-								return (Tuple2<String, String>) value;
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
+						return (Tuple2<String, String>) value;
+					}
+				})
 				.reduceByKey((a, b) -> a + b).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(1, sum);
 
@@ -3324,17 +3338,17 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
-				.peek(val->System.out.println(val)).collect(toexecute, null);
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
+				.peek(val -> System.out.println(val)).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -3351,17 +3365,17 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
-				.peek(val->System.out.println(val)).count(null);
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
+				.peek(val -> System.out.println(val)).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -3380,18 +3394,18 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		datapipeline.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
-				}).peek(val->System.out.println(val)).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+				}).peek(val -> System.out.println(val)).forEach(lis -> {
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(45957, sum);
 
@@ -3404,18 +3418,18 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
 				.reduceByKey((a, b) -> a + b)
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<org.jooq.lambda.tuple.Tuple2>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<org.jooq.lambda.tuple.Tuple2>() {
 					public boolean test(org.jooq.lambda.tuple.Tuple2 value) {
 						return true;
 					}
@@ -3436,18 +3450,18 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
 				.reduceByKey((a, b) -> a + b)
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<org.jooq.lambda.tuple.Tuple2>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<org.jooq.lambda.tuple.Tuple2>() {
 					public boolean test(org.jooq.lambda.tuple.Tuple2 value) {
 						return true;
 					}
@@ -3470,23 +3484,23 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		datapipeline.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).reduceByKey((a, b) -> a + b)
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<org.jooq.lambda.tuple.Tuple2>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<org.jooq.lambda.tuple.Tuple2>() {
 					public boolean test(org.jooq.lambda.tuple.Tuple2 value) {
 						return true;
 					}
 				}).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(1, sum);
 
@@ -3499,16 +3513,16 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
 				.reduceByKey((a, b) -> a + b).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
@@ -3526,16 +3540,16 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
 				.reduceByKey((a, b) -> a + b).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
@@ -3555,18 +3569,18 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		datapipeline.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).reduceByKey((a, b) -> a + b).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(1, sum);
 
@@ -3579,16 +3593,16 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
 				.reduceByKey((a, b) -> a + b).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
@@ -3606,16 +3620,16 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
 				.reduceByKey((a, b) -> a + b).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
@@ -3635,18 +3649,18 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		datapipeline.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).reduceByKey((a, b) -> a + b).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(1, sum);
 
@@ -3659,22 +3673,22 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
 				.reduceByKey((a, b) -> a + b).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
-								return (Tuple2<String, String>) value;
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
+						return (Tuple2<String, String>) value;
+					}
+				})
 				.collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
@@ -3692,22 +3706,22 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
 				.reduceByKey((a, b) -> a + b).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
-								return (Tuple2<String, String>) value;
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
+						return (Tuple2<String, String>) value;
+					}
+				})
 				.count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
@@ -3727,21 +3741,21 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		datapipeline.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).reduceByKey((a, b) -> a + b).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
-								return (Tuple2<String, String>) value;
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
+						return (Tuple2<String, String>) value;
+					}
+				})
 				.forEach(lis -> {
 					sum += ((List) lis).size();
 				}, null);
@@ -3757,22 +3771,22 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Tuple2>> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
 				.reduceByKey((a, b) -> a + b).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
-								return (Tuple2<String, String>) value;
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
+						return (Tuple2<String, String>) value;
+					}
+				})
 				.groupByKey().collect(toexecute, null);
 		int sum = 0;
 		for (List<Tuple2> lsttuples : data) {
@@ -3791,27 +3805,27 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		datapipeline.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).reduceByKey((a, b) -> a + b).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
-								return (Tuple2<String, String>) value;
-							}
-						})
-				.groupByKey().forEach(lsttuples -> {
-					for (Tuple2 tuple2 : lsttuples) {
-						sum += ((List) tuple2.v2).size();
+				new com.github.mdc.common.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
+						return (Tuple2<String, String>) value;
 					}
+				})
+				.groupByKey().forEach(lsttuples -> {
+			for (Tuple2 tuple2 : lsttuples) {
+				sum += ((List) tuple2.v2).size();
+			}
 
-				}, null);
+		}, null);
 
 		assertEquals(1, sum);
 
@@ -3824,22 +3838,22 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
 				.reduceByKey((a, b) -> a + b).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
-								return (Tuple2<String, String>) value;
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
+						return (Tuple2<String, String>) value;
+					}
+				})
 				.reduceByKey((a, b) -> a + b).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
@@ -3857,22 +3871,22 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
 				.reduceByKey((a, b) -> a + b).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
-								return (Tuple2<String, String>) value;
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
+						return (Tuple2<String, String>) value;
+					}
+				})
 				.reduceByKey((a, b) -> a + b).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
@@ -3892,24 +3906,24 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		datapipeline.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).reduceByKey((a, b) -> a + b).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
-								return (Tuple2<String, String>) value;
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
+						return (Tuple2<String, String>) value;
+					}
+				})
 				.reduceByKey((a, b) -> a + b).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(1, sum);
 
@@ -3922,17 +3936,17 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
-				.reduceByKey((a, b) -> a + b).peek(val->System.out.println(val)).collect(toexecute, null);
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
+				.reduceByKey((a, b) -> a + b).peek(val -> System.out.println(val)).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -3949,17 +3963,17 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
-				.reduceByKey((a, b) -> a + b).peek(val->System.out.println(val)).count(null);
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
+				.reduceByKey((a, b) -> a + b).peek(val -> System.out.println(val)).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -3978,18 +3992,18 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		datapipeline.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
-				}).reduceByKey((a, b) -> a + b).peek(val->System.out.println(val)).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+				}).reduceByKey((a, b) -> a + b).peek(val -> System.out.println(val)).forEach(lis -> {
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(1, sum);
 
@@ -4002,16 +4016,16 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
 				.reduceByKey((a, b) -> a + b).sample(46361).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
@@ -4029,16 +4043,16 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
 				.reduceByKey((a, b) -> a + b).sample(46361).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
@@ -4058,18 +4072,18 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		datapipeline.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).reduceByKey((a, b) -> a + b).sample(46361).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(1, sum);
 
@@ -4082,18 +4096,18 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
 				.reduceByKey((a, b) -> a + b)
-				.sorted(new com.github.mdc.stream.functions.SortedComparator<org.jooq.lambda.tuple.Tuple2>() {
+				.sorted(new com.github.mdc.common.functions.SortedComparator<org.jooq.lambda.tuple.Tuple2>() {
 					public int compare(org.jooq.lambda.tuple.Tuple2 value1, org.jooq.lambda.tuple.Tuple2 value2) {
 						return value1.compareTo(value2);
 					}
@@ -4114,18 +4128,18 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
 				.reduceByKey((a, b) -> a + b)
-				.sorted(new com.github.mdc.stream.functions.SortedComparator<org.jooq.lambda.tuple.Tuple2>() {
+				.sorted(new com.github.mdc.common.functions.SortedComparator<org.jooq.lambda.tuple.Tuple2>() {
 					public int compare(org.jooq.lambda.tuple.Tuple2 value1, org.jooq.lambda.tuple.Tuple2 value2) {
 						return value1.compareTo(value2);
 					}
@@ -4148,23 +4162,23 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		datapipeline.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).reduceByKey((a, b) -> a + b)
-				.sorted(new com.github.mdc.stream.functions.SortedComparator<org.jooq.lambda.tuple.Tuple2>() {
+				.sorted(new com.github.mdc.common.functions.SortedComparator<org.jooq.lambda.tuple.Tuple2>() {
 					public int compare(org.jooq.lambda.tuple.Tuple2 value1, org.jooq.lambda.tuple.Tuple2 value2) {
 						return value1.compareTo(value2);
 					}
 				}).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(1, sum);
 
@@ -4177,16 +4191,16 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
 				.sample(46361).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
@@ -4204,16 +4218,16 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
 				.sample(46361).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
@@ -4233,18 +4247,18 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		datapipeline.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).sample(46361).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(45957, sum);
 
@@ -4257,17 +4271,17 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
-				.sorted(new com.github.mdc.stream.functions.SortedComparator<org.jooq.lambda.tuple.Tuple2>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
+				.sorted(new com.github.mdc.common.functions.SortedComparator<org.jooq.lambda.tuple.Tuple2>() {
 					public int compare(org.jooq.lambda.tuple.Tuple2 value1, org.jooq.lambda.tuple.Tuple2 value2) {
 						return value1.compareTo(value2);
 					}
@@ -4288,17 +4302,17 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
-				.sorted(new com.github.mdc.stream.functions.SortedComparator<org.jooq.lambda.tuple.Tuple2>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
+				.sorted(new com.github.mdc.common.functions.SortedComparator<org.jooq.lambda.tuple.Tuple2>() {
 					public int compare(org.jooq.lambda.tuple.Tuple2 value1, org.jooq.lambda.tuple.Tuple2 value2) {
 						return value1.compareTo(value2);
 					}
@@ -4321,22 +4335,22 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		datapipeline.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
-				}).sorted(new com.github.mdc.stream.functions.SortedComparator<org.jooq.lambda.tuple.Tuple2>() {
-					public int compare(org.jooq.lambda.tuple.Tuple2 value1, org.jooq.lambda.tuple.Tuple2 value2) {
-						return value1.compareTo(value2);
-					}
-				}).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+				}).sorted(new com.github.mdc.common.functions.SortedComparator<org.jooq.lambda.tuple.Tuple2>() {
+			public int compare(org.jooq.lambda.tuple.Tuple2 value1, org.jooq.lambda.tuple.Tuple2 value2) {
+				return value1.compareTo(value2);
+			}
+		}).forEach(lis -> {
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(45957, sum);
 
@@ -4349,14 +4363,14 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).peek(val->System.out.println(val))
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				}).peek(val -> System.out.println(val))
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).collect(toexecute, null);
 		int sum = 0;
@@ -4375,14 +4389,14 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).peek(val->System.out.println(val))
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				}).peek(val -> System.out.println(val))
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).count(null);
 		long sum = 0;
@@ -4403,13 +4417,13 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		datapipeline.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
-		}).peek(val->System.out.println(val)).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		}).peek(val -> System.out.println(val)).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).forEach(lis -> {
 			sum += ((List) lis).size();
@@ -4426,12 +4440,12 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).peek(val->System.out.println(val))
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				}).peek(val -> System.out.println(val))
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
@@ -4452,12 +4466,12 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).peek(val->System.out.println(val))
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				}).peek(val -> System.out.println(val))
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
@@ -4480,18 +4494,18 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		datapipeline.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
-		}).peek(val->System.out.println(val))
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		}).peek(val -> System.out.println(val))
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
 				}).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(45957, sum);
 
@@ -4504,12 +4518,12 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).peek(val->System.out.println(val))
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				}).peek(val -> System.out.println(val))
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
@@ -4530,12 +4544,12 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).peek(val->System.out.println(val))
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				}).peek(val -> System.out.println(val))
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
@@ -4558,18 +4572,18 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		datapipeline.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
-		}).peek(val->System.out.println(val))
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+		}).peek(val -> System.out.println(val))
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
 				}).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(45957, sum);
 
@@ -4582,16 +4596,16 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).peek(val->System.out.println(val)).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				}).peek(val -> System.out.println(val)).mapToPair(
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
 				.collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
@@ -4609,16 +4623,16 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).peek(val->System.out.println(val)).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				}).peek(val -> System.out.println(val)).mapToPair(
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
 				.count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
@@ -4638,18 +4652,18 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		datapipeline.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
-		}).peek(val->System.out.println(val)).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+		}).peek(val -> System.out.println(val)).mapToPair(
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(45957, sum);
 
@@ -4662,16 +4676,16 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Tuple2>> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).peek(val->System.out.println(val)).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				}).peek(val -> System.out.println(val)).mapToPair(
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
 				.groupByKey().collect(toexecute, null);
 		int sum = 0;
 		for (List<Tuple2> lsttuples : data) {
@@ -4690,21 +4704,21 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		datapipeline.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
-		}).peek(val->System.out.println(val)).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+		}).peek(val -> System.out.println(val)).mapToPair(
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).groupByKey().forEach(lsttuples -> {
-					for (Tuple2 tuple2 : lsttuples) {
-						sum += ((List) tuple2.v2).size();
-					}
+			for (Tuple2 tuple2 : lsttuples) {
+				sum += ((List) tuple2.v2).size();
+			}
 
-				}, null);
+		}, null);
 
 		assertEquals(45957, sum);
 
@@ -4717,16 +4731,16 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).peek(val->System.out.println(val)).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				}).peek(val -> System.out.println(val)).mapToPair(
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
 				.reduceByKey((a, b) -> a + b).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
@@ -4744,16 +4758,16 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).peek(val->System.out.println(val)).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				}).peek(val -> System.out.println(val)).mapToPair(
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
 				.reduceByKey((a, b) -> a + b).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
@@ -4773,18 +4787,18 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		datapipeline.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
-		}).peek(val->System.out.println(val)).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+		}).peek(val -> System.out.println(val)).mapToPair(
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).reduceByKey((a, b) -> a + b).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(1, sum);
 
@@ -4797,11 +4811,11 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).peek(val->System.out.println(val)).peek(val->System.out.println(val)).collect(toexecute, null);
+				}).peek(val -> System.out.println(val)).peek(val -> System.out.println(val)).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -4818,11 +4832,11 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).peek(val->System.out.println(val)).peek(val->System.out.println(val)).count(null);
+				}).peek(val -> System.out.println(val)).peek(val -> System.out.println(val)).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -4841,11 +4855,11 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		datapipeline.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
-		}).peek(val->System.out.println(val)).peek(val->System.out.println(val)).forEach(lis -> {
+		}).peek(val -> System.out.println(val)).peek(val -> System.out.println(val)).forEach(lis -> {
 			sum += ((List) lis).size();
 		}, null);
 
@@ -4860,11 +4874,11 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).peek(val->System.out.println(val)).sample(46361).collect(toexecute, null);
+				}).peek(val -> System.out.println(val)).sample(46361).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -4881,11 +4895,11 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).peek(val->System.out.println(val)).sample(46361).count(null);
+				}).peek(val -> System.out.println(val)).sample(46361).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -4904,11 +4918,11 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		datapipeline.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
-		}).peek(val->System.out.println(val)).sample(46361).forEach(lis -> {
+		}).peek(val -> System.out.println(val)).sample(46361).forEach(lis -> {
 			sum += ((List) lis).size();
 		}, null);
 
@@ -4923,15 +4937,15 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).peek(val->System.out.println(val)).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
-					public int compare(java.lang.String value1, java.lang.String value2) {
-						return value1.compareTo(value2);
-					}
-				}).collect(toexecute, null);
+				}).peek(val -> System.out.println(val)).sorted(new com.github.mdc.common.functions.SortedComparator<java.lang.String>() {
+			public int compare(java.lang.String value1, java.lang.String value2) {
+				return value1.compareTo(value2);
+			}
+		}).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -4948,15 +4962,15 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).peek(val->System.out.println(val)).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
-					public int compare(java.lang.String value1, java.lang.String value2) {
-						return value1.compareTo(value2);
-					}
-				}).count(null);
+				}).peek(val -> System.out.println(val)).sorted(new com.github.mdc.common.functions.SortedComparator<java.lang.String>() {
+			public int compare(java.lang.String value1, java.lang.String value2) {
+				return value1.compareTo(value2);
+			}
+		}).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -4975,11 +4989,11 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		datapipeline.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
-		}).peek(val->System.out.println(val)).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
+		}).peek(val -> System.out.println(val)).sorted(new com.github.mdc.common.functions.SortedComparator<java.lang.String>() {
 			public int compare(java.lang.String value1, java.lang.String value2) {
 				return value1.compareTo(value2);
 			}
@@ -4998,15 +5012,15 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).sample(46361).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
-					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
-					}
-				}).collect(toexecute, null);
+				}).sample(46361).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
+			public boolean test(java.lang.String value) {
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
+			}
+		}).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -5023,15 +5037,15 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).sample(46361).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
-					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
-					}
-				}).count(null);
+				}).sample(46361).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
+			public boolean test(java.lang.String value) {
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
+			}
+		}).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -5050,13 +5064,13 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		datapipeline.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
-		}).sample(46361).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		}).sample(46361).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).forEach(lis -> {
 			sum += ((List) lis).size();
@@ -5073,12 +5087,12 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).sample(46361)
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
@@ -5099,12 +5113,12 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).sample(46361)
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
@@ -5127,11 +5141,11 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		datapipeline.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
-		}).sample(46361).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		}).sample(46361).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
@@ -5150,15 +5164,15 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).sample(46361).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
-					public java.lang.String[] apply(java.lang.String value) {
-						return value.split(",");
-					}
-				}).collect(toexecute, null);
+				}).sample(46361).map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+			public java.lang.String[] apply(java.lang.String value) {
+				return value.split(",");
+			}
+		}).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -5175,15 +5189,15 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).sample(46361).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
-					public java.lang.String[] apply(java.lang.String value) {
-						return value.split(",");
-					}
-				}).count(null);
+				}).sample(46361).map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+			public java.lang.String[] apply(java.lang.String value) {
+				return value.split(",");
+			}
+		}).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -5202,11 +5216,11 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		datapipeline.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
-		}).sample(46361).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+		}).sample(46361).map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 			public java.lang.String[] apply(java.lang.String value) {
 				return value.split(",");
 			}
@@ -5225,16 +5239,16 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).sample(46361).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
 				.collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
@@ -5252,16 +5266,16 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).sample(46361).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
 				.count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
@@ -5281,18 +5295,18 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		datapipeline.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).sample(46361).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(45957, sum);
 
@@ -5305,16 +5319,16 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Tuple2>> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).sample(46361).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
 				.groupByKey().collect(toexecute, null);
 		int sum = 0;
 		for (List<Tuple2> lsttuples : data) {
@@ -5333,21 +5347,21 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		datapipeline.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).sample(46361).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).groupByKey().forEach(lsttuples -> {
-					for (Tuple2 tuple2 : lsttuples) {
-						sum += ((List) tuple2.v2).size();
-					}
+			for (Tuple2 tuple2 : lsttuples) {
+				sum += ((List) tuple2.v2).size();
+			}
 
-				}, null);
+		}, null);
 
 		assertEquals(45957, sum);
 
@@ -5360,16 +5374,16 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).sample(46361).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
 				.reduceByKey((a, b) -> a + b).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
@@ -5387,16 +5401,16 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).sample(46361).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
 				.reduceByKey((a, b) -> a + b).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
@@ -5416,18 +5430,18 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		datapipeline.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).sample(46361).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).reduceByKey((a, b) -> a + b).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(1, sum);
 
@@ -5440,11 +5454,11 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).sample(46361).peek(val->System.out.println(val)).collect(toexecute, null);
+				}).sample(46361).peek(val -> System.out.println(val)).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -5461,11 +5475,11 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).sample(46361).peek(val->System.out.println(val)).count(null);
+				}).sample(46361).peek(val -> System.out.println(val)).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -5484,11 +5498,11 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		datapipeline.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
-		}).sample(46361).peek(val->System.out.println(val)).forEach(lis -> {
+		}).sample(46361).peek(val -> System.out.println(val)).forEach(lis -> {
 			sum += ((List) lis).size();
 		}, null);
 
@@ -5503,9 +5517,9 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).sample(46361).sample(46361).collect(toexecute, null);
 		int sum = 0;
@@ -5524,9 +5538,9 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).sample(46361).sample(46361).count(null);
 		long sum = 0;
@@ -5547,9 +5561,9 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		datapipeline.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).sample(46361).sample(46361).forEach(lis -> {
 			sum += ((List) lis).size();
@@ -5566,15 +5580,15 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).sample(46361).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
-					public int compare(java.lang.String value1, java.lang.String value2) {
-						return value1.compareTo(value2);
-					}
-				}).collect(toexecute, null);
+				}).sample(46361).sorted(new com.github.mdc.common.functions.SortedComparator<java.lang.String>() {
+			public int compare(java.lang.String value1, java.lang.String value2) {
+				return value1.compareTo(value2);
+			}
+		}).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -5591,15 +5605,15 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).sample(46361).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
-					public int compare(java.lang.String value1, java.lang.String value2) {
-						return value1.compareTo(value2);
-					}
-				}).count(null);
+				}).sample(46361).sorted(new com.github.mdc.common.functions.SortedComparator<java.lang.String>() {
+			public int compare(java.lang.String value1, java.lang.String value2) {
+				return value1.compareTo(value2);
+			}
+		}).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -5618,11 +5632,11 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		datapipeline.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
-		}).sample(46361).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
+		}).sample(46361).sorted(new com.github.mdc.common.functions.SortedComparator<java.lang.String>() {
 			public int compare(java.lang.String value1, java.lang.String value2) {
 				return value1.compareTo(value2);
 			}
@@ -5641,19 +5655,19 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
-					public int compare(java.lang.String value1, java.lang.String value2) {
-						return value1.compareTo(value2);
-					}
-				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
-					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
-					}
-				}).collect(toexecute, null);
+				}).sorted(new com.github.mdc.common.functions.SortedComparator<java.lang.String>() {
+			public int compare(java.lang.String value1, java.lang.String value2) {
+				return value1.compareTo(value2);
+			}
+		}).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
+			public boolean test(java.lang.String value) {
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
+			}
+		}).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -5670,19 +5684,19 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
-					public int compare(java.lang.String value1, java.lang.String value2) {
-						return value1.compareTo(value2);
-					}
-				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
-					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
-					}
-				}).count(null);
+				}).sorted(new com.github.mdc.common.functions.SortedComparator<java.lang.String>() {
+			public int compare(java.lang.String value1, java.lang.String value2) {
+				return value1.compareTo(value2);
+			}
+		}).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
+			public boolean test(java.lang.String value) {
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
+			}
+		}).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -5701,17 +5715,17 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		datapipeline.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
-		}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
+		}).sorted(new com.github.mdc.common.functions.SortedComparator<java.lang.String>() {
 			public int compare(java.lang.String value1, java.lang.String value2) {
 				return value1.compareTo(value2);
 			}
-		}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		}).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).forEach(lis -> {
 			sum += ((List) lis).size();
@@ -5728,19 +5742,19 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
-					public int compare(java.lang.String value1, java.lang.String value2) {
-						return value1.compareTo(value2);
-					}
-				}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
-					public java.util.List<java.lang.String> apply(java.lang.String value) {
-						return Arrays.asList(value);
-					}
-				}).collect(toexecute, null);
+				}).sorted(new com.github.mdc.common.functions.SortedComparator<java.lang.String>() {
+			public int compare(java.lang.String value1, java.lang.String value2) {
+				return value1.compareTo(value2);
+			}
+		}).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+			public java.util.List<java.lang.String> apply(java.lang.String value) {
+				return Arrays.asList(value);
+			}
+		}).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -5757,19 +5771,19 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
-					public int compare(java.lang.String value1, java.lang.String value2) {
-						return value1.compareTo(value2);
-					}
-				}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
-					public java.util.List<java.lang.String> apply(java.lang.String value) {
-						return Arrays.asList(value);
-					}
-				}).count(null);
+				}).sorted(new com.github.mdc.common.functions.SortedComparator<java.lang.String>() {
+			public int compare(java.lang.String value1, java.lang.String value2) {
+				return value1.compareTo(value2);
+			}
+		}).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+			public java.util.List<java.lang.String> apply(java.lang.String value) {
+				return Arrays.asList(value);
+			}
+		}).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -5788,15 +5802,15 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		datapipeline.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
-		}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
+		}).sorted(new com.github.mdc.common.functions.SortedComparator<java.lang.String>() {
 			public int compare(java.lang.String value1, java.lang.String value2) {
 				return value1.compareTo(value2);
 			}
-		}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		}).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
@@ -5815,19 +5829,19 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
-					public int compare(java.lang.String value1, java.lang.String value2) {
-						return value1.compareTo(value2);
-					}
-				}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
-					public java.lang.String[] apply(java.lang.String value) {
-						return value.split(",");
-					}
-				}).collect(toexecute, null);
+				}).sorted(new com.github.mdc.common.functions.SortedComparator<java.lang.String>() {
+			public int compare(java.lang.String value1, java.lang.String value2) {
+				return value1.compareTo(value2);
+			}
+		}).map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+			public java.lang.String[] apply(java.lang.String value) {
+				return value.split(",");
+			}
+		}).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -5844,19 +5858,19 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
-					public int compare(java.lang.String value1, java.lang.String value2) {
-						return value1.compareTo(value2);
-					}
-				}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
-					public java.lang.String[] apply(java.lang.String value) {
-						return value.split(",");
-					}
-				}).count(null);
+				}).sorted(new com.github.mdc.common.functions.SortedComparator<java.lang.String>() {
+			public int compare(java.lang.String value1, java.lang.String value2) {
+				return value1.compareTo(value2);
+			}
+		}).map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+			public java.lang.String[] apply(java.lang.String value) {
+				return value.split(",");
+			}
+		}).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -5875,15 +5889,15 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		datapipeline.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
-		}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
+		}).sorted(new com.github.mdc.common.functions.SortedComparator<java.lang.String>() {
 			public int compare(java.lang.String value1, java.lang.String value2) {
 				return value1.compareTo(value2);
 			}
-		}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+		}).map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 			public java.lang.String[] apply(java.lang.String value) {
 				return value.split(",");
 			}
@@ -5902,20 +5916,20 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
-					public int compare(java.lang.String value1, java.lang.String value2) {
-						return value1.compareTo(value2);
+				}).sorted(new com.github.mdc.common.functions.SortedComparator<java.lang.String>() {
+			public int compare(java.lang.String value1, java.lang.String value2) {
+				return value1.compareTo(value2);
+			}
+		}).mapToPair(
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
-				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				})
 				.collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
@@ -5933,20 +5947,20 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
-					public int compare(java.lang.String value1, java.lang.String value2) {
-						return value1.compareTo(value2);
+				}).sorted(new com.github.mdc.common.functions.SortedComparator<java.lang.String>() {
+			public int compare(java.lang.String value1, java.lang.String value2) {
+				return value1.compareTo(value2);
+			}
+		}).mapToPair(
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
-				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				})
 				.count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
@@ -5966,22 +5980,22 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		datapipeline.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
-		}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
+		}).sorted(new com.github.mdc.common.functions.SortedComparator<java.lang.String>() {
 			public int compare(java.lang.String value1, java.lang.String value2) {
 				return value1.compareTo(value2);
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(45957, sum);
 
@@ -5994,20 +6008,20 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Tuple2>> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
-					public int compare(java.lang.String value1, java.lang.String value2) {
-						return value1.compareTo(value2);
+				}).sorted(new com.github.mdc.common.functions.SortedComparator<java.lang.String>() {
+			public int compare(java.lang.String value1, java.lang.String value2) {
+				return value1.compareTo(value2);
+			}
+		}).mapToPair(
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
-				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				})
 				.groupByKey().collect(toexecute, null);
 		int sum = 0;
 		for (List<Tuple2> lsttuples : data) {
@@ -6026,25 +6040,25 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		datapipeline.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
-		}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
+		}).sorted(new com.github.mdc.common.functions.SortedComparator<java.lang.String>() {
 			public int compare(java.lang.String value1, java.lang.String value2) {
 				return value1.compareTo(value2);
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).groupByKey().forEach(lsttuples -> {
-					for (Tuple2 tuple2 : lsttuples) {
-						sum += ((List) tuple2.v2).size();
-					}
+			for (Tuple2 tuple2 : lsttuples) {
+				sum += ((List) tuple2.v2).size();
+			}
 
-				}, null);
+		}, null);
 
 		assertEquals(45957, sum);
 
@@ -6057,20 +6071,20 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
-					public int compare(java.lang.String value1, java.lang.String value2) {
-						return value1.compareTo(value2);
+				}).sorted(new com.github.mdc.common.functions.SortedComparator<java.lang.String>() {
+			public int compare(java.lang.String value1, java.lang.String value2) {
+				return value1.compareTo(value2);
+			}
+		}).mapToPair(
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
-				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				})
 				.reduceByKey((a, b) -> a + b).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
@@ -6088,20 +6102,20 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
-					public int compare(java.lang.String value1, java.lang.String value2) {
-						return value1.compareTo(value2);
+				}).sorted(new com.github.mdc.common.functions.SortedComparator<java.lang.String>() {
+			public int compare(java.lang.String value1, java.lang.String value2) {
+				return value1.compareTo(value2);
+			}
+		}).mapToPair(
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
-				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				})
 				.reduceByKey((a, b) -> a + b).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
@@ -6121,22 +6135,22 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		datapipeline.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
-		}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
+		}).sorted(new com.github.mdc.common.functions.SortedComparator<java.lang.String>() {
 			public int compare(java.lang.String value1, java.lang.String value2) {
 				return value1.compareTo(value2);
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).reduceByKey((a, b) -> a + b).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(1, sum);
 
@@ -6149,15 +6163,15 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
-					public int compare(java.lang.String value1, java.lang.String value2) {
-						return value1.compareTo(value2);
-					}
-				}).peek(val->System.out.println(val)).collect(toexecute, null);
+				}).sorted(new com.github.mdc.common.functions.SortedComparator<java.lang.String>() {
+			public int compare(java.lang.String value1, java.lang.String value2) {
+				return value1.compareTo(value2);
+			}
+		}).peek(val -> System.out.println(val)).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -6174,15 +6188,15 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
-					public int compare(java.lang.String value1, java.lang.String value2) {
-						return value1.compareTo(value2);
-					}
-				}).peek(val->System.out.println(val)).count(null);
+				}).sorted(new com.github.mdc.common.functions.SortedComparator<java.lang.String>() {
+			public int compare(java.lang.String value1, java.lang.String value2) {
+				return value1.compareTo(value2);
+			}
+		}).peek(val -> System.out.println(val)).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -6201,15 +6215,15 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		datapipeline.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
-		}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
+		}).sorted(new com.github.mdc.common.functions.SortedComparator<java.lang.String>() {
 			public int compare(java.lang.String value1, java.lang.String value2) {
 				return value1.compareTo(value2);
 			}
-		}).peek(val->System.out.println(val)).forEach(lis -> {
+		}).peek(val -> System.out.println(val)).forEach(lis -> {
 			sum += ((List) lis).size();
 		}, null);
 
@@ -6224,15 +6238,15 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
-					public int compare(java.lang.String value1, java.lang.String value2) {
-						return value1.compareTo(value2);
-					}
-				}).sample(46361).collect(toexecute, null);
+				}).sorted(new com.github.mdc.common.functions.SortedComparator<java.lang.String>() {
+			public int compare(java.lang.String value1, java.lang.String value2) {
+				return value1.compareTo(value2);
+			}
+		}).sample(46361).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -6249,15 +6263,15 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
-					public int compare(java.lang.String value1, java.lang.String value2) {
-						return value1.compareTo(value2);
-					}
-				}).sample(46361).count(null);
+				}).sorted(new com.github.mdc.common.functions.SortedComparator<java.lang.String>() {
+			public int compare(java.lang.String value1, java.lang.String value2) {
+				return value1.compareTo(value2);
+			}
+		}).sample(46361).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -6276,11 +6290,11 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		datapipeline.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
-		}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
+		}).sorted(new com.github.mdc.common.functions.SortedComparator<java.lang.String>() {
 			public int compare(java.lang.String value1, java.lang.String value2) {
 				return value1.compareTo(value2);
 			}
@@ -6299,19 +6313,19 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
-					public int compare(java.lang.String value1, java.lang.String value2) {
-						return value1.compareTo(value2);
-					}
-				}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
-					public int compare(java.lang.String value1, java.lang.String value2) {
-						return value1.compareTo(value2);
-					}
-				}).collect(toexecute, null);
+				}).sorted(new com.github.mdc.common.functions.SortedComparator<java.lang.String>() {
+			public int compare(java.lang.String value1, java.lang.String value2) {
+				return value1.compareTo(value2);
+			}
+		}).sorted(new com.github.mdc.common.functions.SortedComparator<java.lang.String>() {
+			public int compare(java.lang.String value1, java.lang.String value2) {
+				return value1.compareTo(value2);
+			}
+		}).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -6328,19 +6342,19 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
-				}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
-					public int compare(java.lang.String value1, java.lang.String value2) {
-						return value1.compareTo(value2);
-					}
-				}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
-					public int compare(java.lang.String value1, java.lang.String value2) {
-						return value1.compareTo(value2);
-					}
-				}).count(null);
+				}).sorted(new com.github.mdc.common.functions.SortedComparator<java.lang.String>() {
+			public int compare(java.lang.String value1, java.lang.String value2) {
+				return value1.compareTo(value2);
+			}
+		}).sorted(new com.github.mdc.common.functions.SortedComparator<java.lang.String>() {
+			public int compare(java.lang.String value1, java.lang.String value2) {
+				return value1.compareTo(value2);
+			}
+		}).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -6359,15 +6373,15 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		datapipeline.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
-		}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
+		}).sorted(new com.github.mdc.common.functions.SortedComparator<java.lang.String>() {
 			public int compare(java.lang.String value1, java.lang.String value2) {
 				return value1.compareTo(value2);
 			}
-		}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
+		}).sorted(new com.github.mdc.common.functions.SortedComparator<java.lang.String>() {
 			public int compare(java.lang.String value1, java.lang.String value2) {
 				return value1.compareTo(value2);
 			}
@@ -6386,19 +6400,19 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
-					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
-					}
-				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
-					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
-					}
-				}).collect(toexecute, null);
+				}).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
+			public boolean test(java.lang.String value) {
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
+			}
+		}).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
+			public boolean test(java.lang.String value) {
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
+			}
+		}).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -6415,19 +6429,19 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
-					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
-					}
-				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
-					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
-					}
-				}).count(null);
+				}).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
+			public boolean test(java.lang.String value) {
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
+			}
+		}).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
+			public boolean test(java.lang.String value) {
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
+			}
+		}).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -6446,17 +6460,17 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		datapipeline.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
-		}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		}).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
-		}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		}).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).forEach(lis -> {
 			sum += ((List) lis).size();
@@ -6473,19 +6487,19 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
-					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
-					}
-				}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
-					public java.util.List<java.lang.String> apply(java.lang.String value) {
-						return Arrays.asList(value);
-					}
-				}).collect(toexecute, null);
+				}).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
+			public boolean test(java.lang.String value) {
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
+			}
+		}).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+			public java.util.List<java.lang.String> apply(java.lang.String value) {
+				return Arrays.asList(value);
+			}
+		}).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -6502,19 +6516,19 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
-					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
-					}
-				}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
-					public java.util.List<java.lang.String> apply(java.lang.String value) {
-						return Arrays.asList(value);
-					}
-				}).count(null);
+				}).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
+			public boolean test(java.lang.String value) {
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
+			}
+		}).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+			public java.util.List<java.lang.String> apply(java.lang.String value) {
+				return Arrays.asList(value);
+			}
+		}).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -6533,15 +6547,15 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		datapipeline.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
-		}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		}).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
-		}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		}).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
@@ -6560,19 +6574,19 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
-					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
-					}
-				}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
-					public java.lang.String[] apply(java.lang.String value) {
-						return value.split(",");
-					}
-				}).collect(toexecute, null);
+				}).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
+			public boolean test(java.lang.String value) {
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
+			}
+		}).map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+			public java.lang.String[] apply(java.lang.String value) {
+				return value.split(",");
+			}
+		}).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -6589,19 +6603,19 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
-					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
-					}
-				}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
-					public java.lang.String[] apply(java.lang.String value) {
-						return value.split(",");
-					}
-				}).count(null);
+				}).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
+			public boolean test(java.lang.String value) {
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
+			}
+		}).map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+			public java.lang.String[] apply(java.lang.String value) {
+				return value.split(",");
+			}
+		}).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -6620,15 +6634,15 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		datapipeline.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
-		}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		}).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
-		}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+		}).map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 			public java.lang.String[] apply(java.lang.String value) {
 				return value.split(",");
 			}
@@ -6647,20 +6661,20 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
-					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				}).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
+			public boolean test(java.lang.String value) {
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
+			}
+		}).mapToPair(
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
-				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				})
 				.collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
@@ -6678,20 +6692,20 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
-					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				}).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
+			public boolean test(java.lang.String value) {
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
+			}
+		}).mapToPair(
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
-				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				})
 				.count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
@@ -6711,22 +6725,22 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		datapipeline.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
-		}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		}).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(45957, sum);
 
@@ -6739,20 +6753,20 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Tuple2>> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
-					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				}).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
+			public boolean test(java.lang.String value) {
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
+			}
+		}).mapToPair(
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
-				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				})
 				.groupByKey().collect(toexecute, null);
 		int sum = 0;
 		for (List<Tuple2> lsttuples : data) {
@@ -6771,25 +6785,25 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		datapipeline.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
-		}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		}).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).groupByKey().forEach(lsttuples -> {
-					for (Tuple2 tuple2 : lsttuples) {
-						sum += ((List) tuple2.v2).size();
-					}
+			for (Tuple2 tuple2 : lsttuples) {
+				sum += ((List) tuple2.v2).size();
+			}
 
-				}, null);
+		}, null);
 
 		assertEquals(45957, sum);
 
@@ -6802,20 +6816,20 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
-					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				}).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
+			public boolean test(java.lang.String value) {
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
+			}
+		}).mapToPair(
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
-				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				})
 				.reduceByKey((a, b) -> a + b).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
@@ -6833,20 +6847,20 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
-					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				}).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
+			public boolean test(java.lang.String value) {
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
+			}
+		}).mapToPair(
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
-				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				})
 				.reduceByKey((a, b) -> a + b).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
@@ -6866,22 +6880,22 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		datapipeline.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
-		}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		}).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).reduceByKey((a, b) -> a + b).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(1, sum);
 
@@ -6894,15 +6908,15 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
-					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
-					}
-				}).peek(val->System.out.println(val)).collect(toexecute, null);
+				}).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
+			public boolean test(java.lang.String value) {
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
+			}
+		}).peek(val -> System.out.println(val)).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -6919,15 +6933,15 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
-					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
-					}
-				}).peek(val->System.out.println(val)).count(null);
+				}).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
+			public boolean test(java.lang.String value) {
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
+			}
+		}).peek(val -> System.out.println(val)).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -6946,15 +6960,15 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		datapipeline.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
-		}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		}).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
-		}).peek(val->System.out.println(val)).forEach(lis -> {
+		}).peek(val -> System.out.println(val)).forEach(lis -> {
 			sum += ((List) lis).size();
 		}, null);
 
@@ -6969,15 +6983,15 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
-					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
-					}
-				}).sample(46361).collect(toexecute, null);
+				}).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
+			public boolean test(java.lang.String value) {
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
+			}
+		}).sample(46361).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -6994,15 +7008,15 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
-					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
-					}
-				}).sample(46361).count(null);
+				}).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
+			public boolean test(java.lang.String value) {
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
+			}
+		}).sample(46361).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -7021,13 +7035,13 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		datapipeline.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
-		}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		}).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).sample(46361).forEach(lis -> {
 			sum += ((List) lis).size();
@@ -7044,19 +7058,19 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
-					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
-					}
-				}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
-					public int compare(java.lang.String value1, java.lang.String value2) {
-						return value1.compareTo(value2);
-					}
-				}).collect(toexecute, null);
+				}).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
+			public boolean test(java.lang.String value) {
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
+			}
+		}).sorted(new com.github.mdc.common.functions.SortedComparator<java.lang.String>() {
+			public int compare(java.lang.String value1, java.lang.String value2) {
+				return value1.compareTo(value2);
+			}
+		}).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -7073,19 +7087,19 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
-					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
-					}
-				}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
-					public int compare(java.lang.String value1, java.lang.String value2) {
-						return value1.compareTo(value2);
-					}
-				}).count(null);
+				}).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
+			public boolean test(java.lang.String value) {
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
+			}
+		}).sorted(new com.github.mdc.common.functions.SortedComparator<java.lang.String>() {
+			public int compare(java.lang.String value1, java.lang.String value2) {
+				return value1.compareTo(value2);
+			}
+		}).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -7104,15 +7118,15 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		datapipeline.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
-		}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		}).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
-		}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
+		}).sorted(new com.github.mdc.common.functions.SortedComparator<java.lang.String>() {
 			public int compare(java.lang.String value1, java.lang.String value2) {
 				return value1.compareTo(value2);
 			}
@@ -7131,19 +7145,19 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
-					public java.util.List<java.lang.String> apply(java.lang.String value) {
-						return Arrays.asList(value);
-					}
-				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
-					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
-					}
-				}).collect(toexecute, null);
+				}).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+			public java.util.List<java.lang.String> apply(java.lang.String value) {
+				return Arrays.asList(value);
+			}
+		}).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
+			public boolean test(java.lang.String value) {
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
+			}
+		}).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -7160,19 +7174,19 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
-					public java.util.List<java.lang.String> apply(java.lang.String value) {
-						return Arrays.asList(value);
-					}
-				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
-					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
-					}
-				}).count(null);
+				}).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+			public java.util.List<java.lang.String> apply(java.lang.String value) {
+				return Arrays.asList(value);
+			}
+		}).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
+			public boolean test(java.lang.String value) {
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
+			}
+		}).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -7191,17 +7205,17 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		datapipeline.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
-		}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		}).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
-		}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		}).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).forEach(lis -> {
 			sum += ((List) lis).size();
@@ -7218,19 +7232,19 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
-					public java.util.List<java.lang.String> apply(java.lang.String value) {
-						return Arrays.asList(value);
-					}
-				}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
-					public java.util.List<java.lang.String> apply(java.lang.String value) {
-						return Arrays.asList(value);
-					}
-				}).collect(toexecute, null);
+				}).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+			public java.util.List<java.lang.String> apply(java.lang.String value) {
+				return Arrays.asList(value);
+			}
+		}).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+			public java.util.List<java.lang.String> apply(java.lang.String value) {
+				return Arrays.asList(value);
+			}
+		}).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -7247,19 +7261,19 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
-					public java.util.List<java.lang.String> apply(java.lang.String value) {
-						return Arrays.asList(value);
-					}
-				}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
-					public java.util.List<java.lang.String> apply(java.lang.String value) {
-						return Arrays.asList(value);
-					}
-				}).count(null);
+				}).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+			public java.util.List<java.lang.String> apply(java.lang.String value) {
+				return Arrays.asList(value);
+			}
+		}).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+			public java.util.List<java.lang.String> apply(java.lang.String value) {
+				return Arrays.asList(value);
+			}
+		}).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -7278,15 +7292,15 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		datapipeline.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
-		}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		}).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
-		}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		}).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
@@ -7305,19 +7319,19 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
-					public java.util.List<java.lang.String> apply(java.lang.String value) {
-						return Arrays.asList(value);
-					}
-				}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
-					public java.lang.String[] apply(java.lang.String value) {
-						return value.split(",");
-					}
-				}).collect(toexecute, null);
+				}).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+			public java.util.List<java.lang.String> apply(java.lang.String value) {
+				return Arrays.asList(value);
+			}
+		}).map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+			public java.lang.String[] apply(java.lang.String value) {
+				return value.split(",");
+			}
+		}).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -7334,19 +7348,19 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
-					public java.util.List<java.lang.String> apply(java.lang.String value) {
-						return Arrays.asList(value);
-					}
-				}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
-					public java.lang.String[] apply(java.lang.String value) {
-						return value.split(",");
-					}
-				}).count(null);
+				}).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+			public java.util.List<java.lang.String> apply(java.lang.String value) {
+				return Arrays.asList(value);
+			}
+		}).map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+			public java.lang.String[] apply(java.lang.String value) {
+				return value.split(",");
+			}
+		}).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -7365,15 +7379,15 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		datapipeline.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
-		}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		}).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
-		}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+		}).map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 			public java.lang.String[] apply(java.lang.String value) {
 				return value.split(",");
 			}
@@ -7392,20 +7406,20 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
-					public java.util.List<java.lang.String> apply(java.lang.String value) {
-						return Arrays.asList(value);
+				}).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+			public java.util.List<java.lang.String> apply(java.lang.String value) {
+				return Arrays.asList(value);
+			}
+		}).mapToPair(
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
-				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				})
 				.collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
@@ -7423,20 +7437,20 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
-					public java.util.List<java.lang.String> apply(java.lang.String value) {
-						return Arrays.asList(value);
+				}).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+			public java.util.List<java.lang.String> apply(java.lang.String value) {
+				return Arrays.asList(value);
+			}
+		}).mapToPair(
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
-				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				})
 				.count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
@@ -7456,22 +7470,22 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		datapipeline.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
-		}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		}).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(46361, sum);
 
@@ -7484,20 +7498,20 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Tuple2>> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
-					public java.util.List<java.lang.String> apply(java.lang.String value) {
-						return Arrays.asList(value);
+				}).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+			public java.util.List<java.lang.String> apply(java.lang.String value) {
+				return Arrays.asList(value);
+			}
+		}).mapToPair(
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
-				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				})
 				.groupByKey().collect(toexecute, null);
 		int sum = 0;
 		for (List<Tuple2> lsttuples : data) {
@@ -7516,25 +7530,25 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		datapipeline.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
-		}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		}).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).groupByKey().forEach(lsttuples -> {
-					for (Tuple2 tuple2 : lsttuples) {
-						sum += ((List) tuple2.v2).size();
-					}
+			for (Tuple2 tuple2 : lsttuples) {
+				sum += ((List) tuple2.v2).size();
+			}
 
-				}, null);
+		}, null);
 
 		assertEquals(46361, sum);
 
@@ -7547,20 +7561,20 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
-					public java.util.List<java.lang.String> apply(java.lang.String value) {
-						return Arrays.asList(value);
+				}).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+			public java.util.List<java.lang.String> apply(java.lang.String value) {
+				return Arrays.asList(value);
+			}
+		}).mapToPair(
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
-				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				})
 				.reduceByKey((a, b) -> a + b).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
@@ -7578,20 +7592,20 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
-					public java.util.List<java.lang.String> apply(java.lang.String value) {
-						return Arrays.asList(value);
+				}).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+			public java.util.List<java.lang.String> apply(java.lang.String value) {
+				return Arrays.asList(value);
+			}
+		}).mapToPair(
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
-				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				})
 				.reduceByKey((a, b) -> a + b).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
@@ -7611,22 +7625,22 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		datapipeline.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
-		}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		}).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).reduceByKey((a, b) -> a + b).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(2, sum);
 
@@ -7639,15 +7653,15 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
-					public java.util.List<java.lang.String> apply(java.lang.String value) {
-						return Arrays.asList(value);
-					}
-				}).peek(val->System.out.println(val)).collect(toexecute, null);
+				}).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+			public java.util.List<java.lang.String> apply(java.lang.String value) {
+				return Arrays.asList(value);
+			}
+		}).peek(val -> System.out.println(val)).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -7664,15 +7678,15 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
-					public java.util.List<java.lang.String> apply(java.lang.String value) {
-						return Arrays.asList(value);
-					}
-				}).peek(val->System.out.println(val)).count(null);
+				}).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+			public java.util.List<java.lang.String> apply(java.lang.String value) {
+				return Arrays.asList(value);
+			}
+		}).peek(val -> System.out.println(val)).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -7691,15 +7705,15 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		datapipeline.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
-		}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		}).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
-		}).peek(val->System.out.println(val)).forEach(lis -> {
+		}).peek(val -> System.out.println(val)).forEach(lis -> {
 			sum += ((List) lis).size();
 		}, null);
 
@@ -7714,15 +7728,15 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
-					public java.util.List<java.lang.String> apply(java.lang.String value) {
-						return Arrays.asList(value);
-					}
-				}).sample(46361).collect(toexecute, null);
+				}).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+			public java.util.List<java.lang.String> apply(java.lang.String value) {
+				return Arrays.asList(value);
+			}
+		}).sample(46361).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -7739,15 +7753,15 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
-					public java.util.List<java.lang.String> apply(java.lang.String value) {
-						return Arrays.asList(value);
-					}
-				}).sample(46361).count(null);
+				}).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+			public java.util.List<java.lang.String> apply(java.lang.String value) {
+				return Arrays.asList(value);
+			}
+		}).sample(46361).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -7766,11 +7780,11 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		datapipeline.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
-		}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		}).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
@@ -7789,19 +7803,19 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
-					public java.util.List<java.lang.String> apply(java.lang.String value) {
-						return Arrays.asList(value);
-					}
-				}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
-					public int compare(java.lang.String value1, java.lang.String value2) {
-						return value1.compareTo(value2);
-					}
-				}).collect(toexecute, null);
+				}).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+			public java.util.List<java.lang.String> apply(java.lang.String value) {
+				return Arrays.asList(value);
+			}
+		}).sorted(new com.github.mdc.common.functions.SortedComparator<java.lang.String>() {
+			public int compare(java.lang.String value1, java.lang.String value2) {
+				return value1.compareTo(value2);
+			}
+		}).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -7818,19 +7832,19 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
-					public java.util.List<java.lang.String> apply(java.lang.String value) {
-						return Arrays.asList(value);
-					}
-				}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
-					public int compare(java.lang.String value1, java.lang.String value2) {
-						return value1.compareTo(value2);
-					}
-				}).count(null);
+				}).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+			public java.util.List<java.lang.String> apply(java.lang.String value) {
+				return Arrays.asList(value);
+			}
+		}).sorted(new com.github.mdc.common.functions.SortedComparator<java.lang.String>() {
+			public int compare(java.lang.String value1, java.lang.String value2) {
+				return value1.compareTo(value2);
+			}
+		}).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -7849,15 +7863,15 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		datapipeline.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
-		}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		}).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
-		}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
+		}).sorted(new com.github.mdc.common.functions.SortedComparator<java.lang.String>() {
 			public int compare(java.lang.String value1, java.lang.String value2) {
 				return value1.compareTo(value2);
 			}
@@ -7876,19 +7890,19 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
-					public java.lang.String[] apply(java.lang.String value) {
-						return value.split(",");
-					}
-				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String[]>() {
-					public boolean test(java.lang.String[] value) {
-						return !value[14].equals("NA") && !value[14].equals("ArrDelay");
-					}
-				}).collect(toexecute, null);
+				}).map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+			public java.lang.String[] apply(java.lang.String value) {
+				return value.split(",");
+			}
+		}).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String[]>() {
+			public boolean test(java.lang.String[] value) {
+				return !"NA".equals(value[14]) && !"ArrDelay".equals(value[14]);
+			}
+		}).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -7905,19 +7919,19 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
-					public java.lang.String[] apply(java.lang.String value) {
-						return value.split(",");
-					}
-				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String[]>() {
-					public boolean test(java.lang.String[] value) {
-						return !value[14].equals("NA") && !value[14].equals("ArrDelay");
-					}
-				}).count(null);
+				}).map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+			public java.lang.String[] apply(java.lang.String value) {
+				return value.split(",");
+			}
+		}).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String[]>() {
+			public boolean test(java.lang.String[] value) {
+				return !"NA".equals(value[14]) && !"ArrDelay".equals(value[14]);
+			}
+		}).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -7936,17 +7950,17 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		datapipeline.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
-		}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+		}).map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 			public java.lang.String[] apply(java.lang.String value) {
 				return value.split(",");
 			}
-		}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String[]>() {
+		}).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String[]>() {
 			public boolean test(java.lang.String[] value) {
-				return !value[14].equals("NA") && !value[14].equals("ArrDelay");
+				return !"NA".equals(value[14]) && !"ArrDelay".equals(value[14]);
 			}
 		}).forEach(lis -> {
 			sum += ((List) lis).size();
@@ -7963,19 +7977,19 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
-					public java.lang.String[] apply(java.lang.String value) {
-						return value.split(",");
-					}
-				}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String[], java.lang.String>() {
-					public java.util.List<java.lang.String> apply(java.lang.String[] value) {
-						return Arrays.asList(value[8] + "-" + value[14]);
-					}
-				}).collect(toexecute, null);
+				}).map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+			public java.lang.String[] apply(java.lang.String value) {
+				return value.split(",");
+			}
+		}).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String[], java.lang.String>() {
+			public java.util.List<java.lang.String> apply(java.lang.String[] value) {
+				return Arrays.asList(value[8] + "-" + value[14]);
+			}
+		}).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -7992,19 +8006,19 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
-					public java.lang.String[] apply(java.lang.String value) {
-						return value.split(",");
-					}
-				}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String[], java.lang.String>() {
-					public java.util.List<java.lang.String> apply(java.lang.String[] value) {
-						return Arrays.asList(value[8] + "-" + value[14]);
-					}
-				}).count(null);
+				}).map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+			public java.lang.String[] apply(java.lang.String value) {
+				return value.split(",");
+			}
+		}).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String[], java.lang.String>() {
+			public java.util.List<java.lang.String> apply(java.lang.String[] value) {
+				return Arrays.asList(value[8] + "-" + value[14]);
+			}
+		}).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -8023,15 +8037,15 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		datapipeline.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
-		}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+		}).map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 			public java.lang.String[] apply(java.lang.String value) {
 				return value.split(",");
 			}
-		}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String[], java.lang.String>() {
+		}).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String[], java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String[] value) {
 				return Arrays.asList(value[8] + "-" + value[14]);
 			}
@@ -8050,19 +8064,19 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
-					public java.lang.String[] apply(java.lang.String value) {
-						return value.split(",");
-					}
-				}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String[], java.lang.String>() {
-					public java.lang.String apply(java.lang.String[] value) {
-						return value[8] + "-" + value[14];
-					}
-				}).collect(toexecute, null);
+				}).map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+			public java.lang.String[] apply(java.lang.String value) {
+				return value.split(",");
+			}
+		}).map(new com.github.mdc.common.functions.MapFunction<java.lang.String[], java.lang.String>() {
+			public java.lang.String apply(java.lang.String[] value) {
+				return value[8] + "-" + value[14];
+			}
+		}).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -8079,19 +8093,19 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
-					public java.lang.String[] apply(java.lang.String value) {
-						return value.split(",");
-					}
-				}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String[], java.lang.String>() {
-					public java.lang.String apply(java.lang.String[] value) {
-						return value[8] + "-" + value[14];
-					}
-				}).count(null);
+				}).map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+			public java.lang.String[] apply(java.lang.String value) {
+				return value.split(",");
+			}
+		}).map(new com.github.mdc.common.functions.MapFunction<java.lang.String[], java.lang.String>() {
+			public java.lang.String apply(java.lang.String[] value) {
+				return value[8] + "-" + value[14];
+			}
+		}).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -8110,15 +8124,15 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		datapipeline.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
-		}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+		}).map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 			public java.lang.String[] apply(java.lang.String value) {
 				return value.split(",");
 			}
-		}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String[], java.lang.String>() {
+		}).map(new com.github.mdc.common.functions.MapFunction<java.lang.String[], java.lang.String>() {
 			public java.lang.String apply(java.lang.String[] value) {
 				return value[8] + "-" + value[14];
 			}
@@ -8137,20 +8151,20 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
-					public java.lang.String[] apply(java.lang.String value) {
-						return value.split(",");
+				}).map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+			public java.lang.String[] apply(java.lang.String value) {
+				return value.split(",");
+			}
+		}).mapToPair(
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
+						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
 					}
-				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
-								return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
-							}
-						})
+				})
 				.collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
@@ -8168,20 +8182,20 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
-					public java.lang.String[] apply(java.lang.String value) {
-						return value.split(",");
+				}).map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+			public java.lang.String[] apply(java.lang.String value) {
+				return value.split(",");
+			}
+		}).mapToPair(
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
+						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
 					}
-				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
-								return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
-							}
-						})
+				})
 				.count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
@@ -8201,22 +8215,22 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		datapipeline.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
-		}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+		}).map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 			public java.lang.String[] apply(java.lang.String value) {
 				return value.split(",");
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
 						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
 					}
 				}).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(46361, sum);
 
@@ -8229,20 +8243,20 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Tuple2>> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
-					public java.lang.String[] apply(java.lang.String value) {
-						return value.split(",");
+				}).map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+			public java.lang.String[] apply(java.lang.String value) {
+				return value.split(",");
+			}
+		}).mapToPair(
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
+						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
 					}
-				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
-								return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
-							}
-						})
+				})
 				.groupByKey().collect(toexecute, null);
 		int sum = 0;
 		for (List<Tuple2> lsttuples : data) {
@@ -8261,25 +8275,25 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		datapipeline.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
-		}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+		}).map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 			public java.lang.String[] apply(java.lang.String value) {
 				return value.split(",");
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
 						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
 					}
 				}).groupByKey().forEach(lsttuples -> {
-					for (Tuple2 tuple2 : lsttuples) {
-						sum += ((List) tuple2.v2).size();
-					}
+			for (Tuple2 tuple2 : lsttuples) {
+				sum += ((List) tuple2.v2).size();
+			}
 
-				}, null);
+		}, null);
 
 		assertEquals(46361, sum);
 
@@ -8292,20 +8306,20 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
-					public java.lang.String[] apply(java.lang.String value) {
-						return value.split(",");
+				}).map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+			public java.lang.String[] apply(java.lang.String value) {
+				return value.split(",");
+			}
+		}).mapToPair(
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
+						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
 					}
-				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
-								return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
-							}
-						})
+				})
 				.reduceByKey((a, b) -> a + b).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
@@ -8323,20 +8337,20 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
-					public java.lang.String[] apply(java.lang.String value) {
-						return value.split(",");
+				}).map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+			public java.lang.String[] apply(java.lang.String value) {
+				return value.split(",");
+			}
+		}).mapToPair(
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
+						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
 					}
-				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
-								return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
-							}
-						})
+				})
 				.reduceByKey((a, b) -> a + b).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
@@ -8356,22 +8370,22 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		datapipeline.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
-		}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+		}).map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 			public java.lang.String[] apply(java.lang.String value) {
 				return value.split(",");
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
 						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
 					}
 				}).reduceByKey((a, b) -> a + b).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(2, sum);
 
@@ -8384,15 +8398,15 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
-					public java.lang.String[] apply(java.lang.String value) {
-						return value.split(",");
-					}
-				}).peek(val->System.out.println(val)).collect(toexecute, null);
+				}).map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+			public java.lang.String[] apply(java.lang.String value) {
+				return value.split(",");
+			}
+		}).peek(val -> System.out.println(val)).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -8409,15 +8423,15 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
-					public java.lang.String[] apply(java.lang.String value) {
-						return value.split(",");
-					}
-				}).peek(val->System.out.println(val)).count(null);
+				}).map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+			public java.lang.String[] apply(java.lang.String value) {
+				return value.split(",");
+			}
+		}).peek(val -> System.out.println(val)).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -8436,15 +8450,15 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		datapipeline.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
-		}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+		}).map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 			public java.lang.String[] apply(java.lang.String value) {
 				return value.split(",");
 			}
-		}).peek(val->System.out.println(val)).forEach(lis -> {
+		}).peek(val -> System.out.println(val)).forEach(lis -> {
 			sum += ((List) lis).size();
 		}, null);
 
@@ -8459,15 +8473,15 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
-					public java.lang.String[] apply(java.lang.String value) {
-						return value.split(",");
-					}
-				}).sample(46361).collect(toexecute, null);
+				}).map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+			public java.lang.String[] apply(java.lang.String value) {
+				return value.split(",");
+			}
+		}).sample(46361).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -8484,15 +8498,15 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
-					public java.lang.String[] apply(java.lang.String value) {
-						return value.split(",");
-					}
-				}).sample(46361).count(null);
+				}).map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+			public java.lang.String[] apply(java.lang.String value) {
+				return value.split(",");
+			}
+		}).sample(46361).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -8511,11 +8525,11 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		datapipeline.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
-		}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+		}).map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 			public java.lang.String[] apply(java.lang.String value) {
 				return value.split(",");
 			}
@@ -8534,19 +8548,19 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
-					public java.lang.String[] apply(java.lang.String value) {
-						return value.split(",");
-					}
-				}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String[]>() {
-					public int compare(java.lang.String[] value1, java.lang.String[] value2) {
-						return value1[1].compareTo(value2[1]);
-					}
-				}).collect(toexecute, null);
+				}).map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+			public java.lang.String[] apply(java.lang.String value) {
+				return value.split(",");
+			}
+		}).sorted(new com.github.mdc.common.functions.SortedComparator<java.lang.String[]>() {
+			public int compare(java.lang.String[] value1, java.lang.String[] value2) {
+				return value1[1].compareTo(value2[1]);
+			}
+		}).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -8563,19 +8577,19 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
-					public java.lang.String[] apply(java.lang.String value) {
-						return value.split(",");
-					}
-				}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String[]>() {
-					public int compare(java.lang.String[] value1, java.lang.String[] value2) {
-						return value1[1].compareTo(value2[1]);
-					}
-				}).count(null);
+				}).map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+			public java.lang.String[] apply(java.lang.String value) {
+				return value.split(",");
+			}
+		}).sorted(new com.github.mdc.common.functions.SortedComparator<java.lang.String[]>() {
+			public int compare(java.lang.String[] value1, java.lang.String[] value2) {
+				return value1[1].compareTo(value2[1]);
+			}
+		}).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -8594,15 +8608,15 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		datapipeline.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
-		}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+		}).map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 			public java.lang.String[] apply(java.lang.String value) {
 				return value.split(",");
 			}
-		}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String[]>() {
+		}).sorted(new com.github.mdc.common.functions.SortedComparator<java.lang.String[]>() {
 			public int compare(java.lang.String[] value1, java.lang.String[] value2) {
 				return value1[1].compareTo(value2[1]);
 			}
@@ -8621,17 +8635,17 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<org.jooq.lambda.tuple.Tuple2>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<org.jooq.lambda.tuple.Tuple2>() {
 					public boolean test(org.jooq.lambda.tuple.Tuple2 value) {
 						return true;
 					}
@@ -8652,17 +8666,17 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<org.jooq.lambda.tuple.Tuple2>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<org.jooq.lambda.tuple.Tuple2>() {
 					public boolean test(org.jooq.lambda.tuple.Tuple2 value) {
 						return true;
 					}
@@ -8685,22 +8699,22 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		datapipeline.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
-				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<org.jooq.lambda.tuple.Tuple2>() {
-					public boolean test(org.jooq.lambda.tuple.Tuple2 value) {
-						return true;
-					}
-				}).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+				}).filter(new com.github.mdc.common.functions.PredicateSerializable<org.jooq.lambda.tuple.Tuple2>() {
+			public boolean test(org.jooq.lambda.tuple.Tuple2 value) {
+				return true;
+			}
+		}).forEach(lis -> {
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(46361, sum);
 
@@ -8713,16 +8727,16 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
 				.collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
@@ -8740,16 +8754,16 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
 				.count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
@@ -8769,18 +8783,18 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		datapipeline.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(46361, sum);
 
@@ -8793,21 +8807,21 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Tuple2>> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
-				.groupByKey().filter(new com.github.mdc.stream.functions.PredicateSerializable<org.jooq.lambda.tuple.Tuple2>() {
-					public boolean test(org.jooq.lambda.tuple.Tuple2 value) {
-						return true;
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
-				}).collect(toexecute, null);
+				})
+				.groupByKey().filter(new com.github.mdc.common.functions.PredicateSerializable<org.jooq.lambda.tuple.Tuple2>() {
+			public boolean test(org.jooq.lambda.tuple.Tuple2 value) {
+				return true;
+			}
+		}).collect(toexecute, null);
 		int sum = 0;
 		for (List<Tuple2> lsttuples : data) {
 			for (Tuple2 tuple2 : lsttuples) {
@@ -8825,26 +8839,26 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		datapipeline.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).groupByKey()
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<org.jooq.lambda.tuple.Tuple2>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<org.jooq.lambda.tuple.Tuple2>() {
 					public boolean test(org.jooq.lambda.tuple.Tuple2 value) {
 						return true;
 					}
 				}).forEach(lsttuples -> {
-					for (Tuple2 tuple2 : lsttuples) {
-						sum += ((List) tuple2.v2).size();
-					}
+			for (Tuple2 tuple2 : lsttuples) {
+				sum += ((List) tuple2.v2).size();
+			}
 
-				}, null);
+		}, null);
 
 		assertEquals(46361, sum);
 
@@ -8857,16 +8871,16 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Tuple2>> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
 				.groupByKey().collect(toexecute, null);
 		int sum = 0;
 		for (List<Tuple2> lsttuples : data) {
@@ -8885,21 +8899,21 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		datapipeline.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).groupByKey().forEach(lsttuples -> {
-					for (Tuple2 tuple2 : lsttuples) {
-						sum += ((List) tuple2.v2).size();
-					}
+			for (Tuple2 tuple2 : lsttuples) {
+				sum += ((List) tuple2.v2).size();
+			}
 
-				}, null);
+		}, null);
 
 		assertEquals(46361, sum);
 
@@ -8912,16 +8926,16 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Tuple2>> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
 				.groupByKey().collect(toexecute, null);
 		int sum = 0;
 		for (List<Tuple2> lsttuples : data) {
@@ -8940,21 +8954,21 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		datapipeline.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).groupByKey().forEach(lsttuples -> {
-					for (Tuple2 tuple2 : lsttuples) {
-						sum += ((List) tuple2.v2).size();
-					}
+			for (Tuple2 tuple2 : lsttuples) {
+				sum += ((List) tuple2.v2).size();
+			}
 
-				}, null);
+		}, null);
 
 		assertEquals(46361, sum);
 
@@ -8967,22 +8981,22 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Tuple2>> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
 				.groupByKey().mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
-								return (Tuple2<String, String>) value;
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
+						return (Tuple2<String, String>) value;
+					}
+				})
 				.collect(toexecute, null);
 		int sum = 0;
 		for (List<Tuple2> lsttuples : data) {
@@ -9001,21 +9015,21 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		datapipeline.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).groupByKey().mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
-								return (Tuple2<String, String>) value;
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
+						return (Tuple2<String, String>) value;
+					}
+				})
 				.forEach(lsttuples -> {
 					for (Tuple2 tuple2 : lsttuples) {
 						sum += ((List) tuple2.v2).size();
@@ -9034,22 +9048,22 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Tuple2>> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
 				.groupByKey().mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
-								return (Tuple2<String, String>) value;
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
+						return (Tuple2<String, String>) value;
+					}
+				})
 				.groupByKey().collect(toexecute, null);
 		int sum = 0;
 		for (List<Tuple2> lsttuples : data) {
@@ -9068,27 +9082,27 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		datapipeline.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).groupByKey().mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
-								return (Tuple2<String, String>) value;
-							}
-						})
-				.groupByKey().forEach(lsttuples -> {
-					for (Tuple2 tuple2 : lsttuples) {
-						sum += ((List) tuple2.v2).size();
+				new com.github.mdc.common.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
+						return (Tuple2<String, String>) value;
 					}
+				})
+				.groupByKey().forEach(lsttuples -> {
+			for (Tuple2 tuple2 : lsttuples) {
+				sum += ((List) tuple2.v2).size();
+			}
 
-				}, null);
+		}, null);
 
 		assertEquals(2, sum);
 
@@ -9101,22 +9115,22 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Tuple2>> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
 				.groupByKey().mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
-								return (Tuple2<String, String>) value;
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
+						return (Tuple2<String, String>) value;
+					}
+				})
 				.reduceByKey((a, b) -> a + b).collect(toexecute, null);
 		int sum = 0;
 		for (List<Tuple2> lsttuples : data) {
@@ -9135,27 +9149,27 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		datapipeline.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).groupByKey().mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
-								return (Tuple2<String, String>) value;
-							}
-						})
-				.reduceByKey((a, b) -> a + b).forEach(lsttuples -> {
-					for (Tuple2 tuple2 : lsttuples) {
-						sum += ((List) tuple2.v2).size();
+				new com.github.mdc.common.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
+						return (Tuple2<String, String>) value;
 					}
+				})
+				.reduceByKey((a, b) -> a + b).forEach(lsttuples -> {
+			for (Tuple2 tuple2 : lsttuples) {
+				sum += ((List) tuple2.v2).size();
+			}
 
-				}, null);
+		}, null);
 
 		assertEquals(46361, sum);
 
@@ -9168,17 +9182,17 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Tuple2>> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
-				.groupByKey().peek(val->System.out.println(val)).collect(toexecute, null);
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
+				.groupByKey().peek(val -> System.out.println(val)).collect(toexecute, null);
 		int sum = 0;
 		for (List<Tuple2> lsttuples : data) {
 			for (Tuple2 tuple2 : lsttuples) {
@@ -9196,21 +9210,21 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		datapipeline.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
-				}).groupByKey().peek(val->System.out.println(val)).forEach(lsttuples -> {
-					for (Tuple2 tuple2 : lsttuples) {
-						sum += ((List) tuple2.v2).size();
-					}
+				}).groupByKey().peek(val -> System.out.println(val)).forEach(lsttuples -> {
+			for (Tuple2 tuple2 : lsttuples) {
+				sum += ((List) tuple2.v2).size();
+			}
 
-				}, null);
+		}, null);
 
 		assertEquals(46361, sum);
 
@@ -9223,16 +9237,16 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Tuple2>> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
 				.groupByKey().sample(46361).collect(toexecute, null);
 		int sum = 0;
 		for (List<Tuple2> lsttuples : data) {
@@ -9251,21 +9265,21 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		datapipeline.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).groupByKey().sample(46361).forEach(lsttuples -> {
-					for (Tuple2 tuple2 : lsttuples) {
-						sum += ((List) tuple2.v2).size();
-					}
+			for (Tuple2 tuple2 : lsttuples) {
+				sum += ((List) tuple2.v2).size();
+			}
 
-				}, null);
+		}, null);
 
 		assertEquals(46361, sum);
 
@@ -9278,21 +9292,21 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Tuple2>> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
-				.groupByKey().sorted(new com.github.mdc.stream.functions.SortedComparator<org.jooq.lambda.tuple.Tuple2>() {
-					public int compare(org.jooq.lambda.tuple.Tuple2 value1, org.jooq.lambda.tuple.Tuple2 value2) {
-						return value1.compareTo(value2);
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
-				}).collect(toexecute, null);
+				})
+				.groupByKey().sorted(new com.github.mdc.common.functions.SortedComparator<org.jooq.lambda.tuple.Tuple2>() {
+			public int compare(org.jooq.lambda.tuple.Tuple2 value1, org.jooq.lambda.tuple.Tuple2 value2) {
+				return value1.compareTo(value2);
+			}
+		}).collect(toexecute, null);
 		int sum = 0;
 		for (List<Tuple2> lsttuples : data) {
 			for (Tuple2 tuple2 : lsttuples) {
@@ -9310,25 +9324,25 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		datapipeline.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
-				}).groupByKey().sorted(new com.github.mdc.stream.functions.SortedComparator<org.jooq.lambda.tuple.Tuple2>() {
-					public int compare(org.jooq.lambda.tuple.Tuple2 value1, org.jooq.lambda.tuple.Tuple2 value2) {
-						return value1.compareTo(value2);
-					}
-				}).forEach(lsttuples -> {
-					for (Tuple2 tuple2 : lsttuples) {
-						sum += ((List) tuple2.v2).size();
-					}
+				}).groupByKey().sorted(new com.github.mdc.common.functions.SortedComparator<org.jooq.lambda.tuple.Tuple2>() {
+			public int compare(org.jooq.lambda.tuple.Tuple2 value1, org.jooq.lambda.tuple.Tuple2 value2) {
+				return value1.compareTo(value2);
+			}
+		}).forEach(lsttuples -> {
+			for (Tuple2 tuple2 : lsttuples) {
+				sum += ((List) tuple2.v2).size();
+			}
 
-				}, null);
+		}, null);
 
 		assertEquals(46361, sum);
 
@@ -9341,16 +9355,16 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
 				.collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
@@ -9368,16 +9382,16 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
 				.count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
@@ -9397,18 +9411,18 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		datapipeline.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(46361, sum);
 
@@ -9421,18 +9435,18 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
 				.mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+						new com.github.mdc.common.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 							public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
 								return (Tuple2<String, String>) value;
 							}
@@ -9454,18 +9468,18 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
 				.mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+						new com.github.mdc.common.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 							public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
 								return (Tuple2<String, String>) value;
 							}
@@ -9489,21 +9503,21 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		datapipeline.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
-								return (Tuple2<String, String>) value;
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
+						return (Tuple2<String, String>) value;
+					}
+				})
 				.forEach(lis -> {
 					sum += ((List) lis).size();
 				}, null);
@@ -9519,18 +9533,18 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Tuple2>> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
 				.mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+						new com.github.mdc.common.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 							public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
 								return (Tuple2<String, String>) value;
 							}
@@ -9553,27 +9567,27 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		datapipeline.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
-								return (Tuple2<String, String>) value;
-							}
-						})
-				.groupByKey().forEach(lsttuples -> {
-					for (Tuple2 tuple2 : lsttuples) {
-						sum += ((List) tuple2.v2).size();
+				new com.github.mdc.common.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
+						return (Tuple2<String, String>) value;
 					}
+				})
+				.groupByKey().forEach(lsttuples -> {
+			for (Tuple2 tuple2 : lsttuples) {
+				sum += ((List) tuple2.v2).size();
+			}
 
-				}, null);
+		}, null);
 
 		assertEquals(46361, sum);
 
@@ -9586,18 +9600,18 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
 				.mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+						new com.github.mdc.common.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 							public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
 								return (Tuple2<String, String>) value;
 							}
@@ -9619,18 +9633,18 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
 				.mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+						new com.github.mdc.common.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 							public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
 								return (Tuple2<String, String>) value;
 							}
@@ -9654,24 +9668,24 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		datapipeline.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
-								return (Tuple2<String, String>) value;
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
+						return (Tuple2<String, String>) value;
+					}
+				})
 				.reduceByKey((a, b) -> a + b).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(2, sum);
 
@@ -9684,17 +9698,17 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
-				.peek(val->System.out.println(val)).collect(toexecute, null);
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
+				.peek(val -> System.out.println(val)).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -9711,17 +9725,17 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
-				.peek(val->System.out.println(val)).count(null);
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
+				.peek(val -> System.out.println(val)).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -9740,18 +9754,18 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		datapipeline.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
-				}).peek(val->System.out.println(val)).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+				}).peek(val -> System.out.println(val)).forEach(lis -> {
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(46361, sum);
 
@@ -9764,18 +9778,18 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
 				.reduceByKey((a, b) -> a + b)
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<org.jooq.lambda.tuple.Tuple2>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<org.jooq.lambda.tuple.Tuple2>() {
 					public boolean test(org.jooq.lambda.tuple.Tuple2 value) {
 						return true;
 					}
@@ -9796,18 +9810,18 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
 				.reduceByKey((a, b) -> a + b)
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<org.jooq.lambda.tuple.Tuple2>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<org.jooq.lambda.tuple.Tuple2>() {
 					public boolean test(org.jooq.lambda.tuple.Tuple2 value) {
 						return true;
 					}
@@ -9830,23 +9844,23 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		datapipeline.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).reduceByKey((a, b) -> a + b)
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<org.jooq.lambda.tuple.Tuple2>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<org.jooq.lambda.tuple.Tuple2>() {
 					public boolean test(org.jooq.lambda.tuple.Tuple2 value) {
 						return true;
 					}
 				}).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(2, sum);
 
@@ -9859,16 +9873,16 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
 				.reduceByKey((a, b) -> a + b).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
@@ -9886,16 +9900,16 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
 				.reduceByKey((a, b) -> a + b).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
@@ -9915,18 +9929,18 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		datapipeline.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).reduceByKey((a, b) -> a + b).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(2, sum);
 
@@ -9939,16 +9953,16 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
 				.reduceByKey((a, b) -> a + b).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
@@ -9966,16 +9980,16 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
 				.reduceByKey((a, b) -> a + b).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
@@ -9995,18 +10009,18 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		datapipeline.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).reduceByKey((a, b) -> a + b).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(2, sum);
 
@@ -10019,22 +10033,22 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
 				.reduceByKey((a, b) -> a + b).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
-								return (Tuple2<String, String>) value;
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
+						return (Tuple2<String, String>) value;
+					}
+				})
 				.collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
@@ -10052,22 +10066,22 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
 				.reduceByKey((a, b) -> a + b).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
-								return (Tuple2<String, String>) value;
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
+						return (Tuple2<String, String>) value;
+					}
+				})
 				.count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
@@ -10087,21 +10101,21 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		datapipeline.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).reduceByKey((a, b) -> a + b).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
-								return (Tuple2<String, String>) value;
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
+						return (Tuple2<String, String>) value;
+					}
+				})
 				.forEach(lis -> {
 					sum += ((List) lis).size();
 				}, null);
@@ -10117,22 +10131,22 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Tuple2>> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
 				.reduceByKey((a, b) -> a + b).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
-								return (Tuple2<String, String>) value;
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
+						return (Tuple2<String, String>) value;
+					}
+				})
 				.groupByKey().collect(toexecute, null);
 		int sum = 0;
 		for (List<Tuple2> lsttuples : data) {
@@ -10151,27 +10165,27 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		datapipeline.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).reduceByKey((a, b) -> a + b).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
-								return (Tuple2<String, String>) value;
-							}
-						})
-				.groupByKey().forEach(lsttuples -> {
-					for (Tuple2 tuple2 : lsttuples) {
-						sum += ((List) tuple2.v2).size();
+				new com.github.mdc.common.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
+						return (Tuple2<String, String>) value;
 					}
+				})
+				.groupByKey().forEach(lsttuples -> {
+			for (Tuple2 tuple2 : lsttuples) {
+				sum += ((List) tuple2.v2).size();
+			}
 
-				}, null);
+		}, null);
 
 		assertEquals(2, sum);
 
@@ -10184,22 +10198,22 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
 				.reduceByKey((a, b) -> a + b).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
-								return (Tuple2<String, String>) value;
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
+						return (Tuple2<String, String>) value;
+					}
+				})
 				.reduceByKey((a, b) -> a + b).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
@@ -10218,22 +10232,22 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
 				.reduceByKey((a, b) -> a + b).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
-								return (Tuple2<String, String>) value;
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
+						return (Tuple2<String, String>) value;
+					}
+				})
 				.reduceByKey((a, b) -> a + b).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
@@ -10253,24 +10267,24 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		datapipeline.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).reduceByKey((a, b) -> a + b).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
-								return (Tuple2<String, String>) value;
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
+						return (Tuple2<String, String>) value;
+					}
+				})
 				.reduceByKey((a, b) -> a + b).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(2, sum);
 
@@ -10283,17 +10297,17 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
-				.reduceByKey((a, b) -> a + b).peek(val->System.out.println(val)).collect(toexecute, null);
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
+				.reduceByKey((a, b) -> a + b).peek(val -> System.out.println(val)).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -10310,17 +10324,17 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
-				.reduceByKey((a, b) -> a + b).peek(val->System.out.println(val)).count(null);
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
+				.reduceByKey((a, b) -> a + b).peek(val -> System.out.println(val)).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -10339,18 +10353,18 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		datapipeline.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
-				}).reduceByKey((a, b) -> a + b).peek(val->System.out.println(val)).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+				}).reduceByKey((a, b) -> a + b).peek(val -> System.out.println(val)).forEach(lis -> {
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(2, sum);
 
@@ -10363,16 +10377,16 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
 				.reduceByKey((a, b) -> a + b).sample(46361).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
@@ -10390,16 +10404,16 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
 				.reduceByKey((a, b) -> a + b).sample(46361).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
@@ -10419,18 +10433,18 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		datapipeline.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).reduceByKey((a, b) -> a + b).sample(46361).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(2, sum);
 
@@ -10443,18 +10457,18 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
 				.reduceByKey((a, b) -> a + b)
-				.sorted(new com.github.mdc.stream.functions.SortedComparator<org.jooq.lambda.tuple.Tuple2>() {
+				.sorted(new com.github.mdc.common.functions.SortedComparator<org.jooq.lambda.tuple.Tuple2>() {
 					public int compare(org.jooq.lambda.tuple.Tuple2 value1, org.jooq.lambda.tuple.Tuple2 value2) {
 						return value1.compareTo(value2);
 					}
@@ -10475,18 +10489,18 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
 				.reduceByKey((a, b) -> a + b)
-				.sorted(new com.github.mdc.stream.functions.SortedComparator<org.jooq.lambda.tuple.Tuple2>() {
+				.sorted(new com.github.mdc.common.functions.SortedComparator<org.jooq.lambda.tuple.Tuple2>() {
 					public int compare(org.jooq.lambda.tuple.Tuple2 value1, org.jooq.lambda.tuple.Tuple2 value2) {
 						return value1.compareTo(value2);
 					}
@@ -10509,23 +10523,23 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		datapipeline.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).reduceByKey((a, b) -> a + b)
-				.sorted(new com.github.mdc.stream.functions.SortedComparator<org.jooq.lambda.tuple.Tuple2>() {
+				.sorted(new com.github.mdc.common.functions.SortedComparator<org.jooq.lambda.tuple.Tuple2>() {
 					public int compare(org.jooq.lambda.tuple.Tuple2 value1, org.jooq.lambda.tuple.Tuple2 value2) {
 						return value1.compareTo(value2);
 					}
 				}).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(2, sum);
 
@@ -10538,16 +10552,16 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
 				.sample(46361).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
@@ -10565,16 +10579,16 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
 				.sample(46361).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
@@ -10594,18 +10608,18 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		datapipeline.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).sample(46361).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(46361, sum);
 
@@ -10618,17 +10632,17 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
-				.sorted(new com.github.mdc.stream.functions.SortedComparator<org.jooq.lambda.tuple.Tuple2>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
+				.sorted(new com.github.mdc.common.functions.SortedComparator<org.jooq.lambda.tuple.Tuple2>() {
 					public int compare(org.jooq.lambda.tuple.Tuple2 value1, org.jooq.lambda.tuple.Tuple2 value2) {
 						return value1.compareTo(value2);
 					}
@@ -10649,17 +10663,17 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
-				.sorted(new com.github.mdc.stream.functions.SortedComparator<org.jooq.lambda.tuple.Tuple2>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
+				.sorted(new com.github.mdc.common.functions.SortedComparator<org.jooq.lambda.tuple.Tuple2>() {
 					public int compare(org.jooq.lambda.tuple.Tuple2 value1, org.jooq.lambda.tuple.Tuple2 value2) {
 						return value1.compareTo(value2);
 					}
@@ -10682,22 +10696,22 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		datapipeline.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
-				}).sorted(new com.github.mdc.stream.functions.SortedComparator<org.jooq.lambda.tuple.Tuple2>() {
-					public int compare(org.jooq.lambda.tuple.Tuple2 value1, org.jooq.lambda.tuple.Tuple2 value2) {
-						return value1.compareTo(value2);
-					}
-				}).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+				}).sorted(new com.github.mdc.common.functions.SortedComparator<org.jooq.lambda.tuple.Tuple2>() {
+			public int compare(org.jooq.lambda.tuple.Tuple2 value1, org.jooq.lambda.tuple.Tuple2 value2) {
+				return value1.compareTo(value2);
+			}
+		}).forEach(lis -> {
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(46361, sum);
 
@@ -10710,14 +10724,14 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).peek(val->System.out.println(val))
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				}).peek(val -> System.out.println(val))
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).collect(toexecute, null);
 		int sum = 0;
@@ -10736,14 +10750,14 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).peek(val->System.out.println(val))
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+				}).peek(val -> System.out.println(val))
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+						return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 					}
 				}).count(null);
 		long sum = 0;
@@ -10764,13 +10778,13 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		datapipeline.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
-		}).peek(val->System.out.println(val)).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		}).peek(val -> System.out.println(val)).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).forEach(lis -> {
 			sum += ((List) lis).size();
@@ -10787,12 +10801,12 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).peek(val->System.out.println(val))
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				}).peek(val -> System.out.println(val))
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
@@ -10813,12 +10827,12 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).peek(val->System.out.println(val))
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				}).peek(val -> System.out.println(val))
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
@@ -10841,18 +10855,18 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		datapipeline.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
-		}).peek(val->System.out.println(val))
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		}).peek(val -> System.out.println(val))
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
 				}).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(46361, sum);
 
@@ -10865,12 +10879,12 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).peek(val->System.out.println(val))
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				}).peek(val -> System.out.println(val))
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
@@ -10891,12 +10905,12 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).peek(val->System.out.println(val))
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				}).peek(val -> System.out.println(val))
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
@@ -10919,18 +10933,18 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		datapipeline.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
-		}).peek(val->System.out.println(val))
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+		}).peek(val -> System.out.println(val))
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
 				}).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(46361, sum);
 
@@ -10943,16 +10957,16 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).peek(val->System.out.println(val)).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				}).peek(val -> System.out.println(val)).mapToPair(
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
 				.collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
@@ -10970,16 +10984,16 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).peek(val->System.out.println(val)).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				}).peek(val -> System.out.println(val)).mapToPair(
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
 				.count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
@@ -10999,18 +11013,18 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		datapipeline.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
-		}).peek(val->System.out.println(val)).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+		}).peek(val -> System.out.println(val)).mapToPair(
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(46361, sum);
 
@@ -11023,16 +11037,16 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Tuple2>> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).peek(val->System.out.println(val)).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				}).peek(val -> System.out.println(val)).mapToPair(
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
 				.groupByKey().collect(toexecute, null);
 		int sum = 0;
 		for (List<Tuple2> lsttuples : data) {
@@ -11051,21 +11065,21 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		datapipeline.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
-		}).peek(val->System.out.println(val)).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+		}).peek(val -> System.out.println(val)).mapToPair(
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).groupByKey().forEach(lsttuples -> {
-					for (Tuple2 tuple2 : lsttuples) {
-						sum += ((List) tuple2.v2).size();
-					}
+			for (Tuple2 tuple2 : lsttuples) {
+				sum += ((List) tuple2.v2).size();
+			}
 
-				}, null);
+		}, null);
 
 		assertEquals(46361, sum);
 
@@ -11078,16 +11092,16 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).peek(val->System.out.println(val)).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				}).peek(val -> System.out.println(val)).mapToPair(
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
 				.reduceByKey((a, b) -> a + b).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
@@ -11105,16 +11119,16 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).peek(val->System.out.println(val)).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				}).peek(val -> System.out.println(val)).mapToPair(
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
 				.reduceByKey((a, b) -> a + b).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
@@ -11134,18 +11148,18 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		datapipeline.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
-		}).peek(val->System.out.println(val)).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+		}).peek(val -> System.out.println(val)).mapToPair(
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).reduceByKey((a, b) -> a + b).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(2, sum);
 
@@ -11158,11 +11172,11 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).peek(val->System.out.println(val)).peek(val->System.out.println(val)).collect(toexecute, null);
+				}).peek(val -> System.out.println(val)).peek(val -> System.out.println(val)).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -11179,11 +11193,11 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).peek(val->System.out.println(val)).peek(val->System.out.println(val)).count(null);
+				}).peek(val -> System.out.println(val)).peek(val -> System.out.println(val)).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -11202,11 +11216,11 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		datapipeline.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
-		}).peek(val->System.out.println(val)).peek(val->System.out.println(val)).forEach(lis -> {
+		}).peek(val -> System.out.println(val)).peek(val -> System.out.println(val)).forEach(lis -> {
 			sum += ((List) lis).size();
 		}, null);
 
@@ -11221,11 +11235,11 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).peek(val->System.out.println(val)).sample(46361).collect(toexecute, null);
+				}).peek(val -> System.out.println(val)).sample(46361).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -11242,11 +11256,11 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).peek(val->System.out.println(val)).sample(46361).count(null);
+				}).peek(val -> System.out.println(val)).sample(46361).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -11265,11 +11279,11 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		datapipeline.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
-		}).peek(val->System.out.println(val)).sample(46361).forEach(lis -> {
+		}).peek(val -> System.out.println(val)).sample(46361).forEach(lis -> {
 			sum += ((List) lis).size();
 		}, null);
 
@@ -11284,15 +11298,15 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).peek(val->System.out.println(val)).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
-					public int compare(java.lang.String value1, java.lang.String value2) {
-						return value1.compareTo(value2);
-					}
-				}).collect(toexecute, null);
+				}).peek(val -> System.out.println(val)).sorted(new com.github.mdc.common.functions.SortedComparator<java.lang.String>() {
+			public int compare(java.lang.String value1, java.lang.String value2) {
+				return value1.compareTo(value2);
+			}
+		}).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -11309,15 +11323,15 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).peek(val->System.out.println(val)).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
-					public int compare(java.lang.String value1, java.lang.String value2) {
-						return value1.compareTo(value2);
-					}
-				}).count(null);
+				}).peek(val -> System.out.println(val)).sorted(new com.github.mdc.common.functions.SortedComparator<java.lang.String>() {
+			public int compare(java.lang.String value1, java.lang.String value2) {
+				return value1.compareTo(value2);
+			}
+		}).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -11336,11 +11350,11 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		datapipeline.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
-		}).peek(val->System.out.println(val)).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
+		}).peek(val -> System.out.println(val)).sorted(new com.github.mdc.common.functions.SortedComparator<java.lang.String>() {
 			public int compare(java.lang.String value1, java.lang.String value2) {
 				return value1.compareTo(value2);
 			}
@@ -11359,15 +11373,15 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).sample(46361).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
-					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
-					}
-				}).collect(toexecute, null);
+				}).sample(46361).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
+			public boolean test(java.lang.String value) {
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
+			}
+		}).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -11384,15 +11398,15 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).sample(46361).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
-					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
-					}
-				}).count(null);
+				}).sample(46361).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
+			public boolean test(java.lang.String value) {
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
+			}
+		}).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -11411,13 +11425,13 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		datapipeline.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
-		}).sample(46361).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		}).sample(46361).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).forEach(lis -> {
 			sum += ((List) lis).size();
@@ -11434,12 +11448,12 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
 				}).sample(46361)
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
@@ -11460,12 +11474,12 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
 				}).sample(46361)
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
@@ -11488,11 +11502,11 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		datapipeline.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
-		}).sample(46361).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		}).sample(46361).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
@@ -11511,15 +11525,15 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).sample(46361).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
-					public java.lang.String[] apply(java.lang.String value) {
-						return value.split(",");
-					}
-				}).collect(toexecute, null);
+				}).sample(46361).map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+			public java.lang.String[] apply(java.lang.String value) {
+				return value.split(",");
+			}
+		}).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -11536,15 +11550,15 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).sample(46361).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
-					public java.lang.String[] apply(java.lang.String value) {
-						return value.split(",");
-					}
-				}).count(null);
+				}).sample(46361).map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+			public java.lang.String[] apply(java.lang.String value) {
+				return value.split(",");
+			}
+		}).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -11563,11 +11577,11 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		datapipeline.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
-		}).sample(46361).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+		}).sample(46361).map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 			public java.lang.String[] apply(java.lang.String value) {
 				return value.split(",");
 			}
@@ -11586,16 +11600,16 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
 				}).sample(46361).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
 				.collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
@@ -11613,16 +11627,16 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
 				}).sample(46361).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
 				.count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
@@ -11642,18 +11656,18 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		datapipeline.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
 		}).sample(46361).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(46361, sum);
 
@@ -11666,16 +11680,16 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Tuple2>> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
 				}).sample(46361).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
 				.groupByKey().collect(toexecute, null);
 		int sum = 0;
 		for (List<Tuple2> lsttuples : data) {
@@ -11694,21 +11708,21 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		datapipeline.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
 		}).sample(46361).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).groupByKey().forEach(lsttuples -> {
-					for (Tuple2 tuple2 : lsttuples) {
-						sum += ((List) tuple2.v2).size();
-					}
+			for (Tuple2 tuple2 : lsttuples) {
+				sum += ((List) tuple2.v2).size();
+			}
 
-				}, null);
+		}, null);
 
 		assertEquals(46361, sum);
 
@@ -11721,16 +11735,16 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
 				}).sample(46361).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
 				.reduceByKey((a, b) -> a + b).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
@@ -11748,16 +11762,16 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
 				}).sample(46361).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
+					}
+				})
 				.reduceByKey((a, b) -> a + b).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
@@ -11777,18 +11791,18 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		datapipeline.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
 		}).sample(46361).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).reduceByKey((a, b) -> a + b).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(2, sum);
 
@@ -11801,11 +11815,11 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).sample(46361).peek(val->System.out.println(val)).collect(toexecute, null);
+				}).sample(46361).peek(val -> System.out.println(val)).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -11822,11 +11836,11 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).sample(46361).peek(val->System.out.println(val)).count(null);
+				}).sample(46361).peek(val -> System.out.println(val)).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -11845,11 +11859,11 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		datapipeline.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
-		}).sample(46361).peek(val->System.out.println(val)).forEach(lis -> {
+		}).sample(46361).peek(val -> System.out.println(val)).forEach(lis -> {
 			sum += ((List) lis).size();
 		}, null);
 
@@ -11864,7 +11878,7 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
@@ -11885,7 +11899,7 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
@@ -11908,7 +11922,7 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		datapipeline.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
@@ -11927,15 +11941,15 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).sample(46361).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
-					public int compare(java.lang.String value1, java.lang.String value2) {
-						return value1.compareTo(value2);
-					}
-				}).collect(toexecute, null);
+				}).sample(46361).sorted(new com.github.mdc.common.functions.SortedComparator<java.lang.String>() {
+			public int compare(java.lang.String value1, java.lang.String value2) {
+				return value1.compareTo(value2);
+			}
+		}).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -11952,15 +11966,15 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).sample(46361).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
-					public int compare(java.lang.String value1, java.lang.String value2) {
-						return value1.compareTo(value2);
-					}
-				}).count(null);
+				}).sample(46361).sorted(new com.github.mdc.common.functions.SortedComparator<java.lang.String>() {
+			public int compare(java.lang.String value1, java.lang.String value2) {
+				return value1.compareTo(value2);
+			}
+		}).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -11979,11 +11993,11 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		datapipeline.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
-		}).sample(46361).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
+		}).sample(46361).sorted(new com.github.mdc.common.functions.SortedComparator<java.lang.String>() {
 			public int compare(java.lang.String value1, java.lang.String value2) {
 				return value1.compareTo(value2);
 			}
@@ -12002,19 +12016,19 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
-					public int compare(java.lang.String value1, java.lang.String value2) {
-						return value1.compareTo(value2);
-					}
-				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
-					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
-					}
-				}).collect(toexecute, null);
+				}).sorted(new com.github.mdc.common.functions.SortedComparator<java.lang.String>() {
+			public int compare(java.lang.String value1, java.lang.String value2) {
+				return value1.compareTo(value2);
+			}
+		}).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
+			public boolean test(java.lang.String value) {
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
+			}
+		}).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -12031,19 +12045,19 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
-					public int compare(java.lang.String value1, java.lang.String value2) {
-						return value1.compareTo(value2);
-					}
-				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
-					public boolean test(java.lang.String value) {
-						return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
-					}
-				}).count(null);
+				}).sorted(new com.github.mdc.common.functions.SortedComparator<java.lang.String>() {
+			public int compare(java.lang.String value1, java.lang.String value2) {
+				return value1.compareTo(value2);
+			}
+		}).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
+			public boolean test(java.lang.String value) {
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
+			}
+		}).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -12062,17 +12076,17 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		datapipeline.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
-		}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
+		}).sorted(new com.github.mdc.common.functions.SortedComparator<java.lang.String>() {
 			public int compare(java.lang.String value1, java.lang.String value2) {
 				return value1.compareTo(value2);
 			}
-		}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		}).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split(",")[14].equals("NA") && !value.split(",")[14].equals("ArrDelay");
+				return !"NA".equals(value.split(",")[14]) && !"ArrDelay".equals(value.split(",")[14]);
 			}
 		}).forEach(lis -> {
 			sum += ((List) lis).size();
@@ -12089,19 +12103,19 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
-					public int compare(java.lang.String value1, java.lang.String value2) {
-						return value1.compareTo(value2);
-					}
-				}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
-					public java.util.List<java.lang.String> apply(java.lang.String value) {
-						return Arrays.asList(value);
-					}
-				}).collect(toexecute, null);
+				}).sorted(new com.github.mdc.common.functions.SortedComparator<java.lang.String>() {
+			public int compare(java.lang.String value1, java.lang.String value2) {
+				return value1.compareTo(value2);
+			}
+		}).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+			public java.util.List<java.lang.String> apply(java.lang.String value) {
+				return Arrays.asList(value);
+			}
+		}).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -12118,19 +12132,19 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
-					public int compare(java.lang.String value1, java.lang.String value2) {
-						return value1.compareTo(value2);
-					}
-				}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
-					public java.util.List<java.lang.String> apply(java.lang.String value) {
-						return Arrays.asList(value);
-					}
-				}).count(null);
+				}).sorted(new com.github.mdc.common.functions.SortedComparator<java.lang.String>() {
+			public int compare(java.lang.String value1, java.lang.String value2) {
+				return value1.compareTo(value2);
+			}
+		}).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+			public java.util.List<java.lang.String> apply(java.lang.String value) {
+				return Arrays.asList(value);
+			}
+		}).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -12149,15 +12163,15 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		datapipeline.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
-		}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
+		}).sorted(new com.github.mdc.common.functions.SortedComparator<java.lang.String>() {
 			public int compare(java.lang.String value1, java.lang.String value2) {
 				return value1.compareTo(value2);
 			}
-		}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		}).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
@@ -12176,19 +12190,19 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
-					public int compare(java.lang.String value1, java.lang.String value2) {
-						return value1.compareTo(value2);
-					}
-				}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
-					public java.lang.String[] apply(java.lang.String value) {
-						return value.split(",");
-					}
-				}).collect(toexecute, null);
+				}).sorted(new com.github.mdc.common.functions.SortedComparator<java.lang.String>() {
+			public int compare(java.lang.String value1, java.lang.String value2) {
+				return value1.compareTo(value2);
+			}
+		}).map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+			public java.lang.String[] apply(java.lang.String value) {
+				return value.split(",");
+			}
+		}).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -12205,19 +12219,19 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
-					public int compare(java.lang.String value1, java.lang.String value2) {
-						return value1.compareTo(value2);
-					}
-				}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
-					public java.lang.String[] apply(java.lang.String value) {
-						return value.split(",");
-					}
-				}).count(null);
+				}).sorted(new com.github.mdc.common.functions.SortedComparator<java.lang.String>() {
+			public int compare(java.lang.String value1, java.lang.String value2) {
+				return value1.compareTo(value2);
+			}
+		}).map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+			public java.lang.String[] apply(java.lang.String value) {
+				return value.split(",");
+			}
+		}).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -12236,15 +12250,15 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		datapipeline.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
-		}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
+		}).sorted(new com.github.mdc.common.functions.SortedComparator<java.lang.String>() {
 			public int compare(java.lang.String value1, java.lang.String value2) {
 				return value1.compareTo(value2);
 			}
-		}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+		}).map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 			public java.lang.String[] apply(java.lang.String value) {
 				return value.split(",");
 			}
@@ -12263,20 +12277,20 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
-					public int compare(java.lang.String value1, java.lang.String value2) {
-						return value1.compareTo(value2);
+				}).sorted(new com.github.mdc.common.functions.SortedComparator<java.lang.String>() {
+			public int compare(java.lang.String value1, java.lang.String value2) {
+				return value1.compareTo(value2);
+			}
+		}).mapToPair(
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
-				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				})
 				.collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
@@ -12294,20 +12308,20 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
-					public int compare(java.lang.String value1, java.lang.String value2) {
-						return value1.compareTo(value2);
+				}).sorted(new com.github.mdc.common.functions.SortedComparator<java.lang.String>() {
+			public int compare(java.lang.String value1, java.lang.String value2) {
+				return value1.compareTo(value2);
+			}
+		}).mapToPair(
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
-				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				})
 				.count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
@@ -12327,22 +12341,22 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		datapipeline.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
-		}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
+		}).sorted(new com.github.mdc.common.functions.SortedComparator<java.lang.String>() {
 			public int compare(java.lang.String value1, java.lang.String value2) {
 				return value1.compareTo(value2);
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(46361, sum);
 
@@ -12355,20 +12369,20 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Tuple2>> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
-					public int compare(java.lang.String value1, java.lang.String value2) {
-						return value1.compareTo(value2);
+				}).sorted(new com.github.mdc.common.functions.SortedComparator<java.lang.String>() {
+			public int compare(java.lang.String value1, java.lang.String value2) {
+				return value1.compareTo(value2);
+			}
+		}).mapToPair(
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
-				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				})
 				.groupByKey().collect(toexecute, null);
 		int sum = 0;
 		for (List<Tuple2> lsttuples : data) {
@@ -12387,25 +12401,25 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		datapipeline.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
-		}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
+		}).sorted(new com.github.mdc.common.functions.SortedComparator<java.lang.String>() {
 			public int compare(java.lang.String value1, java.lang.String value2) {
 				return value1.compareTo(value2);
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).groupByKey().forEach(lsttuples -> {
-					for (Tuple2 tuple2 : lsttuples) {
-						sum += ((List) tuple2.v2).size();
-					}
+			for (Tuple2 tuple2 : lsttuples) {
+				sum += ((List) tuple2.v2).size();
+			}
 
-				}, null);
+		}, null);
 
 		assertEquals(46361, sum);
 
@@ -12418,20 +12432,20 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
-					public int compare(java.lang.String value1, java.lang.String value2) {
-						return value1.compareTo(value2);
+				}).sorted(new com.github.mdc.common.functions.SortedComparator<java.lang.String>() {
+			public int compare(java.lang.String value1, java.lang.String value2) {
+				return value1.compareTo(value2);
+			}
+		}).mapToPair(
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
-				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				})
 				.reduceByKey((a, b) -> a + b).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
@@ -12449,20 +12463,20 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
-					public int compare(java.lang.String value1, java.lang.String value2) {
-						return value1.compareTo(value2);
+				}).sorted(new com.github.mdc.common.functions.SortedComparator<java.lang.String>() {
+			public int compare(java.lang.String value1, java.lang.String value2) {
+				return value1.compareTo(value2);
+			}
+		}).mapToPair(
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
-				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
-							}
-						})
+				})
 				.reduceByKey((a, b) -> a + b).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
@@ -12482,22 +12496,22 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		datapipeline.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
-		}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
+		}).sorted(new com.github.mdc.common.functions.SortedComparator<java.lang.String>() {
 			public int compare(java.lang.String value1, java.lang.String value2) {
 				return value1.compareTo(value2);
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split(",")[8], value.split(",")[14]);
 					}
 				}).reduceByKey((a, b) -> a + b).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(2, sum);
 
@@ -12510,15 +12524,15 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
-					public int compare(java.lang.String value1, java.lang.String value2) {
-						return value1.compareTo(value2);
-					}
-				}).peek(val->System.out.println(val)).collect(toexecute, null);
+				}).sorted(new com.github.mdc.common.functions.SortedComparator<java.lang.String>() {
+			public int compare(java.lang.String value1, java.lang.String value2) {
+				return value1.compareTo(value2);
+			}
+		}).peek(val -> System.out.println(val)).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -12535,15 +12549,15 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
-					public int compare(java.lang.String value1, java.lang.String value2) {
-						return value1.compareTo(value2);
-					}
-				}).peek(val->System.out.println(val)).count(null);
+				}).sorted(new com.github.mdc.common.functions.SortedComparator<java.lang.String>() {
+			public int compare(java.lang.String value1, java.lang.String value2) {
+				return value1.compareTo(value2);
+			}
+		}).peek(val -> System.out.println(val)).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -12562,15 +12576,15 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		datapipeline.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
-		}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
+		}).sorted(new com.github.mdc.common.functions.SortedComparator<java.lang.String>() {
 			public int compare(java.lang.String value1, java.lang.String value2) {
 				return value1.compareTo(value2);
 			}
-		}).peek(val->System.out.println(val)).forEach(lis -> {
+		}).peek(val -> System.out.println(val)).forEach(lis -> {
 			sum += ((List) lis).size();
 		}, null);
 
@@ -12585,15 +12599,15 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
-					public int compare(java.lang.String value1, java.lang.String value2) {
-						return value1.compareTo(value2);
-					}
-				}).sample(46361).collect(toexecute, null);
+				}).sorted(new com.github.mdc.common.functions.SortedComparator<java.lang.String>() {
+			public int compare(java.lang.String value1, java.lang.String value2) {
+				return value1.compareTo(value2);
+			}
+		}).sample(46361).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -12610,15 +12624,15 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
-					public int compare(java.lang.String value1, java.lang.String value2) {
-						return value1.compareTo(value2);
-					}
-				}).sample(46361).count(null);
+				}).sorted(new com.github.mdc.common.functions.SortedComparator<java.lang.String>() {
+			public int compare(java.lang.String value1, java.lang.String value2) {
+				return value1.compareTo(value2);
+			}
+		}).sample(46361).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -12637,11 +12651,11 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		datapipeline.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
-		}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
+		}).sorted(new com.github.mdc.common.functions.SortedComparator<java.lang.String>() {
 			public int compare(java.lang.String value1, java.lang.String value2) {
 				return value1.compareTo(value2);
 			}
@@ -12660,19 +12674,19 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
-					public int compare(java.lang.String value1, java.lang.String value2) {
-						return value1.compareTo(value2);
-					}
-				}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
-					public int compare(java.lang.String value1, java.lang.String value2) {
-						return value1.compareTo(value2);
-					}
-				}).collect(toexecute, null);
+				}).sorted(new com.github.mdc.common.functions.SortedComparator<java.lang.String>() {
+			public int compare(java.lang.String value1, java.lang.String value2) {
+				return value1.compareTo(value2);
+			}
+		}).sorted(new com.github.mdc.common.functions.SortedComparator<java.lang.String>() {
+			public int compare(java.lang.String value1, java.lang.String value2) {
+				return value1.compareTo(value2);
+			}
+		}).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -12689,19 +12703,19 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String value) {
 						return Arrays.asList(value);
 					}
-				}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
-					public int compare(java.lang.String value1, java.lang.String value2) {
-						return value1.compareTo(value2);
-					}
-				}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
-					public int compare(java.lang.String value1, java.lang.String value2) {
-						return value1.compareTo(value2);
-					}
-				}).count(null);
+				}).sorted(new com.github.mdc.common.functions.SortedComparator<java.lang.String>() {
+			public int compare(java.lang.String value1, java.lang.String value2) {
+				return value1.compareTo(value2);
+			}
+		}).sorted(new com.github.mdc.common.functions.SortedComparator<java.lang.String>() {
+			public int compare(java.lang.String value1, java.lang.String value2) {
+				return value1.compareTo(value2);
+			}
+		}).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -12720,15 +12734,15 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		datapipeline.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
-		}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
+		}).sorted(new com.github.mdc.common.functions.SortedComparator<java.lang.String>() {
 			public int compare(java.lang.String value1, java.lang.String value2) {
 				return value1.compareTo(value2);
 			}
-		}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
+		}).sorted(new com.github.mdc.common.functions.SortedComparator<java.lang.String>() {
 			public int compare(java.lang.String value1, java.lang.String value2) {
 				return value1.compareTo(value2);
 			}
@@ -12747,19 +12761,19 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
-				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String[]>() {
-					public boolean test(java.lang.String[] value) {
-						return !value[14].equals("NA") && !value[14].equals("ArrDelay");
-					}
-				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String[]>() {
-					public boolean test(java.lang.String[] value) {
-						return !value[14].equals("NA") && !value[14].equals("ArrDelay");
-					}
-				}).collect(toexecute, null);
+				}).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String[]>() {
+			public boolean test(java.lang.String[] value) {
+				return !"NA".equals(value[14]) && !"ArrDelay".equals(value[14]);
+			}
+		}).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String[]>() {
+			public boolean test(java.lang.String[] value) {
+				return !"NA".equals(value[14]) && !"ArrDelay".equals(value[14]);
+			}
+		}).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -12776,19 +12790,19 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
-				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String[]>() {
-					public boolean test(java.lang.String[] value) {
-						return !value[14].equals("NA") && !value[14].equals("ArrDelay");
-					}
-				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String[]>() {
-					public boolean test(java.lang.String[] value) {
-						return !value[14].equals("NA") && !value[14].equals("ArrDelay");
-					}
-				}).count(null);
+				}).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String[]>() {
+			public boolean test(java.lang.String[] value) {
+				return !"NA".equals(value[14]) && !"ArrDelay".equals(value[14]);
+			}
+		}).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String[]>() {
+			public boolean test(java.lang.String[] value) {
+				return !"NA".equals(value[14]) && !"ArrDelay".equals(value[14]);
+			}
+		}).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -12807,17 +12821,17 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+		datapipeline.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 			public java.lang.String[] apply(java.lang.String value) {
 				return value.split(",");
 			}
-		}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String[]>() {
+		}).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String[]>() {
 			public boolean test(java.lang.String[] value) {
-				return !value[14].equals("NA") && !value[14].equals("ArrDelay");
+				return !"NA".equals(value[14]) && !"ArrDelay".equals(value[14]);
 			}
-		}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String[]>() {
+		}).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String[]>() {
 			public boolean test(java.lang.String[] value) {
-				return !value[14].equals("NA") && !value[14].equals("ArrDelay");
+				return !"NA".equals(value[14]) && !"ArrDelay".equals(value[14]);
 			}
 		}).forEach(lis -> {
 			sum += ((List) lis).size();
@@ -12834,19 +12848,19 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
-				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String[]>() {
-					public boolean test(java.lang.String[] value) {
-						return !value[14].equals("NA") && !value[14].equals("ArrDelay");
-					}
-				}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String[], java.lang.String>() {
-					public java.util.List<java.lang.String> apply(java.lang.String[] value) {
-						return Arrays.asList(value[8] + "-" + value[14]);
-					}
-				}).collect(toexecute, null);
+				}).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String[]>() {
+			public boolean test(java.lang.String[] value) {
+				return !"NA".equals(value[14]) && !"ArrDelay".equals(value[14]);
+			}
+		}).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String[], java.lang.String>() {
+			public java.util.List<java.lang.String> apply(java.lang.String[] value) {
+				return Arrays.asList(value[8] + "-" + value[14]);
+			}
+		}).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -12863,19 +12877,19 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
-				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String[]>() {
-					public boolean test(java.lang.String[] value) {
-						return !value[14].equals("NA") && !value[14].equals("ArrDelay");
-					}
-				}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String[], java.lang.String>() {
-					public java.util.List<java.lang.String> apply(java.lang.String[] value) {
-						return Arrays.asList(value[8] + "-" + value[14]);
-					}
-				}).count(null);
+				}).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String[]>() {
+			public boolean test(java.lang.String[] value) {
+				return !"NA".equals(value[14]) && !"ArrDelay".equals(value[14]);
+			}
+		}).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String[], java.lang.String>() {
+			public java.util.List<java.lang.String> apply(java.lang.String[] value) {
+				return Arrays.asList(value[8] + "-" + value[14]);
+			}
+		}).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -12894,15 +12908,15 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+		datapipeline.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 			public java.lang.String[] apply(java.lang.String value) {
 				return value.split(",");
 			}
-		}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String[]>() {
+		}).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String[]>() {
 			public boolean test(java.lang.String[] value) {
-				return !value[14].equals("NA") && !value[14].equals("ArrDelay");
+				return !"NA".equals(value[14]) && !"ArrDelay".equals(value[14]);
 			}
-		}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String[], java.lang.String>() {
+		}).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String[], java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String[] value) {
 				return Arrays.asList(value[8] + "-" + value[14]);
 			}
@@ -12921,19 +12935,19 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
-				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String[]>() {
-					public boolean test(java.lang.String[] value) {
-						return !value[14].equals("NA") && !value[14].equals("ArrDelay");
-					}
-				}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String[], java.lang.String>() {
-					public java.lang.String apply(java.lang.String[] value) {
-						return value[8] + "-" + value[14];
-					}
-				}).collect(toexecute, null);
+				}).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String[]>() {
+			public boolean test(java.lang.String[] value) {
+				return !"NA".equals(value[14]) && !"ArrDelay".equals(value[14]);
+			}
+		}).map(new com.github.mdc.common.functions.MapFunction<java.lang.String[], java.lang.String>() {
+			public java.lang.String apply(java.lang.String[] value) {
+				return value[8] + "-" + value[14];
+			}
+		}).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -12950,19 +12964,19 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
-				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String[]>() {
-					public boolean test(java.lang.String[] value) {
-						return !value[14].equals("NA") && !value[14].equals("ArrDelay");
-					}
-				}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String[], java.lang.String>() {
-					public java.lang.String apply(java.lang.String[] value) {
-						return value[8] + "-" + value[14];
-					}
-				}).count(null);
+				}).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String[]>() {
+			public boolean test(java.lang.String[] value) {
+				return !"NA".equals(value[14]) && !"ArrDelay".equals(value[14]);
+			}
+		}).map(new com.github.mdc.common.functions.MapFunction<java.lang.String[], java.lang.String>() {
+			public java.lang.String apply(java.lang.String[] value) {
+				return value[8] + "-" + value[14];
+			}
+		}).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -12981,15 +12995,15 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+		datapipeline.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 			public java.lang.String[] apply(java.lang.String value) {
 				return value.split(",");
 			}
-		}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String[]>() {
+		}).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String[]>() {
 			public boolean test(java.lang.String[] value) {
-				return !value[14].equals("NA") && !value[14].equals("ArrDelay");
+				return !"NA".equals(value[14]) && !"ArrDelay".equals(value[14]);
 			}
-		}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String[], java.lang.String>() {
+		}).map(new com.github.mdc.common.functions.MapFunction<java.lang.String[], java.lang.String>() {
 			public java.lang.String apply(java.lang.String[] value) {
 				return value[8] + "-" + value[14];
 			}
@@ -13008,20 +13022,20 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
-				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String[]>() {
-					public boolean test(java.lang.String[] value) {
-						return !value[14].equals("NA") && !value[14].equals("ArrDelay");
+				}).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String[]>() {
+			public boolean test(java.lang.String[] value) {
+				return !"NA".equals(value[14]) && !"ArrDelay".equals(value[14]);
+			}
+		}).mapToPair(
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
+						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
 					}
-				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
-								return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
-							}
-						})
+				})
 				.collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
@@ -13039,20 +13053,20 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
-				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String[]>() {
-					public boolean test(java.lang.String[] value) {
-						return !value[14].equals("NA") && !value[14].equals("ArrDelay");
+				}).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String[]>() {
+			public boolean test(java.lang.String[] value) {
+				return !"NA".equals(value[14]) && !"ArrDelay".equals(value[14]);
+			}
+		}).mapToPair(
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
+						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
 					}
-				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
-								return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
-							}
-						})
+				})
 				.count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
@@ -13072,22 +13086,22 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+		datapipeline.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 			public java.lang.String[] apply(java.lang.String value) {
 				return value.split(",");
 			}
-		}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String[]>() {
+		}).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String[]>() {
 			public boolean test(java.lang.String[] value) {
-				return !value[14].equals("NA") && !value[14].equals("ArrDelay");
+				return !"NA".equals(value[14]) && !"ArrDelay".equals(value[14]);
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
 						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
 					}
 				}).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(45957, sum);
 
@@ -13100,20 +13114,20 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Tuple2>> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
-				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String[]>() {
-					public boolean test(java.lang.String[] value) {
-						return !value[14].equals("NA") && !value[14].equals("ArrDelay");
+				}).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String[]>() {
+			public boolean test(java.lang.String[] value) {
+				return !"NA".equals(value[14]) && !"ArrDelay".equals(value[14]);
+			}
+		}).mapToPair(
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
+						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
 					}
-				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
-								return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
-							}
-						})
+				})
 				.groupByKey().collect(toexecute, null);
 		int sum = 0;
 		for (List<Tuple2> lsttuples : data) {
@@ -13132,25 +13146,25 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+		datapipeline.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 			public java.lang.String[] apply(java.lang.String value) {
 				return value.split(",");
 			}
-		}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String[]>() {
+		}).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String[]>() {
 			public boolean test(java.lang.String[] value) {
-				return !value[14].equals("NA") && !value[14].equals("ArrDelay");
+				return !"NA".equals(value[14]) && !"ArrDelay".equals(value[14]);
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
 						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
 					}
 				}).groupByKey().forEach(lsttuples -> {
-					for (Tuple2 tuple2 : lsttuples) {
-						sum += ((List) tuple2.v2).size();
-					}
+			for (Tuple2 tuple2 : lsttuples) {
+				sum += ((List) tuple2.v2).size();
+			}
 
-				}, null);
+		}, null);
 
 		assertEquals(45957, sum);
 
@@ -13163,20 +13177,20 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
-				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String[]>() {
-					public boolean test(java.lang.String[] value) {
-						return !value[14].equals("NA") && !value[14].equals("ArrDelay");
+				}).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String[]>() {
+			public boolean test(java.lang.String[] value) {
+				return !"NA".equals(value[14]) && !"ArrDelay".equals(value[14]);
+			}
+		}).mapToPair(
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
+						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
 					}
-				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
-								return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
-							}
-						})
+				})
 				.reduceByKey((a, b) -> a + b).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
@@ -13194,20 +13208,20 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
-				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String[]>() {
-					public boolean test(java.lang.String[] value) {
-						return !value[14].equals("NA") && !value[14].equals("ArrDelay");
+				}).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String[]>() {
+			public boolean test(java.lang.String[] value) {
+				return !"NA".equals(value[14]) && !"ArrDelay".equals(value[14]);
+			}
+		}).mapToPair(
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
+						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
 					}
-				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
-								return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
-							}
-						})
+				})
 				.reduceByKey((a, b) -> a + b).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
@@ -13227,22 +13241,22 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+		datapipeline.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 			public java.lang.String[] apply(java.lang.String value) {
 				return value.split(",");
 			}
-		}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String[]>() {
+		}).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String[]>() {
 			public boolean test(java.lang.String[] value) {
-				return !value[14].equals("NA") && !value[14].equals("ArrDelay");
+				return !"NA".equals(value[14]) && !"ArrDelay".equals(value[14]);
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
 						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
 					}
 				}).reduceByKey((a, b) -> a + b).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(1, sum);
 
@@ -13255,15 +13269,15 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
-				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String[]>() {
-					public boolean test(java.lang.String[] value) {
-						return !value[14].equals("NA") && !value[14].equals("ArrDelay");
-					}
-				}).peek(val->System.out.println(val)).collect(toexecute, null);
+				}).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String[]>() {
+			public boolean test(java.lang.String[] value) {
+				return !"NA".equals(value[14]) && !"ArrDelay".equals(value[14]);
+			}
+		}).peek(val -> System.out.println(val)).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -13280,15 +13294,15 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
-				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String[]>() {
-					public boolean test(java.lang.String[] value) {
-						return !value[14].equals("NA") && !value[14].equals("ArrDelay");
-					}
-				}).peek(val->System.out.println(val)).count(null);
+				}).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String[]>() {
+			public boolean test(java.lang.String[] value) {
+				return !"NA".equals(value[14]) && !"ArrDelay".equals(value[14]);
+			}
+		}).peek(val -> System.out.println(val)).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -13307,15 +13321,15 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+		datapipeline.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 			public java.lang.String[] apply(java.lang.String value) {
 				return value.split(",");
 			}
-		}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String[]>() {
+		}).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String[]>() {
 			public boolean test(java.lang.String[] value) {
-				return !value[14].equals("NA") && !value[14].equals("ArrDelay");
+				return !"NA".equals(value[14]) && !"ArrDelay".equals(value[14]);
 			}
-		}).peek(val->System.out.println(val)).forEach(lis -> {
+		}).peek(val -> System.out.println(val)).forEach(lis -> {
 			sum += ((List) lis).size();
 		}, null);
 
@@ -13330,15 +13344,15 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
-				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String[]>() {
-					public boolean test(java.lang.String[] value) {
-						return !value[14].equals("NA") && !value[14].equals("ArrDelay");
-					}
-				}).sample(46361).collect(toexecute, null);
+				}).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String[]>() {
+			public boolean test(java.lang.String[] value) {
+				return !"NA".equals(value[14]) && !"ArrDelay".equals(value[14]);
+			}
+		}).sample(46361).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -13355,15 +13369,15 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
-				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String[]>() {
-					public boolean test(java.lang.String[] value) {
-						return !value[14].equals("NA") && !value[14].equals("ArrDelay");
-					}
-				}).sample(46361).count(null);
+				}).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String[]>() {
+			public boolean test(java.lang.String[] value) {
+				return !"NA".equals(value[14]) && !"ArrDelay".equals(value[14]);
+			}
+		}).sample(46361).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -13382,13 +13396,13 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+		datapipeline.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 			public java.lang.String[] apply(java.lang.String value) {
 				return value.split(",");
 			}
-		}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String[]>() {
+		}).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String[]>() {
 			public boolean test(java.lang.String[] value) {
-				return !value[14].equals("NA") && !value[14].equals("ArrDelay");
+				return !"NA".equals(value[14]) && !"ArrDelay".equals(value[14]);
 			}
 		}).sample(46361).forEach(lis -> {
 			sum += ((List) lis).size();
@@ -13405,19 +13419,19 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
-				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String[]>() {
-					public boolean test(java.lang.String[] value) {
-						return !value[14].equals("NA") && !value[14].equals("ArrDelay");
-					}
-				}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String[]>() {
-					public int compare(java.lang.String[] value1, java.lang.String[] value2) {
-						return value1[1].compareTo(value2[1]);
-					}
-				}).collect(toexecute, null);
+				}).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String[]>() {
+			public boolean test(java.lang.String[] value) {
+				return !"NA".equals(value[14]) && !"ArrDelay".equals(value[14]);
+			}
+		}).sorted(new com.github.mdc.common.functions.SortedComparator<java.lang.String[]>() {
+			public int compare(java.lang.String[] value1, java.lang.String[] value2) {
+				return value1[1].compareTo(value2[1]);
+			}
+		}).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -13434,19 +13448,19 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
-				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String[]>() {
-					public boolean test(java.lang.String[] value) {
-						return !value[14].equals("NA") && !value[14].equals("ArrDelay");
-					}
-				}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String[]>() {
-					public int compare(java.lang.String[] value1, java.lang.String[] value2) {
-						return value1[1].compareTo(value2[1]);
-					}
-				}).count(null);
+				}).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String[]>() {
+			public boolean test(java.lang.String[] value) {
+				return !"NA".equals(value[14]) && !"ArrDelay".equals(value[14]);
+			}
+		}).sorted(new com.github.mdc.common.functions.SortedComparator<java.lang.String[]>() {
+			public int compare(java.lang.String[] value1, java.lang.String[] value2) {
+				return value1[1].compareTo(value2[1]);
+			}
+		}).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -13465,15 +13479,15 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+		datapipeline.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 			public java.lang.String[] apply(java.lang.String value) {
 				return value.split(",");
 			}
-		}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String[]>() {
+		}).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String[]>() {
 			public boolean test(java.lang.String[] value) {
-				return !value[14].equals("NA") && !value[14].equals("ArrDelay");
+				return !"NA".equals(value[14]) && !"ArrDelay".equals(value[14]);
 			}
-		}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String[]>() {
+		}).sorted(new com.github.mdc.common.functions.SortedComparator<java.lang.String[]>() {
 			public int compare(java.lang.String[] value1, java.lang.String[] value2) {
 				return value1[1].compareTo(value2[1]);
 			}
@@ -13492,19 +13506,19 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
-				}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String[], java.lang.String>() {
-					public java.util.List<java.lang.String> apply(java.lang.String[] value) {
-						return Arrays.asList(value[8] + "-" + value[14]);
-					}
-				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<String>() {
-					public boolean test(String value) {
-						return true;
-					}
-				}).collect(toexecute, null);
+				}).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String[], java.lang.String>() {
+			public java.util.List<java.lang.String> apply(java.lang.String[] value) {
+				return Arrays.asList(value[8] + "-" + value[14]);
+			}
+		}).filter(new com.github.mdc.common.functions.PredicateSerializable<String>() {
+			public boolean test(String value) {
+				return true;
+			}
+		}).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -13521,19 +13535,19 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
-				}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String[], java.lang.String>() {
-					public java.util.List<java.lang.String> apply(java.lang.String[] value) {
-						return Arrays.asList(value[8] + "-" + value[14]);
-					}
-				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<String>() {
-					public boolean test(String value) {
-						return true;
-					}
-				}).count(null);
+				}).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String[], java.lang.String>() {
+			public java.util.List<java.lang.String> apply(java.lang.String[] value) {
+				return Arrays.asList(value[8] + "-" + value[14]);
+			}
+		}).filter(new com.github.mdc.common.functions.PredicateSerializable<String>() {
+			public boolean test(String value) {
+				return true;
+			}
+		}).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -13552,15 +13566,15 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+		datapipeline.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 			public java.lang.String[] apply(java.lang.String value) {
 				return value.split(",");
 			}
-		}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String[], java.lang.String>() {
+		}).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String[], java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String[] value) {
 				return Arrays.asList(value[8] + "-" + value[14]);
 			}
-		}).filter(new com.github.mdc.stream.functions.PredicateSerializable<String>() {
+		}).filter(new com.github.mdc.common.functions.PredicateSerializable<String>() {
 			public boolean test(String value) {
 				return true;
 			}
@@ -13579,15 +13593,15 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
-				}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String[], java.lang.String>() {
-					public java.util.List<java.lang.String> apply(java.lang.String[] value) {
-						return Arrays.asList(value[8] + "-" + value[14]);
-					}
-				}).collect(toexecute, null);
+				}).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String[], java.lang.String>() {
+			public java.util.List<java.lang.String> apply(java.lang.String[] value) {
+				return Arrays.asList(value[8] + "-" + value[14]);
+			}
+		}).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -13604,15 +13618,15 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
-				}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String[], java.lang.String>() {
-					public java.util.List<java.lang.String> apply(java.lang.String[] value) {
-						return Arrays.asList(value[8] + "-" + value[14]);
-					}
-				}).count(null);
+				}).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String[], java.lang.String>() {
+			public java.util.List<java.lang.String> apply(java.lang.String[] value) {
+				return Arrays.asList(value[8] + "-" + value[14]);
+			}
+		}).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -13631,11 +13645,11 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+		datapipeline.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 			public java.lang.String[] apply(java.lang.String value) {
 				return value.split(",");
 			}
-		}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String[], java.lang.String>() {
+		}).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String[], java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String[] value) {
 				return Arrays.asList(value[8] + "-" + value[14]);
 			}
@@ -13654,15 +13668,15 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
-				}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String[], java.lang.String>() {
-					public java.util.List<java.lang.String> apply(java.lang.String[] value) {
-						return Arrays.asList(value[8] + "-" + value[14]);
-					}
-				}).collect(toexecute, null);
+				}).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String[], java.lang.String>() {
+			public java.util.List<java.lang.String> apply(java.lang.String[] value) {
+				return Arrays.asList(value[8] + "-" + value[14]);
+			}
+		}).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -13679,15 +13693,15 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
-				}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String[], java.lang.String>() {
-					public java.util.List<java.lang.String> apply(java.lang.String[] value) {
-						return Arrays.asList(value[8] + "-" + value[14]);
-					}
-				}).count(null);
+				}).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String[], java.lang.String>() {
+			public java.util.List<java.lang.String> apply(java.lang.String[] value) {
+				return Arrays.asList(value[8] + "-" + value[14]);
+			}
+		}).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -13706,11 +13720,11 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+		datapipeline.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 			public java.lang.String[] apply(java.lang.String value) {
 				return value.split(",");
 			}
-		}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String[], java.lang.String>() {
+		}).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String[], java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String[] value) {
 				return Arrays.asList(value[8] + "-" + value[14]);
 			}
@@ -13729,21 +13743,21 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
-				}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String[], java.lang.String>() {
-					public java.util.List<java.lang.String> apply(java.lang.String[] value) {
-						return Arrays.asList(value[8] + "-" + value[14]);
-					}
-				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(String value) {
+				}).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String[], java.lang.String>() {
+			public java.util.List<java.lang.String> apply(java.lang.String[] value) {
+				return Arrays.asList(value[8] + "-" + value[14]);
+			}
+		}).mapToPair(
+				new com.github.mdc.common.functions.MapToPairFunction<String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(String value) {
 
-								return (Tuple2<String, String>) Tuple.tuple(value, value);
-							}
-						})
+						return (Tuple2<String, String>) Tuple.tuple(value, value);
+					}
+				})
 				.collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
@@ -13761,21 +13775,21 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
-				}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String[], java.lang.String>() {
-					public java.util.List<java.lang.String> apply(java.lang.String[] value) {
-						return Arrays.asList(value[8] + "-" + value[14]);
-					}
-				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(String value) {
+				}).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String[], java.lang.String>() {
+			public java.util.List<java.lang.String> apply(java.lang.String[] value) {
+				return Arrays.asList(value[8] + "-" + value[14]);
+			}
+		}).mapToPair(
+				new com.github.mdc.common.functions.MapToPairFunction<String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(String value) {
 
-								return (Tuple2<String, String>) Tuple.tuple(value, value);
-							}
-						})
+						return (Tuple2<String, String>) Tuple.tuple(value, value);
+					}
+				})
 				.count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
@@ -13795,23 +13809,23 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+		datapipeline.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 			public java.lang.String[] apply(java.lang.String value) {
 				return value.split(",");
 			}
-		}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String[], java.lang.String>() {
+		}).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String[], java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String[] value) {
 				return Arrays.asList(value[8] + "-" + value[14]);
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(String value) {
 
 						return (Tuple2<String, String>) Tuple.tuple(value, value);
 					}
 				}).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(46361, sum);
 
@@ -13824,21 +13838,21 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Tuple2>> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
-				}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String[], java.lang.String>() {
-					public java.util.List<java.lang.String> apply(java.lang.String[] value) {
-						return Arrays.asList(value[8] + "-" + value[14]);
-					}
-				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(String value) {
+				}).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String[], java.lang.String>() {
+			public java.util.List<java.lang.String> apply(java.lang.String[] value) {
+				return Arrays.asList(value[8] + "-" + value[14]);
+			}
+		}).mapToPair(
+				new com.github.mdc.common.functions.MapToPairFunction<String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(String value) {
 
-								return (Tuple2<String, String>) Tuple.tuple(value, value);
-							}
-						})
+						return (Tuple2<String, String>) Tuple.tuple(value, value);
+					}
+				})
 				.groupByKey().collect(toexecute, null);
 		int sum = 0;
 		for (List<Tuple2> lsttuples : data) {
@@ -13857,29 +13871,29 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+		datapipeline.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 			public java.lang.String[] apply(java.lang.String value) {
 				return value.split(",");
 			}
-		}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String[], java.lang.String>() {
+		}).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String[], java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String[] value) {
 				return Arrays.asList(value[8] + "-" + value[14]);
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(String value) {
 
 						return (Tuple2<String, String>) Tuple.tuple(value, value);
 					}
 				}).groupByKey().forEach(lsttuples -> {
-					for (Tuple2 tuple2 : lsttuples) {
-						log.info(tuple2.v2);
-						if(tuple2.v2!=null) {
-							sum += ((List) tuple2.v2).size();
-						}
-					}
+			for (Tuple2 tuple2 : lsttuples) {
+				log.info(tuple2.v2);
+				if (tuple2.v2 != null) {
+					sum += ((List) tuple2.v2).size();
+				}
+			}
 
-				}, null);
+		}, null);
 
 		assertEquals(46361, sum);
 
@@ -13892,21 +13906,21 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
-				}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String[], java.lang.String>() {
-					public java.util.List<java.lang.String> apply(java.lang.String[] value) {
-						return Arrays.asList(value[8] + "-" + value[14]);
-					}
-				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(String value) {
+				}).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String[], java.lang.String>() {
+			public java.util.List<java.lang.String> apply(java.lang.String[] value) {
+				return Arrays.asList(value[8] + "-" + value[14]);
+			}
+		}).mapToPair(
+				new com.github.mdc.common.functions.MapToPairFunction<String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(String value) {
 
-								return (Tuple2<String, String>) Tuple.tuple(value, value);
-							}
-						})
+						return (Tuple2<String, String>) Tuple.tuple(value, value);
+					}
+				})
 				.reduceByKey((a, b) -> a + b).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
@@ -13924,21 +13938,21 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
-				}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String[], java.lang.String>() {
-					public java.util.List<java.lang.String> apply(java.lang.String[] value) {
-						return Arrays.asList(value[8] + "-" + value[14]);
-					}
-				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(String value) {
+				}).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String[], java.lang.String>() {
+			public java.util.List<java.lang.String> apply(java.lang.String[] value) {
+				return Arrays.asList(value[8] + "-" + value[14]);
+			}
+		}).mapToPair(
+				new com.github.mdc.common.functions.MapToPairFunction<String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(String value) {
 
-								return (Tuple2<String, String>) Tuple.tuple(value, value);
-							}
-						})
+						return (Tuple2<String, String>) Tuple.tuple(value, value);
+					}
+				})
 				.reduceByKey((a, b) -> a + b).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
@@ -13958,23 +13972,23 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+		datapipeline.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 			public java.lang.String[] apply(java.lang.String value) {
 				return value.split(",");
 			}
-		}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String[], java.lang.String>() {
+		}).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String[], java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String[] value) {
 				return Arrays.asList(value[8] + "-" + value[14]);
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(String value) {
 
 						return (Tuple2<String, String>) Tuple.tuple(value, value);
 					}
 				}).reduceByKey((a, b) -> a + b).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(289, sum);
 
@@ -13987,15 +14001,15 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
-				}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String[], java.lang.String>() {
-					public java.util.List<java.lang.String> apply(java.lang.String[] value) {
-						return Arrays.asList(value[8] + "-" + value[14]);
-					}
-				}).peek(val->System.out.println(val)).collect(toexecute, null);
+				}).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String[], java.lang.String>() {
+			public java.util.List<java.lang.String> apply(java.lang.String[] value) {
+				return Arrays.asList(value[8] + "-" + value[14]);
+			}
+		}).peek(val -> System.out.println(val)).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -14012,15 +14026,15 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
-				}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String[], java.lang.String>() {
-					public java.util.List<java.lang.String> apply(java.lang.String[] value) {
-						return Arrays.asList(value[8] + "-" + value[14]);
-					}
-				}).peek(val->System.out.println(val)).count(null);
+				}).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String[], java.lang.String>() {
+			public java.util.List<java.lang.String> apply(java.lang.String[] value) {
+				return Arrays.asList(value[8] + "-" + value[14]);
+			}
+		}).peek(val -> System.out.println(val)).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -14039,15 +14053,15 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+		datapipeline.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 			public java.lang.String[] apply(java.lang.String value) {
 				return value.split(",");
 			}
-		}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String[], java.lang.String>() {
+		}).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String[], java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String[] value) {
 				return Arrays.asList(value[8] + "-" + value[14]);
 			}
-		}).peek(val->System.out.println(val)).forEach(lis -> {
+		}).peek(val -> System.out.println(val)).forEach(lis -> {
 			sum += ((List) lis).size();
 		}, null);
 
@@ -14062,15 +14076,15 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
-				}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String[], java.lang.String>() {
-					public java.util.List<java.lang.String> apply(java.lang.String[] value) {
-						return Arrays.asList(value[8] + "-" + value[14]);
-					}
-				}).sample(46361).collect(toexecute, null);
+				}).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String[], java.lang.String>() {
+			public java.util.List<java.lang.String> apply(java.lang.String[] value) {
+				return Arrays.asList(value[8] + "-" + value[14]);
+			}
+		}).sample(46361).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -14087,15 +14101,15 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
-				}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String[], java.lang.String>() {
-					public java.util.List<java.lang.String> apply(java.lang.String[] value) {
-						return Arrays.asList(value[8] + "-" + value[14]);
-					}
-				}).sample(46361).count(null);
+				}).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String[], java.lang.String>() {
+			public java.util.List<java.lang.String> apply(java.lang.String[] value) {
+				return Arrays.asList(value[8] + "-" + value[14]);
+			}
+		}).sample(46361).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -14114,11 +14128,11 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+		datapipeline.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 			public java.lang.String[] apply(java.lang.String value) {
 				return value.split(",");
 			}
-		}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String[], java.lang.String>() {
+		}).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String[], java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String[] value) {
 				return Arrays.asList(value[8] + "-" + value[14]);
 			}
@@ -14137,19 +14151,19 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
-				}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String[], java.lang.String>() {
-					public java.util.List<java.lang.String> apply(java.lang.String[] value) {
-						return Arrays.asList(value[8] + "-" + value[14]);
-					}
-				}).sorted(new com.github.mdc.stream.functions.SortedComparator<String>() {
-					public int compare(String value1, String value2) {
-						return value1.compareTo(value2);
-					}
-				}).collect(toexecute, null);
+				}).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String[], java.lang.String>() {
+			public java.util.List<java.lang.String> apply(java.lang.String[] value) {
+				return Arrays.asList(value[8] + "-" + value[14]);
+			}
+		}).sorted(new com.github.mdc.common.functions.SortedComparator<String>() {
+			public int compare(String value1, String value2) {
+				return value1.compareTo(value2);
+			}
+		}).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -14166,19 +14180,19 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
-				}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String[], java.lang.String>() {
-					public java.util.List<java.lang.String> apply(java.lang.String[] value) {
-						return Arrays.asList(value[8] + "-" + value[14]);
-					}
-				}).sorted(new com.github.mdc.stream.functions.SortedComparator<String>() {
-					public int compare(String value1, String value2) {
-						return value1.compareTo(value2);
-					}
-				}).count(null);
+				}).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String[], java.lang.String>() {
+			public java.util.List<java.lang.String> apply(java.lang.String[] value) {
+				return Arrays.asList(value[8] + "-" + value[14]);
+			}
+		}).sorted(new com.github.mdc.common.functions.SortedComparator<String>() {
+			public int compare(String value1, String value2) {
+				return value1.compareTo(value2);
+			}
+		}).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -14197,15 +14211,15 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+		datapipeline.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 			public java.lang.String[] apply(java.lang.String value) {
 				return value.split(",");
 			}
-		}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String[], java.lang.String>() {
+		}).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String[], java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String[] value) {
 				return Arrays.asList(value[8] + "-" + value[14]);
 			}
-		}).sorted(new com.github.mdc.stream.functions.SortedComparator<String>() {
+		}).sorted(new com.github.mdc.common.functions.SortedComparator<String>() {
 			public int compare(String value1, String value2) {
 				return value1.compareTo(value2);
 			}
@@ -14224,19 +14238,19 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
-				}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String[], java.lang.String>() {
-					public java.lang.String apply(java.lang.String[] value) {
-						return value[8] + "-" + value[14];
-					}
-				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
-					public boolean test(java.lang.String value) {
-						return !value.split("-")[1].equals("NA") && !value.split("-")[1].equals("ArrDelay");
-					}
-				}).collect(toexecute, null);
+				}).map(new com.github.mdc.common.functions.MapFunction<java.lang.String[], java.lang.String>() {
+			public java.lang.String apply(java.lang.String[] value) {
+				return value[8] + "-" + value[14];
+			}
+		}).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
+			public boolean test(java.lang.String value) {
+				return !"NA".equals(value.split("-")[1]) && !"ArrDelay".equals(value.split("-")[1]);
+			}
+		}).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -14253,19 +14267,19 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
-				}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String[], java.lang.String>() {
-					public java.lang.String apply(java.lang.String[] value) {
-						return value[8] + "-" + value[14];
-					}
-				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
-					public boolean test(java.lang.String value) {
-						return !value.split("-")[1].equals("NA") && !value.split("-")[1].equals("ArrDelay");
-					}
-				}).count(null);
+				}).map(new com.github.mdc.common.functions.MapFunction<java.lang.String[], java.lang.String>() {
+			public java.lang.String apply(java.lang.String[] value) {
+				return value[8] + "-" + value[14];
+			}
+		}).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
+			public boolean test(java.lang.String value) {
+				return !"NA".equals(value.split("-")[1]) && !"ArrDelay".equals(value.split("-")[1]);
+			}
+		}).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -14284,17 +14298,17 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+		datapipeline.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 			public java.lang.String[] apply(java.lang.String value) {
 				return value.split(",");
 			}
-		}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String[], java.lang.String>() {
+		}).map(new com.github.mdc.common.functions.MapFunction<java.lang.String[], java.lang.String>() {
 			public java.lang.String apply(java.lang.String[] value) {
 				return value[8] + "-" + value[14];
 			}
-		}).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String>() {
+		}).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String>() {
 			public boolean test(java.lang.String value) {
-				return !value.split("-")[1].equals("NA") && !value.split("-")[1].equals("ArrDelay");
+				return !"NA".equals(value.split("-")[1]) && !"ArrDelay".equals(value.split("-")[1]);
 			}
 		}).forEach(lis -> {
 			sum += ((List) lis).size();
@@ -14311,19 +14325,19 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
-				}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String[], java.lang.String>() {
-					public java.lang.String apply(java.lang.String[] value) {
-						return value[8] + "-" + value[14];
-					}
-				}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
-					public java.util.List<java.lang.String> apply(java.lang.String value) {
-						return Arrays.asList(value);
-					}
-				}).collect(toexecute, null);
+				}).map(new com.github.mdc.common.functions.MapFunction<java.lang.String[], java.lang.String>() {
+			public java.lang.String apply(java.lang.String[] value) {
+				return value[8] + "-" + value[14];
+			}
+		}).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+			public java.util.List<java.lang.String> apply(java.lang.String value) {
+				return Arrays.asList(value);
+			}
+		}).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -14340,19 +14354,19 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
-				}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String[], java.lang.String>() {
-					public java.lang.String apply(java.lang.String[] value) {
-						return value[8] + "-" + value[14];
-					}
-				}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
-					public java.util.List<java.lang.String> apply(java.lang.String value) {
-						return Arrays.asList(value);
-					}
-				}).count(null);
+				}).map(new com.github.mdc.common.functions.MapFunction<java.lang.String[], java.lang.String>() {
+			public java.lang.String apply(java.lang.String[] value) {
+				return value[8] + "-" + value[14];
+			}
+		}).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+			public java.util.List<java.lang.String> apply(java.lang.String value) {
+				return Arrays.asList(value);
+			}
+		}).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -14371,15 +14385,15 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+		datapipeline.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 			public java.lang.String[] apply(java.lang.String value) {
 				return value.split(",");
 			}
-		}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String[], java.lang.String>() {
+		}).map(new com.github.mdc.common.functions.MapFunction<java.lang.String[], java.lang.String>() {
 			public java.lang.String apply(java.lang.String[] value) {
 				return value[8] + "-" + value[14];
 			}
-		}).flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
+		}).flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String, java.lang.String>() {
 			public java.util.List<java.lang.String> apply(java.lang.String value) {
 				return Arrays.asList(value);
 			}
@@ -14398,19 +14412,19 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
-				}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String[], java.lang.String>() {
-					public java.lang.String apply(java.lang.String[] value) {
-						return value[8] + "-" + value[14];
-					}
-				}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
-					public java.lang.String[] apply(java.lang.String value) {
-						return value.split(",");
-					}
-				}).collect(toexecute, null);
+				}).map(new com.github.mdc.common.functions.MapFunction<java.lang.String[], java.lang.String>() {
+			public java.lang.String apply(java.lang.String[] value) {
+				return value[8] + "-" + value[14];
+			}
+		}).map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+			public java.lang.String[] apply(java.lang.String value) {
+				return value.split(",");
+			}
+		}).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -14427,19 +14441,19 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
-				}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String[], java.lang.String>() {
-					public java.lang.String apply(java.lang.String[] value) {
-						return value[8] + "-" + value[14];
-					}
-				}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
-					public java.lang.String[] apply(java.lang.String value) {
-						return value.split(",");
-					}
-				}).count(null);
+				}).map(new com.github.mdc.common.functions.MapFunction<java.lang.String[], java.lang.String>() {
+			public java.lang.String apply(java.lang.String[] value) {
+				return value[8] + "-" + value[14];
+			}
+		}).map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+			public java.lang.String[] apply(java.lang.String value) {
+				return value.split(",");
+			}
+		}).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -14458,15 +14472,15 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+		datapipeline.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 			public java.lang.String[] apply(java.lang.String value) {
 				return value.split(",");
 			}
-		}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String[], java.lang.String>() {
+		}).map(new com.github.mdc.common.functions.MapFunction<java.lang.String[], java.lang.String>() {
 			public java.lang.String apply(java.lang.String[] value) {
 				return value[8] + "-" + value[14];
 			}
-		}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+		}).map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 			public java.lang.String[] apply(java.lang.String value) {
 				return value.split(",");
 			}
@@ -14485,20 +14499,20 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
-				}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String[], java.lang.String>() {
-					public java.lang.String apply(java.lang.String[] value) {
-						return value[8] + "-" + value[14];
+				}).map(new com.github.mdc.common.functions.MapFunction<java.lang.String[], java.lang.String>() {
+			public java.lang.String apply(java.lang.String[] value) {
+				return value[8] + "-" + value[14];
+			}
+		}).mapToPair(
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split("-")[0], value.split("-")[1]);
 					}
-				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split("-")[0], value.split("-")[1]);
-							}
-						})
+				})
 				.collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
@@ -14516,20 +14530,20 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
-				}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String[], java.lang.String>() {
-					public java.lang.String apply(java.lang.String[] value) {
-						return value[8] + "-" + value[14];
+				}).map(new com.github.mdc.common.functions.MapFunction<java.lang.String[], java.lang.String>() {
+			public java.lang.String apply(java.lang.String[] value) {
+				return value[8] + "-" + value[14];
+			}
+		}).mapToPair(
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split("-")[0], value.split("-")[1]);
 					}
-				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split("-")[0], value.split("-")[1]);
-							}
-						})
+				})
 				.count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
@@ -14549,22 +14563,22 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+		datapipeline.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 			public java.lang.String[] apply(java.lang.String value) {
 				return value.split(",");
 			}
-		}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String[], java.lang.String>() {
+		}).map(new com.github.mdc.common.functions.MapFunction<java.lang.String[], java.lang.String>() {
 			public java.lang.String apply(java.lang.String[] value) {
 				return value[8] + "-" + value[14];
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split("-")[0], value.split("-")[1]);
 					}
 				}).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(46361, sum);
 
@@ -14577,20 +14591,20 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Tuple2>> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
-				}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String[], java.lang.String>() {
-					public java.lang.String apply(java.lang.String[] value) {
-						return value[8] + "-" + value[14];
+				}).map(new com.github.mdc.common.functions.MapFunction<java.lang.String[], java.lang.String>() {
+			public java.lang.String apply(java.lang.String[] value) {
+				return value[8] + "-" + value[14];
+			}
+		}).mapToPair(
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split("-")[0], value.split("-")[1]);
 					}
-				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split("-")[0], value.split("-")[1]);
-							}
-						})
+				})
 				.groupByKey().collect(toexecute, null);
 		int sum = 0;
 		for (List<Tuple2> lsttuples : data) {
@@ -14609,25 +14623,25 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+		datapipeline.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 			public java.lang.String[] apply(java.lang.String value) {
 				return value.split(",");
 			}
-		}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String[], java.lang.String>() {
+		}).map(new com.github.mdc.common.functions.MapFunction<java.lang.String[], java.lang.String>() {
 			public java.lang.String apply(java.lang.String[] value) {
 				return value[8] + "-" + value[14];
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split("-")[0], value.split("-")[1]);
 					}
 				}).groupByKey().forEach(lsttuples -> {
-					for (Tuple2 tuple2 : lsttuples) {
-						sum += ((List) tuple2.v2).size();
-					}
+			for (Tuple2 tuple2 : lsttuples) {
+				sum += ((List) tuple2.v2).size();
+			}
 
-				}, null);
+		}, null);
 
 		assertEquals(46361, sum);
 
@@ -14640,20 +14654,20 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
-				}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String[], java.lang.String>() {
-					public java.lang.String apply(java.lang.String[] value) {
-						return value[8] + "-" + value[14];
+				}).map(new com.github.mdc.common.functions.MapFunction<java.lang.String[], java.lang.String>() {
+			public java.lang.String apply(java.lang.String[] value) {
+				return value[8] + "-" + value[14];
+			}
+		}).mapToPair(
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split("-")[0], value.split("-")[1]);
 					}
-				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split("-")[0], value.split("-")[1]);
-							}
-						})
+				})
 				.reduceByKey((a, b) -> a + b).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
@@ -14671,20 +14685,20 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
-				}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String[], java.lang.String>() {
-					public java.lang.String apply(java.lang.String[] value) {
-						return value[8] + "-" + value[14];
+				}).map(new com.github.mdc.common.functions.MapFunction<java.lang.String[], java.lang.String>() {
+			public java.lang.String apply(java.lang.String[] value) {
+				return value[8] + "-" + value[14];
+			}
+		}).mapToPair(
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
+						return (Tuple2<String, String>) Tuple.tuple(value.split("-")[0], value.split("-")[1]);
 					}
-				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
-								return (Tuple2<String, String>) Tuple.tuple(value.split("-")[0], value.split("-")[1]);
-							}
-						})
+				})
 				.reduceByKey((a, b) -> a + b).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
@@ -14704,22 +14718,22 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+		datapipeline.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 			public java.lang.String[] apply(java.lang.String value) {
 				return value.split(",");
 			}
-		}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String[], java.lang.String>() {
+		}).map(new com.github.mdc.common.functions.MapFunction<java.lang.String[], java.lang.String>() {
 			public java.lang.String apply(java.lang.String[] value) {
 				return value[8] + "-" + value[14];
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String value) {
 						return (Tuple2<String, String>) Tuple.tuple(value.split("-")[0], value.split("-")[1]);
 					}
 				}).reduceByKey((a, b) -> a + b).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(2, sum);
 
@@ -14732,15 +14746,15 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
-				}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String[], java.lang.String>() {
-					public java.lang.String apply(java.lang.String[] value) {
-						return value[8] + "-" + value[14];
-					}
-				}).peek(val->System.out.println(val)).collect(toexecute, null);
+				}).map(new com.github.mdc.common.functions.MapFunction<java.lang.String[], java.lang.String>() {
+			public java.lang.String apply(java.lang.String[] value) {
+				return value[8] + "-" + value[14];
+			}
+		}).peek(val -> System.out.println(val)).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -14757,15 +14771,15 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
-				}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String[], java.lang.String>() {
-					public java.lang.String apply(java.lang.String[] value) {
-						return value[8] + "-" + value[14];
-					}
-				}).peek(val->System.out.println(val)).count(null);
+				}).map(new com.github.mdc.common.functions.MapFunction<java.lang.String[], java.lang.String>() {
+			public java.lang.String apply(java.lang.String[] value) {
+				return value[8] + "-" + value[14];
+			}
+		}).peek(val -> System.out.println(val)).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -14784,15 +14798,15 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+		datapipeline.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 			public java.lang.String[] apply(java.lang.String value) {
 				return value.split(",");
 			}
-		}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String[], java.lang.String>() {
+		}).map(new com.github.mdc.common.functions.MapFunction<java.lang.String[], java.lang.String>() {
 			public java.lang.String apply(java.lang.String[] value) {
 				return value[8] + "-" + value[14];
 			}
-		}).peek(val->System.out.println(val)).forEach(lis -> {
+		}).peek(val -> System.out.println(val)).forEach(lis -> {
 			sum += ((List) lis).size();
 		}, null);
 
@@ -14807,15 +14821,15 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
-				}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String[], java.lang.String>() {
-					public java.lang.String apply(java.lang.String[] value) {
-						return value[8] + "-" + value[14];
-					}
-				}).sample(46361).collect(toexecute, null);
+				}).map(new com.github.mdc.common.functions.MapFunction<java.lang.String[], java.lang.String>() {
+			public java.lang.String apply(java.lang.String[] value) {
+				return value[8] + "-" + value[14];
+			}
+		}).sample(46361).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -14832,15 +14846,15 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
-				}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String[], java.lang.String>() {
-					public java.lang.String apply(java.lang.String[] value) {
-						return value[8] + "-" + value[14];
-					}
-				}).sample(46361).count(null);
+				}).map(new com.github.mdc.common.functions.MapFunction<java.lang.String[], java.lang.String>() {
+			public java.lang.String apply(java.lang.String[] value) {
+				return value[8] + "-" + value[14];
+			}
+		}).sample(46361).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -14859,11 +14873,11 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+		datapipeline.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 			public java.lang.String[] apply(java.lang.String value) {
 				return value.split(",");
 			}
-		}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String[], java.lang.String>() {
+		}).map(new com.github.mdc.common.functions.MapFunction<java.lang.String[], java.lang.String>() {
 			public java.lang.String apply(java.lang.String[] value) {
 				return value[8] + "-" + value[14];
 			}
@@ -14882,19 +14896,19 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
-				}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String[], java.lang.String>() {
-					public java.lang.String apply(java.lang.String[] value) {
-						return value[8] + "-" + value[14];
-					}
-				}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
-					public int compare(java.lang.String value1, java.lang.String value2) {
-						return value1.compareTo(value2);
-					}
-				}).collect(toexecute, null);
+				}).map(new com.github.mdc.common.functions.MapFunction<java.lang.String[], java.lang.String>() {
+			public java.lang.String apply(java.lang.String[] value) {
+				return value[8] + "-" + value[14];
+			}
+		}).sorted(new com.github.mdc.common.functions.SortedComparator<java.lang.String>() {
+			public int compare(java.lang.String value1, java.lang.String value2) {
+				return value1.compareTo(value2);
+			}
+		}).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -14911,19 +14925,19 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
-				}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String[], java.lang.String>() {
-					public java.lang.String apply(java.lang.String[] value) {
-						return value[8] + "-" + value[14];
-					}
-				}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
-					public int compare(java.lang.String value1, java.lang.String value2) {
-						return value1.compareTo(value2);
-					}
-				}).count(null);
+				}).map(new com.github.mdc.common.functions.MapFunction<java.lang.String[], java.lang.String>() {
+			public java.lang.String apply(java.lang.String[] value) {
+				return value[8] + "-" + value[14];
+			}
+		}).sorted(new com.github.mdc.common.functions.SortedComparator<java.lang.String>() {
+			public int compare(java.lang.String value1, java.lang.String value2) {
+				return value1.compareTo(value2);
+			}
+		}).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -14942,15 +14956,15 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+		datapipeline.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 			public java.lang.String[] apply(java.lang.String value) {
 				return value.split(",");
 			}
-		}).map(new com.github.mdc.stream.functions.MapFunction<java.lang.String[], java.lang.String>() {
+		}).map(new com.github.mdc.common.functions.MapFunction<java.lang.String[], java.lang.String>() {
 			public java.lang.String apply(java.lang.String[] value) {
 				return value[8] + "-" + value[14];
 			}
-		}).sorted(new com.github.mdc.stream.functions.SortedComparator<java.lang.String>() {
+		}).sorted(new com.github.mdc.common.functions.SortedComparator<java.lang.String>() {
 			public int compare(java.lang.String value1, java.lang.String value2) {
 				return value1.compareTo(value2);
 			}
@@ -14969,17 +14983,17 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
-								return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
-							}
-						})
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<org.jooq.lambda.tuple.Tuple2>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
+						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
+					}
+				})
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<org.jooq.lambda.tuple.Tuple2>() {
 					public boolean test(org.jooq.lambda.tuple.Tuple2 value) {
 						return true;
 					}
@@ -15000,17 +15014,17 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
-								return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
-							}
-						})
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<org.jooq.lambda.tuple.Tuple2>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
+						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
+					}
+				})
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<org.jooq.lambda.tuple.Tuple2>() {
 					public boolean test(org.jooq.lambda.tuple.Tuple2 value) {
 						return true;
 					}
@@ -15033,22 +15047,22 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+		datapipeline.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 			public java.lang.String[] apply(java.lang.String value) {
 				return value.split(",");
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
 						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
 					}
-				}).filter(new com.github.mdc.stream.functions.PredicateSerializable<org.jooq.lambda.tuple.Tuple2>() {
-					public boolean test(org.jooq.lambda.tuple.Tuple2 value) {
-						return true;
-					}
-				}).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+				}).filter(new com.github.mdc.common.functions.PredicateSerializable<org.jooq.lambda.tuple.Tuple2>() {
+			public boolean test(org.jooq.lambda.tuple.Tuple2 value) {
+				return true;
+			}
+		}).forEach(lis -> {
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(46361, sum);
 
@@ -15061,16 +15075,16 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
-								return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
+						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
+					}
+				})
 				.collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
@@ -15088,16 +15102,16 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
-								return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
+						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
+					}
+				})
 				.count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
@@ -15117,18 +15131,18 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+		datapipeline.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 			public java.lang.String[] apply(java.lang.String value) {
 				return value.split(",");
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
 						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
 					}
 				}).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(46361, sum);
 
@@ -15141,21 +15155,21 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Tuple2>> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
-								return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
-							}
-						})
-				.groupByKey().filter(new com.github.mdc.stream.functions.PredicateSerializable<org.jooq.lambda.tuple.Tuple2>() {
-					public boolean test(org.jooq.lambda.tuple.Tuple2 value) {
-						return true;
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
+						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
 					}
-				}).collect(toexecute, null);
+				})
+				.groupByKey().filter(new com.github.mdc.common.functions.PredicateSerializable<org.jooq.lambda.tuple.Tuple2>() {
+			public boolean test(org.jooq.lambda.tuple.Tuple2 value) {
+				return true;
+			}
+		}).collect(toexecute, null);
 		int sum = 0;
 		for (List<Tuple2> lsttuples : data) {
 			for (Tuple2 tuple2 : lsttuples) {
@@ -15173,26 +15187,26 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+		datapipeline.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 			public java.lang.String[] apply(java.lang.String value) {
 				return value.split(",");
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
 						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
 					}
 				}).groupByKey()
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<org.jooq.lambda.tuple.Tuple2>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<org.jooq.lambda.tuple.Tuple2>() {
 					public boolean test(org.jooq.lambda.tuple.Tuple2 value) {
 						return true;
 					}
 				}).forEach(lsttuples -> {
-					for (Tuple2 tuple2 : lsttuples) {
-						sum += ((List) tuple2.v2).size();
-					}
+			for (Tuple2 tuple2 : lsttuples) {
+				sum += ((List) tuple2.v2).size();
+			}
 
-				}, null);
+		}, null);
 
 		assertEquals(46361, sum);
 
@@ -15205,16 +15219,16 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Tuple2>> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
-								return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
+						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
+					}
+				})
 				.groupByKey().collect(toexecute, null);
 		int sum = 0;
 		for (List<Tuple2> lsttuples : data) {
@@ -15233,21 +15247,21 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+		datapipeline.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 			public java.lang.String[] apply(java.lang.String value) {
 				return value.split(",");
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
 						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
 					}
 				}).groupByKey().forEach(lsttuples -> {
-					for (Tuple2 tuple2 : lsttuples) {
-						sum += ((List) tuple2.v2).size();
-					}
+			for (Tuple2 tuple2 : lsttuples) {
+				sum += ((List) tuple2.v2).size();
+			}
 
-				}, null);
+		}, null);
 
 		assertEquals(46361, sum);
 
@@ -15260,16 +15274,16 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Tuple2>> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
-								return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
+						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
+					}
+				})
 				.groupByKey().collect(toexecute, null);
 		int sum = 0;
 		for (List<Tuple2> lsttuples : data) {
@@ -15288,21 +15302,21 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+		datapipeline.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 			public java.lang.String[] apply(java.lang.String value) {
 				return value.split(",");
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
 						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
 					}
 				}).groupByKey().forEach(lsttuples -> {
-					for (Tuple2 tuple2 : lsttuples) {
-						sum += ((List) tuple2.v2).size();
-					}
+			for (Tuple2 tuple2 : lsttuples) {
+				sum += ((List) tuple2.v2).size();
+			}
 
-				}, null);
+		}, null);
 
 		assertEquals(46361, sum);
 
@@ -15315,22 +15329,22 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Tuple2>> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
-								return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
+						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
+					}
+				})
 				.groupByKey().mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
-								return (Tuple2<String, String>) value;
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
+						return (Tuple2<String, String>) value;
+					}
+				})
 				.collect(toexecute, null);
 		int sum = 0;
 		for (List<Tuple2> lsttuples : data) {
@@ -15349,21 +15363,21 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+		datapipeline.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 			public java.lang.String[] apply(java.lang.String value) {
 				return value.split(",");
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
 						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
 					}
 				}).groupByKey().mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
-								return (Tuple2<String, String>) value;
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
+						return (Tuple2<String, String>) value;
+					}
+				})
 				.forEach(lsttuples -> {
 					for (Tuple2 tuple2 : lsttuples) {
 						sum += ((List) tuple2.v2).size();
@@ -15382,22 +15396,22 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Tuple2>> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
-								return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
+						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
+					}
+				})
 				.groupByKey().mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
-								return (Tuple2<String, String>) value;
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
+						return (Tuple2<String, String>) value;
+					}
+				})
 				.groupByKey().collect(toexecute, null);
 		int sum = 0;
 		for (List<Tuple2> lsttuples : data) {
@@ -15416,27 +15430,27 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+		datapipeline.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 			public java.lang.String[] apply(java.lang.String value) {
 				return value.split(",");
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
 						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
 					}
 				}).groupByKey().mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
-								return (Tuple2<String, String>) value;
-							}
-						})
-				.groupByKey().forEach(lsttuples -> {
-					for (Tuple2 tuple2 : lsttuples) {
-						sum += ((List) tuple2.v2).size();
+				new com.github.mdc.common.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
+						return (Tuple2<String, String>) value;
 					}
+				})
+				.groupByKey().forEach(lsttuples -> {
+			for (Tuple2 tuple2 : lsttuples) {
+				sum += ((List) tuple2.v2).size();
+			}
 
-				}, null);
+		}, null);
 
 		assertEquals(2, sum);
 
@@ -15449,22 +15463,22 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Tuple2>> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
-								return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
+						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
+					}
+				})
 				.groupByKey().mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
-								return (Tuple2<String, String>) value;
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
+						return (Tuple2<String, String>) value;
+					}
+				})
 				.reduceByKey((a, b) -> a + b).collect(toexecute, null);
 		int sum = 0;
 		for (List<Tuple2> lsttuples : data) {
@@ -15483,27 +15497,27 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+		datapipeline.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 			public java.lang.String[] apply(java.lang.String value) {
 				return value.split(",");
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
 						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
 					}
 				}).groupByKey().mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
-								return (Tuple2<String, String>) value;
-							}
-						})
-				.reduceByKey((a, b) -> a + b).forEach(lsttuples -> {
-					for (Tuple2 tuple2 : lsttuples) {
-						sum += ((List) tuple2.v2).size();
+				new com.github.mdc.common.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
+						return (Tuple2<String, String>) value;
 					}
+				})
+				.reduceByKey((a, b) -> a + b).forEach(lsttuples -> {
+			for (Tuple2 tuple2 : lsttuples) {
+				sum += ((List) tuple2.v2).size();
+			}
 
-				}, null);
+		}, null);
 
 		assertEquals(46361, sum);
 
@@ -15516,17 +15530,17 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Tuple2>> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
-								return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
-							}
-						})
-				.groupByKey().peek(val->System.out.println(val)).collect(toexecute, null);
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
+						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
+					}
+				})
+				.groupByKey().peek(val -> System.out.println(val)).collect(toexecute, null);
 		int sum = 0;
 		for (List<Tuple2> lsttuples : data) {
 			for (Tuple2 tuple2 : lsttuples) {
@@ -15544,21 +15558,21 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+		datapipeline.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 			public java.lang.String[] apply(java.lang.String value) {
 				return value.split(",");
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
 						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
 					}
-				}).groupByKey().peek(val->System.out.println(val)).forEach(lsttuples -> {
-					for (Tuple2 tuple2 : lsttuples) {
-						sum += ((List) tuple2.v2).size();
-					}
+				}).groupByKey().peek(val -> System.out.println(val)).forEach(lsttuples -> {
+			for (Tuple2 tuple2 : lsttuples) {
+				sum += ((List) tuple2.v2).size();
+			}
 
-				}, null);
+		}, null);
 
 		assertEquals(46361, sum);
 
@@ -15571,16 +15585,16 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Tuple2>> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
-								return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
+						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
+					}
+				})
 				.groupByKey().sample(46361).collect(toexecute, null);
 		int sum = 0;
 		for (List<Tuple2> lsttuples : data) {
@@ -15599,21 +15613,21 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+		datapipeline.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 			public java.lang.String[] apply(java.lang.String value) {
 				return value.split(",");
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
 						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
 					}
 				}).groupByKey().sample(46361).forEach(lsttuples -> {
-					for (Tuple2 tuple2 : lsttuples) {
-						sum += ((List) tuple2.v2).size();
-					}
+			for (Tuple2 tuple2 : lsttuples) {
+				sum += ((List) tuple2.v2).size();
+			}
 
-				}, null);
+		}, null);
 
 		assertEquals(46361, sum);
 
@@ -15626,21 +15640,21 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Tuple2>> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
-								return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
-							}
-						})
-				.groupByKey().sorted(new com.github.mdc.stream.functions.SortedComparator<org.jooq.lambda.tuple.Tuple2>() {
-					public int compare(org.jooq.lambda.tuple.Tuple2 value1, org.jooq.lambda.tuple.Tuple2 value2) {
-						return value1.compareTo(value2);
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
+						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
 					}
-				}).collect(toexecute, null);
+				})
+				.groupByKey().sorted(new com.github.mdc.common.functions.SortedComparator<org.jooq.lambda.tuple.Tuple2>() {
+			public int compare(org.jooq.lambda.tuple.Tuple2 value1, org.jooq.lambda.tuple.Tuple2 value2) {
+				return value1.compareTo(value2);
+			}
+		}).collect(toexecute, null);
 		int sum = 0;
 		for (List<Tuple2> lsttuples : data) {
 			for (Tuple2 tuple2 : lsttuples) {
@@ -15658,25 +15672,25 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+		datapipeline.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 			public java.lang.String[] apply(java.lang.String value) {
 				return value.split(",");
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
 						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
 					}
-				}).groupByKey().sorted(new com.github.mdc.stream.functions.SortedComparator<org.jooq.lambda.tuple.Tuple2>() {
-					public int compare(org.jooq.lambda.tuple.Tuple2 value1, org.jooq.lambda.tuple.Tuple2 value2) {
-						return value1.compareTo(value2);
-					}
-				}).forEach(lsttuples -> {
-					for (Tuple2 tuple2 : lsttuples) {
-						sum += ((List) tuple2.v2).size();
-					}
+				}).groupByKey().sorted(new com.github.mdc.common.functions.SortedComparator<org.jooq.lambda.tuple.Tuple2>() {
+			public int compare(org.jooq.lambda.tuple.Tuple2 value1, org.jooq.lambda.tuple.Tuple2 value2) {
+				return value1.compareTo(value2);
+			}
+		}).forEach(lsttuples -> {
+			for (Tuple2 tuple2 : lsttuples) {
+				sum += ((List) tuple2.v2).size();
+			}
 
-				}, null);
+		}, null);
 
 		assertEquals(46361, sum);
 
@@ -15689,16 +15703,16 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
-								return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
+						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
+					}
+				})
 				.collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
@@ -15716,16 +15730,16 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
-								return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
+						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
+					}
+				})
 				.count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
@@ -15745,18 +15759,18 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+		datapipeline.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 			public java.lang.String[] apply(java.lang.String value) {
 				return value.split(",");
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
 						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
 					}
 				}).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(46361, sum);
 
@@ -15769,18 +15783,18 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
-								return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
+						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
+					}
+				})
 				.mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+						new com.github.mdc.common.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 							public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
 								return (Tuple2<String, String>) value;
 							}
@@ -15802,18 +15816,18 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
-								return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
+						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
+					}
+				})
 				.mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+						new com.github.mdc.common.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 							public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
 								return (Tuple2<String, String>) value;
 							}
@@ -15837,21 +15851,21 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+		datapipeline.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 			public java.lang.String[] apply(java.lang.String value) {
 				return value.split(",");
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
 						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
-								return (Tuple2<String, String>) value;
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
+						return (Tuple2<String, String>) value;
+					}
+				})
 				.forEach(lis -> {
 					sum += ((List) lis).size();
 				}, null);
@@ -15867,18 +15881,18 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Tuple2>> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
-								return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
+						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
+					}
+				})
 				.mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+						new com.github.mdc.common.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 							public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
 								return (Tuple2<String, String>) value;
 							}
@@ -15901,27 +15915,27 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+		datapipeline.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 			public java.lang.String[] apply(java.lang.String value) {
 				return value.split(",");
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
 						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
-								return (Tuple2<String, String>) value;
-							}
-						})
-				.groupByKey().forEach(lsttuples -> {
-					for (Tuple2 tuple2 : lsttuples) {
-						sum += ((List) tuple2.v2).size();
+				new com.github.mdc.common.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
+						return (Tuple2<String, String>) value;
 					}
+				})
+				.groupByKey().forEach(lsttuples -> {
+			for (Tuple2 tuple2 : lsttuples) {
+				sum += ((List) tuple2.v2).size();
+			}
 
-				}, null);
+		}, null);
 
 		assertEquals(46361, sum);
 
@@ -15934,18 +15948,18 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
-								return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
+						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
+					}
+				})
 				.mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+						new com.github.mdc.common.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 							public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
 								return (Tuple2<String, String>) value;
 							}
@@ -15967,18 +15981,18 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
-								return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
+						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
+					}
+				})
 				.mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+						new com.github.mdc.common.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 							public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
 								return (Tuple2<String, String>) value;
 							}
@@ -16002,24 +16016,24 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+		datapipeline.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 			public java.lang.String[] apply(java.lang.String value) {
 				return value.split(",");
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
 						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
-								return (Tuple2<String, String>) value;
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
+						return (Tuple2<String, String>) value;
+					}
+				})
 				.reduceByKey((a, b) -> a + b).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(2, sum);
 
@@ -16032,17 +16046,17 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
-								return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
-							}
-						})
-				.peek(val->System.out.println(val)).collect(toexecute, null);
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
+						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
+					}
+				})
+				.peek(val -> System.out.println(val)).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -16059,17 +16073,17 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
-								return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
-							}
-						})
-				.peek(val->System.out.println(val)).count(null);
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
+						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
+					}
+				})
+				.peek(val -> System.out.println(val)).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -16088,18 +16102,18 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+		datapipeline.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 			public java.lang.String[] apply(java.lang.String value) {
 				return value.split(",");
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
 						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
 					}
-				}).peek(val->System.out.println(val)).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+				}).peek(val -> System.out.println(val)).forEach(lis -> {
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(46361, sum);
 
@@ -16112,18 +16126,18 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
-								return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
+						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
+					}
+				})
 				.reduceByKey((a, b) -> a + b)
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<org.jooq.lambda.tuple.Tuple2>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<org.jooq.lambda.tuple.Tuple2>() {
 					public boolean test(org.jooq.lambda.tuple.Tuple2 value) {
 						return true;
 					}
@@ -16144,18 +16158,18 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
-								return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
+						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
+					}
+				})
 				.reduceByKey((a, b) -> a + b)
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<org.jooq.lambda.tuple.Tuple2>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<org.jooq.lambda.tuple.Tuple2>() {
 					public boolean test(org.jooq.lambda.tuple.Tuple2 value) {
 						return true;
 					}
@@ -16178,23 +16192,23 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+		datapipeline.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 			public java.lang.String[] apply(java.lang.String value) {
 				return value.split(",");
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
 						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
 					}
 				}).reduceByKey((a, b) -> a + b)
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<org.jooq.lambda.tuple.Tuple2>() {
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<org.jooq.lambda.tuple.Tuple2>() {
 					public boolean test(org.jooq.lambda.tuple.Tuple2 value) {
 						return true;
 					}
 				}).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(2, sum);
 
@@ -16207,16 +16221,16 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
-								return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
+						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
+					}
+				})
 				.reduceByKey((a, b) -> a + b).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
@@ -16234,16 +16248,16 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
-								return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
+						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
+					}
+				})
 				.reduceByKey((a, b) -> a + b).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
@@ -16263,18 +16277,18 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+		datapipeline.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 			public java.lang.String[] apply(java.lang.String value) {
 				return value.split(",");
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
 						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
 					}
 				}).reduceByKey((a, b) -> a + b).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(2, sum);
 
@@ -16287,16 +16301,16 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
-								return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
+						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
+					}
+				})
 				.reduceByKey((a, b) -> a + b).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
@@ -16314,16 +16328,16 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
-								return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
+						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
+					}
+				})
 				.reduceByKey((a, b) -> a + b).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
@@ -16343,18 +16357,18 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+		datapipeline.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 			public java.lang.String[] apply(java.lang.String value) {
 				return value.split(",");
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
 						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
 					}
 				}).reduceByKey((a, b) -> a + b).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(2, sum);
 
@@ -16367,22 +16381,22 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
-								return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
+						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
+					}
+				})
 				.reduceByKey((a, b) -> a + b).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
-								return (Tuple2<String, String>) value;
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
+						return (Tuple2<String, String>) value;
+					}
+				})
 				.collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
@@ -16400,22 +16414,22 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
-								return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
+						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
+					}
+				})
 				.reduceByKey((a, b) -> a + b).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
-								return (Tuple2<String, String>) value;
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
+						return (Tuple2<String, String>) value;
+					}
+				})
 				.count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
@@ -16435,21 +16449,21 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+		datapipeline.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 			public java.lang.String[] apply(java.lang.String value) {
 				return value.split(",");
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
 						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
 					}
 				}).reduceByKey((a, b) -> a + b).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
-								return (Tuple2<String, String>) value;
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
+						return (Tuple2<String, String>) value;
+					}
+				})
 				.forEach(lis -> {
 					sum += ((List) lis).size();
 				}, null);
@@ -16465,22 +16479,22 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Tuple2>> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
-								return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
+						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
+					}
+				})
 				.reduceByKey((a, b) -> a + b).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
-								return (Tuple2<String, String>) value;
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
+						return (Tuple2<String, String>) value;
+					}
+				})
 				.groupByKey().collect(toexecute, null);
 		int sum = 0;
 		for (List<Tuple2> lsttuples : data) {
@@ -16499,27 +16513,27 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+		datapipeline.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 			public java.lang.String[] apply(java.lang.String value) {
 				return value.split(",");
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
 						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
 					}
 				}).reduceByKey((a, b) -> a + b).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
-								return (Tuple2<String, String>) value;
-							}
-						})
-				.groupByKey().forEach(lsttuples -> {
-					for (Tuple2 tuple2 : lsttuples) {
-						sum += ((List) tuple2.v2).size();
+				new com.github.mdc.common.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
+						return (Tuple2<String, String>) value;
 					}
+				})
+				.groupByKey().forEach(lsttuples -> {
+			for (Tuple2 tuple2 : lsttuples) {
+				sum += ((List) tuple2.v2).size();
+			}
 
-				}, null);
+		}, null);
 
 		assertEquals(2, sum);
 
@@ -16532,22 +16546,22 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
-								return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
+						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
+					}
+				})
 				.reduceByKey((a, b) -> a + b).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
-								return (Tuple2<String, String>) value;
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
+						return (Tuple2<String, String>) value;
+					}
+				})
 				.reduceByKey((a, b) -> a + b).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
@@ -16565,22 +16579,22 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
-								return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
+						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
+					}
+				})
 				.reduceByKey((a, b) -> a + b).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
-								return (Tuple2<String, String>) value;
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
+						return (Tuple2<String, String>) value;
+					}
+				})
 				.reduceByKey((a, b) -> a + b).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
@@ -16600,24 +16614,24 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+		datapipeline.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 			public java.lang.String[] apply(java.lang.String value) {
 				return value.split(",");
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
 						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
 					}
 				}).reduceByKey((a, b) -> a + b).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
-								return (Tuple2<String, String>) value;
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<org.jooq.lambda.tuple.Tuple2, org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(org.jooq.lambda.tuple.Tuple2 value) {
+						return (Tuple2<String, String>) value;
+					}
+				})
 				.reduceByKey((a, b) -> a + b).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(2, sum);
 
@@ -16630,17 +16644,17 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
-								return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
-							}
-						})
-				.reduceByKey((a, b) -> a + b).peek(val->System.out.println(val)).collect(toexecute, null);
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
+						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
+					}
+				})
+				.reduceByKey((a, b) -> a + b).peek(val -> System.out.println(val)).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -16657,17 +16671,17 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
-								return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
-							}
-						})
-				.reduceByKey((a, b) -> a + b).peek(val->System.out.println(val)).count(null);
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
+						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
+					}
+				})
+				.reduceByKey((a, b) -> a + b).peek(val -> System.out.println(val)).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -16686,18 +16700,18 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+		datapipeline.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 			public java.lang.String[] apply(java.lang.String value) {
 				return value.split(",");
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
 						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
 					}
-				}).reduceByKey((a, b) -> a + b).peek(val->System.out.println(val)).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+				}).reduceByKey((a, b) -> a + b).peek(val -> System.out.println(val)).forEach(lis -> {
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(2, sum);
 
@@ -16710,16 +16724,16 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
-								return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
+						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
+					}
+				})
 				.reduceByKey((a, b) -> a + b).sample(46361).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
@@ -16737,16 +16751,16 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
-								return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
+						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
+					}
+				})
 				.reduceByKey((a, b) -> a + b).sample(46361).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
@@ -16766,18 +16780,18 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+		datapipeline.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 			public java.lang.String[] apply(java.lang.String value) {
 				return value.split(",");
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
 						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
 					}
 				}).reduceByKey((a, b) -> a + b).sample(46361).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(2, sum);
 
@@ -16790,18 +16804,18 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
-								return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
+						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
+					}
+				})
 				.reduceByKey((a, b) -> a + b)
-				.sorted(new com.github.mdc.stream.functions.SortedComparator<org.jooq.lambda.tuple.Tuple2>() {
+				.sorted(new com.github.mdc.common.functions.SortedComparator<org.jooq.lambda.tuple.Tuple2>() {
 					public int compare(org.jooq.lambda.tuple.Tuple2 value1, org.jooq.lambda.tuple.Tuple2 value2) {
 						return value1.compareTo(value2);
 					}
@@ -16822,18 +16836,18 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
-								return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
+						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
+					}
+				})
 				.reduceByKey((a, b) -> a + b)
-				.sorted(new com.github.mdc.stream.functions.SortedComparator<org.jooq.lambda.tuple.Tuple2>() {
+				.sorted(new com.github.mdc.common.functions.SortedComparator<org.jooq.lambda.tuple.Tuple2>() {
 					public int compare(org.jooq.lambda.tuple.Tuple2 value1, org.jooq.lambda.tuple.Tuple2 value2) {
 						return value1.compareTo(value2);
 					}
@@ -16856,23 +16870,23 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+		datapipeline.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 			public java.lang.String[] apply(java.lang.String value) {
 				return value.split(",");
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
 						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
 					}
 				}).reduceByKey((a, b) -> a + b)
-				.sorted(new com.github.mdc.stream.functions.SortedComparator<org.jooq.lambda.tuple.Tuple2>() {
+				.sorted(new com.github.mdc.common.functions.SortedComparator<org.jooq.lambda.tuple.Tuple2>() {
 					public int compare(org.jooq.lambda.tuple.Tuple2 value1, org.jooq.lambda.tuple.Tuple2 value2) {
 						return value1.compareTo(value2);
 					}
 				}).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(2, sum);
 
@@ -16885,16 +16899,16 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
-								return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
+						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
+					}
+				})
 				.sample(46361).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
@@ -16912,16 +16926,16 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
-								return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
-							}
-						})
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
+						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
+					}
+				})
 				.sample(46361).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
@@ -16941,18 +16955,18 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+		datapipeline.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 			public java.lang.String[] apply(java.lang.String value) {
 				return value.split(",");
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
 						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
 					}
 				}).sample(46361).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(46361, sum);
 
@@ -16965,17 +16979,17 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
-								return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
-							}
-						})
-				.sorted(new com.github.mdc.stream.functions.SortedComparator<org.jooq.lambda.tuple.Tuple2>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
+						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
+					}
+				})
+				.sorted(new com.github.mdc.common.functions.SortedComparator<org.jooq.lambda.tuple.Tuple2>() {
 					public int compare(org.jooq.lambda.tuple.Tuple2 value1, org.jooq.lambda.tuple.Tuple2 value2) {
 						return value1.compareTo(value2);
 					}
@@ -16996,17 +17010,17 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
 				}).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
-								return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
-							}
-						})
-				.sorted(new com.github.mdc.stream.functions.SortedComparator<org.jooq.lambda.tuple.Tuple2>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
+						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
+					}
+				})
+				.sorted(new com.github.mdc.common.functions.SortedComparator<org.jooq.lambda.tuple.Tuple2>() {
 					public int compare(org.jooq.lambda.tuple.Tuple2 value1, org.jooq.lambda.tuple.Tuple2 value2) {
 						return value1.compareTo(value2);
 					}
@@ -17029,22 +17043,22 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+		datapipeline.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 			public java.lang.String[] apply(java.lang.String value) {
 				return value.split(",");
 			}
 		}).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
 						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
 					}
-				}).sorted(new com.github.mdc.stream.functions.SortedComparator<org.jooq.lambda.tuple.Tuple2>() {
-					public int compare(org.jooq.lambda.tuple.Tuple2 value1, org.jooq.lambda.tuple.Tuple2 value2) {
-						return value1.compareTo(value2);
-					}
-				}).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+				}).sorted(new com.github.mdc.common.functions.SortedComparator<org.jooq.lambda.tuple.Tuple2>() {
+			public int compare(org.jooq.lambda.tuple.Tuple2 value1, org.jooq.lambda.tuple.Tuple2 value2) {
+				return value1.compareTo(value2);
+			}
+		}).forEach(lis -> {
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(46361, sum);
 
@@ -17057,14 +17071,14 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
-				}).peek(val->System.out.println(val))
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String[]>() {
+				}).peek(val -> System.out.println(val))
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String[]>() {
 					public boolean test(java.lang.String[] value) {
-						return !value[14].equals("NA") && !value[14].equals("ArrDelay");
+						return !"NA".equals(value[14]) && !"ArrDelay".equals(value[14]);
 					}
 				}).collect(toexecute, null);
 		int sum = 0;
@@ -17083,14 +17097,14 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
-				}).peek(val->System.out.println(val))
-				.filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String[]>() {
+				}).peek(val -> System.out.println(val))
+				.filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String[]>() {
 					public boolean test(java.lang.String[] value) {
-						return !value[14].equals("NA") && !value[14].equals("ArrDelay");
+						return !"NA".equals(value[14]) && !"ArrDelay".equals(value[14]);
 					}
 				}).count(null);
 		long sum = 0;
@@ -17111,13 +17125,13 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+		datapipeline.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 			public java.lang.String[] apply(java.lang.String value) {
 				return value.split(",");
 			}
-		}).peek(val->System.out.println(val)).filter(new com.github.mdc.stream.functions.PredicateSerializable<java.lang.String[]>() {
+		}).peek(val -> System.out.println(val)).filter(new com.github.mdc.common.functions.PredicateSerializable<java.lang.String[]>() {
 			public boolean test(java.lang.String[] value) {
-				return !value[14].equals("NA") && !value[14].equals("ArrDelay");
+				return !"NA".equals(value[14]) && !"ArrDelay".equals(value[14]);
 			}
 		}).forEach(lis -> {
 			sum += ((List) lis).size();
@@ -17134,12 +17148,12 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
-				}).peek(val->System.out.println(val))
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String[], java.lang.String>() {
+				}).peek(val -> System.out.println(val))
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String[], java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String[] value) {
 						return Arrays.asList(value[8] + "-" + value[14]);
 					}
@@ -17160,12 +17174,12 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
-				}).peek(val->System.out.println(val))
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String[], java.lang.String>() {
+				}).peek(val -> System.out.println(val))
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String[], java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String[] value) {
 						return Arrays.asList(value[8] + "-" + value[14]);
 					}
@@ -17188,18 +17202,18 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+		datapipeline.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 			public java.lang.String[] apply(java.lang.String value) {
 				return value.split(",");
 			}
-		}).peek(val->System.out.println(val))
-				.flatMap(new com.github.mdc.stream.functions.FlatMapFunction<java.lang.String[], java.lang.String>() {
+		}).peek(val -> System.out.println(val))
+				.flatMap(new com.github.mdc.common.functions.FlatMapFunction<java.lang.String[], java.lang.String>() {
 					public java.util.List<java.lang.String> apply(java.lang.String[] value) {
 						return Arrays.asList(value[8] + "-" + value[14]);
 					}
 				}).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(46361, sum);
 
@@ -17212,12 +17226,12 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
-				}).peek(val->System.out.println(val))
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String[], java.lang.String>() {
+				}).peek(val -> System.out.println(val))
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String[], java.lang.String>() {
 					public java.lang.String apply(java.lang.String[] value) {
 						return value[8] + "-" + value[14];
 					}
@@ -17238,12 +17252,12 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
-				}).peek(val->System.out.println(val))
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String[], java.lang.String>() {
+				}).peek(val -> System.out.println(val))
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String[], java.lang.String>() {
 					public java.lang.String apply(java.lang.String[] value) {
 						return value[8] + "-" + value[14];
 					}
@@ -17266,18 +17280,18 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+		datapipeline.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 			public java.lang.String[] apply(java.lang.String value) {
 				return value.split(",");
 			}
-		}).peek(val->System.out.println(val))
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String[], java.lang.String>() {
+		}).peek(val -> System.out.println(val))
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String[], java.lang.String>() {
 					public java.lang.String apply(java.lang.String[] value) {
 						return value[8] + "-" + value[14];
 					}
 				}).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(46361, sum);
 
@@ -17290,16 +17304,16 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
-				}).peek(val->System.out.println(val)).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
-								return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
-							}
-						})
+				}).peek(val -> System.out.println(val)).mapToPair(
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
+						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
+					}
+				})
 				.collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
@@ -17317,16 +17331,16 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
-				}).peek(val->System.out.println(val)).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
-								return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
-							}
-						})
+				}).peek(val -> System.out.println(val)).mapToPair(
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
+						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
+					}
+				})
 				.count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
@@ -17346,18 +17360,18 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+		datapipeline.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 			public java.lang.String[] apply(java.lang.String value) {
 				return value.split(",");
 			}
-		}).peek(val->System.out.println(val)).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+		}).peek(val -> System.out.println(val)).mapToPair(
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
 						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
 					}
 				}).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(46361, sum);
 
@@ -17370,16 +17384,16 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Tuple2>> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
-				}).peek(val->System.out.println(val)).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
-								return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
-							}
-						})
+				}).peek(val -> System.out.println(val)).mapToPair(
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
+						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
+					}
+				})
 				.groupByKey().collect(toexecute, null);
 		int sum = 0;
 		for (List<Tuple2> lsttuples : data) {
@@ -17398,21 +17412,21 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+		datapipeline.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 			public java.lang.String[] apply(java.lang.String value) {
 				return value.split(",");
 			}
-		}).peek(val->System.out.println(val)).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+		}).peek(val -> System.out.println(val)).mapToPair(
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
 						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
 					}
 				}).groupByKey().forEach(lsttuples -> {
-					for (Tuple2 tuple2 : lsttuples) {
-						sum += ((List) tuple2.v2).size();
-					}
+			for (Tuple2 tuple2 : lsttuples) {
+				sum += ((List) tuple2.v2).size();
+			}
 
-				}, null);
+		}, null);
 
 		assertEquals(46361, sum);
 
@@ -17425,16 +17439,16 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
-				}).peek(val->System.out.println(val)).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
-								return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
-							}
-						})
+				}).peek(val -> System.out.println(val)).mapToPair(
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
+						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
+					}
+				})
 				.reduceByKey((a, b) -> a + b).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
@@ -17452,16 +17466,16 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
-				}).peek(val->System.out.println(val)).mapToPair(
-						new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
-							public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
-								return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
-							}
-						})
+				}).peek(val -> System.out.println(val)).mapToPair(
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
+						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
+					}
+				})
 				.reduceByKey((a, b) -> a + b).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
@@ -17481,18 +17495,18 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+		datapipeline.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 			public java.lang.String[] apply(java.lang.String value) {
 				return value.split(",");
 			}
-		}).peek(val->System.out.println(val)).mapToPair(
-				new com.github.mdc.stream.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
+		}).peek(val -> System.out.println(val)).mapToPair(
+				new com.github.mdc.common.functions.MapToPairFunction<java.lang.String[], org.jooq.lambda.tuple.Tuple2<java.lang.String, java.lang.String>>() {
 					public org.jooq.lambda.tuple.Tuple2 apply(java.lang.String[] value) {
 						return (Tuple2<String, String>) Tuple.tuple(value[8], value[14]);
 					}
 				}).reduceByKey((a, b) -> a + b).forEach(lis -> {
-					sum += ((List) lis).size();
-				}, null);
+			sum += ((List) lis).size();
+		}, null);
 
 		assertEquals(2, sum);
 
@@ -17505,11 +17519,11 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
-				}).peek(val->System.out.println(val)).peek(val->System.out.println(val)).collect(toexecute, null);
+				}).peek(val -> System.out.println(val)).peek(val -> System.out.println(val)).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -17526,11 +17540,11 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
-				}).peek(val->System.out.println(val)).peek(val->System.out.println(val)).count(null);
+				}).peek(val -> System.out.println(val)).peek(val -> System.out.println(val)).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {
@@ -17549,11 +17563,11 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		sum = 0;
-		datapipeline.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+		datapipeline.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 			public java.lang.String[] apply(java.lang.String value) {
 				return value.split(",");
 			}
-		}).peek(val->System.out.println(val)).peek(val->System.out.println(val)).forEach(lis -> {
+		}).peek(val -> System.out.println(val)).peek(val -> System.out.println(val)).forEach(lis -> {
 			sum += ((List) lis).size();
 		}, null);
 
@@ -17568,11 +17582,11 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
-				}).peek(val->System.out.println(val)).sample(46361).collect(toexecute, null);
+				}).peek(val -> System.out.println(val)).sample(46361).collect(toexecute, null);
 		int sum = 0;
 		for (List partitioneddata : data) {
 			log.info(partitioneddata.size());
@@ -17589,11 +17603,11 @@ public class StreamPipelineDepth31Test extends StreamPipelineBaseTestCommon {
 		StreamPipeline<String> datapipeline = StreamPipeline.newStreamHDFS(hdfsfilepath,
 				airlinesample, pipelineconfig);
 		List<List<Long>> data = (List) datapipeline
-				.map(new com.github.mdc.stream.functions.MapFunction<java.lang.String, java.lang.String[]>() {
+				.map(new com.github.mdc.common.functions.MapFunction<java.lang.String, java.lang.String[]>() {
 					public java.lang.String[] apply(java.lang.String value) {
 						return value.split(",");
 					}
-				}).peek(val->System.out.println(val)).sample(46361).count(null);
+				}).peek(val -> System.out.println(val)).sample(46361).count(null);
 		long sum = 0;
 		for (List<Long> partitioneddata : data) {
 			for (Long count : partitioneddata) {

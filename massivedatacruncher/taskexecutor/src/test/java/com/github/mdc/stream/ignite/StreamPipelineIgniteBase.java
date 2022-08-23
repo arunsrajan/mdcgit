@@ -1,7 +1,21 @@
+/*
+ * Copyright 2021 the original author or authors.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p>
+ * https://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.github.mdc.stream.ignite;
 
 import java.io.InputStream;
-import java.net.Socket;
 import java.net.URI;
 import java.util.List;
 import java.util.Objects;
@@ -30,12 +44,12 @@ import com.github.sakserv.minicluster.impl.YarnLocalCluster;
 
 public class StreamPipelineIgniteBase {
 	static HdfsLocalCluster hdfsLocalCluster;
-	String[] airlineheader = new String[] { "Year", "Month", "DayofMonth", "DayOfWeek", "DepTime", "CRSDepTime",
+	String[] airlineheader = new String[]{"Year", "Month", "DayofMonth", "DayOfWeek", "DepTime", "CRSDepTime",
 			"ArrTime", "CRSArrTime", "UniqueCarrier", "FlightNum", "TailNum", "ActualElapsedTime", "CRSElapsedTime",
 			"AirTime", "ArrDelay", "DepDelay", "Origin", "Dest", "Distance", "TaxiIn", "TaxiOut", "Cancelled",
 			"CancellationCode", "Diverted", "CarrierDelay", "WeatherDelay", "NASDelay", "SecurityDelay",
-			"LateAircraftDelay" };
-	String[] carrierheader = { "Code", "Description" };
+			"LateAircraftDelay"};
+	String[] carrierheader = {"Code", "Description"};
 	static String hdfsfilepath = "hdfs://127.0.0.1:9000";
 	String airlines = "/airlines";
 	String airline = "/airline";
@@ -75,34 +89,23 @@ public class StreamPipelineIgniteBase {
 	static ExecutorService threadpool, executorpool;
 	static int numberofnodes = 1;
 	static Integer port;
-	YarnLocalCluster yarnLocalCluster = null;
+	YarnLocalCluster yarnLocalCluster;
 	static FileSystem hdfs;
-	static boolean setupdone = false;
+	static boolean setupdone;
 	static ConcurrentMap<String, List<Process>> containerprocesses = new ConcurrentHashMap<>();
 	protected static PipelineConfig pipelineconfig = new PipelineConfig();
 
-	@SuppressWarnings({ "unused" })
+	@SuppressWarnings({"unused"})
 	@BeforeClass
 	public static void setServerUp() throws Exception {
 		try {
-			Utils.loadLog4JSystemPropertiesClassPath("mdctest.properties");
+			Utils.loadLog4JSystemProperties(MDCConstants.PREV_FOLDER + MDCConstants.FORWARD_SLASH
+					+ MDCConstants.DIST_CONFIG_FOLDER + MDCConstants.FORWARD_SLASH, "mdctest.properties");
 			Output out = new Output(System.out);
 			pipelineconfig.setKryoOutput(out);
 			pipelineconfig.setLocal("false");
 			pipelineconfig.setIsblocksuserdefined("false");
 			pipelineconfig.setMode(MDCConstants.MODE_DEFAULT);
-			try (Socket sock = new Socket("localhost", 9000);) {
-			} catch (Exception ex) {
-				Configuration conf = new Configuration();
-				conf.set("fs.hdfs.impl.disable.cache", "false");
-				conf.set("dfs.block.access.token.enable", "true");
-				hdfsLocalCluster = new HdfsLocalCluster.Builder().setHdfsNamenodePort(namenodeport)
-						.setHdfsNamenodeHttpPort(namenodehttpport).setHdfsTempDir("./target/embedded_hdfs")
-						.setHdfsNumDatanodes(1).setHdfsEnablePermissions(false).setHdfsFormat(true)
-						.setHdfsEnableRunningUserAsProxyUser(true).setHdfsConfig(conf).build();
-
-				hdfsLocalCluster.start();
-			}
 			Boolean ishdfs = Boolean.parseBoolean(MDCProperties.get().getProperty("taskexecutor.ishdfs"));
 			Configuration configuration = new Configuration();
 			hdfs = FileSystem.newInstance(new URI(MDCProperties.get().getProperty("taskexecutor.hdfsnn")),
@@ -148,14 +151,18 @@ public class StreamPipelineIgniteBase {
 	@AfterClass
 	public static void closeResources() throws Exception {
 		hdfs.close();
-		if (hdfsLocalCluster != null)
+		if (hdfsLocalCluster != null) {
 			hdfsLocalCluster.stop(true);
-		if (hb != null)
+		}
+		if (hb != null) {
 			hb.close();
-		if (executorpool != null)
+		}
+		if (executorpool != null) {
 			executorpool.shutdown();
-		if (threadpool != null)
+		}
+		if (threadpool != null) {
 			threadpool.shutdown();
+		}
 		if (!Objects.isNull(MDCCacheManager.get())) {
 			MDCCacheManager.get().close();
 			MDCCacheManager.put(null);

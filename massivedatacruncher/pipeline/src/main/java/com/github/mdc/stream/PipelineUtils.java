@@ -1,3 +1,18 @@
+/*
+ * Copyright 2021 the original author or authors.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p>
+ * https://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.github.mdc.stream;
 
 import java.util.ArrayList;
@@ -7,37 +22,37 @@ import java.util.function.ToIntFunction;
 
 import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.Task;
-import com.github.mdc.stream.functions.AggregateFunction;
-import com.github.mdc.stream.functions.AggregateReduceFunction;
-import com.github.mdc.stream.functions.CalculateCount;
-import com.github.mdc.stream.functions.Coalesce;
-import com.github.mdc.stream.functions.CoalesceFunction;
-import com.github.mdc.stream.functions.CountByKeyFunction;
-import com.github.mdc.stream.functions.CountByValueFunction;
-import com.github.mdc.stream.functions.DoubleFlatMapFunction;
-import com.github.mdc.stream.functions.FlatMapFunction;
-import com.github.mdc.stream.functions.FoldByKey;
-import com.github.mdc.stream.functions.GroupByKeyFunction;
-import com.github.mdc.stream.functions.IntersectionFunction;
-import com.github.mdc.stream.functions.JoinPredicate;
-import com.github.mdc.stream.functions.LeftOuterJoinPredicate;
-import com.github.mdc.stream.functions.LongFlatMapFunction;
-import com.github.mdc.stream.functions.MapFunction;
-import com.github.mdc.stream.functions.MapToPairFunction;
-import com.github.mdc.stream.functions.MapValuesFunction;
-import com.github.mdc.stream.functions.Max;
-import com.github.mdc.stream.functions.Min;
-import com.github.mdc.stream.functions.PeekConsumer;
-import com.github.mdc.stream.functions.PredicateSerializable;
-import com.github.mdc.stream.functions.ReduceByKeyFunction;
-import com.github.mdc.stream.functions.ReduceByKeyFunctionValues;
-import com.github.mdc.stream.functions.RightOuterJoinPredicate;
-import com.github.mdc.stream.functions.SortedComparator;
-import com.github.mdc.stream.functions.StandardDeviation;
-import com.github.mdc.stream.functions.Sum;
-import com.github.mdc.stream.functions.SummaryStatistics;
-import com.github.mdc.stream.functions.TupleFlatMapFunction;
-import com.github.mdc.stream.functions.UnionFunction;
+import com.github.mdc.common.functions.AggregateFunction;
+import com.github.mdc.common.functions.AggregateReduceFunction;
+import com.github.mdc.common.functions.CalculateCount;
+import com.github.mdc.common.functions.Coalesce;
+import com.github.mdc.common.functions.CoalesceFunction;
+import com.github.mdc.common.functions.CountByKeyFunction;
+import com.github.mdc.common.functions.CountByValueFunction;
+import com.github.mdc.common.functions.DoubleFlatMapFunction;
+import com.github.mdc.common.functions.FlatMapFunction;
+import com.github.mdc.common.functions.FoldByKey;
+import com.github.mdc.common.functions.GroupByKeyFunction;
+import com.github.mdc.common.functions.IntersectionFunction;
+import com.github.mdc.common.functions.JoinPredicate;
+import com.github.mdc.common.functions.LeftOuterJoinPredicate;
+import com.github.mdc.common.functions.LongFlatMapFunction;
+import com.github.mdc.common.functions.MapFunction;
+import com.github.mdc.common.functions.MapToPairFunction;
+import com.github.mdc.common.functions.MapValuesFunction;
+import com.github.mdc.common.functions.Max;
+import com.github.mdc.common.functions.Min;
+import com.github.mdc.common.functions.PeekConsumer;
+import com.github.mdc.common.functions.PredicateSerializable;
+import com.github.mdc.common.functions.ReduceByKeyFunction;
+import com.github.mdc.common.functions.ReduceByKeyFunctionValues;
+import com.github.mdc.common.functions.RightOuterJoinPredicate;
+import com.github.mdc.common.functions.SortedComparator;
+import com.github.mdc.common.functions.StandardDeviation;
+import com.github.mdc.common.functions.Sum;
+import com.github.mdc.common.functions.SummaryStatistics;
+import com.github.mdc.common.functions.TupleFlatMapFunction;
+import com.github.mdc.common.functions.UnionFunction;
 
 /**
  * 
@@ -45,8 +60,9 @@ import com.github.mdc.stream.functions.UnionFunction;
  * The class MassiveDataPipelineUtils is helper class for Pipeline.
  */
 public class PipelineUtils {
-	private PipelineUtils() {}
-	
+	private PipelineUtils() {
+	}
+
 	/**
 	 * The function returns the function name based on the type of 
 	 * function provided as parameter to the getFunctions. 
@@ -133,7 +149,7 @@ public class PipelineUtils {
 		}
 		return MDCConstants.EMPTY;
 	}
-	
+
 	/**
 	 * The function returns the list of function name in list.
 	 * @param tasks

@@ -1,3 +1,18 @@
+/*
+ * Copyright 2021 the original author or authors.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p>
+ * https://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.github.mdc.tasks.executor.web;
 
 import java.io.IOException;
@@ -38,26 +53,31 @@ public class ResourcesMetricsServlet extends HttpServlet {
 			MemoryMXBean membean = ManagementFactory.getMemoryMXBean() ;
 			double systemloadaverage = getProcessCpuLoad();
 			MemoryUsage heap = membean.getHeapMemoryUsage();
-			double heapusage = heap.getUsed()/(double)heap.getMax()*100.0;
+			double heapusage = heap.getUsed() / (double) heap.getMax() * 100.0;
 			MemoryUsage nonheap = membean.getNonHeapMemoryUsage();
-			double nonheapusage = nonheap.getUsed()/(double)nonheap.getMax()*100.0;
-			String[] cpuheap  = {systemloadaverage+MDCConstants.EMPTY,heapusage+MDCConstants.EMPTY,nonheapusage+MDCConstants.EMPTY};
-			
+			double nonheapusage = nonheap.getUsed() / (double) nonheap.getMax() * 100.0;
+			String[] cpuheap  = {systemloadaverage + MDCConstants.EMPTY, heapusage + MDCConstants.EMPTY, nonheapusage + MDCConstants.EMPTY};
+
 			writer.write(new ObjectMapper().writeValueAsString(cpuheap));
 			writer.flush();
 		} catch (Exception ex) {
 			log.debug("TaskScheduler Web servlet error, See cause below \n", ex);
 		}
 	}
+
 	public static double getProcessCpuLoad() throws Exception {
 
-	    MBeanServer mbs    = ManagementFactory.getPlatformMBeanServer();
-	    ObjectName name    = ObjectName.getInstance("java.lang:type=OperatingSystem");
-	    AttributeList list = mbs.getAttributes(name, new String[]{ "ProcessCpuLoad" });
-	    if (list.isEmpty())     return Double.NaN;
-	    Attribute att = (Attribute)list.get(0);
-	    Double value  = (Double)att.getValue();
-	    if (value == -1.0)      return Double.NaN;
-	    return ((int)(value * 1000) / 10.0);
+		MBeanServer mbs    = ManagementFactory.getPlatformMBeanServer();
+		ObjectName name    = ObjectName.getInstance("java.lang:type=OperatingSystem");
+		AttributeList list = mbs.getAttributes(name, new String[]{"ProcessCpuLoad"});
+		if (list.isEmpty()) {
+			return Double.NaN;
+		}
+		Attribute att = (Attribute) list.get(0);
+		Double value  = (Double) att.getValue();
+		if (value == -1.0) {
+			return Double.NaN;
+		}
+		return (int) (value * 1000) / 10.0;
 	}
 }

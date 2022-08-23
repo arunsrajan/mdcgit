@@ -22,6 +22,34 @@
 				"port": 4005,
 				"targetPort": 4005,
 				"nodePort": 31541
+			},
+			{
+			  "name": "webport",
+				"protocol": "TCP",
+				"port": 22223,
+				"targetPort": 22223,
+				"nodePort": 31542
+			},
+			{
+			  "name": "zookeeperport",
+				"protocol": "TCP",
+				"port": 2181,
+				"targetPort": 2181,
+				"nodePort": 31543
+			},
+			{
+			  "name": "namenodeport",
+				"protocol": "TCP",
+				"port": 9000,
+				"targetPort": 9000,
+				"nodePort": 31544
+			},
+			{
+			  "name": "namenodewebport",
+				"protocol": "TCP",
+				"port": 9870,
+				"targetPort": 9870,
+				"nodePort": 31545
 			}
 		],
 		"selector": {

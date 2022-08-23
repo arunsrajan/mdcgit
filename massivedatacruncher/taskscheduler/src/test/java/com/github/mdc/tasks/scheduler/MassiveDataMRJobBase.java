@@ -1,3 +1,18 @@
+/*
+ * Copyright 2021 the original author or authors.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p>
+ * https://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.github.mdc.tasks.scheduler;
 
 import java.io.InputStream;
@@ -46,7 +61,7 @@ public class MassiveDataMRJobBase {
 	static int namenodeport = 9000;
 	static int namenodehttpport = 50070;
 	static FileSystem hdfs;
-	String[] carrierheader = { "Code", "Description" };
+	String[] carrierheader = {"Code", "Description"};
 	String hdfsfilepath = "hdfs://localhost:9000";
 	String airlines = "/airlines";
 	static String airlinenoheader = "/airlinenoheader";
@@ -82,13 +97,15 @@ public class MassiveDataMRJobBase {
 	static int zookeeperport = 2182;
 
 	private static TestingServer testingserver;
+
 	@BeforeClass
 	public static void setServerUp() throws Exception {
 		try (InputStream istream = MassiveDataMRJobBase.class.getResourceAsStream("/log4j.properties");) {
 			System.setProperty("HIBCFG", "../config/mdchibernate.cfg.xml");
 			System.setProperty("HADOOP_HOME", "C:\\DEVELOPMENT\\hadoop\\hadooplocal\\hadoop-3.3.1");
 			PropertyConfigurator.configure(istream);
-			Utils.loadLog4JSystemPropertiesClassPath("mdctest.properties");
+			Utils.loadLog4JSystemProperties(MDCConstants.PREV_FOLDER + MDCConstants.FORWARD_SLASH
+					+ MDCConstants.DIST_CONFIG_FOLDER + MDCConstants.FORWARD_SLASH, "mdctest.properties");
 			ByteBufferPoolDirect.init();
 			ByteBufferPool.init(4);
 			CacheUtils.initCache();
@@ -103,27 +120,15 @@ public class MassiveDataMRJobBase {
 			HeartBeatServer hb = new HeartBeatServer();
 			hb.init(rescheduledelay, port, host, initialdelay, pingdelay, "");
 			hb.start();
-			try (Socket sock = new Socket(MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_HOST), 9000);) {
-			} catch (Exception ex) {
-				Configuration conf = new Configuration();
-				conf.set("fs.hdfs.impl.disable.cache", "false");
-				conf.set("dfs.block.access.token.enable", "true");
-				hdfsLocalCluster = new HdfsLocalCluster.Builder().setHdfsNamenodePort(namenodeport)
-						.setHdfsNamenodeHttpPort(namenodehttpport).setHdfsTempDir("./target/embedded_hdfs")
-						.setHdfsNumDatanodes(1).setHdfsEnablePermissions(false).setHdfsFormat(true)
-						.setHdfsEnableRunningUserAsProxyUser(true).setHdfsConfig(conf).build();
-
-				hdfsLocalCluster.start();
-			}
 			Configuration configuration = new Configuration();
 			hdfs = FileSystem.get(new URI(MDCProperties.get().getProperty("hdfs.namenode.url")),
 					configuration);
-			log.info("HDFS FileSystem Object: "+hdfs);
+			log.info("HDFS FileSystem Object: " + hdfs);
 			if (numberofnodes > 0) {
 				port = Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.NODE_PORT));
 				int executorsindex = 0;
-				ConcurrentMap<String, Map<String,Process>> containerprocesses = new ConcurrentHashMap<>();
-				ConcurrentMap<String, Map<String,List<Thread>>> containeridthreads = new ConcurrentHashMap<>();
+				ConcurrentMap<String, Map<String, Process>> containerprocesses = new ConcurrentHashMap<>();
+				ConcurrentMap<String, Map<String, List<Thread>>> containeridthreads = new ConcurrentHashMap<>();
 				ExecutorService es = Executors.newWorkStealingPool();
 				CountDownLatch cdl = new CountDownLatch(numberofnodes);
 				CountDownLatch cdlport = new CountDownLatch(1);
@@ -137,21 +142,20 @@ public class MassiveDataMRJobBase {
 					hbssl.add(hb);
 					Thread.sleep(3000);
 					int teport = Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_PORT));
-					AtomicInteger portinc = new AtomicInteger(teport);
 					executorpool.execute(() -> {
 						ServerSocket server;
 						try {
-							server = new ServerSocket(port,256,InetAddress.getByAddress(new byte[] { 0x00, 0x00, 0x00, 0x00 }));
+							server = Utils.createSSLServerSocket(port);
 							cdlport.countDown();
 							cdl.countDown();
 							while (true) {
 								Socket client = server.accept();
 								es.submit(
-										new NodeRunner(client, portinc, MDCConstants.TEPROPLOADCLASSPATHCONFIG,
+										new NodeRunner(client, MDCConstants.TEPROPLOADDISTROCONFIG,
 												containerprocesses, hdfs, containeridthreads, containeridports));
 							}
 						} catch (Exception ioe) {
-							log.info(MDCConstants.EMPTY,ioe);
+							log.info(MDCConstants.EMPTY, ioe);
 						}
 					});
 					cdlport.await();
@@ -160,7 +164,7 @@ public class MassiveDataMRJobBase {
 				}
 				cdl.await();
 			}
-			
+
 			uploadfile(hdfs, airlinesample, airlinesample + csvfileextn);
 			uploadfile(hdfs, carriers, carriers + csvfileextn);
 		} catch (Exception ex) {
@@ -168,7 +172,6 @@ public class MassiveDataMRJobBase {
 		}
 	}
 
-	
 
 	public static void uploadfile(FileSystem hdfs, String dir, String filename) throws Exception {
 		InputStream is = MassiveDataMRJobBase.class.getResourceAsStream(filename);

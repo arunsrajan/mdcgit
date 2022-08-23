@@ -14,7 +14,7 @@ SET DATACRUNCHERMODULES=%DATACRUNCHER%\modules
 
 set JMXPORT=33330
 
-set DEBUGPORT=4005
+set DEBUGPORT=4050
 
 set PORTOFFSET=0
 
@@ -36,7 +36,7 @@ IF EXIST %MDC_JAVA_HOME%\bin\java.exe (
 
 "%MDC_JAVA_HOME%\bin\java" -version
 
-"%MDC_JAVA_HOME%\bin\java" --add-opens java.base/java.util=ALL-UNNAMED --enable-preview -Xms128m -Xmx128m %GCCONFIG% %DEBUGCONFIG% %CLASSPATH% -Djava.net.preferIPv4Stack=true com.github.mdc.stream.scheduler.StreamPipelineTaskSchedulerRunner
+"%MDC_JAVA_HOME%\bin\java" --add-opens java.base/java.util=ALL-UNNAMED --add-opens java.base/java.lang.invoke=ALL-UNNAMED --enable-preview -Xms128m -Xmx128m %GCCONFIG% %DEBUGCONFIG% %CLASSPATH% -Djava.net.preferIPv4Stack=true com.github.mdc.stream.scheduler.StreamPipelineTaskSchedulerRunner
 
 ) ELSE (
  @echo on

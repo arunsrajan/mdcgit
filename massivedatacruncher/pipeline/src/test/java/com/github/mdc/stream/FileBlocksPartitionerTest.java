@@ -1,3 +1,18 @@
+/*
+ * Copyright 2021 the original author or authors.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p>
+ * https://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.github.mdc.stream;
 
 import static java.util.Objects.isNull;
@@ -24,18 +39,19 @@ import com.github.mdc.common.Utils;
 import com.github.mdc.stream.utils.MDCIgniteServer;
 
 public class FileBlocksPartitionerTest extends StreamPipelineTestCommon {
-	static Ignite server = null;
+	static Ignite server;
 
 	@BeforeClass
 	public static void launchNodes() throws Exception {
 		if (isNull(server)) {
-			Utils.loadLog4JSystemPropertiesClassPath("mdctest.properties");
+			Utils.loadLog4JSystemProperties(MDCConstants.PREV_FOLDER + MDCConstants.FORWARD_SLASH
+					+ MDCConstants.DIST_CONFIG_FOLDER + MDCConstants.FORWARD_SLASH, "mdctest.properties");
 			// Starting the node
 			server = MDCIgniteServer.instance();
 		}
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	@Test
 	public void testgetJobStageBlocks() throws PipelineException, MalformedObjectNameException, MBeanRegistrationException, InstanceNotFoundException {
 		Job job = new Job();
@@ -43,7 +59,7 @@ public class FileBlocksPartitionerTest extends StreamPipelineTestCommon {
 		PipelineConfig pc = new PipelineConfig();
 		IgnitePipeline mdpi = IgnitePipeline
 				.newStreamFILE(
-						System.getProperty("user.dir") + MDCConstants.BACKWARD_SLASH + "src/test/resources/ignite", pc)
+						System.getProperty("user.dir") + MDCConstants.FORWARD_SLASH + "src/test/resources/ignite", pc)
 				.map(val -> val.split(MDCConstants.COMMA));
 		((IgnitePipeline) mdpi.root).mdsroots.add(mdpi.root);
 		((IgnitePipeline) mdpi.root).finaltasks = new HashSet<>(Arrays.asList(mdpi.root.finaltask));
@@ -51,11 +67,11 @@ public class FileBlocksPartitionerTest extends StreamPipelineTestCommon {
 		List<BlocksLocation> bls = (List<BlocksLocation>) job.stageoutputmap
 				.get(job.stageoutputmap.keySet().iterator().next());
 		assertEquals(1, bls.size());
-		assertEquals(2, bls.get(0).block.length);
-		assertEquals(4270834, bls.get(0).block[0].blockend);
+		assertEquals(2, bls.get(0).getBlock().length);
+		assertEquals(4270834, bls.get(0).getBlock()[0].getBlockend());
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	@Test
 	public void testgetJobStageBlocks32MBBlockSize() throws PipelineException, MalformedObjectNameException, MBeanRegistrationException, InstanceNotFoundException {
 		Job job = new Job();
@@ -73,12 +89,12 @@ public class FileBlocksPartitionerTest extends StreamPipelineTestCommon {
 		var sum = 0;
 		for (int index = 0; index < bls.size(); index++) {
 			BlocksLocation bl = bls.get(index);
-			sum += bl.block[0].blockend - bl.block[0].blockstart;
+			sum += bl.getBlock()[0].getBlockend() - bl.getBlock()[0].getBlockstart();
 		}
 		assertEquals(127162942, sum);
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	@Test
 	public void testgetJobStageBlocks64MBBlockSize() throws PipelineException, MalformedObjectNameException, MBeanRegistrationException, InstanceNotFoundException {
 		Job job = new Job();
@@ -96,7 +112,7 @@ public class FileBlocksPartitionerTest extends StreamPipelineTestCommon {
 		var sum = 0;
 		for (int index = 0; index < bls.size(); index++) {
 			BlocksLocation bl = bls.get(index);
-			sum += bl.block[0].blockend - bl.block[0].blockstart;
+			sum += bl.getBlock()[0].getBlockend() - bl.getBlock()[0].getBlockstart();
 		}
 		assertEquals(486518821, sum);
 	}

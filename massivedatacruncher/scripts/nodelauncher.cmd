@@ -31,7 +31,7 @@ rem set GCCONFIG=-server -Xms2G -Xmx2G -XX:+UseG1GC -XX:+UnlockExperimentalVMOpt
 
 IF EXIST %MDC_JAVA_HOME%\bin\java.exe (
 
-"%MDC_JAVA_HOME%\bin\java" --enable-preview %DEBUGCONFIG% %CLASSPATH% %GCCONFIG% -Djava.net.preferIPv4Stack=true com.github.mdc.tasks.executor.NodeLauncher
+"%MDC_JAVA_HOME%\bin\java" --add-opens java.base/java.util=ALL-UNNAMED --add-opens java.base/java.lang.invoke=ALL-UNNAMED --enable-preview %DEBUGCONFIG% %CLASSPATH% %GCCONFIG% -Djava.net.preferIPv4Stack=true com.github.mdc.tasks.executor.NodeLauncher
 
 ) ELSE (
  @echo on

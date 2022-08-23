@@ -1,3 +1,18 @@
+/*
+ * Copyright 2021 the original author or authors.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p>
+ * https://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.github.mdc.stream.yarn.appmaster;
 
 import java.net.InetAddress;
@@ -51,12 +66,12 @@ public class StreamPipelineYarnAppmaster extends StaticEventingAppmaster impleme
 	private Map<String, Task> pendingsubmittedtasks = new ConcurrentHashMap<>();
 	private Map<String, Timer> requestresponsetimer = new ConcurrentHashMap<>();
 	private Map<String, Map<String, Task>> containertaskmap = new ConcurrentHashMap<>();
-	private Map<String,JobStage> jsidjsmap;
-	private Map<String,Boolean> sentjobstages = new ConcurrentHashMap<>();
+	private Map<String, JobStage> jsidjsmap;
+	private Map<String, Boolean> sentjobstages = new ConcurrentHashMap<>();
 	private final Object lock = new Object();
 
-	private long taskidcounter = 0;
-	private long taskcompleted = 0;
+	private long taskidcounter;
+	private long taskcompleted;
 	private List<StreamPipelineTaskSubmitter> mdststs;
 	private SimpleDirectedGraph<StreamPipelineTaskSubmitter, DAGEdge> graph = new SimpleDirectedGraph<>(
 			DAGEdge.class);
@@ -87,7 +102,7 @@ public class StreamPipelineYarnAppmaster extends StaticEventingAppmaster impleme
 			ByteBufferPool.init(3);
 			log.debug("Task Id Counter: " + taskidcounter);
 			log.debug("Environment: " + getEnvironment());
-			var yarninputfolder = MDCConstants.YARNINPUTFOLDER + MDCConstants.BACKWARD_SLASH
+			var yarninputfolder = MDCConstants.YARNINPUTFOLDER + MDCConstants.FORWARD_SLASH
 					+ getEnvironment().get(MDCConstants.YARNMDCJOBID);
 			log.debug("Yarn Input Folder: " + yarninputfolder);
 			log.debug("AppMaster HDFS: " + getConfiguration().get(MDCConstants.HDFSNAMENODEURL));
@@ -122,7 +137,8 @@ public class StreamPipelineYarnAppmaster extends StaticEventingAppmaster impleme
 		}
 		super.submitApplication();
 	}
-	Map<String,String> containeridipmap = new ConcurrentHashMap<>();
+	Map<String, String> containeridipmap = new ConcurrentHashMap<>();
+
 	/**
 	 * Set App Master service hosts and port running before the container is
 	 * launched.
@@ -204,9 +220,10 @@ public class StreamPipelineYarnAppmaster extends StaticEventingAppmaster impleme
 
 	/**
 	 * Update the job statuses if job status is completed.
-	 * 
-	 * @param job
+	 *
+	 * @param task
 	 * @param success
+	 * @param containerid
 	 */
 	@SuppressWarnings("ucd")
 	public void reportJobStatus(Task task, boolean success, String containerid) {
@@ -231,7 +248,7 @@ public class StreamPipelineYarnAppmaster extends StaticEventingAppmaster impleme
 	 */
 	public Object getTask(String containerid) {
 		synchronized (lock) {
-			if(!sentjobstages.containsKey(containerid)) {
+			if (!sentjobstages.containsKey(containerid)) {
 				sentjobstages.put(containerid, true);
 				return jsidjsmap;
 			}
@@ -256,12 +273,12 @@ public class StreamPipelineYarnAppmaster extends StaticEventingAppmaster impleme
 			if (taskidcounter < tasks.size()) {
 				var task = tasks.get((int) taskidcounter);
 				String ip = containeridipmap.get(containerid.trim());
-				if(!Objects.isNull(task.input)) {
-					if(task.input[0] instanceof BlocksLocation) {
+				if (!Objects.isNull(task.input)) {
+					if (task.input[0] instanceof BlocksLocation) {
 						var bl = (BlocksLocation) task.input[0];
-						if(!Objects.isNull(bl.block)&&bl.block.length>0) {
-							String[] blockip = bl.block[0].hp.split(MDCConstants.COLON);
-							if(!ip.equals(blockip[0])) {
+						if (!Objects.isNull(bl.getBlock()) && bl.getBlock().length > 0) {
+							String[] blockip = bl.getBlock()[0].getHp().split(MDCConstants.COLON);
+							if (!ip.equals(blockip[0])) {
 								return null;
 							}
 						}
@@ -318,7 +335,7 @@ public class StreamPipelineYarnAppmaster extends StaticEventingAppmaster impleme
 	public boolean hasJobs() {
 		synchronized (lock) {
 			log.debug("Has Jobs: " + (taskidcounter < tasks.size()) + ", Task Counter:" + taskidcounter);
-			return (taskidcounter < tasks.size() || pendingtasks.size() > 0 || taskcompleted < tasks.size());
+			return taskidcounter < tasks.size() || pendingtasks.size() > 0 || taskcompleted < tasks.size();
 		}
 	}
 

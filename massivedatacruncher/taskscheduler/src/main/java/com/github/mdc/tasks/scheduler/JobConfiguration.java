@@ -1,8 +1,25 @@
+/*
+ * Copyright 2021 the original author or authors.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p>
+ * https://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.github.mdc.tasks.scheduler;
 
 import java.util.Objects;
 
 import com.esotericsoftware.kryo.io.Output;
+import com.github.mdc.common.MDCConstants;
+import com.github.mdc.common.MDCProperties;
 
 public class JobConfiguration {
 	private Output output;
@@ -35,39 +52,43 @@ public class JobConfiguration {
 	String yarnscheduler;
 	String containeralloc;
 	String heappercentage;
-	public JobConfiguration(String hdfsurl, String tstempdir, String tshost, String tsport, String zkport,
-			String zkretrydelay, String tspingdelay, String tsrescheduledelay, String tsinitialdelay,
-			String tepingdelay, Boolean hdfs, String blocksize, String batchsize, String numofreducers, String minmem,
-			String maxmem, String gctype, String numberofcontainers, String isblocksuserdefined, String execmode
-			, String taskexeccount,String ignitemulticastgroup, String ignitebackup, String yarnrm, String yarnscheduler,
-			String containeralloc, String heappercentage) {
-		this.hdfsurl = hdfsurl;
-		this.tstempdir = tstempdir;
-		this.tshost = tshost;
-		this.tsport = tsport;
-		this.zkport = zkport;
-		this.zkretrydelay = zkretrydelay;
-		this.tspingdelay = tspingdelay;
-		this.tsrescheduledelay = tsrescheduledelay;
-		this.tsinitialdelay = tsinitialdelay;
-		this.tepingdelay = tepingdelay;
-		this.hdfs = hdfs;
-		this.blocksize = blocksize;
-		this.batchsize = batchsize;
-		this.numofreducers = numofreducers;
-		this.minmem = minmem;
-		this.maxmem = maxmem;
-		this.gctype = gctype;
-		this.numberofcontainers = numberofcontainers;
-		this.isblocksuserdefined = isblocksuserdefined;
-		this.execmode = execmode;
-		this.taskexeccount = taskexeccount;
-		this.ignitebackup = ignitebackup;
-		this.ignitemulticastgroup = ignitemulticastgroup;
-		this.yarnrm = yarnrm;
-		this.yarnscheduler = yarnscheduler;
-		this.containeralloc = containeralloc;
-		this.heappercentage = heappercentage;
+	String implicitcontainerallocanumber;
+	String implicitcontainercpu;
+	String implicitcontainermemory;
+	String implicitcontainermemorysize;
+
+	public JobConfiguration(JobConfigurationBuilder builder) {
+		this.hdfsurl = builder.hdfsurl;
+		this.tstempdir = builder.tstempdir;
+		this.tshost = builder.tshost;
+		this.tsport = builder.tsport;
+		this.zkport = builder.zkport;
+		this.zkretrydelay = builder.zkretrydelay;
+		this.tspingdelay = builder.tspingdelay;
+		this.tsrescheduledelay = builder.tsrescheduledelay;
+		this.tsinitialdelay = builder.tsinitialdelay;
+		this.tepingdelay = builder.tepingdelay;
+		this.hdfs = builder.hdfs;
+		this.blocksize = builder.blocksize;
+		this.batchsize = builder.batchsize;
+		this.numofreducers = builder.numofreducers;
+		this.minmem = builder.minmem;
+		this.maxmem = builder.maxmem;
+		this.gctype = builder.gctype;
+		this.numberofcontainers = builder.numberofcontainers;
+		this.isblocksuserdefined = builder.isblocksuserdefined;
+		this.execmode = builder.execmode;
+		this.taskexeccount = builder.taskexeccount;
+		this.ignitebackup = builder.ignitebackup;
+		this.ignitemulticastgroup = builder.ignitemulticastgroup;
+		this.yarnrm = builder.yarnrm;
+		this.yarnscheduler = builder.yarnscheduler;
+		this.containeralloc = builder.containeralloc;
+		this.heappercentage = builder.heappercentage;
+		this.implicitcontainerallocanumber = builder.implicitcontainerallocanumber;
+		this.implicitcontainercpu = builder.implicitcontainercpu;
+		this.implicitcontainermemory = builder.implicitcontainermemory;
+		this.implicitcontainermemorysize = builder.implicitcontainermemorysize;
 	}
 
 	public String getHdfsurl() {
@@ -135,7 +156,7 @@ public class JobConfiguration {
 	}
 
 	public void setMrjar(byte[] mrjar) {
-		if(!Objects.isNull(this.mrjar)) {
+		if (!Objects.isNull(this.mrjar)) {
 			throw new UnsupportedOperationException();
 		}
 		this.mrjar = mrjar;
@@ -312,5 +333,36 @@ public class JobConfiguration {
 	public void setHeappercentage(String heappercentage) {
 		this.heappercentage = heappercentage;
 	}
-	
+
+	public String getImplicitcontainerallocanumber() {
+		return implicitcontainerallocanumber;
+	}
+
+	public void setImplicitcontainerallocanumber(String implicitcontainerallocanumber) {
+		this.implicitcontainerallocanumber = implicitcontainerallocanumber;
+	}
+
+	public String getImplicitcontainercpu() {
+		return implicitcontainercpu;
+	}
+
+	public void setImplicitcontainercpu(String implicitcontainercpu) {
+		this.implicitcontainercpu = implicitcontainercpu;
+	}
+
+	public String getImplicitcontainermemory() {
+		return implicitcontainermemory;
+	}
+
+	public void setImplicitcontainermemory(String implicitcontainermemory) {
+		this.implicitcontainermemory = implicitcontainermemory;
+	}
+
+	public String getImplicitcontainermemorysize() {
+		return implicitcontainermemorysize;
+	}
+
+	public void setImplicitcontainermemorysize(String implicitcontainermemorysize) {
+		this.implicitcontainermemorysize = implicitcontainermemorysize;
+	}
 }
