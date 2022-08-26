@@ -26,7 +26,7 @@ public class JobConfigurationBuilderTest extends TaskSchedulerCommon {
 	@Test
 	public void testJobConfigurationBuilder() {
 		JobConfiguration jc = JobConfigurationBuilder.newBuilder().build();
-		assertEquals("5", jc.getBatchsize());
+		assertEquals("2", jc.getBatchsize());
 		assertEquals("64", jc.getBlocksize());
 		assertEquals(MDCConstants.GCCONFIG_DEFAULT, jc.getGctype());
 		assertEquals(Boolean.valueOf("true"), jc.getHdfs());
@@ -36,7 +36,7 @@ public class JobConfigurationBuilderTest extends TaskSchedulerCommon {
 		assertEquals("1024", jc.getMinmem());
 		assertEquals(null, jc.getMrjar());
 		assertEquals(MDCConstants.NUMBEROFCONTAINERS_DEFAULT, jc.getNumberofcontainers());
-		assertEquals("3", jc.getNumofreducers());
+		assertEquals("1", jc.getNumofreducers());
 		assertEquals(null, jc.getOutput());
 		assertEquals("4000", jc.getTepingdelay());
 		assertEquals("127.0.0.1", jc.getTshost());

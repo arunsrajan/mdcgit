@@ -16,9 +16,7 @@
 package com.github.mdc.stream.utils;
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.ServerSocket;
-import java.net.Socket;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,7 +30,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.Semaphore;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileStatus;
@@ -46,9 +43,14 @@ import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
+import com.esotericsoftware.kryonetty.ServerEndpoint;
+import com.esotericsoftware.kryonetty.network.ReceiveEvent;
+import com.esotericsoftware.kryonetty.network.handler.NetworkHandler;
+import com.esotericsoftware.kryonetty.network.handler.NetworkListener;
 import com.github.mdc.common.BlocksLocation;
 import com.github.mdc.common.GlobalContainerAllocDealloc;
 import com.github.mdc.common.Job;
+import com.github.mdc.common.JobMetrics;
 import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.MDCNodesResources;
 import com.github.mdc.common.PipelineConfig;
@@ -61,15 +63,16 @@ import com.github.mdc.tasks.executor.NodeRunner;
 public class FileBlocksPartitionerHDFSMultipleNodesTest extends StreamPipelineBase {
 	private static final int NOOFNODES = 5;
 	static int teport = 12121;
-	static ExecutorService es,escontainer;
+	static ExecutorService escontainer;
 	static ConcurrentMap<String, List<ServerSocket>> containers;
 	static ConcurrentMap<String, List<Thread>> tes;
-	static List<ServerSocket> containerlauncher = new ArrayList<>();
-	static Logger log = Logger.getLogger(FileBlocksPartitionerHDFSTest.class);
+	static List<ServerEndpoint> containerlauncher = new ArrayList<>();
+	static Logger log = Logger.getLogger(FileBlocksPartitionerHDFSMultipleNodesTest.class);
 	static int nodeindex;
 	static FileSystem hdfs;
 	static Path[] paths;
 	static List<BlocksLocation> bls;
+	static ServerEndpoint server = null;
 
 	@BeforeClass
 	public static void launchNodes() throws Exception {
@@ -84,9 +87,6 @@ public class FileBlocksPartitionerHDFSMultipleNodesTest extends StreamPipelineBa
 		bls = fbp.getBlocks(true, 128 * MDCConstants.MB);
 		containers = new ConcurrentHashMap<>();
 		tes = new ConcurrentHashMap<>();
-		es = Executors.newFixedThreadPool(NOOFNODES);
-		Semaphore semaphore = new Semaphore(1);
-		CountDownLatch cdl = new CountDownLatch(NOOFNODES);
 		escontainer = Executors.newFixedThreadPool(100);
 		var containerprocesses = new ConcurrentHashMap<String, Map<String, Process>>();
 		var containeridthreads = new ConcurrentHashMap<String, Map<String, List<Thread>>>();
@@ -94,30 +94,33 @@ public class FileBlocksPartitionerHDFSMultipleNodesTest extends StreamPipelineBa
 		ConcurrentMap<String, Resources> noderesourcesmap = new ConcurrentHashMap<>();
 		MDCNodesResources.put(noderesourcesmap);
 		for (; nodeindex < NOOFNODES; nodeindex++) {
-			semaphore.acquire();
-			ServerSocket ss = Utils.createSSLServerSocket(20000+nodeindex);
-			containerlauncher.add(ss);
 			Resources resource = new Resources();
 			int memory = 64;
 			resource.setFreememory(memory * 1024 * 1024 * 1024l);
 			resource.setNumberofprocessors(4);
 			noderesourcesmap.put("127.0.0.1_" + (20000 + nodeindex), resource);
-			es.execute(() -> {
-				ServerSocket ssl = ss;
-				cdl.countDown();
-				semaphore.release();
-				while (true) {
-					try (Socket sock = ssl.accept();) {
-						var container = new NodeRunner(sock, MDCConstants.PROPLOADERCONFIGFOLDER,
-								containerprocesses, hdfs, containeridthreads, containeridports);
-						Future<Boolean> containerallocated = escontainer.submit(container);
-						log.info("Containers Allocated: " + containerallocated.get());
-					} catch (Exception e) {
+			server = Utils.getServerKryoNetty(20000+nodeindex,
+					new NetworkListener() {
+					@NetworkHandler
+		            public void onReceive(ReceiveEvent event) {
+						try {
+							Object object = event.getObject();
+							var container = new NodeRunner(server, MDCConstants.PROPLOADERCONFIGFOLDER,
+									containerprocesses, hdfs, containeridthreads, containeridports,
+									object, event);
+							Future<Boolean> containerallocated = escontainer.submit(container);
+							log.info("Containers Allocated: " + containerallocated.get());
+						} catch (InterruptedException e) {
+							log.warn("Interrupted!", e);
+							// Restore interrupted state...
+							Thread.currentThread().interrupt();
+						} catch (Exception e) {
+							log.error(MDCConstants.EMPTY, e);
+						}
 					}
-				}
-			});
+				});
+			containerlauncher.add(server);
 		}
-		cdl.await();
 	}
 
 	@AfterClass
@@ -131,14 +134,8 @@ public class FileBlocksPartitionerHDFSMultipleNodesTest extends StreamPipelineBa
 		tes.keySet().stream().flatMap(key -> tes.get(key).stream()).forEach(thr -> thr.stop());
 		if (!Objects.isNull(containerlauncher)) {
 			containerlauncher.stream().forEach(ss -> {
-				try {
-					ss.close();
-				} catch (IOException e) {
-				}
+				ss.close();
 			});
-		}
-		if (!Objects.isNull(es)) {
-			es.shutdown();
 		}
 		if (!Objects.isNull(escontainer)) {
 			escontainer.shutdown();
@@ -171,6 +168,7 @@ public class FileBlocksPartitionerHDFSMultipleNodesTest extends StreamPipelineBa
 		fbp.pipelineconfig.setMaxmem("4096");
 		fbp.pipelineconfig.setNumberofcontainers("5");
 		fbp.job = new Job();
+		fbp.job.jm = new JobMetrics();
 		fbp.isignite = false;
 		fbp.getDnXref(bls, false);
 		fbp.allocateContainersByResources(bls);
@@ -189,6 +187,7 @@ public class FileBlocksPartitionerHDFSMultipleNodesTest extends StreamPipelineBa
 		fbp.pipelineconfig.setMaxmem("4096");
 		fbp.pipelineconfig.setNumberofcontainers("5");
 		fbp.job = new Job();
+		fbp.job.jm = new JobMetrics();
 		fbp.isignite = false;
 		fbp.filepaths = Arrays.asList(paths);
 		fbp.isblocksuserdefined = false;
