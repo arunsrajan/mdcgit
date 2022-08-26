@@ -15,7 +15,6 @@
  */
 package com.github.mdc.tasks.executor;
 
-import java.net.Socket;
 import java.net.URI;
 import java.net.URL;
 import java.util.List;

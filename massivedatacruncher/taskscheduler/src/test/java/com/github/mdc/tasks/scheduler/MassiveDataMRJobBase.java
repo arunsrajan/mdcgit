@@ -16,9 +16,6 @@
 package com.github.mdc.tasks.scheduler;
 
 import java.io.InputStream;
-import java.net.InetAddress;
-import java.net.ServerSocket;
-import java.net.Socket;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +26,7 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.Future;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.curator.test.TestingServer;
@@ -42,6 +39,10 @@ import org.apache.log4j.PropertyConfigurator;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 
+import com.esotericsoftware.kryonetty.ServerEndpoint;
+import com.esotericsoftware.kryonetty.network.ReceiveEvent;
+import com.esotericsoftware.kryonetty.network.handler.NetworkHandler;
+import com.esotericsoftware.kryonetty.network.handler.NetworkListener;
 import com.github.mdc.common.ByteBufferPool;
 import com.github.mdc.common.ByteBufferPoolDirect;
 import com.github.mdc.common.CacheUtils;
@@ -93,10 +94,12 @@ public class MassiveDataMRJobBase {
 	private static int port;
 	static List<HeartBeatServer> hbssl = new ArrayList<>();
 	static ExecutorService executorpool;
-	static List<ServerSocket> ssl = new ArrayList<>();
-	static int zookeeperport = 2182;
+	static List<ServerEndpoint> ssl = new ArrayList<>();
+	static int zookeeperport = 2181;
 
 	private static TestingServer testingserver;
+
+	private static ServerEndpoint server;
 
 	@BeforeClass
 	public static void setServerUp() throws Exception {
@@ -130,8 +133,6 @@ public class MassiveDataMRJobBase {
 				ConcurrentMap<String, Map<String, Process>> containerprocesses = new ConcurrentHashMap<>();
 				ConcurrentMap<String, Map<String, List<Thread>>> containeridthreads = new ConcurrentHashMap<>();
 				ExecutorService es = Executors.newWorkStealingPool();
-				CountDownLatch cdl = new CountDownLatch(numberofnodes);
-				CountDownLatch cdlport = new CountDownLatch(1);
 				var containeridports = new ConcurrentHashMap<String, List<Integer>>();
 				while (executorsindex < numberofnodes) {
 					hb = new HeartBeatServer();
@@ -141,28 +142,29 @@ public class MassiveDataMRJobBase {
 					hb.ping();
 					hbssl.add(hb);
 					Thread.sleep(3000);
-					int teport = Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_PORT));
-					executorpool.execute(() -> {
-						ServerSocket server;
-						try {
-							server = Utils.createSSLServerSocket(port);
-							cdlport.countDown();
-							cdl.countDown();
-							while (true) {
-								Socket client = server.accept();
-								es.submit(
-										new NodeRunner(client, MDCConstants.TEPROPLOADDISTROCONFIG,
-												containerprocesses, hdfs, containeridthreads, containeridports));
+					server = Utils.getServerKryoNetty(port,
+							new NetworkListener() {
+							@NetworkHandler
+				            public void onReceive(ReceiveEvent event) {
+								try {
+									Object object = event.getObject();
+									var container = new NodeRunner(server, MDCConstants.PROPLOADERCONFIGFOLDER,
+											containerprocesses, hdfs, containeridthreads, containeridports,
+											object, event);
+									Future<Boolean> containerallocated = es.submit(container);
+									log.info("Containers Allocated: " + containerallocated.get());
+								} catch (InterruptedException e) {
+									log.warn("Interrupted!", e);
+									// Restore interrupted state...
+									Thread.currentThread().interrupt();
+								} catch (Exception e) {
+									log.error(MDCConstants.EMPTY, e);
+								}
 							}
-						} catch (Exception ioe) {
-							log.info(MDCConstants.EMPTY, ioe);
-						}
-					});
-					cdlport.await();
+						});
 					port++;
 					executorsindex++;
 				}
-				cdl.await();
 			}
 
 			uploadfile(hdfs, airlinesample, airlinesample + csvfileextn);
@@ -208,7 +210,7 @@ public class MassiveDataMRJobBase {
 			hbss.stop();
 			hbss.destroy();
 		}
-		for (ServerSocket ss : ssl) {
+		for (ServerEndpoint ss : ssl) {
 			ss.close();
 		}
 		testingserver.stop();

@@ -43,6 +43,10 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 
 import com.esotericsoftware.kryo.io.Output;
+import com.esotericsoftware.kryonetty.ServerEndpoint;
+import com.esotericsoftware.kryonetty.network.ReceiveEvent;
+import com.esotericsoftware.kryonetty.network.handler.NetworkHandler;
+import com.esotericsoftware.kryonetty.network.handler.NetworkListener;
 import com.github.mdc.common.CacheUtils;
 import com.github.mdc.common.HeartBeatServerStream;
 import com.github.mdc.common.MDCCacheManager;
@@ -101,7 +105,7 @@ public class StreamPipelineBaseException {
 	static private String host;
 	static Logger log = Logger.getLogger(StreamPipelineBaseException.class);
 	static List<HeartBeatServerStream> hbssl = new ArrayList<>();
-	static List<ServerSocket> sss = new ArrayList<>();
+	static List<ServerEndpoint> sss = new ArrayList<>();
 	static ExecutorService threadpool, executorpool;
 	static int numberofnodes = 1;
 	static Integer port;
@@ -112,6 +116,7 @@ public class StreamPipelineBaseException {
 	static ConcurrentMap<String, List<Process>> containerprocesses = new ConcurrentHashMap<>();
 	static FileSystem hdfste;
 	protected static PipelineConfig pipelineconfig = new PipelineConfig();
+	private static ServerEndpoint server;
 
 	@SuppressWarnings({"unused"})
 	@BeforeClass
@@ -154,7 +159,6 @@ public class StreamPipelineBaseException {
 				port = Integer.parseInt(MDCProperties.get().getProperty("taskexecutor.port"));
 				int executorsindex = 0;
 				CountDownLatch cdl = new CountDownLatch(numberofnodes);
-				CountDownLatch cdlport = new CountDownLatch(1);
 				ConcurrentMap<String, Map<String, Process>> containerprocesses = new ConcurrentHashMap<>();
 				ConcurrentMap<String, Map<String, List<Thread>>> containeridthreads = new ConcurrentHashMap<>();
 				hdfste = FileSystem.get(new URI(MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL)),
@@ -166,24 +170,27 @@ public class StreamPipelineBaseException {
 					hb.init(rescheduledelay, nodeport, host, initialdelay, pingdelay, "");
 					hb.ping();
 					hbssl.add(hb);
-					executorpool.execute(() -> {
-						ServerSocket server;
-						try {
-							server = Utils.createSSLServerSocket(nodeport);;
-							sss.add(server);
-							cdlport.countDown();
-							cdl.countDown();
-							while (true) {
-								Socket client = server.accept();
-								Future<Boolean> containerallocated = threadpool.submit(
-										new NodeRunner(client, MDCConstants.TEPROPLOADCLASSPATHCONFIGEXCEPTION,
-												containerprocesses, hdfste, containeridthreads, containeridports));
-								log.info("Containers Allocated: " + containerallocated.get());
+					server = Utils.getServerKryoNetty(nodeport,
+							new NetworkListener() {
+							@NetworkHandler
+				            public void onReceive(ReceiveEvent event) {
+								try {
+									Object object = event.getObject();
+									var container = new NodeRunner(server, MDCConstants.PROPLOADERCONFIGFOLDER,
+											containerprocesses, hdfs, containeridthreads, containeridports,
+											object, event);
+									Future<Boolean> containerallocated =threadpool.submit(container);
+									log.info("Containers Allocated: " + containerallocated.get());
+								} catch (InterruptedException e) {
+									log.warn("Interrupted!", e);
+									// Restore interrupted state...
+									Thread.currentThread().interrupt();
+								} catch (Exception e) {
+									log.error(MDCConstants.EMPTY, e);
+								}
 							}
-						} catch (Exception ioe) {
-						}
-					});
-					cdlport.await();
+						});
+					sss.add(server);
 					port += 100;
 					executorsindex++;
 				}
