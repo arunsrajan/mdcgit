@@ -16,8 +16,6 @@
 package com.github.mdc.stream;
 
 import java.io.InputStream;
-import java.net.ServerSocket;
-import java.net.Socket;
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
@@ -28,7 +26,6 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import com.github.mdc.common.*;
 import org.apache.commons.io.IOUtils;
 import org.apache.curator.test.TestingServer;
 import org.apache.hadoop.conf.Configuration;
@@ -41,6 +38,19 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
 import com.esotericsoftware.kryo.io.Output;
+import com.esotericsoftware.kryonetty.ServerEndpoint;
+import com.esotericsoftware.kryonetty.network.ReceiveEvent;
+import com.esotericsoftware.kryonetty.network.handler.NetworkHandler;
+import com.esotericsoftware.kryonetty.network.handler.NetworkListener;
+import com.github.mdc.common.ByteBufferPool;
+import com.github.mdc.common.ByteBufferPoolDirect;
+import com.github.mdc.common.HeartBeatServerStream;
+import com.github.mdc.common.MDCConstants;
+import com.github.mdc.common.MDCProperties;
+import com.github.mdc.common.NetworkUtil;
+import com.github.mdc.common.Utils;
+import com.github.mdc.stream.utils.FileBlocksPartitionerHDFSMultipleNodesTest;
+import com.github.mdc.stream.utils.FileBlocksPartitionerHDFSTest;
 import com.github.mdc.tasks.executor.MassiveDataCruncherMRApiTest;
 import com.github.mdc.tasks.executor.NodeRunner;
 
@@ -52,8 +62,10 @@ import com.github.mdc.tasks.executor.NodeRunner;
 		StreamPipelineDepth34Test.class, StreamPipelineUtilsTest.class, StreamPipelineFunctionsTest.class,
 		StreamPipelineCoalesceTest.class, StreamPipelineJsonTest.class, StreamPipelineTransformationFunctionsTest.class,
 		HDFSBlockUtilsTest.class, StreamPipelineStatisticsTest.class, MassiveDataCruncherMRApiTest.class,
-		StreamPipelineSqlTest.class })
+		StreamPipelineSqlTest.class,
+		FileBlocksPartitionerHDFSMultipleNodesTest.class,FileBlocksPartitionerHDFSTest.class})
 public class StreamPipelineTestSuite extends StreamPipelineBase {
+	static ServerEndpoint server = null;
 	@SuppressWarnings({ "unused" })
 	@BeforeClass
 	public static void setServerUp() throws Exception {
@@ -99,40 +111,38 @@ public class StreamPipelineTestSuite extends StreamPipelineBase {
 				port = Integer.parseInt(MDCProperties.get().getProperty("taskexecutor.port"));
 				int executorsindex = 0;
 				CountDownLatch cdl = new CountDownLatch(numberofnodes);
-				CountDownLatch cdlport = new CountDownLatch(1);
 				ConcurrentMap<String, Map<String, Process>> containerprocesses = new ConcurrentHashMap<>();
 				ConcurrentMap<String, Map<String, List<Thread>>> containeridthreads = new ConcurrentHashMap<>();
 				hdfste = FileSystem.get(new URI(MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL)),
 						configuration);
-				var containeridports = new ConcurrentHashMap<String, List<TaskExecutorPorts>>();
+				var containeridports = new ConcurrentHashMap<String, List<Integer>>();
 				while (executorsindex < numberofnodes) {
 					hb = new HeartBeatServerStream();
 					host = NetworkUtil.getNetworkAddress(MDCProperties.get().getProperty("taskexecutor.host"));
 					hb.init(rescheduledelay, nodeport, host, initialdelay, pingdelay, "");
 					hb.ping();
 					hbssl.add(hb);
-					executorpool.execute(() -> {
-						ServerSocket server;
-						try {
-							server = Utils.createSSLServerSocket(nodeport);
-							sss.add(server);
-							cdlport.countDown();
-							cdl.countDown();
-							while (true) {
-								try (Socket sock = server.accept();) {
-									var container = new NodeRunner(sock, MDCConstants.TEPROPLOADDISTROCONFIG,
-											containerprocesses, hdfs, containeridthreads, containeridports);
+					server = Utils.getServerKryoNetty(nodeport,
+							new NetworkListener() {
+							@NetworkHandler
+				            public void onReceive(ReceiveEvent event) {
+								try {
+									Object object = event.getObject();
+									var container = new NodeRunner(server, MDCConstants.PROPLOADERCONFIGFOLDER,
+											containerprocesses, hdfs, containeridthreads, containeridports,
+											object, event);
 									Future<Boolean> containerallocated = threadpool.submit(container);
 									log.info("Containers Allocated: " + containerallocated.get());
+								} catch (InterruptedException e) {
+									log.warn("Interrupted!", e);
+									// Restore interrupted state...
+									Thread.currentThread().interrupt();
 								} catch (Exception e) {
-									e.printStackTrace();
+									log.error(MDCConstants.EMPTY, e);
 								}
 							}
-						} catch (Exception ioe) {
-							ioe.printStackTrace();
-						}
-					});
-					cdlport.await();
+						});
+					sss.add(server);
 					port += 100;
 					executorsindex++;
 				}

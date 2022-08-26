@@ -27,6 +27,7 @@ import org.apache.curator.test.TestingServer;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.log4j.Logger;
 
+import com.esotericsoftware.kryonetty.ServerEndpoint;
 import com.github.mdc.common.HeartBeatServerStream;
 import com.github.mdc.common.PipelineConfig;
 import com.github.sakserv.minicluster.impl.HdfsLocalCluster;
@@ -90,7 +91,7 @@ public class StreamPipelineBase {
 	protected static String host;
 	static Logger log = Logger.getLogger(StreamPipelineBase.class);
 	static List<HeartBeatServerStream> hbssl = new ArrayList<>();
-	static List<ServerSocket> sss = new ArrayList<>();
+	static List<ServerEndpoint> sss = new ArrayList<>();
 	static ExecutorService threadpool, executorpool;
 	static int numberofnodes = 1;
 	static Integer port;

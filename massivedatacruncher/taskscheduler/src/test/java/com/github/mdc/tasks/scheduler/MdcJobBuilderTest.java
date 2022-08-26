@@ -44,7 +44,7 @@ public class MdcJobBuilderTest extends MassiveDataMRJobBase {
 		assertEquals("/aircararrivaldelay", mdcjob.outputfolder);
 	}
 
-	@SuppressWarnings({"rawtypes", "unchecked"})
+	@SuppressWarnings({"rawtypes"})
 	@Test
 	public void testMdcJobCall() {
 		MapReduceApplication mdcjob = (MapReduceApplication) MapReduceApplicationBuilder.newBuilder()
@@ -60,6 +60,6 @@ public class MdcJobBuilderTest extends MassiveDataMRJobBase {
 		assertEquals("/aircararrivaldelay", mdcjob.outputfolder);
 		List<DataCruncherContext> dccl = mdcjob.call();
 		log.info(dccl);
-		assertEquals(4, dccl.size());
+		assertEquals(1, dccl.size());
 	}
 }
