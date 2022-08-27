@@ -41,7 +41,7 @@
 	</util:properties>
 
 	<yarn:client app-name="MassiveDataCruncherMapReduce">
-		<yarn:master-runner command="java --enable-preview"
+		<yarn:master-runner command="java --enable-preview --add-opens java.base/java.lang.reflect=ALL-UNNAMED --add-opens java.base/jdk.internal.reflect=ALL-UNNAMED --add-opens java.base/java.util=ALL-UNNAMED --add-opens java.base/java.lang.invoke=ALL-UNNAMED --add-opens java.base/java.nio=ALL-UNNAMED --add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.util.concurrent.atomic=ALL-UNNAMED"
 			arguments="applicationArguments" context-file="yarn-appmaster-context.xml"/>
 	</yarn:client>
 
