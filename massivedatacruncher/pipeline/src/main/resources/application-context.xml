@@ -42,7 +42,7 @@
 
 	<yarn:client app-name="MassiveDataCruncher">
 		<yarn:master-runner
-			command="java --enable-preview"
+			command="java --enable-preview --add-opens java.base/java.lang.reflect=ALL-UNNAMED --add-opens java.base/jdk.internal.reflect=ALL-UNNAMED --add-opens java.base/java.util=ALL-UNNAMED --add-opens java.base/java.lang.invoke=ALL-UNNAMED --add-opens java.base/java.nio=ALL-UNNAMED --add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.util.concurrent.atomic=ALL-UNNAMED"
     		context-file="appmaster-context.xml"
     		bean-name="yarnAppmaster"
 			arguments="applicationArguments" />

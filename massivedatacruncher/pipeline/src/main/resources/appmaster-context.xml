@@ -40,7 +40,7 @@
 		appmaster-class="com.github.mdc.stream.yarn.appmaster.StreamPipelineYarnAppmaster">
 		<yarn:container-allocator virtualcores="1"
 			memory="512" priority="0" />
-		<yarn:container-runner command="java --enable-preview"
+		<yarn:container-runner command="java --enable-preview --add-opens java.base/java.lang.reflect=ALL-UNNAMED --add-opens java.base/jdk.internal.reflect=ALL-UNNAMED --add-opens java.base/java.util=ALL-UNNAMED --add-opens java.base/java.lang.invoke=ALL-UNNAMED --add-opens java.base/java.nio=ALL-UNNAMED --add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.util.concurrent.atomic=ALL-UNNAMED"
 		    context-file="container-context.xml"
 		    bean-name="yarnContainer" />
 	</yarn:master>
