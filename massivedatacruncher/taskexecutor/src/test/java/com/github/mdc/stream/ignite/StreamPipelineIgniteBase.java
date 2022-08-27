@@ -17,6 +17,7 @@ package com.github.mdc.stream.ignite;
 
 import java.io.InputStream;
 import java.net.URI;
+import java.net.URL;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
@@ -27,6 +28,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataOutputStream;
 import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.FsUrlStreamHandlerFactory;
 import org.apache.hadoop.fs.Path;
 import org.apache.log4j.Logger;
 import org.junit.AfterClass;
@@ -44,12 +46,12 @@ import com.github.sakserv.minicluster.impl.YarnLocalCluster;
 
 public class StreamPipelineIgniteBase {
 	static HdfsLocalCluster hdfsLocalCluster;
-	String[] airlineheader = new String[]{"Year", "Month", "DayofMonth", "DayOfWeek", "DepTime", "CRSDepTime",
+	String[] airlineheader = new String[] { "Year", "Month", "DayofMonth", "DayOfWeek", "DepTime", "CRSDepTime",
 			"ArrTime", "CRSArrTime", "UniqueCarrier", "FlightNum", "TailNum", "ActualElapsedTime", "CRSElapsedTime",
 			"AirTime", "ArrDelay", "DepDelay", "Origin", "Dest", "Distance", "TaxiIn", "TaxiOut", "Cancelled",
 			"CancellationCode", "Diverted", "CarrierDelay", "WeatherDelay", "NASDelay", "SecurityDelay",
-			"LateAircraftDelay"};
-	String[] carrierheader = {"Code", "Description"};
+			"LateAircraftDelay" };
+	String[] carrierheader = { "Code", "Description" };
 	static String hdfsfilepath = "hdfs://127.0.0.1:9000";
 	String airlines = "/airlines";
 	String airline = "/airline";
@@ -95,37 +97,39 @@ public class StreamPipelineIgniteBase {
 	static ConcurrentMap<String, List<Process>> containerprocesses = new ConcurrentHashMap<>();
 	protected static PipelineConfig pipelineconfig = new PipelineConfig();
 
-	@SuppressWarnings({"unused"})
+	@SuppressWarnings({ "unused" })
 	@BeforeClass
 	public static void setServerUp() throws Exception {
 		try {
-			Utils.loadLog4JSystemProperties(MDCConstants.PREV_FOLDER + MDCConstants.FORWARD_SLASH
-					+ MDCConstants.DIST_CONFIG_FOLDER + MDCConstants.FORWARD_SLASH, "mdctest.properties");
-			Output out = new Output(System.out);
-			pipelineconfig.setKryoOutput(out);
-			pipelineconfig.setLocal("false");
-			pipelineconfig.setIsblocksuserdefined("false");
-			pipelineconfig.setMode(MDCConstants.MODE_DEFAULT);
-			Boolean ishdfs = Boolean.parseBoolean(MDCProperties.get().getProperty("taskexecutor.ishdfs"));
-			Configuration configuration = new Configuration();
-			hdfs = FileSystem.newInstance(new URI(MDCProperties.get().getProperty("taskexecutor.hdfsnn")),
-					configuration);
-			uploadfile(hdfs, airlinesample, airlinesample + csvfileextn);
-			uploadfile(hdfs, airlinesamplesql, airlinesamplesql + csvfileextn);
-			uploadfile(hdfs, airlinesamplejoin, airlinesamplejoin + csvfileextn);
-			uploadfile(hdfs, carriers, carriers + csvfileextn);
-			uploadfile(hdfs, airline1987, airline1987 + csvfileextn);
-			uploadfile(hdfs, bicyclecrash, bicyclecrash + csvfileextn);
-			uploadfile(hdfs, population, population + csvfileextn);
-			uploadfile(hdfs, airlinepairjoin, airlinepairjoin + csvfileextn);
-			uploadfile(hdfs, airlinenoheader, airlinenoheader + csvfileextn);
-			uploadfile(hdfs, airlinesamplenoheader, airlinesamplenoheader + csvfileextn);
-			uploadfile(hdfs, cars, cars + txtfileextn);
-			uploadfile(hdfs, wordcount, wordcount + txtfileextn);
-			uploadfile(hdfs, airlinemultiplefilesfolder, airlinesample + csvfileextn);
-			uploadfile(hdfs, airlinemultiplefilesfolder, airlinenoheader + csvfileextn);
-			uploadfile(hdfs, githubevents, githubevents + jsonfileextn);
-
+			if (!setupdone) {
+				URL.setURLStreamHandlerFactory(new FsUrlStreamHandlerFactory());
+				Utils.loadLog4JSystemProperties(MDCConstants.PREV_FOLDER + MDCConstants.FORWARD_SLASH
+						+ MDCConstants.DIST_CONFIG_FOLDER + MDCConstants.FORWARD_SLASH, "mdctest.properties");
+				Output out = new Output(System.out);
+				pipelineconfig.setKryoOutput(out);
+				pipelineconfig.setLocal("false");
+				pipelineconfig.setIsblocksuserdefined("false");
+				pipelineconfig.setMode(MDCConstants.MODE_DEFAULT);
+				Boolean ishdfs = Boolean.parseBoolean(MDCProperties.get().getProperty("taskexecutor.ishdfs"));
+				Configuration configuration = new Configuration();
+				hdfs = FileSystem.newInstance(new URI(MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL)),
+						configuration);
+				uploadfile(hdfs, airlinesample, airlinesample + csvfileextn);
+				uploadfile(hdfs, airlinesamplesql, airlinesamplesql + csvfileextn);
+				uploadfile(hdfs, airlinesamplejoin, airlinesamplejoin + csvfileextn);
+				uploadfile(hdfs, carriers, carriers + csvfileextn);
+				uploadfile(hdfs, airline1987, airline1987 + csvfileextn);
+				uploadfile(hdfs, bicyclecrash, bicyclecrash + csvfileextn);
+				uploadfile(hdfs, population, population + csvfileextn);
+				uploadfile(hdfs, airlinepairjoin, airlinepairjoin + csvfileextn);
+				uploadfile(hdfs, airlinenoheader, airlinenoheader + csvfileextn);
+				uploadfile(hdfs, airlinesamplenoheader, airlinesamplenoheader + csvfileextn);
+				uploadfile(hdfs, cars, cars + txtfileextn);
+				uploadfile(hdfs, wordcount, wordcount + txtfileextn);
+				uploadfile(hdfs, airlinemultiplefilesfolder, airlinesample + csvfileextn);
+				uploadfile(hdfs, airlinemultiplefilesfolder, airlinenoheader + csvfileextn);
+				uploadfile(hdfs, githubevents, githubevents + jsonfileextn);
+			}
 		} catch (Throwable e) {
 			log.info("Error Uploading file", e);
 		}

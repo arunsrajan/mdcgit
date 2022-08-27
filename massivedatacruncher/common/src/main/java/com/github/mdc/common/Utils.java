@@ -1189,6 +1189,8 @@ public class Utils {
 		kryonetty.register(ContainerLaunchAttributes.class);
 		kryonetty.register(ContainerResources.class);
 		kryonetty.register(LaunchContainers.MODE.class);
+		kryonetty.register(DestroyContainers.class);
+		kryonetty.register(DestroyContainer.class);
 		kryonetty.register(JobApp.class, new JavaSerializer());
 		kryonetty.register(JobApp.JOBAPP.class, new EnumSerializer(JobApp.JOBAPP.class));
 		kryonetty.register(Dummy.class, new JavaSerializer());

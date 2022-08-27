@@ -10,6 +10,11 @@ In order to skip tests the following needs to be set in MAVEN_OPTS
 ------------------------------------------------------------------
 -Dmaven.test.skip.exec=true
 
+and mvn command with goals are 
+
+mvn -Dmaven.antrun.skip=true -Dmaven.test.skip.exec=true -Pmodules clean package assembly:assembly
+
+
 To compile only tests
 ---------------------------------------------------------------
 mvn -Dmaven.antrun.skip=true -Pmodules clean compile test-compile

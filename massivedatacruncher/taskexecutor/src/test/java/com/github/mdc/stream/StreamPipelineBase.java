@@ -15,9 +15,9 @@
  */
 package com.github.mdc.stream;
 
-import java.net.ServerSocket;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutorService;
@@ -99,7 +99,7 @@ public class StreamPipelineBase {
 	protected static FileSystem hdfs;
 	static boolean setupdone,toteardownclass;
 	static TestingServer testingserver;
-	static ConcurrentMap<String, List<Process>> containerprocesses = new ConcurrentHashMap<>();
+	static ConcurrentMap<String, Map<String, Process>> containerprocesses = new ConcurrentHashMap<>();
 	static FileSystem hdfste;
 	protected static PipelineConfig pipelineconfig = new PipelineConfig();
 
