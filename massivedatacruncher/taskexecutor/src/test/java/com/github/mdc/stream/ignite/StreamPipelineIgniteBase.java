@@ -129,11 +129,11 @@ public class StreamPipelineIgniteBase {
 				uploadfile(hdfs, airlinemultiplefilesfolder, airlinesample + csvfileextn);
 				uploadfile(hdfs, airlinemultiplefilesfolder, airlinenoheader + csvfileextn);
 				uploadfile(hdfs, githubevents, githubevents + jsonfileextn);
+				setupdone = true;
 			}
 		} catch (Throwable e) {
 			log.info("Error Uploading file", e);
 		}
-		setupdone = true;
 	}
 
 	public static void uploadfile(FileSystem hdfs, String dir, String filename) throws Throwable {
@@ -171,6 +171,6 @@ public class StreamPipelineIgniteBase {
 			MDCCacheManager.get().close();
 			MDCCacheManager.put(null);
 		}
-
+		setupdone = false;
 	}
 }
