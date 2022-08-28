@@ -141,7 +141,7 @@ public class TaskExecutor implements Runnable {
 						stageidexecutormap = (Map<String, Object>) jobidstageidexecutormap.get(task.jobid);
 					}
 					stageidexecutormap.put(task.stageid, mdste);
-					taskqueue.offer(mdste);
+					es.execute(mdste);
 					log.info("Submitted Task for execution: " + deserobj);
 				} else if (mdste.isCompleted()) {
 					hbtss.setTimetakenseconds(mdste.getHbtss().getTimetakenseconds());
@@ -159,7 +159,7 @@ public class TaskExecutor implements Runnable {
 					for (Task task :stagesgraph.getTasks()) {
 						jobstageexecutormap.put(task.jobid + task.stageid + task.taskid, mdste);
 					}
-					taskqueue.offer(mdste);
+					es.execute(mdste);
 				}
 			} else if (deserobj instanceof CloseStagesGraphExecutor closestagesgraph) {
 				var key = closestagesgraph.getTasks().get(0).jobid + closestagesgraph.getTasks().get(0).stageid + closestagesgraph.getTasks().get(0).taskid;

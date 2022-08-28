@@ -119,7 +119,7 @@ public class StreamPipelineYarnContainer extends AbstractIntegrationYarnContaine
 					var yarnexecutor = new StreamPipelineTaskExecutorYarn( containerprops.get(MDCConstants.HDFSNAMENODEURL), jsidjsmap.get(task.jobid + task.stageid));
 					yarnexecutor.setTask(task);
 					yarnexecutor.setExecutor(executor);
-					yarnexecutor.call();
+					yarnexecutor.run();
 					request = new JobRequest();
 					request.setState(JobRequest.State.JOBDONE);
 					request.setJob(job);

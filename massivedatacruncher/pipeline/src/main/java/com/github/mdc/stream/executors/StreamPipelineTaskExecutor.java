@@ -28,7 +28,6 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 import java.util.Vector;
-import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.function.IntSupplier;
@@ -105,7 +104,7 @@ import com.pivovarit.collectors.ParallelCollectors;
  */
 @SuppressWarnings("rawtypes")
 public sealed class StreamPipelineTaskExecutor implements
-		Callable<StreamPipelineTaskExecutor>permits StreamPipelineTaskExecutorInMemory,StreamPipelineTaskExecutorJGroups,StreamPipelineTaskExecutorMesos,StreamPipelineTaskExecutorYarn,StreamPipelineTaskExecutorLocal {
+		Runnable permits StreamPipelineTaskExecutorInMemory,StreamPipelineTaskExecutorJGroups,StreamPipelineTaskExecutorMesos,StreamPipelineTaskExecutorYarn,StreamPipelineTaskExecutorLocal {
 	protected JobStage jobstage;
 	protected HeartBeatTaskSchedulerStream hbtss;
 	private static Logger log = Logger.getLogger(StreamPipelineTaskExecutor.class);
@@ -331,7 +330,6 @@ public sealed class StreamPipelineTaskExecutor implements
 	 * 
 	 * @param fsstreamfirst
 	 * @param fsstreamsecond
-	 * @param hdfs
 	 * @throws Exception
 	 */
 	@SuppressWarnings({ "unchecked" })
@@ -402,8 +400,6 @@ public sealed class StreamPipelineTaskExecutor implements
 
 	/**
 	 * Create a file in HDFS and return the stream.
-	 * 
-	 * @param hdfs
 	 * @return
 	 * @throws Exception
 	 */
@@ -423,8 +419,6 @@ public sealed class StreamPipelineTaskExecutor implements
 
 	/**
 	 * Open the already existing file using the job and stageid.
-	 * 
-	 * @param hdfs
 	 * @return
 	 * @throws Exception
 	 */
@@ -595,7 +589,6 @@ public sealed class StreamPipelineTaskExecutor implements
 	 * 
 	 * @param fsstreamfirst
 	 * @param fsstreamsecond
-	 * @param hdfs
 	 * @throws Exception
 	 */
 	@SuppressWarnings({ "unchecked" })
@@ -677,7 +670,6 @@ public sealed class StreamPipelineTaskExecutor implements
 	 * 
 	 * @param blockslocation
 	 * @param hdfs
-	 * @param skeletons
 	 * @throws Throwable
 	 */
 	@SuppressWarnings("unchecked")
@@ -846,8 +838,6 @@ public sealed class StreamPipelineTaskExecutor implements
 	 * Perform map operation to obtain intermediate stage result.
 	 * 
 	 * @param fsstreamfirst
-	 * @param hdfs
-	 * @param skeletons
 	 * @throws Exception
 	 */
 	@SuppressWarnings("unchecked")
@@ -1034,7 +1024,6 @@ public sealed class StreamPipelineTaskExecutor implements
 	 * 
 	 * @param numofsample
 	 * @param fsstreams
-	 * @param hdfs
 	 * @throws Exception
 	 */
 	@SuppressWarnings("unchecked")
@@ -1109,7 +1098,7 @@ public sealed class StreamPipelineTaskExecutor implements
 	}
 
 	@Override
-	public StreamPipelineTaskExecutor call() {
+	public void run() {
 		log.debug("Entered MassiveDataStreamTaskDExecutor.call");
 		var stageTasks = getStagesTask();
 		var stagePartition = jobstage.stageid;
@@ -1160,7 +1149,6 @@ public sealed class StreamPipelineTaskExecutor implements
 			}
 		}
 		log.debug("Exiting MassiveDataStreamTaskDExecutor.call");
-		return this;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -1754,7 +1742,6 @@ public sealed class StreamPipelineTaskExecutor implements
 	 * 
 	 * @param streamfirst
 	 * @param streamsecond
-	 * @param hdfs
 	 * @throws Exception
 	 */
 	@SuppressWarnings("unchecked")
@@ -2164,8 +2151,6 @@ public sealed class StreamPipelineTaskExecutor implements
 
 	/**
 	 * Group by key pair operation.
-	 * 
-	 * @param hdfs
 	 * @throws Exception
 	 */
 	@SuppressWarnings("unchecked")
@@ -2270,7 +2255,6 @@ public sealed class StreamPipelineTaskExecutor implements
 	/**
 	 * Fold by key pair operation.
 	 * 
-	 * @param hdfs
 	 * @throws Exception
 	 */
 	@SuppressWarnings("unchecked")
@@ -2392,8 +2376,6 @@ public sealed class StreamPipelineTaskExecutor implements
 
 	/**
 	 * Count by key pair operation.
-	 * 
-	 * @param hdfs
 	 * @throws Exception
 	 */
 	@SuppressWarnings("unchecked")
@@ -2484,8 +2466,6 @@ public sealed class StreamPipelineTaskExecutor implements
 
 	/**
 	 * Count by key pair operation.
-	 * 
-	 * @param hdfs
 	 * @throws Exception
 	 */
 	@SuppressWarnings("unchecked")
@@ -2586,8 +2566,6 @@ public sealed class StreamPipelineTaskExecutor implements
 
 	/**
 	 * Result of Coalesce by key operation
-	 * 
-	 * @param hdfs
 	 * @throws Exception
 	 */
 	@SuppressWarnings("unchecked")

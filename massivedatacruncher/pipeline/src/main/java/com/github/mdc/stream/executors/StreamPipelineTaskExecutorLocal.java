@@ -141,7 +141,7 @@ public final class StreamPipelineTaskExecutorLocal extends StreamPipelineTaskExe
 
 
 	@Override
-	public StreamPipelineTaskExecutorLocal call() {
+	public void run() {
 		log.debug("Entered MassiveDataStreamTaskExecutorInMemory.call");
 		var stageTasks = getStagesTask();
 		var hdfsfilepath = MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL, MDCConstants.HDFSNAMENODEURL_DEFAULT);
@@ -190,7 +190,6 @@ public final class StreamPipelineTaskExecutorLocal extends StreamPipelineTaskExe
 			}
 		}
 		log.debug("Exiting MassiveDataStreamTaskExecutorInMemory.call");
-		return this;
 	}
 
 }

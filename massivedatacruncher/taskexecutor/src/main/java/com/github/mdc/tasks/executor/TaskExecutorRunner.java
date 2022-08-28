@@ -89,7 +89,7 @@ public class TaskExecutorRunner implements TaskExecutorRunnerMBean {
 		log.info("Number Of 128 MB directmemory: " + directmemory);
 		ByteBufferPool.init(directmemory);
 		CacheUtils.initCache();
-		es = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+		es = Executors.newWorkStealingPool(Runtime.getRuntime().availableProcessors() * 2);
 		var mdted = new TaskExecutorRunner();
 		mdted.init();
 		mdted.start();
@@ -150,9 +150,7 @@ public class TaskExecutorRunner implements TaskExecutorRunnerMBean {
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Override
 	public void start() throws Exception {
-		var threadpool = Executors.newSingleThreadExecutor();
 		var launchtaskpool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-		var taskpool = Executors.newFixedThreadPool(2);
 		var port = Integer.parseInt(System.getProperty(MDCConstants.TASKEXECUTOR_PORT));
 		log.info("TaskExecutor Port: " + port);
 		var su = new ServerUtils();
@@ -249,47 +247,6 @@ public class TaskExecutorRunner implements TaskExecutorRunnerMBean {
 					log.info(MDCConstants.EMPTY, ex);
 				}
 			}
-		});
-		var taskresultqueue = new LinkedBlockingQueue<ExecutorsFutureTask>();
-		taskpool.execute(() -> {
-			while (true) {
-				try {
-					if (!taskqueue.isEmpty()) {
-						ExecutorService estask = Executors.newScheduledThreadPool(1);
-						Future future = estask.submit((Callable) taskqueue.poll());
-						ExecutorsFutureTask eft = new ExecutorsFutureTask();
-						eft.future = future;
-						eft.estask = estask;
-						if (!taskresultqueue.offer(eft)) {
-							log.info("Task Exceution Queue Full");
-						}
-					}
-					Thread.sleep(300);
-				} catch (InterruptedException e) {
-					log.warn("Interrupted!", e);
-					// Restore interrupted state...
-					Thread.currentThread().interrupt();
-				} catch (Exception e) {
-				}
-			}
-		});
-		taskpool.execute(() -> {
-			while (true) {
-				try {
-					if (!taskresultqueue.isEmpty()) {
-						ExecutorsFutureTask eft = taskresultqueue.poll();
-						eft.future.get();
-						eft.estask.shutdown();
-					}
-					Thread.sleep(300);
-				} catch (InterruptedException e) {
-					log.warn("Interrupted!", e);
-					// Restore interrupted state...
-					Thread.currentThread().interrupt();
-				} catch (Exception e) {
-				}
-			}
-
 		});
 	}
 

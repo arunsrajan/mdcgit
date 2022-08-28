@@ -84,7 +84,7 @@ public final class StreamPipelineTaskExecutorYarn extends StreamPipelineTaskExec
 	 * The runnable method executes the streaming api parallely.
 	 */
 	@Override
-	public StreamPipelineTaskExecutor call() {
+	public void run() {
 		try (var hdfs = FileSystem.newInstance(new URI(hdfsnn), new Configuration());) {
 			this.hdfs = hdfs;
 			var output = new ArrayList<>();
@@ -108,7 +108,6 @@ public final class StreamPipelineTaskExecutorYarn extends StreamPipelineTaskExec
 			log.error("Stage " + task.jobid + MDCConstants.SINGLESPACE + task.stageid + " failed, See cause below \n",
 					ex);
 		}
-		return this;
 	}
 
 

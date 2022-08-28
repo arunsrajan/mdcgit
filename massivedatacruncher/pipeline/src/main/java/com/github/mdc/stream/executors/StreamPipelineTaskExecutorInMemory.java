@@ -132,7 +132,7 @@ public sealed class StreamPipelineTaskExecutorInMemory extends StreamPipelineTas
 
 	
 	@Override
-	public StreamPipelineTaskExecutorInMemory call() {
+	public void run() {
 		log.info("Entered MassiveDataStreamTaskExecutorInMemory.call for task "+task);
 		String stageTasks = "";
 		log.info("Init Stage tasks");
@@ -190,7 +190,6 @@ public sealed class StreamPipelineTaskExecutorInMemory extends StreamPipelineTas
 			}
 		}
 		log.debug("Exiting MassiveDataStreamTaskExecutorInMemory.call");
-		return this;
 	}
 	
 }

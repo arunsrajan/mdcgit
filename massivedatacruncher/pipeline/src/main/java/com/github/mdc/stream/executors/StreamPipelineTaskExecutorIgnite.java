@@ -265,7 +265,6 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 	 * 
 	 * @param fsstreamfirst
 	 * @param fsstreamsecond
-	 * @param hdfs
 	 * @throws Exception
 	 */
 	@SuppressWarnings({"unchecked"})
@@ -315,8 +314,6 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 
 	/**
 	 * Create a file in HDFS and return the stream.
-	 * 
-	 * @param hdfs
 	 * @return
 	 * @throws Exception
 	 */
@@ -327,8 +324,6 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 
 	/**
 	 * Open the already existing file using the job and stageid.
-	 * 
-	 * @param hdfs
 	 * @return
 	 * @throws Exception
 	 */
@@ -451,7 +446,6 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 	 * 
 	 * @param fsstreamfirst
 	 * @param fsstreamsecond
-	 * @param hdfs
 	 * @throws Exception
 	 */
 	@SuppressWarnings({"unchecked"})
@@ -508,7 +502,6 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 	 * Perform map operation to obtain intermediate stage result.
 	 * @param blockslocation
 	 * @param hdfs
-	 * @param skeletons
 	 * @throws Throwable
 	 */
 	@SuppressWarnings("unchecked")
@@ -635,8 +628,6 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 	 * Perform map operation to obtain intermediate stage result.
 	 * 
 	 * @param fsstreamfirst
-	 * @param hdfs
-	 * @param skeletons
 	 * @throws Exception
 	 */
 	@SuppressWarnings("unchecked")
@@ -772,7 +763,6 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 	 * 
 	 * @param numofsample
 	 * @param fsstreams
-	 * @param hdfs
 	 * @throws Exception
 	 */
 	@SuppressWarnings("unchecked")
@@ -1004,7 +994,6 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 	 * 
 	 * @param streamfirst
 	 * @param streamsecond
-	 * @param hdfs
 	 * @throws Exception
 	 */
 	@SuppressWarnings("unchecked")
@@ -1234,8 +1223,6 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 
 	/**
 	 * Group by key pair operation.
-	 * 
-	 * @param hdfs
 	 * @throws Exception
 	 */
 	@SuppressWarnings("unchecked")
@@ -1301,8 +1288,6 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 
 	/**
 	 * Fold by key pair operation.
-	 * 
-	 * @param hdfs
 	 * @throws Exception
 	 */
 	@SuppressWarnings("unchecked")
@@ -1378,8 +1363,6 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 
 	/**
 	 * Count by key pair operation.
-	 * 
-	 * @param hdfs
 	 * @throws Exception
 	 */
 	public double processCountByKeyTuple2() throws PipelineException {
@@ -1434,8 +1417,6 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 
 	/**
 	 * Count by key pair operation.
-	 * 
-	 * @param hdfs
 	 * @throws Exception
 	 */
 	public double processCountByValueTuple2() throws PipelineException {
@@ -1500,8 +1481,6 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 
 	/**
 	 * Result of Coalesce by key operation
-	 * 
-	 * @param hdfs
 	 * @throws Exception
 	 */
 	@SuppressWarnings("unchecked")

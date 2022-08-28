@@ -15,45 +15,22 @@
  */
 package com.github.mdc.stream.scheduler;
 
-import static java.util.Objects.nonNull;
-
-import java.beans.PropertyChangeListener;
-import java.io.BufferedInputStream;
-import java.io.BufferedWriter;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.StringWriter;
-import java.lang.ref.SoftReference;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Random;
-import java.util.Set;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.Vector;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Semaphore;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.stream.Collectors;
-
+import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.io.Input;
+import com.esotericsoftware.kryo.io.Output;
+import com.github.dexecutor.core.DefaultDexecutor;
+import com.github.dexecutor.core.DexecutorConfig;
+import com.github.dexecutor.core.ExecutionConfig;
+import com.github.dexecutor.core.task.ExecutionResult;
+import com.github.dexecutor.core.task.TaskProvider;
+import com.github.mdc.common.*;
+import com.github.mdc.common.functions.*;
+import com.github.mdc.stream.PipelineException;
+import com.github.mdc.stream.executors.StreamPipelineTaskExecutor;
+import com.github.mdc.stream.executors.StreamPipelineTaskExecutorIgnite;
+import com.github.mdc.stream.executors.StreamPipelineTaskExecutorLocal;
+import com.github.mdc.stream.mesos.scheduler.MesosScheduler;
+import com.google.common.collect.Iterables;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
@@ -74,63 +51,18 @@ import org.springframework.yarn.client.CommandYarnClient;
 import org.xerial.snappy.SnappyInputStream;
 import org.xerial.snappy.SnappyOutputStream;
 
-import com.esotericsoftware.kryo.Kryo;
-import com.esotericsoftware.kryo.io.Input;
-import com.esotericsoftware.kryo.io.Output;
-import com.github.dexecutor.core.DefaultDexecutor;
-import com.github.dexecutor.core.DexecutorConfig;
-import com.github.dexecutor.core.ExecutionConfig;
-import com.github.dexecutor.core.task.ExecutionResult;
-import com.github.dexecutor.core.task.TaskProvider;
-import com.github.mdc.common.BlocksLocation;
-import com.github.mdc.common.CloseStagesGraphExecutor;
-import com.github.mdc.common.ContainerResources;
-import com.github.mdc.common.DAGEdge;
-import com.github.mdc.common.DestroyContainer;
-import com.github.mdc.common.DestroyContainers;
-import com.github.mdc.common.Dummy;
-import com.github.mdc.common.FileSystemSupport;
-import com.github.mdc.common.FreeResourcesCompletedJob;
-import com.github.mdc.common.GlobalContainerAllocDealloc;
-import com.github.mdc.common.HeartBeatServerStream;
-import com.github.mdc.common.HeartBeatTaskSchedulerStream;
-import com.github.mdc.common.Job;
-import com.github.mdc.common.JobApp;
-import com.github.mdc.common.JobStage;
-import com.github.mdc.common.LoadJar;
-import com.github.mdc.common.MDCCache;
-import com.github.mdc.common.MDCConstants;
-import com.github.mdc.common.MDCNodesResources;
-import com.github.mdc.common.MDCProperties;
-import com.github.mdc.common.NetworkUtil;
-import com.github.mdc.common.PipelineConfig;
-import com.github.mdc.common.PipelineConstants;
-import com.github.mdc.common.RemoteDataFetch;
-import com.github.mdc.common.RemoteDataFetcher;
-import com.github.mdc.common.Resources;
-import com.github.mdc.common.Stage;
-import com.github.mdc.common.Task;
-import com.github.mdc.common.TasksGraphExecutor;
-import com.github.mdc.common.TssHAChannel;
-import com.github.mdc.common.TssHAHostPorts;
-import com.github.mdc.common.Utils;
-import com.github.mdc.common.WhoIsResponse;
-import com.github.mdc.stream.PipelineException;
-import com.github.mdc.stream.executors.StreamPipelineTaskExecutor;
-import com.github.mdc.stream.executors.StreamPipelineTaskExecutorIgnite;
-import com.github.mdc.stream.executors.StreamPipelineTaskExecutorLocal;
-import com.github.mdc.common.functions.AggregateReduceFunction;
-import com.github.mdc.common.functions.Coalesce;
-import com.github.mdc.common.functions.IntersectionFunction;
-import com.github.mdc.common.functions.Join;
-import com.github.mdc.common.functions.JoinPredicate;
-import com.github.mdc.common.functions.LeftJoin;
-import com.github.mdc.common.functions.LeftOuterJoinPredicate;
-import com.github.mdc.common.functions.RightJoin;
-import com.github.mdc.common.functions.RightOuterJoinPredicate;
-import com.github.mdc.common.functions.UnionFunction;
-import com.github.mdc.stream.mesos.scheduler.MesosScheduler;
-import com.google.common.collect.Iterables;
+import java.beans.PropertyChangeListener;
+import java.io.*;
+import java.lang.ref.SoftReference;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URL;
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
+
+import static java.util.Objects.nonNull;
 
 /**
  * 
@@ -793,11 +725,6 @@ public class StreamJobScheduler {
 				for (var mdstst : vertices) {
 					var predecessors = Graphs.predecessorListOf(graph, mdstst);
 					if (predecessors.size() > 0) {
-						if (Objects.isNull(servertotaltasks.get(mdststs))) {
-							servertotaltasks.put(mdstst.getHostPort(), predecessors.size());
-						} else {
-							servertotaltasks.put(mdstst.getHostPort(), servertotaltasks.get(mdstst.getHostPort()) + predecessors.size());
-						}
 						for (var pred : predecessors) {
 							dexecutor.addDependency(pred, mdstst);
 							log.info(pred + "->" + mdstst);
@@ -810,7 +737,11 @@ public class StreamJobScheduler {
 							temdstdtmap.put(mdstst.getHostPort(), mdststs);
 						}
 						mdststs.add(mdstst);
-
+					}
+					if (Objects.isNull(servertotaltasks.get(mdstst.getHostPort()))) {
+						servertotaltasks.put(mdstst.getHostPort(), 1);
+					} else {
+						servertotaltasks.put(mdstst.getHostPort(), servertotaltasks.get(mdstst.getHostPort()) + 1);
 					}
 				}
 				var config = new DexecutorConfig<DefaultDexecutor<StreamPipelineTaskSubmitter, Boolean>, List<ExecutionResult<StreamPipelineTaskSubmitter, Boolean>>>(
@@ -820,14 +751,10 @@ public class StreamJobScheduler {
 				temdstdtmap.keySet().stream().forEach(key -> {
 					var mdststsl = temdstdtmap.get(key);
 					var cr = chpcres.get(key);
-					var batchsize = cr.getCpu();
+					var batchsize = cr.getCpu() * 2;
+					batchsize = mdststsl.size()<batchsize?mdststsl.size():batchsize;
 					var configinitialstage = new DexecutorConfig<StreamPipelineTaskSubmitter, Boolean>(
 							newExecutor((int) batchsize), new DAGScheduler(mdststsl.size(), (int) batchsize));
-					if (Objects.isNull(servertotaltasks.get(key))) {
-						servertotaltasks.put(key, mdststsl.size());
-					} else {
-						servertotaltasks.put(key, servertotaltasks.get(key) + mdststsl.size());
-					}
 					var dexecutorinitialstage = new DefaultDexecutor<StreamPipelineTaskSubmitter, Boolean>(
 							configinitialstage);
 					initialstageexecutor.addDependency(dexecutorinitialstage, dexecutorinitialstage);
@@ -886,6 +813,14 @@ public class StreamJobScheduler {
 		}
 	}
 
+	/**
+	 * Creates Executors
+	 *
+	 * @return ExecutorsService object.
+	 */
+	private ExecutorService newExecutor(int numberoftasks) {
+		return Executors.newWorkStealingPool(numberoftasks);
+	}
 
 	private class DAGSchedulerInitialStage implements
 			TaskProvider<DefaultDexecutor<StreamPipelineTaskSubmitter, Boolean>, List<ExecutionResult<StreamPipelineTaskSubmitter, Boolean>>> {
@@ -1073,14 +1008,6 @@ public class StreamJobScheduler {
 		}
 	}
 
-	/**
-	 * Creates Executors
-	 * 
-	 * @return ExecutorsService object.
-	 */
-	private ExecutorService newExecutor(int numberoftasks) {
-		return Executors.newFixedThreadPool(numberoftasks);
-	}
 
 	/**
 	 * 
@@ -1114,7 +1041,7 @@ public class StreamJobScheduler {
 					mdste.setHdfs(hdfs);
 					try {
 						semaphore.acquire();
-						mdste.call();
+						mdste.run();
 						Utils.writeKryoOutput(kryo, pipelineconfig.getOutput(),
 								"Completed Job And Stages: " + mdstst.getTask().jobid + MDCConstants.HYPHEN
 										+ mdstst.getTask().stageid + " in " + mdste.timetaken + " seconds");

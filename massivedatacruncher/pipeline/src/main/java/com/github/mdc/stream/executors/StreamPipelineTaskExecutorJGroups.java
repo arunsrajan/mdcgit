@@ -62,7 +62,7 @@ public final class StreamPipelineTaskExecutorJGroups extends StreamPipelineTaskE
 	}
 
 	@Override
-	public StreamPipelineTaskExecutorJGroups call() {
+	public void run() {
 		log.debug("Entered MassiveDataStreamJGroupsTaskExecutor.call");
 		var taskstatusmap = tasks.parallelStream()
 				.map(task -> task.taskid)
@@ -161,7 +161,6 @@ public final class StreamPipelineTaskExecutorJGroups extends StreamPipelineTaskE
 			log.error("Failed Stage " + tasks, ex);
 		}
 		log.debug("Exiting MassiveDataStreamJGroupsTaskExecutor.call");
-		return this;
 	}
 
 }

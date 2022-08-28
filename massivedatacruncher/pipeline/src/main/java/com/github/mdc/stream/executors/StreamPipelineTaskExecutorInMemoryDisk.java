@@ -133,7 +133,7 @@ public final class StreamPipelineTaskExecutorInMemoryDisk extends StreamPipeline
 	}
 
 	@Override
-	public StreamPipelineTaskExecutorInMemoryDisk call() {
+	public void run() {
 		log.debug("Entered MassiveDataStreamTaskExecutorInMemory.call");
 		var stageTasks = getStagesTask();
 		var hdfsfilepath = MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL, MDCConstants.HDFSNAMENODEURL);
@@ -189,7 +189,6 @@ public final class StreamPipelineTaskExecutorInMemoryDisk extends StreamPipeline
 			}
 		}
 		log.debug("Exiting MassiveDataStreamTaskExecutorInMemory.call");
-		return this;
 	}
 
 }

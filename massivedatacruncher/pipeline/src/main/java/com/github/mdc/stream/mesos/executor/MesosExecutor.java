@@ -122,7 +122,7 @@ public class MesosExecutor implements Executor {
 				//Initialize the mesos task executor.
 				var mdstem = new StreamPipelineTaskExecutorMesos(job, driver, task.getTaskId());
 				//Execute the tasks via run method.
-				mdstem.call();
+				mdstem.run();
 				log.debug(task.getTaskId() + " - Completed");
 
 			}
