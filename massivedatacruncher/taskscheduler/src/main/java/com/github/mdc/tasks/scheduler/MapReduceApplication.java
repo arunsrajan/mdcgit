@@ -559,7 +559,7 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 
 			jm.jobstarttime = System.currentTimeMillis();
 			var isblocksuserdefined = Boolean.parseBoolean(jobconf.getIsblocksuserdefined());
-			var applicationid = MDCConstants.MDCAPPLICATION + MDCConstants.HYPHEN + Utils.getUniqueID();
+			var applicationid = MDCConstants.MDCAPPLICATION + MDCConstants.HYPHEN + Utils.getUniqueAppID();
 			jm.jobid = applicationid;
 			MDCJobMetrics.put(jm);
 			hbts = new HeartBeatTaskScheduler();

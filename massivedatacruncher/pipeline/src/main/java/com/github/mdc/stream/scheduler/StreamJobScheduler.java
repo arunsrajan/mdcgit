@@ -458,8 +458,8 @@ public class StreamJobScheduler {
 				try {
 					JobStage js = (JobStage) jsidjsmap.get(key);
 					JobStage clonedjs = (JobStage) js.clone();
-					clonedjs.stage = new Stage(js.stage.id,js.stage.getStageid(),js.stage.number,
-							null,null,null,js.stage.isstagecompleted,js.stage.tovisit,js.stage.tasksdescription);
+					clonedjs.stage = new Stage(js.stage.id,js.stage.number,
+							null,null,null,js.stage.isstagecompleted,js.stage.tovisit);
 					clonedjs.stage.tasks = new ArrayList<>();
 					clonedjs.stage.tasks.addAll(js.stage.tasks);
 					Utils.writeObject(te, clonedjs);
@@ -1318,7 +1318,6 @@ public class StreamJobScheduler {
 	 * @param currentstage
 	 * @param nextstage
 	 * @param stageoutputs
-	 * @param allstageshp
 	 * @param jobid
 	 * @param graph
 	 * @throws Exception
@@ -1355,14 +1354,10 @@ public class StreamJobScheduler {
 						StreamPipelineTaskSubmitter mdstst;
 						if ((parentthread1 instanceof BlocksLocation) && (parentthread2 instanceof BlocksLocation)) {
 							mdstst = getMassiveDataStreamTaskSchedulerThread(jobid,
-									currentstage.id + MDCConstants.HYPHEN + currentstage.number + MDCConstants.HYPHEN
-											+ partitionindex,
 									Arrays.asList(parentthread1, parentthread2), currentstage, partitionindex,
 									currentstage.number, null);
 						} else {
 							mdstst = getMassiveDataStreamTaskSchedulerThread(jobid,
-									currentstage.id + MDCConstants.HYPHEN + currentstage.number + MDCConstants.HYPHEN
-											+ partitionindex,
 									null, currentstage, partitionindex, currentstage.number,
 									Arrays.asList(parentthread2, parentthread1));
 						}
@@ -1403,8 +1398,6 @@ public class StreamJobScheduler {
 					for (var inputparent2 : outputparent2) {
 						partitionindex++;
 						var mdstst = getMassiveDataStreamTaskSchedulerThread(jobid,
-								currentstage.id + MDCConstants.HYPHEN + currentstage.number + MDCConstants.HYPHEN
-										+ partitionindex,
 								null, currentstage, partitionindex, currentstage.number,
 								Arrays.asList(inputparent1, inputparent2));
 						taskmdsthread.put(mdstst.getTask().jobid + mdstst.getTask().stageid + mdstst.getTask().taskid,
@@ -1445,8 +1438,6 @@ public class StreamJobScheduler {
 					for (var inputparent2 : outputparent2) {
 						partitionindex++;
 						var mdstst = getMassiveDataStreamTaskSchedulerThread(jobid,
-								currentstage.id + MDCConstants.HYPHEN + currentstage.number + MDCConstants.HYPHEN
-										+ partitionindex,
 								null, currentstage, partitionindex, currentstage.number,
 								Arrays.asList(inputparent1, inputparent2));
 						taskmdsthread.put(mdstst.getTask().jobid + mdstst.getTask().stageid + mdstst.getTask().taskid,
@@ -1485,8 +1476,6 @@ public class StreamJobScheduler {
 					var parentpartitioned = (List) partkeys.next();
 					partitionindex++;
 					var mdstst = getMassiveDataStreamTaskSchedulerThread(jobid,
-							currentstage.id + MDCConstants.HYPHEN + currentstage.number + MDCConstants.HYPHEN
-									+ partitionindex,
 							null, currentstage, partitionindex, currentstage.number, parentpartitioned);
 					tasks.add(mdstst);
 					graph.addVertex(mdstst);
@@ -1508,8 +1497,6 @@ public class StreamJobScheduler {
 			} else if (function instanceof AggregateReduceFunction) {
 				partitionindex++;
 				var mdstst = getMassiveDataStreamTaskSchedulerThread(jobid,
-						currentstage.id + MDCConstants.HYPHEN + currentstage.number + MDCConstants.HYPHEN
-								+ partitionindex,
 						null, currentstage, partitionindex, currentstage.number, new ArrayList<>(outputparent1));
 				tasks.add(mdstst);
 				graph.addVertex(mdstst);
@@ -1533,8 +1520,6 @@ public class StreamJobScheduler {
 					StreamPipelineTaskSubmitter mdstst;
 					if (input instanceof BlocksLocation) {
 						mdstst = getMassiveDataStreamTaskSchedulerThread(jobid,
-								currentstage.id + MDCConstants.HYPHEN + currentstage.number + MDCConstants.HYPHEN
-										+ partitionindex,
 								input, currentstage, partitionindex, currentstage.number, null);
 						taskmdsthread.put(mdstst.getTask().jobid + mdstst.getTask().stageid + mdstst.getTask().taskid,
 								mdstst);
@@ -1543,8 +1528,6 @@ public class StreamJobScheduler {
 					} else {
 						var parentthread = (StreamPipelineTaskSubmitter) input;
 						mdstst = getMassiveDataStreamTaskSchedulerThread(jobid,
-								currentstage.id + MDCConstants.HYPHEN + currentstage.number + MDCConstants.HYPHEN
-										+ partitionindex,
 								null, currentstage, partitionindex, currentstage.number, Arrays.asList(parentthread));
 						taskmdsthread.put(mdstst.getTask().jobid + mdstst.getTask().stageid + mdstst.getTask().taskid,
 								mdstst);
@@ -1793,9 +1776,6 @@ public class StreamJobScheduler {
 
 	/**
 	 * Get the file streams from HDFS and jobid and stageid.
-	 * 
-	 * @param hdfs
-	 * @param jobstage
 	 * @return
 	 * @throws Exception
 	 */
@@ -1817,8 +1797,6 @@ public class StreamJobScheduler {
 
 	/**
 	 * Get intermediate stream obtained from ignite server.
-	 * 
-	 * @param jobstage
 	 * @return InputStream object.
 	 * @throws Exception
 	 */
@@ -1871,11 +1849,10 @@ public class StreamJobScheduler {
 	 * @throws Exception
 	 */
 	@SuppressWarnings("rawtypes")
-	private StreamPipelineTaskSubmitter getMassiveDataStreamTaskSchedulerThread(String jobid, String stageid,
+	private StreamPipelineTaskSubmitter getMassiveDataStreamTaskSchedulerThread(String jobid,
 			Object input, Stage stage, int partitionindex, int currentstage, List<Object> parentthreads)
 			throws PipelineException {
 		try {
-			stage.setStageid(stageid);
 			var task = new Task();
 			task.jobid = jobid;
 			task.stageid = stage.id;
@@ -1961,7 +1938,6 @@ public class StreamJobScheduler {
 	 * fashion.
 	 * 
 	 * @param currentexecutor
-	 * @param hpresmap
 	 * @return
 	 * @throws Exception
 	 */

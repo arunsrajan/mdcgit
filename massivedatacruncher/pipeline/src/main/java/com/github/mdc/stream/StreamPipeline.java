@@ -900,7 +900,7 @@ public sealed class StreamPipeline<I1> extends AbstractPipeline permits CsvStrea
 		}
 		else {
 			jobCreated = new Job();
-			jobCreated.id = MDCConstants.JOB+MDCConstants.HYPHEN+Utils.getUniqueID();
+			jobCreated.id = MDCConstants.JOB+MDCConstants.HYPHEN+Utils.getUniqueJobID();
 			jobCreated.jm = new JobMetrics();
 			jobCreated.jm.jobstarttime = System.currentTimeMillis();
 			jobCreated.jm.jobid = jobCreated.id;
@@ -938,7 +938,7 @@ public sealed class StreamPipeline<I1> extends AbstractPipeline permits CsvStrea
 		return tasksnames.toString();
 	}
 	private String printStages(Set<Stage> stages) {
-		var stagenames = stages.stream().map(sta->sta.getStageid()).collect(Collectors.toList());
+		var stagenames = stages.stream().map(sta->sta.getId()).collect(Collectors.toList());
 		return stagenames.toString();
 	}
 	private Set<Stage> finalstages = new LinkedHashSet<>();
@@ -983,9 +983,6 @@ public sealed class StreamPipeline<I1> extends AbstractPipeline permits CsvStrea
 				// child stage and form the edge between stages.
 				if ((af instanceof StreamPipeline) && af.task instanceof Dummy) {
 					var parentstage = new Stage();
-					parentstage.setStageid("Stage" + stageid);
-					stageid++;
-					parentstage.id = MDCConstants.STAGE + MDCConstants.HYPHEN + Utils.getUniqueID();
 					rootstages.add(parentstage);
 					graphstages.addVertex(parentstage);
 					taskstagemap.put(af.task, parentstage);
@@ -997,10 +994,6 @@ public sealed class StreamPipeline<I1> extends AbstractPipeline permits CsvStrea
 				// between parent and child.
 				else if (af.parents.size() >= 2) {
 					var childstage = new Stage();
-					childstage.setStageid("Stage" + stageid);
-					stageid++;
-					childstage.id = MDCConstants.STAGE + MDCConstants.HYPHEN
-							+ Utils.getUniqueID();
 					for (var afparent : af.parents) {
 						Stage parentstage = taskstagemap.get(afparent.task);
 						graphstages.addVertex(parentstage);
@@ -1027,9 +1020,6 @@ public sealed class StreamPipeline<I1> extends AbstractPipeline permits CsvStrea
 					// and pushed to stack.
 					if (af.parents.get(0).childs.size() >= 2) {
 						var childstage = new Stage();
-						childstage.setStageid("Stage" + stageid);
-						stageid++;
-						childstage.id = MDCConstants.STAGE + MDCConstants.HYPHEN + Utils.getUniqueID();
 						for (var afparent : af.parents) {
 							var parentstage = taskstagemap.get(afparent.task);
 							graphstages.addVertex(parentstage);
@@ -1087,14 +1077,13 @@ public sealed class StreamPipeline<I1> extends AbstractPipeline permits CsvStrea
 			log.debug("Stages----------------------------------------");
 			var stagesprocessed = graphstages.vertexSet();
 			for (var stagetoprint : stagesprocessed) {
-				log.debug("\n\nStage " + stagetoprint.getStageid());
+				log.debug("\n\nStage " + stagetoprint.getId());
 				log.debug("[Parent] [Child]");
 				log.debug(printStages(stagetoprint.parent) + " , " + printStages(stagetoprint.child));
 				log.debug("Tasks");
 				for (var task : stagetoprint.tasks) {
 					log.debug(PipelineUtils.getFunctions(task));
 				}
-				stagetoprint.tasksdescription = PipelineUtils.getFunctions(stagetoprint.tasks).toString();
 			}
 
 			finalstages.clear();
@@ -1158,9 +1147,6 @@ public sealed class StreamPipeline<I1> extends AbstractPipeline permits CsvStrea
 	Map<Object, Stage> taskstagemap,AbstractPipeline af) {
 		var parentstage = taskstagemap.get(af.parents.get(0).task);
 		var childstage = new Stage();
-		childstage.setStageid("Stage"+stageid);
-		stageid++;
-		childstage.id = MDCConstants.STAGE + MDCConstants.HYPHEN + Utils.getUniqueID();
 		childstage.tasks.add(af.task);
 		graphstages.addVertex(parentstage);
 		graphstages.addVertex(childstage);

@@ -99,7 +99,7 @@ public class CacheUtils {
 				Integer.parseInt((String) MDCProperties.get().get(MDCConstants.CACHEEXPIRY)),
 				CacheUtils.CacheExpiry.valueOf(cacheduration),
 				Integer.parseInt((String) MDCProperties.get().get(MDCConstants.CACHEDISKSIZEGB)),
-				(String) MDCProperties.get().getProperty(MDCConstants.CACHEDISKPATH, MDCConstants.CACHEDISKPATH_DEFAULT) + MDCConstants.FORWARD_SLASH + Utils.getUniqueID()));
+				(String) MDCProperties.get().getProperty(MDCConstants.CACHEDISKPATH, MDCConstants.CACHEDISKPATH_DEFAULT) + MDCConstants.FORWARD_SLASH + Utils.getCacheID()));
 		log.debug("Exiting CacheUtils.initCache");
 	}
 

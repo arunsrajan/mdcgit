@@ -142,7 +142,7 @@ public sealed class IgniteCommon extends AbstractPipeline permits IgnitePipeline
 	protected Job createJob() throws PipelineException, ExportException, IOException, URISyntaxException  {
 		Job job;
 		job = new Job();
-		job.id = MDCConstants.JOB+MDCConstants.HYPHEN+Utils.getUniqueID();
+		job.id = MDCConstants.JOB+MDCConstants.HYPHEN+Utils.getUniqueJobID();
 		job.jm = new JobMetrics();
 		job.jm.jobstarttime = System.currentTimeMillis();
 		job.jm.jobid = job.id;
@@ -195,7 +195,7 @@ public sealed class IgniteCommon extends AbstractPipeline permits IgnitePipeline
 		return tasksnames.toString();
 	}
 	private String printStages(Set<Stage> stages) {
-		var stagenames = stages.stream().map(sta->sta.getStageid()).collect(Collectors.toList());
+		var stagenames = stages.stream().map(sta->sta.getId()).collect(Collectors.toList());
 		return stagenames.toString();
 	}
 	private Set<Stage> finalstages = new LinkedHashSet<>();
@@ -240,9 +240,6 @@ public sealed class IgniteCommon extends AbstractPipeline permits IgnitePipeline
 				// child stage and form the edge between stages.
 				if ((af instanceof IgnitePipeline || af instanceof MapPairIgnite) && af.task instanceof Dummy) {
 					var parentstage = new Stage();
-					parentstage.setStageid("Stage" + stageid);
-					stageid++;
-					parentstage.id = MDCConstants.STAGE + MDCConstants.HYPHEN + Utils.getUniqueID();
 					rootstages.add(parentstage);
 					graphstages.addVertex(parentstage);
 					taskstagemap.put(af.task, parentstage);
@@ -254,10 +251,6 @@ public sealed class IgniteCommon extends AbstractPipeline permits IgnitePipeline
 				// between parent and child.
 				else if (af.parents.size() >= 2) {
 					var childstage = new Stage();
-					childstage.setStageid("Stage" + stageid);
-					stageid++;
-					childstage.id = MDCConstants.STAGE + MDCConstants.HYPHEN 
-							+ Utils.getUniqueID();
 					for (var afparent : af.parents) {
 						var parentstage = taskstagemap.get(afparent.task);
 						graphstages.addVertex(parentstage);
@@ -284,9 +277,6 @@ public sealed class IgniteCommon extends AbstractPipeline permits IgnitePipeline
 					// and pushed to stack.
 					if (af.parents.get(0).childs.size() >= 2) {
 						var childstage = new Stage();
-						childstage.setStageid("Stage" + stageid);
-						stageid++;
-						childstage.id = MDCConstants.STAGE + MDCConstants.HYPHEN + Utils.getUniqueID();
 						for (var afparent : af.parents) {
 							Stage parentstage = taskstagemap.get(afparent.task);
 							graphstages.addVertex(parentstage);
@@ -338,14 +328,13 @@ public sealed class IgniteCommon extends AbstractPipeline permits IgnitePipeline
 			log.debug("Stages----------------------------------------");
 			var stagesprocessed = graphstages.vertexSet();
 			for (Stage stagetoprint : stagesprocessed) {
-				log.debug("\n\nStage " + stagetoprint.getStageid());
+				log.debug("\n\nStage " + stagetoprint.getId());
 				log.debug("[Parent] [Child]");
 				log.debug(printStages(stagetoprint.parent) + " , " + printStages(stagetoprint.child));
 				log.debug("Tasks");
 				for (var task : stagetoprint.tasks) {
 					log.debug(PipelineUtils.getFunctions(task));
 				}
-				stagetoprint.tasksdescription = PipelineUtils.getFunctions(stagetoprint.tasks).toString();
 			}
 
 			finalstages.clear();
@@ -462,9 +451,6 @@ public sealed class IgniteCommon extends AbstractPipeline permits IgnitePipeline
 	Map<Object, Stage> taskstagemap,AbstractPipeline af) {
 		var parentstage = taskstagemap.get(af.parents.get(0).task);
 		var childstage = new Stage();
-		childstage.setStageid("Stage"+stageid);
-		stageid++;
-		childstage.id = MDCConstants.STAGE + MDCConstants.HYPHEN + Utils.getUniqueID();
 		childstage.tasks.add(af.task);
 		graphstages.addVertex(parentstage);
 		graphstages.addVertex(childstage);

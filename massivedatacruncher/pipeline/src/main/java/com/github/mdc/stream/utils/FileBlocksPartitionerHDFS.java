@@ -565,7 +565,6 @@ public class FileBlocksPartitionerHDFS {
 				AtomicLong totalallocated =  new AtomicLong();
 				//Get Reused containers to be allocated by current job.
 				//Calculate the remaining to allocate.
-				long totalallocatedremaining = nodestotalblockmem.get(host) - totalallocated.get();
 				List<ContainerResources> contres = null;
 
 				if (Objects.isNull(resources.get(node))) {

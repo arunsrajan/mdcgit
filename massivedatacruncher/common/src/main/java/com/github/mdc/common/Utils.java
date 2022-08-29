@@ -71,6 +71,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
@@ -960,9 +961,35 @@ public class Utils {
 			}
 		}
 	}
-
-	public static String getUniqueID() {
+	
+	
+	public static String getCacheID() {
 		return UUID.randomUUID().toString();
+	}
+	
+	private static final AtomicInteger uniqueidincrement = new AtomicInteger(1) ;
+	public static int getUniqueID() {
+		return uniqueidincrement.getAndIncrement();
+	}
+
+	private static final AtomicInteger uniquetaskidincrement = new AtomicInteger(1) ;
+	public static int getUniqueTaskID() {
+		return uniquetaskidincrement.getAndIncrement();
+	}
+
+	private static final AtomicInteger uniquestageidincrement = new AtomicInteger(1) ;
+	public static int getUniqueStageID() {
+		return uniquestageidincrement.getAndIncrement();
+	}
+
+	private static final AtomicInteger uniquejobidincrement = new AtomicInteger(1) ;
+	public static int getUniqueJobID() {
+		return uniquejobidincrement.getAndIncrement();
+	}
+
+	private static final AtomicInteger uniqueappidincrement = new AtomicInteger(1) ;
+	public static int getUniqueAppID() {
+		return uniqueappidincrement.getAndIncrement();
 	}
 
 	public static ServerCnxnFactory startZookeeperServer(int clientport, int numconnections, int ticktime)
@@ -1046,7 +1073,7 @@ public class Utils {
 	@SuppressWarnings("unchecked")
 	public static String launchContainers(Integer numberofcontainers) throws Exception {
 		var containerid = MDCConstants.CONTAINER + MDCConstants.HYPHEN + Utils.getUniqueID();
-		var jobid = MDCConstants.JOB + MDCConstants.HYPHEN + Utils.getUniqueID();
+		var jobid = MDCConstants.JOB + MDCConstants.HYPHEN + Utils.getUniqueJobID();
 		var ac = new AllocateContainers();
 		ac.setContainerid(containerid);
 		ac.setNumberofcontainers(numberofcontainers);
