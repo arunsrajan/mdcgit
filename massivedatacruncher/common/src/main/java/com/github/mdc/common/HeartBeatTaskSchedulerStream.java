@@ -41,7 +41,7 @@ public final class HeartBeatTaskSchedulerStream extends HeartBeatServerStream im
 	private static Logger log = Logger.getLogger(HeartBeatTaskSchedulerStream.class);
 	private String jobid;
 	private TaskStatus taskstatus = TaskStatus.SUBMITTED;
-	private HeartBeatObservable<Task> hbo;
+	private HeartBeatTaskObserver<Task> hbo;
 	protected double timetakenseconds;
 	public List<String> containers;
 
@@ -53,7 +53,7 @@ public final class HeartBeatTaskSchedulerStream extends HeartBeatServerStream im
 		this.taskstatus = taskstatus;
 	}
 
-	public HeartBeatObservable<Task> getHbo() {
+	public HeartBeatTaskObserver<Task> getHbo() {
 		return hbo;
 	}
 
@@ -81,7 +81,7 @@ public final class HeartBeatTaskSchedulerStream extends HeartBeatServerStream im
 		else {
 			throw new HeartBeatException(MDCConstants.HEARTBEAT_TASK_SCHEDULER_STREAM_EXCEPTON_JOBID);
 		}
-		hbo = new HeartBeatObservable<>();
+		hbo = new HeartBeatTaskObserver<>();
 		log.debug("Exiting HeartBeatTaskSchedulerStream.init");
 	}
 
@@ -163,7 +163,7 @@ public final class HeartBeatTaskSchedulerStream extends HeartBeatServerStream im
 	 * @param timetaken
 	 * @throws Exception
 	 */
-	public synchronized void pingOnce(String stageid, String taskid, String hostport, TaskStatus taskstatus, double timetaken, String stagefailuremessage)
+	public void pingOnce(String stageid, String taskid, String hostport, TaskStatus taskstatus, double timetaken, String stagefailuremessage)
 			throws Exception {
 		log.debug("Entered HeartBeatTaskSchedulerStream.pingOnce");
 		pingmutex.acquire();

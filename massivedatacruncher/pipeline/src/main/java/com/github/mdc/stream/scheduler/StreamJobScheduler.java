@@ -787,7 +787,7 @@ public class StreamJobScheduler {
 				numexecute++;
 				hbtss.clearStageJobStageMap();
 				hbtss.getHbo().clearQueue();
-				hbtss.getHbo().removePropertyChangeListeners();
+				hbtss.getHbo().clearAll();
 			}
 			Utils.writeKryoOutput(kryo, pipelineconfig.getOutput(), "Number of Executions: " + numexecute);
 			if (!completed) {
@@ -1236,7 +1236,7 @@ public class StreamJobScheduler {
 
 					try {
 						mutex.acquire();
-						hbtss.getHbo().addPropertyChangeListener(observer);
+						hbtss.getHbo().addPropertyChangeListener(mdststlocal.getTask(), observer);
 						if (taskexecutors.contains(mdststlocal.getHostPort())) {
 							var timer = new Timer();
 							jobtimer.put(mdststlocal.getTask().taskid, timer);
@@ -1271,7 +1271,7 @@ public class StreamJobScheduler {
 							mdststlocal.setCompletedexecution(false);
 						}
 						mutex.release();
-						hbtss.getHbo().removePropertyChangeListener(observer);
+						hbtss.getHbo().removePropertyChangeListener(mdststlocal.getTask());
 					} catch (InterruptedException e) {
 						log.warn("Interrupted!", e);
 						// Restore interrupted state...
