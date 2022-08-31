@@ -854,6 +854,37 @@ public class Utils {
 			}
 		}
 	}
+	
+	/**
+	 * The write object with serializable classes
+	 * @param hp
+	 * @param inputobj
+	 * @param classes
+	 * @throws Exception
+	 */
+	public static void writeObject(String hp, Object inputobj, Set<Class<?>> classes) throws Exception {
+		var hostport = hp.split(MDCConstants.UNDERSCORE);
+		ClientEndpoint client = null;
+		try {
+			client = Utils.getClientKryoNetty(hostport[0], Integer.parseInt(hostport[1]), null);
+			for(Class<?> clz:classes) {
+				Kryo kryo = client.getKryoSerialization().obtainKryo();
+				kryo.register(clz, new CompatibleFieldSerializer(kryo, clz), 100);
+				log.info("Client Next registration ID: "+kryo.getNextRegistrationId()+" for class "+clz);
+				client.getKryoSerialization().free(kryo);				
+			}	
+			log.info("writeObject(String hp, Object inputobj): "+hp+" "+inputobj);
+			client.send(inputobj);
+			log.info("writeObject(String hp, Object inputobj): "+hp+" "+inputobj+" completed");
+		} catch (Exception ex) {
+			log.error("Unable to write Object: " + inputobj);
+			throw ex;
+		} finally {
+			if(nonNull(client)) {
+				client.close();
+			}
+		}
+	}
 
 	/**
 	 * This method writes the object via sockets outputstream of server.
@@ -1164,7 +1195,7 @@ public class Utils {
 				.outputSize(4096)
 				.maxOutputSize(-1);
 		registerKryoNetty(kryoNetty);
-		var server = new ServerEndpoint(kryoNetty, 10);
+		var server = new ServerEndpoint(kryoNetty, 1);
 		server.getEventHandler().register(listener);		
 		server.start(port);
 		return server;
@@ -1234,7 +1265,7 @@ public class Utils {
 				.outputSize(4096)
 				.maxOutputSize(-1);
 		registerKryoNetty(kryoNetty);
-		var client = new ClientEndpoint(kryoNetty,10);
+		var client = new ClientEndpoint(kryoNetty, 1);
 		if(nonNull(listener)){
 			client.getEventHandler().register(listener);
 		}

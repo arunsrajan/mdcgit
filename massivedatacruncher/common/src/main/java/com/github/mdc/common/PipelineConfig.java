@@ -17,6 +17,7 @@ package com.github.mdc.common;
 
 import java.io.Serializable;
 import java.util.Objects;
+import java.util.Set;
 
 import com.esotericsoftware.kryo.io.Output;
 import com.github.mdc.common.MDCConstants.STORAGE;
@@ -61,6 +62,7 @@ public class PipelineConfig implements Serializable, Cloneable {
 	private String implicitcontainercpu;
 	private String implicitcontainermemory;
 	private String implicitcontainermemorysize;
+	private Set<Class<?>> customclasses;
 
 	public void setKryoOutput(Output output) {
 		this.output = output;
@@ -218,6 +220,17 @@ public class PipelineConfig implements Serializable, Cloneable {
 			throw new UnsupportedOperationException();
 		}
 		this.jar = jar;
+	}
+	
+	public void setCustomclasses(Set<Class<?>> customclasses) {
+		if (Objects.isNull(customclasses)) {
+			throw new UnsupportedOperationException();
+		}
+		this.customclasses = customclasses;
+	}
+
+	public Set<Class<?>> getCustomclasses() {
+		return customclasses;
 	}
 
 	public String getIsblocksusedefined() {

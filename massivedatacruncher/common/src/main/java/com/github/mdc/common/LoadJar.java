@@ -16,6 +16,7 @@
 package com.github.mdc.common;
 
 import java.io.Serializable;
+import java.util.Set;
 
 /**
  * 
@@ -27,4 +28,5 @@ import java.io.Serializable;
 public class LoadJar implements Serializable {
 	private static final long serialVersionUID = 3379246177932569561L;
 	public byte[] mrjar;
+	public Set<String> classes;
 }

@@ -22,6 +22,8 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.log4j.Logger;
@@ -85,6 +87,9 @@ public class StreamPipelineTaskScheduler implements Runnable {
 			//Invoke the runPipeline method via reflection.
 			var pipelineconfig = new PipelineConfig();
 			pipelineconfig.setJar(mrjar);
+			Set<Class<?>> classes = new LinkedHashSet<>();
+			pipelineconfig.setCustomclasses(classes);
+			classes.add(main);
 			pipelineconfig.setKryoOutput(new Output(tss.getOutputStream()));
 			var pipeline = (Pipeline) main.getDeclaredConstructor().newInstance();
 			pipelineconfig.setJobname(main.getSimpleName());

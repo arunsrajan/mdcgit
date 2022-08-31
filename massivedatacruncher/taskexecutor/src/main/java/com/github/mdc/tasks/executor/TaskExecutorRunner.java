@@ -24,6 +24,9 @@ import java.util.Objects;
 import java.util.Queue;
 import java.util.concurrent.*;
 
+import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.serializers.CompatibleFieldSerializer;
+import com.esotericsoftware.kryo.serializers.JavaSerializer;
 import com.esotericsoftware.kryonetty.ServerEndpoint;
 import com.esotericsoftware.kryonetty.network.ConnectEvent;
 import com.esotericsoftware.kryonetty.network.DisconnectEvent;
@@ -192,8 +195,17 @@ public class TaskExecutorRunner implements TaskExecutorRunnerMBean {
 						log.info("Loading the Required jars: "+loadjar.mrjar);
 						cl = MDCMapReducePhaseClassLoader
 									.newInstance(loadjar.mrjar, cl);
-						log.info("Loaded the Required jars");
-						server.getKryoSerialization().obtainKryo().setClassLoader(cl);
+						log.info("Loaded the Required jars with Next registration ID: "+server.getKryoSerialization().obtainKryo().getNextRegistrationId());
+						Kryo kryo = server.getKryoSerialization().obtainKryo();
+						kryo.setClassLoader(cl);
+						server.getKryoSerialization().free(kryo);
+						for(String clz:loadjar.classes) {
+							var main = Class.forName(clz, true, cl);
+							kryo = server.getKryoSerialization().obtainKryo();
+							kryo.register(main, new CompatibleFieldSerializer(kryo, main), 100);							
+							log.info("Next registration ID: "+kryo.getNextRegistrationId()+" for class "+clz);
+							server.getKryoSerialization().free(kryo);
+						}						
 						server.send(event.getCtx(),  MDCConstants.JARLOADED);
 					} else if (deserobj instanceof JobApp jobapp) {
 						if (jobapp.getJobtype() == JobApp.JOBAPP.MR) {

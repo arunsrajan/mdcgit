@@ -462,7 +462,7 @@ public class StreamJobScheduler {
 							null,null,null,js.stage.isstagecompleted,js.stage.tovisit);
 					clonedjs.stage.tasks = new ArrayList<>();
 					clonedjs.stage.tasks.addAll(js.stage.tasks);
-					Utils.writeObject(te, clonedjs);
+					Utils.writeObject(te, clonedjs, pipelineconfig.getCustomclasses());
 				} catch (Exception e) {
 					log.error(MDCConstants.EMPTY, e);
 				}
@@ -481,6 +481,7 @@ public class StreamJobScheduler {
 			GlobalContainerAllocDealloc.getGlobalcontainerallocdeallocsem().acquire();
 			var loadjar = new LoadJar();
 			loadjar.mrjar = pipelineconfig.getJar();
+			loadjar.classes = pipelineconfig.getCustomclasses().stream().map(clz->clz.getSimpleName()).collect(Collectors.toCollection(LinkedHashSet::new));
 			for (var lc : job.lcs) {
 				List<Integer> ports = null;
 				if (pipelineconfig.getUseglobaltaskexecutors()) {
