@@ -199,13 +199,15 @@ public class TaskExecutorRunner implements TaskExecutorRunnerMBean {
 						Kryo kryo = server.getKryoSerialization().obtainKryo();
 						kryo.setClassLoader(cl);
 						server.getKryoSerialization().free(kryo);
-						for(String clz:loadjar.classes) {
-							var main = Class.forName(clz, true, cl);
-							kryo = server.getKryoSerialization().obtainKryo();
-							kryo.register(main, new CompatibleFieldSerializer(kryo, main), 100);							
-							log.info("Next registration ID: "+kryo.getNextRegistrationId()+" for class "+clz);
-							server.getKryoSerialization().free(kryo);
-						}						
+						if(nonNull(loadjar.classes) && !loadjar.classes.isEmpty()) {
+							for(String clz:loadjar.classes) {
+								var main = Class.forName(clz, true, cl);
+								kryo = server.getKryoSerialization().obtainKryo();
+								kryo.register(main, new CompatibleFieldSerializer(kryo, main), 100);							
+								log.info("Next registration ID: "+kryo.getNextRegistrationId()+" for class "+clz);
+								server.getKryoSerialization().free(kryo);
+							}
+						}
 						server.send(event.getCtx(),  MDCConstants.JARLOADED);
 					} else if (deserobj instanceof JobApp jobapp) {
 						if (jobapp.getJobtype() == JobApp.JOBAPP.MR) {

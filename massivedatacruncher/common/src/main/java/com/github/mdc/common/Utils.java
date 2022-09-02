@@ -867,12 +867,14 @@ public class Utils {
 		ClientEndpoint client = null;
 		try {
 			client = Utils.getClientKryoNetty(hostport[0], Integer.parseInt(hostport[1]), null);
-			for(Class<?> clz:classes) {
-				Kryo kryo = client.getKryoSerialization().obtainKryo();
-				kryo.register(clz, new CompatibleFieldSerializer(kryo, clz), 100);
-				log.info("Client Next registration ID: "+kryo.getNextRegistrationId()+" for class "+clz);
-				client.getKryoSerialization().free(kryo);				
-			}	
+			if(nonNull(classes) && !classes.isEmpty()) {
+				for(Class<?> clz:classes) {
+					Kryo kryo = client.getKryoSerialization().obtainKryo();
+					kryo.register(clz, new CompatibleFieldSerializer(kryo, clz), 100);
+					log.info("Client Next registration ID: "+kryo.getNextRegistrationId()+" for class "+clz);
+					client.getKryoSerialization().free(kryo);				
+				}
+			}
 			log.info("writeObject(String hp, Object inputobj): "+hp+" "+inputobj);
 			client.send(inputobj);
 			log.info("writeObject(String hp, Object inputobj): "+hp+" "+inputobj+" completed");

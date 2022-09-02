@@ -481,7 +481,9 @@ public class StreamJobScheduler {
 			GlobalContainerAllocDealloc.getGlobalcontainerallocdeallocsem().acquire();
 			var loadjar = new LoadJar();
 			loadjar.mrjar = pipelineconfig.getJar();
-			loadjar.classes = pipelineconfig.getCustomclasses().stream().map(clz->clz.getName()).collect(Collectors.toCollection(LinkedHashSet::new));
+			if(nonNull(pipelineconfig.getCustomclasses()) && !pipelineconfig.getCustomclasses().isEmpty()) {
+				loadjar.classes = pipelineconfig.getCustomclasses().stream().map(clz->clz.getName()).collect(Collectors.toCollection(LinkedHashSet::new));
+			}
 			for (var lc : job.lcs) {
 				List<Integer> ports = null;
 				if (pipelineconfig.getUseglobaltaskexecutors()) {
