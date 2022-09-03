@@ -92,7 +92,8 @@ public class TaskExecutorRunner implements TaskExecutorRunnerMBean {
 		log.info("Number Of 128 MB directmemory: " + directmemory);
 		ByteBufferPool.init(directmemory);
 		CacheUtils.initCache();
-		es = Executors.newWorkStealingPool(Runtime.getRuntime().availableProcessors() * 2);
+		int numberofprocessors = Runtime.getRuntime().availableProcessors();
+		es = Executors.newWorkStealingPool(directmemory>numberofprocessors?numberofprocessors:directmemory);
 		var mdted = new TaskExecutorRunner();
 		mdted.init();
 		mdted.start();
@@ -200,10 +201,12 @@ public class TaskExecutorRunner implements TaskExecutorRunnerMBean {
 						kryo.setClassLoader(cl);
 						server.getKryoSerialization().free(kryo);
 						if(nonNull(loadjar.classes) && !loadjar.classes.isEmpty()) {
+							int classindex = 1;
 							for(String clz:loadjar.classes) {
 								var main = Class.forName(clz, true, cl);
 								kryo = server.getKryoSerialization().obtainKryo();
-								kryo.register(main, new CompatibleFieldSerializer(kryo, main), 100);							
+								kryo.register(main, new CompatibleFieldSerializer(kryo, main), 1000 + classindex);
+								classindex++;
 								log.info("Next registration ID: "+kryo.getNextRegistrationId()+" for class "+clz);
 								server.getKryoSerialization().free(kryo);
 							}

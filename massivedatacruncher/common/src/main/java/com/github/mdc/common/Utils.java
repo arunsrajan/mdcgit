@@ -933,9 +933,11 @@ public class Utils {
 		try {
 			client = Utils.getClientKryoNetty(hostport[0], Integer.parseInt(hostport[1]), null);
 			if(nonNull(classes) && !classes.isEmpty()) {
+				int classindex = 1;
 				for(Class<?> clz:classes) {
 					Kryo kryo = client.getKryoSerialization().obtainKryo();
-					kryo.register(clz, new CompatibleFieldSerializer(kryo, clz), 100);
+					kryo.register(clz, new CompatibleFieldSerializer(kryo, clz), 1000 + classindex);
+					classindex++;
 					client.getKryoSerialization().free(kryo);				
 				}
 			}
@@ -1237,8 +1239,8 @@ public class Utils {
 				.useLogging()
 				.useExecution()
 				.threadSize(Runtime.getRuntime().availableProcessors())
-				.inputSize(4096)
-				.outputSize(4096)
+				.inputSize(1048576)
+				.outputSize(1048576)
 				.maxOutputSize(-1);
 		registerKryoNetty(kryoNetty);
 		var server = new ServerEndpoint(kryoNetty, 1);
@@ -1307,8 +1309,8 @@ public class Utils {
 				.useLogging()
 				.useExecution()
 				.threadSize(Runtime.getRuntime().availableProcessors())
-				.inputSize(4096)
-				.outputSize(4096)
+				.inputSize(1048576)
+				.outputSize(1048576)
 				.maxOutputSize(-1);
 		registerKryoNetty(kryoNetty);
 		var client = new ClientEndpoint(kryoNetty, 1);

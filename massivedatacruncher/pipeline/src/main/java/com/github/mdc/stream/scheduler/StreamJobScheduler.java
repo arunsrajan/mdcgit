@@ -755,7 +755,7 @@ public class StreamJobScheduler {
 				temdstdtmap.keySet().stream().forEach(key -> {
 					var mdststsl = temdstdtmap.get(key);
 					var cr = chpcres.get(key);
-					var batchsize = cr.getCpu() * 2;
+					var batchsize = cr.getCpu();
 					batchsize = mdststsl.size()<batchsize?mdststsl.size():batchsize;
 					var configinitialstage = new DexecutorConfig<StreamPipelineTaskSubmitter, Boolean>(
 							newExecutor((int) batchsize), new DAGScheduler(mdststsl.size(), (int) batchsize));
