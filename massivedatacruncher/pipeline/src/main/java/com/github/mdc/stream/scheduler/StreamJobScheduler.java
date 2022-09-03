@@ -62,6 +62,7 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
+import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
 /**
@@ -1228,6 +1229,10 @@ public class StreamJobScheduler {
 								printresult.release();
 								cdl.countDown();
 							}
+							if(isNull(job.jm.taskexcutortasks.get(task.getHostport()))){
+								job.jm.taskexcutortasks.put(task.getHostport(), new ArrayList<>());
+							}
+							job.jm.taskexcutortasks.get(task.getHostport()).add(task);
 						} catch (InterruptedException e) {
 							log.warn("Interrupted!", e);
 							// Restore interrupted state...
@@ -1259,7 +1264,7 @@ public class StreamJobScheduler {
 												timer.purge();
 											}
 											hbtss.pingOnce(mdststlocal.getTask().stageid, mdststlocal.getTask().taskid,
-													mdststlocal.getHostPort(), Task.TaskStatus.FAILED, 0.0d,
+													mdststlocal.getHostPort(), Task.TaskStatus.FAILED, new Long[]{0l,0l}, 0.0d,
 													MDCConstants.TSEXCEEDEDEXECUTIONCOUNT);
 										}
 									} catch (Exception ex) {

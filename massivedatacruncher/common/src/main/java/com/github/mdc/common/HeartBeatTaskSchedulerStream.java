@@ -160,10 +160,12 @@ public final class HeartBeatTaskSchedulerStream extends HeartBeatServerStream im
 	 * @param taskid
 	 * @param hostport
 	 * @param taskstatus
+	 * @param startendtime
 	 * @param timetaken
+	 * @param stagefailuremessage
 	 * @throws Exception
 	 */
-	public void pingOnce(String stageid, String taskid, String hostport, TaskStatus taskstatus, double timetaken, String stagefailuremessage)
+	public void pingOnce(String stageid, String taskid, String hostport, TaskStatus taskstatus, Long[] startendtime, double timetaken, String stagefailuremessage)
 			throws Exception {
 		log.debug("Entered HeartBeatTaskSchedulerStream.pingOnce");
 		pingmutex.acquire();
@@ -182,6 +184,8 @@ public final class HeartBeatTaskSchedulerStream extends HeartBeatServerStream im
 			task.taskid = taskid;
 			task.timetakenseconds = timetaken;
 			task.stagefailuremessage = taskstatus == Task.TaskStatus.FAILED ? stagefailuremessage : "";
+			task.taskexecutionstartime = startendtime[0];
+			task.taskexecutionendtime = startendtime[1];
 			// Initiate the tasks execution by sending the job stage
 			// information.
 			try (var baos = new ByteArrayOutputStream(); var output = new Output(baos);) {

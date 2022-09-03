@@ -130,9 +130,10 @@ public sealed class StreamPipelineTaskExecutorInMemory extends StreamPipelineTas
 		
 	}
 
-	
+
 	@Override
 	public void run() {
+		starttime = System.currentTimeMillis();
 		log.info("Entered MassiveDataStreamTaskExecutorInMemory.call for task "+task);
 		String stageTasks = "";
 		log.info("Init Stage tasks");
@@ -159,11 +160,15 @@ public sealed class StreamPipelineTaskExecutorInMemory extends StreamPipelineTas
 					}
 				}
 			}
-			if(!Objects.isNull(hbtss))
-			hbtss.pingOnce(task.stageid, task.taskid, task.hostport, Task.TaskStatus.RUNNING, timetaken, null);
+			if(!Objects.isNull(hbtss)) {
+				endtime = System.currentTimeMillis();
+				hbtss.pingOnce(task.stageid, task.taskid, task.hostport, Task.TaskStatus.RUNNING, new Long[]{starttime,endtime}, timetaken, null);
+			}
 			timetaken = computeTasks(task, hdfs);
-			if(!Objects.isNull(hbtss))
-			hbtss.pingOnce(task.stageid, task.taskid, task.hostport, Task.TaskStatus.COMPLETED, timetaken, null);
+			if(!Objects.isNull(hbtss)) {
+				endtime = System.currentTimeMillis();
+				hbtss.pingOnce(task.stageid, task.taskid, task.hostport, Task.TaskStatus.COMPLETED, new Long[]{starttime,endtime}, timetaken, null);
+			}
 			log.info("Completed Task: " + task);
 		} catch (Exception ex) {
 			log.error("Failed Stage " + stageTasks, ex);
@@ -174,7 +179,8 @@ public sealed class StreamPipelineTaskExecutorInMemory extends StreamPipelineTas
 					var baos = new ByteArrayOutputStream();
 					var failuremessage = new PrintWriter(baos, true, StandardCharsets.UTF_8);
 					ex.printStackTrace(failuremessage);
-					hbtss.pingOnce(task.stageid, task.taskid, task.hostport, Task.TaskStatus.FAILED, 0.0,
+					endtime = System.currentTimeMillis();
+					hbtss.pingOnce(task.stageid, task.taskid, task.hostport, Task.TaskStatus.FAILED,new Long[]{starttime,endtime}, 0.0,
 							new String(baos.toByteArray()));
 				} catch (Exception e) {
 					log.error("Message Send Failed for Task Failed: ", e);

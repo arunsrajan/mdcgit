@@ -142,6 +142,7 @@ public final class StreamPipelineTaskExecutorLocal extends StreamPipelineTaskExe
 
 	@Override
 	public void run() {
+		starttime = System.currentTimeMillis();
 		log.debug("Entered MassiveDataStreamTaskExecutorInMemory.call");
 		var stageTasks = getStagesTask();
 		var hdfsfilepath = MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL, MDCConstants.HDFSNAMENODEURL_DEFAULT);
@@ -166,11 +167,12 @@ public final class StreamPipelineTaskExecutorLocal extends StreamPipelineTaskExe
 				}
 			}
 			if (!Objects.isNull(hbtss)) {
-				hbtss.pingOnce(task.stageid, task.taskid, task.hostport, Task.TaskStatus.RUNNING, timetaken, null);
+				endtime = System.currentTimeMillis();
+				hbtss.pingOnce(task.stageid, task.taskid, task.hostport, Task.TaskStatus.RUNNING, new Long[]{starttime,endtime}, timetaken, null);
 			}
 			timetaken = computeTasks(task, hdfs);
 			if (!Objects.isNull(hbtss)) {
-				hbtss.pingOnce(task.stageid, task.taskid, task.hostport, Task.TaskStatus.COMPLETED, timetaken, null);
+				hbtss.pingOnce(task.stageid, task.taskid, task.hostport, Task.TaskStatus.COMPLETED, new Long[]{starttime,endtime}, timetaken, null);
 			}
 			log.debug("Completed Stage " + stageTasks);
 		} catch (Exception ex) {
@@ -182,7 +184,8 @@ public final class StreamPipelineTaskExecutorLocal extends StreamPipelineTaskExe
 					var baos = new ByteArrayOutputStream();
 					var failuremessage = new PrintWriter(baos, true, StandardCharsets.UTF_8);
 					ex.printStackTrace(failuremessage);
-					hbtss.pingOnce(task.stageid, task.taskid, task.hostport, Task.TaskStatus.FAILED, 0.0,
+					endtime = System.currentTimeMillis();
+					hbtss.pingOnce(task.stageid, task.taskid, task.hostport, Task.TaskStatus.FAILED, new Long[]{starttime,endtime}, 0.0,
 							new String(baos.toByteArray()));
 				} catch (Exception e) {
 					log.error("Message Send Failed for Task Failed: ", e);

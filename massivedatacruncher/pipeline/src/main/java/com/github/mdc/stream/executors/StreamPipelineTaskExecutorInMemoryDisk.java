@@ -134,6 +134,7 @@ public final class StreamPipelineTaskExecutorInMemoryDisk extends StreamPipeline
 
 	@Override
 	public void run() {
+		starttime = System.currentTimeMillis();
 		log.debug("Entered MassiveDataStreamTaskExecutorInMemory.call");
 		var stageTasks = getStagesTask();
 		var hdfsfilepath = MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL, MDCConstants.HDFSNAMENODEURL);
@@ -142,7 +143,8 @@ public final class StreamPipelineTaskExecutorInMemoryDisk extends StreamPipeline
 		try (var hdfs = FileSystem.newInstance(new URI(hdfsfilepath), configuration);) {
 
 			hbtss.setTimetakenseconds(timetakenseconds);
-			hbtss.pingOnce(task.stageid, task.taskid, task.hostport, Task.TaskStatus.SUBMITTED, timetakenseconds, null);
+			endtime = System.currentTimeMillis();
+			hbtss.pingOnce(task.stageid, task.taskid, task.hostport, Task.TaskStatus.SUBMITTED, new Long[]{starttime,endtime}, timetakenseconds, null);
 			log.debug("Submitted JobStage " + task.jobid + " " + task.stageid + " " + jobstage);
 			log.debug("Running Stage " + stageTasks);
 			hbtss.setTaskstatus(Task.TaskStatus.RUNNING);
@@ -166,7 +168,8 @@ public final class StreamPipelineTaskExecutorInMemoryDisk extends StreamPipeline
 			timetakenseconds = computeTasks(task, hdfs);
 			completed = true;
 			hbtss.setTimetakenseconds(timetakenseconds);
-			hbtss.pingOnce(task.stageid, task.taskid, task.hostport, Task.TaskStatus.COMPLETED, timetakenseconds, null);
+			endtime = System.currentTimeMillis();
+			hbtss.pingOnce(task.stageid, task.taskid, task.hostport, Task.TaskStatus.COMPLETED, new Long[]{starttime,endtime}, timetakenseconds, null);
 			log.debug("Completed JobStage " + task.jobid + " " + task.stageid + " in " + timetakenseconds);
 		} catch (Exception ex) {
 			completed = true;
@@ -175,7 +178,8 @@ public final class StreamPipelineTaskExecutorInMemoryDisk extends StreamPipeline
 				var baos = new ByteArrayOutputStream();
 				var failuremessage = new PrintWriter(baos, true, StandardCharsets.UTF_8);
 				ex.printStackTrace(failuremessage);
-				hbtss.pingOnce(task.stageid, task.taskid, task.hostport, Task.TaskStatus.FAILED, 0.0, new String(baos.toByteArray()));
+				endtime = System.currentTimeMillis();
+				hbtss.pingOnce(task.stageid, task.taskid, task.hostport, Task.TaskStatus.FAILED, new Long[]{starttime,endtime}, 0.0, new String(baos.toByteArray()));
 			} catch (Exception e) {
 				log.error("Message Send Failed for Task Failed: ", e);
 			}

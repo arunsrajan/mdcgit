@@ -16,6 +16,7 @@
 package com.github.mdc.common;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -29,6 +30,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
+import org.springframework.util.CollectionUtils;
+
+import static java.util.Objects.nonNull;
 
 /**
  * 
@@ -122,6 +126,7 @@ public class TaskSchedulerWebServlet extends HttpServlet {
 				<th>Job<Br/>Start<Br/>Time</th>
 				<th>Job<Br/>Completion<Br/>Time</th>
 				<th>Total<Br/>Time<Br/>Taken (Sec)</th>
+				<th>Summary</th>
 				</thead>
 				<tbody>""");
 				var jms = MDCJobMetrics.get();
@@ -166,6 +171,9 @@ public class TaskSchedulerWebServlet extends HttpServlet {
 					builder.append("<td>");
 					builder.append(jm.totaltimetaken == 0 ? "" : jm.totaltimetaken);
 					builder.append("</td>");
+					builder.append("<td>");
+					builder.append(summary(jm));
+					builder.append("</td>");
 					builder.append("</tr>");
 				}
 				builder.append("</tbody></table>");
@@ -178,7 +186,42 @@ public class TaskSchedulerWebServlet extends HttpServlet {
 		}
 	}
 
-	public String getColor(int i) {
+	private String summary(JobMetrics jm){
+		SimpleDateFormat formatstartenddate = new SimpleDateFormat("yyyy/MM/dd-HH:mm:ss");
+		StringBuilder tasksummary = new StringBuilder();
+		tasksummary.append("<p>");
+		if(!CollectionUtils.isEmpty(jm.taskexcutortasks)){
+			jm.taskexcutortasks.entrySet().stream().forEachOrdered(entry->{
+				tasksummary.append(entry.getKey());
+				tasksummary.append(":<BR/>");
+				double totaltimetakenexecutor = 0d;
+				for(Task task : entry.getValue()){
+					tasksummary.append(task.taskid);
+					tasksummary.append("<BR/>");
+					tasksummary.append(formatstartenddate.format(new Date(task.taskexecutionstartime)));
+					tasksummary.append("<BR/>");
+					tasksummary.append(formatstartenddate.format(new Date(task.taskexecutionendtime)));
+					tasksummary.append("<BR/>");
+					tasksummary.append(task.timetakenseconds);
+					tasksummary.append("<BR/>");
+					tasksummary.append("<BR/>");
+					totaltimetakenexecutor += task.timetakenseconds;
+				}
+				tasksummary.append(totaltimetakenexecutor/entry.getValue().size());
+				tasksummary.append("<BR/>");
+				tasksummary.append("<BR/>");
+			});
+		}
+		tasksummary.append("</p>");
+		return tasksummary.toString();
+	}
+
+	/**
+	 * Color for primary and alternate
+	 * @param i
+	 * @return
+	 */
+	private String getColor(int i) {
 		{
 			if (i % 2 == 0) {
 				return MDCProperties.get().getProperty(MDCConstants.COLOR_PICKER_PRIMARY, MDCConstants.COLOR_PICKER_PRIMARY_DEFAULT);
@@ -189,7 +232,7 @@ public class TaskSchedulerWebServlet extends HttpServlet {
 	}
 
 	@SuppressWarnings({"unchecked", "rawtypes"})
-	public String toHtml(Object data) {
+	private String toHtml(Object data) {
 		StringBuilder builder = new StringBuilder();
 		builder.append("<p>");
 		if (!Objects.isNull(data)) {

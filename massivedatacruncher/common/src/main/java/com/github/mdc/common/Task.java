@@ -55,6 +55,8 @@ public class Task implements Serializable,Cloneable {
 	public String hdfsurl;
 	public String filepath;
 	public boolean saveresulttohdfs;
+	public Long taskexecutionstartime;
+	public Long taskexecutionendtime;
 
 	@Override
 	public int hashCode() {

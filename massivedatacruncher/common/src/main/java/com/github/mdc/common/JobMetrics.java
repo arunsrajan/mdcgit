@@ -15,10 +15,19 @@
  */
 package com.github.mdc.common;
 
+import lombok.*;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
+@Getter
+@Setter
+@EqualsAndHashCode
+@ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class JobMetrics {
 	public String jobname;
 	public String jobid;
@@ -34,14 +43,6 @@ public class JobMetrics {
 	public long jobcompletiontime;
 	public double totaltimetaken;
 	public List<String> stagecompletiontime;
+	public Map<String, List<Task>> taskexcutortasks = new ConcurrentHashMap<>();
 
-	@Override
-	public String toString() {
-		return "JobMetrics [jobname=" + jobname + ", jobid=" + jobid + ", files=" + files + ", mode=" + mode
-				+ ", totalfilesize=" + totalfilesize + ", stages=" + stages + ", containerresources="
-				+ containerresources + ", containersallocated=" + containersallocated + ", nodes=" + nodes
-				+ ", totalblocks=" + totalblocks + ", jobstarttime=" + jobstarttime + ", jobcompletiontime="
-				+ jobcompletiontime + ", totaltimetaken=" + totaltimetaken + ", stagecompletiontime="
-				+ stagecompletiontime + "]";
-	}
 }
