@@ -32,14 +32,14 @@ import com.esotericsoftware.kryonetty.network.ReceiveEvent;
 import com.github.mdc.common.*;
 import org.apache.commons.io.IOUtils;
 import org.apache.hadoop.fs.FileSystem;
-import org.apache.log4j.Logger;
 import org.jooq.lambda.tuple.Tuple;
 import org.jooq.lambda.tuple.Tuple2;
+import org.slf4j.LoggerFactory;
 
 import static java.util.Objects.nonNull;
 
 public class NodeRunner implements Callable<Boolean> {
-	private static Logger log = Logger.getLogger(NodeRunner.class);
+	private static org.slf4j.Logger log = LoggerFactory.getLogger(NodeRunner.class);
 	ServerEndpoint server;
 	String proploaderpath;
 	ConcurrentMap<String, Map<String, Process>> containerprocesses;
@@ -87,7 +87,7 @@ public class NodeRunner implements Callable<Boolean> {
 				Process proc;
 				for (int port = 0; port < lc.getCla().getNumberofcontainers(); port++) {
 					var cr = lc.getCla().getCr().get(port);
-					log.info("Launching Container " + (cr.getPort()));
+					log.info("Launching Container {}", (cr.getPort()));
 					proc = processes.get((cr.getPort()) + MDCConstants.EMPTY);
 					if (Objects.isNull(proc)) {
 						proc = ContainerLauncher.spawnMDCContainer((cr.getPort()) + MDCConstants.EMPTY,
@@ -106,7 +106,7 @@ public class NodeRunner implements Callable<Boolean> {
 										log.debug("Printing Container Logs");
 										InputStream istr = tuple.v2.getInputStream();
 										while (true) {
-											log.debug(IOUtils.readLines(istr, StandardCharsets.UTF_8));
+											log.debug("{}",IOUtils.readLines(istr, StandardCharsets.UTF_8));
 											Thread.sleep(5000);
 										}
 									} catch (InterruptedException e) {
@@ -114,7 +114,7 @@ public class NodeRunner implements Callable<Boolean> {
 										// Restore interrupted state...
 										Thread.currentThread().interrupt();
 									} catch (Exception ex) {
-										log.debug("Unable to Launch Container:", ex);
+										log.error("Unable to Launch Container:", ex);
 									}
 								}
 							};
@@ -127,7 +127,7 @@ public class NodeRunner implements Callable<Boolean> {
 										log.debug("Printing Container Error Logs");
 										InputStream istr = tuple.v2.getErrorStream();
 										while (true) {
-											log.debug(IOUtils.readLines(istr, StandardCharsets.UTF_8));
+											log.debug("{}",IOUtils.readLines(istr, StandardCharsets.UTF_8));
 											Thread.sleep(5000);
 										}
 									} catch (InterruptedException e) {
@@ -135,7 +135,7 @@ public class NodeRunner implements Callable<Boolean> {
 										// Restore interrupted state...
 										Thread.currentThread().interrupt();
 									} catch (Exception ex) {
-										log.debug("Unable to Launch Container:", ex);
+										log.error("Unable to Launch Container:", ex);
 									}
 								}
 							};
@@ -146,9 +146,8 @@ public class NodeRunner implements Callable<Boolean> {
 				containerprocesses.put(lc.getContainerid(), processes);
 				server.send(event.getCtx(), ports);
 			} else if (deserobj instanceof DestroyContainers dc) {
-				log.debug("In DCs Destroying the Containers with id: " + dc.getContainerid());
+				log.debug("Destroying the Containers with id: " + dc.getContainerid());
 				Map<String, Process> processes = containerprocesses.remove(dc.getContainerid());
-				log.info("In DCs Destroying the Container Processes: " + processes);
 				if (!Objects.isNull(processes)) {
 					processes.entrySet().stream().forEach(entry -> {
 						log.info("In DCs Destroying the Container Process: " + entry);
@@ -161,15 +160,14 @@ public class NodeRunner implements Callable<Boolean> {
 							.forEach(thr -> thr.stop());
 				}
 			} else if (deserobj instanceof DestroyContainer dc) {
-				log.debug("In DC Destroying the Container with id: " + dc.getContainerid());
+				log.debug("Destroying the Container with id: " + dc.getContainerid());
 				Map<String, Process> processes = containerprocesses.get(dc.getContainerid());
-				log.info("In DC Destroying the Container Processes: " + processes);
 				if (!Objects.isNull(processes)) {
 					String taskexecutorport = dc.getContainerhp().split(MDCConstants.UNDERSCORE)[1];
 					processes.keySet().stream()
 							.filter(key -> key.equals(taskexecutorport))
 							.map(key -> processes.get(key)).forEach(proc -> {
-						log.info("In DC Destroying the Container Process: " + proc);
+						log.info("Destroying the Container Process: " + proc);
 						destroyProcess(taskexecutorport, proc);
 					});
 					processes.remove(taskexecutorport);
@@ -179,7 +177,7 @@ public class NodeRunner implements Callable<Boolean> {
 								.forEach(port -> {
 									Process proc = containerprocesses.get(key).get(port);
 									if (nonNull(proc)) {
-										log.info("In DC else Destroying the Container Process: " + proc);
+										log.info("Destroying the Container Process: " + proc);
 										destroyProcess(port, proc);
 									}
 								});
@@ -199,7 +197,7 @@ public class NodeRunner implements Callable<Boolean> {
 			}
 			return true;
 		} catch (Exception ex) {
-			log.info("MRJob Execution Problem", ex);
+			log.error("Task completed in error", ex);
 		}
 		return false;
 	}
@@ -207,17 +205,17 @@ public class NodeRunner implements Callable<Boolean> {
 	public void destroyProcess(String port, Process proc) {
 		try {
 			TaskExecutorShutdown taskExecutorshutdown = new TaskExecutorShutdown();
-			log.info("Destroying the TaskExecutor: "+MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_HOST)+MDCConstants.UNDERSCORE+port);
+			log.info("Initiated destroying the TaskExecutor process {}",MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_HOST)+MDCConstants.UNDERSCORE+port);
 			Utils.writeObject(MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_HOST)+MDCConstants.UNDERSCORE+port, taskExecutorshutdown);
-			log.info("Checking the Process is Alive for: "+MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_HOST)+MDCConstants.UNDERSCORE+port);
+			log.info("Checking the Process is Alive for {} ",MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_HOST)+MDCConstants.UNDERSCORE+port);
 			while(proc.isAlive()){
-				log.info("Destroying the TaskExecutor: "+MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_HOST)+MDCConstants.UNDERSCORE+port);
+				log.info("Attempting destroying the TaskExecutor again {}", MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_HOST)+MDCConstants.UNDERSCORE+port);
 				Thread.sleep(500);
 			}
-			log.info("Process Destroyed: "+proc+" for the port "+port);
+			log.info("Process {} Destroyed for the port {} ",proc,port);
 		}
 		catch(Exception ex) {
-			log.error("Destroy failed for the process: "+proc);
+			log.error("Destroy failed for the process "+proc, ex);
 		}
 	}
 

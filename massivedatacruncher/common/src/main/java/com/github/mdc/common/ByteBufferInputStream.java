@@ -21,12 +21,14 @@ import java.nio.ByteBuffer;
 import java.util.Objects;
 import java.util.concurrent.Semaphore;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 public class ByteBufferInputStream extends InputStream {
 	static int allocation;
 	static int deallocation;
-	static Logger log = Logger.getLogger(ByteBufferInputStream.class);
+	static Logger log = LoggerFactory.getLogger(ByteBufferInputStream.class);
 	private ByteBuffer bb;
 	static Semaphore printallocdealloc = new Semaphore(1);
 
@@ -34,7 +36,7 @@ public class ByteBufferInputStream extends InputStream {
 		try {
 			this.bb = bb;
 			printallocdealloc.acquire();
-			log.info("ByteBuffer Input Stream allocated:" + allocation++ + bb);
+			log.info("ByteBuffer Input Stream allocation number {} with object info {}", allocation++,  bb);
 
 		}
 		catch (InterruptedException ie) {
@@ -75,7 +77,7 @@ public class ByteBufferInputStream extends InputStream {
 		if (!Objects.isNull(bb)) {
 			try {
 				printallocdealloc.acquire();
-				log.info("ByteBuffer Input Stream returning to pool: " + deallocation++ + bb);
+				log.info("ByteBuffer Input Stream returning to pool deallocation number {} with buffer info {}", deallocation++,  bb);
 				bb.clear();
 				bb.rewind();
 				ByteBufferPool.get().returnObject(bb);

@@ -23,6 +23,7 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.FsUrlStreamHandlerFactory;
 import org.apache.log4j.Logger;
 import org.apache.zookeeper.server.ServerCnxnFactory;
+import org.slf4j.LoggerFactory;
 
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryonetty.ServerEndpoint;
@@ -36,7 +37,7 @@ import com.github.mdc.tasks.executor.web.ResourcesMetricsServlet;
 import com.github.mdc.tasks.scheduler.TaskScheduler;
 
 public class EmbeddedSchedulersNodeLauncher {
-	static Logger log = Logger.getLogger(EmbeddedSchedulersNodeLauncher.class);
+	static org.slf4j.Logger log = LoggerFactory.getLogger(EmbeddedSchedulersNodeLauncher.class);
 
 	public static final String STOPPINGANDCLOSECONNECTION = "Stopping and closes all the connections...";
 
@@ -116,7 +117,7 @@ public class EmbeddedSchedulersNodeLauncher {
 									containerprocesses, hdfs, containeridthreads, containeridports,
 									object, event);
 							Future<Boolean> containerallocated = escontainer.submit(container);
-							log.info("Containers Allocated: " + containerallocated.get());
+							log.info("Node Processor processed the {} with status {} ", object, containerallocated.get());
 						} catch (InterruptedException e) {
 							log.warn("Interrupted!", e);
 							// Restore interrupted state...

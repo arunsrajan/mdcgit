@@ -15,8 +15,96 @@
  */
 package com.github.mdc.common;
 
+import static java.util.Objects.nonNull;
+
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.lang.invoke.SerializedLambda;
+import java.lang.management.ManagementFactory;
+import java.lang.management.MemoryPoolMXBean;
+import java.lang.management.MemoryType;
+import java.lang.management.MemoryUsage;
+import java.lang.reflect.InvocationHandler;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.net.URI;
+import java.security.KeyStore;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.GregorianCalendar;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Properties;
+import java.util.Set;
+import java.util.Vector;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.jar.Attributes;
+import java.util.jar.JarEntry;
+import java.util.jar.JarOutputStream;
+import java.util.jar.Manifest;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLServerSocket;
+import javax.net.ssl.SSLServerSocketFactory;
+import javax.net.ssl.SSLSocket;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.TrustManagerFactory;
+
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVRecord;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.hdfs.DistributedFileSystem;
+import org.apache.log4j.PropertyConfigurator;
+import org.apache.zookeeper.server.ServerCnxnFactory;
+import org.apache.zookeeper.server.ZooKeeperServer;
+import org.jgrapht.Graph;
+import org.jgrapht.graph.SimpleDirectedGraph;
+import org.jgrapht.io.ComponentNameProvider;
+import org.jgrapht.io.DOTExporter;
+import org.jgrapht.io.ExportException;
+import org.jgrapht.io.GraphExporter;
+import org.jgroups.Address;
+import org.jgroups.JChannel;
+import org.jgroups.Message;
+import org.jgroups.ObjectMessage;
+import org.jgroups.Receiver;
+import org.jgroups.View;
+import org.jgroups.util.UUID;
+import org.jooq.lambda.tuple.Tuple2;
+import org.json.simple.JSONObject;
+import org.objenesis.strategy.StdInstantiatorStrategy;
+import org.slf4j.LoggerFactory;
+
 import com.esotericsoftware.kryo.Kryo;
-import com.esotericsoftware.kryo.SerializerFactory;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 import com.esotericsoftware.kryo.serializers.ClosureSerializer;
@@ -31,55 +119,34 @@ import com.esotericsoftware.kryonetty.kryo.KryoNetty;
 import com.esotericsoftware.kryonetty.network.ReceiveEvent;
 import com.esotericsoftware.kryonetty.network.handler.NetworkHandler;
 import com.esotericsoftware.kryonetty.network.handler.NetworkListener;
-import com.github.mdc.common.functions.SortedComparator;
-import de.javakaffee.kryoserializers.*;
+
+import de.javakaffee.kryoserializers.ArraysAsListSerializer;
+import de.javakaffee.kryoserializers.CollectionsEmptyListSerializer;
+import de.javakaffee.kryoserializers.CollectionsEmptyMapSerializer;
+import de.javakaffee.kryoserializers.CollectionsEmptySetSerializer;
+import de.javakaffee.kryoserializers.CollectionsSingletonListSerializer;
+import de.javakaffee.kryoserializers.CollectionsSingletonMapSerializer;
+import de.javakaffee.kryoserializers.CollectionsSingletonSetSerializer;
+import de.javakaffee.kryoserializers.GregorianCalendarSerializer;
+import de.javakaffee.kryoserializers.JdkProxySerializer;
+import de.javakaffee.kryoserializers.SynchronizedCollectionsSerializer;
+import de.javakaffee.kryoserializers.UnmodifiableCollectionsSerializer;
 import de.javakaffee.kryoserializers.cglib.CGLibProxySerializer;
-import de.javakaffee.kryoserializers.guava.*;
-import org.apache.commons.csv.CSVParser;
-import org.apache.commons.csv.CSVRecord;
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.FileSystem;
-import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.hdfs.DistributedFileSystem;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
-import org.apache.zookeeper.server.ServerCnxnFactory;
-import org.apache.zookeeper.server.ZooKeeperServer;
-import org.jgrapht.Graph;
-import org.jgrapht.graph.SimpleDirectedGraph;
-import org.jgrapht.io.ComponentNameProvider;
-import org.jgrapht.io.DOTExporter;
-import org.jgrapht.io.ExportException;
-import org.jgrapht.io.GraphExporter;
-import org.jgroups.*;
-import org.jgroups.util.UUID;
-import org.jooq.lambda.tuple.Tuple2;
-import org.json.simple.JSONObject;
-import org.objenesis.strategy.StdInstantiatorStrategy;
-
-import javax.net.ssl.*;
-import java.io.*;
-import java.lang.invoke.SerializedLambda;
-import java.lang.management.ManagementFactory;
-import java.lang.management.MemoryPoolMXBean;
-import java.lang.management.MemoryType;
-import java.lang.management.MemoryUsage;
-import java.lang.reflect.InvocationHandler;
-import java.net.*;
-import java.security.KeyStore;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.Semaphore;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.jar.Attributes;
-import java.util.jar.JarEntry;
-import java.util.jar.JarOutputStream;
-import java.util.jar.Manifest;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import static java.util.Objects.nonNull;
+import de.javakaffee.kryoserializers.guava.ArrayListMultimapSerializer;
+import de.javakaffee.kryoserializers.guava.ArrayTableSerializer;
+import de.javakaffee.kryoserializers.guava.HashBasedTableSerializer;
+import de.javakaffee.kryoserializers.guava.HashMultimapSerializer;
+import de.javakaffee.kryoserializers.guava.ImmutableListSerializer;
+import de.javakaffee.kryoserializers.guava.ImmutableMapSerializer;
+import de.javakaffee.kryoserializers.guava.ImmutableMultimapSerializer;
+import de.javakaffee.kryoserializers.guava.ImmutableSetSerializer;
+import de.javakaffee.kryoserializers.guava.ImmutableTableSerializer;
+import de.javakaffee.kryoserializers.guava.LinkedHashMultimapSerializer;
+import de.javakaffee.kryoserializers.guava.LinkedListMultimapSerializer;
+import de.javakaffee.kryoserializers.guava.ReverseListSerializer;
+import de.javakaffee.kryoserializers.guava.TreeBasedTableSerializer;
+import de.javakaffee.kryoserializers.guava.TreeMultimapSerializer;
+import de.javakaffee.kryoserializers.guava.UnmodifiableNavigableSetSerializer;
 
 /**
  * 
@@ -88,7 +155,7 @@ import static java.util.Objects.nonNull;
  *         utilities and send and receive the objects via socket.
  */
 public class Utils {
-	private static Logger log = Logger.getLogger(Utils.class);
+	private static org.slf4j.Logger log = LoggerFactory.getLogger(Utils.class);
 
 	private Utils() {
 	}
@@ -766,7 +833,6 @@ public class Utils {
 	 * @throws Exception 
 	 */
 	public static Object getResultObjectByInput(String hp, Object inputobj) throws Exception {
-		log.info("getResultObjectByInput: " + inputobj);
 		var hostport = hp.split(MDCConstants.UNDERSCORE);
 		var queue = new LinkedBlockingQueue<Object>();
 		ClientEndpoint client = null;
@@ -817,14 +883,13 @@ public class Utils {
 	 * @throws Exception 
 	 */
 	public static void writeObject(Socket socket, Object object) throws Exception {
-		log.info("writeObject(Socket socket, Object object): "+object);
 		try {
 			var output = new Output(socket.getOutputStream());
 			var kryo = Utils.getKryoSerializerDeserializer();
 			kryo.writeClassAndObject(output, object);
 			output.flush();
 		} catch (Exception ex) {
-			log.error("Unable to write Object: ", ex);
+			log.error("Directing the {} to host {} with port {} Failed", object, socket.getInetAddress(), socket.getPort());
 			throw ex;
 		}
 	}
@@ -842,11 +907,11 @@ public class Utils {
 		ClientEndpoint client = null;
 		try {
 			client = Utils.getClientKryoNetty(hostport[0], Integer.parseInt(hostport[1]), null);
-			log.info("writeObject(String hp, Object inputobj): "+hp+" "+inputobj);
+			log.info("Directing the {} to host with port {}",inputobj, hp);
 			client.send(inputobj);
-			log.info("writeObject(String hp, Object inputobj): "+hp+" "+inputobj+" completed");
+			log.info("Directing the {} to host with port {} completed",inputobj, hp);
 		} catch (Exception ex) {
-			log.error("Unable to write Object: " + inputobj);
+			log.error("Directing the {} to host with port {} Failed",inputobj, hp);
 			throw ex;
 		} finally {
 			if(nonNull(client)) {
@@ -871,40 +936,19 @@ public class Utils {
 				for(Class<?> clz:classes) {
 					Kryo kryo = client.getKryoSerialization().obtainKryo();
 					kryo.register(clz, new CompatibleFieldSerializer(kryo, clz), 100);
-					log.info("Client Next registration ID: "+kryo.getNextRegistrationId()+" for class "+clz);
 					client.getKryoSerialization().free(kryo);				
 				}
 			}
-			log.info("writeObject(String hp, Object inputobj): "+hp+" "+inputobj);
+			log.info("Directing the {} to host with port {}",inputobj, hp);
 			client.send(inputobj);
-			log.info("writeObject(String hp, Object inputobj): "+hp+" "+inputobj+" completed");
+			log.info("Directing the {} to host with port {} completed",inputobj, hp);
 		} catch (Exception ex) {
-			log.error("Unable to write Object: " + inputobj);
+			log.error("Directing the {} to host with port {} failed",inputobj, hp);
 			throw ex;
 		} finally {
 			if(nonNull(client)) {
 				client.close();
 			}
-		}
-	}
-
-	/**
-	 * This method writes the object via sockets outputstream of server.
-	 * 
-	 * @param ostream
-	 * @param inputobj
-	 * @throws Exception
-	 */
-	public static void writeObjectByStream(OutputStream ostream, Object inputobj) {
-		try {
-			var output = new Output(ostream);
-			log.info("writeObjectByStream(OutputStream ostream, Object inputobj): "+inputobj);			
-			var kryo = Utils.getKryoSerializerDeserializer();
-			kryo.writeClassAndObject(output, inputobj);
-			output.flush();
-		} catch (Exception ex) {
-			log.error("Unable to write Object Stream: " + inputobj, ex);
-			throw ex;
 		}
 	}
 
