@@ -149,8 +149,15 @@ public class StreamJobScheduler {
 						Integer.parseInt(pipelineconfig.getPingdelay()), MDCConstants.EMPTY, job.id);
 				// Start the heart beat to receive task executor to task
 				// schedulers task status updates.
+				job.containers.parallelStream().forEach(container->hbtss.getHbo().put(container, new HeartBeatTaskObserver<>()));
 				hbtss.start();
-				hbtss.getHbo().start();
+				hbtss.getHbo().values().forEach(hbo-> {
+					try {
+						hbo.start();
+					} catch (Exception e) {
+						log.error("HeartBeat Observer start error");
+					}
+				});
 				getContainersHostPort();
 				batchsize = Integer.parseInt(pipelineconfig.getBatchsize());
 				var taskexecutorssize = taskexecutors.size();
@@ -790,8 +797,14 @@ public class StreamJobScheduler {
 				}
 				numexecute++;
 				hbtss.clearStageJobStageMap();
-				hbtss.getHbo().clearQueue();
-				hbtss.getHbo().clearAll();
+				hbtss.getHbo().values().forEach(hbo-> {
+					try {
+						hbo.clearQueue();
+						hbo.clearAll();
+					} catch (Exception e) {
+						log.error("HeartBeat Observer start error");
+					}
+				});
 			}
 			Utils.writeKryoOutput(kryo, pipelineconfig.getOutput(), "Number of Executions: " + numexecute);
 			if (!completed) {
@@ -1244,7 +1257,7 @@ public class StreamJobScheduler {
 
 					try {
 						mutex.acquire();
-						hbtss.getHbo().addPropertyChangeListener(mdststlocal.getTask(), observer);
+						hbtss.getHbo().get(mdststlocal.getTask().getHostport()).addPropertyChangeListener(mdststlocal.getTask(), observer);
 						if (taskexecutors.contains(mdststlocal.getHostPort())) {
 							var timer = new Timer();
 							jobtimer.put(mdststlocal.getTask().taskid, timer);
@@ -1279,7 +1292,7 @@ public class StreamJobScheduler {
 							mdststlocal.setCompletedexecution(false);
 						}
 						mutex.release();
-						hbtss.getHbo().removePropertyChangeListener(mdststlocal.getTask());
+						hbtss.getHbo().get(mdststlocal.getHostPort()).removePropertyChangeListener(mdststlocal.getTask());
 					} catch (InterruptedException e) {
 						log.warn("Interrupted!", e);
 						// Restore interrupted state...

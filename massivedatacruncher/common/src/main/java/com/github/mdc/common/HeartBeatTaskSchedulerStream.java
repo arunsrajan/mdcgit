@@ -19,6 +19,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Semaphore;
 
 import org.apache.log4j.Logger;
@@ -41,7 +43,7 @@ public final class HeartBeatTaskSchedulerStream extends HeartBeatServerStream im
 	private static Logger log = Logger.getLogger(HeartBeatTaskSchedulerStream.class);
 	private String jobid;
 	private TaskStatus taskstatus = TaskStatus.SUBMITTED;
-	private HeartBeatTaskObserver<Task> hbo;
+	private Map<String, HeartBeatTaskObserver<Task>> hbo;
 	protected double timetakenseconds;
 	public List<String> containers;
 
@@ -53,7 +55,7 @@ public final class HeartBeatTaskSchedulerStream extends HeartBeatServerStream im
 		this.taskstatus = taskstatus;
 	}
 
-	public HeartBeatTaskObserver<Task> getHbo() {
+	public Map<String, HeartBeatTaskObserver<Task>> getHbo() {
 		return hbo;
 	}
 
@@ -81,7 +83,7 @@ public final class HeartBeatTaskSchedulerStream extends HeartBeatServerStream im
 		else {
 			throw new HeartBeatException(MDCConstants.HEARTBEAT_TASK_SCHEDULER_STREAM_EXCEPTON_JOBID);
 		}
-		hbo = new HeartBeatTaskObserver<>();
+		hbo = new ConcurrentHashMap<>();
 		log.debug("Exiting HeartBeatTaskSchedulerStream.init");
 	}
 
@@ -115,7 +117,7 @@ public final class HeartBeatTaskSchedulerStream extends HeartBeatServerStream im
 									|| task.taskstatus == Task.TaskStatus.FAILED)
 									&& !apptasks.contains(task.taskid)) {
 								log.info("Task adding to queue: " + task);
-								hbo.addToQueue(task);
+								hbo.get(task.getHostport()).addToQueue(task);
 								apptasks.add(task.taskid);
 							} else if ((task.taskstatus == Task.TaskStatus.COMPLETED
 									|| task.taskstatus == Task.TaskStatus.FAILED)) {
@@ -233,6 +235,16 @@ public final class HeartBeatTaskSchedulerStream extends HeartBeatServerStream im
 		}
 		pingmutex.release();
 		log.debug("Exiting HeartBeatTaskSchedulerStream.pingOnce");
+	}
+
+	/**
+	 * The resources destroy method
+	 */
+	public void destroy() throws Exception {
+		super.destroy();
+		hbo.values().parallelStream().forEach(hbto->{
+			hbto.stop();
+		});
 	}
 
 }

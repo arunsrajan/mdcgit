@@ -870,7 +870,13 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 		// Start the heart beat to receive task executor to task
 		// schedulers task status updates.
 		js.hbtss.start();
-		js.hbtss.getHbo().start();
+		js.hbtss.getHbo().values().forEach(hbo-> {
+			try {
+				hbo.start();
+			} catch (Exception e) {
+				log.error("HeartBeat Observer start error");
+			}
+		});
 		HeartBeatServerStream hbss = new HeartBeatServerStream();
 		js.hbss = hbss;
 		js.getContainersHostPort();
@@ -916,7 +922,13 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 			sum += result.size();
 		}
 		assertEquals(46361, sum);
-		js.hbtss.getHbo().stop();
+		js.hbtss.getHbo().values().forEach(hbo-> {
+			try {
+				hbo.stop();
+			} catch (Exception e) {
+				log.error("HeartBeat Observer start error");
+			}
+		});
 		js.hbtss.close();
 		js.hbss.stop();
 		js.hbss.destroy();
