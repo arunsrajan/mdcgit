@@ -144,7 +144,7 @@ public final class StreamPipelineTaskExecutorInMemoryDisk extends StreamPipeline
 
 			hbtss.setTimetakenseconds(timetakenseconds);
 			endtime = System.currentTimeMillis();
-			hbtss.pingOnce(task.stageid, task.taskid, task.hostport, Task.TaskStatus.SUBMITTED, new Long[]{starttime,endtime}, timetakenseconds, null);
+			hbtss.pingOnce(task, Task.TaskStatus.SUBMITTED, new Long[]{starttime,endtime}, timetakenseconds, null);
 			log.debug("Submitted JobStage " + task.jobid + " " + task.stageid + " " + jobstage);
 			log.debug("Running Stage " + stageTasks);
 			hbtss.setTaskstatus(Task.TaskStatus.RUNNING);
@@ -169,7 +169,7 @@ public final class StreamPipelineTaskExecutorInMemoryDisk extends StreamPipeline
 			completed = true;
 			hbtss.setTimetakenseconds(timetakenseconds);
 			endtime = System.currentTimeMillis();
-			hbtss.pingOnce(task.stageid, task.taskid, task.hostport, Task.TaskStatus.COMPLETED, new Long[]{starttime,endtime}, timetakenseconds, null);
+			hbtss.pingOnce(task, Task.TaskStatus.COMPLETED, new Long[]{starttime,endtime}, timetakenseconds, null);
 			log.debug("Completed JobStage " + task.jobid + " " + task.stageid + " in " + timetakenseconds);
 		} catch (Exception ex) {
 			completed = true;
@@ -179,7 +179,7 @@ public final class StreamPipelineTaskExecutorInMemoryDisk extends StreamPipeline
 				var failuremessage = new PrintWriter(baos, true, StandardCharsets.UTF_8);
 				ex.printStackTrace(failuremessage);
 				endtime = System.currentTimeMillis();
-				hbtss.pingOnce(task.stageid, task.taskid, task.hostport, Task.TaskStatus.FAILED, new Long[]{starttime,endtime}, 0.0, new String(baos.toByteArray()));
+				hbtss.pingOnce(task, Task.TaskStatus.FAILED, new Long[]{starttime,endtime}, 0.0, new String(baos.toByteArray()));
 			} catch (Exception e) {
 				log.error("Message Send Failed for Task Failed: ", e);
 			}

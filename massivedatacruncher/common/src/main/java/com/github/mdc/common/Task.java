@@ -57,6 +57,7 @@ public class Task implements Serializable,Cloneable {
 	public boolean saveresulttohdfs;
 	public Long taskexecutionstartime;
 	public Long taskexecutionendtime;
+	public String hbphysicaladdress;
 
 	@Override
 	public int hashCode() {

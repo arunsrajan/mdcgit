@@ -145,7 +145,7 @@ public class TaskExecutor implements Runnable {
 					log.info("Submitted Task for execution: " + deserobj);
 				} else if (mdste.isCompleted()) {
 					hbtss.setTimetakenseconds(mdste.getHbtss().getTimetakenseconds());
-					hbtss.pingOnce(task.stageid, task.taskid, task.hostport, Task.TaskStatus.COMPLETED, new Long[]{mdste.starttime, mdste.endtime}, mdste.getHbtss().getTimetakenseconds(), null);
+					hbtss.pingOnce(task, Task.TaskStatus.COMPLETED, new Long[]{mdste.starttime, mdste.endtime}, mdste.getHbtss().getTimetakenseconds(), null);
 				}
 			} else if (deserobj instanceof TasksGraphExecutor stagesgraph) {
 				int numoftasks = stagesgraph.getTasks().size();

@@ -24,14 +24,14 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Semaphore;
 
 import org.apache.log4j.Logger;
-import org.jgroups.Message;
-import org.jgroups.ObjectMessage;
-import org.jgroups.Receiver;
-import org.jgroups.View;
+import org.jgroups.*;
 
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 import com.github.mdc.common.Task.TaskStatus;
+import org.jgroups.stack.IpAddress;
+
+import static java.util.Objects.nonNull;
 
 /**
  * 
@@ -119,18 +119,6 @@ public final class HeartBeatTaskSchedulerStream extends HeartBeatServerStream im
 								log.info("Task adding to queue: " + task);
 								hbo.get(task.getHostport()).addToQueue(task);
 								apptasks.add(task.taskid);
-							} else if ((task.taskstatus == Task.TaskStatus.COMPLETED
-									|| task.taskstatus == Task.TaskStatus.FAILED)) {
-								var trs = new TaskResponseStatus();
-								trs.jobid = task.jobid;
-								trs.stageid = task.stageid;
-								trs.taskid = task.taskid;
-								try (var baos = new ByteArrayOutputStream(); var output = new Output(baos);) {
-									Utils.writeKryoOutputClassObject(kryo, output, trs);
-									if (!channel.isClosed()) {
-										channel.send(new ObjectMessage(msg.getSrc(), baos.toByteArray()));
-									}
-								}
 							}
 						}
 						log.debug("Exiting Receiver.receive");
@@ -153,37 +141,51 @@ public final class HeartBeatTaskSchedulerStream extends HeartBeatServerStream im
 		hpresmap.clear();
 	}
 
+	/**
+	 * Gets Physical address of heartbeat channel.
+	 * @return
+	 */
+	public String getPhysicalAddress() {
+		if (nonNull(channel)) {
+			PhysicalAddress physicalAddress = (PhysicalAddress)
+					channel.down(
+							new Event(
+									Event.GET_PHYSICAL_ADDRESS, channel.getAddress()
+							)
+					);
+			return physicalAddress.printIpAddress();
+		}
+		throw new IllegalStateException("HeartBeat channel needs to be initialized");
+	}
+
 	Semaphore pingmutex = new Semaphore(1);
 	boolean responsereceived;
 
 	/**
 	 * This method pings the status of the tasks executed by the task executors.
-	 * @param stageid
-	 * @param taskid
-	 * @param hostport
+	 * @param tasksource
 	 * @param taskstatus
 	 * @param startendtime
 	 * @param timetaken
 	 * @param stagefailuremessage
 	 * @throws Exception
 	 */
-	public void pingOnce(String stageid, String taskid, String hostport, TaskStatus taskstatus, Long[] startendtime, double timetaken, String stagefailuremessage)
+	public void pingOnce(Task tasksource, TaskStatus taskstatus, Long[] startendtime, double timetaken, String stagefailuremessage)
 			throws Exception {
 		log.debug("Entered HeartBeatTaskSchedulerStream.pingOnce");
-		pingmutex.acquire();
 		try (var channel = Utils.getChannelWithPStack(
 				NetworkUtil.getNetworkAddress(MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_HOST)))) {
-			log.info("Entered Pinging Message: " + jobid + MDCConstants.SINGLESPACE + stageid + MDCConstants.SINGLESPACE
-					+ taskid + MDCConstants.SINGLESPACE + taskstatus);
-			channel.setName(jobid + stageid);
+			log.info("Entered Pinging Message: " + jobid + MDCConstants.SINGLESPACE + tasksource.stageid + MDCConstants.SINGLESPACE
+					+ tasksource.taskid + MDCConstants.SINGLESPACE + taskstatus);
+			channel.setName(jobid + tasksource.stageid);
 			channel.setDiscardOwnMessages(true);
 			channel.connect(jobid);
 			var task = new Task();
 			task.jobid = jobid;
-			task.stageid = stageid;
+			task.stageid = tasksource.stageid;
 			task.taskstatus = taskstatus;
-			task.hostport = hostport;
-			task.taskid = taskid;
+			task.hostport = tasksource.hostport;
+			task.taskid = tasksource.taskid;
 			task.timetakenseconds = timetaken;
 			task.stagefailuremessage = taskstatus == Task.TaskStatus.FAILED ? stagefailuremessage : "";
 			task.taskexecutionstartime = startendtime[0];
@@ -191,41 +193,13 @@ public final class HeartBeatTaskSchedulerStream extends HeartBeatServerStream im
 			// Initiate the tasks execution by sending the job stage
 			// information.
 			try (var baos = new ByteArrayOutputStream(); var output = new Output(baos);) {
-				Utils.writeKryoOutputClassObject(Utils.getKryoSerializerDeserializer(), output, task);
-				if (taskstatus == TaskStatus.COMPLETED) {
-					responsereceived = false;
-					channel.setReceiver(new Receiver() {
-						public void viewAccepted(View clusterview) {
-						}
-
-						public void receive(Message msg) {
-							var rawbuffer = (byte[]) ((ObjectMessage) msg).getObject();
-							var kryo = Utils.getKryoSerializerDeserializer();
-							try (var bais = new ByteArrayInputStream(rawbuffer);
-									var input = new Input(bais);) {
-								var obj = Utils.readKryoInputObjectWithClass(kryo, input);
-								if (obj instanceof TaskResponseStatus trs) {
-									if (trs.jobid.equals(jobid) && trs.stageid.equals(stageid)
-											&& trs.taskid.equals(taskid)) {
-										responsereceived = true;
-									}
-								}
-							} catch (Exception ex) {
-								log.error(MDCConstants.EMPTY, ex);
-							}
-						}
-					});
-					while (!responsereceived) {
-						channel.send(new ObjectMessage(null, baos.toByteArray()));
-						Thread.sleep(1000);
-					}
-				} else {
-					channel.send(new ObjectMessage(null, baos.toByteArray()));
-				}
+					Utils.writeKryoOutputClassObject(Utils.getKryoSerializerDeserializer(), output, task);
+					IpAddress ip = new IpAddress(tasksource.hbphysicaladdress);
+					channel.send(new ObjectMessage(ip, baos.toByteArray()));
 			}
 
-			log.info("Exiting Pinging Message: " + jobid + MDCConstants.SINGLESPACE + stageid + MDCConstants.SINGLESPACE
-					+ taskid + MDCConstants.SINGLESPACE + taskstatus);
+			log.info("Exiting Pinging Message: " + jobid + MDCConstants.SINGLESPACE + tasksource.stageid + MDCConstants.SINGLESPACE
+					+ tasksource.taskid + MDCConstants.SINGLESPACE + taskstatus);
 		} catch (InterruptedException e) {
 			log.warn("Interrupted!", e);
 			// Restore interrupted state...
@@ -233,7 +207,6 @@ public final class HeartBeatTaskSchedulerStream extends HeartBeatServerStream im
 		} catch (Exception ex) {
 			log.info("Heartbeat ping once error, See Cause below: \n", ex);
 		}
-		pingmutex.release();
 		log.debug("Exiting HeartBeatTaskSchedulerStream.pingOnce");
 	}
 
