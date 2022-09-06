@@ -142,12 +142,10 @@ public final class StreamPipelineTaskExecutorInMemoryDisk extends StreamPipeline
 		var timetakenseconds = 0.0;
 		try (var hdfs = FileSystem.newInstance(new URI(hdfsfilepath), configuration);) {
 
-			hbtss.setTimetakenseconds(timetakenseconds);
 			endtime = System.currentTimeMillis();
 			hbtss.pingOnce(task, Task.TaskStatus.SUBMITTED, new Long[]{starttime,endtime}, timetakenseconds, null);
 			log.debug("Submitted JobStage " + task.jobid + " " + task.stageid + " " + jobstage);
 			log.debug("Running Stage " + stageTasks);
-			hbtss.setTaskstatus(Task.TaskStatus.RUNNING);
 			if (task.input != null && task.parentremotedatafetch != null) {
 				var numinputs = task.parentremotedatafetch.length;
 				for (var inputindex = 0; inputindex < numinputs; inputindex++) {
@@ -164,10 +162,10 @@ public final class StreamPipelineTaskExecutorInMemoryDisk extends StreamPipeline
 					}
 				}
 			}
+			hbtss.pingOnce(task, Task.TaskStatus.RUNNING, new Long[]{starttime,endtime}, timetakenseconds, null);
 			log.debug("Running Stage " + task.jobid + " " + task.stageid + " " + jobstage);
 			timetakenseconds = computeTasks(task, hdfs);
 			completed = true;
-			hbtss.setTimetakenseconds(timetakenseconds);
 			endtime = System.currentTimeMillis();
 			hbtss.pingOnce(task, Task.TaskStatus.COMPLETED, new Long[]{starttime,endtime}, timetakenseconds, null);
 			log.debug("Completed JobStage " + task.jobid + " " + task.stageid + " in " + timetakenseconds);

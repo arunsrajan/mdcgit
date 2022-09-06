@@ -207,14 +207,14 @@ public sealed class StreamPipelineTaskExecutor implements
 		log.debug("Entered MassiveDataStreamTaskDExecutor.processBlockHDFSIntersection");
 
 		try (var fsdos = createIntermediateDataToFS(task);
-				var output = new Output(new SnappyOutputStream(new BufferedOutputStream(fsdos)));
+			 var output = new Output(new SnappyOutputStream(new BufferedOutputStream(fsdos)));
 
-				var bais1 = HdfsBlockReader.getBlockDataSnappyStream(blocksfirst, hdfs);
-				var buffer1 = new BufferedReader(new InputStreamReader(bais1));
-				var bais2 = HdfsBlockReader.getBlockDataSnappyStream(blockssecond, hdfs);
-				var buffer2 = new BufferedReader(new InputStreamReader(bais2));
-				var streamfirst = buffer1.lines();
-				var streamsecond = buffer2.lines();) {
+			 var bais1 = HdfsBlockReader.getBlockDataInputStream(blocksfirst, hdfs);
+			 var buffer1 = new BufferedReader(new InputStreamReader(bais1));
+			 var bais2 = HdfsBlockReader.getBlockDataInputStream(blockssecond, hdfs);
+			 var buffer2 = new BufferedReader(new InputStreamReader(bais2));
+			 var streamfirst = buffer1.lines();
+			 var streamsecond = buffer2.lines();) {
 			var cf = (CompletableFuture) streamsecond.distinct().collect(ParallelCollectors.parallel(value -> value,
 					Collectors.toCollection(LinkedHashSet::new), executor, Runtime.getRuntime().availableProcessors()));
 			;
@@ -276,11 +276,11 @@ public sealed class StreamPipelineTaskExecutor implements
 		log.debug("Entered MassiveDataStreamTaskDExecutor.processBlockHDFSIntersection");
 
 		try (var fsdos = createIntermediateDataToFS(task);
-				var output = new Output(new SnappyOutputStream(new BufferedOutputStream(fsdos)));
-				var inputfirst = new Input(new BufferedInputStream(fsstreamfirst.iterator().next()));
-				var bais2 = HdfsBlockReader.getBlockDataSnappyStream(blockssecond.get(0), hdfs);
-				var buffer2 = new BufferedReader(new InputStreamReader(bais2));
-				var streamsecond = buffer2.lines();) {
+			 var output = new Output(new SnappyOutputStream(new BufferedOutputStream(fsdos)));
+			 var inputfirst = new Input(new BufferedInputStream(fsstreamfirst.iterator().next()));
+			 var bais2 = HdfsBlockReader.getBlockDataInputStream(blockssecond.get(0), hdfs);
+			 var buffer2 = new BufferedReader(new InputStreamReader(bais2));
+			 var streamsecond = buffer2.lines();) {
 			var kryo = Utils.getKryoSerializerDeserializer();
 			var datafirst = (List) kryo.readClassAndObject(inputfirst);
 			var cf = (CompletableFuture) streamsecond.distinct().collect(ParallelCollectors.parallel(value -> value,
@@ -444,13 +444,13 @@ public sealed class StreamPipelineTaskExecutor implements
 		log.debug("Entered MassiveDataStreamTaskDExecutor.processBlockHDFSUnion");
 
 		try (var fsdos = createIntermediateDataToFS(task);
-				var output = new Output(new SnappyOutputStream(new BufferedOutputStream(fsdos)));
-				var bais1 = HdfsBlockReader.getBlockDataSnappyStream(blocksfirst, hdfs);
-				var buffer1 = new BufferedReader(new InputStreamReader(bais1));
-				var bais2 = HdfsBlockReader.getBlockDataSnappyStream(blockssecond, hdfs);
-				var buffer2 = new BufferedReader(new InputStreamReader(bais2));
-				var streamfirst = buffer1.lines();
-				var streamsecond = buffer2.lines();) {
+			 var output = new Output(new SnappyOutputStream(new BufferedOutputStream(fsdos)));
+			 var bais1 = HdfsBlockReader.getBlockDataInputStream(blocksfirst, hdfs);
+			 var buffer1 = new BufferedReader(new InputStreamReader(bais1));
+			 var bais2 = HdfsBlockReader.getBlockDataInputStream(blockssecond, hdfs);
+			 var buffer2 = new BufferedReader(new InputStreamReader(bais2));
+			 var streamfirst = buffer1.lines();
+			 var streamsecond = buffer2.lines();) {
 			boolean terminalCount = false;
 			if (jobstage.stage.tasks.get(0) instanceof CalculateCount) {
 				terminalCount = true;
@@ -522,11 +522,11 @@ public sealed class StreamPipelineTaskExecutor implements
 		log.debug("Entered MassiveDataStreamTaskDExecutor.processBlockHDFSUnion");
 
 		try (var fsdos = createIntermediateDataToFS(task);
-				var output = new Output(new SnappyOutputStream(new BufferedOutputStream(fsdos)));
-				var inputfirst = new Input(new BufferedInputStream(fsstreamfirst.iterator().next()));
-				var bais2 = HdfsBlockReader.getBlockDataSnappyStream(blockssecond.get(0), hdfs);
-				var buffer2 = new BufferedReader(new InputStreamReader(bais2));
-				var streamsecond = buffer2.lines();) {
+			 var output = new Output(new SnappyOutputStream(new BufferedOutputStream(fsdos)));
+			 var inputfirst = new Input(new BufferedInputStream(fsstreamfirst.iterator().next()));
+			 var bais2 = HdfsBlockReader.getBlockDataInputStream(blockssecond.get(0), hdfs);
+			 var buffer2 = new BufferedReader(new InputStreamReader(bais2));
+			 var streamsecond = buffer2.lines();) {
 			var kryo = Utils.getKryoSerializerDeserializer();
 
 			var datafirst = (List) kryo.readClassAndObject(inputfirst);
@@ -681,9 +681,9 @@ public sealed class StreamPipelineTaskExecutor implements
 		log.info(blockslocation);
 		CSVParser records = null;
 		try (var fsdos = createIntermediateDataToFS(task);
-				var output = new Output(new SnappyOutputStream(new BufferedOutputStream(fsdos)));
-				var bais = HdfsBlockReader.getBlockDataSnappyStream(blockslocation, hdfs);
-				var buffer = new BufferedReader(new InputStreamReader(bais));) {
+			 var output = new Output(new SnappyOutputStream(new BufferedOutputStream(fsdos)));
+			 var bais = HdfsBlockReader.getBlockDataInputStream(blockslocation, hdfs);
+			 var buffer = new BufferedReader(new InputStreamReader(bais));) {
 
 			var kryo = Utils.getKryoSerializerDeserializer();
 			Stream intermediatestreamobject;
@@ -962,10 +962,10 @@ public sealed class StreamPipelineTaskExecutor implements
 		var starttime = System.currentTimeMillis();
 		log.debug("Entered MassiveDataStreamTaskDExecutor.processSamplesBlocks");
 		try (var fsdos = createIntermediateDataToFS(task);
-				var output = new Output(new SnappyOutputStream(new BufferedOutputStream(fsdos)));
-				var bais = HdfsBlockReader.getBlockDataSnappyStream(blockslocation, hdfs);
-				var buffer = new BufferedReader(new InputStreamReader(bais));
-				var stringdata = buffer.lines();) {
+			 var output = new Output(new SnappyOutputStream(new BufferedOutputStream(fsdos)));
+			 var bais = HdfsBlockReader.getBlockDataInputStream(blockslocation, hdfs);
+			 var buffer = new BufferedReader(new InputStreamReader(bais));
+			 var stringdata = buffer.lines();) {
 			Kryo kryo = Utils.getKryoSerializerDeserializer();
 			// Limit the sample using the limit method.
 			boolean terminalCount = false;
@@ -1165,15 +1165,15 @@ public sealed class StreamPipelineTaskExecutor implements
 			InputStream streamsecond = null;
 			if ((task.input[0] instanceof BlocksLocation blfirst)
 					&& (task.input[1] instanceof BlocksLocation blsecond)) {
-				streamfirst = HdfsBlockReader.getBlockDataSnappyStream(blfirst, hdfs);
-				streamsecond = HdfsBlockReader.getBlockDataSnappyStream(blsecond, hdfs);
+				streamfirst = HdfsBlockReader.getBlockDataInputStream(blfirst, hdfs);
+				streamsecond = HdfsBlockReader.getBlockDataInputStream(blsecond, hdfs);
 			} else if (((task.input[0] instanceof BlocksLocation) && task.input[1] instanceof InputStream)
 					|| ((task.input[0] instanceof InputStream) && task.input[1] instanceof BlocksLocation)) {
 				streamfirst = task.input[0] instanceof BlocksLocation
-						? HdfsBlockReader.getBlockDataSnappyStream((BlocksLocation) task.input[0], hdfs)
+						? HdfsBlockReader.getBlockDataInputStream((BlocksLocation) task.input[0], hdfs)
 						: (InputStream) task.input[0];
 				streamsecond = task.input[1] instanceof BlocksLocation
-						? HdfsBlockReader.getBlockDataSnappyStream((BlocksLocation) task.input[1], hdfs)
+						? HdfsBlockReader.getBlockDataInputStream((BlocksLocation) task.input[1], hdfs)
 						: (InputStream) task.input[1];
 			} else {
 				streamfirst = (InputStream) task.input[0];
@@ -1196,15 +1196,15 @@ public sealed class StreamPipelineTaskExecutor implements
 			InputStream streamsecond = null;
 			if ((task.input[0] instanceof BlocksLocation blfirst)
 					&& (task.input[1] instanceof BlocksLocation blsecond)) {
-				streamfirst = HdfsBlockReader.getBlockDataSnappyStream(blfirst, hdfs);
-				streamsecond = HdfsBlockReader.getBlockDataSnappyStream(blsecond, hdfs);
+				streamfirst = HdfsBlockReader.getBlockDataInputStream(blfirst, hdfs);
+				streamsecond = HdfsBlockReader.getBlockDataInputStream(blsecond, hdfs);
 			} else if (((task.input[0] instanceof BlocksLocation) && task.input[1] instanceof InputStream)
 					|| ((task.input[0] instanceof InputStream) && task.input[1] instanceof BlocksLocation)) {
 				streamfirst = task.input[0] instanceof BlocksLocation
-						? HdfsBlockReader.getBlockDataSnappyStream((BlocksLocation) task.input[0], hdfs)
+						? HdfsBlockReader.getBlockDataInputStream((BlocksLocation) task.input[0], hdfs)
 						: (InputStream) task.input[0];
 				streamsecond = task.input[1] instanceof BlocksLocation
-						? HdfsBlockReader.getBlockDataSnappyStream((BlocksLocation) task.input[1], hdfs)
+						? HdfsBlockReader.getBlockDataInputStream((BlocksLocation) task.input[1], hdfs)
 						: (InputStream) task.input[1];
 			} else {
 				streamfirst = (InputStream) task.input[0];
@@ -1226,15 +1226,15 @@ public sealed class StreamPipelineTaskExecutor implements
 			InputStream streamsecond = null;
 			if ((task.input[0] instanceof BlocksLocation blfirst)
 					&& (task.input[1] instanceof BlocksLocation blsecond)) {
-				streamfirst = HdfsBlockReader.getBlockDataSnappyStream(blfirst, hdfs);
-				streamsecond = HdfsBlockReader.getBlockDataSnappyStream(blsecond, hdfs);
+				streamfirst = HdfsBlockReader.getBlockDataInputStream(blfirst, hdfs);
+				streamsecond = HdfsBlockReader.getBlockDataInputStream(blsecond, hdfs);
 			} else if (((task.input[0] instanceof BlocksLocation) && task.input[1] instanceof InputStream)
 					|| ((task.input[0] instanceof InputStream) && task.input[1] instanceof BlocksLocation)) {
 				streamfirst = task.input[0] instanceof BlocksLocation
-						? HdfsBlockReader.getBlockDataSnappyStream((BlocksLocation) task.input[0], hdfs)
+						? HdfsBlockReader.getBlockDataInputStream((BlocksLocation) task.input[0], hdfs)
 						: (InputStream) task.input[0];
 				streamsecond = task.input[1] instanceof BlocksLocation
-						? HdfsBlockReader.getBlockDataSnappyStream((BlocksLocation) task.input[1], hdfs)
+						? HdfsBlockReader.getBlockDataInputStream((BlocksLocation) task.input[1], hdfs)
 						: (InputStream) task.input[1];
 			} else {
 				streamfirst = (InputStream) task.input[0];
@@ -1256,15 +1256,15 @@ public sealed class StreamPipelineTaskExecutor implements
 			InputStream streamsecond = null;
 			if ((task.input[0] instanceof BlocksLocation blfirst)
 					&& (task.input[1] instanceof BlocksLocation blsecond)) {
-				streamfirst = HdfsBlockReader.getBlockDataSnappyStream(blfirst, hdfs);
-				streamsecond = HdfsBlockReader.getBlockDataSnappyStream(blsecond, hdfs);
+				streamfirst = HdfsBlockReader.getBlockDataInputStream(blfirst, hdfs);
+				streamsecond = HdfsBlockReader.getBlockDataInputStream(blsecond, hdfs);
 			} else if (((task.input[0] instanceof BlocksLocation) && task.input[1] instanceof InputStream)
 					|| ((task.input[0] instanceof InputStream) && task.input[1] instanceof BlocksLocation)) {
 				streamfirst = task.input[0] instanceof BlocksLocation
-						? HdfsBlockReader.getBlockDataSnappyStream((BlocksLocation) task.input[0], hdfs)
+						? HdfsBlockReader.getBlockDataInputStream((BlocksLocation) task.input[0], hdfs)
 						: (InputStream) task.input[0];
 				streamsecond = task.input[1] instanceof BlocksLocation
-						? HdfsBlockReader.getBlockDataSnappyStream((BlocksLocation) task.input[1], hdfs)
+						? HdfsBlockReader.getBlockDataInputStream((BlocksLocation) task.input[1], hdfs)
 						: (InputStream) task.input[1];
 			} else {
 				streamfirst = (InputStream) task.input[0];
@@ -1287,15 +1287,15 @@ public sealed class StreamPipelineTaskExecutor implements
 			InputStream streamsecond = null;
 			if ((task.input[0] instanceof BlocksLocation blfirst)
 					&& (task.input[1] instanceof BlocksLocation blsecond)) {
-				streamfirst = HdfsBlockReader.getBlockDataSnappyStream(blfirst, hdfs);
-				streamsecond = HdfsBlockReader.getBlockDataSnappyStream(blsecond, hdfs);
+				streamfirst = HdfsBlockReader.getBlockDataInputStream(blfirst, hdfs);
+				streamsecond = HdfsBlockReader.getBlockDataInputStream(blsecond, hdfs);
 			} else if (((task.input[0] instanceof BlocksLocation) && task.input[1] instanceof InputStream)
 					|| ((task.input[0] instanceof InputStream) && task.input[1] instanceof BlocksLocation)) {
 				streamfirst = task.input[0] instanceof BlocksLocation
-						? HdfsBlockReader.getBlockDataSnappyStream((BlocksLocation) task.input[0], hdfs)
+						? HdfsBlockReader.getBlockDataInputStream((BlocksLocation) task.input[0], hdfs)
 						: (InputStream) task.input[0];
 				streamsecond = task.input[1] instanceof BlocksLocation
-						? HdfsBlockReader.getBlockDataSnappyStream((BlocksLocation) task.input[1], hdfs)
+						? HdfsBlockReader.getBlockDataInputStream((BlocksLocation) task.input[1], hdfs)
 						: (InputStream) task.input[1];
 			} else {
 				streamfirst = (InputStream) task.input[0];
@@ -1317,15 +1317,15 @@ public sealed class StreamPipelineTaskExecutor implements
 			InputStream streamsecond = null;
 			if ((task.input[0] instanceof BlocksLocation blfirst)
 					&& (task.input[1] instanceof BlocksLocation blsecond)) {
-				streamfirst = HdfsBlockReader.getBlockDataSnappyStream(blfirst, hdfs);
-				streamsecond = HdfsBlockReader.getBlockDataSnappyStream(blsecond, hdfs);
+				streamfirst = HdfsBlockReader.getBlockDataInputStream(blfirst, hdfs);
+				streamsecond = HdfsBlockReader.getBlockDataInputStream(blsecond, hdfs);
 			} else if (((task.input[0] instanceof BlocksLocation) && task.input[1] instanceof InputStream)
 					|| ((task.input[0] instanceof InputStream) && task.input[1] instanceof BlocksLocation)) {
 				streamfirst = task.input[0] instanceof BlocksLocation
-						? HdfsBlockReader.getBlockDataSnappyStream((BlocksLocation) task.input[0], hdfs)
+						? HdfsBlockReader.getBlockDataInputStream((BlocksLocation) task.input[0], hdfs)
 						: (InputStream) task.input[0];
 				streamsecond = task.input[1] instanceof BlocksLocation
-						? HdfsBlockReader.getBlockDataSnappyStream((BlocksLocation) task.input[1], hdfs)
+						? HdfsBlockReader.getBlockDataInputStream((BlocksLocation) task.input[1], hdfs)
 						: (InputStream) task.input[1];
 			} else {
 				streamfirst = (InputStream) task.input[0];

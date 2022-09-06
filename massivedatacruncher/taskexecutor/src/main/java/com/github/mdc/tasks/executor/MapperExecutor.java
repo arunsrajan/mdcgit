@@ -16,6 +16,7 @@
 package com.github.mdc.tasks.executor;
 
 import java.io.BufferedReader;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -33,9 +34,9 @@ public class MapperExecutor implements Callable<Context> {
 	static Logger log = Logger.getLogger(MapperExecutor.class);
 	BlocksLocation blockslocation;
 	List<Mapper> crunchmappers;
-	SnappyInputStream datastream;
+	InputStream datastream;
 
-	public MapperExecutor(BlocksLocation blockslocation, SnappyInputStream datastream, List<Mapper> crunchmappers) {
+	public MapperExecutor(BlocksLocation blockslocation, InputStream datastream, List<Mapper> crunchmappers) {
 		this.blockslocation = blockslocation;
 		this.datastream = datastream;
 		this.crunchmappers = crunchmappers;

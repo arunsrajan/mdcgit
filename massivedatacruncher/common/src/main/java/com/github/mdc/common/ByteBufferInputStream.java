@@ -80,7 +80,7 @@ public class ByteBufferInputStream extends InputStream {
 				log.info("ByteBuffer Input Stream returning to pool deallocation number {} with buffer info {}", deallocation++,  bb);
 				bb.clear();
 				bb.rewind();
-				ByteBufferPool.get().returnObject(bb);
+				ByteBufferPoolDirect.get().give(bb);
 			} catch (InterruptedException ie) {
 				log.error(MDCConstants.EMPTY, ie);
 				Thread.currentThread().interrupt();

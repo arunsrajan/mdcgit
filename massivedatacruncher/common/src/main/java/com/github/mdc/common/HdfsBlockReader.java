@@ -17,6 +17,7 @@ package com.github.mdc.common;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.ref.SoftReference;
 import java.net.InetSocketAddress;
@@ -55,6 +56,8 @@ import org.apache.htrace.core.Tracer;
 import org.apache.log4j.Logger;
 import org.xerial.snappy.SnappyInputStream;
 import org.xerial.snappy.SnappyOutputStream;
+
+import static java.util.Objects.nonNull;
 
 
 /**
@@ -176,12 +179,10 @@ public class HdfsBlockReader {
 	 * @return
 	 * @throws Exception
 	 */
-	public static SnappyInputStream getBlockDataSnappyStream(final BlocksLocation bl, FileSystem hdfs) throws Exception {
-		ByteBuffer bb = ByteBufferPool.get().borrowObject();
-		try (var bbos = new ByteBufferOutputStream(bb);
-				var lzfos = new SnappyOutputStream(bbos)) {
-			log.debug("Entered HdfsBlockReader.getBlockDataMR");
-
+	public static InputStream getBlockDataInputStream(final BlocksLocation bl, FileSystem hdfs) throws Exception {
+		ByteBuffer bb = ByteBufferPoolDirect.get().take(calculateBytesRequired(bl.getBlock()));
+		try (var bbos = new ByteBufferOutputStream(bb);) {
+			log.debug("Entered HdfsBlockReader.getBlockDataSnappyStream");
 
 			var mapfilenamelb = new HashMap<String, List<LocatedBlock>>();
 			for (var block : bl.getBlock()) {
@@ -196,21 +197,34 @@ public class HdfsBlockReader {
 					for (var lb : locatedBlocks) {
 						if (lb.getStartOffset() == block.getBlockOffset()) {
 							log.debug("Obtaining Data for the " + block + " with offset: " + lb.getStartOffset());
-							getDataBlock(block, lb, hdfs, lzfos, block.getHp().split(MDCConstants.UNDERSCORE)[0]);
+							getDataBlock(block, lb, hdfs, bbos, block.getHp().split(MDCConstants.UNDERSCORE)[0]);
 							break;
 						}
 					}
 				}
 			}
 			bbos.get().flip();
-			log.debug("Exiting HdfsBlockReader.getBlockDataMR");
-			return new SnappyInputStream(new ByteBufferInputStream(bbos.get()));
+			log.debug("Exiting HdfsBlockReader.getBlockDataSnappyStream");
+			return new ByteBufferInputStream(bbos.get());
 		} catch (Exception ex) {
-			log.error("Unable to Obtain Block Data getBlockDataMR: ", ex);
+			log.error("Unable to Obtain Block Data getBlockDataSnappyStream: ", ex);
 		}
 
 		return null;
 
+	}
+
+	/**
+	 * To calculate the total amount of bytes required;
+	 * @param block
+	 * @return
+	 */
+	public static int calculateBytesRequired(Block[] block) {
+		int totalmemoryrequired = (int) (block[0].getBlockend() - block[0].getBlockstart());
+		if (block.length > 1 && nonNull(block[1])) {
+			totalmemoryrequired += block[1].getBlockend() - block[1].getBlockstart();
+		}
+		return totalmemoryrequired;
 	}
 
 	public static Set<BlockExecutors> sort(Set<BlockExecutors> blocks) {

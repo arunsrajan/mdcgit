@@ -91,7 +91,7 @@ public class TaskExecutorRunner implements TaskExecutorRunnerMBean {
 		ByteBufferPool.init(directmemory);
 		CacheUtils.initCache();
 		int numberofprocessors = Runtime.getRuntime().availableProcessors();
-		es = Executors.newWorkStealingPool(directmemory>numberofprocessors?numberofprocessors:directmemory);
+		es = Executors.newCachedThreadPool();
 		var mdted = new TaskExecutorRunner();
 		mdted.init();
 		mdted.start();

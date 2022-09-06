@@ -15,6 +15,7 @@
  */
 package com.github.mdc.common;
 
+import java.io.InputStream;
 import java.time.Duration;
 import java.util.Objects;
 
@@ -28,7 +29,6 @@ import org.ehcache.config.builders.CacheManagerBuilder;
 import org.ehcache.config.builders.ExpiryPolicyBuilder;
 import org.ehcache.config.builders.ResourcePoolsBuilder;
 import org.ehcache.config.units.MemoryUnit;
-import org.xerial.snappy.SnappyInputStream;
 
 /**
  * 
@@ -110,9 +110,9 @@ public class CacheUtils {
 	 * @return compressed stream object.
 	 * @throws Exception
 	 */
-	public static SnappyInputStream getBlockData(BlocksLocation blockslocation, FileSystem hdfs) throws Exception {
+	public static InputStream getBlockData(BlocksLocation blockslocation, FileSystem hdfs) throws Exception {
 		log.debug("Entered CacheUtils.getBlockData");
-		return HdfsBlockReader.getBlockDataSnappyStream(blockslocation, hdfs);
+		return HdfsBlockReader.getBlockDataInputStream(blockslocation, hdfs);
 
 	}
 }

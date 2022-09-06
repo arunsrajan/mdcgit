@@ -17,6 +17,7 @@ package com.github.mdc.tasks.executor;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -24,7 +25,6 @@ import java.util.List;
 import java.util.concurrent.Executors;
 
 import org.apache.log4j.Logger;
-import org.xerial.snappy.SnappyInputStream;
 
 import com.github.mdc.common.ApplicationTask.TaskStatus;
 import com.github.mdc.common.ApplicationTask.TaskType;
@@ -46,13 +46,13 @@ public class TaskExecutorMapperCombiner implements Runnable {
 	HeartBeatTaskScheduler hbts;
 	String applicationid;
 	String taskid;
-	SnappyInputStream datastream;
+	InputStream datastream;
 	int port;
 
 	@SuppressWarnings({"rawtypes"})
-	public TaskExecutorMapperCombiner(BlocksLocation blockslocation, SnappyInputStream datastream, String applicationid, String taskid,
-			ClassLoader cl, int port,
-			HeartBeatTaskScheduler hbts) throws Exception {
+	public TaskExecutorMapperCombiner(BlocksLocation blockslocation, InputStream datastream, String applicationid, String taskid,
+									  ClassLoader cl, int port,
+									  HeartBeatTaskScheduler hbts) throws Exception {
 		this.blockslocation = blockslocation;
 		this.datastream = datastream;
 		this.port = port;

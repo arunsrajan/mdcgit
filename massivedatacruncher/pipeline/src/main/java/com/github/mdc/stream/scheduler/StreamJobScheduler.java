@@ -735,11 +735,9 @@ public class StreamJobScheduler {
 
 				var vertices = graph.vertexSet();
 				List<StreamPipelineTaskSubmitter> mdststs = null;
-				boolean onlyindependent = true;
 				for (var mdstst : vertices) {
 					var predecessors = Graphs.predecessorListOf(graph, mdstst);
 					if (predecessors.size() > 0) {
-						onlyindependent = false;
 						for (var pred : predecessors) {
 							dexecutor.addDependency(pred, mdstst);
 							log.info(pred + "->" + mdstst);
@@ -787,22 +785,19 @@ public class StreamJobScheduler {
 					numexecute++;
 					completed = false;
 					continue;
-				} else if(onlyindependent){
+				}
+				var executionresultscomplete = dexecutor.execute(ExecutionConfig.NON_TERMINATING);
+				erroredresult = executionresultscomplete.getErrored();
+				log.info("Errored Tasks: " + erroredresult);
+				if (erroredresult.isEmpty()) {
 					completed = true;
+				} else {
+					var currentcontainers = new ArrayList<>(hbss.containers);
+					var initialcontainers = new ArrayList<>(this.taskexecutors);
+					initialcontainers.removeAll(currentcontainers);
+					reformDAG(graph, currentcontainers, initialcontainers);
 				}
-				if(!onlyindependent) {
-					var executionresultscomplete = dexecutor.execute(ExecutionConfig.NON_TERMINATING);
-					erroredresult = executionresultscomplete.getErrored();
-					log.info("Errored Tasks: " + erroredresult);
-					if (erroredresult.isEmpty()) {
-						completed = true;
-					} else {
-						var currentcontainers = new ArrayList<>(hbss.containers);
-						var initialcontainers = new ArrayList<>(this.taskexecutors);
-						initialcontainers.removeAll(currentcontainers);
-						reformDAG(graph, currentcontainers, initialcontainers);
-					}
-				}
+
 				numexecute++;
 				hbtss.clearStageJobStageMap();
 				hbtss.getHbo().values().forEach(hbo-> {
