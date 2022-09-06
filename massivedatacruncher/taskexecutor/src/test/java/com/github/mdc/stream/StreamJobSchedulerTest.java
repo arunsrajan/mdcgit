@@ -36,10 +36,12 @@ import org.junit.runners.MethodSorters;
 import com.esotericsoftware.kryo.io.Output;
 import com.github.mdc.common.DAGEdge;
 import com.github.mdc.common.HeartBeatServerStream;
+import com.github.mdc.common.HeartBeatTaskObserver;
 import com.github.mdc.common.HeartBeatTaskSchedulerStream;
 import com.github.mdc.common.Job;
 import com.github.mdc.common.JobStage;
 import com.github.mdc.common.MDCConstants;
+import com.github.mdc.common.MDCConstants.STORAGE;
 import com.github.mdc.common.MDCProperties;
 import com.github.mdc.common.PipelineConfig;
 import com.github.mdc.common.Stage;
@@ -845,6 +847,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 		pc.setIsblocksuserdefined("true");
 		pc.setBlocksize("1");
 		pc.setGctype(MDCConstants.ZGC);
+		pc.setStorage(STORAGE.INMEMORY);
 		StreamPipeline<String> mdp = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesample, pc);
 		StreamPipeline<String[]> mdparr = mdp.map(val -> val.split(MDCConstants.COMMA));
 		mdparr.finaltasks.add(mdparr.task);
@@ -869,14 +872,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 				job.id);
 		// Start the heart beat to receive task executor to task
 		// schedulers task status updates.
-		js.hbtss.start();
-		js.hbtss.getHbo().values().forEach(hbo-> {
-			try {
-				hbo.start();
-			} catch (Exception e) {
-				log.error("HeartBeat Observer start error");
-			}
-		});
+		js.hbtss.start();		
 		HeartBeatServerStream hbss = new HeartBeatServerStream();
 		js.hbss = hbss;
 		js.getContainersHostPort();
@@ -914,7 +910,16 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 			mdstst.getTask().finalphase = true;
 			mdstst.getTask().hdfsurl = job.uri;
 			mdstst.getTask().filepath = job.savepath + MDCConstants.HYPHEN + partitionnumber++;
+			mdstst.getTask().hbphysicaladdress = js.hbtss.getPhysicalAddress();
 		}
+		job.containers.parallelStream().forEach(container->js.hbtss.getHbo().put(container, new HeartBeatTaskObserver<>()));
+		js.hbtss.getHbo().values().forEach(hbo-> {
+			try {
+				hbo.start();
+			} catch (Exception e) {
+				log.error("HeartBeat Observer start error");
+			}
+		});
 		js.parallelExecutionPhaseDExecutor(graph);
 		List<List> results = js.getLastStageOutput(mdstts, graph, mdststs, false, false, false, false, js.resultstream);
 		int sum = 0;

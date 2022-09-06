@@ -16,7 +16,6 @@
 package com.github.mdc.tasks.executor;
 
 import java.io.OutputStream;
-import java.net.ServerSocket;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
@@ -26,7 +25,6 @@ import java.util.concurrent.*;
 
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.serializers.CompatibleFieldSerializer;
-import com.esotericsoftware.kryo.serializers.JavaSerializer;
 import com.esotericsoftware.kryonetty.ServerEndpoint;
 import com.esotericsoftware.kryonetty.network.ConnectEvent;
 import com.esotericsoftware.kryonetty.network.DisconnectEvent;
@@ -41,7 +39,7 @@ import org.apache.curator.framework.state.ConnectionState;
 import org.apache.curator.retry.RetryForever;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FsUrlStreamHandlerFactory;
-import org.apache.log4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.github.mdc.tasks.executor.web.NodeWebServlet;
 import com.github.mdc.tasks.executor.web.ResourcesMetricsServlet;
@@ -50,7 +48,7 @@ import static java.util.Objects.nonNull;
 
 public class TaskExecutorRunner implements TaskExecutorRunnerMBean {
 
-	static Logger log = Logger.getLogger(TaskExecutorRunner.class);
+	static org.slf4j.Logger log = LoggerFactory.getLogger(TaskExecutorRunner.class);
 	Map<String, Object> apptaskexecutormap = new ConcurrentHashMap<>();
 	Map<String, Object> jobstageexecutormap = new ConcurrentHashMap<>();
 	ConcurrentMap<String, OutputStream> resultstream = new ConcurrentHashMap<>();
@@ -151,7 +149,7 @@ public class TaskExecutorRunner implements TaskExecutorRunnerMBean {
 	}
 	ClassLoader cl;
 	static ServerEndpoint server = null;
-	@SuppressWarnings({"unchecked", "rawtypes"})
+	@SuppressWarnings({"rawtypes"})
 	@Override
 	public void start() throws Exception {
 		var launchtaskpool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
@@ -244,7 +242,7 @@ public class TaskExecutorRunner implements TaskExecutorRunnerMBean {
 									.parseInt(MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULER_PINGDELAY));
 							var host = NetworkUtil
 									.getNetworkAddress(MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_HOST));
-							log.info("Starting Hearbeat for container id: " + containerid);
+							log.info("Starting Hearbeat for container id: {} with host {} and port {}",containerid,host,teport);
 							hbss.init(0, teport, host, 0, pingdelay, containerid);
 							hbss.ping();
 							containeridhbss.put(containerid, hbss);

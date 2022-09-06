@@ -123,14 +123,20 @@ public class HeartBeatTaskSchedulerStreamTest extends HeartBeatCommon {
 	@Test
 	public void testHBTSSStartAndPing() throws Exception {
 		UUID stageid = UUID.randomUUID();
-		UUID taskid = UUID.randomUUID();
+		UUID jobid = UUID.randomUUID();
+		
 		HeartBeatTaskSchedulerStream hbtss = new HeartBeatTaskSchedulerStream();
 		hbtss.init(10000, 2000, "127.0.0.1", 1000, 5000, MDCConstants.EMPTY, job + jobid.toString());
 		hbtss.start();
 
 		HeartBeatTaskSchedulerStream hbtss1 = new HeartBeatTaskSchedulerStream();
 		hbtss1.init(10000, 2001, "127.0.0.1", 1000, 5000, MDCConstants.EMPTY, job + jobid.toString());
-		hbtss1.pingOnce(stage + stageid.toString(), task + taskid.toString(), "127.0.0.1_2001", Task.TaskStatus.SUBMITTED, 1.0d, null);
+		hbtss1.start();
+		Task task = new Task();
+		task.stageid = stage + stageid.toString();
+		task.jobid = MDCConstants.JOB + jobid.toString();
+		task.hbphysicaladdress = hbtss1.getPhysicalAddress();
+		hbtss1.pingOnce(task, Task.TaskStatus.SUBMITTED, new Long[]{System.currentTimeMillis(),System.currentTimeMillis()}, 1.0d, null);
 		hbtss1.close();
 		hbtss.close();
 	}

@@ -962,8 +962,10 @@ public class Utils {
 	public static synchronized JChannel getChannelWithPStack(String bindaddr) {
 		try {
 			System.setProperty(MDCConstants.BINDADDRESS, bindaddr);
-			var channel = new JChannel(System.getProperty(MDCConstants.USERDIR) + MDCConstants.FORWARD_SLASH
-					+ MDCProperties.get().getProperty(MDCConstants.JGROUPSCONF));
+			String configfilepath = System.getProperty(MDCConstants.USERDIR) + MDCConstants.FORWARD_SLASH
+					+ MDCProperties.get().getProperty(MDCConstants.JGROUPSCONF);
+			log.info("Configuring Jgroups for bind address {} with path {}", bindaddr, configfilepath);
+			var channel = new JChannel(configfilepath);
 			return channel;
 		} catch (Exception ex) {
 			log.error("Unable to add Protocol Stack: ", ex);

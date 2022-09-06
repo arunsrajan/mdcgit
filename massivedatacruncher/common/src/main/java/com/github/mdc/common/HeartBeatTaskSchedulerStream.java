@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 the original author or authors.
+ * CopyronNight 2021 the original author or authors.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -97,6 +97,7 @@ public final class HeartBeatTaskSchedulerStream extends HeartBeatServerStream im
 		log.debug("Entered HeartBeatTaskSchedulerStream.start");
 		channel = Utils.getChannelWithPStack(networkaddress);
 		channel.setName(jobid);
+		channel.setDiscardOwnMessages(true);
 		channel.setReceiver(new Receiver() {
 
 			@Override
@@ -215,9 +216,11 @@ public final class HeartBeatTaskSchedulerStream extends HeartBeatServerStream im
 	 */
 	public void destroy() throws Exception {
 		super.destroy();
-		hbo.values().parallelStream().forEach(hbto->{
-			hbto.stop();
-		});
+		if(nonNull(hbo)) {
+			hbo.values().parallelStream().forEach(hbto->{
+				hbto.stop();
+			});
+		}
 	}
 
 }
