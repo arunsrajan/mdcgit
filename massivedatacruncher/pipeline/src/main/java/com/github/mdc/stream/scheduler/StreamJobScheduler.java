@@ -839,7 +839,7 @@ public class StreamJobScheduler {
 	 * @return ExecutorsService object.
 	 */
 	private ExecutorService newExecutor(int numberoftasks) {
-		return Executors.newWorkStealingPool(numberoftasks);
+		return Executors.newFixedThreadPool(numberoftasks);
 	}
 
 	private class DAGSchedulerInitialStage implements
@@ -1036,7 +1036,7 @@ public class StreamJobScheduler {
 	public class TaskProviderLocalMode
 			implements TaskProvider<StreamPipelineTaskSubmitter, StreamPipelineTaskExecutorLocal> {
 
-
+		ExecutorService es = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 		double totaltasks;
 		double counttaskscomp = 0;
 		double counttasksfailed = 0;
@@ -1054,23 +1054,26 @@ public class StreamJobScheduler {
 				private static final long serialVersionUID = 1L;
 
 				public StreamPipelineTaskExecutorLocal execute() {
-					var mdste = new StreamPipelineTaskExecutorLocal(jsidjsmap.get(task.jobid + task.stageid),
-							resultstream, cache);
-					mdste.setTask(task);
-					mdste.setExecutor(jobping);
-					mdste.setHdfs(hdfs);
-					try {
-						semaphore.acquire();
-						mdste.run();
+					try (var hdfs = FileSystem.newInstance(new URI(hdfsfilepath), new Configuration());) {
+						semaphore.acquire();						
+						var mdste = new StreamPipelineTaskExecutorLocal(jsidjsmap.get(task.jobid + task.stageid),
+								resultstream, cache);
+						mdste.setTask(task);
+						mdste.setExecutor(jobping);
+						mdste.setHdfs(hdfs);
+						Future fut =  es.submit(mdste);
+						fut.get();
 						Utils.writeKryoOutput(kryo, pipelineconfig.getOutput(),
 								"Completed Job And Stages: " + mdstst.getTask().jobid + MDCConstants.HYPHEN
-										+ mdstst.getTask().stageid + " in " + mdste.timetaken + " seconds");
+										+ mdstst.getTask().stageid + MDCConstants.HYPHEN
+										+ mdstst.getTask().taskid + " in " + mdste.timetaken + " seconds");
 						semaphore.release();
 						printresults.acquire();
 						counttaskscomp++;
 						Utils.writeKryoOutput(kryo, pipelineconfig.getOutput(), "\nPercentage Completed "
 								+ Math.floor((counttaskscomp / totaltasks) * 100.0) + "% \n");
 						printresults.release();
+						return mdste;
 					} catch (InterruptedException e) {
 						log.warn("Interrupted!", e);
 						// Restore interrupted state...
@@ -1079,7 +1082,7 @@ public class StreamJobScheduler {
 						log.error("SleepyTaskProvider error", e);
 					}
 
-					return mdste;
+					return null;
 				}
 			};
 		}

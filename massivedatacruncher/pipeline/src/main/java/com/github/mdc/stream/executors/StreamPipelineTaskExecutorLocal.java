@@ -100,14 +100,8 @@ public final class StreamPipelineTaskExecutorLocal extends StreamPipelineTaskExe
 		log.debug("Entered MassiveDataStreamTaskExecutorInMemory.createIntermediateDataToFS");
 		try {
 			var path = getIntermediateDataFSFilePath(task);
-			OutputStream os;
-			if (task.finalphase && task.saveresulttohdfs) {
-				os = new CloseableByteBufferOutputStream(ByteBufferPool.get().borrowObject());
-			}
-			else {
-				os = new ByteArrayOutputStream();
-				resultstream.put(path, os);
-			}
+			var os = new ByteArrayOutputStream();				
+			resultstream.put(path, os);
 			log.debug("Exiting MassiveDataStreamTaskExecutorInMemory.createIntermediateDataToFS");
 			return os;
 		} catch (Exception e) {

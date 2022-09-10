@@ -17,36 +17,28 @@ package com.github.mdc.common;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
 import java.util.Objects;
-import java.util.concurrent.Semaphore;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
 public class ByteBufferInputStream extends InputStream {
-	static int allocation;
-	static int deallocation;
+	static AtomicInteger allocation = new AtomicInteger(1);
+	static AtomicInteger deallocation = new AtomicInteger(1);
 	static Logger log = LoggerFactory.getLogger(ByteBufferInputStream.class);
 	private ByteBuffer bb;
-	static Semaphore printallocdealloc = new Semaphore(1);
 
 	public ByteBufferInputStream(ByteBuffer bb) {
 		try {
 			this.bb = bb;
-			printallocdealloc.acquire();
-			log.info("ByteBuffer Input Stream allocation number {} with object info {}", allocation++,  bb);
-
-		}
-		catch (InterruptedException ie) {
-			log.error(MDCConstants.EMPTY, ie);
-			Thread.currentThread().interrupt();
+			log.info("ByteBuffer Input Stream allocation number {} with object info {}", allocation.incrementAndGet(),  bb);
 		}
 		catch (Exception e) {
 			log.error(MDCConstants.EMPTY, e);
-		} finally {
-			printallocdealloc.release();
 		}
 
 	}
@@ -76,18 +68,11 @@ public class ByteBufferInputStream extends InputStream {
 	public void close() {
 		if (!Objects.isNull(bb)) {
 			try {
-				printallocdealloc.acquire();
-				log.info("ByteBuffer Input Stream returning to pool deallocation number {} with buffer info {}", deallocation++,  bb);
-				bb.clear();
-				bb.rewind();
-				ByteBufferPoolDirect.get().give(bb);
-			} catch (InterruptedException ie) {
-				log.error(MDCConstants.EMPTY, ie);
-				Thread.currentThread().interrupt();
+				log.info("ByteBuffer Input Stream returning to pool deallocation number {} with buffer info {}",
+						deallocation.incrementAndGet(), bb);
+				DirectByteBufferUtil.freeDirectBufferMemory(bb);
 			} catch (Exception e) {
 				log.error(MDCConstants.EMPTY, e);
-			} finally {
-				printallocdealloc.release();
 			}
 			bb = null;
 		}
