@@ -17,7 +17,6 @@ package com.github.mdc.common;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -25,7 +24,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
+/**
+ * The direct byte buffer closeable input stream 
+ * @author arun
+ *
+ */
 public class ByteBufferInputStream extends InputStream {
 	static AtomicInteger allocation = new AtomicInteger(1);
 	static AtomicInteger deallocation = new AtomicInteger(1);

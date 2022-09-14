@@ -31,8 +31,6 @@ import org.apache.log4j.Logger;
 import org.ehcache.Cache;
 import org.xerial.snappy.SnappyInputStream;
 
-import com.github.mdc.common.ByteBufferPool;
-import com.github.mdc.common.CloseableByteBufferOutputStream;
 import com.github.mdc.common.JobStage;
 import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.MDCProperties;

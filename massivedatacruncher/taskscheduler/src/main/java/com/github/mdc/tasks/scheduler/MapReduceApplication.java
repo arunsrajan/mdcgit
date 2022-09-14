@@ -16,11 +16,9 @@
 package com.github.mdc.tasks.scheduler;
 
 import java.beans.PropertyChangeListener;
-import java.net.Socket;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -67,7 +65,6 @@ import com.github.mdc.common.ApplicationTask;
 import com.github.mdc.common.ApplicationTask.TaskStatus;
 import com.github.mdc.common.ApplicationTask.TaskType;
 import com.github.mdc.common.Block;
-import com.github.mdc.common.BlockExecutors;
 import com.github.mdc.common.BlocksLocation;
 import com.github.mdc.common.ContainerLaunchAttributes;
 import com.github.mdc.common.ContainerResources;
@@ -76,7 +73,7 @@ import com.github.mdc.common.DataCruncherContext;
 import com.github.mdc.common.DestroyContainers;
 import com.github.mdc.common.Dummy;
 import com.github.mdc.common.HDFSBlockUtils;
-import com.github.mdc.common.HeartBeatServer;
+import com.github.mdc.common.HeartBeat;
 import com.github.mdc.common.HeartBeatTaskScheduler;
 import com.github.mdc.common.JobApp;
 import com.github.mdc.common.JobMetrics;
@@ -84,7 +81,6 @@ import com.github.mdc.common.LaunchContainers;
 import com.github.mdc.common.LoadJar;
 import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.MDCJobMetrics;
-import com.github.mdc.common.MDCNodes;
 import com.github.mdc.common.MDCNodesResources;
 import com.github.mdc.common.MDCProperties;
 import com.github.mdc.common.NetworkUtil;
@@ -122,12 +118,10 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 	List<String> nodes;
 	CuratorFramework cf;
 	static Logger log = Logger.getLogger(MapReduceApplication.class);
-	Set<BlockExecutors> locations;
 	List<LocatedBlock> locatedBlocks;
-	Collection<String> locationsblock;
 	int executorindex;
 	ExecutorService es;
-	HeartBeatServer hbs;
+	HeartBeat hbs;
 	JobMetrics jm = new JobMetrics();
 
 	public MapReduceApplication(String jobname, JobConfiguration jobconf, List<MapperInput> mappers,
@@ -560,7 +554,7 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 			jm.jobstarttime = System.currentTimeMillis();
 			var isblocksuserdefined = Boolean.parseBoolean(jobconf.getIsblocksuserdefined());
 			var applicationid = MDCConstants.MDCAPPLICATION + MDCConstants.HYPHEN + Utils.getUniqueAppID();
-			jm.jobid = applicationid;
+			jm.setJobid(applicationid);
 			MDCJobMetrics.put(jm);
 			hbts = new HeartBeatTaskScheduler();
 			hbts.init(Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULER_RESCHEDULEDELAY)), 0,
@@ -614,7 +608,7 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 				folderblocks.put(hdfsdir, bls);
 				allfilebls.addAll(bls);
 				allfiles.addAll(Utils.getAllFilePaths(blockpath));
-				jm.totalfilesize += Utils.getTotalLengthByFiles(hdfs, blockpath);
+				jm.setTotalfilesize(jm.getTotalfilesize() + Utils.getTotalLengthByFiles(hdfs, blockpath));
 				blockpath.clear();
 				fileStatuses.clear();
 			}
@@ -625,12 +619,12 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 			getContainers(containerid, applicationid);
 			containerscount = containers.size();
 
-			jm.totalfilesize = jm.totalfilesize / MDCConstants.MB;
-			jm.files = allfiles;
+			jm.setTotalfilesize(jm.getTotalfilesize() / MDCConstants.MB);
+			jm.setFiles(allfiles);
 			jm.nodes = new LinkedHashSet<>(nodessorted);
 			jm.containersallocated = containers.stream().collect(Collectors.toMap(key -> key, value -> 0d));
 			;
-			jm.mode = jobconf.execmode;
+			jm.setMode(jobconf.execmode);
 			jm.totalblocks = allfilebls.size();
 			for (var cls : combiners) {
 				if (cls != null) {

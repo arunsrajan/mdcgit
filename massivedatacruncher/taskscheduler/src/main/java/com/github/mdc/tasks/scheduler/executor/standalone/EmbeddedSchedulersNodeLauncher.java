@@ -1,7 +1,8 @@
 package com.github.mdc.tasks.scheduler.executor.standalone;
 
 import java.io.IOException;
-import java.net.*;
+import java.net.URI;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -10,10 +11,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-import com.github.mdc.common.*;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.state.ConnectionState;
@@ -21,7 +20,6 @@ import org.apache.curator.retry.RetryForever;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.FsUrlStreamHandlerFactory;
-import org.apache.log4j.Logger;
 import org.apache.zookeeper.server.ServerCnxnFactory;
 import org.slf4j.LoggerFactory;
 
@@ -30,6 +28,17 @@ import com.esotericsoftware.kryonetty.ServerEndpoint;
 import com.esotericsoftware.kryonetty.network.ReceiveEvent;
 import com.esotericsoftware.kryonetty.network.handler.NetworkHandler;
 import com.esotericsoftware.kryonetty.network.handler.NetworkListener;
+import com.github.mdc.common.ByteBufferPoolDirect;
+import com.github.mdc.common.HeartBeat;
+import com.github.mdc.common.HeartBeatStream;
+import com.github.mdc.common.MDCConstants;
+import com.github.mdc.common.MDCProperties;
+import com.github.mdc.common.NetworkUtil;
+import com.github.mdc.common.ServerUtils;
+import com.github.mdc.common.TaskSchedulerWebServlet;
+import com.github.mdc.common.Utils;
+import com.github.mdc.common.WebResourcesServlet;
+import com.github.mdc.common.ZookeeperOperations;
 import com.github.mdc.stream.scheduler.StreamPipelineTaskScheduler;
 import com.github.mdc.tasks.executor.NodeRunner;
 import com.github.mdc.tasks.executor.web.NodeWebServlet;
@@ -43,7 +52,6 @@ public class EmbeddedSchedulersNodeLauncher {
 
 	public static void main(String[] args) throws Exception {
 		URL.setURLStreamHandlerFactory(new FsUrlStreamHandlerFactory());
-		log.info(MDCScalaConstants.SCALA_VERSION());
 		Utils.loadLog4JSystemProperties(MDCConstants.PREV_FOLDER + MDCConstants.FORWARD_SLASH
 				+ MDCConstants.DIST_CONFIG_FOLDER + MDCConstants.FORWARD_SLASH, MDCConstants.MDC_PROPERTIES);
 		var cdl = new CountDownLatch(3);
@@ -62,8 +70,6 @@ public class EmbeddedSchedulersNodeLauncher {
 			cf.start();
 			cf.blockUntilConnected();
 			ByteBufferPoolDirect.init();
-			ByteBufferPool.init(Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.BYTEBUFFERPOOL_MAX,
-					MDCConstants.BYTEBUFFERPOOL_MAX_DEFAULT)));
 			startTaskScheduler(cf, cdl);
 			startTaskSchedulerStream(cf, cdl);
 			startContainerLauncher(cdl);
@@ -83,13 +89,13 @@ public class EmbeddedSchedulersNodeLauncher {
 	static ServerEndpoint server = null;
 	@SuppressWarnings("resource")
 	public static void startContainerLauncher(CountDownLatch cdl) {
-		HeartBeatServerStream hbss = new HeartBeatServerStream();
+		HeartBeatStream hbss = new HeartBeatStream();
 		try {
 			var port = Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.NODE_PORT));
 			var pingdelay = Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULER_PINGDELAY));
 			var host = NetworkUtil.getNetworkAddress(MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_HOST));
 			hbss.init(0, port, host, 0, pingdelay, "");
-			var hb = new HeartBeatServer();
+			var hb = new HeartBeat();
 			hb.init(0, port, host, 0, pingdelay, "");
 			hbss.ping();
 			var escontainer = Executors.newWorkStealingPool();
@@ -197,7 +203,7 @@ public class EmbeddedSchedulersNodeLauncher {
 									+ MDCConstants.UNDERSCORE
 									+ MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULERSTREAM_PORT));
 		}
-		var hbss = new HeartBeatServerStream();
+		var hbss = new HeartBeatStream();
 		hbss.init(Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULERSTREAM_RESCHEDULEDELAY)),
 				Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULERSTREAM_PORT)),
 				NetworkUtil.getNetworkAddress(MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULERSTREAM_HOST)),
@@ -276,7 +282,7 @@ public class EmbeddedSchedulersNodeLauncher {
 
 	@SuppressWarnings({ "unchecked", "resource" })
 	public static void startTaskScheduler(CuratorFramework cf, CountDownLatch cdl) throws Exception {
-		var hbs = new HeartBeatServer();
+		var hbs = new HeartBeat();
 		hbs.init(Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULER_RESCHEDULEDELAY)),
 				Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULER_PORT)),
 				NetworkUtil.getNetworkAddress(MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULER_HOST)),

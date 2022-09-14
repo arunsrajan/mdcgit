@@ -50,7 +50,6 @@ public class CacheUtilsTest {
 				+ MDCConstants.DIST_CONFIG_FOLDER + MDCConstants.FORWARD_SLASH, MDCConstants.MDC_TEST_PROPERTIES);
 		CacheUtils.initCache();
 		ByteBufferPoolDirect.init();
-		ByteBufferPool.init(Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.BYTEBUFFERPOOL_MAX, MDCConstants.BYTEBUFFERPOOL_MAX_DEFAULT)));
 	}
 
 	@Test

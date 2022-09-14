@@ -18,7 +18,6 @@ package com.github.mdc.tasks.executor;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.OutputStream;
-import java.net.Socket;
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
@@ -29,22 +28,21 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutorService;
 
-import com.esotericsoftware.kryonetty.ServerEndpoint;
-import com.esotericsoftware.kryonetty.network.ReceiveEvent;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.log4j.Logger;
 import org.ehcache.Cache;
 
+import com.esotericsoftware.kryonetty.ServerEndpoint;
+import com.esotericsoftware.kryonetty.network.ReceiveEvent;
 import com.github.mdc.common.ApplicationTask.TaskStatus;
 import com.github.mdc.common.BlocksLocation;
-import com.github.mdc.common.CacheAvailability;
 import com.github.mdc.common.CacheUtils;
 import com.github.mdc.common.CloseStagesGraphExecutor;
 import com.github.mdc.common.Context;
 import com.github.mdc.common.FileSystemSupport;
 import com.github.mdc.common.FreeResourcesCompletedJob;
-import com.github.mdc.common.HeartBeatServerStream;
+import com.github.mdc.common.HeartBeatStream;
 import com.github.mdc.common.HeartBeatTaskScheduler;
 import com.github.mdc.common.HeartBeatTaskSchedulerStream;
 import com.github.mdc.common.JobStage;
@@ -78,7 +76,7 @@ public class TaskExecutor implements Runnable {
 	Map<String, Map<String, Object>> jobidstageidexecutormap;
 	Map<String, HeartBeatTaskScheduler> hbtsappid = new ConcurrentHashMap<>();
 	Map<String, HeartBeatTaskSchedulerStream> hbtssjobid = new ConcurrentHashMap<>();
-	Map<String, HeartBeatServerStream> containeridhbss = new ConcurrentHashMap<>();
+	Map<String, HeartBeatStream> containeridhbss = new ConcurrentHashMap<>();
 	Map<String, JobStage> jobidstageidjobstagemap;
 	Queue<Object> taskqueue;
 	ReceiveEvent event;
@@ -87,7 +85,7 @@ public class TaskExecutor implements Runnable {
 			Map<String, Object> apptaskexecutormap, Map<String, Object> jobstageexecutormap,
 			ConcurrentMap<String, OutputStream> resultstream, Cache inmemorycache, Object deserobj,
 			Map<String, HeartBeatTaskScheduler> hbtsappid, Map<String, HeartBeatTaskSchedulerStream> hbtssjobid,
-			Map<String, HeartBeatServerStream> containeridhbss,
+			Map<String, HeartBeatStream> containeridhbss,
 			Map<String, Map<String, Object>> jobidstageidexecutormap, Queue<Object> taskqueue,
 			Map<String, JobStage> jobidstageidjobstagemap, ReceiveEvent event) {
 		this.s = s;
@@ -187,22 +185,22 @@ public class TaskExecutor implements Runnable {
 					s.send(event.getCtx(), true);
 				}
 			} else if (deserobj instanceof FreeResourcesCompletedJob cce) {
-				var jsem = jobidstageidexecutormap.remove(cce.jobid);
+				var jsem = jobidstageidexecutormap.remove(cce.getJobid());
 				if (!Objects.isNull(jsem)) {
 					var keys = jsem.keySet();
 					for (var key : keys) {
 						jsem.remove(key);
-						jobstageexecutormap.remove(cce.jobid + key);
-						log.info("Removed stages: " + cce.jobid + key);
+						jobstageexecutormap.remove(cce.getJobid() + key);
+						log.info("Removed stages: " + cce.getJobid() + key);
 					}
 				}
-				var hbtss = hbtssjobid.remove(cce.jobid);
+				var hbtss = hbtssjobid.remove(cce.getJobid());
 				if (!Objects.isNull(hbtss)) {
 					log.info("Hearbeat task scheduler stream closing....: " + hbtss);
 					hbtss.close();
 					log.info("Hearbeat task scheduler stream closed: " + hbtss);
 				}
-				var hbss = containeridhbss.get(cce.containerid);
+				var hbss = containeridhbss.get(cce.getContainerid());
 				if (!Objects.isNull(hbss)) {
 					log.info("Hearbeat closing....: " + hbtss);
 					hbss.close();
@@ -249,18 +247,6 @@ public class TaskExecutor implements Runnable {
 				}
 
 				log.info("Exiting RemoteDataFetch: ");
-			} else if (deserobj instanceof CacheAvailability ca) {
-				var bl = ca.getBl();
-				ca.setAvailable(true);
-				for (var block : bl.getBlock()) {
-					var blockkey = block.getFilename() + "-" + block.getBlockstart() + "-" + block.getBlockend();
-					if (!inmemorycache.containsKey(blockkey) || inmemorycache.get(blockkey) == null) {
-						ca.setAvailable(false);
-						break;
-					}
-				}
-				ca.setResponse(true);
-				s.send(event.getCtx(), ca);
 			} else if (deserobj instanceof List objects) {
 				var object = objects.get(0);
 				var applicationid = (String) objects.get(1);

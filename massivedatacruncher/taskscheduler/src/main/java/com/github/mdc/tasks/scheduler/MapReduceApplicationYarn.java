@@ -19,7 +19,6 @@ import java.io.File;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -45,11 +44,10 @@ import org.apache.log4j.Logger;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.yarn.client.CommandYarnClient;
 
-import com.github.mdc.common.BlockExecutors;
 import com.github.mdc.common.BlocksLocation;
 import com.github.mdc.common.DataCruncherContext;
 import com.github.mdc.common.HDFSBlockUtils;
-import com.github.mdc.common.HeartBeatServer;
+import com.github.mdc.common.HeartBeat;
 import com.github.mdc.common.HeartBeatTaskScheduler;
 import com.github.mdc.common.JobMetrics;
 import com.github.mdc.common.MDCConstants;
@@ -81,12 +79,10 @@ public class MapReduceApplicationYarn implements Callable<List<DataCruncherConte
 	List<String> nodes;
 	CuratorFramework cf;
 	static Logger log = Logger.getLogger(MapReduceApplicationYarn.class);
-	Set<BlockExecutors> locations;
 	List<LocatedBlock> locatedBlocks;
-	Collection<String> locationsblock;
 	int executorindex;
 	ExecutorService es;
-	HeartBeatServer hbs;
+	HeartBeat hbs;
 
 	public MapReduceApplicationYarn(String jobname, JobConfiguration jobconf, List<MapperInput> mappers,
 			List<Class<?>> combiners, List<Class<?>> reducers, String outputfolder) {
@@ -158,7 +154,7 @@ public class MapReduceApplicationYarn implements Callable<List<DataCruncherConte
 			blocksize = Integer.parseInt(jobconf.getBlocksize());
 			var jm = new JobMetrics();
 			jm.jobstarttime = System.currentTimeMillis();
-			jm.jobid = applicationid;
+			jm.setJobid(applicationid);
 			MDCJobMetrics.put(jm);
 			hdfs = FileSystem.get(new URI(MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL)),
 					configuration);
@@ -198,13 +194,13 @@ public class MapReduceApplicationYarn implements Callable<List<DataCruncherConte
 				mrtaskcount += bls.size();
 				folderfileblocksmap.put(hdfsdir, bls);
 				allfiles.addAll(Utils.getAllFilePaths(blockpath));
-				jm.totalfilesize += Utils.getTotalLengthByFiles(hdfs, blockpath);
+				jm.setTotalfilesize(jm.getTotalfilesize() + Utils.getTotalLengthByFiles(hdfs, blockpath));
 				blockpath.clear();
 			}
 
-			jm.totalfilesize = jm.totalfilesize / MDCConstants.MB;
-			jm.files = allfiles;
-			jm.mode = jobconf.execmode;
+			jm.setTotalfilesize(jm.getTotalfilesize() / MDCConstants.MB);
+			jm.setFiles(allfiles);
+			jm.setMode(jobconf.execmode);
 			jm.totalblocks = bls.size();
 			log.debug("Total MapReduce Tasks: " + mrtaskcount);
 			for (var mapperinput : mappers) {

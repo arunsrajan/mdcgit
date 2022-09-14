@@ -45,7 +45,6 @@ import org.springframework.yarn.am.container.AbstractLauncher;
 
 import com.github.mdc.common.ApplicationTask;
 import com.github.mdc.common.BlocksLocation;
-import com.github.mdc.common.ByteBufferPool;
 import com.github.mdc.common.ByteBufferPoolDirect;
 import com.github.mdc.common.Context;
 import com.github.mdc.common.DataCruncherContext;
@@ -109,7 +108,6 @@ public class MapReduceYarnAppmaster extends StaticEventingAppmaster implements C
 			var prop = new Properties();
 			MDCProperties.put(prop);
 			ByteBufferPoolDirect.init();
-			ByteBufferPool.init(3);
 			log.info("Environment: " + getEnvironment());
 			var yarninputfolder = MDCConstants.YARNINPUTFOLDER + MDCConstants.FORWARD_SLASH
 					+ getEnvironment().get(MDCConstants.YARNMDCJOBID);

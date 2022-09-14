@@ -2,7 +2,6 @@ package com.github.mdc.stream.scheduler;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.URL;
 import java.util.ArrayList;
@@ -29,10 +28,9 @@ import org.jgroups.View;
 import org.xerial.snappy.SnappyInputStream;
 
 import com.esotericsoftware.kryo.io.Input;
-import com.github.mdc.common.ByteBufferPool;
 import com.github.mdc.common.ByteBufferPoolDirect;
 import com.github.mdc.common.CacheUtils;
-import com.github.mdc.common.HeartBeatServerStream;
+import com.github.mdc.common.HeartBeatStream;
 import com.github.mdc.common.Job;
 import com.github.mdc.common.LoadJar;
 import com.github.mdc.common.MDCConstants;
@@ -53,7 +51,7 @@ import com.github.mdc.common.ZookeeperOperations;
  */
 public class StreamPipelineTaskSchedulerRunner {
 	static Logger log = Logger.getLogger(StreamPipelineTaskSchedulerRunner.class);
-	private static HeartBeatServerStream hbss;
+	private static HeartBeatStream hbss;
 	static ServerSocket ss = null;
 	static ExecutorService esstream;
 	static ExecutorService es;
@@ -80,8 +78,6 @@ public class StreamPipelineTaskSchedulerRunner {
 			cf.start();
 			cf.blockUntilConnected();
 			ByteBufferPoolDirect.init();
-			ByteBufferPool.init(Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.BYTEBUFFERPOOL_MAX,
-					MDCConstants.BYTEBUFFERPOOL_MAX_DEFAULT)));
 			try (LeaderLatch ll = new LeaderLatch(cf,
 					MDCConstants.FORWARD_SLASH + MDCProperties.get().getProperty(MDCConstants.CLUSTERNAME)
 							+ MDCConstants.FORWARD_SLASH + MDCConstants.TSS)) {
@@ -131,7 +127,7 @@ public class StreamPipelineTaskSchedulerRunner {
 												+ MDCConstants.UNDERSCORE + MDCProperties.get()
 														.getProperty(MDCConstants.TASKSCHEDULERSTREAM_PORT));
 							}
-							hbss = new HeartBeatServerStream();
+							hbss = new HeartBeatStream();
 							hbss.init(
 									Integer.parseInt(MDCProperties.get()
 											.getProperty(MDCConstants.TASKSCHEDULERSTREAM_RESCHEDULEDELAY)),
@@ -212,7 +208,7 @@ public class StreamPipelineTaskSchedulerRunner {
 							Set<String> jobkeys = jobidjobmap.keySet();
 							for (String jobkey : jobkeys) {
 								Job job = jobidjobmap.remove(jobkey);
-								if (!job.iscompleted) {
+								if (!job.isIscompleted()) {
 									log.info("Executing Job....." + job);
 									executeIncompleteJobs(job);
 								}
@@ -280,7 +276,7 @@ public class StreamPipelineTaskSchedulerRunner {
 												var decompressor = new SnappyInputStream(bais);
 												var input = new Input(decompressor);) {
 											var job = (Job) Utils.readKryoInputObjectWithClass(kryo, input);
-											jobidjobmap.put(job.id, job);
+											jobidjobmap.put( job.getId(), job);
 											log.info("Received Job: " + jobidjobmap);
 											log.info("Exiting MassiveDataStreamTaskSchedulerDaemon.Receiver.receive");
 										}

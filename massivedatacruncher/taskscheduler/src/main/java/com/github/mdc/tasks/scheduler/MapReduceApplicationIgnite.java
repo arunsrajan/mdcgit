@@ -19,7 +19,6 @@ import java.io.ByteArrayOutputStream;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -58,7 +57,6 @@ import com.github.dexecutor.core.DefaultDexecutor;
 import com.github.dexecutor.core.DexecutorConfig;
 import com.github.dexecutor.core.ExecutionConfig;
 import com.github.dexecutor.core.task.TaskProvider;
-import com.github.mdc.common.BlockExecutors;
 import com.github.mdc.common.BlocksLocation;
 import com.github.mdc.common.Context;
 import com.github.mdc.common.DataCruncherContext;
@@ -74,9 +72,9 @@ import com.github.mdc.stream.utils.FileBlocksPartitionerHDFS;
 import com.github.mdc.tasks.executor.Combiner;
 import com.github.mdc.tasks.executor.Mapper;
 import com.github.mdc.tasks.executor.Reducer;
-import com.github.mdc.tasks.scheduler.ignite.MapReduceResult;
 import com.github.mdc.tasks.scheduler.ignite.IgniteMapperCombiner;
 import com.github.mdc.tasks.scheduler.ignite.IgniteReducer;
+import com.github.mdc.tasks.scheduler.ignite.MapReduceResult;
 
 @SuppressWarnings("rawtypes")
 public class MapReduceApplicationIgnite implements Callable<List<DataCruncherContext>> {
@@ -101,9 +99,7 @@ public class MapReduceApplicationIgnite implements Callable<List<DataCruncherCon
 	List<String> nodes;
 	CuratorFramework cf;
 	static Logger log = Logger.getLogger(MapReduceApplicationIgnite.class);
-	Set<BlockExecutors> locations;
 	List<LocatedBlock> locatedBlocks;
-	Collection<String> locationsblock;
 	int executorindex;
 	ExecutorService es;
 
@@ -160,7 +156,7 @@ public class MapReduceApplicationIgnite implements Callable<List<DataCruncherCon
 			var mrtaskcount = 0;
 			var jm = new JobMetrics();
 			jm.jobstarttime = System.currentTimeMillis();
-			jm.jobid = MDCConstants.MDCAPPLICATION + MDCConstants.HYPHEN + System.currentTimeMillis();
+			jm.setJobid(MDCConstants.MDCAPPLICATION + MDCConstants.HYPHEN + System.currentTimeMillis());
 			MDCJobMetrics.put(jm);
 			var cfg = new IgniteConfiguration();
 			// The node will be started as a client node.
@@ -191,7 +187,7 @@ public class MapReduceApplicationIgnite implements Callable<List<DataCruncherCon
 				var paths = FileUtil.stat2Paths(fileStatus);
 				blockpath.addAll(Arrays.asList(paths));
 				allfiles.addAll(Utils.getAllFilePaths(blockpath));
-				jm.totalfilesize += Utils.getTotalLengthByFiles(hdfs, blockpath);
+				jm.setTotalfilesize(jm.getTotalfilesize() + Utils.getTotalLengthByFiles(hdfs, blockpath));
 				bls = new ArrayList<>();
 				if (isblocksuserdefined) {
 					bls.addAll(HDFSBlockUtils.getBlocksLocationByFixedBlockSizeAuto(hdfs, blockpath, isblocksuserdefined, blocksize * MDCConstants.MB));
@@ -217,9 +213,9 @@ public class MapReduceApplicationIgnite implements Callable<List<DataCruncherCon
 				}
 				blockpath.clear();
 			}
-			jm.totalfilesize = jm.totalfilesize / MDCConstants.MB;
-			jm.files = allfiles;
-			jm.mode = jobconf.execmode;
+			jm.setTotalfilesize(jm.getTotalfilesize() / MDCConstants.MB);
+			jm.setFiles(allfiles);
+			jm.setMode(jobconf.execmode);
 			jm.totalblocks = bls.size();
 			log.debug("Total MapReduce Tasks: " + mdcmcs.size());
 

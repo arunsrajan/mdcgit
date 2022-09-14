@@ -32,12 +32,10 @@ import org.ehcache.Cache;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 
-import com.github.mdc.common.ByteBufferPool;
 import com.github.mdc.common.ByteBufferPoolDirect;
 import com.github.mdc.common.CacheUtils;
 import com.github.mdc.common.MDCCache;
 import com.github.mdc.common.MDCConstants;
-import com.github.mdc.common.MDCProperties;
 import com.github.mdc.common.Utils;
 import com.github.sakserv.minicluster.impl.HdfsLocalCluster;
 
@@ -88,7 +86,6 @@ public class StreamPipelineTestCommon {
 				+ MDCConstants.DIST_CONFIG_FOLDER + MDCConstants.FORWARD_SLASH, "mdctest.properties");
 		ByteBufferPoolDirect.init();
 		CacheUtils.initCache();
-		ByteBufferPool.init(Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.BYTEBUFFERPOOL_MAX, MDCConstants.BYTEBUFFERPOOL_MAX_DEFAULT)));
 		cache = (Cache<String, byte[]>) MDCCache.get();
 		hdfs = FileSystem.newInstance(new URI(hdfsurl),
 				conf);

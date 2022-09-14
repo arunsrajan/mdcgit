@@ -19,6 +19,11 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
 
+/**
+ * The direct byte buffer output stream
+ * @author arun
+ *
+ */
 public class ByteBufferOutputStream extends OutputStream {
 	private ByteBuffer bb;
 

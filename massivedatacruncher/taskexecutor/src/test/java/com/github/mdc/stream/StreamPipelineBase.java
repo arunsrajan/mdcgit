@@ -28,7 +28,7 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.log4j.Logger;
 
 import com.esotericsoftware.kryonetty.ServerEndpoint;
-import com.github.mdc.common.HeartBeatServerStream;
+import com.github.mdc.common.HeartBeatStream;
 import com.github.mdc.common.PipelineConfig;
 import com.github.sakserv.minicluster.impl.HdfsLocalCluster;
 import com.github.sakserv.minicluster.impl.YarnLocalCluster;
@@ -87,10 +87,10 @@ public class StreamPipelineBase {
 	static int namenodeport = 9000;
 	static int namenodehttpport = 60070;
 	public static final String ZK_BASE_PATH = "/mdc/cluster1";
-	protected static HeartBeatServerStream hb;
+	protected static HeartBeatStream hb;
 	protected static String host;
 	static Logger log = Logger.getLogger(StreamPipelineBase.class);
-	static List<HeartBeatServerStream> hbssl = new ArrayList<>();
+	static List<HeartBeatStream> hbssl = new ArrayList<>();
 	static List<ServerEndpoint> sss = new ArrayList<>();
 	static ExecutorService threadpool, executorpool;
 	static int numberofnodes = 1;

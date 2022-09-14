@@ -54,11 +54,11 @@ public class FileBlocksPartitioner {
 		// Getting the ignite client
 		var ignite = MDCIgniteClient.instance(pc);
 		IgniteCache<Object, byte[]> ignitecache = ignite.cache(MDCConstants.MDCCACHE);
-		job.ignite = ignite;
-		var computeservers = job.ignite.cluster().forServers();
-		job.jm.containersallocated = computeservers.hostNames().stream().collect(Collectors.toMap(key -> key, value -> 0d));
-		job.igcache = ignitecache;
-		job.stageoutputmap = new ConcurrentHashMap<>();
+		job.setIgnite(ignite);
+		var computeservers = job.getIgnite().cluster().forServers();
+		job.getJm().containersallocated = computeservers.hostNames().stream().collect(Collectors.toMap(key -> key, value -> 0d));
+		job.setIgcache(ignitecache);
+		job.setStageoutputmap(new ConcurrentHashMap<>());
 		for (var rootstage : rootstages) {
 			var obj = roots.next();
 			if (obj instanceof IgnitePipeline mdp) {
@@ -73,7 +73,7 @@ public class FileBlocksPartitioner {
 					partitionFiles(ignitecache, csvfile.getAbsolutePath(), bls);
 				}
 			}
-			job.stageoutputmap.put(rootstage, bls);
+			job.getStageoutputmap().put(rootstage, bls);
 		}
 	}
 

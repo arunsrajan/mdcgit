@@ -22,6 +22,11 @@ import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
 
+/**
+ * Holds LaunchContainer object globally
+ * @author arun
+ *
+ */
 public class GlobalContainerLaunchers {
 
 	private static Logger log = Logger.getLogger(GlobalContainerLaunchers.class);

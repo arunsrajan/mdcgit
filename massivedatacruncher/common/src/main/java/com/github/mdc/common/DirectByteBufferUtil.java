@@ -7,6 +7,11 @@ import java.security.PrivilegedAction;
 
 import sun.misc.Unsafe;
 
+/**
+ * Utility which frees the Direct Byte Buffer memory
+ * @author arun
+ *
+ */
 public final class DirectByteBufferUtil {
 
     //various buffer creation utility functions etc. etc.

@@ -48,7 +48,7 @@ import com.esotericsoftware.kryonetty.network.ReceiveEvent;
 import com.esotericsoftware.kryonetty.network.handler.NetworkHandler;
 import com.esotericsoftware.kryonetty.network.handler.NetworkListener;
 import com.github.mdc.common.CacheUtils;
-import com.github.mdc.common.HeartBeatServerStream;
+import com.github.mdc.common.HeartBeatStream;
 import com.github.mdc.common.MDCCacheManager;
 import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.MDCProperties;
@@ -101,10 +101,10 @@ public class StreamPipelineBaseException {
 	static int namenodeport = 9000;
 	static int namenodehttpport = 60070;
 	public static final String ZK_BASE_PATH = "/mdc/cluster1";
-	static private HeartBeatServerStream hb;
+	static private HeartBeatStream hb;
 	static private String host;
 	static Logger log = Logger.getLogger(StreamPipelineBaseException.class);
-	static List<HeartBeatServerStream> hbssl = new ArrayList<>();
+	static List<HeartBeatStream> hbssl = new ArrayList<>();
 	static List<ServerEndpoint> sss = new ArrayList<>();
 	static ExecutorService threadpool, executorpool;
 	static int numberofnodes = 1;
@@ -143,7 +143,7 @@ public class StreamPipelineBaseException {
 					configuration);
 			Boolean islocal = Boolean.parseBoolean(pipelineconfig.getLocal());
 			if (numberofnodes > 0) {
-				hb = new HeartBeatServerStream();
+				hb = new HeartBeatStream();
 				int rescheduledelay = Integer
 						.parseInt(MDCProperties.get().getProperty("taskschedulerstream.rescheduledelay"));
 				int initialdelay = Integer.parseInt(MDCProperties.get().getProperty("taskschedulerstream.initialdelay"));
@@ -165,7 +165,7 @@ public class StreamPipelineBaseException {
 						configuration);
 				var containeridports = new ConcurrentHashMap<String, List<Integer>>();
 				while (executorsindex < numberofnodes) {
-					hb = new HeartBeatServerStream();
+					hb = new HeartBeatStream();
 					host = NetworkUtil.getNetworkAddress(MDCProperties.get().getProperty("taskexecutor.host"));
 					hb.init(rescheduledelay, nodeport, host, initialdelay, pingdelay, "");
 					hb.ping();
@@ -256,7 +256,7 @@ public class StreamPipelineBaseException {
 			threadpool.shutdown();
 		}
 		testingserver.close();
-		for (HeartBeatServerStream hbss : hbssl) {
+		for (HeartBeatStream hbss : hbssl) {
 			hbss.stop();
 			hbss.destroy();
 		}

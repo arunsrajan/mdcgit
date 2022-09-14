@@ -27,11 +27,9 @@ import org.jooq.lambda.tuple.Tuple2;
 import org.junit.Test;
 
 import com.esotericsoftware.kryo.io.Output;
-import com.github.mdc.common.ByteBufferPool;
 import com.github.mdc.common.ByteBufferPoolDirect;
 import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.MDCNodesResources;
-import com.github.mdc.common.MDCProperties;
 import com.github.mdc.common.PipelineConfig;
 import com.github.mdc.common.Resources;
 import com.github.mdc.common.Utils;
@@ -91,7 +89,6 @@ public class LaunchContainersTest extends StreamPipelineBaseTestCommon {
 		var lc = Utils.launchContainers(1);
 		assertNotNull(lc);
 		ByteBufferPoolDirect.init();
-		ByteBufferPool.init(Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.BYTEBUFFERPOOL_MAX, MDCConstants.BYTEBUFFERPOOL_MAX_DEFAULT)));
 		pc.setLocal("false");
 		pc.setUseglobaltaskexecutors(true);
 		StreamPipeline<String> datastream = StreamPipeline.newStreamHDFS("hdfs://127.0.0.1:9000", "/airline1989", pc);

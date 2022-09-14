@@ -16,7 +16,7 @@ import org.apache.hadoop.fs.FsUrlStreamHandlerFactory;
 import org.apache.log4j.Logger;
 
 import com.esotericsoftware.kryo.io.Input;
-import com.github.mdc.common.HeartBeatServer;
+import com.github.mdc.common.HeartBeat;
 import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.MDCProperties;
 import com.github.mdc.common.NetworkUtil;
@@ -42,7 +42,7 @@ public class TaskSchedulerRunner {
 				var ss = Utils.createSSLServerSocket(
 						Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULER_PORT)));) {
 			cf.start();
-			var hbs = new HeartBeatServer();
+			var hbs = new HeartBeat();
 			hbs.init(Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULER_RESCHEDULEDELAY)),
 					Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULER_PORT)),
 					NetworkUtil.getNetworkAddress(MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULER_HOST)),

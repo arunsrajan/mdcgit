@@ -32,8 +32,6 @@ import org.apache.log4j.Logger;
 import org.ehcache.Cache;
 import org.xerial.snappy.SnappyInputStream;
 
-import com.github.mdc.common.ByteBufferPool;
-import com.github.mdc.common.CloseableByteBufferOutputStream;
 import com.github.mdc.common.HeartBeatTaskSchedulerStream;
 import com.github.mdc.common.JobStage;
 import com.github.mdc.common.MDCConstants;
@@ -85,7 +83,7 @@ public final class StreamPipelineTaskExecutorInMemoryDisk extends StreamPipeline
 		log.debug("Entered MassiveDataStreamTaskExecutorInMemory.createIntermediateDataToFS");
 		try {
 			OutputStream os;
-			os = new CloseableByteBufferOutputStream(ByteBufferPool.get().borrowObject());
+			os = new ByteArrayOutputStream();
 			log.debug("Exiting MassiveDataStreamTaskExecutorInMemory.createIntermediateDataToFS");
 			return os;
 		} catch (Exception e) {

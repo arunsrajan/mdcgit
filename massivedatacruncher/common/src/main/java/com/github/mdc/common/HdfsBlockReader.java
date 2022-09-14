@@ -227,22 +227,6 @@ public class HdfsBlockReader {
 		return totalmemoryrequired;
 	}
 
-	public static Set<BlockExecutors> sort(Set<BlockExecutors> blocks) {
-		return blocks.parallelStream().sorted((b1, b2) -> {
-			return b1.numberofblockstoread - b2.numberofblockstoread;
-		}).collect(Collectors.toCollection(LinkedHashSet::new));
-	}
-
-	public static String getLocation(Collection<String> locationsblock, Set<BlockExecutors> blocks) {
-		for (var be : blocks) {
-			if (locationsblock.contains(be.hp)) {
-				be.numberofblockstoread++;
-				return be.hp;
-			}
-		}
-		return null;
-	}
-
 	/**
 	 * The block reader for reading block information.
 	 * @param fs

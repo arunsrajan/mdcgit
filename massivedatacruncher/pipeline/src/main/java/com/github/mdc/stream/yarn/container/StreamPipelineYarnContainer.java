@@ -28,7 +28,6 @@ import org.springframework.yarn.integration.container.AbstractIntegrationYarnCon
 import org.springframework.yarn.integration.ip.mind.MindAppmasterServiceClient;
 
 import com.esotericsoftware.kryo.io.Input;
-import com.github.mdc.common.ByteBufferPool;
 import com.github.mdc.common.ByteBufferPoolDirect;
 import com.github.mdc.common.JobStage;
 import com.github.mdc.common.MDCConstants;
@@ -70,7 +69,6 @@ public class StreamPipelineYarnContainer extends AbstractIntegrationYarnContaine
 			prop.putAll(System.getProperties());
 			MDCProperties.put(prop);
 			ByteBufferPoolDirect.init();
-			ByteBufferPool.init(3);
 			while (true) {
 				request = new JobRequest();
 				request.setState(JobRequest.State.WHATTODO);

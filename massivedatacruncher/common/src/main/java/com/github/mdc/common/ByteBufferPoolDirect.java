@@ -19,6 +19,11 @@ import java.util.Objects;
 
 import com.github.pbbl.direct.DirectByteBufferPool;
 
+/**
+ * Direct Byte buffer pool which allocates byte buffer 
+ * @author arun
+ *
+ */
 public class ByteBufferPoolDirect {
 	private static DirectByteBufferPool pool;
 

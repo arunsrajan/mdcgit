@@ -1,15 +1,18 @@
 package com.github.mdc.common;
 
+import static java.util.Objects.nonNull;
+
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
 import java.util.Map;
-import java.util.concurrent.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Semaphore;
 
 import org.apache.commons.lang.mutable.MutableBoolean;
 import org.apache.log4j.Logger;
-
-import static java.util.Objects.nonNull;
 
 /**
  *

@@ -40,7 +40,6 @@ import org.springframework.yarn.am.allocate.DefaultContainerAllocator;
 import org.springframework.yarn.am.container.AbstractLauncher;
 
 import com.github.mdc.common.BlocksLocation;
-import com.github.mdc.common.ByteBufferPool;
 import com.github.mdc.common.ByteBufferPoolDirect;
 import com.github.mdc.common.DAGEdge;
 import com.github.mdc.common.JobStage;
@@ -99,7 +98,6 @@ public class StreamPipelineYarnAppmaster extends StaticEventingAppmaster impleme
 			var prop = new Properties();
 			MDCProperties.put(prop);
 			ByteBufferPoolDirect.init();
-			ByteBufferPool.init(3);
 			log.debug("Task Id Counter: " + taskidcounter);
 			log.debug("Environment: " + getEnvironment());
 			var yarninputfolder = MDCConstants.YARNINPUTFOLDER + MDCConstants.FORWARD_SLASH

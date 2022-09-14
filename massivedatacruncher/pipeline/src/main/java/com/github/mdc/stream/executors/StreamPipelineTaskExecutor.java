@@ -59,7 +59,6 @@ import com.esotericsoftware.kryo.io.Output;
 import com.github.mdc.common.Blocks;
 import com.github.mdc.common.BlocksLocation;
 import com.github.mdc.common.ByteBufferInputStream;
-import com.github.mdc.common.CloseableByteBufferOutputStream;
 import com.github.mdc.common.FileSystemSupport;
 import com.github.mdc.common.HdfsBlockReader;
 import com.github.mdc.common.HeartBeatTaskSchedulerStream;
@@ -828,10 +827,7 @@ public sealed class StreamPipelineTaskExecutor implements
 	@SuppressWarnings("unchecked")
 	public void cacheAble(OutputStream fsdos) {
 		if (iscacheable) {
-			ByteBuffer buf = ((CloseableByteBufferOutputStream) fsdos).get();
-			byte[] bt = new byte[buf.position()];
-			buf.flip();
-			buf.get(bt);
+			byte[] bt = ((ByteArrayOutputStream) fsdos).toByteArray();
 			cache.put(getIntermediateDataFSFilePath(task), bt);
 		}
 	}
@@ -2684,11 +2680,8 @@ public sealed class StreamPipelineTaskExecutor implements
 	}
 
 	public void writeFinalPhaseResultsToHdfs(OutputStream os) throws Exception {
-		if (os instanceof CloseableByteBufferOutputStream cbbos) {
-			log.info("Limit of Buffer: " + cbbos.get().limit());
-			cbbos.get().flip();
-			log.info("Buffer Allocated: " + cbbos.get());
-			try (InputStream sis = new ByteBufferInputStream(cbbos.get());) {
+		if (os instanceof ByteArrayOutputStream baos) {
+			try (InputStream sis = new ByteArrayInputStream(baos.toByteArray());) {
 				Utils.writeResultToHDFS(task.hdfsurl, task.filepath, sis);
 			} catch (Exception ex) {
 				log.error(MDCConstants.EMPTY, ex);

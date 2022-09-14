@@ -900,14 +900,14 @@ public sealed class StreamPipeline<I1> extends AbstractPipeline permits CsvStrea
 		}
 		else {
 			jobCreated = new Job();
-			jobCreated.id = MDCConstants.JOB+MDCConstants.HYPHEN+Utils.getUniqueJobID();
-			jobCreated.jm = new JobMetrics();
-			jobCreated.jm.jobstarttime = System.currentTimeMillis();
-			jobCreated.jm.jobid = jobCreated.id;
+			jobCreated.setId(MDCConstants.JOB+MDCConstants.HYPHEN+Utils.getUniqueJobID());
+			jobCreated.setJm(new JobMetrics());
+			jobCreated.getJm().jobstarttime = System.currentTimeMillis();
+			jobCreated.getJm().setJobid(jobCreated.getId());
 			PipelineConfig pipelineconfig = ((StreamPipeline)root).pipelineconfig;
-			jobCreated.jm.mode = Boolean.parseBoolean(pipelineconfig.getYarn())?MDCConstants.YARN:Boolean.parseBoolean(pipelineconfig.getMesos())?MDCConstants.MESOS:Boolean.parseBoolean(pipelineconfig.getJgroups())?MDCConstants.JGROUPS:Boolean.parseBoolean(pipelineconfig.getLocal())?MDCConstants.LOCAL:MDCConstants.EXECMODE_DEFAULT;
-			jobCreated.jm.jobname = pipelineconfig.getJobname();
-			MDCJobMetrics.put(jobCreated.jm);
+			jobCreated.getJm().setMode(Boolean.parseBoolean(pipelineconfig.getYarn())?MDCConstants.YARN:Boolean.parseBoolean(pipelineconfig.getMesos())?MDCConstants.MESOS:Boolean.parseBoolean(pipelineconfig.getJgroups())?MDCConstants.JGROUPS:Boolean.parseBoolean(pipelineconfig.getLocal())?MDCConstants.LOCAL:MDCConstants.EXECMODE_DEFAULT);
+			jobCreated.getJm().setJobname(pipelineconfig.getJobname());
+			MDCJobMetrics.put(jobCreated.getJm());
 		}
 		
 		getDAG(jobCreated);
@@ -1113,8 +1113,8 @@ public sealed class StreamPipeline<I1> extends AbstractPipeline permits CsvStrea
 			// result been computed.
 			Iterator<Stage> topostages = new TopologicalOrderIterator(graphstages);
 			while (topostages.hasNext())
-				job.topostages.add(topostages.next());
-			job.topostages.retainAll(stages);
+				job.getTopostages().add(topostages.next());
+			job.getTopostages().retainAll(stages);
 			var dbPartitioner = new FileBlocksPartitionerHDFS();
 			dbPartitioner.getJobStageBlocks(job, supplier, ((StreamPipeline)root).protocol, rootstages, mdsroots, ((StreamPipeline)root).blocksize, ((StreamPipeline)root).pipelineconfig);
 			var writer = new StringWriter();
@@ -1202,9 +1202,9 @@ public sealed class StreamPipeline<I1> extends AbstractPipeline permits CsvStrea
 				mdscollect.mdsroots.add(root);
 			}
 			var jobcreated = mdscollect.createJob();
-			jobcreated.trigger = Job.TRIGGER.SAVERESULTSTOFILE;
-			jobcreated.uri = uri.toString();
-			jobcreated.savepath = path;
+			jobcreated.setTrigger(Job.TRIGGER.SAVERESULTSTOFILE);
+			jobcreated.setUri(uri.toString());
+			jobcreated.setSavepath(path);
 			mdscollect.submitJob(jobcreated);			
 	}
 
@@ -1219,7 +1219,7 @@ public sealed class StreamPipeline<I1> extends AbstractPipeline permits CsvStrea
 	private Object submitJob(Job job) throws Exception  {
 		var mdp = (StreamPipeline)root;
 		StreamJobScheduler js = new StreamJobScheduler();
-		job.pipelineconfig = mdp.pipelineconfig;
+		job.setPipelineconfig(mdp.pipelineconfig);
 		return js.schedule(job);
 
 	}
@@ -1235,7 +1235,7 @@ public sealed class StreamPipeline<I1> extends AbstractPipeline permits CsvStrea
 	private List collect(boolean toexecute,Job.TRIGGER jobtrigger) throws PipelineException  {
 		try {
 			var job = createJob();
-			job.trigger = jobtrigger;
+			job.setTrigger(jobtrigger);
 			var results=new ArrayList();
 			if(toexecute) {
 				results = (ArrayList) submitJob(job);

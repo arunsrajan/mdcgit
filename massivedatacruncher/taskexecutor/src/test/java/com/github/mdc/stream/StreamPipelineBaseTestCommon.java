@@ -17,7 +17,6 @@ package com.github.mdc.stream;
 
 import java.io.InputStream;
 import java.net.URI;
-import java.net.URL;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -32,7 +31,6 @@ import org.apache.curator.test.TestingServer;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataOutputStream;
 import org.apache.hadoop.fs.FileSystem;
-import org.apache.hadoop.fs.FsUrlStreamHandlerFactory;
 import org.apache.hadoop.fs.Path;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -42,9 +40,8 @@ import com.esotericsoftware.kryonetty.ServerEndpoint;
 import com.esotericsoftware.kryonetty.network.ReceiveEvent;
 import com.esotericsoftware.kryonetty.network.handler.NetworkHandler;
 import com.esotericsoftware.kryonetty.network.handler.NetworkListener;
-import com.github.mdc.common.ByteBufferPool;
 import com.github.mdc.common.ByteBufferPoolDirect;
-import com.github.mdc.common.HeartBeatServerStream;
+import com.github.mdc.common.HeartBeatStream;
 import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.MDCProperties;
 import com.github.mdc.common.NetworkUtil;
@@ -70,8 +67,6 @@ public class StreamPipelineBaseTestCommon extends StreamPipelineBase {
 			pipelineconfig.setBatchsize("1");
 			System.setProperty("HADOOP_HOME", "C:\\DEVELOPMENT\\hadoop\\hadoop-3.3.1");
 			ByteBufferPoolDirect.init();
-			ByteBufferPool.init(Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.BYTEBUFFERPOOL_MAX,
-					MDCConstants.BYTEBUFFERPOOL_MAX_DEFAULT)));
 			pipelineconfig.setBlocksize("20");
 			testingserver = new TestingServer(zookeeperport);
 			testingserver.start();
@@ -82,7 +77,7 @@ public class StreamPipelineBaseTestCommon extends StreamPipelineBase {
 					configuration);
 			Boolean islocal = Boolean.parseBoolean(pipelineconfig.getLocal());
 			if (numberofnodes > 0) {
-				hb = new HeartBeatServerStream();
+				hb = new HeartBeatStream();
 				int rescheduledelay = Integer
 						.parseInt(MDCProperties.get().getProperty("taskschedulerstream.rescheduledelay"));
 				int initialdelay = Integer
@@ -105,7 +100,7 @@ public class StreamPipelineBaseTestCommon extends StreamPipelineBase {
 						configuration);
 				var containeridports = new ConcurrentHashMap<String, List<Integer>>();
 				while (executorsindex < numberofnodes) {
-					hb = new HeartBeatServerStream();
+					hb = new HeartBeatStream();
 					host = NetworkUtil.getNetworkAddress(MDCProperties.get().getProperty("taskexecutor.host"));
 					hb.init(rescheduledelay, nodeport, host, initialdelay, pingdelay, "");
 					hb.ping();
@@ -196,7 +191,7 @@ public class StreamPipelineBaseTestCommon extends StreamPipelineBase {
 			threadpool.shutdown();
 		}
 		testingserver.close();
-		for (HeartBeatServerStream hbss : hbssl) {
+		for (HeartBeatStream hbss : hbssl) {
 			hbss.stop();
 			hbss.destroy();
 		}
@@ -236,6 +231,5 @@ public class StreamPipelineBaseTestCommon extends StreamPipelineBase {
 			});
 		});
 		ByteBufferPoolDirect.get().close();
-		ByteBufferPool.destroyByteBuffer();
 	}
 }

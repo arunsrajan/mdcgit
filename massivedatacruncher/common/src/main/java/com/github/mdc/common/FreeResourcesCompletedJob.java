@@ -17,13 +17,26 @@ package com.github.mdc.common;
 
 import java.io.Serializable;
 
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+
 /**
  * 
  * @author Arun
  * Retrieve the result of the streaming api job execution.
  */
+@Getter
+@Setter
+@EqualsAndHashCode
+@ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class FreeResourcesCompletedJob implements Serializable {
-	public String jobid;
-	public String containerid;
+	private String jobid;
+	private String containerid;
 	private static final long serialVersionUID = -8474439567106417669L;
 }

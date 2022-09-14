@@ -36,7 +36,6 @@ import org.springframework.yarn.integration.container.AbstractIntegrationYarnCon
 import org.springframework.yarn.integration.ip.mind.MindAppmasterServiceClient;
 
 import com.esotericsoftware.kryo.io.Input;
-import com.github.mdc.common.ByteBufferPool;
 import com.github.mdc.common.ByteBufferPoolDirect;
 import com.github.mdc.common.CacheUtils;
 import com.github.mdc.common.Context;
@@ -47,8 +46,8 @@ import com.github.mdc.common.RemoteDataFetcher;
 import com.github.mdc.common.Utils;
 import com.github.mdc.tasks.executor.Combiner;
 import com.github.mdc.tasks.executor.Mapper;
-import com.github.mdc.tasks.executor.Reducer;
 import com.github.mdc.tasks.executor.MapperCombinerExecutor;
+import com.github.mdc.tasks.executor.Reducer;
 import com.github.mdc.tasks.executor.ReducerExecutor;
 
 /**
@@ -81,7 +80,6 @@ public class MapReduceYarnContainer extends AbstractIntegrationYarnContainer {
 			var prop = new Properties();
 			MDCProperties.put(prop);
 			ByteBufferPoolDirect.init();
-			ByteBufferPool.init(3);
 			while (true) {
 				request = new JobRequest();
 				request.setState(JobRequest.State.WHATTODO);

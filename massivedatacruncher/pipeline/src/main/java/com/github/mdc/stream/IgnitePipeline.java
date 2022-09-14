@@ -845,7 +845,7 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 			mdscollect.finaltasks.add(mdscollect.finaltask);
 			mdscollect.mdsroots.add(root);
 			var job = mdscollect.cacheInternal(true, null, null);
-			return (List) job.results;
+			return (List) job.getResults();
 		} catch (Exception ex) {
 			log.error(PipelineConstants.PIPELINECOLLECTERROR, ex);
 			throw new PipelineException(PipelineConstants.PIPELINECOLLECTERROR, ex);
@@ -869,7 +869,7 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 			mdscollect.finaltasks.add(mdp.task);
 			mdscollect.mdsroots.add(root);
 			var job = mdscollect.cacheInternal(true, null, null);
-			return (List) job.results;
+			return (List) job.getResults();
 		}
 		catch (Exception ex) {
 			log.error(PipelineConstants.PIPELINECOUNTERROR, ex);
@@ -892,7 +892,7 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 
 			mdscollect.mdsroots.add(root);
 			var job = mdscollect.cacheInternal(true, null, null);
-			var results = (List<?>) job.results;
+			var results = (List<?>) job.getResults();
 			results.stream().forEach((Consumer) consumer);
 		}
 		catch (Exception ex) {

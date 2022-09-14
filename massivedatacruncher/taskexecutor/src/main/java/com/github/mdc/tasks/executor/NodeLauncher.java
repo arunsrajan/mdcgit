@@ -35,8 +35,8 @@ import com.esotericsoftware.kryonetty.ServerEndpoint;
 import com.esotericsoftware.kryonetty.network.ReceiveEvent;
 import com.esotericsoftware.kryonetty.network.handler.NetworkHandler;
 import com.esotericsoftware.kryonetty.network.handler.NetworkListener;
-import com.github.mdc.common.HeartBeatServer;
-import com.github.mdc.common.HeartBeatServerStream;
+import com.github.mdc.common.HeartBeat;
+import com.github.mdc.common.HeartBeatStream;
 import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.MDCProperties;
 import com.github.mdc.common.NetworkUtil;
@@ -54,11 +54,11 @@ public class NodeLauncher {
 		Utils.loadLog4JSystemProperties(MDCConstants.PREV_FOLDER + MDCConstants.FORWARD_SLASH
 				+ MDCConstants.DIST_CONFIG_FOLDER + MDCConstants.FORWARD_SLASH, MDCConstants.MDC_PROPERTIES);
 		var port = Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.NODE_PORT));
-		try (var hbss = new HeartBeatServerStream();) {
+		try (var hbss = new HeartBeatStream();) {
 			var pingdelay = Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULER_PINGDELAY));
 			var host = NetworkUtil.getNetworkAddress(MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_HOST));
 			hbss.init(0, port, host, 0, pingdelay, "");
-			var hb = new HeartBeatServer();
+			var hb = new HeartBeat();
 			hb.init(0, port, host, 0, pingdelay, "");
 			hbss.ping();
 			hb.ping();

@@ -39,7 +39,7 @@ import com.github.mdc.common.ApplicationTask.TaskType;
  * @author Arun
  * Heart beat task scheduler to receive updates on Job execution from task executors to task schedulers.
  */
-public final class HeartBeatTaskScheduler extends HeartBeatServer implements HeartBeatCloseable {
+public final class HeartBeatTaskScheduler extends HeartBeat implements HeartBeatCloseable {
 
 	private String applicationid,taskid;
 	public TaskStatus taskstatus = TaskStatus.SUBMITTED;

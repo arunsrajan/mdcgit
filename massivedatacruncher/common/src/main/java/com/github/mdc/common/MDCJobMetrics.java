@@ -24,7 +24,7 @@ public class MDCJobMetrics {
 	static Map<String, JobMetrics> jms = new ConcurrentHashMap<String, JobMetrics>();
 
 	public static void put(JobMetrics jm) {
-		jms.put(jm.jobid, jm);
+		jms.put(jm.getJobid(), jm);
 	}
 
 	public static Map<String, JobMetrics> get() {

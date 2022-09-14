@@ -28,7 +28,7 @@ import org.jgroups.View;
  * The Heartbeat server for messaging between task scheduler and
  * task executors implemented using jgroups.
  */
-public sealed class HeartBeatServerStream implements HeartBeatServerMBean,HeartBeatCloseable permits HeartBeatTaskSchedulerStream {
+public sealed class HeartBeatStream implements HeartBeatCloseable permits HeartBeatTaskSchedulerStream {
 	JChannel channel;
 	int serverport;
 	int rescheduledelay = 5000;
@@ -39,7 +39,7 @@ public sealed class HeartBeatServerStream implements HeartBeatServerMBean,HeartB
 
 	Timer pingtimer;
 	Semaphore semaphore = new Semaphore(1);
-	private static Logger log = Logger.getLogger(HeartBeatServerStream.class);
+	private static Logger log = Logger.getLogger(HeartBeatStream.class);
 
 	ConcurrentMap<String, Callable<Object>> jobstagemap = new ConcurrentHashMap<>();
 	private String clusterid;

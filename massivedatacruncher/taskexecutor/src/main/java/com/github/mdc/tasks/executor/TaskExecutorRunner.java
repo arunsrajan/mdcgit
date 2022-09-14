@@ -54,7 +54,7 @@ public class TaskExecutorRunner implements TaskExecutorRunnerMBean {
 	ConcurrentMap<String, OutputStream> resultstream = new ConcurrentHashMap<>();
 	Map<String, HeartBeatTaskScheduler> hbtsappid = new ConcurrentHashMap<>();
 	Map<String, HeartBeatTaskSchedulerStream> hbtssjobid = new ConcurrentHashMap<>();
-	Map<String, HeartBeatServerStream> containeridhbss = new ConcurrentHashMap<>();
+	Map<String, HeartBeatStream> containeridhbss = new ConcurrentHashMap<>();
 	Map<String, Map<String, Object>> jobidstageidexecutormap = new ConcurrentHashMap<>();
 	Map<String, JobStage> jobidstageidjobstagemap = new ConcurrentHashMap<>();
 	Queue<Object> taskqueue = new LinkedBlockingQueue<Object>();
@@ -88,7 +88,6 @@ public class TaskExecutorRunner implements TaskExecutorRunnerMBean {
 		log.info("Direct Memory Allocated: " + args[1]);
 		int directmemory = Integer.valueOf(args[1]) / 128;
 		log.info("Number Of 128 MB directmemory: " + directmemory);
-		ByteBufferPool.init(directmemory);
 		CacheUtils.initCache();
 		int numberofprocessors = Runtime.getRuntime().availableProcessors();
 		es = Executors.newCachedThreadPool();
@@ -106,7 +105,6 @@ public class TaskExecutorRunner implements TaskExecutorRunnerMBean {
 			log.info("Stopping and closes all the connections...");
 			mdted.destroy();
 			ByteBufferPoolDirect.destroy();
-			ByteBufferPool.destroyByteBuffer();
 			log.info("Freed the resources...");
 			Runtime.getRuntime().halt(0);
 		} catch (Exception e) {
@@ -235,7 +233,7 @@ public class TaskExecutorRunner implements TaskExecutorRunnerMBean {
 						}
 						var containerid = (String) jobapp.getContainerid();
 						if (Objects.isNull(containeridhbss.get(containerid))) {
-							HeartBeatServerStream hbss = new HeartBeatServerStream();
+							HeartBeatStream hbss = new HeartBeatStream();
 							var teport = Integer
 									.parseInt(MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_PORT));
 							var pingdelay = Integer

@@ -83,7 +83,7 @@ public class HeartBeatTaskSchedulerStreamTest extends HeartBeatCommon {
 	@Test
 	public void testHBTSSInitWithImproperPingDelay() {
 		try {
-			HeartBeatServerStream hbss = new HeartBeatServerStream();
+			HeartBeatStream hbss = new HeartBeatStream();
 			hbss.init(10000, 2000, "127.0.0.1", 1000, "IMPROPERPINGDELAY", MDCConstants.EMPTY, job + jobid.toString());
 		} catch (Exception ex) {
 			assertEquals(MDCConstants.HEARTBEAT_EXCEPTION_PING_DELAY, ex.getMessage());
@@ -93,7 +93,7 @@ public class HeartBeatTaskSchedulerStreamTest extends HeartBeatCommon {
 	@Test
 	public void testHBTSSInitWithImproperContainerId() {
 		try {
-			HeartBeatServerStream hbss = new HeartBeatServerStream();
+			HeartBeatStream hbss = new HeartBeatStream();
 			hbss.init(10000, 2000, "127.0.0.1", 1000, 5000, 1000.0, job + jobid.toString());
 		} catch (Exception ex) {
 			assertEquals(MDCConstants.HEARTBEAT_EXCEPTION_CONTAINER_ID, ex.getMessage());

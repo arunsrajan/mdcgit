@@ -2,12 +2,10 @@ package com.github.mdc.stream.executors;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentMap;
@@ -18,9 +16,6 @@ import org.apache.log4j.Logger;
 import org.ehcache.Cache;
 import org.xerial.snappy.SnappyInputStream;
 
-import com.github.mdc.common.ByteBufferPool;
-import com.github.mdc.common.ByteBufferPoolDirect;
-import com.github.mdc.common.CloseableByteBufferOutputStream;
 import com.github.mdc.common.JobStage;
 import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.MDCProperties;
@@ -92,7 +87,7 @@ public sealed class StreamPipelineTaskExecutorInMemory extends StreamPipelineTas
 			var path = getIntermediateDataFSFilePath(task);
 			OutputStream os;
 			if(task.finalphase && task.saveresulttohdfs) {
-				os = new CloseableByteBufferOutputStream(ByteBufferPool.get().borrowObject());
+				os = new ByteArrayOutputStream();
 			}
 			else {
 				os = new ByteArrayOutputStream();

@@ -39,7 +39,7 @@ import static java.util.Objects.nonNull;
  * The heart beat server for MR streaming api which 
  * receives the task status updates from streaming task executors.
  */
-public final class HeartBeatTaskSchedulerStream extends HeartBeatServerStream implements HeartBeatCloseable {
+public final class HeartBeatTaskSchedulerStream extends HeartBeatStream implements HeartBeatCloseable {
 	private static Logger log = Logger.getLogger(HeartBeatTaskSchedulerStream.class);
 	private String jobid;
 	private TaskStatus taskstatus = TaskStatus.SUBMITTED;

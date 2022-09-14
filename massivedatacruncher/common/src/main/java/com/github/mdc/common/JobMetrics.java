@@ -29,11 +29,11 @@ import java.util.concurrent.ConcurrentHashMap;
 @NoArgsConstructor
 @AllArgsConstructor
 public class JobMetrics {
-	public String jobname;
-	public String jobid;
-	public List<String> files;
-	public String mode;
-	public double totalfilesize;
+	private String jobname;
+	private String jobid;
+	private List<String> files;
+	private String mode;
+	private double totalfilesize;
 	public List<String> stages;
 	public List<String> containerresources;
 	public Map<String, Double> containersallocated;

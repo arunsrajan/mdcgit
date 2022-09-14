@@ -136,19 +136,19 @@ public class TaskSchedulerWebServlet extends HttpServlet {
 				for (var jm : jobmetrics) {
 					builder.append("<tr bgcolor=\"" + getColor(i++) + "\">");
 					builder.append("<td>");
-					builder.append(jm.jobid);
+					builder.append(jm.getJobid());
 					builder.append("</td>");
 					builder.append("<td>");
-					builder.append(Objects.isNull(jm.jobname) ? MDCConstants.EMPTY : jm.jobname);
+					builder.append(Objects.isNull(jm.getJobname()) ? MDCConstants.EMPTY : jm.getJobname());
 					builder.append("</td>");
 					builder.append("<td>");
-					builder.append(toHtml(jm.files));
+					builder.append(toHtml(jm.getFiles()));
 					builder.append("</td>");
 					builder.append("<td>");
-					builder.append(jm.mode);
+					builder.append(jm.getMode());
 					builder.append("</td>");
 					builder.append("<td>");
-					builder.append(jm.totalfilesize);
+					builder.append(jm.getTotalfilesize());
 					builder.append("</td>");
 					builder.append("<td>");
 					builder.append(jm.totalblocks);
