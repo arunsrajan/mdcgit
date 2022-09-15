@@ -155,7 +155,7 @@ public class MapReduceApplicationIgnite implements Callable<List<DataCruncherCon
 
 			var mrtaskcount = 0;
 			var jm = new JobMetrics();
-			jm.jobstarttime = System.currentTimeMillis();
+			jm.setJobstarttime(System.currentTimeMillis());
 			jm.setJobid(MDCConstants.MDCAPPLICATION + MDCConstants.HYPHEN + System.currentTimeMillis());
 			MDCJobMetrics.put(jm);
 			var cfg = new IgniteConfiguration();
@@ -216,7 +216,7 @@ public class MapReduceApplicationIgnite implements Callable<List<DataCruncherCon
 			jm.setTotalfilesize(jm.getTotalfilesize() / MDCConstants.MB);
 			jm.setFiles(allfiles);
 			jm.setMode(jobconf.execmode);
-			jm.totalblocks = bls.size();
+			jm.setTotalblocks(bls.size());
 			log.debug("Total MapReduce Tasks: " + mdcmcs.size());
 
 			for (var cls : combiners) {
@@ -280,11 +280,11 @@ public class MapReduceApplicationIgnite implements Callable<List<DataCruncherCon
 			} catch (Exception ex) {
 				log.error(MDCConstants.EMPTY, ex);
 			}
-			jm.jobcompletiontime = System.currentTimeMillis();
-			jm.totaltimetaken = (jm.jobcompletiontime - jm.jobstarttime) / 1000.0;
+			jm.setJobcompletiontime(System.currentTimeMillis());
+			jm.setTotaltimetaken((jm.getJobcompletiontime() - jm.getJobstarttime()) / 1000.0);
 			if (!Objects.isNull(jobconf.getOutput())) {
 				Utils.writeKryoOutput(kryo, jobconf.getOutput(),
-						"Completed Job in " + (jm.totaltimetaken) + " seconds");
+						"Completed Job in " + (jm.getTotaltimetaken()) + " seconds");
 			}
 			return result;
 		} catch (Exception ex) {

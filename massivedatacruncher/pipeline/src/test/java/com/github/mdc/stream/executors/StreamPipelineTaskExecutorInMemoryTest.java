@@ -84,16 +84,16 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 	@Test
 	public void testProcessBlockHDFSIntersection() throws Exception {
 		JobStage js = new JobStage();
-		js.stage = new Stage();
-		js.jobid = MDCConstants.JOB + MDCConstants.HYPHEN + System.currentTimeMillis();
-		js.stageid = MDCConstants.STAGE + MDCConstants.HYPHEN + System.currentTimeMillis();
-		js.stage.id = js.stageid;
-		js.stage.tasks = new ArrayList<>();
+		js.setStage(new Stage());
+		js.setJobid(MDCConstants.JOB + MDCConstants.HYPHEN + System.currentTimeMillis());
+		js.setStageid(MDCConstants.STAGE + MDCConstants.HYPHEN + System.currentTimeMillis());
+		js.getStage().id = js.getStageid();
+		js.getStage().tasks = new ArrayList<>();
 		Task task = new Task();
-		task.jobid = js.jobid;
-		task.stageid = js.stageid;
+		task.jobid = js.getJobid();
+		task.stageid = js.getStageid();
 		Object function = new IntersectionFunction();
-		js.stage.tasks.add(function);
+		js.getStage().tasks.add(function);
 
 		StreamPipelineTaskExecutorInMemory mdsteim = new StreamPipelineTaskExecutorInMemory(js, resultstream,
 				MDCCache.get());
@@ -123,16 +123,16 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 	@Test
 	public void testProcessBlockHDFSIntersectionDiff() throws Exception {
 		JobStage js = new JobStage();
-		js.stage = new Stage();
-		js.jobid = MDCConstants.JOB + MDCConstants.HYPHEN + System.currentTimeMillis();
-		js.stageid = MDCConstants.STAGE + MDCConstants.HYPHEN + System.currentTimeMillis();
-		js.stage.id = js.stageid;
-		js.stage.tasks = new ArrayList<>();
+		js.setStage(new Stage());
+		js.setJobid(MDCConstants.JOB + MDCConstants.HYPHEN + System.currentTimeMillis());
+		js.setStageid(MDCConstants.STAGE + MDCConstants.HYPHEN + System.currentTimeMillis());
+		js.getStage().id = js.getStageid();
+		js.getStage().tasks = new ArrayList<>();
 		Task task = new Task();
-		task.jobid = js.jobid;
-		task.stageid = js.stageid;
+		task.jobid = js.getJobid();
+		task.stageid = js.getStageid();
 		Object function = new IntersectionFunction();
-		js.stage.tasks.add(function);
+		js.getStage().tasks.add(function);
 
 		StreamPipelineTaskExecutorInMemory mdsteim = new StreamPipelineTaskExecutorInMemory(js, resultstream,
 				MDCCache.get());
@@ -170,16 +170,16 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 	@Test
 	public void testProcessStreamBlockHDFSIntersectionDiff() throws Exception {
 		JobStage js = new JobStage();
-		js.stage = new Stage();
-		js.jobid = MDCConstants.JOB + MDCConstants.HYPHEN + System.currentTimeMillis();
-		js.stageid = MDCConstants.STAGE + MDCConstants.HYPHEN + System.currentTimeMillis();
-		js.stage.id = js.stageid;
-		js.stage.tasks = new ArrayList<>();
+		js.setStage(new Stage());
+		js.setJobid(MDCConstants.JOB + MDCConstants.HYPHEN + System.currentTimeMillis());
+		js.setStageid(MDCConstants.STAGE + MDCConstants.HYPHEN + System.currentTimeMillis());
+		js.getStage().id = js.getStageid();
+		js.getStage().tasks = new ArrayList<>();
 		Task task = new Task();
-		task.jobid = js.jobid;
-		task.stageid = js.stageid;
+		task.jobid = js.getJobid();
+		task.stageid = js.getStageid();
 		Object function = new IntersectionFunction();
-		js.stage.tasks.add(function);
+		js.getStage().tasks.add(function);
 
 		StreamPipelineTaskExecutorInMemory mdsteim = new StreamPipelineTaskExecutorInMemory(js, resultstream,
 				MDCCache.get());
@@ -210,11 +210,11 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 		InputStream is = new SnappyInputStream(new ByteArrayInputStream(((ByteArrayOutputStream) resultstream.get(path)).toByteArray()));
 		Set<InputStream> istreams = new LinkedHashSet<>(Arrays.asList(is));
 		task = new Task();
-		task.jobid = js.jobid;
-		task.stageid = js.stageid;
+		task.jobid = js.getJobid();
+		task.stageid = js.getStageid();
 		function = new IntersectionFunction();
-		js.stage.tasks.clear();
-		js.stage.tasks.add(function);
+		js.getStage().tasks.clear();
+		js.getStage().tasks.add(function);
 		mdsteim.setTask(task);
 		mdsteim.processBlockHDFSIntersection(istreams, Arrays.asList(bls2.get(0)), hdfs);
 		is.close();
@@ -230,14 +230,14 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 	@Test
 	public void testProcessStreamsBlockHDFSIntersectionDiff() throws Exception {
 		JobStage js = new JobStage();
-		js.stage = new Stage();
-		js.jobid = MDCConstants.JOB + MDCConstants.HYPHEN + System.currentTimeMillis();
-		js.stageid = MDCConstants.STAGE + MDCConstants.HYPHEN + System.currentTimeMillis();
-		js.stage.id = js.stageid;
-		js.stage.tasks = new ArrayList<>();
+		js.setStage(new Stage());
+		js.setJobid(MDCConstants.JOB + MDCConstants.HYPHEN + System.currentTimeMillis());
+		js.setStageid(MDCConstants.STAGE + MDCConstants.HYPHEN + System.currentTimeMillis());
+		js.getStage().id = js.getStageid();
+		js.getStage().tasks = new ArrayList<>();
 		Task task1 = new Task();
 		Object function = new IntersectionFunction();
-		js.stage.tasks.add(function);
+		js.getStage().tasks.add(function);
 
 		StreamPipelineTaskExecutorInMemory mdsteim = new StreamPipelineTaskExecutorInMemory(js, resultstream,
 				MDCCache.get());
@@ -264,11 +264,11 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 		mdsteim.setTask(task1);
 		mdsteim.processBlockHDFSIntersection(bls1.get(0), bls1.get(0), hdfs);
 		Task task2 = new Task();
-		task2.jobid = js.jobid;
-		task2.stageid = js.stageid;
+		task2.jobid = js.getJobid();
+		task2.stageid = js.getStageid();
 		function = new IntersectionFunction();
-		js.stage.tasks.clear();
-		js.stage.tasks.add(function);
+		js.getStage().tasks.clear();
+		js.getStage().tasks.add(function);
 		mdsteim.setTask(task2);
 		mdsteim.processBlockHDFSIntersection(bls2.get(0), bls2.get(0), hdfs);
 		Kryo kryo = Utils.getKryoSerializerDeserializer();
@@ -280,11 +280,11 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 		List<InputStream> istreams2 = Arrays.asList(is2);
 
 		Task taskinter = new Task();
-		taskinter.jobid = js.jobid;
-		taskinter.stageid = js.stageid;
+		taskinter.jobid = js.getJobid();
+		taskinter.stageid = js.getStageid();
 		function = new IntersectionFunction();
-		js.stage.tasks.clear();
-		js.stage.tasks.add(function);
+		js.getStage().tasks.clear();
+		js.getStage().tasks.add(function);
 		mdsteim.setTask(taskinter);
 		mdsteim.processBlockHDFSIntersection(istreams1, istreams2);
 		is1.close();
@@ -301,16 +301,16 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 	@Test
 	public void testProcessBlockHDFSUnion() throws Exception {
 		JobStage js = new JobStage();
-		js.stage = new Stage();
-		js.jobid = MDCConstants.JOB + MDCConstants.HYPHEN + System.currentTimeMillis();
-		js.stageid = MDCConstants.STAGE + MDCConstants.HYPHEN + System.currentTimeMillis();
-		js.stage.id = js.stageid;
-		js.stage.tasks = new ArrayList<>();
+		js.setStage(new Stage());
+		js.setJobid(MDCConstants.JOB + MDCConstants.HYPHEN + System.currentTimeMillis());
+		js.setStageid(MDCConstants.STAGE + MDCConstants.HYPHEN + System.currentTimeMillis());
+		js.getStage().id = js.getStageid();
+		js.getStage().tasks = new ArrayList<>();
 		Task task = new Task();
-		task.jobid = js.jobid;
-		task.stageid = js.stageid;
+		task.jobid = js.getJobid();
+		task.stageid = js.getStageid();
 		Object function = new UnionFunction();
-		js.stage.tasks.add(function);
+		js.getStage().tasks.add(function);
 
 		StreamPipelineTaskExecutorInMemory mdsteim = new StreamPipelineTaskExecutorInMemory(js, resultstream,
 				MDCCache.get());
@@ -340,16 +340,16 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 	@Test
 	public void testProcessBlockHDFSUnionDiff() throws Exception {
 		JobStage js = new JobStage();
-		js.stage = new Stage();
-		js.jobid = MDCConstants.JOB + MDCConstants.HYPHEN + System.currentTimeMillis();
-		js.stageid = MDCConstants.STAGE + MDCConstants.HYPHEN + System.currentTimeMillis();
-		js.stage.id = js.stageid;
-		js.stage.tasks = new ArrayList<>();
+		js.setStage(new Stage());
+		js.setJobid(MDCConstants.JOB + MDCConstants.HYPHEN + System.currentTimeMillis());
+		js.setStageid(MDCConstants.STAGE + MDCConstants.HYPHEN + System.currentTimeMillis());
+		js.getStage().id = js.getStageid();
+		js.getStage().tasks = new ArrayList<>();
 		Task task = new Task();
-		task.jobid = js.jobid;
-		task.stageid = js.stageid;
+		task.jobid = js.getJobid();
+		task.stageid = js.getStageid();
 		Object function = new UnionFunction();
-		js.stage.tasks.add(function);
+		js.getStage().tasks.add(function);
 
 		StreamPipelineTaskExecutorInMemory mdsteim = new StreamPipelineTaskExecutorInMemory(js, resultstream,
 				MDCCache.get());
@@ -387,16 +387,16 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 	@Test
 	public void testProcessStreamBlockHDFSUnionDiff() throws Exception {
 		JobStage js = new JobStage();
-		js.stage = new Stage();
-		js.jobid = MDCConstants.JOB + MDCConstants.HYPHEN + System.currentTimeMillis();
-		js.stageid = MDCConstants.STAGE + MDCConstants.HYPHEN + System.currentTimeMillis();
-		js.stage.id = js.stageid;
-		js.stage.tasks = new ArrayList<>();
+		js.setStage(new Stage());
+		js.setJobid(MDCConstants.JOB + MDCConstants.HYPHEN + System.currentTimeMillis());
+		js.setStageid(MDCConstants.STAGE + MDCConstants.HYPHEN + System.currentTimeMillis());
+		js.getStage().id = js.getStageid();
+		js.getStage().tasks = new ArrayList<>();
 		Task task = new Task();
-		task.jobid = js.jobid;
-		task.stageid = js.stageid;
+		task.jobid = js.getJobid();
+		task.stageid = js.getStageid();
 		Object function = new UnionFunction();
-		js.stage.tasks.add(task);
+		js.getStage().tasks.add(task);
 
 		StreamPipelineTaskExecutorInMemory mdsteim = new StreamPipelineTaskExecutorInMemory(js, resultstream,
 				MDCCache.get());
@@ -427,11 +427,11 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 		InputStream is = new SnappyInputStream(new ByteArrayInputStream(((ByteArrayOutputStream) resultstream.get(path)).toByteArray()));
 		Set<InputStream> istreams = new LinkedHashSet<>(Arrays.asList(is));
 		task = new Task();
-		task.jobid = js.jobid;
-		task.stageid = js.stageid;
+		task.jobid = js.getJobid();
+		task.stageid = js.getStageid();
 		function = new UnionFunction();
-		js.stage.tasks.clear();
-		js.stage.tasks.add(function);
+		js.getStage().tasks.clear();
+		js.getStage().tasks.add(function);
 		mdsteim.setTask(task);
 		mdsteim.processBlockHDFSUnion(istreams, Arrays.asList(bls2.get(0)), hdfs);
 		is.close();
@@ -446,16 +446,16 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 	@Test
 	public void testProcessStreamsBlockHDFSUnionDiff() throws Exception {
 		JobStage js = new JobStage();
-		js.stage = new Stage();
-		js.jobid = MDCConstants.JOB + MDCConstants.HYPHEN + System.currentTimeMillis();
-		js.stageid = MDCConstants.STAGE + MDCConstants.HYPHEN + System.currentTimeMillis();
-		js.stage.id = js.stageid;
-		js.stage.tasks = new ArrayList<>();
+		js.setStage(new Stage());
+		js.setJobid(MDCConstants.JOB + MDCConstants.HYPHEN + System.currentTimeMillis());
+		js.setStageid(MDCConstants.STAGE + MDCConstants.HYPHEN + System.currentTimeMillis());
+		js.getStage().id = js.getStageid();
+		js.getStage().tasks = new ArrayList<>();
 		Task task1 = new Task();
-		task1.jobid = js.jobid;
-		task1.stageid = js.stageid;
+		task1.jobid = js.getJobid();
+		task1.stageid = js.getStageid();
 		Object function = new UnionFunction();
-		js.stage.tasks.add(function);
+		js.getStage().tasks.add(function);
 
 		StreamPipelineTaskExecutorInMemory mdsteim = new StreamPipelineTaskExecutorInMemory(js, resultstream,
 				MDCCache.get());
@@ -482,11 +482,11 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 		mdsteim.setTask(task1);
 		mdsteim.processBlockHDFSUnion(bls1.get(0), bls1.get(0), hdfs);
 		Task task2 = new Task();
-		task2.jobid = js.jobid;
-		task2.stageid = js.stageid;
+		task2.jobid = js.getJobid();
+		task2.stageid = js.getStageid();
 		function = new UnionFunction();
-		js.stage.tasks.clear();
-		js.stage.tasks.add(function);
+		js.getStage().tasks.clear();
+		js.getStage().tasks.add(function);
 		mdsteim.setTask(task2);
 		mdsteim.processBlockHDFSUnion(bls2.get(0), bls2.get(0), hdfs);
 		Kryo kryo = Utils.getKryoSerializerDeserializer();
@@ -499,11 +499,11 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 		List<InputStream> istreams2 = Arrays.asList(is2);
 
 		Task taskunion = new Task();
-		taskunion.jobid = js.jobid;
-		taskunion.stageid = js.stageid;
+		taskunion.jobid = js.getJobid();
+		taskunion.stageid = js.getStageid();
 		function = new UnionFunction();
-		js.stage.tasks.clear();
-		js.stage.tasks.add(function);
+		js.getStage().tasks.clear();
+		js.getStage().tasks.add(function);
 		mdsteim.setTask(taskunion);
 		mdsteim.processBlockHDFSUnion(istreams1, istreams2);
 		is1.close();
@@ -520,18 +520,18 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 	@Test
 	public void testProcessBlockHDFSMap() throws Exception {
 		JobStage js = new JobStage();
-		js.stage = new Stage();
-		js.jobid = MDCConstants.JOB + MDCConstants.HYPHEN + System.currentTimeMillis();
-		js.stageid = MDCConstants.STAGE + MDCConstants.HYPHEN + System.currentTimeMillis();
-		js.stage.id = js.stageid;
-		js.stage.tasks = new ArrayList<>();
+		js.setStage(new Stage());
+		js.setJobid(MDCConstants.JOB + MDCConstants.HYPHEN + System.currentTimeMillis());
+		js.setStageid(MDCConstants.STAGE + MDCConstants.HYPHEN + System.currentTimeMillis());
+		js.getStage().id = js.getStageid();
+		js.getStage().tasks = new ArrayList<>();
 		Task filtertask = new Task();
-		filtertask.jobid = js.jobid;
-		filtertask.stageid = js.stageid;
+		filtertask.jobid = js.getJobid();
+		filtertask.stageid = js.getStageid();
 		MapFunction<String, String[]> map = (String str) -> str.split(MDCConstants.COMMA);
 		PredicateSerializable<String[]> filter = (String str[]) -> !"ArrDelay".equals(str[14]) && !"NA".equals(str[14]);
-		js.stage.tasks.add(map);
-		js.stage.tasks.add(filter);
+		js.getStage().tasks.add(map);
+		js.getStage().tasks.add(filter);
 
 		StreamPipelineTaskExecutorInMemory mdsteim = new StreamPipelineTaskExecutorInMemory(js, resultstream,
 				MDCCache.get());
@@ -562,19 +562,19 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 	@Test
 	public void testProcessBlockHDFSMapCount() throws Exception {
 		JobStage js = new JobStage();
-		js.stage = new Stage();
-		js.jobid = MDCConstants.JOB + MDCConstants.HYPHEN + System.currentTimeMillis();
-		js.stageid = MDCConstants.STAGE + MDCConstants.HYPHEN + System.currentTimeMillis();
-		js.stage.id = js.stageid;
-		js.stage.tasks = new ArrayList<>();
+		js.setStage(new Stage());
+		js.setJobid(MDCConstants.JOB + MDCConstants.HYPHEN + System.currentTimeMillis());
+		js.setStageid(MDCConstants.STAGE + MDCConstants.HYPHEN + System.currentTimeMillis());
+		js.getStage().id = js.getStageid();
+		js.getStage().tasks = new ArrayList<>();
 		Task calculatecounttask = new Task();
-		calculatecounttask.jobid = js.jobid;
-		calculatecounttask.stageid = js.stageid;
+		calculatecounttask.jobid = js.getJobid();
+		calculatecounttask.stageid = js.getStageid();
 		MapFunction<String, String[]> map = (String str) -> str.split(MDCConstants.COMMA);
 		PredicateSerializable<String[]> filter = (String str[]) -> !"ArrDelay".equals(str[14]) && !"NA".equals(str[14]);
-		js.stage.tasks.add(map);
-		js.stage.tasks.add(filter);
-		js.stage.tasks.add(new CalculateCount());
+		js.getStage().tasks.add(map);
+		js.getStage().tasks.add(filter);
+		js.getStage().tasks.add(new CalculateCount());
 
 		StreamPipelineTaskExecutorInMemory mdsteim = new StreamPipelineTaskExecutorInMemory(js, resultstream,
 				MDCCache.get());
@@ -604,21 +604,21 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 	@Test
 	public void testProcessBlockHDFSMapSummaryStatistics() throws Exception {
 		JobStage js = new JobStage();
-		js.stage = new Stage();
-		js.jobid = MDCConstants.JOB + MDCConstants.HYPHEN + System.currentTimeMillis();
-		js.stageid = MDCConstants.STAGE + MDCConstants.HYPHEN + System.currentTimeMillis();
-		js.stage.id = js.stageid;
-		js.stage.tasks = new ArrayList<>();
+		js.setStage(new Stage());
+		js.setJobid(MDCConstants.JOB + MDCConstants.HYPHEN + System.currentTimeMillis());
+		js.setStageid(MDCConstants.STAGE + MDCConstants.HYPHEN + System.currentTimeMillis());
+		js.getStage().id = js.getStageid();
+		js.getStage().tasks = new ArrayList<>();
 		Task sstask = new Task();
-		sstask.jobid = js.jobid;
-		sstask.stageid = js.stageid;
+		sstask.jobid = js.getJobid();
+		sstask.stageid = js.getStageid();
 		MapFunction<String, String[]> map = (String str) -> str.split(MDCConstants.COMMA);
 		PredicateSerializable<String[]> filter = (String str[]) -> !"ArrDelay".equals(str[14]) && !"NA".equals(str[14]);
 		ToIntFunction<String[]> toint = (String str[]) -> Integer.parseInt(str[14]);
-		js.stage.tasks.add(map);
-		js.stage.tasks.add(filter);
-		js.stage.tasks.add(toint);
-		js.stage.tasks.add(new SummaryStatistics());
+		js.getStage().tasks.add(map);
+		js.getStage().tasks.add(filter);
+		js.getStage().tasks.add(toint);
+		js.getStage().tasks.add(new SummaryStatistics());
 
 		StreamPipelineTaskExecutorInMemory mdsteim = new StreamPipelineTaskExecutorInMemory(js, resultstream,
 				MDCCache.get());
@@ -653,22 +653,22 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 	@Test
 	public void testProcessBlockHDFSMapMax() throws Exception {
 		JobStage js = new JobStage();
-		js.stage = new Stage();
-		js.jobid = MDCConstants.JOB + MDCConstants.HYPHEN + System.currentTimeMillis();
-		js.stageid = MDCConstants.STAGE + MDCConstants.HYPHEN + System.currentTimeMillis();
-		js.stage.id = js.stageid;
-		js.stage.tasks = new ArrayList<>();
+		js.setStage(new Stage());
+		js.setJobid(MDCConstants.JOB + MDCConstants.HYPHEN + System.currentTimeMillis());
+		js.setStageid(MDCConstants.STAGE + MDCConstants.HYPHEN + System.currentTimeMillis());
+		js.getStage().id = js.getStageid();
+		js.getStage().tasks = new ArrayList<>();
 
 		Task maxtask = new Task();
-		maxtask.jobid = js.jobid;
-		maxtask.stageid = js.stageid;
+		maxtask.jobid = js.getJobid();
+		maxtask.stageid = js.getStageid();
 		MapFunction<String, String[]> map = (String str) -> str.split(MDCConstants.COMMA);
 		PredicateSerializable<String[]> filter = (String str[]) -> !"ArrDelay".equals(str[14]) && !"NA".equals(str[14]);
 		ToIntFunction<String[]> toint = (String str[]) -> Integer.parseInt(str[14]);
-		js.stage.tasks.add(map);
-		js.stage.tasks.add(filter);
-		js.stage.tasks.add(toint);
-		js.stage.tasks.add(new Max());
+		js.getStage().tasks.add(map);
+		js.getStage().tasks.add(filter);
+		js.getStage().tasks.add(toint);
+		js.getStage().tasks.add(new Max());
 
 		StreamPipelineTaskExecutorInMemory mdsteim = new StreamPipelineTaskExecutorInMemory(js, resultstream,
 				MDCCache.get());
@@ -698,21 +698,21 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 	@Test
 	public void testProcessBlockHDFSMapMin() throws Exception {
 		JobStage js = new JobStage();
-		js.stage = new Stage();
-		js.jobid = MDCConstants.JOB + MDCConstants.HYPHEN + System.currentTimeMillis();
-		js.stageid = MDCConstants.STAGE + MDCConstants.HYPHEN + System.currentTimeMillis();
-		js.stage.id = js.stageid;
-		js.stage.tasks = new ArrayList<>();
+		js.setStage(new Stage());
+		js.setJobid(MDCConstants.JOB + MDCConstants.HYPHEN + System.currentTimeMillis());
+		js.setStageid(MDCConstants.STAGE + MDCConstants.HYPHEN + System.currentTimeMillis());
+		js.getStage().id = js.getStageid();
+		js.getStage().tasks = new ArrayList<>();
 		Task mintask = new Task();
-		mintask.jobid = js.jobid;
-		mintask.stageid = js.stageid;
+		mintask.jobid = js.getJobid();
+		mintask.stageid = js.getStageid();
 		MapFunction<String, String[]> map = (String str) -> str.split(MDCConstants.COMMA);
 		PredicateSerializable<String[]> filter = (String str[]) -> !"ArrDelay".equals(str[14]) && !"NA".equals(str[14]);
 		ToIntFunction<String[]> toint = (String str[]) -> Integer.parseInt(str[14]);
-		js.stage.tasks.add(map);
-		js.stage.tasks.add(filter);
-		js.stage.tasks.add(toint);
-		js.stage.tasks.add(new Min());
+		js.getStage().tasks.add(map);
+		js.getStage().tasks.add(filter);
+		js.getStage().tasks.add(toint);
+		js.getStage().tasks.add(new Min());
 
 		StreamPipelineTaskExecutorInMemory mdsteim = new StreamPipelineTaskExecutorInMemory(js, resultstream,
 				MDCCache.get());
@@ -742,21 +742,21 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 	@Test
 	public void testProcessBlockHDFSMapSum() throws Exception {
 		JobStage js = new JobStage();
-		js.stage = new Stage();
-		js.jobid = MDCConstants.JOB + MDCConstants.HYPHEN + System.currentTimeMillis();
-		js.stageid = MDCConstants.STAGE + MDCConstants.HYPHEN + System.currentTimeMillis();
-		js.stage.id = js.stageid;
-		js.stage.tasks = new ArrayList<>();
+		js.setStage(new Stage());
+		js.setJobid(MDCConstants.JOB + MDCConstants.HYPHEN + System.currentTimeMillis());
+		js.setStageid(MDCConstants.STAGE + MDCConstants.HYPHEN + System.currentTimeMillis());
+		js.getStage().id = js.getStageid();
+		js.getStage().tasks = new ArrayList<>();
 		Task sumtask = new Task();
-		sumtask.jobid = js.jobid;
-		sumtask.stageid = js.stageid;
+		sumtask.jobid = js.getJobid();
+		sumtask.stageid = js.getStageid();
 		MapFunction<String, String[]> map = (String str) -> str.split(MDCConstants.COMMA);
 		PredicateSerializable<String[]> filter = (String str[]) -> !"ArrDelay".equals(str[14]) && !"NA".equals(str[14]);
 		ToIntFunction<String[]> toint = (String str[]) -> Integer.parseInt(str[14]);
-		js.stage.tasks.add(map);
-		js.stage.tasks.add(filter);
-		js.stage.tasks.add(toint);
-		js.stage.tasks.add(new Sum());
+		js.getStage().tasks.add(map);
+		js.getStage().tasks.add(filter);
+		js.getStage().tasks.add(toint);
+		js.getStage().tasks.add(new Sum());
 
 		StreamPipelineTaskExecutorInMemory mdsteim = new StreamPipelineTaskExecutorInMemory(js, resultstream,
 				MDCCache.get());
@@ -786,21 +786,21 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 	@Test
 	public void testProcessBlockHDFSMapSD() throws Exception {
 		JobStage js = new JobStage();
-		js.stage = new Stage();
-		js.jobid = MDCConstants.JOB + MDCConstants.HYPHEN + System.currentTimeMillis();
-		js.stageid = MDCConstants.STAGE + MDCConstants.HYPHEN + System.currentTimeMillis();
-		js.stage.id = js.stageid;
-		js.stage.tasks = new ArrayList<>();
+		js.setStage(new Stage());
+		js.setJobid(MDCConstants.JOB + MDCConstants.HYPHEN + System.currentTimeMillis());
+		js.setStageid(MDCConstants.STAGE + MDCConstants.HYPHEN + System.currentTimeMillis());
+		js.getStage().id = js.getStageid();
+		js.getStage().tasks = new ArrayList<>();
 		Task sdtask = new Task();
-		sdtask.jobid = js.jobid;
-		sdtask.stageid = js.stageid;
+		sdtask.jobid = js.getJobid();
+		sdtask.stageid = js.getStageid();
 		MapFunction<String, String[]> map = (String str) -> str.split(MDCConstants.COMMA);
 		PredicateSerializable<String[]> filter = (String str[]) -> !"ArrDelay".equals(str[14]) && !"NA".equals(str[14]);
 		ToIntFunction<String[]> toint = (String str[]) -> Integer.parseInt(str[14]);
-		js.stage.tasks.add(map);
-		js.stage.tasks.add(filter);
-		js.stage.tasks.add(toint);
-		js.stage.tasks.add(new StandardDeviation());
+		js.getStage().tasks.add(map);
+		js.getStage().tasks.add(filter);
+		js.getStage().tasks.add(toint);
+		js.getStage().tasks.add(new StandardDeviation());
 
 		StreamPipelineTaskExecutorInMemory mdsteim = new StreamPipelineTaskExecutorInMemory(js, resultstream,
 				MDCCache.get());
@@ -830,20 +830,20 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 	@Test
 	public void testProcessBlockHDFSMapCSVCount() throws Exception {
 		JobStage js = new JobStage();
-		js.stage = new Stage();
-		js.jobid = MDCConstants.JOB + MDCConstants.HYPHEN + System.currentTimeMillis();
-		js.stageid = MDCConstants.STAGE + MDCConstants.HYPHEN + System.currentTimeMillis();
-		js.stage.id = js.stageid;
-		js.stage.tasks = new ArrayList<>();
+		js.setStage(new Stage());
+		js.setJobid(MDCConstants.JOB + MDCConstants.HYPHEN + System.currentTimeMillis());
+		js.setStageid(MDCConstants.STAGE + MDCConstants.HYPHEN + System.currentTimeMillis());
+		js.getStage().id = js.getStageid();
+		js.getStage().tasks = new ArrayList<>();
 		CsvOptions csvoptions = new CsvOptions(airlineheader);
 		Task calcultecounttask = new Task();
-		calcultecounttask.jobid = js.jobid;
-		calcultecounttask.stageid = js.stageid;
+		calcultecounttask.jobid = js.getJobid();
+		calcultecounttask.stageid = js.getStageid();
 		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !"ArrDelay".equals(csvrecord.get(14))
 				&& !"NA".equals(csvrecord.get(14));
-		js.stage.tasks.add(csvoptions);
-		js.stage.tasks.add(filter);
-		js.stage.tasks.add(new CalculateCount());
+		js.getStage().tasks.add(csvoptions);
+		js.getStage().tasks.add(filter);
+		js.getStage().tasks.add(new CalculateCount());
 
 		StreamPipelineTaskExecutorInMemory mdsteim = new StreamPipelineTaskExecutorInMemory(js, resultstream,
 				MDCCache.get());
@@ -873,19 +873,19 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 	@Test
 	public void testProcessBlockHDFSMapCSVRecord() throws Exception {
 		JobStage js = new JobStage();
-		js.stage = new Stage();
-		js.jobid = MDCConstants.JOB + MDCConstants.HYPHEN + System.currentTimeMillis();
-		js.stageid = MDCConstants.STAGE + MDCConstants.HYPHEN + System.currentTimeMillis();
-		js.stage.id = js.stageid;
-		js.stage.tasks = new ArrayList<>();
+		js.setStage(new Stage());
+		js.setJobid(MDCConstants.JOB + MDCConstants.HYPHEN + System.currentTimeMillis());
+		js.setStageid(MDCConstants.STAGE + MDCConstants.HYPHEN + System.currentTimeMillis());
+		js.getStage().id = js.getStageid();
+		js.getStage().tasks = new ArrayList<>();
 		CsvOptions csvoptions = new CsvOptions(airlineheader);
 		Task filtertask = new Task();
-		filtertask.jobid = js.jobid;
-		filtertask.stageid = js.stageid;
+		filtertask.jobid = js.getJobid();
+		filtertask.stageid = js.getStageid();
 		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !"ArrDelay".equals(csvrecord.get("ArrDelay"))
 				&& !"NA".equals(csvrecord.get("ArrDelay"));
-		js.stage.tasks.add(csvoptions);
-		js.stage.tasks.add(filter);
+		js.getStage().tasks.add(csvoptions);
+		js.getStage().tasks.add(filter);
 
 		StreamPipelineTaskExecutorInMemory mdsteim = new StreamPipelineTaskExecutorInMemory(js, resultstream,
 				MDCCache.get());
@@ -915,22 +915,22 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 	@Test
 	public void testProcessBlockHDFSMapCSVRecordSumaryStatistics() throws Exception {
 		JobStage js = new JobStage();
-		js.stage = new Stage();
-		js.jobid = MDCConstants.JOB + MDCConstants.HYPHEN + System.currentTimeMillis();
-		js.stageid = MDCConstants.STAGE + MDCConstants.HYPHEN + System.currentTimeMillis();
-		js.stage.id = js.stageid;
-		js.stage.tasks = new ArrayList<>();
+		js.setStage(new Stage());
+		js.setJobid(MDCConstants.JOB + MDCConstants.HYPHEN + System.currentTimeMillis());
+		js.setStageid(MDCConstants.STAGE + MDCConstants.HYPHEN + System.currentTimeMillis());
+		js.getStage().id = js.getStageid();
+		js.getStage().tasks = new ArrayList<>();
 		CsvOptions csvoptions = new CsvOptions(airlineheader);
 		Task summarystaticstask = new Task();
-		summarystaticstask.jobid = js.jobid;
-		summarystaticstask.stageid = js.stageid;
+		summarystaticstask.jobid = js.getJobid();
+		summarystaticstask.stageid = js.getStageid();
 		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !"ArrDelay".equals(csvrecord.get("ArrDelay"))
 				&& !"NA".equals(csvrecord.get("ArrDelay"));
 		ToIntFunction<CSVRecord> csvint = (CSVRecord csvrecord) -> Integer.parseInt(csvrecord.get("ArrDelay"));
-		js.stage.tasks.add(csvoptions);
-		js.stage.tasks.add(filter);
-		js.stage.tasks.add(csvint);
-		js.stage.tasks.add(new SummaryStatistics());
+		js.getStage().tasks.add(csvoptions);
+		js.getStage().tasks.add(filter);
+		js.getStage().tasks.add(csvint);
+		js.getStage().tasks.add(new SummaryStatistics());
 
 		StreamPipelineTaskExecutorInMemory mdsteim = new StreamPipelineTaskExecutorInMemory(js, resultstream,
 				MDCCache.get());
@@ -965,22 +965,22 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 	@Test
 	public void testProcessBlockHDFSMapCSVRecordMax() throws Exception {
 		JobStage js = new JobStage();
-		js.stage = new Stage();
-		js.jobid = MDCConstants.JOB + MDCConstants.HYPHEN + System.currentTimeMillis();
-		js.stageid = MDCConstants.STAGE + MDCConstants.HYPHEN + System.currentTimeMillis();
-		js.stage.id = js.stageid;
-		js.stage.tasks = new ArrayList<>();
+		js.setStage(new Stage());
+		js.setJobid(MDCConstants.JOB + MDCConstants.HYPHEN + System.currentTimeMillis());
+		js.setStageid(MDCConstants.STAGE + MDCConstants.HYPHEN + System.currentTimeMillis());
+		js.getStage().id = js.getStageid();
+		js.getStage().tasks = new ArrayList<>();
 		CsvOptions csvoptions = new CsvOptions(airlineheader);
 		Task maxtask = new Task();
-		maxtask.jobid = js.jobid;
-		maxtask.stageid = js.stageid;
+		maxtask.jobid = js.getJobid();
+		maxtask.stageid = js.getStageid();
 		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !"ArrDelay".equals(csvrecord.get("ArrDelay"))
 				&& !"NA".equals(csvrecord.get("ArrDelay"));
 		ToIntFunction<CSVRecord> csvint = (CSVRecord csvrecord) -> Integer.parseInt(csvrecord.get("ArrDelay"));
-		js.stage.tasks.add(csvoptions);
-		js.stage.tasks.add(filter);
-		js.stage.tasks.add(csvint);
-		js.stage.tasks.add(new Max());
+		js.getStage().tasks.add(csvoptions);
+		js.getStage().tasks.add(filter);
+		js.getStage().tasks.add(csvint);
+		js.getStage().tasks.add(new Max());
 
 		StreamPipelineTaskExecutorInMemory mdsteim = new StreamPipelineTaskExecutorInMemory(js, resultstream,
 				MDCCache.get());
@@ -1010,22 +1010,22 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 	@Test
 	public void testProcessBlockHDFSMapCSVRecordMin() throws Exception {
 		JobStage js = new JobStage();
-		js.stage = new Stage();
-		js.jobid = MDCConstants.JOB + MDCConstants.HYPHEN + System.currentTimeMillis();
-		js.stageid = MDCConstants.STAGE + MDCConstants.HYPHEN + System.currentTimeMillis();
-		js.stage.id = js.stageid;
-		js.stage.tasks = new ArrayList<>();
+		js.setStage(new Stage());
+		js.setJobid(MDCConstants.JOB + MDCConstants.HYPHEN + System.currentTimeMillis());
+		js.setStageid(MDCConstants.STAGE + MDCConstants.HYPHEN + System.currentTimeMillis());
+		js.getStage().id = js.getStageid();
+		js.getStage().tasks = new ArrayList<>();
 		CsvOptions csvoptions = new CsvOptions(airlineheader);
 		Task mintask = new Task();
-		mintask.jobid = js.jobid;
-		mintask.stageid = js.stageid;
+		mintask.jobid = js.getJobid();
+		mintask.stageid = js.getStageid();
 		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !"ArrDelay".equals(csvrecord.get("ArrDelay"))
 				&& !"NA".equals(csvrecord.get("ArrDelay"));
 		ToIntFunction<CSVRecord> csvint = (CSVRecord csvrecord) -> Integer.parseInt(csvrecord.get("ArrDelay"));
-		js.stage.tasks.add(csvoptions);
-		js.stage.tasks.add(filter);
-		js.stage.tasks.add(csvint);
-		js.stage.tasks.add(new Min());
+		js.getStage().tasks.add(csvoptions);
+		js.getStage().tasks.add(filter);
+		js.getStage().tasks.add(csvint);
+		js.getStage().tasks.add(new Min());
 
 		StreamPipelineTaskExecutorInMemory mdsteim = new StreamPipelineTaskExecutorInMemory(js, resultstream,
 				MDCCache.get());
@@ -1055,22 +1055,22 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 	@Test
 	public void testProcessBlockHDFSMapCSVRecordSum() throws Exception {
 		JobStage js = new JobStage();
-		js.stage = new Stage();
-		js.jobid = MDCConstants.JOB + MDCConstants.HYPHEN + System.currentTimeMillis();
-		js.stageid = MDCConstants.STAGE + MDCConstants.HYPHEN + System.currentTimeMillis();
-		js.stage.id = js.stageid;
-		js.stage.tasks = new ArrayList<>();
+		js.setStage(new Stage());
+		js.setJobid(MDCConstants.JOB + MDCConstants.HYPHEN + System.currentTimeMillis());
+		js.setStageid(MDCConstants.STAGE + MDCConstants.HYPHEN + System.currentTimeMillis());
+		js.getStage().id = js.getStageid();
+		js.getStage().tasks = new ArrayList<>();
 		CsvOptions csvoptions = new CsvOptions(airlineheader);
 		Task sumtask = new Task();
-		sumtask.jobid = js.jobid;
-		sumtask.stageid = js.stageid;
+		sumtask.jobid = js.getJobid();
+		sumtask.stageid = js.getStageid();
 		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !"ArrDelay".equals(csvrecord.get("ArrDelay"))
 				&& !"NA".equals(csvrecord.get("ArrDelay"));
 		ToIntFunction<CSVRecord> csvint = (CSVRecord csvrecord) -> Integer.parseInt(csvrecord.get("ArrDelay"));
-		js.stage.tasks.add(csvoptions);
-		js.stage.tasks.add(filter);
-		js.stage.tasks.add(csvint);
-		js.stage.tasks.add(new Sum());
+		js.getStage().tasks.add(csvoptions);
+		js.getStage().tasks.add(filter);
+		js.getStage().tasks.add(csvint);
+		js.getStage().tasks.add(new Sum());
 
 		StreamPipelineTaskExecutorInMemory mdsteim = new StreamPipelineTaskExecutorInMemory(js, resultstream,
 				MDCCache.get());
@@ -1100,22 +1100,22 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 	@Test
 	public void testProcessBlockHDFSMapCSVRecordStandardDeviation() throws Exception {
 		JobStage js = new JobStage();
-		js.stage = new Stage();
-		js.jobid = MDCConstants.JOB + MDCConstants.HYPHEN + System.currentTimeMillis();
-		js.stageid = MDCConstants.STAGE + MDCConstants.HYPHEN + System.currentTimeMillis();
-		js.stage.id = js.stageid;
-		js.stage.tasks = new ArrayList<>();
+		js.setStage(new Stage());
+		js.setJobid(MDCConstants.JOB + MDCConstants.HYPHEN + System.currentTimeMillis());
+		js.setStageid(MDCConstants.STAGE + MDCConstants.HYPHEN + System.currentTimeMillis());
+		js.getStage().id = js.getStageid();
+		js.getStage().tasks = new ArrayList<>();
 		CsvOptions csvoptions = new CsvOptions(airlineheader);
 		Task sdtask = new Task();
-		sdtask.jobid = js.jobid;
-		sdtask.stageid = js.stageid;
+		sdtask.jobid = js.getJobid();
+		sdtask.stageid = js.getStageid();
 		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !"ArrDelay".equals(csvrecord.get("ArrDelay"))
 				&& !"NA".equals(csvrecord.get("ArrDelay"));
 		ToIntFunction<CSVRecord> csvint = (CSVRecord csvrecord) -> Integer.parseInt(csvrecord.get("ArrDelay"));
-		js.stage.tasks.add(csvoptions);
-		js.stage.tasks.add(filter);
-		js.stage.tasks.add(csvint);
-		js.stage.tasks.add(new StandardDeviation());
+		js.getStage().tasks.add(csvoptions);
+		js.getStage().tasks.add(filter);
+		js.getStage().tasks.add(csvint);
+		js.getStage().tasks.add(new StandardDeviation());
 
 		StreamPipelineTaskExecutorInMemory mdsteim = new StreamPipelineTaskExecutorInMemory(js, resultstream,
 				MDCCache.get());
@@ -1145,20 +1145,20 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 	@Test
 	public void testProcessStreamBlockHDFSMapCSVCount() throws Exception {
 		JobStage js = new JobStage();
-		js.stage = new Stage();
-		js.jobid = MDCConstants.JOB + MDCConstants.HYPHEN + System.currentTimeMillis();
-		js.stageid = MDCConstants.STAGE + MDCConstants.HYPHEN + System.currentTimeMillis();
-		js.stage.id = js.stageid;
-		js.stage.tasks = new ArrayList<>();
+		js.setStage(new Stage());
+		js.setJobid(MDCConstants.JOB + MDCConstants.HYPHEN + System.currentTimeMillis());
+		js.setStageid(MDCConstants.STAGE + MDCConstants.HYPHEN + System.currentTimeMillis());
+		js.getStage().id = js.getStageid();
+		js.getStage().tasks = new ArrayList<>();
 		CsvOptions csvoptions = new CsvOptions(airlineheader);
 		Task filtertask = new Task();
-		filtertask.jobid = js.jobid;
-		filtertask.stageid = js.stageid;
+		filtertask.jobid = js.getJobid();
+		filtertask.stageid = js.getStageid();
 
 		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !"ArrDelay".equals(csvrecord.get(14))
 				&& !"NA".equals(csvrecord.get(14));
-		js.stage.tasks.add(csvoptions);
-		js.stage.tasks.add(filter);
+		js.getStage().tasks.add(csvoptions);
+		js.getStage().tasks.add(filter);
 
 		StreamPipelineTaskExecutorInMemory mdsteim = new StreamPipelineTaskExecutorInMemory(js, resultstream,
 				MDCCache.get());
@@ -1180,10 +1180,10 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 		InputStream is = new SnappyInputStream(new ByteArrayInputStream(((ByteArrayOutputStream) resultstream.get(path)).toByteArray()));
 		Set<InputStream> inputtocount = new LinkedHashSet<>(Arrays.asList(is));
 		Task calcultecounttask = new Task();
-		calcultecounttask.jobid = js.jobid;
-		calcultecounttask.stageid = js.stageid;
-		js.stage.tasks.clear();
-		js.stage.tasks.add(new CalculateCount());
+		calcultecounttask.jobid = js.getJobid();
+		calcultecounttask.stageid = js.getStageid();
+		js.getStage().tasks.clear();
+		js.getStage().tasks.add(new CalculateCount());
 		mdsteim.setTask(calcultecounttask);
 		mdsteim.processBlockHDFSMap(inputtocount);
 		is.close();
@@ -1199,20 +1199,20 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 	@Test
 	public void testProcessStreamBlockHDFSMapCSVSummaryStatistics() throws Exception {
 		JobStage js = new JobStage();
-		js.stage = new Stage();
-		js.jobid = MDCConstants.JOB + MDCConstants.HYPHEN + System.currentTimeMillis();
-		js.stageid = MDCConstants.STAGE + MDCConstants.HYPHEN + System.currentTimeMillis();
-		js.stage.id = js.stageid;
-		js.stage.tasks = new ArrayList<>();
+		js.setStage(new Stage());
+		js.setJobid(MDCConstants.JOB + MDCConstants.HYPHEN + System.currentTimeMillis());
+		js.setStageid(MDCConstants.STAGE + MDCConstants.HYPHEN + System.currentTimeMillis());
+		js.getStage().id = js.getStageid();
+		js.getStage().tasks = new ArrayList<>();
 		CsvOptions csvoptions = new CsvOptions(airlineheader);
 		Task filtertask = new Task();
-		filtertask.jobid = js.jobid;
-		filtertask.stageid = js.stageid;
+		filtertask.jobid = js.getJobid();
+		filtertask.stageid = js.getStageid();
 
 		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !"ArrDelay".equals(csvrecord.get(14))
 				&& !"NA".equals(csvrecord.get(14));
-		js.stage.tasks.add(csvoptions);
-		js.stage.tasks.add(filter);
+		js.getStage().tasks.add(csvoptions);
+		js.getStage().tasks.add(filter);
 
 		StreamPipelineTaskExecutorInMemory mdsteim = new StreamPipelineTaskExecutorInMemory(js, resultstream,
 				MDCCache.get());
@@ -1235,11 +1235,11 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 		Set<InputStream> inputtocount = new LinkedHashSet<>(Arrays.asList(is));
 		ToIntFunction<CSVRecord> csvint = (CSVRecord csvrecord) -> Integer.parseInt(csvrecord.get("ArrDelay"));
 		Task summarystaticstask = new Task();
-		summarystaticstask.jobid = js.jobid;
-		summarystaticstask.stageid = js.stageid;
-		js.stage.tasks.clear();
-		js.stage.tasks.add(csvint);
-		js.stage.tasks.add(new SummaryStatistics());
+		summarystaticstask.jobid = js.getJobid();
+		summarystaticstask.stageid = js.getStageid();
+		js.getStage().tasks.clear();
+		js.getStage().tasks.add(csvint);
+		js.getStage().tasks.add(new SummaryStatistics());
 		mdsteim.setTask(summarystaticstask);
 		mdsteim.processBlockHDFSMap(inputtocount);
 		is.close();
@@ -1260,20 +1260,20 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 	@Test
 	public void testProcessStreamBlockHDFSMapCSVMax() throws Exception {
 		JobStage js = new JobStage();
-		js.stage = new Stage();
-		js.jobid = MDCConstants.JOB + MDCConstants.HYPHEN + System.currentTimeMillis();
-		js.stageid = MDCConstants.STAGE + MDCConstants.HYPHEN + System.currentTimeMillis();
-		js.stage.id = js.stageid;
-		js.stage.tasks = new ArrayList<>();
+		js.setStage(new Stage());
+		js.setJobid(MDCConstants.JOB + MDCConstants.HYPHEN + System.currentTimeMillis());
+		js.setStageid(MDCConstants.STAGE + MDCConstants.HYPHEN + System.currentTimeMillis());
+		js.getStage().id = js.getStageid();
+		js.getStage().tasks = new ArrayList<>();
 		CsvOptions csvoptions = new CsvOptions(airlineheader);
 		Task filtertask = new Task();
-		filtertask.jobid = js.jobid;
-		filtertask.stageid = js.stageid;
+		filtertask.jobid = js.getJobid();
+		filtertask.stageid = js.getStageid();
 
 		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !"ArrDelay".equals(csvrecord.get(14))
 				&& !"NA".equals(csvrecord.get(14));
-		js.stage.tasks.add(csvoptions);
-		js.stage.tasks.add(filter);
+		js.getStage().tasks.add(csvoptions);
+		js.getStage().tasks.add(filter);
 
 		StreamPipelineTaskExecutorInMemory mdsteim = new StreamPipelineTaskExecutorInMemory(js, resultstream,
 				MDCCache.get());
@@ -1296,11 +1296,11 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 		Set<InputStream> inputtocount = new LinkedHashSet<>(Arrays.asList(is));
 		ToIntFunction<CSVRecord> csvint = (CSVRecord csvrecord) -> Integer.parseInt(csvrecord.get("ArrDelay"));
 		Task maxtask = new Task();
-		maxtask.jobid = js.jobid;
-		maxtask.stageid = js.stageid;
-		js.stage.tasks.clear();
-		js.stage.tasks.add(csvint);
-		js.stage.tasks.add(new Max());
+		maxtask.jobid = js.getJobid();
+		maxtask.stageid = js.getStageid();
+		js.getStage().tasks.clear();
+		js.getStage().tasks.add(csvint);
+		js.getStage().tasks.add(new Max());
 		mdsteim.setTask(maxtask);
 		mdsteim.processBlockHDFSMap(inputtocount);
 		is.close();
@@ -1316,19 +1316,19 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 	@Test
 	public void testProcessStreamBlockHDFSMapCSVMin() throws Exception {
 		JobStage js = new JobStage();
-		js.stage = new Stage();
-		js.jobid = MDCConstants.JOB + MDCConstants.HYPHEN + System.currentTimeMillis();
-		js.stageid = MDCConstants.STAGE + MDCConstants.HYPHEN + System.currentTimeMillis();
-		js.stage.id = js.stageid;
-		js.stage.tasks = new ArrayList<>();
+		js.setStage(new Stage());
+		js.setJobid(MDCConstants.JOB + MDCConstants.HYPHEN + System.currentTimeMillis());
+		js.setStageid(MDCConstants.STAGE + MDCConstants.HYPHEN + System.currentTimeMillis());
+		js.getStage().id = js.getStageid();
+		js.getStage().tasks = new ArrayList<>();
 		CsvOptions csvoptions = new CsvOptions(airlineheader);
 		Task filtertask = new Task();
-		filtertask.jobid = js.jobid;
-		filtertask.stageid = js.stageid;
+		filtertask.jobid = js.getJobid();
+		filtertask.stageid = js.getStageid();
 		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !"ArrDelay".equals(csvrecord.get(14))
 				&& !"NA".equals(csvrecord.get(14));
-		js.stage.tasks.add(csvoptions);
-		js.stage.tasks.add(filter);
+		js.getStage().tasks.add(csvoptions);
+		js.getStage().tasks.add(filter);
 
 		StreamPipelineTaskExecutorInMemory mdsteim = new StreamPipelineTaskExecutorInMemory(js, resultstream,
 				MDCCache.get());
@@ -1351,11 +1351,11 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 		Set<InputStream> inputtocount = new LinkedHashSet<>(Arrays.asList(is));
 		ToIntFunction<CSVRecord> csvint = (CSVRecord csvrecord) -> Integer.parseInt(csvrecord.get("ArrDelay"));
 		Task mintask = new Task();
-		mintask.jobid = js.jobid;
-		mintask.stageid = js.stageid;
-		js.stage.tasks.clear();
-		js.stage.tasks.add(csvint);
-		js.stage.tasks.add(new Min());
+		mintask.jobid = js.getJobid();
+		mintask.stageid = js.getStageid();
+		js.getStage().tasks.clear();
+		js.getStage().tasks.add(csvint);
+		js.getStage().tasks.add(new Min());
 		mdsteim.setTask(mintask);
 		mdsteim.processBlockHDFSMap(inputtocount);
 		is.close();
@@ -1371,20 +1371,20 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 	@Test
 	public void testProcessStreamBlockHDFSMapCSVSum() throws Exception {
 		JobStage js = new JobStage();
-		js.stage = new Stage();
-		js.jobid = MDCConstants.JOB + MDCConstants.HYPHEN + System.currentTimeMillis();
-		js.stageid = MDCConstants.STAGE + MDCConstants.HYPHEN + System.currentTimeMillis();
-		js.stage.id = js.stageid;
-		js.stage.tasks = new ArrayList<>();
+		js.setStage(new Stage());
+		js.setJobid(MDCConstants.JOB + MDCConstants.HYPHEN + System.currentTimeMillis());
+		js.setStageid(MDCConstants.STAGE + MDCConstants.HYPHEN + System.currentTimeMillis());
+		js.getStage().id = js.getStageid();
+		js.getStage().tasks = new ArrayList<>();
 		CsvOptions csvoptions = new CsvOptions(airlineheader);
 		Task filtertask = new Task();
-		filtertask.jobid = js.jobid;
-		filtertask.stageid = js.stageid;
+		filtertask.jobid = js.getJobid();
+		filtertask.stageid = js.getStageid();
 
 		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !"ArrDelay".equals(csvrecord.get(14))
 				&& !"NA".equals(csvrecord.get(14));
-		js.stage.tasks.add(csvoptions);
-		js.stage.tasks.add(filter);
+		js.getStage().tasks.add(csvoptions);
+		js.getStage().tasks.add(filter);
 
 		StreamPipelineTaskExecutorInMemory mdsteim = new StreamPipelineTaskExecutorInMemory(js, resultstream,
 				MDCCache.get());
@@ -1407,11 +1407,11 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 		Set<InputStream> inputtocount = new LinkedHashSet<>(Arrays.asList(is));
 		ToIntFunction<CSVRecord> csvint = (CSVRecord csvrecord) -> Integer.parseInt(csvrecord.get("ArrDelay"));
 		Task sumtask = new Task();
-		sumtask.jobid = js.jobid;
-		sumtask.stageid = js.stageid;
-		js.stage.tasks.clear();
-		js.stage.tasks.add(csvint);
-		js.stage.tasks.add(new Sum());
+		sumtask.jobid = js.getJobid();
+		sumtask.stageid = js.getStageid();
+		js.getStage().tasks.clear();
+		js.getStage().tasks.add(csvint);
+		js.getStage().tasks.add(new Sum());
 		mdsteim.setTask(sumtask);
 		mdsteim.processBlockHDFSMap(inputtocount);
 		is.close();
@@ -1427,20 +1427,20 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 	@Test
 	public void testProcessStreamBlockHDFSMapCSVSD() throws Exception {
 		JobStage js = new JobStage();
-		js.stage = new Stage();
-		js.jobid = MDCConstants.JOB + MDCConstants.HYPHEN + System.currentTimeMillis();
-		js.stageid = MDCConstants.STAGE + MDCConstants.HYPHEN + System.currentTimeMillis();
-		js.stage.id = js.stageid;
-		js.stage.tasks = new ArrayList<>();
+		js.setStage(new Stage());
+		js.setJobid(MDCConstants.JOB + MDCConstants.HYPHEN + System.currentTimeMillis());
+		js.setStageid(MDCConstants.STAGE + MDCConstants.HYPHEN + System.currentTimeMillis());
+		js.getStage().id = js.getStageid();
+		js.getStage().tasks = new ArrayList<>();
 		CsvOptions csvoptions = new CsvOptions(airlineheader);
 		Task filtertask = new Task();
-		filtertask.jobid = js.jobid;
-		filtertask.stageid = js.stageid;
+		filtertask.jobid = js.getJobid();
+		filtertask.stageid = js.getStageid();
 
 		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !"ArrDelay".equals(csvrecord.get(14))
 				&& !"NA".equals(csvrecord.get(14));
-		js.stage.tasks.add(csvoptions);
-		js.stage.tasks.add(filter);
+		js.getStage().tasks.add(csvoptions);
+		js.getStage().tasks.add(filter);
 
 		StreamPipelineTaskExecutorInMemory mdsteim = new StreamPipelineTaskExecutorInMemory(js, resultstream,
 				MDCCache.get());
@@ -1463,11 +1463,11 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 		Set<InputStream> inputtocount = new LinkedHashSet<>(Arrays.asList(is));
 		ToIntFunction<CSVRecord> csvint = (CSVRecord csvrecord) -> Integer.parseInt(csvrecord.get("ArrDelay"));
 		Task sdtask = new Task();
-		sdtask.jobid = js.jobid;
-		sdtask.stageid = js.stageid;
-		js.stage.tasks.clear();
-		js.stage.tasks.add(csvint);
-		js.stage.tasks.add(new StandardDeviation());
+		sdtask.jobid = js.getJobid();
+		sdtask.stageid = js.getStageid();
+		js.getStage().tasks.clear();
+		js.getStage().tasks.add(csvint);
+		js.getStage().tasks.add(new StandardDeviation());
 		mdsteim.setTask(sdtask);
 		mdsteim.processBlockHDFSMap(inputtocount);
 		is.close();
@@ -1483,20 +1483,20 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 	@Test
 	public void testProcessSample() throws Exception {
 		JobStage js = new JobStage();
-		js.stage = new Stage();
-		js.jobid = MDCConstants.JOB + MDCConstants.HYPHEN + System.currentTimeMillis();
-		js.stageid = MDCConstants.STAGE + MDCConstants.HYPHEN + System.currentTimeMillis();
-		js.stage.id = js.stageid;
-		js.stage.tasks = new ArrayList<>();
+		js.setStage(new Stage());
+		js.setJobid(MDCConstants.JOB + MDCConstants.HYPHEN + System.currentTimeMillis());
+		js.setStageid(MDCConstants.STAGE + MDCConstants.HYPHEN + System.currentTimeMillis());
+		js.getStage().id = js.getStageid();
+		js.getStage().tasks = new ArrayList<>();
 		CsvOptions csvoptions = new CsvOptions(airlineheader);
 		Task filtertask = new Task();
-		filtertask.jobid = js.jobid;
-		filtertask.stageid = js.stageid;
+		filtertask.jobid = js.getJobid();
+		filtertask.stageid = js.getStageid();
 
 		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !"ArrDelay".equals(csvrecord.get(14))
 				&& !"NA".equals(csvrecord.get(14));
-		js.stage.tasks.add(csvoptions);
-		js.stage.tasks.add(filter);
+		js.getStage().tasks.add(csvoptions);
+		js.getStage().tasks.add(filter);
 
 		StreamPipelineTaskExecutorInMemory mdsteim = new StreamPipelineTaskExecutorInMemory(js, resultstream,
 				MDCCache.get());
@@ -1526,20 +1526,20 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 	@Test
 	public void testProcessSampleCount() throws Exception {
 		JobStage js = new JobStage();
-		js.stage = new Stage();
-		js.jobid = MDCConstants.JOB + MDCConstants.HYPHEN + System.currentTimeMillis();
-		js.stageid = MDCConstants.STAGE + MDCConstants.HYPHEN + System.currentTimeMillis();
-		js.stage.id = js.stageid;
-		js.stage.tasks = new ArrayList<>();
+		js.setStage(new Stage());
+		js.setJobid(MDCConstants.JOB + MDCConstants.HYPHEN + System.currentTimeMillis());
+		js.setStageid(MDCConstants.STAGE + MDCConstants.HYPHEN + System.currentTimeMillis());
+		js.getStage().id = js.getStageid();
+		js.getStage().tasks = new ArrayList<>();
 		Task counttask = new Task();
-		counttask.jobid = js.jobid;
-		counttask.stageid = js.stageid;
+		counttask.jobid = js.getJobid();
+		counttask.stageid = js.getStageid();
 		CsvOptions csvoptions = new CsvOptions(airlineheader);
 		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !"ArrDelay".equals(csvrecord.get(14))
 				&& !"NA".equals(csvrecord.get(14));
-		js.stage.tasks.add(csvoptions);
-		js.stage.tasks.add(filter);
-		js.stage.tasks.add(new CalculateCount());
+		js.getStage().tasks.add(csvoptions);
+		js.getStage().tasks.add(filter);
+		js.getStage().tasks.add(new CalculateCount());
 		StreamPipelineTaskExecutorInMemory mdsteim = new StreamPipelineTaskExecutorInMemory(js, resultstream,
 				MDCCache.get());
 		mdsteim.setHdfs(hdfs);
@@ -1568,20 +1568,20 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 	@Test
 	public void testProcessStreamSample() throws Exception {
 		JobStage js = new JobStage();
-		js.stage = new Stage();
-		js.jobid = MDCConstants.JOB + MDCConstants.HYPHEN + System.currentTimeMillis();
-		js.stageid = MDCConstants.STAGE + MDCConstants.HYPHEN + System.currentTimeMillis();
-		js.stage.id = js.stageid;
-		js.stage.tasks = new ArrayList<>();
+		js.setStage(new Stage());
+		js.setJobid(MDCConstants.JOB + MDCConstants.HYPHEN + System.currentTimeMillis());
+		js.setStageid(MDCConstants.STAGE + MDCConstants.HYPHEN + System.currentTimeMillis());
+		js.getStage().id = js.getStageid();
+		js.getStage().tasks = new ArrayList<>();
 		CsvOptions csvoptions = new CsvOptions(airlineheader);
 		Task filtertask = new Task();
-		filtertask.jobid = js.jobid;
-		filtertask.stageid = js.stageid;
+		filtertask.jobid = js.getJobid();
+		filtertask.stageid = js.getStageid();
 
 		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !"ArrDelay".equals(csvrecord.get(14))
 				&& !"NA".equals(csvrecord.get(14));
-		js.stage.tasks.add(csvoptions);
-		js.stage.tasks.add(filter);
+		js.getStage().tasks.add(csvoptions);
+		js.getStage().tasks.add(filter);
 
 		StreamPipelineTaskExecutorInMemory mdsteim = new StreamPipelineTaskExecutorInMemory(js, resultstream,
 				MDCCache.get());
@@ -1603,11 +1603,11 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 		InputStream is = new SnappyInputStream(new ByteArrayInputStream(((ByteArrayOutputStream) resultstream.get(path)).toByteArray()));
 		List<InputStream> inputtocount = Arrays.asList(is);
 		Task sample = new Task();
-		sample.jobid = js.jobid;
-		sample.stageid = js.stageid;
+		sample.jobid = js.getJobid();
+		sample.stageid = js.getStageid();
 		Function samplefn = val -> val;
-		js.stage.tasks.clear();
-		js.stage.tasks.add(samplefn);
+		js.getStage().tasks.clear();
+		js.getStage().tasks.add(samplefn);
 		mdsteim.setTask(sample);
 		mdsteim.processSamplesObjects(150, inputtocount);
 		is.close();
@@ -1623,20 +1623,20 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 	@Test
 	public void testProcessStreamSampleCount() throws Exception {
 		JobStage js = new JobStage();
-		js.stage = new Stage();
-		js.jobid = MDCConstants.JOB + MDCConstants.HYPHEN + System.currentTimeMillis();
-		js.stageid = MDCConstants.STAGE + MDCConstants.HYPHEN + System.currentTimeMillis();
-		js.stage.id = js.stageid;
-		js.stage.tasks = new ArrayList<>();
+		js.setStage(new Stage());
+		js.setJobid(MDCConstants.JOB + MDCConstants.HYPHEN + System.currentTimeMillis());
+		js.setStageid(MDCConstants.STAGE + MDCConstants.HYPHEN + System.currentTimeMillis());
+		js.getStage().id = js.getStageid();
+		js.getStage().tasks = new ArrayList<>();
 		CsvOptions csvoptions = new CsvOptions(airlineheader);
 		Task filtertask = new Task();
-		filtertask.jobid = js.jobid;
-		filtertask.stageid = js.stageid;
+		filtertask.jobid = js.getJobid();
+		filtertask.stageid = js.getStageid();
 
 		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !"ArrDelay".equals(csvrecord.get(14))
 				&& !"NA".equals(csvrecord.get(14));
-		js.stage.tasks.add(csvoptions);
-		js.stage.tasks.add(filter);
+		js.getStage().tasks.add(csvoptions);
+		js.getStage().tasks.add(filter);
 
 		StreamPipelineTaskExecutorInMemory mdsteim = new StreamPipelineTaskExecutorInMemory(js, resultstream,
 				MDCCache.get());
@@ -1658,10 +1658,10 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 		InputStream is = new SnappyInputStream(new ByteArrayInputStream(((ByteArrayOutputStream) resultstream.get(path)).toByteArray()));
 		List<InputStream> inputtocount = Arrays.asList(is);
 		Task count = new Task();
-		count.jobid = js.jobid;
-		count.stageid = js.stageid;
-		js.stage.tasks.clear();
-		js.stage.tasks.add(new CalculateCount());
+		count.jobid = js.getJobid();
+		count.stageid = js.getStageid();
+		js.getStage().tasks.clear();
+		js.getStage().tasks.add(new CalculateCount());
 		mdsteim.setTask(count);
 		mdsteim.processSamplesObjects(150, inputtocount);
 		is.close();
@@ -1677,23 +1677,23 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 	@Test
 	public void testProcessJoin() throws Exception {
 		JobStage js = new JobStage();
-		js.stage = new Stage();
-		js.jobid = MDCConstants.JOB + MDCConstants.HYPHEN + System.currentTimeMillis();
-		js.stageid = MDCConstants.STAGE + MDCConstants.HYPHEN + System.currentTimeMillis();
-		js.stage.id = js.stageid;
-		js.stage.tasks = new ArrayList<>();
+		js.setStage(new Stage());
+		js.setJobid(MDCConstants.JOB + MDCConstants.HYPHEN + System.currentTimeMillis());
+		js.setStageid(MDCConstants.STAGE + MDCConstants.HYPHEN + System.currentTimeMillis());
+		js.getStage().id = js.getStageid();
+		js.getStage().tasks = new ArrayList<>();
 		Task reducebykeytask1 = new Task();
-		reducebykeytask1.jobid = js.jobid;
-		reducebykeytask1.stageid = js.stageid;
+		reducebykeytask1.jobid = js.getJobid();
+		reducebykeytask1.stageid = js.getStageid();
 		MapFunction<String, String[]> map = (String str) -> str.split(MDCConstants.COMMA);
 		PredicateSerializable<String[]> filter = (String str[]) -> !"ArrDelay".equals(str[14]) && !"NA".equals(str[14]);
 		MapToPairFunction<String[], Tuple2<String, Integer>> pair = val -> new Tuple2<String, Integer>(
 				(String) val[8], (Integer) Integer.parseInt(val[14]));
 		ReduceByKeyFunction<Integer> redfunc = (input1, input2) -> input1 + input2;
-		js.stage.tasks.add(map);
-		js.stage.tasks.add(filter);
-		js.stage.tasks.add(pair);
-		js.stage.tasks.add(redfunc);
+		js.getStage().tasks.add(map);
+		js.getStage().tasks.add(filter);
+		js.getStage().tasks.add(pair);
+		js.getStage().tasks.add(redfunc);
 
 		StreamPipelineTaskExecutorInMemory mdsteim = new StreamPipelineTaskExecutorInMemory(js, resultstream,
 				MDCCache.get());
@@ -1721,13 +1721,13 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 		mdsteim.processBlockHDFSMap(bls1.get(0), hdfs);
 
 		Task reducebykeytask2 = new Task();
-		reducebykeytask2.jobid = js.jobid;
-		reducebykeytask2.stageid = js.stageid;
-		js.stage.tasks.clear();
-		js.stage.tasks.add(map);
-		js.stage.tasks.add(filter);
-		js.stage.tasks.add(pair);
-		js.stage.tasks.add(redfunc);
+		reducebykeytask2.jobid = js.getJobid();
+		reducebykeytask2.stageid = js.getStageid();
+		js.getStage().tasks.clear();
+		js.getStage().tasks.add(map);
+		js.getStage().tasks.add(filter);
+		js.getStage().tasks.add(pair);
+		js.getStage().tasks.add(redfunc);
 		mdsteim.setTask(reducebykeytask2);
 		mdsteim.processBlockHDFSMap(bls2.get(0), hdfs);
 
@@ -1737,12 +1737,12 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 		String path2 = mdsteim.getIntermediateDataFSFilePath(reducebykeytask2);
 		InputStream is2 = new SnappyInputStream(new ByteArrayInputStream(((ByteArrayOutputStream) resultstream.get(path2)).toByteArray()));
 		Task jointask = new Task();
-		jointask.jobid = js.jobid;
-		jointask.stageid = js.stageid;
-		js.stage.tasks.clear();
+		jointask.jobid = js.getJobid();
+		jointask.stageid = js.getStageid();
+		js.getStage().tasks.clear();
 		Consumer<String> dummy = val -> {
 		};
-		js.stage.tasks.add(dummy);
+		js.getStage().tasks.add(dummy);
 		JoinPredicate<Tuple2<String, Long>, Tuple2<String, Long>> jp = (Tuple2<String, Long> tup1,
 				Tuple2<String, Long> tup2) -> tup1.v1.equals(tup2.v1);
 		mdsteim.setTask(jointask);
@@ -1765,23 +1765,23 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 	@Test
 	public void testProcessLeftOuterJoin() throws Exception {
 		JobStage js = new JobStage();
-		js.stage = new Stage();
-		js.jobid = MDCConstants.JOB + MDCConstants.HYPHEN + System.currentTimeMillis();
-		js.stageid = MDCConstants.STAGE + MDCConstants.HYPHEN + System.currentTimeMillis();
-		js.stage.id = js.stageid;
-		js.stage.tasks = new ArrayList<>();
+		js.setStage(new Stage());
+		js.setJobid(MDCConstants.JOB + MDCConstants.HYPHEN + System.currentTimeMillis());
+		js.setStageid(MDCConstants.STAGE + MDCConstants.HYPHEN + System.currentTimeMillis());
+		js.getStage().id = js.getStageid();
+		js.getStage().tasks = new ArrayList<>();
 		Task reducebykeytask1 = new Task();
-		reducebykeytask1.jobid = js.jobid;
-		reducebykeytask1.stageid = js.stageid;
+		reducebykeytask1.jobid = js.getJobid();
+		reducebykeytask1.stageid = js.getStageid();
 		MapFunction<String, String[]> map = (String str) -> str.split(MDCConstants.COMMA);
 		PredicateSerializable<String[]> filter = (String str[]) -> !"ArrDelay".equals(str[14]) && !"NA".equals(str[14]);
 		MapToPairFunction<String[], Tuple2<String, Integer>> pair = val -> new Tuple2<String, Integer>(
 				(String) val[8], (Integer) Integer.parseInt(val[14]));
 		ReduceByKeyFunction<Integer> redfunc = (input1, input2) -> input1 + input2;
-		js.stage.tasks.add(map);
-		js.stage.tasks.add(filter);
-		js.stage.tasks.add(pair);
-		js.stage.tasks.add(redfunc);
+		js.getStage().tasks.add(map);
+		js.getStage().tasks.add(filter);
+		js.getStage().tasks.add(pair);
+		js.getStage().tasks.add(redfunc);
 
 		StreamPipelineTaskExecutorInMemory mdsteim = new StreamPipelineTaskExecutorInMemory(js, resultstream,
 				MDCCache.get());
@@ -1809,13 +1809,13 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 		mdsteim.processBlockHDFSMap(bls1.get(0), hdfs);
 
 		Task reducebykeytask2 = new Task();
-		reducebykeytask2.jobid = js.jobid;
-		reducebykeytask2.stageid = js.stageid;
-		js.stage.tasks.clear();
-		js.stage.tasks.add(map);
-		js.stage.tasks.add(filter);
-		js.stage.tasks.add(pair);
-		js.stage.tasks.add(redfunc);
+		reducebykeytask2.jobid = js.getJobid();
+		reducebykeytask2.stageid = js.getStageid();
+		js.getStage().tasks.clear();
+		js.getStage().tasks.add(map);
+		js.getStage().tasks.add(filter);
+		js.getStage().tasks.add(pair);
+		js.getStage().tasks.add(redfunc);
 		mdsteim.setTask(reducebykeytask2);
 		mdsteim.processBlockHDFSMap(bls2.get(0), hdfs);
 
@@ -1825,12 +1825,12 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 		String path2 = mdsteim.getIntermediateDataFSFilePath(reducebykeytask2);
 		InputStream is2 = new SnappyInputStream(new ByteArrayInputStream(((ByteArrayOutputStream) resultstream.get(path2)).toByteArray()));
 		Task jointask = new Task();
-		jointask.jobid = js.jobid;
-		jointask.stageid = js.stageid;
-		js.stage.tasks.clear();
+		jointask.jobid = js.getJobid();
+		jointask.stageid = js.getStageid();
+		js.getStage().tasks.clear();
 		Consumer<String> dummy = val -> {
 		};
-		js.stage.tasks.add(dummy);
+		js.getStage().tasks.add(dummy);
 
 		LeftOuterJoinPredicate<Tuple2<String, Long>, Tuple2<String, Long>> jp = (Tuple2<String, Long> tup1,
 				Tuple2<String, Long> tup2) -> tup1.v1.equals(tup2.v1);
@@ -1858,23 +1858,23 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 	@Test
 	public void testProcessRightOuterJoin() throws Exception {
 		JobStage js = new JobStage();
-		js.stage = new Stage();
-		js.jobid = MDCConstants.JOB + MDCConstants.HYPHEN + System.currentTimeMillis();
-		js.stageid = MDCConstants.STAGE + MDCConstants.HYPHEN + System.currentTimeMillis();
-		js.stage.id = js.stageid;
-		js.stage.tasks = new ArrayList<>();
+		js.setStage(new Stage());
+		js.setJobid(MDCConstants.JOB + MDCConstants.HYPHEN + System.currentTimeMillis());
+		js.setStageid(MDCConstants.STAGE + MDCConstants.HYPHEN + System.currentTimeMillis());
+		js.getStage().id = js.getStageid();
+		js.getStage().tasks = new ArrayList<>();
 		Task reducebykeytask1 = new Task();
-		reducebykeytask1.jobid = js.jobid;
-		reducebykeytask1.stageid = js.stageid;
+		reducebykeytask1.jobid = js.getJobid();
+		reducebykeytask1.stageid = js.getStageid();
 		MapFunction<String, String[]> map = (String str) -> str.split(MDCConstants.COMMA);
 		PredicateSerializable<String[]> filter = (String str[]) -> !"ArrDelay".equals(str[14]) && !"NA".equals(str[14]);
 		MapToPairFunction<String[], Tuple2<String, Integer>> pair = val -> new Tuple2<String, Integer>(
 				(String) val[8], (Integer) Integer.parseInt(val[14]));
 		ReduceByKeyFunction<Integer> redfunc = (input1, input2) -> input1 + input2;
-		js.stage.tasks.add(map);
-		js.stage.tasks.add(filter);
-		js.stage.tasks.add(pair);
-		js.stage.tasks.add(redfunc);
+		js.getStage().tasks.add(map);
+		js.getStage().tasks.add(filter);
+		js.getStage().tasks.add(pair);
+		js.getStage().tasks.add(redfunc);
 
 		StreamPipelineTaskExecutorInMemory mdsteim = new StreamPipelineTaskExecutorInMemory(js, resultstream,
 				MDCCache.get());
@@ -1902,13 +1902,13 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 		mdsteim.processBlockHDFSMap(bls1.get(0), hdfs);
 
 		Task reducebykeytask2 = new Task();
-		reducebykeytask2.jobid = js.jobid;
-		reducebykeytask2.stageid = js.stageid;
-		js.stage.tasks.clear();
-		js.stage.tasks.add(map);
-		js.stage.tasks.add(filter);
-		js.stage.tasks.add(pair);
-		js.stage.tasks.add(redfunc);
+		reducebykeytask2.jobid = js.getJobid();
+		reducebykeytask2.stageid = js.getStageid();
+		js.getStage().tasks.clear();
+		js.getStage().tasks.add(map);
+		js.getStage().tasks.add(filter);
+		js.getStage().tasks.add(pair);
+		js.getStage().tasks.add(redfunc);
 		mdsteim.setTask(reducebykeytask2);
 		mdsteim.processBlockHDFSMap(bls2.get(0), hdfs);
 
@@ -1918,12 +1918,12 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 		String path2 = mdsteim.getIntermediateDataFSFilePath(reducebykeytask2);
 		InputStream is2 = new SnappyInputStream(new ByteArrayInputStream(((ByteArrayOutputStream) resultstream.get(path2)).toByteArray()));
 		Task jointask = new Task();
-		jointask.jobid = js.jobid;
-		jointask.stageid = js.stageid;
-		js.stage.tasks.clear();
+		jointask.jobid = js.getJobid();
+		jointask.stageid = js.getStageid();
+		js.getStage().tasks.clear();
 		Consumer<String> dummy = val -> {
 		};
-		js.stage.tasks.add(dummy);
+		js.getStage().tasks.add(dummy);
 
 		RightOuterJoinPredicate<Tuple2<String, Long>, Tuple2<String, Long>> jp = (Tuple2<String, Long> tup1,
 				Tuple2<String, Long> tup2) -> tup1.v1.equals(tup2.v1);
@@ -1951,21 +1951,21 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 	@Test
 	public void testProcessGroupByKey() throws Exception {
 		JobStage js = new JobStage();
-		js.stage = new Stage();
-		js.jobid = MDCConstants.JOB + MDCConstants.HYPHEN + System.currentTimeMillis();
-		js.stageid = MDCConstants.STAGE + MDCConstants.HYPHEN + System.currentTimeMillis();
-		js.stage.id = js.stageid;
-		js.stage.tasks = new ArrayList<>();
+		js.setStage(new Stage());
+		js.setJobid(MDCConstants.JOB + MDCConstants.HYPHEN + System.currentTimeMillis());
+		js.setStageid(MDCConstants.STAGE + MDCConstants.HYPHEN + System.currentTimeMillis());
+		js.getStage().id = js.getStageid();
+		js.getStage().tasks = new ArrayList<>();
 		Task mappairtask1 = new Task();
-		mappairtask1.jobid = js.jobid;
-		mappairtask1.stageid = js.stageid;
+		mappairtask1.jobid = js.getJobid();
+		mappairtask1.stageid = js.getStageid();
 		MapFunction<String, String[]> map = (String str) -> str.split(MDCConstants.COMMA);
 		PredicateSerializable<String[]> filter = (String str[]) -> !"ArrDelay".equals(str[14]) && !"NA".equals(str[14]);
 		MapToPairFunction<String[], Tuple2<String, Integer>> pair = val -> new Tuple2<String, Integer>(
 				(String) val[8], (Integer) Integer.parseInt(val[14]));
-		js.stage.tasks.add(map);
-		js.stage.tasks.add(filter);
-		js.stage.tasks.add(pair);
+		js.getStage().tasks.add(map);
+		js.getStage().tasks.add(filter);
+		js.getStage().tasks.add(pair);
 
 		StreamPipelineTaskExecutorInMemory mdsteim = new StreamPipelineTaskExecutorInMemory(js, resultstream,
 				MDCCache.get());
@@ -1988,10 +1988,10 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 		String path1 = mdsteim.getIntermediateDataFSFilePath(mappairtask1);
 		InputStream is1 = new SnappyInputStream(new ByteArrayInputStream(((ByteArrayOutputStream) resultstream.get(path1)).toByteArray()));
 		Task gbktask = new Task();
-		gbktask.jobid = js.jobid;
-		gbktask.stageid = js.stageid;
-		js.stage.tasks.clear();
-		js.stage.tasks.add(gbktask);
+		gbktask.jobid = js.getJobid();
+		gbktask.stageid = js.getStageid();
+		js.getStage().tasks.clear();
+		js.getStage().tasks.add(gbktask);
 		Consumer<String> dummy = val -> {
 		};
 		gbktask.input = new Object[]{is1};
@@ -2013,21 +2013,21 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 	@Test
 	public void testProcessFoldLeft() throws Exception {
 		JobStage js = new JobStage();
-		js.stage = new Stage();
-		js.jobid = MDCConstants.JOB + MDCConstants.HYPHEN + System.currentTimeMillis();
-		js.stageid = MDCConstants.STAGE + MDCConstants.HYPHEN + System.currentTimeMillis();
-		js.stage.id = js.stageid;
-		js.stage.tasks = new ArrayList<>();
+		js.setStage(new Stage());
+		js.setJobid(MDCConstants.JOB + MDCConstants.HYPHEN + System.currentTimeMillis());
+		js.setStageid(MDCConstants.STAGE + MDCConstants.HYPHEN + System.currentTimeMillis());
+		js.getStage().id = js.getStageid();
+		js.getStage().tasks = new ArrayList<>();
 		Task mappairtask1 = new Task();
-		mappairtask1.jobid = js.jobid;
-		mappairtask1.stageid = js.stageid;
+		mappairtask1.jobid = js.getJobid();
+		mappairtask1.stageid = js.getStageid();
 		MapFunction<String, String[]> map = (String str) -> str.split(MDCConstants.COMMA);
 		PredicateSerializable<String[]> filter = (String str[]) -> !"ArrDelay".equals(str[14]) && !"NA".equals(str[14]);
 		MapToPairFunction<String[], Tuple2<String, Long>> pair = val -> new Tuple2<String, Long>((String) val[8],
 				(Long) Long.parseLong(val[14]));
-		js.stage.tasks.add(map);
-		js.stage.tasks.add(filter);
-		js.stage.tasks.add(pair);
+		js.getStage().tasks.add(map);
+		js.getStage().tasks.add(filter);
+		js.getStage().tasks.add(pair);
 
 		StreamPipelineTaskExecutorInMemory mdsteim = new StreamPipelineTaskExecutorInMemory(js, resultstream,
 				MDCCache.get());
@@ -2050,12 +2050,12 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 		String path1 = mdsteim.getIntermediateDataFSFilePath(mappairtask1);
 		InputStream is1 = new SnappyInputStream(new ByteArrayInputStream(((ByteArrayOutputStream) resultstream.get(path1)).toByteArray()));
 		Task fbktask = new Task();
-		fbktask.jobid = js.jobid;
-		fbktask.stageid = js.stageid;
-		js.stage.tasks.clear();
+		fbktask.jobid = js.getJobid();
+		fbktask.stageid = js.getStageid();
+		js.getStage().tasks.clear();
 		ReduceByKeyFunction<Long> redfunc = (a, b) -> a + b;
 		FoldByKey fbk = new FoldByKey(0l, redfunc, true);
-		js.stage.tasks.add(fbk);
+		js.getStage().tasks.add(fbk);
 		fbktask.input = new Object[]{is1};
 		mdsteim.setTask(fbktask);
 		mdsteim.processFoldByKeyTuple2();
@@ -2075,19 +2075,19 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 	@Test
 	public void testProcessFoldRight() throws Exception {
 		JobStage js = new JobStage();
-		js.stage = new Stage();
-		js.jobid = MDCConstants.JOB + MDCConstants.HYPHEN + System.currentTimeMillis();
-		js.stageid = MDCConstants.STAGE + MDCConstants.HYPHEN + System.currentTimeMillis();
-		js.stage.id = js.stageid;
-		js.stage.tasks = new ArrayList<>();
+		js.setStage(new Stage());
+		js.setJobid(MDCConstants.JOB + MDCConstants.HYPHEN + System.currentTimeMillis());
+		js.setStageid(MDCConstants.STAGE + MDCConstants.HYPHEN + System.currentTimeMillis());
+		js.getStage().id = js.getStageid();
+		js.getStage().tasks = new ArrayList<>();
 		Task mappairtask1 = new Task();
 		MapFunction<String, String[]> map = (String str) -> str.split(MDCConstants.COMMA);
 		PredicateSerializable<String[]> filter = (String str[]) -> !"ArrDelay".equals(str[14]) && !"NA".equals(str[14]);
 		MapToPairFunction<String[], Tuple2<String, Long>> pair = val -> new Tuple2<String, Long>((String) val[8],
 				(Long) Long.parseLong(val[14]));
-		js.stage.tasks.add(map);
-		js.stage.tasks.add(filter);
-		js.stage.tasks.add(pair);
+		js.getStage().tasks.add(map);
+		js.getStage().tasks.add(filter);
+		js.getStage().tasks.add(pair);
 
 		StreamPipelineTaskExecutorInMemory mdsteim = new StreamPipelineTaskExecutorInMemory(js, resultstream,
 				MDCCache.get());
@@ -2110,12 +2110,12 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 		String path1 = mdsteim.getIntermediateDataFSFilePath(mappairtask1);
 		InputStream is1 = new SnappyInputStream(new ByteArrayInputStream(((ByteArrayOutputStream) resultstream.get(path1)).toByteArray()));
 		Task fbktask = new Task();
-		fbktask.jobid = js.jobid;
-		fbktask.stageid = js.stageid;
+		fbktask.jobid = js.getJobid();
+		fbktask.stageid = js.getStageid();
 		ReduceByKeyFunction<Long> redfunc = (a, b) -> a + b;
 		FoldByKey fbk = new FoldByKey(0l, redfunc, false);
-		js.stage.tasks.clear();
-		js.stage.tasks.add(fbk);
+		js.getStage().tasks.clear();
+		js.getStage().tasks.add(fbk);
 
 		fbktask.input = new Object[]{is1};
 		mdsteim.setTask(fbktask);
@@ -2136,19 +2136,19 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 	@Test
 	public void testProcessCountByKey() throws Exception {
 		JobStage js = new JobStage();
-		js.stage = new Stage();
-		js.jobid = MDCConstants.JOB + MDCConstants.HYPHEN + System.currentTimeMillis();
-		js.stageid = MDCConstants.STAGE + MDCConstants.HYPHEN + System.currentTimeMillis();
-		js.stage.id = js.stageid;
-		js.stage.tasks = new ArrayList<>();
+		js.setStage(new Stage());
+		js.setJobid(MDCConstants.JOB + MDCConstants.HYPHEN + System.currentTimeMillis());
+		js.setStageid(MDCConstants.STAGE + MDCConstants.HYPHEN + System.currentTimeMillis());
+		js.getStage().id = js.getStageid();
+		js.getStage().tasks = new ArrayList<>();
 		Task mappairtask1 = new Task();
 		MapFunction<String, String[]> map = (String str) -> str.split(MDCConstants.COMMA);
 		PredicateSerializable<String[]> filter = (String str[]) -> !"ArrDelay".equals(str[14]) && !"NA".equals(str[14]);
 		MapToPairFunction<String[], Tuple2<String, Long>> pair = val -> new Tuple2<String, Long>((String) val[8],
 				(Long) Long.parseLong(val[14]));
-		js.stage.tasks.add(map);
-		js.stage.tasks.add(filter);
-		js.stage.tasks.add(pair);
+		js.getStage().tasks.add(map);
+		js.getStage().tasks.add(filter);
+		js.getStage().tasks.add(pair);
 
 		StreamPipelineTaskExecutorInMemory mdsteim = new StreamPipelineTaskExecutorInMemory(js, resultstream,
 				MDCCache.get());
@@ -2171,10 +2171,10 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 		String path1 = mdsteim.getIntermediateDataFSFilePath(mappairtask1);
 		InputStream is1 = new SnappyInputStream(new ByteArrayInputStream(((ByteArrayOutputStream) resultstream.get(path1)).toByteArray()));
 		Task cbktask = new Task();
-		cbktask.jobid = js.jobid;
-		cbktask.stageid = js.stageid;
-		js.stage.tasks.clear();
-		js.stage.tasks.add(new CountByKeyFunction());
+		cbktask.jobid = js.getJobid();
+		cbktask.stageid = js.getStageid();
+		js.getStage().tasks.clear();
+		js.getStage().tasks.add(new CountByKeyFunction());
 		cbktask.input = new Object[]{is1};
 		mdsteim.setTask(cbktask);
 		mdsteim.processCountByKeyTuple2();
@@ -2194,19 +2194,19 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 	@Test
 	public void testProcessCountByValue() throws Exception {
 		JobStage js = new JobStage();
-		js.stage = new Stage();
-		js.jobid = MDCConstants.JOB + MDCConstants.HYPHEN + System.currentTimeMillis();
-		js.stageid = MDCConstants.STAGE + MDCConstants.HYPHEN + System.currentTimeMillis();
-		js.stage.id = js.stageid;
-		js.stage.tasks = new ArrayList<>();
+		js.setStage(new Stage());
+		js.setJobid(MDCConstants.JOB + MDCConstants.HYPHEN + System.currentTimeMillis());
+		js.setStageid(MDCConstants.STAGE + MDCConstants.HYPHEN + System.currentTimeMillis());
+		js.getStage().id = js.getStageid();
+		js.getStage().tasks = new ArrayList<>();
 		Task mappairtask1 = new Task();
 		MapFunction<String, String[]> map = (String str) -> str.split(MDCConstants.COMMA);
 		PredicateSerializable<String[]> filter = (String str[]) -> !"ArrDelay".equals(str[14]) && !"NA".equals(str[14]);
 		MapToPairFunction<String[], Tuple2<String, Long>> pair = val -> new Tuple2<String, Long>((String) val[8],
 				(Long) Long.parseLong(val[14]));
-		js.stage.tasks.add(map);
-		js.stage.tasks.add(filter);
-		js.stage.tasks.add(pair);
+		js.getStage().tasks.add(map);
+		js.getStage().tasks.add(filter);
+		js.getStage().tasks.add(pair);
 
 		StreamPipelineTaskExecutorInMemory mdsteim = new StreamPipelineTaskExecutorInMemory(js, resultstream,
 				MDCCache.get());
@@ -2229,10 +2229,10 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 		String path1 = mdsteim.getIntermediateDataFSFilePath(mappairtask1);
 		InputStream is1 = new SnappyInputStream(new ByteArrayInputStream(((ByteArrayOutputStream) resultstream.get(path1)).toByteArray()));
 		Task cbktask = new Task();
-		cbktask.jobid = js.jobid;
-		cbktask.stageid = js.stageid;
-		js.stage.tasks.clear();
-		js.stage.tasks.add(new CountByKeyFunction());
+		cbktask.jobid = js.getJobid();
+		cbktask.stageid = js.getStageid();
+		js.getStage().tasks.clear();
+		js.getStage().tasks.add(new CountByKeyFunction());
 		cbktask.input = new Object[]{is1};
 		mdsteim.setTask(cbktask);
 		mdsteim.processCountByValueTuple2();
@@ -2255,21 +2255,21 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 	@Test
 	public void testProcessCoalesce() throws Exception {
 		JobStage js = new JobStage();
-		js.stage = new Stage();
-		js.jobid = MDCConstants.JOB + MDCConstants.HYPHEN + System.currentTimeMillis();
-		js.stageid = MDCConstants.STAGE + MDCConstants.HYPHEN + System.currentTimeMillis();
-		js.stage.id = js.stageid;
-		js.stage.tasks = new ArrayList<>();
+		js.setStage(new Stage());
+		js.setJobid(MDCConstants.JOB + MDCConstants.HYPHEN + System.currentTimeMillis());
+		js.setStageid(MDCConstants.STAGE + MDCConstants.HYPHEN + System.currentTimeMillis());
+		js.getStage().id = js.getStageid();
+		js.getStage().tasks = new ArrayList<>();
 		Task reducebykeytask1 = new Task();
 		MapFunction<String, String[]> map = (String str) -> str.split(MDCConstants.COMMA);
 		PredicateSerializable<String[]> filter = (String str[]) -> !"ArrDelay".equals(str[14]) && !"NA".equals(str[14]);
 		MapToPairFunction<String[], Tuple2<String, Integer>> pair = val -> new Tuple2<String, Integer>(
 				(String) val[8], (Integer) Integer.parseInt(val[14]));
 		ReduceByKeyFunction<Integer> redfunc = (input1, input2) -> input1 + input2;
-		js.stage.tasks.add(map);
-		js.stage.tasks.add(filter);
-		js.stage.tasks.add(pair);
-		js.stage.tasks.add(redfunc);
+		js.getStage().tasks.add(map);
+		js.getStage().tasks.add(filter);
+		js.getStage().tasks.add(pair);
+		js.getStage().tasks.add(redfunc);
 
 		StreamPipelineTaskExecutorInMemory mdsteim = new StreamPipelineTaskExecutorInMemory(js, resultstream,
 				MDCCache.get());
@@ -2297,11 +2297,11 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 		mdsteim.processBlockHDFSMap(bls1.get(0), hdfs);
 
 		Task reducebykeytask2 = new Task();
-		js.stage.tasks.clear();
-		js.stage.tasks.add(map);
-		js.stage.tasks.add(filter);
-		js.stage.tasks.add(pair);
-		js.stage.tasks.add(redfunc);
+		js.getStage().tasks.clear();
+		js.getStage().tasks.add(map);
+		js.getStage().tasks.add(filter);
+		js.getStage().tasks.add(pair);
+		js.getStage().tasks.add(redfunc);
 		mdsteim.setTask(reducebykeytask2);
 		mdsteim.processBlockHDFSMap(bls2.get(0), hdfs);
 
@@ -2312,14 +2312,14 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 		InputStream is2 = new SnappyInputStream(new ByteArrayInputStream(((ByteArrayOutputStream) resultstream.get(path2)).toByteArray()));
 		reducebykeytask2.input = new Object[]{is1, is2};
 		Task coalescetask = new Task();
-		coalescetask.jobid = js.jobid;
-		coalescetask.stageid = js.stageid;
-		js.stage.tasks.clear();
+		coalescetask.jobid = js.getJobid();
+		coalescetask.stageid = js.getStageid();
+		js.getStage().tasks.clear();
 		Coalesce<Integer> coalesce = new Coalesce();
 		coalesce.setCoalescepartition(1);
 		coalesce.setCoalescefunction((a, b) -> a + b);
 		coalescetask.input = new Object[]{is1, is2};
-		js.stage.tasks.add(coalesce);
+		js.getStage().tasks.add(coalesce);
 		RightOuterJoinPredicate<Tuple2<String, Long>, Tuple2<String, Long>> jp = (Tuple2<String, Long> tup1,
 				Tuple2<String, Long> tup2) -> tup1.v1.equals(tup2.v1);
 		mdsteim.setTask(coalescetask);
@@ -2345,19 +2345,19 @@ public class StreamPipelineTaskExecutorInMemoryTest extends StreamPipelineTestCo
 	@Test
 	public void testProcessBlockHDFSMapJSON() throws Exception {
 		JobStage js = new JobStage();
-		js.stage = new Stage();
-		js.jobid = MDCConstants.JOB + MDCConstants.HYPHEN + System.currentTimeMillis();
-		js.stageid = MDCConstants.STAGE + MDCConstants.HYPHEN + System.currentTimeMillis();
-		js.stage.id = js.stageid;
-		js.stage.tasks = new ArrayList<>();
+		js.setStage(new Stage());
+		js.setJobid(MDCConstants.JOB + MDCConstants.HYPHEN + System.currentTimeMillis());
+		js.setStageid(MDCConstants.STAGE + MDCConstants.HYPHEN + System.currentTimeMillis());
+		js.getStage().id = js.getStageid();
+		js.getStage().tasks = new ArrayList<>();
 		Json json = new Json();
 		Task filtertask = new Task();
-		filtertask.jobid = js.jobid;
-		filtertask.stageid = js.stageid;
+		filtertask.jobid = js.getJobid();
+		filtertask.stageid = js.getStageid();
 		PredicateSerializable<JSONObject> filter = jsonobj -> jsonobj != null
 				&& jsonobj.get("type").equals("CreateEvent");
-		js.stage.tasks.add(json);
-		js.stage.tasks.add(filter);
+		js.getStage().tasks.add(json);
+		js.getStage().tasks.add(filter);
 
 		StreamPipelineTaskExecutorInMemory mdsteim = new StreamPipelineTaskExecutorInMemory(js, resultstream,
 				MDCCache.get());

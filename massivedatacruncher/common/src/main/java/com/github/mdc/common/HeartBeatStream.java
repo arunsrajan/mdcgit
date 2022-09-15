@@ -223,16 +223,16 @@ public sealed class HeartBeatStream implements HeartBeatCloseable permits HeartB
 		else {
 			var runtime = Runtime.getRuntime();
 			var resources = new Resources();
-			resources.nodeport = networkaddress + MDCConstants.UNDERSCORE + serverport;
-			resources.totalmemory = runtime.totalMemory();
-			resources.freememory = getTotalAvailablePhysicalMemory();
-			resources.numberofprocessors = runtime.availableProcessors();
-			resources.totaldisksize = totaldiskspace();
-			resources.usabledisksize = usablediskspace();
-			resources.physicalmemorysize = getPhysicalMemory();
+			resources.setNodeport(networkaddress + MDCConstants.UNDERSCORE + serverport);
+			resources.setTotalmemory(runtime.totalMemory());
+			resources.setFreememory(getTotalAvailablePhysicalMemory());
+			resources.setNumberofprocessors(runtime.availableProcessors());
+			resources.setTotaldisksize(totaldiskspace());
+			resources.setUsabledisksize(usablediskspace());
+			resources.setPhysicalmemorysize(getPhysicalMemory());
 			channel.setReceiver(new Receiver() {
 				public void receive(Message msg) {					
-					if(msg.getObject() instanceof ResponseReceived rr && resources.nodeport.equals(rr.getHp())) {
+					if(msg.getObject() instanceof ResponseReceived rr && resources.getNodeport().equals(rr.getHp())) {
 						log.info(msg.getSrc().toString()+" "+msg.getObject());
 						isresponsereceived = true;
 					}

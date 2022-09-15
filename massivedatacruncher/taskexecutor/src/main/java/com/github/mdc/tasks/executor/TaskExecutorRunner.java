@@ -189,16 +189,16 @@ public class TaskExecutorRunner implements TaskExecutorRunnerMBean {
 						shutdown.countDown();
 					}
 					else if (deserobj instanceof LoadJar loadjar) {
-						log.info("Loading the Required jars: "+loadjar.mrjar);
+						log.info("Loading the Required jars: "+loadjar.getMrjar());
 						cl = MDCMapReducePhaseClassLoader
-									.newInstance(loadjar.mrjar, cl);
+									.newInstance(loadjar.getMrjar(), cl);
 						log.info("Loaded the Required jars with Next registration ID: "+server.getKryoSerialization().obtainKryo().getNextRegistrationId());
 						Kryo kryo = server.getKryoSerialization().obtainKryo();
 						kryo.setClassLoader(cl);
 						server.getKryoSerialization().free(kryo);
-						if(nonNull(loadjar.classes) && !loadjar.classes.isEmpty()) {
+						if(nonNull(loadjar.getClasses()) && !loadjar.getClasses().isEmpty()) {
 							int classindex = 1;
-							for(String clz:loadjar.classes) {
+							for(String clz:loadjar.getClasses()) {
 								var main = Class.forName(clz, true, cl);
 								kryo = server.getKryoSerialization().obtainKryo();
 								kryo.register(main, new CompatibleFieldSerializer(kryo, main), 1000 + classindex);

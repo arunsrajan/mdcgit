@@ -29,6 +29,11 @@ import org.apache.ignite.spi.communication.tcp.TcpCommunicationSpi;
 import org.apache.ignite.spi.discovery.tcp.TcpDiscoverySpi;
 import org.apache.ignite.spi.discovery.tcp.ipfinder.multicast.TcpDiscoveryMulticastIpFinder;
 
+/**
+ * Ignite client instance initialization
+ * @author arun
+ *
+ */
 public class MDCIgniteClient {
 
 	private MDCIgniteClient() {

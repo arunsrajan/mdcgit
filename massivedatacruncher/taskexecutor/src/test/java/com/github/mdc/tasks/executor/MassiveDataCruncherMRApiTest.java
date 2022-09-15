@@ -189,9 +189,9 @@ public class MassiveDataCruncherMRApiTest extends StreamPipelineBase {
 				TaskExecutorMapperCombiner(bls, lzis, app, task, Thread.currentThread().getContextClassLoader(), 12121, hbts);
 		mdtemc.run();
 		ReducerValues reducervalues = new ReducerValues();
-		reducervalues.tuples = Arrays.asList(new Tuple2<>("AQ", Arrays.asList(app + task)));
-		reducervalues.appid = app;
-		reducervalues.reducerclass = AirlineDataMapper.class.getName();
+		reducervalues.setTuples(Arrays.asList(new Tuple2<>("AQ", Arrays.asList(app + task))));
+		reducervalues.setAppid(app);
+		reducervalues.setReducerclass(AirlineDataMapper.class.getName());
 		task = MDCConstants.TASK + "-1";
 		TaskExecutorReducer reducerexec = new TaskExecutorReducer(reducervalues, app, task, Thread.currentThread().getContextClassLoader(), 12121, hbts);
 		reducerexec.run();

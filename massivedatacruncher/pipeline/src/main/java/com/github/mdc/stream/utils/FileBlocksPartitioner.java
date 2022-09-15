@@ -56,7 +56,7 @@ public class FileBlocksPartitioner {
 		IgniteCache<Object, byte[]> ignitecache = ignite.cache(MDCConstants.MDCCACHE);
 		job.setIgnite(ignite);
 		var computeservers = job.getIgnite().cluster().forServers();
-		job.getJm().containersallocated = computeservers.hostNames().stream().collect(Collectors.toMap(key -> key, value -> 0d));
+		job.getJm().setContainersallocated(computeservers.hostNames().stream().collect(Collectors.toMap(key -> key, value -> 0d)));
 		job.setIgcache(ignitecache);
 		job.setStageoutputmap(new ConcurrentHashMap<>());
 		for (var rootstage : rootstages) {

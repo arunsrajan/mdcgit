@@ -22,6 +22,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * The class holds metrics for job execution
+ * @author arun
+ *
+ */
 @Getter
 @Setter
 @EqualsAndHashCode
@@ -34,15 +39,14 @@ public class JobMetrics {
 	private List<String> files;
 	private String mode;
 	private double totalfilesize;
-	public List<String> stages;
-	public List<String> containerresources;
-	public Map<String, Double> containersallocated;
-	public Set<String> nodes;
-	public long totalblocks;
-	public long jobstarttime;
-	public long jobcompletiontime;
-	public double totaltimetaken;
-	public List<String> stagecompletiontime;
-	public Map<String, List<Task>> taskexcutortasks = new ConcurrentHashMap<>();
+	private List<String> stages;
+	private List<String> containerresources;
+	private Map<String, Double> containersallocated;
+	private Set<String> nodes;
+	private long totalblocks;
+	private long jobstarttime;
+	private long jobcompletiontime;
+	private double totaltimetaken;
+	private Map<String, List<Task>> taskexcutortasks = new ConcurrentHashMap<>();
 
 }

@@ -240,7 +240,7 @@ public class StreamPipelineTaskSchedulerRunner {
 							if (deserobj instanceof LoadJar loadjar) {
 								log.info("Loading the Required jars");
 								synchronized (deserobj) {
-									var clsloader = MDCMapReducePhaseClassLoader.newInstance(loadjar.mrjar, cl);
+									var clsloader = MDCMapReducePhaseClassLoader.newInstance(loadjar.getMrjar(), cl);
 									cl = clsloader;
 								}
 								log.info("Loaded the Required jars");

@@ -144,7 +144,7 @@ public sealed class IgniteCommon extends AbstractPipeline permits IgnitePipeline
 		job = new Job();
 		job.setId(MDCConstants.JOB+MDCConstants.HYPHEN+Utils.getUniqueJobID());
 		job.setJm(new JobMetrics());
-		job.getJm().jobstarttime = System.currentTimeMillis();
+		job.getJm().setJobstarttime(System.currentTimeMillis());
 		job.getJm().setJobid(job.getId());
 		MDCJobMetrics.put(job.getJm());
 		PipelineConfig pipelineconfig = null;
@@ -401,7 +401,7 @@ public sealed class IgniteCommon extends AbstractPipeline permits IgnitePipeline
 				IgniteCache<Object, byte[]> ignitecache = ignite.cache(MDCConstants.MDCCACHE);
 				job.setIgnite(ignite);
 				var computeservers = job.getIgnite().cluster().forServers();
-				job.getJm().containersallocated = computeservers.hostNames().stream().collect(Collectors.toMap(key->key, value->0d));
+				job.getJm().setContainersallocated(computeservers.hostNames().stream().collect(Collectors.toMap(key->key, value->0d)));
 				job.setIgcache(ignitecache);
 				job.setStageoutputmap(new ConcurrentHashMap<>());
 				var inputstages = new ArrayList<Stage>();

@@ -125,8 +125,8 @@ public final class StreamPipelineTaskExecutorInMemoryDisk extends StreamPipeline
 	 */
 	public byte[] getCachedRDF(RemoteDataFetch rdf) throws Exception {
 		log.debug("Entered MassiveDataStreamTaskExecutorInMemory.getIntermediateInputStreamRDF");
-		var path = rdf.jobid + MDCConstants.HYPHEN
-				+ rdf.stageid + MDCConstants.HYPHEN + rdf.taskid;
+		var path = rdf.getJobid() + MDCConstants.HYPHEN
+				+ rdf.getStageid() + MDCConstants.HYPHEN + rdf.getTaskid();
 		return (byte[]) cache.get(path);
 	}
 
@@ -155,7 +155,7 @@ public final class StreamPipelineTaskExecutorInMemoryDisk extends StreamPipeline
 							task.input[inputindex] = new SnappyInputStream(new ByteArrayInputStream(btarray));
 						} else {
 							RemoteDataFetcher.remoteInMemoryDataFetch(rdf);
-							task.input[inputindex] = new SnappyInputStream(new ByteArrayInputStream(rdf.data));
+							task.input[inputindex] = new SnappyInputStream(new ByteArrayInputStream(rdf.getData()));
 						}
 					}
 				}

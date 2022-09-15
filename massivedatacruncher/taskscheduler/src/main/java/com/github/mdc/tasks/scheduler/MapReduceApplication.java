@@ -210,7 +210,7 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 				totalcontainersallocated += cr.size();
 				nodecrsmap.put(node, cr);
 			}
-			jm.containerresources = lcs.stream().flatMap(lc -> {
+			jm.setContainerresources(lcs.stream().flatMap(lc -> {
 				var crs = lc.getCla().getCr();
 				return crs.stream().map(cr -> {
 					var node = lc.getNodehostport().split(MDCConstants.UNDERSCORE)[0];
@@ -226,7 +226,7 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 							+ MDCConstants.ROUNDED_BRACKET_CLOSE;
 
 				}).collect(Collectors.toList()).stream();
-			}).collect(Collectors.toList());
+			}).collect(Collectors.toList()));
 			log.debug("Total Containers Allocated:"	+ totalcontainersallocated);
 		} catch (Exception ex) {
 			log.error(PipelineConstants.TASKEXECUTORSALLOCATIONERROR, ex);
@@ -506,7 +506,7 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 
 	public void getContainers(String containerid, String appid) throws Exception {
 		var loadjar = new LoadJar();
-		loadjar.mrjar = jobconf.getMrjar();
+		loadjar.setMrjar(jobconf.getMrjar());
 		List<String> containers = new ArrayList<>();
 		for (var lc : lcs) {
 			List<Integer> ports = (List<Integer>) Utils.getResultObjectByInput(lc.getNodehostport(), lc);
@@ -523,7 +523,7 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 							Thread.sleep(1000);
 						}
 					}
-					if (!Objects.isNull(loadjar.mrjar)) {
+					if (!Objects.isNull(loadjar.getMrjar())) {
 						log.info(Utils.getResultObjectByInput(tehost+MDCConstants.UNDERSCORE+ports.get(index), loadjar));
 					}
 					JobApp jobapp = new JobApp();
@@ -551,7 +551,7 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 							Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.ZOOKEEPER_RETRYDELAY))));
 			cf.start();
 
-			jm.jobstarttime = System.currentTimeMillis();
+			jm.setJobstarttime(System.currentTimeMillis());
 			var isblocksuserdefined = Boolean.parseBoolean(jobconf.getIsblocksuserdefined());
 			var applicationid = MDCConstants.MDCAPPLICATION + MDCConstants.HYPHEN + Utils.getUniqueAppID();
 			jm.setJobid(applicationid);
@@ -621,11 +621,11 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 
 			jm.setTotalfilesize(jm.getTotalfilesize() / MDCConstants.MB);
 			jm.setFiles(allfiles);
-			jm.nodes = new LinkedHashSet<>(nodessorted);
-			jm.containersallocated = containers.stream().collect(Collectors.toMap(key -> key, value -> 0d));
+			jm.setNodes(new LinkedHashSet<>(nodessorted));
+			jm.setContainersallocated(containers.stream().collect(Collectors.toMap(key -> key, value -> 0d)));
 			;
 			jm.setMode(jobconf.execmode);
-			jm.totalblocks = allfilebls.size();
+			jm.setTotalblocks(allfilebls.size());
 			for (var cls : combiners) {
 				if (cls != null) {
 					combiner.add(cls.getName());
@@ -753,19 +753,19 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 				mrtaskcount++;
 				var currentexecutor = getTaskExecutor(mrtaskcount);
 				var rv = new ReducerValues();
-				rv.appid = applicationid;
-				rv.tuples = new ArrayList<>(partkeys.next());
-				rv.reducerclass = reducers.iterator().next().getName();
+				rv.setAppid(applicationid);
+				rv.setTuples(new ArrayList<>(partkeys.next()));
+				rv.setReducerclass(reducers.iterator().next().getName());
 				var taskid = MDCConstants.TASK + MDCConstants.HYPHEN + mrtaskcount;
 				var mdtstr = new TaskSchedulerReducerSubmitter(
 						currentexecutor, rv, applicationid, taskid, redcount, cf, containers);
 				hbts.apptaskmdtstrmap.put(applicationid + taskid, mdtstr);
 
 				log.debug("Reducer: Submitting " + mrtaskcount + " App And Task:"
-						+ applicationid + taskid + rv.tuples);
+						+ applicationid + taskid + rv.getTuples());
 				if (!Objects.isNull(jobconf.getOutput())) {
 					Utils.writeKryoOutput(Utils.getKryoSerializerDeserializer(), jobconf.getOutput(), "Initial Reducer: Submitting " + mrtaskcount + " App And Task:"
-							+ applicationid + taskid + rv.tuples + " to " + currentexecutor);
+							+ applicationid + taskid + rv.getTuples() + " to " + currentexecutor);
 				}
 				executorred.addIndependent(mdtstr);
 			}
@@ -806,8 +806,8 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 					Utils.writeKryoOutput(Utils.getKryoSerializerDeserializer(), jobconf.getOutput(), exceptionmsg);
 				}
 			}
-			jm.jobcompletiontime = System.currentTimeMillis();
-			jm.totaltimetaken = (jm.jobcompletiontime - jm.jobstarttime) / 1000.0;
+			jm.setJobcompletiontime(System.currentTimeMillis());
+			jm.setTotaltimetaken((jm.getJobcompletiontime() - jm.getJobstarttime()) / 1000.0);
 			if (!Objects.isNull(jobconf.getOutput())) {
 				Utils.writeKryoOutput(kryo, jobconf.getOutput(),
 						"Completed Job in " + ((System.currentTimeMillis() - starttime) / 1000.0) + " seconds");
@@ -1105,7 +1105,7 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 							}
 							totalouputobtained++;
 							double percentcompleted = Math.floor(totalouputobtained / (double) totaltasks * 100.0);
-							jm.containersallocated.put(apptask.getHp(), percentcompleted);
+							jm.getContainersallocated().put(apptask.getHp(), percentcompleted);
 							if (jobconf.getOutput() != null) {
 								Utils.writeKryoOutput(kryo, jobconf.getOutput(), apptask.getTaskid() + " " + apptask.getHp() + "'s Mapper Task Status: " + apptask.getTaskstatus() + " Execution Status = " + totalouputobtained + "/" + totaltasks + " = " + percentcompleted + "%");
 							}

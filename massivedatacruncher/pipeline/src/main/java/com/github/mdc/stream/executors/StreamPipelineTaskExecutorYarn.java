@@ -56,7 +56,7 @@ public final class StreamPipelineTaskExecutorYarn extends StreamPipelineTaskExec
 	 * @return
 	 */
 	public String getIntermediateDataFSFilePath(Task task) {
-		return MDCConstants.FORWARD_SLASH + FileSystemSupport.MDS + MDCConstants.FORWARD_SLASH + jobstage.jobid
+		return MDCConstants.FORWARD_SLASH + FileSystemSupport.MDS + MDCConstants.FORWARD_SLASH + jobstage.getJobid()
 				+ MDCConstants.FORWARD_SLASH + task.taskid;
 	}
 
@@ -96,8 +96,8 @@ public final class StreamPipelineTaskExecutorYarn extends StreamPipelineTaskExec
 					if (input != null) {
 						var rdf = (RemoteDataFetch) input;
 						//Intermediate data fetch from HDFS streaming API.
-						task.input[inputindex] = RemoteDataFetcher.readIntermediatePhaseOutputFromDFS(rdf.jobid,
-								rdf.taskid, hdfs);
+						task.input[inputindex] = RemoteDataFetcher.readIntermediatePhaseOutputFromDFS(rdf.getJobid(),
+								rdf.getTaskid(), hdfs);
 					}
 				}
 			}

@@ -44,8 +44,8 @@ public sealed class StreamPipelineTaskExecutorInMemory extends StreamPipelineTas
 	
 	public OutputStream getIntermediateInputStreamRDF(RemoteDataFetch rdf) throws Exception {
 		log.debug("Entered MassiveDataStreamTaskExecutorInMemory.getIntermediateInputStreamRDF");
-		var path = (rdf.jobid + MDCConstants.HYPHEN +
-				rdf.stageid + MDCConstants.HYPHEN +rdf.taskid
+		var path = (rdf.getJobid() + MDCConstants.HYPHEN +
+				rdf.getStageid() + MDCConstants.HYPHEN +rdf.getTaskid()
 				);
 		OutputStream os = resultstream.get(path);
 		log.debug("Exiting MassiveDataStreamTaskExecutorInMemory.getIntermediateInputStreamFS");
@@ -150,7 +150,7 @@ public sealed class StreamPipelineTaskExecutorInMemory extends StreamPipelineTas
 							task.input[inputindex] = new SnappyInputStream(new ByteArrayInputStream(((ByteArrayOutputStream)os).toByteArray()));
 						} else {
 							RemoteDataFetcher.remoteInMemoryDataFetch(rdf);
-							task.input[inputindex] = new SnappyInputStream(new ByteArrayInputStream(rdf.data));
+							task.input[inputindex] = new SnappyInputStream(new ByteArrayInputStream(rdf.getData()));
 						}
 					}
 				}

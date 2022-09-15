@@ -1139,7 +1139,7 @@ public class Utils {
 
 	public static String getIntermediateInputStreamRDF(RemoteDataFetch rdf) throws Exception {
 		log.debug("Entered Utils.getIntermediateInputStreamRDF");
-		var path = rdf.jobid + MDCConstants.HYPHEN + rdf.stageid + MDCConstants.HYPHEN + rdf.taskid;
+		var path = rdf.getJobid() + MDCConstants.HYPHEN + rdf.getStageid() + MDCConstants.HYPHEN + rdf.getTaskid();
 		log.debug("Returned Utils.getIntermediateInputStreamRDF");
 		return path;
 	}

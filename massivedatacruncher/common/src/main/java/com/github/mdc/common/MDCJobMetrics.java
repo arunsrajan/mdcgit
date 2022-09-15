@@ -18,6 +18,11 @@ package com.github.mdc.common;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * Global job metrics inmemory store
+ * @author arun
+ *
+ */
 public class MDCJobMetrics {
 	private MDCJobMetrics() {
 	}

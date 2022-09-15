@@ -153,7 +153,7 @@ public class MapReduceApplicationYarn implements Callable<List<DataCruncherConte
 			var configuration = new Configuration();
 			blocksize = Integer.parseInt(jobconf.getBlocksize());
 			var jm = new JobMetrics();
-			jm.jobstarttime = System.currentTimeMillis();
+			jm.setJobstarttime(System.currentTimeMillis());
 			jm.setJobid(applicationid);
 			MDCJobMetrics.put(jm);
 			hdfs = FileSystem.get(new URI(MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL)),
@@ -201,7 +201,7 @@ public class MapReduceApplicationYarn implements Callable<List<DataCruncherConte
 			jm.setTotalfilesize(jm.getTotalfilesize() / MDCConstants.MB);
 			jm.setFiles(allfiles);
 			jm.setMode(jobconf.execmode);
-			jm.totalblocks = bls.size();
+			jm.setTotalblocks(bls.size());
 			log.debug("Total MapReduce Tasks: " + mrtaskcount);
 			for (var mapperinput : mappers) {
 				try {
@@ -257,11 +257,11 @@ public class MapReduceApplicationYarn implements Callable<List<DataCruncherConte
 			log.debug("Waiting for the Reducer to complete------------");
 			log.debug("Reducer completed------------------------------");
 			jobconf.setOutput(output);
-			jm.jobcompletiontime = System.currentTimeMillis();
-			jm.totaltimetaken = (jm.jobcompletiontime - jm.jobstarttime) / 1000.0;
+			jm.setJobcompletiontime(System.currentTimeMillis());
+			jm.setTotaltimetaken((jm.getJobcompletiontime() - jm.getJobstarttime()) / 1000.0);
 			if (!Objects.isNull(jobconf.getOutput())) {
 				Utils.writeKryoOutput(kryo, jobconf.getOutput(),
-						"Completed Job in " + (jm.totaltimetaken) + " seconds");
+						"Completed Job in " + (jm.getTotaltimetaken()) + " seconds");
 			}
 			return null;
 		} catch (InterruptedException e) {

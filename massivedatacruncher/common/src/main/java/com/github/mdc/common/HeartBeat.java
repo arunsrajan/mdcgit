@@ -210,13 +210,13 @@ public sealed class HeartBeat implements HeartBeatCloseable permits HeartBeatTas
 
 			@Override
 			public void run() {
-				resources.nodeport = networkaddress + MDCConstants.UNDERSCORE + serverport;
-				resources.totalmemory = runtime.totalMemory();
-				resources.freememory = getTotalAvailablePhysicalMemory();
-				resources.numberofprocessors = runtime.availableProcessors();
-				resources.totaldisksize = totaldiskspace();
-				resources.usabledisksize = usablediskspace();
-				resources.physicalmemorysize = getPhysicalMemory();
+				resources.setNodeport(networkaddress + MDCConstants.UNDERSCORE + serverport);
+				resources.setTotalmemory(runtime.totalMemory());
+				resources.setFreememory(getTotalAvailablePhysicalMemory());
+				resources.setNumberofprocessors(runtime.availableProcessors());
+				resources.setTotaldisksize(totaldiskspace());
+				resources.setUsabledisksize(usablediskspace());
+				resources.setPhysicalmemorysize(getPhysicalMemory());
 				try {
 					if (!isresponsereceived) {
 						channel.send(new ObjectMessage(null,resources));

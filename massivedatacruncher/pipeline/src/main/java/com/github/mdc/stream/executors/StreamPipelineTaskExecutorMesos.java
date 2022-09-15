@@ -72,8 +72,8 @@ public final class StreamPipelineTaskExecutorMesos extends StreamPipelineTaskExe
 					var input = task.parentremotedatafetch[inputindex];
 					if (input != null) {
 						var rdf = (RemoteDataFetch) input;
-						task.input[inputindex] = RemoteDataFetcher.readIntermediatePhaseOutputFromDFS(rdf.jobid,
-								getIntermediateDataFSFilePath(rdf.jobid, rdf.stageid, rdf.taskid), hdfs);
+						task.input[inputindex] = RemoteDataFetcher.readIntermediatePhaseOutputFromDFS(rdf.getJobid(),
+								getIntermediateDataFSFilePath(rdf.getJobid(), rdf.getStageid(), rdf.getTaskid()), hdfs);
 					}
 				}
 			}

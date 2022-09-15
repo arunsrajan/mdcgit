@@ -171,7 +171,7 @@ public class StreamJobScheduler {
 					TssHAHostPorts.get().forEach(hp -> {
 						try {
 							LoadJar lj = new LoadJar();
-							lj.mrjar = pipelineconfig.getJar();
+							lj.setMrjar(pipelineconfig.getJar());
 							String jarloaded = (String) Utils.getResultObjectByInput(hp, lj);
 							if (!Objects.isNull(jarloaded) && jarloaded.equals(MDCConstants.JARLOADED)) {
 								log.info("Jar Loaded in server " + hp);
@@ -199,9 +199,9 @@ public class StreamJobScheduler {
 			if (Objects.isNull(job.getVertices())) {
 				for (var stage : uniquestagestoprocess) {
 					JobStage js = new JobStage();
-					js.jobid =  job.getId();
-					js.stageid = stage.id;
-					js.stage = stage;
+					js.setJobid(job.getId());
+					js.setStageid(stage.id);
+					js.setStage(stage);
 					jsidjsmap.put( job.getId() + stage.id, js);
 					partitionindex = 0;
 					var nextstage = stagenumber + 1 < uniquestagestoprocess.size()
@@ -366,7 +366,7 @@ public class StreamJobScheduler {
 						if (totalcompleted == totaltasks) {
 							Utils.writeKryoOutput(kryo, pipelineconfig.getOutput(), "\nPercentage Completed "
 									+ percentagecompleted + "% \n");
-							job.getJm().containersallocated.put("", percentagecompleted);
+							job.getJm().getContainersallocated().put("", percentagecompleted);
 							mdststs.parallelStream().forEach(spts -> spts.setCompletedexecution(true));
 							break;
 						} else {
@@ -374,7 +374,7 @@ public class StreamJobScheduler {
 									"Total Percentage Completed: " + Math.floor((totalcompleted / totaltasks) * 100.0));
 							Utils.writeKryoOutput(kryo, pipelineconfig.getOutput(), "\nPercentage Completed "
 									+ percentagecompleted + "% \n");
-							job.getJm().containersallocated.put("", percentagecompleted);
+							job.getJm().getContainersallocated().put("", percentagecompleted);
 							Thread.sleep(4000);
 						}
 					}
@@ -403,11 +403,11 @@ public class StreamJobScheduler {
 				closeResourcesTaskExecutor(tasksgraphexecutor);
 			}
 			job.setIscompleted(true);
-			job.getJm().jobcompletiontime = System.currentTimeMillis();
+			job.getJm().setJobcompletiontime(System.currentTimeMillis());
 			Utils.writeKryoOutput(kryo, pipelineconfig.getOutput(),
-					"Completed Job in " + ((job.getJm().jobcompletiontime - job.getJm().jobstarttime) / 1000.0) + " seconds");
-			log.info("Completed Job in " + ((job.getJm().jobcompletiontime - job.getJm().jobstarttime) / 1000.0) + " seconds");
-			job.getJm().totaltimetaken = (job.getJm().jobcompletiontime - job.getJm().jobstarttime) / 1000.0;
+					"Completed Job in " + ((job.getJm().getJobcompletiontime() - job.getJm().getJobstarttime()) / 1000.0) + " seconds");
+			log.info("Completed Job in " + ((job.getJm().getJobcompletiontime() - job.getJm().getJobstarttime()) / 1000.0) + " seconds");
+			job.getJm().setTotaltimetaken((job.getJm().getJobcompletiontime() - job.getJm().getJobstarttime()) / 1000.0);
 			Utils.writeKryoOutput(kryo, pipelineconfig.getOutput(),
 					"Job Metrics " + job.getJm());
 			log.info("Job Metrics " + job.getJm());
@@ -468,10 +468,10 @@ public class StreamJobScheduler {
 				try {
 					JobStage js = (JobStage) jsidjsmap.get(key);
 					JobStage clonedjs = (JobStage) js.clone();
-					clonedjs.stage = new Stage(js.stage.id,js.stage.number,
-							null,null,null,js.stage.isstagecompleted,js.stage.tovisit);
-					clonedjs.stage.tasks = new ArrayList<>();
-					clonedjs.stage.tasks.addAll(js.stage.tasks);
+					clonedjs.setStage(new Stage(js.getStage().id,js.getStage().number,
+							null,null,null,js.getStage().isstagecompleted,js.getStage().tovisit));
+					clonedjs.getStage().tasks = new ArrayList<>();
+					clonedjs.getStage().tasks.addAll(js.getStage().tasks);
 					Utils.writeObject(te, clonedjs, pipelineconfig.getCustomclasses());
 				} catch (Exception e) {
 					log.error(MDCConstants.EMPTY, e);
@@ -500,9 +500,9 @@ public class StreamJobScheduler {
 			// Start Resources gathering via heart beat resources status update.
 			hbss.start();
 			var loadjar = new LoadJar();
-			loadjar.mrjar = pipelineconfig.getJar();
+			loadjar.setMrjar(pipelineconfig.getJar());
 			if(nonNull(pipelineconfig.getCustomclasses()) && !pipelineconfig.getCustomclasses().isEmpty()) {
-				loadjar.classes = pipelineconfig.getCustomclasses().stream().map(clz->clz.getName()).collect(Collectors.toCollection(LinkedHashSet::new));
+				loadjar.setClasses(pipelineconfig.getCustomclasses().stream().map(clz->clz.getName()).collect(Collectors.toCollection(LinkedHashSet::new)));
 			}
 			for (var lc : job.getLcs()) {
 				List<Integer> ports = null;
@@ -525,7 +525,7 @@ public class StreamJobScheduler {
 							Thread.sleep(200);
 						}
 					}
-					if (!Objects.isNull(loadjar.mrjar)) {
+					if (!Objects.isNull(loadjar.getMrjar())) {
 						log.info(Utils.getResultObjectByInput(tehost+MDCConstants.UNDERSCORE+ports.get(index), loadjar));
 					}
 					JobApp jobapp = new JobApp();
@@ -972,8 +972,8 @@ public class StreamJobScheduler {
 			StreamPipelineTaskSubmitter pred) {
 		var prdf = mdstst.getTask().parentremotedatafetch;
 		for (var rdf : prdf) {
-			if (!Objects.isNull(rdf) && rdf.stageid.equals(pred.getTask().stageid)) {
-				rdf.hp = pred.getHostPort();
+			if (!Objects.isNull(rdf) && rdf.getStageid().equals(pred.getTask().stageid)) {
+				rdf.setHp(pred.getHostPort());
 				break;
 			}
 		}
@@ -1166,7 +1166,7 @@ public class StreamJobScheduler {
 							double percentagecompleted = Math.floor((tetotaltaskscompleted.get(mdststlocal.getHostPort()) / servertotaltasks.get(mdststlocal.getHostPort())) * 100.0);
 							Utils.writeKryoOutput(kryo, pipelineconfig.getOutput(), "\nPercentage Completed TE("
 									+ mdststlocal.getHostPort() + ") " + percentagecompleted + "% \n");
-							job.getJm().containersallocated.put(mdststlocal.getHostPort(), percentagecompleted);
+							job.getJm().getContainersallocated().put(mdststlocal.getHostPort(), percentagecompleted);
 							printresult.release();
 						} catch (InterruptedException e) {
 							log.warn("Interrupted!", e);
@@ -1207,7 +1207,7 @@ public class StreamJobScheduler {
 										+ percentagecompleted + "% \n");
 								log.info("\nPercentage Completed TE(" + mdststlocal.getHostPort() + ") "
 										+ percentagecompleted + "% \n");
-								job.getJm().containersallocated.put(mdststlocal.getHostPort(), percentagecompleted);
+								job.getJm().getContainersallocated().put(mdststlocal.getHostPort(), percentagecompleted);
 								printresult.release();
 								cdl.countDown();
 
@@ -1235,10 +1235,10 @@ public class StreamJobScheduler {
 								printresult.release();
 								cdl.countDown();
 							}
-							if(isNull(job.getJm().taskexcutortasks.get(task.getHostport()))){
-								job.getJm().taskexcutortasks.put(task.getHostport(), new ArrayList<>());
+							if(isNull(job.getJm().getTaskexcutortasks().get(task.getHostport()))){
+								job.getJm().getTaskexcutortasks().put(task.getHostport(), new ArrayList<>());
 							}
-							job.getJm().taskexcutortasks.get(task.getHostport()).add(task);
+							job.getJm().getTaskexcutortasks().get(task.getHostport()).add(task);
 						} catch (InterruptedException e) {
 							log.warn("Interrupted!", e);
 							// Restore interrupted state...
@@ -1657,14 +1657,14 @@ public class StreamJobScheduler {
 					if (mdstt.isCompletedexecution() && job.getTrigger() != job.getTrigger().SAVERESULTSTOFILE || !ishdfs) {
 						Task task = mdstt.getTask();
 						RemoteDataFetch rdf = new RemoteDataFetch();
-						rdf.hp = task.hostport;
-						rdf.jobid = task.jobid;
-						rdf.stageid = task.stageid;
-						rdf.taskid = task.taskid;
+						rdf.setHp(task.hostport);
+						rdf.setJobid(task.jobid);
+						rdf.setStageid(task.stageid);
+						rdf.setTaskid(task.taskid);
 						boolean isJGroups = Boolean.parseBoolean(pipelineconfig.getJgroups());
-						rdf.mode = isJGroups ? MDCConstants.JGROUPS : MDCConstants.STANDALONE;
+						rdf.setMode( isJGroups ? MDCConstants.JGROUPS : MDCConstants.STANDALONE);
 						RemoteDataFetcher.remoteInMemoryDataFetch(rdf);
-						try (var input = new Input(!isJGroups ? new SnappyInputStream(new ByteArrayInputStream(rdf.data)) : new ByteArrayInputStream(rdf.data));) {
+						try (var input = new Input(!isJGroups ? new SnappyInputStream(new ByteArrayInputStream(rdf.getData())) : new ByteArrayInputStream(rdf.getData()));) {
 							var obj = kryofinal.readClassAndObject(input);
 							writeOutputToFile(stageoutput.size(), obj);
 							stageoutput.add(obj);
@@ -1739,14 +1739,14 @@ public class StreamJobScheduler {
 	private InputStream getIntermediateInputStreamInMemory(Task task) throws Exception {
 		try {
 			var rdf = new RemoteDataFetch();
-			rdf.jobid = task.jobid;
-			rdf.stageid = task.stageid;
-			rdf.taskid = task.taskid;
-			rdf.hp = task.hostport;
+			rdf.setJobid(task.jobid);
+			rdf.setStageid(task.stageid);
+			rdf.setTaskid(task.taskid);
+			rdf.setHp(task.hostport);
 			boolean isJGroups = Boolean.parseBoolean(pipelineconfig.getJgroups());
-			rdf.mode = isJGroups ? MDCConstants.JGROUPS : MDCConstants.STANDALONE;
+			rdf.setMode( isJGroups ? MDCConstants.JGROUPS : MDCConstants.STANDALONE);
 			RemoteDataFetcher.remoteInMemoryDataFetch(rdf);
-			return new SnappyInputStream(new ByteArrayInputStream(rdf.data));
+			return new SnappyInputStream(new ByteArrayInputStream(rdf.getData()));
 		} catch (Exception ex) {
 			log.error(PipelineConstants.JOBSCHEDULERINMEMORYDATAFETCHERROR, ex);
 			throw new PipelineException(PipelineConstants.JOBSCHEDULERINMEMORYDATAFETCHERROR, ex);
@@ -1795,12 +1795,12 @@ public class StreamJobScheduler {
 	private RemoteDataFetch getIntermediateRdfInMemory(Task task) throws Exception {
 		try {
 			var rdf = new RemoteDataFetch();
-			rdf.jobid = task.jobid;
-			rdf.stageid = task.stageid;
-			rdf.taskid = task.taskid;
-			rdf.hp = task.hostport;
+			rdf.setJobid(task.jobid);
+			rdf.setStageid(task.stageid);
+			rdf.setTaskid(task.taskid);
+			rdf.setHp(task.hostport);
 			boolean isJGroups = Boolean.parseBoolean(pipelineconfig.getJgroups());
-			rdf.mode = isJGroups ? MDCConstants.JGROUPS : MDCConstants.STANDALONE;
+			rdf.setMode( isJGroups ? MDCConstants.JGROUPS : MDCConstants.STANDALONE);
 			return rdf;
 		} catch (Exception ex) {
 			log.error(PipelineConstants.JOBSCHEDULERINMEMORYDATAFETCHERROR, ex);
@@ -1885,15 +1885,15 @@ public class StreamJobScheduler {
 					if (parentthreads.get(parentcount) instanceof StreamPipelineTaskSubmitter mdstst) {
 						if (!isignite) {
 							task.parentremotedatafetch[parentcount] = new RemoteDataFetch();
-							task.parentremotedatafetch[parentcount].jobid = mdstst.getTask().jobid;
-							task.parentremotedatafetch[parentcount].stageid = mdstst.getTask().stageid;
-							task.parentremotedatafetch[parentcount].taskid = mdstst.getTask().taskid;
-							task.parentremotedatafetch[parentcount].hp = mdstst.getHostPort();
+							task.parentremotedatafetch[parentcount].setJobid(mdstst.getTask().jobid);
+							task.parentremotedatafetch[parentcount].setStageid(mdstst.getTask().stageid);
+							task.parentremotedatafetch[parentcount].setTaskid(mdstst.getTask().taskid);
+							task.parentremotedatafetch[parentcount].setHp(mdstst.getHostPort());
 							if (Boolean.parseBoolean(pipelineconfig.getJgroups())) {
-								task.parentremotedatafetch[parentcount].mode = MDCConstants.JGROUPS;
+								task.parentremotedatafetch[parentcount].setMode(MDCConstants.JGROUPS);
 							}
 							else {
-								task.parentremotedatafetch[parentcount].mode = MDCConstants.STANDALONE;
+								task.parentremotedatafetch[parentcount].setMode(MDCConstants.STANDALONE);
 							}
 							hp = mdstst.getHostPort();
 						} else {

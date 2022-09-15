@@ -74,7 +74,7 @@ public final class StreamPipelineTaskExecutorJGroups extends StreamPipelineTaskE
 		String host = NetworkUtil.getNetworkAddress(MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_HOST));
 		try (var hdfs = FileSystem.newInstance(new URI(hdfsfilepath), new Configuration());) {
 			this.hdfs = hdfs;
-			channel = Utils.getChannelTaskExecutor(jobstage.jobid,
+			channel = Utils.getChannelTaskExecutor(jobstage.getJobid(),
 					host,
 					port, taskstatusconcmapreq, taskstatusconcmapresp);
 			log.info("Tasks In Jgroups executor: " + tasks + " in host: " + host + " port: " + port);
@@ -131,12 +131,12 @@ public final class StreamPipelineTaskExecutorJGroups extends StreamPipelineTaskE
 							var input = task.parentremotedatafetch[inputindex];
 							if (input != null) {
 								var rdf = input;
-								InputStream is = RemoteDataFetcher.readIntermediatePhaseOutputFromFS(rdf.jobid,
-										getIntermediateDataRDF(rdf.taskid));
+								InputStream is = RemoteDataFetcher.readIntermediatePhaseOutputFromFS(rdf.getJobid(),
+										getIntermediateDataRDF(rdf.getTaskid()));
 								if (Objects.isNull(is)) {
 									RemoteDataFetcher.remoteInMemoryDataFetch(rdf);
 									task.input[inputindex] =
-											new ByteArrayInputStream(rdf.data);
+											new ByteArrayInputStream(rdf.getData());
 								} else {
 									task.input[inputindex] = is;
 								}

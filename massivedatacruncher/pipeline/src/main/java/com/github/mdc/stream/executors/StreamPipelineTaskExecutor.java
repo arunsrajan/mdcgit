@@ -171,7 +171,7 @@ public sealed class StreamPipelineTaskExecutor implements
 	 */
 	private List getFunctions() {
 		log.debug("Entered MassiveDataStreamTaskDExecutor.getFunctions");
-		var tasks = jobstage.stage.tasks;
+		var tasks = jobstage.getStage().tasks;
 		var functions = new ArrayList<>();
 		for (var task : tasks) {
 			functions.add(task);
@@ -182,7 +182,7 @@ public sealed class StreamPipelineTaskExecutor implements
 
 	protected String getStagesTask() {
 		log.debug("Entered MassiveDataStreamTaskDExecutor.getStagesTask");
-		var tasks = jobstage.stage.tasks;
+		var tasks = jobstage.getStage().tasks;
 		var builder = new StringBuilder();
 		for (var task : tasks) {
 			builder.append(PipelineUtils.getFunctions(task));
@@ -395,7 +395,7 @@ public sealed class StreamPipelineTaskExecutor implements
 	 * @return
 	 */
 	public String getIntermediateDataFSFilePath(Task task) {
-		return (MDCConstants.FORWARD_SLASH + FileSystemSupport.MDS + MDCConstants.FORWARD_SLASH + jobstage.jobid
+		return (MDCConstants.FORWARD_SLASH + FileSystemSupport.MDS + MDCConstants.FORWARD_SLASH + jobstage.getJobid()
 				+ MDCConstants.FORWARD_SLASH + task.taskid);
 	}
 
@@ -409,7 +409,7 @@ public sealed class StreamPipelineTaskExecutor implements
 		try {
 			var path = getIntermediateDataFSFilePath(task);
 			new File(MDCProperties.get().getProperty(MDCConstants.TMPDIR) + MDCConstants.FORWARD_SLASH
-					+ FileSystemSupport.MDS + MDCConstants.FORWARD_SLASH + jobstage.jobid).mkdirs();
+					+ FileSystemSupport.MDS + MDCConstants.FORWARD_SLASH + jobstage.getJobid()).mkdirs();
 			log.debug("Exiting MassiveDataStreamTaskDExecutor.createIntermediateDataToFS");
 			return new FileOutputStream(MDCProperties.get().getProperty(MDCConstants.TMPDIR) + path);
 		} catch (IOException ioe) {
@@ -451,7 +451,7 @@ public sealed class StreamPipelineTaskExecutor implements
 			 var streamfirst = buffer1.lines();
 			 var streamsecond = buffer2.lines();) {
 			boolean terminalCount = false;
-			if (jobstage.stage.tasks.get(0) instanceof CalculateCount) {
+			if (jobstage.getStage().tasks.get(0) instanceof CalculateCount) {
 				terminalCount = true;
 			}
 			List result;
@@ -530,7 +530,7 @@ public sealed class StreamPipelineTaskExecutor implements
 
 			var datafirst = (List) kryo.readClassAndObject(inputfirst);
 			boolean terminalCount = false;
-			if (jobstage.stage.tasks.get(0) instanceof CalculateCount) {
+			if (jobstage.getStage().tasks.get(0) instanceof CalculateCount) {
 				terminalCount = true;
 			}
 			if (task.finalphase && task.saveresulttohdfs) {
@@ -609,7 +609,7 @@ public sealed class StreamPipelineTaskExecutor implements
 			var datasecond = (List) kryo.readClassAndObject(inputsecond);
 			List result;
 			var terminalCount = false;
-			if (jobstage.stage.tasks.get(0) instanceof CalculateCount) {
+			if (jobstage.getStage().tasks.get(0) instanceof CalculateCount) {
 				terminalCount = true;
 			}
 			if (task.finalphase && task.saveresulttohdfs) {
@@ -686,7 +686,7 @@ public sealed class StreamPipelineTaskExecutor implements
 
 			var kryo = Utils.getKryoSerializerDeserializer();
 			Stream intermediatestreamobject;
-			if (jobstage.stage.tasks.get(0) instanceof Json) {
+			if (jobstage.getStage().tasks.get(0) instanceof Json) {
 				intermediatestreamobject = buffer.lines();
 				intermediatestreamobject = intermediatestreamobject.map(line -> {
 					try {
@@ -696,7 +696,7 @@ public sealed class StreamPipelineTaskExecutor implements
 					}
 				});
 			} else {
-				if (jobstage.stage.tasks.get(0) instanceof CsvOptions csvoptions) {
+				if (jobstage.getStage().tasks.get(0) instanceof CsvOptions csvoptions) {
 					var csvformat = CSVFormat.DEFAULT;
 					csvformat = csvformat.withDelimiter(',').withHeader(csvoptions.getHeader()).withIgnoreHeaderCase()
 							.withTrim();
@@ -720,7 +720,7 @@ public sealed class StreamPipelineTaskExecutor implements
 			intermediatestreamobject.onClose(() -> {
 				log.debug("Stream closed");
 			});
-			var finaltask = jobstage.stage.tasks.get(jobstage.stage.tasks.size() - 1);
+			var finaltask = jobstage.getStage().tasks.get(jobstage.getStage().tasks.size() - 1);
 
 			try (var streammap = (BaseStream) StreamUtils.getFunctionsToStream(getFunctions(),
 					intermediatestreamobject);) {
@@ -848,7 +848,7 @@ public sealed class StreamPipelineTaskExecutor implements
 			var functions = getFunctions();
 
 			List out = new ArrayList<>();
-			var finaltask = jobstage.stage.tasks.get(jobstage.stage.tasks.size() - 1);
+			var finaltask = jobstage.getStage().tasks.get(jobstage.getStage().tasks.size() - 1);
 			for (var is : fsstreamfirst) {
 				try (var input = new Input(is);) {
 					// while (input.available() > 0) {
@@ -965,7 +965,7 @@ public sealed class StreamPipelineTaskExecutor implements
 			Kryo kryo = Utils.getKryoSerializerDeserializer();
 			// Limit the sample using the limit method.
 			boolean terminalCount = false;
-			if (jobstage.stage.tasks.get(jobstage.stage.tasks.size() - 1) instanceof CalculateCount) {
+			if (jobstage.getStage().tasks.get(jobstage.getStage().tasks.size() - 1) instanceof CalculateCount) {
 				terminalCount = true;
 			}
 			if (task.finalphase && task.saveresulttohdfs) {
@@ -1034,7 +1034,7 @@ public sealed class StreamPipelineTaskExecutor implements
 			var kryo = Utils.getKryoSerializerDeserializer();
 			var datafirst = (List) kryo.readClassAndObject(inputfirst);
 			var terminalCount = false;
-			if (jobstage.stage.tasks.get(0) instanceof CalculateCount) {
+			if (jobstage.getStage().tasks.get(0) instanceof CalculateCount) {
 				terminalCount = true;
 			}
 			if (task.finalphase && task.saveresulttohdfs) {
@@ -1100,7 +1100,7 @@ public sealed class StreamPipelineTaskExecutor implements
 		starttime = System.currentTimeMillis();
 		log.debug("Entered MassiveDataStreamTaskDExecutor.call");
 		var stageTasks = getStagesTask();
-		var stagePartition = jobstage.stageid;
+		var stagePartition = jobstage.getStageid();
 		var timetakenseconds = 0.0;
 		var hdfsfilepath = MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL, MDCConstants.HDFSNAMENODEURL);
 		try (var hdfs = FileSystem.newInstance(new URI(hdfsfilepath), new Configuration());) {
@@ -1117,11 +1117,11 @@ public sealed class StreamPipelineTaskExecutor implements
 					var input = task.parentremotedatafetch[inputindex];
 					if (input != null) {
 						var rdf = input;
-						InputStream is = RemoteDataFetcher.readIntermediatePhaseOutputFromFS(rdf.jobid, rdf.taskid);
+						InputStream is = RemoteDataFetcher.readIntermediatePhaseOutputFromFS(rdf.getJobid(), rdf.getTaskid());
 						if (Objects.isNull(is)) {
 							RemoteDataFetcher.remoteInMemoryDataFetch(rdf);
 							task.input[inputindex] = new SnappyInputStream(
-									new BufferedInputStream(new ByteArrayInputStream(rdf.data)));
+									new BufferedInputStream(new ByteArrayInputStream(rdf.getData())));
 						} else {
 							task.input[inputindex] = is;
 						}
@@ -1156,7 +1156,7 @@ public sealed class StreamPipelineTaskExecutor implements
 	@SuppressWarnings("unchecked")
 	public double computeTasks(Task task, FileSystem hdfs) throws Exception {
 		var timetakenseconds = 0.0;
-		if (jobstage.stage.tasks.get(0) instanceof JoinPredicate jp) {
+		if (jobstage.getStage().tasks.get(0) instanceof JoinPredicate jp) {
 			InputStream streamfirst = null;
 			InputStream streamsecond = null;
 			if ((task.input[0] instanceof BlocksLocation blfirst)
@@ -1187,7 +1187,7 @@ public sealed class StreamPipelineTaskExecutor implements
 				throw new PipelineException(PipelineConstants.PROCESSJOIN, ex);
 			}
 
-		} else if (jobstage.stage.tasks.get(0) instanceof LeftOuterJoinPredicate ljp) {
+		} else if (jobstage.getStage().tasks.get(0) instanceof LeftOuterJoinPredicate ljp) {
 			InputStream streamfirst = null;
 			InputStream streamsecond = null;
 			if ((task.input[0] instanceof BlocksLocation blfirst)
@@ -1217,7 +1217,7 @@ public sealed class StreamPipelineTaskExecutor implements
 				log.error(PipelineConstants.PROCESSLEFTOUTERJOIN, ex);
 				throw new PipelineException(PipelineConstants.PROCESSLEFTOUTERJOIN, ex);
 			}
-		} else if (jobstage.stage.tasks.get(0) instanceof RightOuterJoinPredicate rjp) {
+		} else if (jobstage.getStage().tasks.get(0) instanceof RightOuterJoinPredicate rjp) {
 			InputStream streamfirst = null;
 			InputStream streamsecond = null;
 			if ((task.input[0] instanceof BlocksLocation blfirst)
@@ -1247,7 +1247,7 @@ public sealed class StreamPipelineTaskExecutor implements
 				log.error(PipelineConstants.PROCESSRIGHTOUTERJOIN, ex);
 				throw new PipelineException(PipelineConstants.PROCESSRIGHTOUTERJOIN, ex);
 			}
-		} else if (jobstage.stage.tasks.get(0) instanceof Join jp) {
+		} else if (jobstage.getStage().tasks.get(0) instanceof Join jp) {
 			InputStream streamfirst = null;
 			InputStream streamsecond = null;
 			if ((task.input[0] instanceof BlocksLocation blfirst)
@@ -1278,7 +1278,7 @@ public sealed class StreamPipelineTaskExecutor implements
 				throw new PipelineException(PipelineConstants.PROCESSJOIN, ex);
 			}
 
-		} else if (jobstage.stage.tasks.get(0) instanceof LeftJoin ljp) {
+		} else if (jobstage.getStage().tasks.get(0) instanceof LeftJoin ljp) {
 			InputStream streamfirst = null;
 			InputStream streamsecond = null;
 			if ((task.input[0] instanceof BlocksLocation blfirst)
@@ -1308,7 +1308,7 @@ public sealed class StreamPipelineTaskExecutor implements
 				log.error(PipelineConstants.PROCESSLEFTOUTERJOIN, ex);
 				throw new PipelineException(PipelineConstants.PROCESSLEFTOUTERJOIN, ex);
 			}
-		} else if (jobstage.stage.tasks.get(0) instanceof RightJoin rjp) {
+		} else if (jobstage.getStage().tasks.get(0) instanceof RightJoin rjp) {
 			InputStream streamfirst = null;
 			InputStream streamsecond = null;
 			if ((task.input[0] instanceof BlocksLocation blfirst)
@@ -1338,7 +1338,7 @@ public sealed class StreamPipelineTaskExecutor implements
 				log.error(PipelineConstants.PROCESSRIGHTOUTERJOIN, ex);
 				throw new PipelineException(PipelineConstants.PROCESSRIGHTOUTERJOIN, ex);
 			}
-		} else if (jobstage.stage.tasks.get(0) instanceof IntersectionFunction) {
+		} else if (jobstage.getStage().tasks.get(0) instanceof IntersectionFunction) {
 
 			if ((task.input[0] instanceof BlocksLocation blfirst)
 					&& (task.input[1] instanceof BlocksLocation blsecond)) {
@@ -1362,7 +1362,7 @@ public sealed class StreamPipelineTaskExecutor implements
 				timetakenseconds = processBlockHDFSIntersection((List) Arrays.asList(task.input[0]),
 						(List) Arrays.asList(task.input[1]));
 			}
-		} else if (jobstage.stage.tasks.get(0) instanceof UnionFunction) {
+		} else if (jobstage.getStage().tasks.get(0) instanceof UnionFunction) {
 			if ((task.input[0] instanceof BlocksLocation blfirst)
 					&& (task.input[1] instanceof BlocksLocation blsecond)) {
 				timetakenseconds = processBlockHDFSUnion(blfirst, blsecond, hdfs);
@@ -1385,7 +1385,7 @@ public sealed class StreamPipelineTaskExecutor implements
 				timetakenseconds = processBlockHDFSUnion((List) Arrays.asList(task.input[0]),
 						(List) Arrays.asList(task.input[1]));
 			}
-		} else if (jobstage.stage.tasks.get(0) instanceof IntSupplier sample) {
+		} else if (jobstage.getStage().tasks.get(0) instanceof IntSupplier sample) {
 			var numofsample = sample.getAsInt();
 			if (task.input[0] instanceof BlocksLocation bl) {
 				timetakenseconds = processSamplesBlocks(numofsample, (BlocksLocation) bl, hdfs);
@@ -1394,16 +1394,16 @@ public sealed class StreamPipelineTaskExecutor implements
 			}
 		} else if (task.input[0] instanceof BlocksLocation bl) {
 			timetakenseconds = processBlockHDFSMap(bl, hdfs);
-		} else if (jobstage.stage.tasks.get(0) instanceof GroupByKeyFunction) {
+		} else if (jobstage.getStage().tasks.get(0) instanceof GroupByKeyFunction) {
 			timetakenseconds = processGroupByKeyTuple2();
-		} else if (jobstage.stage.tasks.get(0) instanceof FoldByKey) {
+		} else if (jobstage.getStage().tasks.get(0) instanceof FoldByKey) {
 			timetakenseconds = processFoldByKeyTuple2();
-		} else if (jobstage.stage.tasks.get(0) instanceof CountByKeyFunction) {
+		} else if (jobstage.getStage().tasks.get(0) instanceof CountByKeyFunction) {
 			timetakenseconds = processCountByKeyTuple2();
-		} else if (jobstage.stage.tasks.get(0) instanceof CountByValueFunction) {
+		} else if (jobstage.getStage().tasks.get(0) instanceof CountByValueFunction) {
 			timetakenseconds = processCountByValueTuple2();
 		} else if (task.input[0] instanceof InputStream) {
-			if (jobstage.stage.tasks.get(0) instanceof Coalesce) {
+			if (jobstage.getStage().tasks.get(0) instanceof Coalesce) {
 				timetakenseconds = processCoalesce();
 			} else {
 				var streams = new LinkedHashSet<InputStream>();
@@ -1457,7 +1457,7 @@ public sealed class StreamPipelineTaskExecutor implements
 				inputs2 = cf.get();
 			}
 			var terminalCount = false;
-			if (jobstage.stage.tasks.get(0) instanceof CalculateCount) {
+			if (jobstage.getStage().tasks.get(0) instanceof CalculateCount) {
 				terminalCount = true;
 			}
 			
@@ -1563,7 +1563,7 @@ public sealed class StreamPipelineTaskExecutor implements
 				inputs2 = cf.get();
 			}
 			var terminalCount = false;
-			if (jobstage.stage.tasks.get(0) instanceof CalculateCount) {
+			if (jobstage.getStage().tasks.get(0) instanceof CalculateCount) {
 				terminalCount = true;
 			}
 			
@@ -1672,7 +1672,7 @@ public sealed class StreamPipelineTaskExecutor implements
 				inputs2 = cf.get();
 			}
 			var terminalCount = false;
-			if (jobstage.stage.tasks.get(0) instanceof CalculateCount) {
+			if (jobstage.getStage().tasks.get(0) instanceof CalculateCount) {
 				terminalCount = true;
 			}
 			
@@ -1779,7 +1779,7 @@ public sealed class StreamPipelineTaskExecutor implements
 				inputs2 = cf.get();
 			}
 			var terminalCount = false;
-			if (jobstage.stage.tasks.get(0) instanceof CalculateCount) {
+			if (jobstage.getStage().tasks.get(0) instanceof CalculateCount) {
 				terminalCount = true;
 			}
 			if (task.finalphase && task.saveresulttohdfs) {
@@ -1915,7 +1915,7 @@ public sealed class StreamPipelineTaskExecutor implements
 				inputs2 = cf.get();
 			}
 			boolean terminalCount = false;
-			if (jobstage.stage.tasks.get(0) instanceof CalculateCount) {
+			if (jobstage.getStage().tasks.get(0) instanceof CalculateCount) {
 				terminalCount = true;
 			}
 			if (task.finalphase && task.saveresulttohdfs) {
@@ -2050,7 +2050,7 @@ public sealed class StreamPipelineTaskExecutor implements
 				inputs2 = cf.get();
 			}
 			boolean terminalCount = false;
-			if (jobstage.stage.tasks.get(0) instanceof CalculateCount) {
+			if (jobstage.getStage().tasks.get(0) instanceof CalculateCount) {
 				terminalCount = true;
 			}
 			if (task.finalphase && task.saveresulttohdfs) {
@@ -2288,7 +2288,7 @@ public sealed class StreamPipelineTaskExecutor implements
 				}
 			}
 			// Parallel processing of fold by key operation.
-			var foldbykey = (FoldByKey) jobstage.stage.tasks.get(0);
+			var foldbykey = (FoldByKey) jobstage.getStage().tasks.get(0);
 			if (task.finalphase && task.saveresulttohdfs) {
 				try (OutputStream os = hdfs.create(new Path(task.hdfsurl + task.filepath),
 						Short.parseShort(MDCProperties.get().getProperty(MDCConstants.DFSOUTPUTFILEREPLICATION,
@@ -2410,7 +2410,7 @@ public sealed class StreamPipelineTaskExecutor implements
 								.collect(Collectors.toMap(Tuple2::v1, (Object v2) -> 1l, (a, b) -> a + b));
 						var cf = processedcountbykey.entrySet().stream()
 								.map(entry -> Tuple.tuple(((Entry) entry).getKey(), ((Entry) entry).getValue()));
-						if (jobstage.stage.tasks.size() > 1) {
+						if (jobstage.getStage().tasks.size() > 1) {
 							var functions = getFunctions();
 							functions.remove(0);
 							cf = ((Stream) StreamUtils.getFunctionsToStream(functions, cf.parallel()));
@@ -2437,7 +2437,7 @@ public sealed class StreamPipelineTaskExecutor implements
 						.collect(ParallelCollectors.parallel(value -> value, Collectors.toCollection(Vector::new),
 								executor, Runtime.getRuntime().availableProcessors()));
 				intermediatelist = (List<Tuple2>) cf.get();
-				if (jobstage.stage.tasks.size() > 1) {
+				if (jobstage.getStage().tasks.size() > 1) {
 					var functions = getFunctions();
 					functions.remove(0);
 					cf = (CompletableFuture) ((Stream) StreamUtils.getFunctionsToStream(functions,
@@ -2500,7 +2500,7 @@ public sealed class StreamPipelineTaskExecutor implements
 								.collect(Collectors.toMap(tuple2 -> tuple2, (Object v2) -> 1l, (a, b) -> a + b));
 						var cf = processedcountbyvalue.entrySet().stream()
 								.map(entry -> Tuple.tuple(((Entry) entry).getKey(), ((Entry) entry).getValue()));
-						if (jobstage.stage.tasks.size() > 1) {
+						if (jobstage.getStage().tasks.size() > 1) {
 							var functions = getFunctions();
 							functions.remove(0);
 							cf = ((Stream) StreamUtils.getFunctionsToStream(functions, cf.parallel()));
@@ -2527,7 +2527,7 @@ public sealed class StreamPipelineTaskExecutor implements
 						.collect(ParallelCollectors.parallel(value -> value, Collectors.toCollection(Vector::new),
 								executor, Runtime.getRuntime().availableProcessors()));
 				intermediatelist = (List) cf.get();
-				if (jobstage.stage.tasks.size() > 1) {
+				if (jobstage.getStage().tasks.size() > 1) {
 					var functions = getFunctions();
 					functions.remove(0);
 					cf = (CompletableFuture) ((Stream) StreamUtils.getFunctionsToStream(functions,

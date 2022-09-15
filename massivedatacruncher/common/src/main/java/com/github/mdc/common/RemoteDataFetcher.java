@@ -317,9 +317,9 @@ public class RemoteDataFetcher {
 	 */
 	public static void remoteInMemoryDataFetch(RemoteDataFetch rdf) throws Exception {
 		log.debug("Entered RemoteDataFetcher.remoteInMemoryDataFetch");
-		log.info("Remote Data Fetch with hp: " + rdf.hp);
-		var rdfwithdata = (RemoteDataFetch) Utils.getResultObjectByInput(rdf.hp, rdf);
-		rdf.data = rdfwithdata.data;
+		log.info("Remote Data Fetch with hp: " + rdf.getHp());
+		var rdfwithdata = (RemoteDataFetch) Utils.getResultObjectByInput(rdf.getHp(), rdf);
+		rdf.setData(rdfwithdata.getData());
 		log.debug("Exiting RemoteDataFetcher.remoteInMemoryDataFetch");
 	}
 

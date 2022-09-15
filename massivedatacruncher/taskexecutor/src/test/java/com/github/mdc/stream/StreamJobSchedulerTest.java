@@ -885,9 +885,9 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 		// Generate Physical execution plan for each stages.
 		for (Stage stage : uniquestagestoprocess) {
 			JobStage jobstage = new JobStage();
-			jobstage.jobid = job.getId();
-			jobstage.stageid = stage.id;
-			jobstage.stage = stage;
+			jobstage.setJobid(job.getId());
+			jobstage.setStageid(stage.id);
+			jobstage.setStage(stage);
 			js.jsidjsmap.put( job.getId() + stage.id, jobstage);
 			Stage nextstage = stagenumber + 1 < uniquestagestoprocess.size()
 					? uniquestagestoprocess.get(stagenumber + 1)
@@ -973,9 +973,9 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 		// Generate Physical execution plan for each stages.
 		for (Stage stage : uniquestagestoprocess) {
 			JobStage jobstage = new JobStage();
-			jobstage.jobid = job.getId();
-			jobstage.stageid = stage.id;
-			jobstage.stage = stage;
+			jobstage.setJobid(job.getId());
+			jobstage.setStageid(stage.id);
+			jobstage.setStage(stage);
 			js.jsidjsmap.put( job.getId() + stage.id, jobstage);
 			Stage nextstage = stagenumber + 1 < uniquestagestoprocess.size()
 					? uniquestagestoprocess.get(stagenumber + 1)
@@ -1036,9 +1036,9 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 		// Generate Physical execution plan for each stages.
 		for (Stage stage : uniquestagestoprocess) {
 			JobStage jobstage = new JobStage();
-			jobstage.jobid = job.getId();
-			jobstage.stageid = stage.id;
-			jobstage.stage = stage;
+			jobstage.setJobid(job.getId());
+			jobstage.setStageid(stage.id);
+			jobstage.setStage(stage);
 			js.jsidjsmap.put( job.getId() + stage.id, jobstage);
 			Stage nextstage = stagenumber + 1 < uniquestagestoprocess.size()
 					? uniquestagestoprocess.get(stagenumber + 1)
@@ -1104,9 +1104,9 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 		// Generate Physical execution plan for each stages.
 		for (Stage stage : uniquestagestoprocess) {
 			JobStage jobstage = new JobStage();
-			jobstage.jobid = job.getId();
-			jobstage.stageid = stage.id;
-			jobstage.stage = stage;
+			jobstage.setJobid(job.getId());
+			jobstage.setStageid(stage.id);
+			jobstage.setStage(stage);
 			js.jsidjsmap.put( job.getId() + stage.id, jobstage);
 			Stage nextstage = stagenumber + 1 < uniquestagestoprocess.size()
 					? uniquestagestoprocess.get(stagenumber + 1)

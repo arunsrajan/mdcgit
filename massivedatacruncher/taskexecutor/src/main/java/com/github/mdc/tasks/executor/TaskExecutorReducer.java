@@ -56,7 +56,7 @@ public class TaskExecutorReducer implements Runnable {
 		Class<?> clz = null;
 		this.port = port;
 		try {
-			clz = cl.loadClass(rv.reducerclass);
+			clz = cl.loadClass(rv.getReducerclass());
 			cr = (Reducer) clz.getDeclaredConstructor().newInstance();
 			this.applicationid = applicationid;
 			this.taskid = taskid;
@@ -77,14 +77,14 @@ public class TaskExecutorReducer implements Runnable {
 			var complete = new DataCruncherContext();
 			var apptaskcontextmap = new ConcurrentHashMap<String, Context>();
 			Context currentctx;
-			for (var tuple2 : (List<Tuple2>) rv.tuples) {
+			for (var tuple2 : (List<Tuple2>) rv.getTuples()) {
 				var ctx = new DataCruncherContext();
 				for (var apptaskids : (Collection<String>) tuple2.v2) {
 					if (apptaskcontextmap.get(apptaskids) != null) {
 						currentctx = apptaskcontextmap.get(apptaskids);
 					}
 					else {
-						currentctx = (Context) RemoteDataFetcher.readIntermediatePhaseOutputFromDFS(rv.appid,
+						currentctx = (Context) RemoteDataFetcher.readIntermediatePhaseOutputFromDFS(rv.getAppid(),
 								apptaskids, false);
 						apptaskcontextmap.put(apptaskids, currentctx);
 					}

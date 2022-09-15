@@ -151,7 +151,7 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 	@SuppressWarnings({"unchecked"})
 	private List getFunctions() {
 		log.debug("Entered MassiveDataStreamTaskIgnite.getFunctions");
-		var tasks = jobstage.stage.tasks;
+		var tasks = jobstage.getStage().tasks;
 		var functions = new ArrayList<>();
 		for (var task : tasks) {
 			functions.add(task);
@@ -162,7 +162,7 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 
 	protected String getStagesTask() {
 		log.debug("Entered MassiveDataStreamTaskIgnite.getStagesTask");
-		var tasks = jobstage.stage.tasks;
+		var tasks = jobstage.getStage().tasks;
 		var builder = new StringBuilder();
 		for (var task : tasks) {
 			builder.append(PipelineUtils.getFunctions(task));
@@ -355,7 +355,7 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 				var streamsecond = buffer2.lines().parallel();
 				) {
 			var terminalCount = false;
-			if (jobstage.stage.tasks.get(0) instanceof CalculateCount) {
+			if (jobstage.getStage().tasks.get(0) instanceof CalculateCount) {
 				terminalCount = true;
 			}
 			List result;
@@ -411,7 +411,7 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 
 			var datafirst = (List) kryo.readClassAndObject(inputfirst);
 			var terminalCount = false;
-			if (jobstage.stage.tasks.get(0) instanceof CalculateCount) {
+			if (jobstage.getStage().tasks.get(0) instanceof CalculateCount) {
 				terminalCount = true;
 			}
 			List result;
@@ -465,7 +465,7 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 			var datasecond = (List) kryo.readClassAndObject(inputsecond);
 			List result;
 			var terminalCount = false;
-			if (jobstage.stage.tasks.get(0) instanceof CalculateCount) {
+			if (jobstage.getStage().tasks.get(0) instanceof CalculateCount) {
 				terminalCount = true;
 			}
 
@@ -508,7 +508,7 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 	public double processBlockHDFSMap(BlocksLocation blockslocation, FileSystem hdfs) throws PipelineException {
 		var starttime = System.currentTimeMillis();
 		log.debug("Entered MassiveDataStreamTaskIgnite.processBlockHDFSMap");
-		var function = jobstage.stage.tasks.get(jobstage.stage.tasks.size() - 1);
+		var function = jobstage.getStage().tasks.get(jobstage.getStage().tasks.size() - 1);
 		try (var fsdos = createIntermediateDataToFS();
 				var output = new Output(new SnappyOutputStream(new BufferedOutputStream(fsdos)));
 				var bais = getIntermediateInputStreamFS(blockslocation);
@@ -516,9 +516,9 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 
 			var kryo = Utils.getKryoSerializerDeserializer();
 			List datastream = null;
-			var tasks = jobstage.stage.tasks;
+			var tasks = jobstage.getStage().tasks;
 			Stream intermediatestreamobject;
-			if (jobstage.stage.tasks.get(0) instanceof Json) {
+			if (jobstage.getStage().tasks.get(0) instanceof Json) {
 				intermediatestreamobject = buffer.lines().parallel();
 				intermediatestreamobject = intermediatestreamobject.map(line -> {
 					try {
@@ -528,7 +528,7 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 					}
 				});
 			} else {
-				if (jobstage.stage.tasks.get(0) instanceof CsvOptions csvoptions) {
+				if (jobstage.getStage().tasks.get(0) instanceof CsvOptions csvoptions) {
 
 					var csvformat = CSVFormat.DEFAULT;
 					csvformat = csvformat.withHeader(csvoptions.getHeader());
@@ -634,7 +634,7 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 	public double processBlockHDFSMap(Set<InputStream> fsstreamfirst) throws PipelineException {
 		var starttime = System.currentTimeMillis();
 		log.debug("Entered MassiveDataStreamTaskIgnite.processBlockHDFSMap");
-		var function = jobstage.stage.tasks.get(jobstage.stage.tasks.size() - 1);
+		var function = jobstage.getStage().tasks.get(jobstage.getStage().tasks.size() - 1);
 		try (var fsdos = createIntermediateDataToFS();
 				var output = new Output(new SnappyOutputStream(new BufferedOutputStream(fsdos)));) {
 			var kryo = Utils.getKryoSerializerDeserializer();
@@ -722,7 +722,7 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 	public double processSamplesBlocks(Integer numofsample, BlocksLocation blockslocation, FileSystem hdfs) throws Exception {
 		var starttime = System.currentTimeMillis();
 		log.debug("Entered MassiveDataStreamTaskIgnite.processSamplesBlocks");
-		var function = jobstage.stage.tasks.get(jobstage.stage.tasks.size() - 1);
+		var function = jobstage.getStage().tasks.get(jobstage.getStage().tasks.size() - 1);
 		try (var fsdos = createIntermediateDataToFS();
 				var output = new Output(new SnappyOutputStream(new BufferedOutputStream(fsdos)));
 				var bais = getIntermediateInputStreamFS(blockslocation);
@@ -769,14 +769,14 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 	public double processSamplesObjects(Integer numofsample, List fsstreams) throws PipelineException {
 		var starttime = System.currentTimeMillis();
 		log.debug("Entered MassiveDataStreamTaskIgnite.processSamplesObjects");
-		var function = jobstage.stage.tasks.get(jobstage.stage.tasks.size() - 1);
+		var function = jobstage.getStage().tasks.get(jobstage.getStage().tasks.size() - 1);
 		try (var fsdos = createIntermediateDataToFS();
 				var output = new Output(new SnappyOutputStream(new BufferedOutputStream(fsdos)));
 				var inputfirst = new Input(new BufferedInputStream(((InputStream) (fsstreams.iterator().next()))));) {
 			var kryo = Utils.getKryoSerializerDeserializer();
 			var datafirst = (List) kryo.readClassAndObject(inputfirst);
 			var terminalCount = false;
-			if (jobstage.stage.tasks.get(0) instanceof CalculateCount) {
+			if (jobstage.getStage().tasks.get(0) instanceof CalculateCount) {
 				terminalCount = true;
 			}
 			List out;
@@ -808,7 +808,7 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 	@Override
 	public void run() {
 		log.info("Entered MassiveDataStreamTaskIgnite.call");
-		var stagePartition = jobstage.stageid;
+		var stagePartition = jobstage.getStageid();
 		try {
 			cache = ignite.getOrCreateCache(MDCConstants.MDCCACHE);
 
@@ -835,7 +835,7 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 
 	public double computeTasks(Task task) throws Exception {
 		var timetakenseconds = 0.0;
-		if (jobstage.stage.tasks.get(0) instanceof JoinPredicate jp) {
+		if (jobstage.getStage().tasks.get(0) instanceof JoinPredicate jp) {
 			InputStream streamfirst = null;
 			InputStream streamsecond = null;
 			if ((task.input[0] instanceof BlocksLocation blfirst) && (task.input[1] instanceof BlocksLocation blsecond)) {
@@ -861,7 +861,7 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 				throw new PipelineException(PipelineConstants.PROCESSJOIN, ex);
 			}
 
-		} else if (jobstage.stage.tasks.get(0) instanceof LeftOuterJoinPredicate ljp) {
+		} else if (jobstage.getStage().tasks.get(0) instanceof LeftOuterJoinPredicate ljp) {
 			InputStream streamfirst = null;
 			InputStream streamsecond = null;
 			if ((task.input[0] instanceof BlocksLocation blfirst) && (task.input[1] instanceof BlocksLocation blsecond)) {
@@ -886,7 +886,7 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 				log.error(PipelineConstants.PROCESSLEFTOUTERJOIN, ex);
 				throw new PipelineException(PipelineConstants.PROCESSLEFTOUTERJOIN, ex);
 			}
-		} else if (jobstage.stage.tasks.get(0) instanceof RightOuterJoinPredicate rjp) {
+		} else if (jobstage.getStage().tasks.get(0) instanceof RightOuterJoinPredicate rjp) {
 			InputStream streamfirst = null;
 			InputStream streamsecond = null;
 			if ((task.input[0] instanceof BlocksLocation blfirst) && (task.input[1] instanceof BlocksLocation blsecond)) {
@@ -912,7 +912,7 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 				log.error(PipelineConstants.PROCESSRIGHTOUTERJOIN, ex);
 				throw new PipelineException(PipelineConstants.PROCESSRIGHTOUTERJOIN, ex);
 			}
-		} else if (jobstage.stage.tasks.get(0) instanceof IntersectionFunction) {
+		} else if (jobstage.getStage().tasks.get(0) instanceof IntersectionFunction) {
 
 			if ((task.input[0] instanceof BlocksLocation blfirst) && (task.input[1] instanceof BlocksLocation blsecond)) {
 				timetakenseconds = processBlockHDFSIntersection(blfirst, blsecond, hdfs);
@@ -936,7 +936,7 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 				timetakenseconds = processBlockHDFSIntersection((List) Arrays.asList(task.input[0]),
 						(List) Arrays.asList(task.input[1]));
 			}
-		} else if (jobstage.stage.tasks.get(0) instanceof UnionFunction) {
+		} else if (jobstage.getStage().tasks.get(0) instanceof UnionFunction) {
 			if ((task.input[0] instanceof BlocksLocation blfirst) && (task.input[1] instanceof BlocksLocation blsecond)) {
 				timetakenseconds = processBlockHDFSUnion(blfirst, blsecond, hdfs);
 			} else if (((task.input[0] instanceof BlocksLocation) && task.input[1] instanceof InputStream)
@@ -959,7 +959,7 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 				timetakenseconds = processBlockHDFSUnion((List) Arrays.asList(task.input[0]),
 						(List) Arrays.asList(task.input[1]));
 			}
-		} else if (jobstage.stage.tasks.get(0) instanceof IntSupplier sample) {
+		} else if (jobstage.getStage().tasks.get(0) instanceof IntSupplier sample) {
 			var numofsample = sample.getAsInt();
 			if (task.input[0] instanceof BlocksLocation bl) {
 				timetakenseconds = processSamplesBlocks(numofsample, bl, hdfs);
@@ -968,16 +968,16 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 			}
 		} else if (task.input[0] instanceof BlocksLocation bl) {
 			timetakenseconds = processBlockHDFSMap(bl, hdfs);
-		} else if (jobstage.stage.tasks.get(0) instanceof GroupByKeyFunction) {
+		} else if (jobstage.getStage().tasks.get(0) instanceof GroupByKeyFunction) {
 			timetakenseconds = processGroupByKeyTuple2();
-		} else if (jobstage.stage.tasks.get(0) instanceof FoldByKey) {
+		} else if (jobstage.getStage().tasks.get(0) instanceof FoldByKey) {
 			timetakenseconds = processFoldByKeyTuple2();
-		} else if (jobstage.stage.tasks.get(0) instanceof CountByKeyFunction) {
+		} else if (jobstage.getStage().tasks.get(0) instanceof CountByKeyFunction) {
 			timetakenseconds = processCountByKeyTuple2();
-		} else if (jobstage.stage.tasks.get(0) instanceof CountByValueFunction) {
+		} else if (jobstage.getStage().tasks.get(0) instanceof CountByValueFunction) {
 			timetakenseconds = processCountByValueTuple2();
 		} else if (task.input[0] instanceof InputStream) {
-			if (jobstage.stage.tasks.get(0) instanceof Coalesce) {
+			if (jobstage.getStage().tasks.get(0) instanceof Coalesce) {
 				timetakenseconds = processCoalesce();
 			} else {
 				var streams = new LinkedHashSet<InputStream>();
@@ -1028,7 +1028,7 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 				inputs2 = buffreader2.lines().collect(Collectors.toList());
 			}
 			var terminalCount = false;
-			if (jobstage.stage.tasks.get(0) instanceof CalculateCount) {
+			if (jobstage.getStage().tasks.get(0) instanceof CalculateCount) {
 				terminalCount = true;
 			}
 			List joinpairsout;
@@ -1104,7 +1104,7 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 				inputs2 = buffreader2.lines().collect(Collectors.toList());
 			}
 			var terminalCount = false;
-			if (jobstage.stage.tasks.get(0) instanceof CalculateCount) {
+			if (jobstage.getStage().tasks.get(0) instanceof CalculateCount) {
 				terminalCount = true;
 			}
 			List joinpairsout;
@@ -1179,7 +1179,7 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 				inputs2 = buffreader2.lines().collect(Collectors.toList());
 			}
 			var terminalCount = false;
-			if (jobstage.stage.tasks.get(0) instanceof CalculateCount) {
+			if (jobstage.getStage().tasks.get(0) instanceof CalculateCount) {
 				terminalCount = true;
 			}
 			List joinpairsout;
@@ -1295,7 +1295,7 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 		var starttime = System.currentTimeMillis();
 		log.debug("Entered MassiveDataStreamTaskIgnite.processFoldByKeyTuple2");
 
-		var function = jobstage.stage.tasks.get(jobstage.stage.tasks.size() - 1);
+		var function = jobstage.getStage().tasks.get(jobstage.getStage().tasks.size() - 1);
 		try (var fsdos = createIntermediateDataToFS();
 				var output = new Output(new SnappyOutputStream(fsdos));) {
 			var kryo = Utils.getKryoSerializerDeserializer();
@@ -1322,7 +1322,7 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 				}
 			}
 			// Parallel processing of fold by key operation.
-			var foldbykey = (FoldByKey)  jobstage.stage.tasks.get(0);
+			var foldbykey = (FoldByKey)  jobstage.getStage().tasks.get(0);
 			if (!allpairs.isEmpty()) {
 				var finalfoldbykeyobj = new ArrayList<Tuple2>();
 				var processedgroupbykey = Seq.of(allpairs.toArray(new Tuple2[allpairs.size()])).groupBy(tup2 -> tup2.v1, Collectors.mapping(Tuple2::v2, Collectors.toCollection(Vector::new)));
@@ -1391,7 +1391,7 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 				var intermediatelist = (List<Tuple2>) processedcountbykey.entrySet().parallelStream()
 						.map(entry -> Tuple.tuple(((Entry) entry).getKey(), ((Entry) entry).getValue()))
 						.collect(Collectors.toCollection(Vector::new));
-				if (jobstage.stage.tasks.size() > 1) {
+				if (jobstage.getStage().tasks.size() > 1) {
 					var functions = getFunctions();
 					functions.remove(0);
 					intermediatelist = (List<Tuple2>) ((Stream) StreamUtils.getFunctionsToStream(functions,
@@ -1445,7 +1445,7 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 				var intermediatelist = (List<Tuple2>) processedcountbyvalue.entrySet().parallelStream()
 						.map(entry -> Tuple.tuple(((Entry) entry).getKey(), ((Entry) entry).getValue()))
 						.collect(Collectors.toCollection(Vector::new));
-				if (jobstage.stage.tasks.size() > 1) {
+				if (jobstage.getStage().tasks.size() > 1) {
 					var functions = getFunctions();
 					functions.remove(0);
 					intermediatelist = (List<Tuple2>) ((Stream) StreamUtils.getFunctionsToStream(functions,

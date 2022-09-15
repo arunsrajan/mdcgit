@@ -16,6 +16,16 @@
 package com.github.mdc.common;
 
 import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 /**
  * 
@@ -23,6 +33,12 @@ import java.io.Serializable;
  * This class contains the fields for launching the task executors processed 
  * by the container. 
  */
+@Getter
+@Setter
+@EqualsAndHashCode
+@ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class LaunchContainers implements Serializable {
 
 	private static final long serialVersionUID = 6845774609991683878L;
@@ -36,60 +52,5 @@ public class LaunchContainers implements Serializable {
 	private String jobid;
 	private MODE mode;
 	private ContainerLaunchAttributes cla;
-
-	public String getContainerid() {
-		return containerid;
-	}
-
-	public void setContainerid(String containerid) {
-		this.containerid = containerid;
-	}
-
-	public ContainerLaunchAttributes getCla() {
-		return cla;
-	}
-
-	public void setCla(ContainerLaunchAttributes cla) {
-		this.cla = cla;
-	}
-
-	public String getAppid() {
-		return appid;
-	}
-
-	public void setAppid(String appid) {
-		this.appid = appid;
-	}
-
-	public String getJobid() {
-		return jobid;
-	}
-
-	public void setJobid(String jobid) {
-		this.jobid = jobid;
-	}
-
-	public MODE getMode() {
-		return mode;
-	}
-
-	public void setMode(MODE mode) {
-		this.mode = mode;
-	}
-
-	public String getNodehostport() {
-		return nodehostport;
-	}
-
-	public void setNodehostport(String nodehostport) {
-		this.nodehostport = nodehostport;
-	}
-
-	@Override
-	public String toString() {
-		return "LaunchContainers [nodehostport=" + nodehostport + ", containerid=" + containerid + ", appid=" + appid
-				+ ", jobid=" + jobid + ", mode=" + mode + ", cla=" + cla + "]";
-	}
-
 
 }

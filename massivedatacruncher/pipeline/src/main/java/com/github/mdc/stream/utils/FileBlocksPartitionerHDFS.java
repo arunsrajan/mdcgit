@@ -204,7 +204,7 @@ public class FileBlocksPartitionerHDFS {
 			}
 			job.getJm().setFiles(Utils.getAllFilePaths(metricsfilepath));
 			job.getJm().setTotalfilesize(job.getJm().getTotalfilesize() / MDCConstants.MB);
-			job.getJm().totalblocks = totalblockslocation.size();
+			job.getJm().setTotalblocks(totalblockslocation.size());
 			if (isignite) {
 				getDnXref(totalblockslocation, false);
 				sendDataToIgniteServer(totalblockslocation, ((IgnitePipeline) mdsroots.iterator().next()).getHdfspath());
@@ -216,8 +216,8 @@ public class FileBlocksPartitionerHDFS {
 					getContainersGlobal();
 				}
 				allocateContainersLoadBalanced(totalblockslocation);
-				job.getJm().nodes = nodeschoosen;
-				job.getJm().containersallocated = new ConcurrentHashMap<>();
+				job.getJm().setNodes(nodeschoosen);
+				job.getJm().setContainersallocated(new ConcurrentHashMap<>());
 			} else if (islocal || isyarn || ismesos) {
 				getDnXref(totalblockslocation, false);
 			}
@@ -263,7 +263,7 @@ public class FileBlocksPartitionerHDFS {
 		job.setIgcache(ignitecache);
 		job.setIgnite(ignite);
 		var computeservers = job.getIgnite().cluster().forServers();
-		job.getJm().containersallocated = computeservers.hostNames().stream().collect(Collectors.toMap(key -> key, value -> 0d));
+		job.getJm().setContainersallocated(computeservers.hostNames().stream().collect(Collectors.toMap(key -> key, value -> 0d)));
 	}
 
 	/**
@@ -545,7 +545,7 @@ public class FileBlocksPartitionerHDFS {
 			containers = new ArrayList<>();
 			nodeschoosen = new HashSet<>();
 			var loadjar = new LoadJar();
-			loadjar.mrjar = pipelineconfig.getJar();
+			loadjar.setMrjar(pipelineconfig.getJar());
 			var totalcontainersallocated = 0;
 			var nodestotalblockmem = new ConcurrentHashMap<String, Long>();
 			//Get all the nodes in sort by processor and then by memory.
@@ -619,7 +619,7 @@ public class FileBlocksPartitionerHDFS {
 			job.setContainers(containers);
 			job.setNodes(nodeschoosen);
 			//Get the node and container assign to job metrics for display.
-			job.getJm().containerresources = job.getLcs().stream().flatMap(lc -> {
+			job.getJm().setContainerresources(job.getLcs().stream().flatMap(lc -> {
 				var crs = lc.getCla().getCr();
 				return crs.stream().map(cr -> {
 					var node = lc.getNodehostport().split(MDCConstants.UNDERSCORE)[0];
@@ -635,7 +635,7 @@ public class FileBlocksPartitionerHDFS {
 							+ MDCConstants.ROUNDED_BRACKET_CLOSE;
 
 				}).collect(Collectors.toList()).stream();
-			}).collect(Collectors.toList());
+			}).collect(Collectors.toList()));
 			log.debug("Total Containers Allocated:"	+ totalcontainersallocated);
 		} catch (Exception ex) {
 			log.error(PipelineConstants.TASKEXECUTORSALLOCATIONERROR, ex);

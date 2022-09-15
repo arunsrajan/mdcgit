@@ -902,7 +902,7 @@ public sealed class StreamPipeline<I1> extends AbstractPipeline permits CsvStrea
 			jobCreated = new Job();
 			jobCreated.setId(MDCConstants.JOB+MDCConstants.HYPHEN+Utils.getUniqueJobID());
 			jobCreated.setJm(new JobMetrics());
-			jobCreated.getJm().jobstarttime = System.currentTimeMillis();
+			jobCreated.getJm().setJobstarttime(System.currentTimeMillis());
 			jobCreated.getJm().setJobid(jobCreated.getId());
 			PipelineConfig pipelineconfig = ((StreamPipeline)root).pipelineconfig;
 			jobCreated.getJm().setMode(Boolean.parseBoolean(pipelineconfig.getYarn())?MDCConstants.YARN:Boolean.parseBoolean(pipelineconfig.getMesos())?MDCConstants.MESOS:Boolean.parseBoolean(pipelineconfig.getJgroups())?MDCConstants.JGROUPS:Boolean.parseBoolean(pipelineconfig.getLocal())?MDCConstants.LOCAL:MDCConstants.EXECMODE_DEFAULT);

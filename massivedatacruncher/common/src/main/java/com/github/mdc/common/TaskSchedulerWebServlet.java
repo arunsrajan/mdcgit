@@ -131,7 +131,7 @@ public class TaskSchedulerWebServlet extends HttpServlet {
 				<tbody>""");
 				var jms = MDCJobMetrics.get();
 				var jobmetrics = jms.keySet().stream().map(key -> jms.get(key)).sorted((jm1, jm2) -> {
-					return (int) (jm2.jobstarttime - jm1.jobstarttime);
+					return (int) (jm2.getJobstarttime() - jm1.getJobstarttime());
 				}).collect(Collectors.toList());
 				for (var jm : jobmetrics) {
 					builder.append("<tr bgcolor=\"" + getColor(i++) + "\">");
@@ -151,25 +151,25 @@ public class TaskSchedulerWebServlet extends HttpServlet {
 					builder.append(jm.getTotalfilesize());
 					builder.append("</td>");
 					builder.append("<td>");
-					builder.append(jm.totalblocks);
+					builder.append(jm.getTotalblocks());
 					builder.append("</td>");
 					builder.append("<td>");
-					builder.append(jm.containerresources);
+					builder.append(jm.getContainerresources());
 					builder.append("</td>");
 					builder.append("<td>");
-					builder.append(toHtml(jm.containersallocated));
+					builder.append(toHtml(jm.getContainersallocated()));
 					builder.append("</td>");
 					builder.append("<td>");
-					builder.append(!Objects.isNull(jm.nodes) ? toHtml(new ArrayList<>(jm.nodes)) : "");
+					builder.append(!Objects.isNull(jm.getNodes()) ? toHtml(new ArrayList<>(jm.getNodes())) : "");
 					builder.append("</td>");
 					builder.append("<td>");
-					builder.append(new Date(jm.jobstarttime));
+					builder.append(new Date(jm.getJobstarttime()));
 					builder.append("</td>");
 					builder.append("<td>");
-					builder.append(jm.jobcompletiontime == 0 ? "" : new Date(jm.jobcompletiontime));
+					builder.append(jm.getJobcompletiontime() == 0 ? "" : new Date(jm.getJobcompletiontime()));
 					builder.append("</td>");
 					builder.append("<td>");
-					builder.append(jm.totaltimetaken == 0 ? "" : jm.totaltimetaken);
+					builder.append(jm.getTotaltimetaken() == 0 ? "" : jm.getTotaltimetaken());
 					builder.append("</td>");
 					builder.append("<td>");
 					builder.append(summary(jm));
@@ -190,8 +190,8 @@ public class TaskSchedulerWebServlet extends HttpServlet {
 		SimpleDateFormat formatstartenddate = new SimpleDateFormat("yyyy/MM/dd-HH:mm:ss");
 		StringBuilder tasksummary = new StringBuilder();
 		tasksummary.append("<p>");
-		if(!CollectionUtils.isEmpty(jm.taskexcutortasks)){
-			jm.taskexcutortasks.entrySet().stream().forEachOrdered(entry->{
+		if(!CollectionUtils.isEmpty(jm.getTaskexcutortasks())){
+			jm.getTaskexcutortasks().entrySet().stream().forEachOrdered(entry->{
 				tasksummary.append(entry.getKey());
 				tasksummary.append(":<BR/>");
 				double totaltimetakenexecutor = 0d;

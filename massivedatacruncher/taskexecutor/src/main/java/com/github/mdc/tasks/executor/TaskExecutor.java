@@ -115,7 +115,7 @@ public class TaskExecutor implements Runnable {
 		try {
 			if (deserobj instanceof JobStage jobstage) {
 				log.info("Received Job Stage: " + jobstage);
-				jobidstageidjobstagemap.put(jobstage.jobid + jobstage.stageid, jobstage);
+				jobidstageidjobstagemap.put(jobstage.getJobid() + jobstage.getStageid(), jobstage);
 			} else if (deserobj instanceof Task task) {
 				log.info("Received Task: " + task);
 				var taskexecutor = jobstageexecutormap.get(task.jobid + task.stageid + task.taskid);
@@ -208,39 +208,39 @@ public class TaskExecutor implements Runnable {
 				}
 			} else if (deserobj instanceof RemoteDataFetch rdf) {
 				log.info("Entering RemoteDataFetch: " + deserobj);
-				var taskexecutor = jobstageexecutormap.get(rdf.jobid + rdf.stageid + rdf.taskid);
+				var taskexecutor = jobstageexecutormap.get(rdf.getJobid() + rdf.getStageid() + rdf.getTaskid());
 				var mdstde = (StreamPipelineTaskExecutor) taskexecutor;
 				log.info("Executor: " + mdstde);
-				if (rdf.mode.equals(MDCConstants.STANDALONE)) {
+				if (rdf.getMode().equals(MDCConstants.STANDALONE)) {
 					if (taskexecutor != null) {
 						Task task  = mdstde.getTask();
 						if (task.storage == MDCConstants.STORAGE.INMEMORY) {
 							var os = ((StreamPipelineTaskExecutorInMemory) mdstde).getIntermediateInputStreamRDF(rdf);
 							if (!Objects.isNull(os)) {
-								rdf.data = ((ByteArrayOutputStream) os).toByteArray();
+								rdf.setData(((ByteArrayOutputStream) os).toByteArray());
 							}
 						} else if (task.storage == MDCConstants.STORAGE.INMEMORY_DISK) {
 							var path = Utils.getIntermediateInputStreamRDF(rdf);
-							rdf.data = (byte[]) inmemorycache.get(path);
+							rdf.setData((byte[]) inmemorycache.get(path));
 						} else {
 							try (var is = mdstde.getIntermediateInputStreamFS(task);) {
-								rdf.data = (byte[]) is.readAllBytes();
+								rdf.setData((byte[]) is.readAllBytes());
 							}
 						}
 						s.send(event.getCtx(), rdf);
 					}
 				}
-				else if (rdf.mode.equals(MDCConstants.JGROUPS)) {
-					try (var is = RemoteDataFetcher.readIntermediatePhaseOutputFromFS(rdf.jobid, rdf.taskid);) {
-						rdf.data = (byte[]) is.readAllBytes();
+				else if (rdf.getMode().equals(MDCConstants.JGROUPS)) {
+					try (var is = RemoteDataFetcher.readIntermediatePhaseOutputFromFS(rdf.getJobid(), rdf.getTaskid());) {
+						rdf.setData((byte[]) is.readAllBytes());
 						s.send(event.getCtx(), rdf);
 					}
 				} else {
 					if (taskexecutor != null) {
 						try (var is = RemoteDataFetcher
-								.readIntermediatePhaseOutputFromFS(rdf.jobid,
-										mdstde.getIntermediateDataRDF(rdf.taskid));) {
-							rdf.data = (byte[]) is.readAllBytes();
+								.readIntermediatePhaseOutputFromFS(rdf.getJobid(),
+										mdstde.getIntermediateDataRDF(rdf.getTaskid()));) {
+							rdf.setData((byte[]) is.readAllBytes());
 							s.send(event.getCtx(), rdf);
 						}
 					}
