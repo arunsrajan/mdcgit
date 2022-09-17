@@ -28,7 +28,7 @@ public sealed class HeartBeat implements HeartBeatCloseable permits HeartBeatTas
 	int rescheduledelay = 5000;
 	int initialdelay = 5000;
 	int pingdelay = 5000;
-	String networkaddress;
+	public String networkaddress;
 	@SuppressWarnings("rawtypes")
 	public ConcurrentMap hpresmap = new ConcurrentHashMap<>();
 
@@ -38,7 +38,7 @@ public sealed class HeartBeat implements HeartBeatCloseable permits HeartBeatTas
 	
 
 	static Logger log = Logger.getLogger(HeartBeat.class);
-	protected int serverport;
+	public int serverport;
 	private String clusterid;
 	public List<String> containers;
 	/**

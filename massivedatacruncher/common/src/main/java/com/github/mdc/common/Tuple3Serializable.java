@@ -17,27 +17,27 @@ package com.github.mdc.common;
 
 import java.io.Serializable;
 
-import org.jooq.lambda.tuple.Tuple2;
+import org.jooq.lambda.tuple.Tuple3;
 
 /**
  * 
  * @author arun
- * This class is the derivied class of the Tuple2 with serializable.
+ * This class is the derivied class of the Tuple3 with serializable.
  * @param <V1>
  * @param <V2>
  */
-public class Tuple2Serializable<V1, V2> extends Tuple2<V1, V2> implements Serializable {
+public class Tuple3Serializable<V1, V2, V3> extends Tuple3<V1, V2, V3> implements Serializable {
 
 	private static final long serialVersionUID = -622259929441801409L;
 
 
-	public Tuple2Serializable() {
-		super(null, null);
+	public Tuple3Serializable() {
+		super(null, null, null);
 	}
 
 
-	public Tuple2Serializable(V1 v1, V2 v2) {
-		super(v1, v2);
+	public Tuple3Serializable(V1 v1, V2 v2, V3 v3) {
+		super(v1, v2, v3);
 	}
 
 }

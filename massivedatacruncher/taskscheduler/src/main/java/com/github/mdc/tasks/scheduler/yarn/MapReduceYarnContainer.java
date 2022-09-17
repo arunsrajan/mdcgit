@@ -190,7 +190,7 @@ public class MapReduceYarnContainer extends AbstractIntegrationYarnContainer {
 
 			}
 			log.info(containerid + ": Completed Job Exiting with status 0...");
-			ByteBufferPoolDirect.get().close();
+			ByteBufferPoolDirect.destroy();
 			System.exit(0);
 		} catch (Exception ex) {
 			request = new JobRequest();
@@ -200,9 +200,7 @@ public class MapReduceYarnContainer extends AbstractIntegrationYarnContainer {
 				JobResponse response = (JobResponse) client.doMindRequest(request);
 				log.info("Job Completion Error..." + response.getState() + "..., See cause below \n", ex);
 			}
-			if (Objects.isNull(ByteBufferPoolDirect.get())) {
-				ByteBufferPoolDirect.get().close();
-			}
+			ByteBufferPoolDirect.destroy();
 			System.exit(-1);
 		}
 	}

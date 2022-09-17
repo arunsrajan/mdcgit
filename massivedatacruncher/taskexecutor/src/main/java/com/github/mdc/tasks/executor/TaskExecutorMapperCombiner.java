@@ -31,7 +31,6 @@ import com.github.mdc.common.ApplicationTask.TaskType;
 import com.github.mdc.common.BlocksLocation;
 import com.github.mdc.common.Context;
 import com.github.mdc.common.HeartBeatTaskScheduler;
-import com.github.mdc.common.RemoteDataFetcher;
 
 public class TaskExecutorMapperCombiner implements Runnable {
 	static Logger log = Logger.getLogger(TaskExecutorMapperCombiner.class);
@@ -90,8 +89,7 @@ public class TaskExecutorMapperCombiner implements Runnable {
 			hbts.pingOnce(taskid, TaskStatus.RUNNING, TaskType.MAPPERCOMBINER, null);
 			var fc = es.submit(mdcmc);
 			ctx = fc.get();
-			RemoteDataFetcher.writerIntermediatePhaseOutputToDFS(ctx, applicationid, (applicationid + taskid));
-			ctx = null;
+			
 			hbts.pingOnce(taskid, TaskStatus.COMPLETED, TaskType.MAPPERCOMBINER, null);
 		} catch (Throwable ex) {
 			try {

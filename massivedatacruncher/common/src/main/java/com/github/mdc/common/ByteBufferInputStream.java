@@ -73,7 +73,7 @@ public class ByteBufferInputStream extends InputStream {
 			try {
 				log.info("ByteBuffer Input Stream returning to pool deallocation number {} with buffer info {}",
 						deallocation.incrementAndGet(), bb);
-				DirectByteBufferUtil.freeDirectBufferMemory(bb);
+				ByteBufferPoolDirect.destroy(bb);
 			} catch (Exception e) {
 				log.error(MDCConstants.EMPTY, e);
 			}

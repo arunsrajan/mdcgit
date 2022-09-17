@@ -18,6 +18,8 @@ package com.github.mdc.common;
 import java.io.Serializable;
 import java.util.List;
 
+import org.jooq.lambda.tuple.Tuple3;
+
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -39,7 +41,7 @@ import lombok.ToString;
 @AllArgsConstructor
 public class ReducerValues implements Serializable {
 	private static final long serialVersionUID = -8329337737535175061L;
-	private List tuples;
+	private List<Tuple3> tuples;
 	private String reducerclass;
 	private String appid;
 }

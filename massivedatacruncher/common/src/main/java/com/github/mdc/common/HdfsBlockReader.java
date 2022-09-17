@@ -180,7 +180,7 @@ public class HdfsBlockReader {
 	 * @throws Exception
 	 */
 	public static InputStream getBlockDataInputStream(final BlocksLocation bl, FileSystem hdfs) throws Exception {
-		ByteBuffer bb = ByteBufferPoolDirect.get().take(calculateBytesRequired(bl.getBlock()));		
+		ByteBuffer bb = ByteBufferPoolDirect.get(calculateBytesRequired(bl.getBlock()));		
 		try (var bbos = new ByteBufferOutputStream(bb);) {
 			log.debug("Entered HdfsBlockReader.getBlockDataSnappyStream");
 

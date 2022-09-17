@@ -19,6 +19,7 @@ import java.beans.PropertyChangeListener;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -89,7 +90,7 @@ import com.github.mdc.common.ReducerValues;
 import com.github.mdc.common.Resources;
 import com.github.mdc.common.RetrieveData;
 import com.github.mdc.common.RetrieveKeys;
-import com.github.mdc.common.Tuple2Serializable;
+import com.github.mdc.common.Tuple3Serializable;
 import com.github.mdc.common.Utils;
 import com.github.mdc.stream.PipelineException;
 import com.github.mdc.stream.scheduler.StreamPipelineTaskSubmitter;
@@ -123,7 +124,7 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 	ExecutorService es;
 	HeartBeat hbs;
 	JobMetrics jm = new JobMetrics();
-
+	Map<String, String> apptaskhp = new ConcurrentHashMap<>();
 	public MapReduceApplication(String jobname, JobConfiguration jobconf, List<MapperInput> mappers,
 			List<Class<?>> combiners, List<Class<?>> reducers, String outputfolder) {
 		this.jobname = jobname;
@@ -539,6 +540,11 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 	boolean isexception;
 	String exceptionmsg = MDCConstants.EMPTY;
 
+	protected List<String> getHostPort(Collection<String> appidtaskids) {
+		return appidtaskids.stream().map(apptaskid->apptaskhp.get(apptaskid))
+				.collect(Collectors.toList());
+	}
+	
 	@SuppressWarnings({"unchecked"})
 	public List<DataCruncherContext> call() {
 		var containerid = MDCConstants.CONTAINER + MDCConstants.HYPHEN + System.currentTimeMillis();
@@ -635,7 +641,7 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 				if (reducer != null) {
 					reducer.add(cls.getName());
 				}
-			}
+			}			
 			for (var folder : hdfsdirpath) {
 				var mapclznames = mapclz.get(folder);
 				var bls = folderblocks.get(folder);
@@ -650,6 +656,7 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 						containermappercombinermap.put(mdtstm.getHostPort(), new ArrayList<>());
 					}
 					containermappercombinermap.get(mdtstm.getHostPort()).add(mdtstm);
+					apptaskhp.put(applicationid + taskid, mdtstm.getHostPort());
 					mrtaskcount++;
 				}
 
@@ -731,7 +738,7 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 				return Arrays.asList(new DataCruncherContext<>());
 			}
 			var dccred = new ArrayList<DataCruncherContext>();
-			List<Tuple2Serializable> keyapptasks;
+			List<Tuple3Serializable> keyapptasks;
 			var dccmapphase = new DataCruncherContext();
 			for (var dcc : dccmapphases) {
 				dcc.keys().stream().forEach(dcckey -> {
@@ -740,8 +747,8 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 					});
 				});
 			}
-			keyapptasks = (List<Tuple2Serializable>) dccmapphase.keys().parallelStream()
-					.map(key -> new Tuple2Serializable(key, dccmapphase.get(key)))
+			keyapptasks = (List<Tuple3Serializable>) dccmapphase.keys().parallelStream()
+					.map(key -> new Tuple3Serializable(key, dccmapphase.get(key), getHostPort(dccmapphase.get(key))))
 					.collect(Collectors.toCollection(ArrayList::new));
 			var partkeys = Iterables
 					.partition(keyapptasks, (keyapptasks.size()) / numreducers).iterator();
@@ -848,7 +855,6 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 	public void reConfigureContainerForStageExecution(TaskSchedulerMapperCombinerSubmitter mdtsstm,
 			List<String> availablecontainers) {
 		var bsl = (BlocksLocation) mdtsstm.blockslocation;
-		bsl.getContainers().retainAll(availablecontainers);
 		var containersgrouped = availablecontainers.stream()
 				.collect(Collectors.groupingBy(key -> key.split(MDCConstants.UNDERSCORE)[0],
 						Collectors.mapping(value -> value, Collectors.toCollection(Vector::new))));
@@ -1024,7 +1030,7 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 							@Override
 							public void run() {
 								try {
-									if (++count > 3 ) {
+									if (++count > 10 ) {
 										log.info(mdtstmc.getHostPort() + " Task Failed:" + mdtstmc.apptask.getApplicationid()
 												+ mdtstmc.apptask.getTaskid());
 										var apptimer = timermap.remove(mdtstmc.apptask.getApplicationid()

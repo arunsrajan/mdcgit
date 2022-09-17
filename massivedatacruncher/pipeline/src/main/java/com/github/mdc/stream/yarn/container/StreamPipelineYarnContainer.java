@@ -134,7 +134,7 @@ public class StreamPipelineYarnContainer extends AbstractIntegrationYarnContaine
 
 			}
 			log.debug(containerid + ": Completed Job Exiting with status 0...");
-			ByteBufferPoolDirect.get().close();
+			ByteBufferPoolDirect.destroy();
 			shutdownExecutor();
 			System.exit(0);
 		}
@@ -151,7 +151,7 @@ public class StreamPipelineYarnContainer extends AbstractIntegrationYarnContaine
 				var response = (JobResponse) client.doMindRequest(request);
 				log.debug("Job Completion Error..." + response.getState() + "..., See cause below \n", ex);
 			}
-			ByteBufferPoolDirect.get().close();
+			ByteBufferPoolDirect.destroy();
 			try {
 				shutdownExecutor();
 			} catch (InterruptedException e) {

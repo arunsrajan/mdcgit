@@ -188,9 +188,7 @@ public class MapReduceYarnAppmaster extends StaticEventingAppmaster implements C
 		}
 		catch (Exception ex) {
 			log.info("Submit Application Error, See cause below \n", ex);
-			if (!Objects.isNull(ByteBufferPoolDirect.get())) {
-				ByteBufferPoolDirect.get().close();
-			}
+			ByteBufferPoolDirect.destroy();
 		}
 	}
 

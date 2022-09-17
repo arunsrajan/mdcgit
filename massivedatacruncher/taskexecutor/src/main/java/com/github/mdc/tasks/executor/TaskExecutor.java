@@ -19,6 +19,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.OutputStream;
 import java.net.URI;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -37,11 +38,11 @@ import com.esotericsoftware.kryonetty.ServerEndpoint;
 import com.esotericsoftware.kryonetty.network.ReceiveEvent;
 import com.github.mdc.common.ApplicationTask.TaskStatus;
 import com.github.mdc.common.BlocksLocation;
-import com.github.mdc.common.CacheUtils;
 import com.github.mdc.common.CloseStagesGraphExecutor;
 import com.github.mdc.common.Context;
 import com.github.mdc.common.FileSystemSupport;
 import com.github.mdc.common.FreeResourcesCompletedJob;
+import com.github.mdc.common.HdfsBlockReader;
 import com.github.mdc.common.HeartBeatStream;
 import com.github.mdc.common.HeartBeatTaskScheduler;
 import com.github.mdc.common.HeartBeatTaskSchedulerStream;
@@ -269,7 +270,7 @@ public class TaskExecutor implements Runnable {
 
 								var hbts = hbtsappid.get(applicationid);
 								mdtemc = new TaskExecutorMapperCombiner(blockslocation,
-										CacheUtils.getBlockData(blockslocation, hdfs), applicationid, taskid, cl,
+										HdfsBlockReader.getBlockDataInputStream(blockslocation, hdfs), applicationid, taskid, cl,
 										port, hbts);
 							}
 							apptaskexecutormap.put(apptaskid, mdtemc);
@@ -285,35 +286,37 @@ public class TaskExecutor implements Runnable {
 							}
 							var hbts = hbtsappid.get(applicationid);
 							mdter = new TaskExecutorReducer(rv, applicationid, taskid, cl, port,
-									hbts);
+									hbts, apptaskexecutormap);
 							apptaskexecutormap.put(apptaskid, mdter);
 							log.debug("Reducer submission:" + apptaskid);
 							es.execute(mdter);
 						}
 					} else if (object instanceof RetrieveData) {
 						Context ctx = null;
-						if (taskexecutor instanceof TaskExecutorReducer mdter) {
-							mdter.getHbts().stop();
-							mdter.getHbts().destroy();
+						if (taskexecutor instanceof TaskExecutorReducer ter) {
+							ter.getHbts().stop();
+							ter.getHbts().destroy();
 							log.info("Obtaining reducer Context: " + apptaskid);
-							ctx = (Context) RemoteDataFetcher.readIntermediatePhaseOutputFromDFS(applicationid,
-									apptaskid, false);
+							ctx = ter.ctx;
+						} else if (taskexecutor instanceof TaskExecutorMapperCombiner temc) {
+							temc.getHbts().stop();
+							temc.getHbts().destroy();
+							log.info("Obtaining reducer Context: " + apptaskid);
+							ctx = temc.ctx;
 						}
 						s.send(event.getCtx(), ctx);
 						apptaskexecutormap.remove(apptaskid);
 					} else if (object instanceof RetrieveKeys rk) {
-						var keys = RemoteDataFetcher.readIntermediatePhaseOutputFromDFS(applicationid,
-								apptaskid, true);
-						rk.keys = (Set<Object>) keys;
+						var mdtemc = (TaskExecutorMapperCombiner) taskexecutor;
+						var keys = mdtemc.ctx.keys();
+						rk.keys = new LinkedHashSet<>(keys);
 						rk.applicationid = applicationid;
 						rk.taskid = taskid;
 						rk.response = true;
 						s.send(event.getCtx(), rk);
-						if (taskexecutor instanceof TaskExecutorMapperCombiner mdtemc) {
-							mdtemc.getHbts().stop();
-							mdtemc.getHbts().destroy();
-							log.debug("destroying MapperCombiner HeartBeat: " + apptaskid);
-						}
+						mdtemc.getHbts().stop();
+						mdtemc.getHbts().destroy();
+						log.debug("destroying MapperCombiner HeartBeat: " + apptaskid);
 					}
 				}
 			}

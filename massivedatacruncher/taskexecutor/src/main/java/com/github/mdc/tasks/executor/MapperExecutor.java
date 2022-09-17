@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.concurrent.Callable;
 
 import org.apache.log4j.Logger;
-import org.xerial.snappy.SnappyInputStream;
 
 import com.github.mdc.common.BlocksLocation;
 import com.github.mdc.common.Context;
@@ -48,7 +47,7 @@ public class MapperExecutor implements Callable<Context> {
 				var br =
 						new BufferedReader(new InputStreamReader(compstream));) {
 			var ctx = new DataCruncherContext();
-			br.lines().parallel().forEachOrdered(line -> {
+			br.lines().parallel().forEach(line -> {
 				for (var crunchmapper : crunchmappers) {
 					crunchmapper.map(0l, line, ctx);
 				}

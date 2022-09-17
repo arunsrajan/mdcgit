@@ -22,10 +22,13 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.jooq.lambda.tuple.Tuple2;
+import org.jooq.lambda.tuple.Tuple3;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.xerial.snappy.SnappyInputStream;
@@ -188,14 +191,16 @@ public class MassiveDataCruncherMRApiTest extends StreamPipelineBase {
 		TaskExecutorMapperCombiner mdtemc = new
 				TaskExecutorMapperCombiner(bls, lzis, app, task, Thread.currentThread().getContextClassLoader(), 12121, hbts);
 		mdtemc.run();
+		Map<String,Object> apptaskexecutormap = new ConcurrentHashMap<>();
+		apptaskexecutormap.put(app + task, mdtemc);
 		ReducerValues reducervalues = new ReducerValues();
-		reducervalues.setTuples(Arrays.asList(new Tuple2<>("AQ", Arrays.asList(app + task))));
+		reducervalues.setTuples(Arrays.asList(new Tuple3<>("AQ", Arrays.asList(app + task), Arrays.asList("127.0.0.1_1000"))));
 		reducervalues.setAppid(app);
 		reducervalues.setReducerclass(AirlineDataMapper.class.getName());
 		task = MDCConstants.TASK + "-1";
-		TaskExecutorReducer reducerexec = new TaskExecutorReducer(reducervalues, app, task, Thread.currentThread().getContextClassLoader(), 12121, hbts);
+		TaskExecutorReducer reducerexec = new TaskExecutorReducer(reducervalues, app, task, Thread.currentThread().getContextClassLoader(), 12121, hbts, apptaskexecutormap);
 		reducerexec.run();
-		Context ctx = (Context) RemoteDataFetcher.readIntermediatePhaseOutputFromDFS(app, (app + task), false);
+		Context ctx = (Context) reducerexec.ctx;
 		hbtsreceiver.stop();
 		hbtsreceiver.destroy();
 		hbts.stop();

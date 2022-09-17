@@ -41,6 +41,7 @@ public class ContainerLauncher {
 			argumentsForSpawn.add(System.getProperty("java.class.path"));
 			argumentsForSpawn.add("-Xms" + cr.getMinmemory() + "m");
 			argumentsForSpawn.add("-Xmx" + cr.getMaxmemory() + "m");
+			argumentsForSpawn.add("-XX:MaxDirectMemorySize="+cr.getDirectheap()+"m");
 			argumentsForSpawn.add("-XX:ActiveProcessorCount=" + cr.getCpu());
 			argumentsForSpawn.add("-Djava.util.concurrent.ForkJoinPool.common.parallelism=" + cr.getCpu());
 			argumentsForSpawn.add("-XX:+HeapDumpOnOutOfMemoryError");

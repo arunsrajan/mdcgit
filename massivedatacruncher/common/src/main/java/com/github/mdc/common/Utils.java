@@ -314,7 +314,7 @@ public class Utils {
 		CompatibleFieldSerializer<Tuple2> cfs = new CompatibleFieldSerializer<Tuple2>(kryo, Tuple2.class, configtuple2);
 		kryo.register(Tuple2.class, cfs);
 		kryo.register(LinkedHashSet.class);
-		kryo.register(Tuple2Serializable.class);
+		kryo.register(Tuple3Serializable.class);
 		kryo.register(BlocksLocation.class);
 		kryo.register(RetrieveData.class);
 		kryo.register(RetrieveKeys.class);
@@ -783,7 +783,7 @@ public class Utils {
 		kryo.register(ArrayList.class);
 		kryo.register(Tuple2.class);
 		kryo.register(LinkedHashSet.class);
-		kryo.register(Tuple2Serializable.class);
+		kryo.register(Tuple3Serializable.class);
 		kryo.setDefaultSerializer(CompatibleFieldSerializer.class);
 		kryo.register(ClosureSerializer.Closure.class, new ClosureSerializer());
 		kryo.register(BlocksLocation.class);
@@ -1266,7 +1266,7 @@ public class Utils {
 		kryonetty.register(Hashtable.class);
 		kryonetty.register(Tuple2.class);
 		kryonetty.register(LinkedHashSet.class);
-		kryonetty.register(Tuple2Serializable.class);
+		kryonetty.register(Tuple3Serializable.class);
 		kryonetty.register(BlocksLocation.class);
 		kryonetty.register(RetrieveData.class);
 		kryonetty.register(RetrieveKeys.class);

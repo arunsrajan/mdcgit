@@ -120,6 +120,6 @@ public class StreamPipelineTestCommon {
 		if (!Objects.isNull(hdfs)) {
 			hdfs.close();
 		}
-		ByteBufferPoolDirect.get().close();
+		ByteBufferPoolDirect.destroy();
 	}
 }

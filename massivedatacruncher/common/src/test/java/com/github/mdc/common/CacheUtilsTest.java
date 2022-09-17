@@ -122,7 +122,7 @@ public class CacheUtilsTest {
 	public static void destroyCache() throws Exception {
 		MDCCache.get().clear();
 		MDCCacheManager.get().close();
-		ByteBufferPoolDirect.get().close();
+		ByteBufferPoolDirect.destroy();
 	}
 
 }
