@@ -1077,12 +1077,12 @@ public sealed class StreamPipeline<I1> extends AbstractPipeline permits CsvStrea
 			log.debug("Stages----------------------------------------");
 			var stagesprocessed = graphstages.vertexSet();
 			for (var stagetoprint : stagesprocessed) {
-				log.debug("\n\nStage " + stagetoprint.getId());
+				log.info("\n\nStage " + stagetoprint.getId());
 				log.debug("[Parent] [Child]");
 				log.debug(printStages(stagetoprint.parent) + " , " + printStages(stagetoprint.child));
-				log.debug("Tasks");
+				log.info("Tasks");
 				for (var task : stagetoprint.tasks) {
-					log.debug(PipelineUtils.getFunctions(task));
+					log.info(PipelineUtils.getFunctions(task));
 				}
 			}
 

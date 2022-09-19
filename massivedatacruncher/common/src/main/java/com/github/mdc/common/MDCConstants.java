@@ -27,6 +27,7 @@ public class MDCConstants {
 	static final String MDC = "MDC";
 	public static final String NEWLINE = "\n";
 	public static final String HYPHEN = "-";
+	public static final String AMPERSAND = "&";
 	static final String SLASH = "\\";
 	public static final String FORWARD_SLASH = "/";
 	public static final String BACKWARD_SLASH = "\\";
@@ -445,5 +446,9 @@ public class MDCConstants {
 	public static final String MDC_JKS = "mdc.jks.path";
 	public static final String MDC_KEYSTORE_PASSWORD = "mdc.jks.pass";
 	public static final String MDC_JKS_ALGO = "mdc.jks.algo";
+	
+	public static final String REGEX_CSV = ",(?=([^\"]*\"[^\"]*\")*(?![^\"]*\"))";
+	
+	
 
 }

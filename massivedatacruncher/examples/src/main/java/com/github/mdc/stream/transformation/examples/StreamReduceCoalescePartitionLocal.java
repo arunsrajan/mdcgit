@@ -27,13 +27,13 @@ import com.github.mdc.common.PipelineConfig;
 import com.github.mdc.stream.StreamPipeline;
 import com.github.mdc.stream.Pipeline;
 
-public class StreamReduceCoalescePartition implements Serializable, Pipeline {
+public class StreamReduceCoalescePartitionLocal implements Serializable, Pipeline {
 	private static final long serialVersionUID = -7001849661976107123L;
-	private Logger log = Logger.getLogger(StreamReduceCoalescePartition.class);
+	private Logger log = Logger.getLogger(StreamReduceCoalescePartitionLocal.class);
 
 	public void runPipeline(String[] args, PipelineConfig pipelineconfig) throws Exception {
 		pipelineconfig.setIsblocksuserdefined("false");
-		pipelineconfig.setLocal("false");
+		pipelineconfig.setLocal("true");
 		pipelineconfig.setMesos("false");
 		pipelineconfig.setYarn("false");
 		pipelineconfig.setJgroups("false");

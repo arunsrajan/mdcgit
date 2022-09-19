@@ -5,6 +5,7 @@ import java.io.Serializable;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -53,6 +54,7 @@ import org.apache.commons.csv.CSVRecord;
 import org.jooq.lambda.tuple.Tuple;
 import org.jooq.lambda.tuple.Tuple2;
 
+import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.PipelineConfig;
 import com.github.mdc.stream.MapPair;
 import com.github.mdc.stream.StreamPipeline;
@@ -319,9 +321,9 @@ public class StreamPipelineSqlBuilder implements Serializable{
 					for(AggregateCall aggcall:aggcalls) {
 						String aggfunc = aggcall.getAggregation().getName();
 						if(aggfunc.equals("SUM")) {
-							MapToPairFunction<Map, Tuple2<Map, Long>> mappair = !agggroup.isEmpty()?aggregateCallSum(enuprojcolumnmap.get(ep),agggroup,
+							MapToPairFunction<Map, Tuple2<String, Long>> mappair = !agggroup.isEmpty()?aggregateCallSum(enuprojcolumnmap.get(ep),agggroup,
 									aggcall):null;
-							MapPair<Map,Long> mpcrml = !Objects.isNull(mappair)?mdp.mapToPair(mappair):null;
+							MapPair<String,Long> mpcrml = !Objects.isNull(mappair)?mdp.mapToPair(mappair):null;
 							OperandSqlFunction osf = new OperandSqlFunction("sum("+enuprojcolumnmap.get(ep).get(aggcall.getArgList().get(0)).column+")","Long");
 							osfs.add(osf);
 							if(!Objects.isNull(mpcrml)) {
@@ -334,11 +336,11 @@ public class StreamPipelineSqlBuilder implements Serializable{
 								stack.push(mdp.map((Serializable&MapFunction<Map,Long>)map->Long.valueOf((String)map.get(column))).reduce((a,b)->a+b));
 							}
 						}else if(aggfunc.equals("COUNT")) {
-							MapToPairFunction<Map, Tuple2<Map, Long>> mappair = aggregateCallCount(enuprojcolumnmap.get(ep),agggroup);
-							MapPair<Map,Long> mpcrml = !Objects.isNull(mappair)?mdp.mapToPair(mappair):null;
+							MapToPairFunction<Map, Tuple2<String, Long>> mappair = aggregateCallCount(enuprojcolumnmap.get(ep),agggroup);
+							MapPair<String,Long> mpcrml = !Objects.isNull(mappair)?mdp.mapToPair(mappair):null;
 							OperandSqlFunction osf = new OperandSqlFunction("count()","Long");
 							osfs.add(osf);
-							stack.push(mpcrml.countByKey().coalesce(1, (a,b)->a+b).map(convertToMap(enuprojcolumnmap.get(ep),agggroup,"count()")));
+							stack.push(mpcrml.reduceByKey((a,b)->a+b).coalesce(1, (a,b)->a+b).map(convertToMap(enuprojcolumnmap.get(ep),agggroup,"count()")));
 						}
 					}					
 				}else {
@@ -357,9 +359,9 @@ public class StreamPipelineSqlBuilder implements Serializable{
 						}
 					}
 					if(aggfuncs.contains("COUNT")&&aggfuncs.contains("SUM")){
-						MapToPairFunction<Map, Tuple2<Map, Long>> mappair = !agggroup.isEmpty()?aggregateCallSum(enuprojcolumnmap.get(ep),agggroup,
+						MapToPairFunction<Map, Tuple2<String, Long>> mappair = !agggroup.isEmpty()?aggregateCallSum(enuprojcolumnmap.get(ep),agggroup,
 								aggfunaggcallmap.get("SUM")):null;
-						MapPair<Map,Long> mpcrml = !Objects.isNull(mappair)?mdp.mapToPair(mappair):null;
+						MapPair<String,Long> mpcrml = !Objects.isNull(mappair)?mdp.mapToPair(mappair):null;
 						stack.push(mpcrml.mapValues(mv->new Tuple2<Long,Long>(mv,1l))
 								.reduceByValues((tuple1,tuple2)->new Tuple2<Long,Long>(tuple1.v1+tuple2.v1,tuple1.v2+tuple2.v2))
 								.coalesce(1, (tuple1,tuple2)->new Tuple2<Long,Long>(tuple1.v1+tuple2.v1,tuple1.v2+tuple2.v2)).map(convertTuple2ToMap(osfs)));
@@ -374,14 +376,14 @@ public class StreamPipelineSqlBuilder implements Serializable{
 				List<OperandSqlFunction> columns = agggroup.stream().map(key->globalindexcolumnsmap.get("$"+key)).map(column->new OperandSqlFunction(column,"String")).collect(Collectors.toList());
 				for(AggregateCall aggcall:aggcalls) {
 					String aggfunc = aggcall.getAggregation().getName();
-					MapToPairFunction<Map, Tuple2<Map, Long>> mappair = !agggroup.isEmpty()?aggregateCallCount(columns,indexagggroupreform):null;
-					MapPair<Map,Long> mpcrml = !Objects.isNull(mappair)?mdp.mapToPair(mappair):null;
+					MapToPairFunction<Map, Tuple2<String, Long>> mappair = !agggroup.isEmpty()?aggregateCallCount(columns,indexagggroupreform):null;
+					MapPair<String,Long> mpcrml = !Objects.isNull(mappair)?mdp.mapToPair(mappair):null;
 					if(aggfunc.equals("COUNT") && Objects.isNull(mpcrml)) {
 						OperandSqlFunction osf = new OperandSqlFunction("count()","Long");
 						stack.push(mdp.map(csvrec->1l).reduce((a,b)->a+b));
 					}else if(aggfunc.equals("COUNT") && !Objects.isNull(mpcrml)) {
 						OperandSqlFunction osf = new OperandSqlFunction("count()","Long");
-						stack.push(mpcrml.countByKey().coalesce(1, (a,b)->a+b).map(convertToMap(columns,indexagggroupreform,"count()")));
+						stack.push(mpcrml.reduceByKey((a,b)->a+b).coalesce(1, (a,b)->a+b).map(convertToMap(columns,indexagggroupreform,"count()")));
 					}
 				}
 			}else if(agginput instanceof EnumerableHashJoin ehj) {
@@ -397,11 +399,11 @@ public class StreamPipelineSqlBuilder implements Serializable{
 				}
 				for(AggregateCall aggcall:aggcalls) {
 					String aggfunc = aggcall.getAggregation().getName();
-					MapToPairFunction<Map, Tuple2<Map, Long>> mappair = aggregateCallCount(osfs,indexes);
-					MapPair<Map,Long> mpcrml = mdp.mapToPair(mappair);
+					MapToPairFunction<Map, Tuple2<String, Long>> mappair = aggregateCallCount(osfs,indexes);
+					MapPair<String,Long> mpcrml = mdp.mapToPair(mappair);
 					if(aggfunc.equals("COUNT")) {
 						OperandSqlFunction osf = new OperandSqlFunction("count()","Long");
-						stack.push(mpcrml.countByKey().coalesce(1, (a,b)->a+b).map(convertToMap(osfs,indexes,"count()")));
+						stack.push(mpcrml.reduceByKey((a,b)->a+b).coalesce(1, (a,b)->a+b).map(convertToMap(osfs,indexes,"count()")));
 					}
 				}
 			}
@@ -429,42 +431,60 @@ public class StreamPipelineSqlBuilder implements Serializable{
 		return reposcolumns;
 	}
 	
-	@SuppressWarnings("unchecked")
-	public MapFunction<Tuple2<Map, Tuple2<Long,Long>>, Map> convertTuple2ToMap(List<OperandSqlFunction> osfs) {
-		return (Serializable &  MapFunction<Tuple2<Map, Tuple2<Long,Long>>, Map>)(Tuple2<Map, Tuple2<Long,Long>> rec)->{
-			Map inputmap = rec.v1;
-			Map outputmap = new LinkedHashMap<>();
+	public MapFunction<Tuple2<String, Tuple2<Long,Long>>, Map> convertTuple2ToMap(List<OperandSqlFunction> osfs) {
+		return (Serializable &  MapFunction<Tuple2<String, Tuple2<Long,Long>>, Map>)(Tuple2<String, Tuple2<Long,Long>> rec)->{
+			Map<String,Object> outputmap = new HashMap<>();
+			String[] columnnamevalues = rec.v1.split(MDCConstants.AMPERSAND);
+			String[] columnnames = columnnamevalues[0].split(MDCConstants.COLON);
+			String[] columnvalues = columnnamevalues[1].split(MDCConstants.COMMA);
+			for(int columncount = 0; columncount < columnnames.length; columncount++) {
+				outputmap.put(columnnames[columncount], columnvalues[columncount]);
+			}
 			for(OperandSqlFunction osf:osfs) {
 					if(osf.column.startsWith("sum")) {
 						outputmap.put(osf.column, rec.v2.v1);
 					}else if(osf.column.startsWith("count")){
 						outputmap.put(osf.column, rec.v2.v2);
-					}else {
-						outputmap.put(osf.column, inputmap.get(osf.column));
 					}
 			}
 			return outputmap;
 		};
 	}
 	
-	public MapFunction<Tuple2<Map, Long>, Map> convertToMap(List<OperandSqlFunction> osf, List<Integer> agggroup, String extracolumn) {
-		return (Serializable &  MapFunction<Tuple2<Map, Long>, Map>)(Tuple2<Map, Long> rec)->{
-			Map inputmap = rec.v1;
-			inputmap.put(extracolumn,rec.v2);
-			return inputmap;
+	public MapFunction<Tuple2<String, Long>, Map> convertToMap(List<OperandSqlFunction> osf, List<Integer> agggroup, String extracolumn) {
+		return (Serializable &  MapFunction<Tuple2<String, Long>, Map>)(Tuple2<String, Long> rec)->{
+			Map<String,Object> map = new HashMap<>();
+			String[] columnnamevalues = rec.v1.split(MDCConstants.AMPERSAND);
+			String[] columnnames = columnnamevalues[0].split(MDCConstants.COLON);
+			String[] columnvalues = columnnamevalues[1].split(MDCConstants.COMMA);
+			for(int columncount = 0; columncount < columnnames.length; columncount++) {
+				map.put(columnnames[columncount], columnvalues[columncount]);
+			}
+			map.put(extracolumn, rec.v2);
+			return map;
 		};
 	}
 	
 	
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public MapToPairFunction<Map, Tuple2<Map, Long>> aggregateCallSum(List<OperandSqlFunction> columns,List<Integer> agggroup, AggregateCall aggcall) {
-		MapToPairFunction<Map, Tuple2<Map, Long>> pairfunc = (Serializable & MapToPairFunction<Map, Tuple2<Map, Long>>) (map) -> {
+	public MapToPairFunction<Map, Tuple2<String, Long>> aggregateCallSum(List<OperandSqlFunction> columns,List<Integer> agggroup, AggregateCall aggcall) {
+		MapToPairFunction<Map, Tuple2<String, Long>> pairfunc = (Serializable & MapToPairFunction<Map, Tuple2<String, Long>>) (map) -> {
 			try {
+				StringBuilder buildercolumnname = new StringBuilder();
+				StringBuilder buildercolumnvalue = new StringBuilder();
+				
 				for(Integer index:agggroup) {
-					map.put(columns.get(index).column,cast(map.get(columns.get(index).column),columns.get(index).sqltype));
+					buildercolumnname.append(columns.get(index).column);
+					buildercolumnname.append(MDCConstants.COLON);
+					buildercolumnvalue.append(cast(map.get(columns.get(index).column),columns.get(index).sqltype));
+					buildercolumnvalue.append(MDCConstants.COMMA);
 				}
+				String columnnames = buildercolumnname.toString();
+				columnnames = columnnames.substring(0, columnnames.length()-1);
+				String columnvalues = buildercolumnvalue.toString();
+				columnvalues = columnvalues.substring(0, columnvalues.length()-1);
 				Integer aggindex = aggcall.getArgList().get(0);
-				return new Tuple2(map, Long.valueOf((String) map.get(columns.get(aggindex).column)));
+				return new Tuple2(columnnames+MDCConstants.AMPERSAND+columnvalues, Long.valueOf((String) map.get(columns.get(aggindex).column)));
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
@@ -473,13 +493,23 @@ public class StreamPipelineSqlBuilder implements Serializable{
 		return pairfunc;
 	}
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public MapToPairFunction<Map, Tuple2<Map, Long>> aggregateCallCount(List<OperandSqlFunction> columns,List<Integer> agggroup) {
-		MapToPairFunction<Map, Tuple2<Map, Long>> pairfunc = (Serializable & MapToPairFunction<Map, Tuple2<Map, Long>>) (map) -> {
+	public MapToPairFunction<Map, Tuple2<String, Long>> aggregateCallCount(List<OperandSqlFunction> columns,List<Integer> agggroup) {
+		MapToPairFunction<Map, Tuple2<String, Long>> pairfunc = (Serializable & MapToPairFunction<Map, Tuple2<String, Long>>) (map) -> {
 			try {
+				StringBuilder buildercolumnname = new StringBuilder();
+				StringBuilder buildercolumnvalue = new StringBuilder();
+				
 				for(Integer index:agggroup) {
-					map.put(columns.get(index).column,cast(map.get(columns.get(index).column),columns.get(index).sqltype));
+					buildercolumnname.append(columns.get(index).column);
+					buildercolumnname.append(MDCConstants.COLON);
+					buildercolumnvalue.append(cast(map.get(columns.get(index).column),columns.get(index).sqltype));
+					buildercolumnvalue.append(MDCConstants.COMMA);
 				}
-				return new Tuple2(map, 0l);
+				String columnnames = buildercolumnname.toString();
+				columnnames = columnnames.substring(0, columnnames.length()-1);
+				String columnvalues = buildercolumnvalue.toString();
+				columnvalues = columnvalues.substring(0, columnvalues.length()-1);
+				return new Tuple2(columnnames+MDCConstants.AMPERSAND+columnvalues, 1l);
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}

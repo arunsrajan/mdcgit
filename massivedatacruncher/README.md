@@ -375,9 +375,7 @@ tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.transforma
 
 tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.transformation.examples.StreamReduceCoalescePartition hdfs://127.0.0.1:9000 /airline1989 /carriers /examplesmdc
 
-tasksubmitterstream.cmd ../modules/examples.jar 
-com.github.mdc.stream.transformation.examples.StreamReduceUnion 
-hdfs://127.0.0.1:9000 /airline1989 /1987 /examplesmdc
+tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.transformation.examples.StreamReduceUnion hdfs://127.0.0.1:9000 /airline1989 /1987 /examplesmdc
 
 tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.transformation.examples.StreamReduceIntersection hdfs://127.0.0.1:9000 /airline1989 /1987 /examplesmdc
 
@@ -396,6 +394,32 @@ tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.transforma
 tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.transformation.examples.StreamReducePairRightJoinCoalesceReduction hdfs://127.0.0.1:9000 /airline1989 /carriers /examplesmdc
 
 tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.transformation.examples.StreamReducePairMultipleJoinsCoalesceReduction hdfs://127.0.0.1:9000 /airline1989 /carriers /examplesmdc
+
+tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.transformation.examples.StreamReduceSampleLocal hdfs://127.0.0.1:9000 /airline1989 /carriers /examplesmdc
+
+tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.transformation.examples.StreamReduceCoalesceOneLocal hdfs://127.0.0.1:9000 /airline1989 /carriers /examplesmdc
+
+tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.transformation.examples.StreamReduceCoalescePartitionLocal hdfs://127.0.0.1:9000 /airline1989 /carriers /examplesmdc
+
+tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.transformation.examples.StreamReduceUnionLocal hdfs://127.0.0.1:9000 /airline1989 /1987 /examplesmdc
+
+tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.transformation.examples.StreamReduceIntersectionLocal hdfs://127.0.0.1:9000 /airline1989 /1987 /examplesmdc
+
+tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.transformation.examples.StreamReduceCachedIgniteLocal hdfs://127.0.0.1:9000 /airline1989 /examplesmdc
+
+tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.transformation.examples.StreamReducePairJoinLocal hdfs://127.0.0.1:9000 /airline1989 /carriers /examplesmdc
+
+tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.transformation.examples.StreamReducePairLeftJoinLocal hdfs://127.0.0.1:9000 /airline1989 /carriers /examplesmdc
+
+tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.transformation.examples.StreamReducePairRightJoinLocal hdfs://127.0.0.1:9000 /airline1989 /carriers /examplesmdc
+
+tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.transformation.examples.StreamReducePairJoinCoalesceReductionLocal hdfs://127.0.0.1:9000 /airline1989 /carriers /examplesmdc
+
+tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.transformation.examples.StreamReducePairLeftJoinCoalesceReductionLocal hdfs://127.0.0.1:9000 /airline1989 /carriers /examplesmdc
+
+tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.transformation.examples.StreamReducePairRightJoinCoalesceReductionLocal hdfs://127.0.0.1:9000 /airline1989 /carriers /examplesmdc
+
+tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.transformation.examples.StreamReducePairMultipleJoinsCoalesceReductionLocal hdfs://127.0.0.1:9000 /airline1989 /carriers /examplesmdc
 
 Stream Reduce SQL
 -----------------
@@ -419,7 +443,6 @@ tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.sql.exampl
 
 tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.sql.examples.SqlUniqueCarrierSumCountArrDelaySAInMemoryDisk hdfs://127.0.0.1:9000 /airline1989 32 1
 
-
 tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.sql.examples.SqlUniqueCarrierSumCountDepDelayLocal hdfs://127.0.0.1:9000 /airline1989 32 2
 
 tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.sql.examples.SqlUniqueCarrierSumCountDepDelaySADisk hdfs://127.0.0.1:9000 /airline1989 32 1 1024 1
@@ -427,6 +450,10 @@ tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.sql.exampl
 tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.sql.examples.SqlUniqueCarrierSumCountDepDelaySAInMemory hdfs://127.0.0.1:9000 /airline1989 32 1 1024 1
 
 tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.sql.examples.SqlUniqueCarrierSumCountDepDelaySAInMemoryDisk hdfs://127.0.0.1:9000 /airline1989 32 1 1024 1
+
+tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.sql.examples.SqlUniqueCarrierYearMonthOfYearDayOfMonthSumCountArrDelayLocal hdfs://127.0.0.1:9000 /airline1989 128 11
+
+tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.sql.examples.SqlUniqueCarrierYearMonthOfYearDayOfMonthSumCountArrDelaySaveLocal hdfs://127.0.0.1:9000 /airline1989 128 11 /examplesmdc
 
 Stream Reduce Aggregate
 -----------------------
@@ -614,6 +641,10 @@ tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.sql.exampl
 
 tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.sql.examples.SqlUniqueCarrierSumCountDepDelaySAInMemoryDisk hdfs://namenode:9000 /airline1989 32 1 1024 1
 
+tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.sql.examples.SqlUniqueCarrierYearMonthOfYearDayOfMonthSumCountArrDelayLocal hdfs://namenode:9000 /airline1989 128 11
+
+tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.sql.examples.SqlUniqueCarrierYearMonthOfYearDayOfMonthSumCountArrDelaySaveLocal hdfs://namenode:9000 /airline1989 128 11 /examplesmdc
+
 Stream Reduce Aggregate Linux
 -----------------------------
 
@@ -642,7 +673,6 @@ tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.examples.S
 tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.examples.StreamAggSumCountArrDelayLocal hdfs://namenode:9000 /airline1989 /examplesmdc 1024 1
 
 tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.examples.StreamAggSumCountArrDelayYARN hdfs://namenode:9000 /airline1989 /examplesmdc 1024 1
-
 
 tasksubmitterstream.cmd ../modules/examples.jar com.github.mdc.stream.examples.StreamCoalesceNormalInMemoryDiskContainerDivided hdfs://namenode:9000 /airline1989 /examplesmdc 1
 
