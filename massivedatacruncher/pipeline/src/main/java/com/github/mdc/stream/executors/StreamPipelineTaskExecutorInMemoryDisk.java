@@ -32,6 +32,9 @@ import org.apache.log4j.Logger;
 import org.ehcache.Cache;
 import org.xerial.snappy.SnappyInputStream;
 
+import com.github.mdc.common.ByteBufferInputStream;
+import com.github.mdc.common.ByteBufferOutputStream;
+import com.github.mdc.common.ByteBufferPoolDirect;
 import com.github.mdc.common.HeartBeatTaskSchedulerStream;
 import com.github.mdc.common.JobStage;
 import com.github.mdc.common.MDCConstants;
@@ -75,16 +78,18 @@ public final class StreamPipelineTaskExecutorInMemoryDisk extends StreamPipeline
 	 * Create a file in HDFS and return the stream.
 	 * @param hdfs
 	 * @return
-	 * @throws FileNotFoundException 
+	 * @throws Exception 
 	 * @throws Exception
 	 */
 	@Override
-	public OutputStream createIntermediateDataToFS(Task task) throws PipelineException {
-		log.debug("Entered MassiveDataStreamTaskExecutorInMemory.createIntermediateDataToFS");
+	public OutputStream createIntermediateDataToFS(Task task,int buffersize) throws PipelineException {
+		log.debug("Entered StreamPipelineTaskExecutorInMemoryDisk.createIntermediateDataToFS");
 		try {
+			var path = getIntermediateDataFSFilePath(task);
 			OutputStream os;
-			os = new ByteArrayOutputStream();
-			log.debug("Exiting MassiveDataStreamTaskExecutorInMemory.createIntermediateDataToFS");
+			os = new ByteBufferOutputStream(ByteBufferPoolDirect.get(buffersize));
+			resultstream.put(path, os);
+			log.debug("Exiting StreamPipelineTaskExecutorInMemoryDisk.createIntermediateDataToFS");
 			return os;
 		} catch (Exception e) {
 			log.error(PipelineConstants.FILEIOERROR, e);
@@ -92,6 +97,7 @@ public final class StreamPipelineTaskExecutorInMemoryDisk extends StreamPipeline
 		}
 	}
 
+	
 
 	/**
 	 * Open the already existing file using the job and stageid.
@@ -101,20 +107,18 @@ public final class StreamPipelineTaskExecutorInMemoryDisk extends StreamPipeline
 	 */
 	@Override
 	public InputStream getIntermediateInputStreamFS(Task task) throws Exception {
-		log.debug("Entered MassiveDataStreamTaskExecutorInMemory.getIntermediateInputStreamFS");
+		log.debug("Entered StreamPipelineTaskExecutorInMemoryDisk.getIntermediateInputStreamFS");
 		var path = getIntermediateDataFSFilePath(task);
+		log.debug("Exiting StreamPipelineTaskExecutorInMemoryDisk.getIntermediateInputStreamFS");
 		OutputStream os = resultstream.get(path);
-		log.debug("Exiting MassiveDataStreamTaskExecutorInMemory.getIntermediateInputStreamFS");
-		if (Objects.isNull(os)) {
-			log.info("Unable to get Result Stream for path: " + path + " Fetching Remotely");
-			return null;
-		}
-		else if (os instanceof ByteArrayOutputStream baos) {
-			return new ByteArrayInputStream((byte[]) cache.get(path));
-		}
-		else {
+		if(Objects.isNull(os)) {
+			throw new NullPointerException("Unable to get Result Stream for path: "+path);
+		}else if(os instanceof ByteBufferOutputStream baos) {
+			return new ByteBufferInputStream(baos.get());
+		} else {
 			throw new UnsupportedOperationException("Unknown I/O operation");
 		}
+		
 	}
 
 	/**
@@ -124,7 +128,7 @@ public final class StreamPipelineTaskExecutorInMemoryDisk extends StreamPipeline
 	 * @throws Exception 
 	 */
 	public byte[] getCachedRDF(RemoteDataFetch rdf) throws Exception {
-		log.debug("Entered MassiveDataStreamTaskExecutorInMemory.getIntermediateInputStreamRDF");
+		log.debug("Entered StreamPipelineTaskExecutorInMemoryDisk.getIntermediateInputStreamRDF");
 		var path = rdf.getJobid() + MDCConstants.HYPHEN
 				+ rdf.getStageid() + MDCConstants.HYPHEN + rdf.getTaskid();
 		return (byte[]) cache.get(path);
@@ -133,7 +137,7 @@ public final class StreamPipelineTaskExecutorInMemoryDisk extends StreamPipeline
 	@Override
 	public void run() {
 		starttime = System.currentTimeMillis();
-		log.debug("Entered MassiveDataStreamTaskExecutorInMemory.call");
+		log.debug("Entered StreamPipelineTaskExecutorInMemoryDisk.call");
 		var stageTasks = getStagesTask();
 		var hdfsfilepath = MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL, MDCConstants.HDFSNAMENODEURL);
 		var configuration = new Configuration();
@@ -152,10 +156,10 @@ public final class StreamPipelineTaskExecutorInMemoryDisk extends StreamPipeline
 						var rdf = (RemoteDataFetch) input;
 						var btarray = getCachedRDF(rdf);
 						if (btarray != null) {
-							task.input[inputindex] = new SnappyInputStream(new ByteArrayInputStream(btarray));
+							task.input[inputindex] =new ByteArrayInputStream(btarray);
 						} else {
 							RemoteDataFetcher.remoteInMemoryDataFetch(rdf);
-							task.input[inputindex] = new SnappyInputStream(new ByteArrayInputStream(rdf.getData()));
+							task.input[inputindex] = new ByteArrayInputStream(rdf.getData());
 						}
 					}
 				}
@@ -188,7 +192,7 @@ public final class StreamPipelineTaskExecutorInMemoryDisk extends StreamPipeline
 				}
 			}
 		}
-		log.debug("Exiting MassiveDataStreamTaskExecutorInMemory.call");
+		log.debug("Exiting StreamPipelineTaskExecutorInMemoryDisk.call");
 	}
 
 }

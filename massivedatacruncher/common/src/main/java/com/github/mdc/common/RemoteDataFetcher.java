@@ -27,7 +27,6 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.hdfs.DistributedFileSystem;
 import org.apache.log4j.Logger;
-import org.xerial.snappy.SnappyInputStream;
 
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
@@ -252,7 +251,7 @@ public class RemoteDataFetcher {
 		try {
 			var path = MDCConstants.FORWARD_SLASH + FileSystemSupport.MDS + MDCConstants.FORWARD_SLASH + jobid + MDCConstants.FORWARD_SLASH + filename;
 			log.debug("Exiting RemoteDataFetcher.readIntermediatePhaseOutputFromDFS");
-			return new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path))));
+			return new BufferedInputStream(hdfs.open(new Path(path)));
 		}
 		catch (Exception ioe) {
 			log.error(RemoteDataFetcherException.INTERMEDIATEPHASEREADERROR, ioe);
@@ -278,7 +277,7 @@ public class RemoteDataFetcher {
 			File file = new File(MDCProperties.get().getProperty(MDCConstants.TMPDIR) + path);
 			log.debug("Exiting RemoteDataFetcher.readIntermediatePhaseOutputFromDFS");
 			if (file.isFile() && file.exists()) {
-				return new SnappyInputStream(new BufferedInputStream(new FileInputStream(file)));
+				return new BufferedInputStream(new FileInputStream(file));
 			}
 			log.info("RemoteDataFetcher.readIntermediatePhaseOutputFromDFS: "+(file.isFile() && file.exists()));
 			return null;

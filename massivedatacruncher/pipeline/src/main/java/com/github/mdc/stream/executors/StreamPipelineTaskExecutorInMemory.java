@@ -16,6 +16,9 @@ import org.apache.log4j.Logger;
 import org.ehcache.Cache;
 import org.xerial.snappy.SnappyInputStream;
 
+import com.github.mdc.common.ByteBufferInputStream;
+import com.github.mdc.common.ByteBufferOutputStream;
+import com.github.mdc.common.ByteBufferPoolDirect;
 import com.github.mdc.common.JobStage;
 import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.MDCProperties;
@@ -81,18 +84,13 @@ public sealed class StreamPipelineTaskExecutorInMemory extends StreamPipelineTas
 	 * @throws Exception
 	 */
 	@Override
-	public OutputStream createIntermediateDataToFS(Task task) throws PipelineException {
+	public OutputStream createIntermediateDataToFS(Task task,int buffersize) throws PipelineException {
 		log.debug("Entered MassiveDataStreamTaskExecutorInMemory.createIntermediateDataToFS");
 		try {
 			var path = getIntermediateDataFSFilePath(task);
 			OutputStream os;
-			if(task.finalphase && task.saveresulttohdfs) {
-				os = new ByteArrayOutputStream();
-			}
-			else {
-				os = new ByteArrayOutputStream();
-				resultstream.put(path, os);
-			}
+			os = new ByteBufferOutputStream(ByteBufferPoolDirect.get(buffersize));
+			resultstream.put(path, os);
 			log.debug("Exiting MassiveDataStreamTaskExecutorInMemory.createIntermediateDataToFS");
 			return os;
 		} catch (Exception e) {
@@ -117,8 +115,8 @@ public sealed class StreamPipelineTaskExecutorInMemory extends StreamPipelineTas
 		OutputStream os = resultstream.get(path);
 		if(Objects.isNull(os)) {
 			throw new NullPointerException("Unable to get Result Stream for path: "+path);
-		}else if(os instanceof ByteArrayOutputStream baos) {
-			return new ByteArrayInputStream(baos.toByteArray());
+		}else if(os instanceof ByteBufferOutputStream baos) {
+			return new ByteBufferInputStream(baos.get());
 		} else {
 			throw new UnsupportedOperationException("Unknown I/O operation");
 		}
@@ -147,10 +145,11 @@ public sealed class StreamPipelineTaskExecutorInMemory extends StreamPipelineTas
 						var rdf = (RemoteDataFetch) input;
 						var os = getIntermediateInputStreamRDF(rdf);
 						if (os != null) {
-							task.input[inputindex] = new SnappyInputStream(new ByteArrayInputStream(((ByteArrayOutputStream)os).toByteArray()));
+							ByteBufferOutputStream bbos = (ByteBufferOutputStream) os;
+							task.input[inputindex] = new ByteBufferInputStream(bbos.get());
 						} else {
 							RemoteDataFetcher.remoteInMemoryDataFetch(rdf);
-							task.input[inputindex] = new SnappyInputStream(new ByteArrayInputStream(rdf.getData()));
+							task.input[inputindex] = new ByteArrayInputStream(rdf.getData());
 						}
 					}
 				}

@@ -29,8 +29,10 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.log4j.Logger;
 import org.ehcache.Cache;
-import org.xerial.snappy.SnappyInputStream;
 
+import com.github.mdc.common.ByteBufferInputStream;
+import com.github.mdc.common.ByteBufferOutputStream;
+import com.github.mdc.common.ByteBufferPoolDirect;
 import com.github.mdc.common.JobStage;
 import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.MDCProperties;
@@ -67,7 +69,7 @@ public final class StreamPipelineTaskExecutorLocal extends StreamPipelineTaskExe
 			log.info("Unable to get Result Stream for path: " + path + " Fetching Remotely");
 			return os;
 		}
-		else if (os instanceof ByteArrayOutputStream baos) {
+		else if (os instanceof ByteBufferOutputStream baos) {
 			return os;
 		}
 		else {
@@ -94,13 +96,14 @@ public final class StreamPipelineTaskExecutorLocal extends StreamPipelineTaskExe
 	 * @throws Exception
 	 */
 	@Override
-	public OutputStream createIntermediateDataToFS(Task task) throws PipelineException {
-		log.debug("Entered MassiveDataStreamTaskExecutorInMemory.createIntermediateDataToFS");
+	public OutputStream createIntermediateDataToFS(Task task,int buffersize) throws PipelineException {
+		log.debug("Entered StreamPipelineTaskExecutorLocal.createIntermediateDataToFS");
 		try {
 			var path = getIntermediateDataFSFilePath(task);
-			var os = new ByteArrayOutputStream();				
+			OutputStream os;
+			os = new ByteBufferOutputStream(ByteBufferPoolDirect.get(buffersize));
 			resultstream.put(path, os);
-			log.debug("Exiting MassiveDataStreamTaskExecutorInMemory.createIntermediateDataToFS");
+			log.debug("Exiting StreamPipelineTaskExecutorLocal.createIntermediateDataToFS");
 			return os;
 		} catch (Exception e) {
 			log.error(PipelineConstants.FILEIOERROR, e);
@@ -108,6 +111,7 @@ public final class StreamPipelineTaskExecutorLocal extends StreamPipelineTaskExe
 		}
 	}
 
+	
 
 	/**
 	 * Open the already existing file using the job and stageid.
@@ -117,18 +121,18 @@ public final class StreamPipelineTaskExecutorLocal extends StreamPipelineTaskExe
 	 */
 	@Override
 	public InputStream getIntermediateInputStreamFS(Task task) throws Exception {
-		log.debug("Entered MassiveDataStreamTaskExecutorInMemory.getIntermediateInputStreamFS");
+		log.debug("Entered StreamPipelineTaskExecutorLocal.getIntermediateInputStreamFS");
 		var path = getIntermediateDataFSFilePath(task);
-		log.debug("Exiting MassiveDataStreamTaskExecutorInMemory.getIntermediateInputStreamFS");
+		log.debug("Exiting StreamPipelineTaskExecutorLocal.getIntermediateInputStreamFS");
 		OutputStream os = resultstream.get(path);
-		if (Objects.isNull(os)) {
-			throw new NullPointerException("Unable to get Result Stream for path: " + path);
-		} else if (os instanceof ByteArrayOutputStream baos) {
-			return new ByteArrayInputStream(baos.toByteArray());
+		if(Objects.isNull(os)) {
+			throw new NullPointerException("Unable to get Result Stream for path: "+path);
+		}else if(os instanceof ByteBufferOutputStream baos) {
+			return new ByteBufferInputStream(baos.get());
 		} else {
 			throw new UnsupportedOperationException("Unknown I/O operation");
 		}
-
+		
 	}
 
 
@@ -150,10 +154,11 @@ public final class StreamPipelineTaskExecutorLocal extends StreamPipelineTaskExe
 						var rdf = (RemoteDataFetch) input;
 						var os = getIntermediateInputStreamRDF(rdf);
 						if (os != null) {
-							task.input[inputindex] = new SnappyInputStream(new ByteArrayInputStream(((ByteArrayOutputStream) os).toByteArray()));
+							ByteBufferOutputStream bbos = (ByteBufferOutputStream) os;
+							task.input[inputindex] = new ByteBufferInputStream(bbos.get());
 						} else {
 							RemoteDataFetcher.remoteInMemoryDataFetch(rdf);
-							task.input[inputindex] = new SnappyInputStream(new ByteArrayInputStream(rdf.getData()));
+							task.input[inputindex] = new ByteArrayInputStream(rdf.getData());
 						}
 					}
 				}

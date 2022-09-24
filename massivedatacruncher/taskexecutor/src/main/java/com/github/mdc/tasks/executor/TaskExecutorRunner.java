@@ -90,7 +90,7 @@ public class TaskExecutorRunner implements TaskExecutorRunnerMBean {
 		log.info("Number Of 128 MB directmemory: " + directmemory);
 		CacheUtils.initCache();
 		int numberofprocessors = Runtime.getRuntime().availableProcessors();
-		es = Executors.newCachedThreadPool();
+		es = new ForkJoinPool(numberofprocessors*2);
 		var mdted = new TaskExecutorRunner();
 		mdted.init();
 		mdted.start();

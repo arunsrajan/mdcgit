@@ -722,15 +722,22 @@ public class StreamJobScheduler {
 			var completed = false;
 			var numexecute = 0;
 			var executioncount = Integer.parseInt(pipelineconfig.getExecutioncount());
-			es = newExecutor(batchsize);
+			batchsize = 0;
 			List<ExecutionResult<StreamPipelineTaskSubmitter, Boolean>> erroredresult = null;
 
 			var temdstdtmap = new ConcurrentHashMap<String, List<StreamPipelineTaskSubmitter>>();
 			var chpcres = GlobalContainerAllocDealloc.getHportcrs();
+			var semaphores = new ConcurrentHashMap<String, Semaphore>();
+			for(var cr:chpcres.entrySet()) {
+				batchsize += cr.getValue().getCpu()*2;
+				semaphores.put(cr.getKey(), new Semaphore(cr.getValue().getCpu()*2));
+			}
+			es = newExecutor(batchsize);
+			
 			while (!completed && numexecute < executioncount) {
 				temdstdtmap.clear();
 				var configexec = new DexecutorConfig<StreamPipelineTaskSubmitter, Boolean>(es,
-						new DAGScheduler(graph.vertexSet().size(), batchsize));
+						new DAGScheduler(graph.vertexSet().size(), semaphores));
 				var dexecutor = new DefaultDexecutor<StreamPipelineTaskSubmitter, Boolean>(configexec);
 
 				var vertices = graph.vertexSet();
@@ -744,47 +751,12 @@ public class StreamJobScheduler {
 						}
 					} else {
 						dexecutor.addIndependent(mdstst);
-						mdststs = temdstdtmap.get(mdstst.getHostPort());
-						if (Objects.isNull(mdststs)) {
-							mdststs = new ArrayList<>();
-							temdstdtmap.put(mdstst.getHostPort(), mdststs);
-						}
-						mdststs.add(mdstst);
 					}
 					if (Objects.isNull(servertotaltasks.get(mdstst.getHostPort()))) {
 						servertotaltasks.put(mdstst.getHostPort(), 1);
 					} else {
 						servertotaltasks.put(mdstst.getHostPort(), servertotaltasks.get(mdstst.getHostPort()) + 1);
 					}
-				}
-				var config = new DexecutorConfig<DefaultDexecutor<StreamPipelineTaskSubmitter, Boolean>, List<ExecutionResult<StreamPipelineTaskSubmitter, Boolean>>>(
-						newExecutor(temdstdtmap.keySet().size()), new DAGSchedulerInitialStage());
-				var initialstageexecutor = new DefaultDexecutor<DefaultDexecutor<StreamPipelineTaskSubmitter, Boolean>, List<ExecutionResult<StreamPipelineTaskSubmitter, Boolean>>>(
-						config);
-				temdstdtmap.keySet().stream().forEach(key -> {
-					var mdststsl = temdstdtmap.get(key);
-					var cr = chpcres.get(key);
-					var batchsize = cr.getCpu();
-					batchsize = mdststsl.size()<batchsize?mdststsl.size():batchsize;
-					var configinitialstage = new DexecutorConfig<StreamPipelineTaskSubmitter, Boolean>(
-							newExecutor((int) batchsize), new DAGScheduler(mdststsl.size(), (int) batchsize));
-					var dexecutorinitialstage = new DefaultDexecutor<StreamPipelineTaskSubmitter, Boolean>(
-							configinitialstage);
-					initialstageexecutor.addIndependent(dexecutorinitialstage);
-					mdststsl.stream().forEach(mdststl -> {
-						dexecutorinitialstage.addIndependent(mdststl);
-					});
-				});
-				var executionresults = initialstageexecutor.execute(ExecutionConfig.NON_TERMINATING);
-				var erroredresultinitialstage = executionresults.getErrored();
-				temdstdtmap.keySet().stream().forEach(key -> {
-					tetotaltaskscompleted.put(key, 0d);
-					tetotaltasksfailed.put(key, 0d);
-				});
-				if (!erroredresultinitialstage.isEmpty()) {
-					numexecute++;
-					completed = false;
-					continue;
 				}
 				var executionresultscomplete = dexecutor.execute(ExecutionConfig.NON_TERMINATING);
 				erroredresult = executionresultscomplete.getErrored();
@@ -840,26 +812,6 @@ public class StreamJobScheduler {
 	 */
 	private ExecutorService newExecutor(int numberoftasks) {
 		return Executors.newFixedThreadPool(numberoftasks);
-	}
-
-	private class DAGSchedulerInitialStage implements
-			TaskProvider<DefaultDexecutor<StreamPipelineTaskSubmitter, Boolean>, List<ExecutionResult<StreamPipelineTaskSubmitter, Boolean>>> {
-
-		@Override
-		public com.github.dexecutor.core.task.Task<DefaultDexecutor<StreamPipelineTaskSubmitter, Boolean>, List<ExecutionResult<StreamPipelineTaskSubmitter, Boolean>>> provideTask(
-				DefaultDexecutor<StreamPipelineTaskSubmitter, Boolean> dexecutor) {
-			return new com.github.dexecutor.core.task.Task<DefaultDexecutor<StreamPipelineTaskSubmitter, Boolean>, List<ExecutionResult<StreamPipelineTaskSubmitter, Boolean>>>() {
-
-				private static final long serialVersionUID = 1L;
-
-				@Override
-				public List<ExecutionResult<StreamPipelineTaskSubmitter, Boolean>> execute() {
-					var execresults = dexecutor.execute(ExecutionConfig.NON_TERMINATING);
-					return execresults.getErrored();
-				}
-			};
-		}
-
 	}
 
 	/**
@@ -1135,15 +1087,14 @@ public class StreamJobScheduler {
 		double totaltasks;
 		double counttaskscomp = 0;
 		double counttasksfailed = 0;
-
-		public DAGScheduler(double totaltasks, Integer batchsize) {
+		Map<String,Semaphore> semaphores;
+		public DAGScheduler(double totaltasks, Map<String,Semaphore> semaphores) {
 			this.totaltasks = totaltasks;
-			this.mutex = new Semaphore(batchsize);
+			this.semaphores = semaphores;
 		}
 
 		Semaphore printresult = new Semaphore(1);
 
-		Semaphore mutex;
 		ConcurrentMap<String, Timer> jobtimer = new ConcurrentHashMap<>();
 
 		public com.github.dexecutor.core.task.Task<StreamPipelineTaskSubmitter, Boolean> provideTask(
@@ -1249,7 +1200,7 @@ public class StreamJobScheduler {
 					};
 
 					try {
-						mutex.acquire();
+						semaphores.get(mdststlocal.getTask().getHostport()).acquire();
 						hbtss.getHbo().get(mdststlocal.getTask().getHostport()).addPropertyChangeListener(mdststlocal.getTask(), observer);
 						if (taskexecutors.contains(mdststlocal.getHostPort())) {
 							var timer = new Timer();
@@ -1283,7 +1234,7 @@ public class StreamJobScheduler {
 						} else {
 							mdststlocal.setCompletedexecution(false);
 						}
-						mutex.release();
+						semaphores.get(mdststlocal.getTask().getHostport()).release();
 						hbtss.getHbo().get(mdststlocal.getHostPort()).removePropertyChangeListener(mdststlocal.getTask());
 					} catch (InterruptedException e) {
 						log.warn("Interrupted!", e);
@@ -1630,7 +1581,7 @@ public class StreamJobScheduler {
 						var key = getIntermediateResultFS(mdstt.getTask());
 						try (var fsstream = resultstream.get(key);
 								var input = new Input(
-										new SnappyInputStream(new ByteArrayInputStream(((ByteArrayOutputStream) fsstream).toByteArray())));) {
+										new ByteBufferInputStream(((ByteBufferOutputStream)fsstream).get()));) {
 							var obj = kryofinal.readClassAndObject(input);
 							resultstream.remove(key);
 							writeOutputToFile(stageoutput.size(), obj);

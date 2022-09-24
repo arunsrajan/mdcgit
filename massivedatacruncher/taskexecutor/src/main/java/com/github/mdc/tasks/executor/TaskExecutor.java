@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Queue;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutorService;
@@ -33,11 +34,14 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.log4j.Logger;
 import org.ehcache.Cache;
+import org.h2.util.IOUtils;
 
 import com.esotericsoftware.kryonetty.ServerEndpoint;
 import com.esotericsoftware.kryonetty.network.ReceiveEvent;
 import com.github.mdc.common.ApplicationTask.TaskStatus;
 import com.github.mdc.common.BlocksLocation;
+import com.github.mdc.common.ByteBufferInputStream;
+import com.github.mdc.common.ByteBufferOutputStream;
 import com.github.mdc.common.CloseStagesGraphExecutor;
 import com.github.mdc.common.Context;
 import com.github.mdc.common.FileSystemSupport;
@@ -140,7 +144,7 @@ public class TaskExecutor implements Runnable {
 						stageidexecutormap = (Map<String, Object>) jobidstageidexecutormap.get(task.jobid);
 					}
 					stageidexecutormap.put(task.stageid, mdste);
-					es.execute(mdste);
+					CompletableFuture.runAsync(mdste, es);
 					log.info("Submitted Task for execution: " + deserobj);
 				} else if (mdste.isCompleted()) {
 					hbtss.setTimetakenseconds(mdste.getHbtss().getTimetakenseconds());
@@ -158,7 +162,7 @@ public class TaskExecutor implements Runnable {
 					for (Task task :stagesgraph.getTasks()) {
 						jobstageexecutormap.put(task.jobid + task.stageid + task.taskid, mdste);
 					}
-					es.execute(mdste);
+					CompletableFuture.runAsync(mdste, es);
 				}
 			} else if (deserobj instanceof CloseStagesGraphExecutor closestagesgraph) {
 				var key = closestagesgraph.getTasks().get(0).jobid + closestagesgraph.getTasks().get(0).stageid + closestagesgraph.getTasks().get(0).taskid;
@@ -218,7 +222,8 @@ public class TaskExecutor implements Runnable {
 						if (task.storage == MDCConstants.STORAGE.INMEMORY) {
 							var os = ((StreamPipelineTaskExecutorInMemory) mdstde).getIntermediateInputStreamRDF(rdf);
 							if (!Objects.isNull(os)) {
-								rdf.setData(((ByteArrayOutputStream) os).toByteArray());
+								ByteBufferOutputStream bbos = (ByteBufferOutputStream) os;
+								rdf.setData(IOUtils.readBytesAndClose(new ByteBufferInputStream(bbos.get()), bbos.get().limit()));
 							}
 						} else if (task.storage == MDCConstants.STORAGE.INMEMORY_DISK) {
 							var path = Utils.getIntermediateInputStreamRDF(rdf);
@@ -274,7 +279,7 @@ public class TaskExecutor implements Runnable {
 										port, hbts);
 							}
 							apptaskexecutormap.put(apptaskid, mdtemc);
-							es.execute(mdtemc);
+							CompletableFuture.runAsync(mdtemc, es);
 						}
 					} else if (object instanceof ReducerValues rv) {
 						var mdter = (TaskExecutorReducer) taskexecutor;
@@ -289,7 +294,7 @@ public class TaskExecutor implements Runnable {
 									hbts, apptaskexecutormap);
 							apptaskexecutormap.put(apptaskid, mdter);
 							log.debug("Reducer submission:" + apptaskid);
-							es.execute(mdter);
+							CompletableFuture.runAsync(mdter, es);
 						}
 					} else if (object instanceof RetrieveData) {
 						Context ctx = null;
