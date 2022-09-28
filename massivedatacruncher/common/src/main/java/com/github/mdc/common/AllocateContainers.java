@@ -15,6 +15,8 @@
  */
 package com.github.mdc.common;
 
+import java.io.Serializable;
+
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -33,7 +35,8 @@ import lombok.ToString;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class AllocateContainers {
+public class AllocateContainers implements Serializable{
+	private static final long serialVersionUID = 5722412378550026294L;
 	private String containerid;
 	private int numberofcontainers;
 

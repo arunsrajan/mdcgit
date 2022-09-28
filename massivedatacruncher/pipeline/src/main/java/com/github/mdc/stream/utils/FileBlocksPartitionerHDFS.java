@@ -294,7 +294,7 @@ public class FileBlocksPartitionerHDFS {
 							Set<String> containers = GlobalContainerAllocDealloc.getNodecontainers().get(node);
 							containers.remove(container);
 							//Remove the container from the node and destroy it.  
-							Utils.writeObject(node, dc);
+							Utils.getResultObjectByInput(node, dc);
 							ContainerResources cr = chpcres.remove(container);
 							Resources allocresources = MDCNodesResources.get().get(node);
 							long maxmemory = cr.getMaxmemory() * MDCConstants.MB;
@@ -312,7 +312,7 @@ public class FileBlocksPartitionerHDFS {
 					log.debug("Destroying Containers with id:" + job.getContainerid() + " for the hosts: " + nodes);
 					//Destroy all the containers from all the nodes
 					for (var node : nodes) {
-						Utils.writeObject(node, dc);
+						Utils.getResultObjectByInput(node, dc);
 					}
 				}
 			}

@@ -17,7 +17,6 @@ package com.github.mdc.stream.executors;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
@@ -30,12 +29,10 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.log4j.Logger;
 import org.ehcache.Cache;
-import org.xerial.snappy.SnappyInputStream;
 
 import com.github.mdc.common.ByteBufferInputStream;
 import com.github.mdc.common.ByteBufferOutputStream;
 import com.github.mdc.common.ByteBufferPoolDirect;
-import com.github.mdc.common.HeartBeatTaskSchedulerStream;
 import com.github.mdc.common.JobStage;
 import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.MDCProperties;
@@ -56,10 +53,9 @@ public final class StreamPipelineTaskExecutorInMemoryDisk extends StreamPipeline
 
 	public StreamPipelineTaskExecutorInMemoryDisk(JobStage jobstage,
 			ConcurrentMap<String, OutputStream> resultstream,
-			Cache cache, HeartBeatTaskSchedulerStream hbtss) throws Exception {
+			Cache cache) throws Exception {
 		super(jobstage, resultstream, cache);
 		iscacheable = true;
-		this.hbtss = hbtss;
 	}
 
 
@@ -135,7 +131,7 @@ public final class StreamPipelineTaskExecutorInMemoryDisk extends StreamPipeline
 	}
 
 	@Override
-	public void run() {
+	public Boolean call() {
 		starttime = System.currentTimeMillis();
 		log.debug("Entered StreamPipelineTaskExecutorInMemoryDisk.call");
 		var stageTasks = getStagesTask();
@@ -145,7 +141,6 @@ public final class StreamPipelineTaskExecutorInMemoryDisk extends StreamPipeline
 		try (var hdfs = FileSystem.newInstance(new URI(hdfsfilepath), configuration);) {
 
 			endtime = System.currentTimeMillis();
-			hbtss.pingOnce(task, Task.TaskStatus.SUBMITTED, new Long[]{starttime,endtime}, timetakenseconds, null);
 			log.debug("Submitted JobStage " + task.jobid + " " + task.stageid + " " + jobstage);
 			log.debug("Running Stage " + stageTasks);
 			if (task.input != null && task.parentremotedatafetch != null) {
@@ -164,22 +159,19 @@ public final class StreamPipelineTaskExecutorInMemoryDisk extends StreamPipeline
 					}
 				}
 			}
-			hbtss.pingOnce(task, Task.TaskStatus.RUNNING, new Long[]{starttime,endtime}, timetakenseconds, null);
 			log.debug("Running Stage " + task.jobid + " " + task.stageid + " " + jobstage);
 			timetakenseconds = computeTasks(task, hdfs);
 			completed = true;
 			endtime = System.currentTimeMillis();
-			hbtss.pingOnce(task, Task.TaskStatus.COMPLETED, new Long[]{starttime,endtime}, timetakenseconds, null);
 			log.debug("Completed JobStage " + task.jobid + " " + task.stageid + " in " + timetakenseconds);
 		} catch (Exception ex) {
-			completed = true;
+			completed = false;
 			log.error("Failed Stage: " + task.stageid, ex);
 			try {
 				var baos = new ByteArrayOutputStream();
 				var failuremessage = new PrintWriter(baos, true, StandardCharsets.UTF_8);
 				ex.printStackTrace(failuremessage);
 				endtime = System.currentTimeMillis();
-				hbtss.pingOnce(task, Task.TaskStatus.FAILED, new Long[]{starttime,endtime}, 0.0, new String(baos.toByteArray()));
 			} catch (Exception e) {
 				log.error("Message Send Failed for Task Failed: ", e);
 			}
@@ -193,6 +185,7 @@ public final class StreamPipelineTaskExecutorInMemoryDisk extends StreamPipeline
 			}
 		}
 		log.debug("Exiting StreamPipelineTaskExecutorInMemoryDisk.call");
+		return completed;
 	}
 
 }

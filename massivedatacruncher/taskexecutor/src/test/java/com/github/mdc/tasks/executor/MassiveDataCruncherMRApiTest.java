@@ -27,7 +27,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import org.jooq.lambda.tuple.Tuple2;
 import org.jooq.lambda.tuple.Tuple3;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -37,10 +36,8 @@ import org.xerial.snappy.SnappyOutputStream;
 import com.github.mdc.common.BlocksLocation;
 import com.github.mdc.common.Context;
 import com.github.mdc.common.DataCruncherContext;
-import com.github.mdc.common.HeartBeatTaskScheduler;
 import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.ReducerValues;
-import com.github.mdc.common.RemoteDataFetcher;
 import com.github.mdc.common.Utils;
 import com.github.mdc.stream.StreamPipelineBase;
 
@@ -130,31 +127,11 @@ public class MassiveDataCruncherMRApiTest extends StreamPipelineBase {
 		bls.setMapperclasses(new LinkedHashSet<>(Arrays.asList(AirlineDataMapper.class.getName())));
 		bls.setCombinerclasses(new LinkedHashSet<>(Arrays.asList(AirlineDataMapper.class.getName())));
 		ExecutorService es = Executors.newWorkStealingPool();
-		HeartBeatTaskScheduler hbtsreceiver = new HeartBeatTaskScheduler();
-		HeartBeatTaskScheduler hbts = new HeartBeatTaskScheduler();
 		String app = MDCConstants.MDCAPPLICATION;
 		String task = MDCConstants.TASK;
-		hbts.init(0,
-				12121,
-				"127.0.0.1",
-				0,
-				1000, "",
-				app, "");
-		hbtsreceiver.init(0,
-				12121,
-				"127.0.0.1",
-				0,
-				1000, "",
-				app, "");
-		hbtsreceiver.start();
 		TaskExecutorMapperCombiner mdtemc = new
-				TaskExecutorMapperCombiner(bls, lzis, app, task, Thread.currentThread().getContextClassLoader(), 12121, hbts);
-		mdtemc.run();
-		Context ctx = (Context) RemoteDataFetcher.readIntermediatePhaseOutputFromDFS(app, (app + task), false);
-		hbtsreceiver.stop();
-		hbtsreceiver.destroy();
-		hbts.stop();
-		hbts.destroy();
+				TaskExecutorMapperCombiner(bls, lzis, app, task, Thread.currentThread().getContextClassLoader(), 12121);		
+		Context ctx = (Context) mdtemc.call();
 		es.shutdown();
 		assertEquals(-63278, (long) (ctx.get("AQ").iterator().next()));
 	}
@@ -171,26 +148,10 @@ public class MassiveDataCruncherMRApiTest extends StreamPipelineBase {
 		BlocksLocation bls = new BlocksLocation();
 		bls.setMapperclasses(new LinkedHashSet<>(Arrays.asList(AirlineDataMapper.class.getName())));
 		ExecutorService es = Executors.newWorkStealingPool();
-		HeartBeatTaskScheduler hbtsreceiver = new HeartBeatTaskScheduler();
-		HeartBeatTaskScheduler hbts = new HeartBeatTaskScheduler();
 		String app = MDCConstants.MDCAPPLICATION;
 		String task = MDCConstants.TASK;
-		hbts.init(0,
-				12121,
-				"127.0.0.1",
-				0,
-				1000, "",
-				app, "");
-		hbtsreceiver.init(0,
-				12121,
-				"127.0.0.1",
-				0,
-				1000, "",
-				app, "");
-		hbtsreceiver.start();
 		TaskExecutorMapperCombiner mdtemc = new
-				TaskExecutorMapperCombiner(bls, lzis, app, task, Thread.currentThread().getContextClassLoader(), 12121, hbts);
-		mdtemc.run();
+				TaskExecutorMapperCombiner(bls, lzis, app, task, Thread.currentThread().getContextClassLoader(), 12121);		
 		Map<String,Object> apptaskexecutormap = new ConcurrentHashMap<>();
 		apptaskexecutormap.put(app + task, mdtemc);
 		ReducerValues reducervalues = new ReducerValues();
@@ -198,13 +159,9 @@ public class MassiveDataCruncherMRApiTest extends StreamPipelineBase {
 		reducervalues.setAppid(app);
 		reducervalues.setReducerclass(AirlineDataMapper.class.getName());
 		task = MDCConstants.TASK + "-1";
-		TaskExecutorReducer reducerexec = new TaskExecutorReducer(reducervalues, app, task, Thread.currentThread().getContextClassLoader(), 12121, hbts, apptaskexecutormap);
+		TaskExecutorReducer reducerexec = new TaskExecutorReducer(reducervalues, app, task, Thread.currentThread().getContextClassLoader(), 12121, apptaskexecutormap);
 		reducerexec.run();
 		Context ctx = (Context) reducerexec.ctx;
-		hbtsreceiver.stop();
-		hbtsreceiver.destroy();
-		hbts.stop();
-		hbts.destroy();
 		es.shutdown();
 		assertEquals(-63278, (long) (ctx.get("AQ").iterator().next()));
 	}

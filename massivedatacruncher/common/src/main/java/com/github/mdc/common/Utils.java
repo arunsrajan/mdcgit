@@ -43,6 +43,8 @@ import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.URI;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.security.KeyStore;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -834,21 +836,10 @@ public class Utils {
 	 */
 	public static Object getResultObjectByInput(String hp, Object inputobj) throws Exception {
 		var hostport = hp.split(MDCConstants.UNDERSCORE);
-		var queue = new LinkedBlockingQueue<Object>();
-		ClientEndpoint client = null;
 		try {
-			final Object obj;
-			client = Utils.getClientKryoNetty(hostport[0], Integer.parseInt(hostport[1]), new NetworkListener() {
-				@NetworkHandler
-	            public void onReceive(ReceiveEvent event) {
-					queue.offer(event.getObject()) ;
-	            }
-			});
-			client.send(inputobj);
-			while(queue.isEmpty()) {
-				Thread.sleep(400);
-			}
-			return queue.poll();
+			final Registry registry = LocateRegistry.getRegistry(hostport[0], Integer.parseInt(hostport[1]));
+			StreamDataCruncher cruncher = (StreamDataCruncher) registry.lookup(MDCConstants.BINDTESTUB);
+			return cruncher.postObject(inputobj);
 		} catch (Exception ex) {
 			log.error("Unable to read result Object: " + inputobj + " " + hp, ex);
 			throw ex;
@@ -891,66 +882,6 @@ public class Utils {
 		} catch (Exception ex) {
 			log.error("Directing the {} to host {} with port {} Failed", object, socket.getInetAddress(), socket.getPort());
 			throw ex;
-		}
-	}
-
-	/**
-	 * This method writes the object via socket connection to the host and port of
-	 * server.
-	 * 
-	 * @param hp
-	 * @param inputobj
-	 * @throws Exception
-	 */
-	public static void writeObject(String hp, Object inputobj) throws Exception {
-		var hostport = hp.split(MDCConstants.UNDERSCORE);
-		ClientEndpoint client = null;
-		try {
-			client = Utils.getClientKryoNetty(hostport[0], Integer.parseInt(hostport[1]), null);
-			log.info("Directing the {} to host with port {}",inputobj, hp);
-			client.send(inputobj);
-			log.info("Directing the {} to host with port {} completed",inputobj, hp);
-		} catch (Exception ex) {
-			log.error("Directing the {} to host with port {} Failed",inputobj, hp);
-			throw ex;
-		} finally {
-			if(nonNull(client)) {
-				client.close();
-			}
-		}
-	}
-	
-	/**
-	 * The write object with serializable classes
-	 * @param hp
-	 * @param inputobj
-	 * @param classes
-	 * @throws Exception
-	 */
-	public static void writeObject(String hp, Object inputobj, Set<Class<?>> classes) throws Exception {
-		var hostport = hp.split(MDCConstants.UNDERSCORE);
-		ClientEndpoint client = null;
-		try {
-			client = Utils.getClientKryoNetty(hostport[0], Integer.parseInt(hostport[1]), null);
-			if(nonNull(classes) && !classes.isEmpty()) {
-				int classindex = 1;
-				for(Class<?> clz:classes) {
-					Kryo kryo = client.getKryoSerialization().obtainKryo();
-					kryo.register(clz, new CompatibleFieldSerializer(kryo, clz), 1000 + classindex);
-					classindex++;
-					client.getKryoSerialization().free(kryo);				
-				}
-			}
-			log.info("Directing the {} to host with port {}",inputobj, hp);
-			client.send(inputobj);
-			log.info("Directing the {} to host with port {} completed",inputobj, hp);
-		} catch (Exception ex) {
-			log.error("Directing the {} to host with port {} failed",inputobj, hp);
-			throw ex;
-		} finally {
-			if(nonNull(client)) {
-				client.close();
-			}
 		}
 	}
 
@@ -1228,7 +1159,7 @@ public class Utils {
 		var lcs = GlobalContainerLaunchers.get(containerid);
 		lcs.stream().forEach(lc -> {
 			try {
-				Utils.writeObject(lc.getNodehostport(), dc);
+				Utils.getResultObjectByInput(lc.getNodehostport(), lc);
 			} catch (Exception e) {
 				log.error(MDCConstants.EMPTY, e);
 			}
@@ -1236,92 +1167,6 @@ public class Utils {
 		GlobalContainerLaunchers.remove(containerid);
 	}
 
-	public static ServerEndpoint getServerKryoNetty(int port, NetworkListener listener){
-		KryoNetty kryoNetty = new KryoNetty()
-				.useLogging()
-				.useExecution()
-				.threadSize(Runtime.getRuntime().availableProcessors())
-				.inputSize(1048576)
-				.outputSize(1048576)
-				.maxOutputSize(-1);
-		registerKryoNetty(kryoNetty);
-		var server = new ServerEndpoint(kryoNetty, 1);
-		server.getEventHandler().register(listener);		
-		server.start(port);
-		return server;
-	}
-
-	
-	public static void registerKryoNetty(KryoNetty kryonetty) {
-		log.debug("Entered Utils.registerKryoNetty");
-		RegisterKyroSerializers.register(kryonetty);
-		kryonetty.register(Object[].class);
-		kryonetty.register(Object.class);
-		kryonetty.register(Class.class);
-		kryonetty.register(MDCConstants.STORAGE.class);
-		kryonetty.register(SerializedLambda.class);
-		kryonetty.register(ClosureSerializer.Closure.class, new ClosureSerializer());
-		kryonetty.register(Vector.class);
-		kryonetty.register(ArrayList.class);
-		kryonetty.register(Hashtable.class);
-		kryonetty.register(Tuple2.class);
-		kryonetty.register(LinkedHashSet.class);
-		kryonetty.register(Tuple3Serializable.class);
-		kryonetty.register(BlocksLocation.class);
-		kryonetty.register(RetrieveData.class);
-		kryonetty.register(RetrieveKeys.class);
-		kryonetty.register(Block.class);
-		kryonetty.register(Block[].class);
-		kryonetty.register(ConcurrentHashMap.class);
-		kryonetty.register(byte[].class);
-		kryonetty.register(LoadJar.class);
-		kryonetty.register(JobStage.class, new JavaSerializer());
-		kryonetty.register(RemoteDataFetch[].class);
-		kryonetty.register(RemoteDataFetch.class);
-		kryonetty.register(Stage.class, new JavaSerializer());
-		kryonetty.register(Task.class, new JavaSerializer());
-		kryonetty.register(TasksGraphExecutor.class);
-		kryonetty.register(DAGEdge.class);
-		kryonetty.register(DataCruncherContext.class);
-		kryonetty.register(JSONObject.class);
-		kryonetty.register(PipelineConfig.class);
-		kryonetty.register(SimpleDirectedGraph.class);
-		kryonetty.register(CSVParser.class);
-		kryonetty.register(CSVRecord.class);
-		kryonetty.register(ReducerValues.class);
-		kryonetty.register(SkipToNewLine.class);
-		kryonetty.register(CloseStagesGraphExecutor.class);
-		kryonetty.register(AllocateContainers.class);
-		kryonetty.register(LaunchContainers.class);
-		kryonetty.register(AllocateContainers.class);
-		kryonetty.register(ContainerLaunchAttributes.class);
-		kryonetty.register(ContainerResources.class);
-		kryonetty.register(LaunchContainers.MODE.class);
-		kryonetty.register(DestroyContainers.class);
-		kryonetty.register(DestroyContainer.class);
-		kryonetty.register(JobApp.class, new JavaSerializer());
-		kryonetty.register(JobApp.JOBAPP.class, new EnumSerializer(JobApp.JOBAPP.class));
-		kryonetty.register(Dummy.class, new JavaSerializer());
-		kryonetty.register(TaskExecutorShutdown.class, new JavaSerializer());
-		log.debug("Exiting Utils.registerKryoNetty");
-	}
-
-	public static ClientEndpoint getClientKryoNetty(String host, int port, NetworkListener listener){
-		KryoNetty kryoNetty = new KryoNetty()
-				.useLogging()
-				.useExecution()
-				.threadSize(Runtime.getRuntime().availableProcessors())
-				.inputSize(1048576)
-				.outputSize(1048576)
-				.maxOutputSize(-1);
-		registerKryoNetty(kryoNetty);
-		var client = new ClientEndpoint(kryoNetty, 1);
-		if(nonNull(listener)){
-			client.getEventHandler().register(listener);
-		}
-		client.connect(host, port);
-		return client;
-	}
 
 	public static ServerSocket createSSLServerSocket(int port) throws Exception {
 		KeyStore ks = KeyStore.getInstance("JKS");

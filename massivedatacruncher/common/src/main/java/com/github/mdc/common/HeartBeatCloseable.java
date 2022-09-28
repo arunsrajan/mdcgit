@@ -6,6 +6,6 @@ import java.io.Closeable;
  * @author arun
  *
  */
-public sealed interface HeartBeatCloseable extends Closeable,HeartBeatMBean permits HeartBeat,HeartBeatStream,HeartBeatTaskScheduler,HeartBeatTaskSchedulerStream {
+public sealed interface HeartBeatCloseable extends Closeable,HeartBeatMBean permits HeartBeat,HeartBeatStream {
 
 }

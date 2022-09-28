@@ -23,7 +23,6 @@ import org.apache.curator.framework.CuratorFramework;
 
 import com.github.mdc.common.ApplicationTask;
 import com.github.mdc.common.Context;
-import com.github.mdc.common.HeartBeatTaskScheduler;
 import com.github.mdc.common.TaskSchedulerMapperCombinerSubmitterMBean;
 
 @SuppressWarnings("rawtypes")
@@ -34,8 +33,8 @@ public class TaskSchedulerMapperCombinerSubmitter extends TaskSchedulerMapperSub
 	TaskSchedulerMapperCombinerSubmitter(Object blockslocation, boolean mapper,
 			Set<String> mapperclasses, Set<String> combinerclasses,
 			CuratorFramework cf, List<String> containers,
-			HeartBeatTaskScheduler hbts, ApplicationTask apptask) {
-		super(blockslocation, mapper, mapperclasses, apptask, cf, containers, hbts);
+			ApplicationTask apptask) {
+		super(blockslocation, mapper, mapperclasses, apptask, cf, containers);
 		this.combinerclasses = combinerclasses;
 	}
 

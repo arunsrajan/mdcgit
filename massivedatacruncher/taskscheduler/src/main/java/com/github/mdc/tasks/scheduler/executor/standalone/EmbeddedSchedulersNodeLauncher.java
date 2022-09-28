@@ -3,6 +3,9 @@ package com.github.mdc.tasks.scheduler.executor.standalone;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -24,18 +27,14 @@ import org.apache.zookeeper.server.ServerCnxnFactory;
 import org.slf4j.LoggerFactory;
 
 import com.esotericsoftware.kryo.io.Input;
-import com.esotericsoftware.kryonetty.ServerEndpoint;
-import com.esotericsoftware.kryonetty.network.ReceiveEvent;
-import com.esotericsoftware.kryonetty.network.handler.NetworkHandler;
-import com.esotericsoftware.kryonetty.network.handler.NetworkListener;
 import com.github.mdc.common.ByteBufferPoolDirect;
-import com.github.mdc.common.CacheUtils;
 import com.github.mdc.common.HeartBeat;
 import com.github.mdc.common.HeartBeatStream;
 import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.MDCProperties;
 import com.github.mdc.common.NetworkUtil;
 import com.github.mdc.common.ServerUtils;
+import com.github.mdc.common.StreamDataCruncher;
 import com.github.mdc.common.TaskSchedulerWebServlet;
 import com.github.mdc.common.Utils;
 import com.github.mdc.common.WebResourcesServlet;
@@ -87,7 +86,7 @@ public class EmbeddedSchedulersNodeLauncher {
 		}
 		Runtime.getRuntime().halt(0);
 	}
-	static ServerEndpoint server = null;
+	static Registry server = null;
 	@SuppressWarnings("resource")
 	public static void startContainerLauncher(CountDownLatch cdl) {
 		HeartBeatStream hbss = new HeartBeatStream();
@@ -114,17 +113,17 @@ public class EmbeddedSchedulersNodeLauncher {
 					new ResourcesMetricsServlet(), MDCConstants.FORWARD_SLASH + MDCConstants.DATA
 							+ MDCConstants.FORWARD_SLASH + MDCConstants.ASTERIX);
 			su.start();
-			server = Utils.getServerKryoNetty(port,
-					new NetworkListener() {
-					@NetworkHandler
-		            public void onReceive(ReceiveEvent event) {
+			server = LocateRegistry.createRegistry(port);
+			datacruncher = new StreamDataCruncher() {
+		            public Object postObject(Object object) {
 						try {
-							Object object = event.getObject();
-							var container = new NodeRunner(server, MDCConstants.PROPLOADERCONFIGFOLDER,
+							var container = new NodeRunner(MDCConstants.PROPLOADERCONFIGFOLDER,
 									containerprocesses, hdfs, containeridthreads, containeridports,
-									object, event);
-							Future<Boolean> containerallocated = escontainer.submit(container);
-							log.info("Node Processor processed the {} with status {} ", object, containerallocated.get());
+									object);
+							Future<Object> containerallocated = escontainer.submit(container);
+							Object retobj = containerallocated.get();
+							log.info("Node Processor processed the {} with status {} ", object, retobj);
+							return retobj;
 						} catch (InterruptedException e) {
 							log.warn("Interrupted!", e);
 							// Restore interrupted state...
@@ -132,8 +131,11 @@ public class EmbeddedSchedulersNodeLauncher {
 						} catch (Exception e) {
 							log.error(MDCConstants.EMPTY, e);
 						}
+						return null;
 					}
-				});
+			};
+			stub = (StreamDataCruncher) UnicastRemoteObject.exportObject(datacruncher, 0);
+			server.rebind(MDCConstants.BINDTESTUB, stub);
 			log.debug("NodeLauncher started at port....." + MDCProperties.get().getProperty(MDCConstants.NODE_PORT));
 			log.debug("Adding Shutdown Hook...");
 			Utils.addShutdownHook(() -> {
@@ -153,9 +155,6 @@ public class EmbeddedSchedulersNodeLauncher {
 					if (!Objects.isNull(hdfs)) {
 						hdfs.close();
 					}
-					if (!Objects.isNull(server)) {
-						server.close();
-					}
 					cdl.countDown();
 				} catch (Exception e) {
 					log.debug("", e);
@@ -165,7 +164,8 @@ public class EmbeddedSchedulersNodeLauncher {
 			log.error("Unable to start Node Manager due to ", ex);
 		}
 	}
-
+	static StreamDataCruncher stub = null;
+	static StreamDataCruncher datacruncher = null;
 	public static void startTaskSchedulerStream(CuratorFramework cf, CountDownLatch cdl) throws Exception {
 		var esstream = Executors.newFixedThreadPool(1);
 		var es = Executors.newWorkStealingPool();

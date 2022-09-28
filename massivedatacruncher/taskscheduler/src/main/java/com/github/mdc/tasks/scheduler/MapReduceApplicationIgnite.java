@@ -62,7 +62,6 @@ import com.github.mdc.common.Context;
 import com.github.mdc.common.DataCruncherContext;
 import com.github.mdc.common.HDFSBlockUtils;
 import com.github.mdc.common.HdfsBlockReader;
-import com.github.mdc.common.HeartBeatTaskScheduler;
 import com.github.mdc.common.JobMetrics;
 import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.MDCJobMetrics;
@@ -113,7 +112,6 @@ public class MapReduceApplicationIgnite implements Callable<List<DataCruncherCon
 		this.outputfolder = outputfolder;
 	}
 
-	HeartBeatTaskScheduler hbts;
 	List<MapReduceResult> mrresults = new ArrayList<>();
 	Map<String, ArrayBlockingQueue> containerqueue = new ConcurrentHashMap<>();
 	List<Integer> ports;

@@ -52,7 +52,7 @@ public final class StreamPipelineTaskExecutorMesos extends StreamPipelineTaskExe
 	 * Execute the tasks via run method.
 	 */
 	@Override
-	public void run() {
+	public Boolean call() {
 
 		log.debug("Entered MassiveDataStreamTaskExecutorMesos.run");
 		var configuration = new Configuration();
@@ -90,6 +90,7 @@ public final class StreamPipelineTaskExecutorMesos extends StreamPipelineTaskExe
 			driver.sendStatusUpdate(status);
 		}
 		log.debug("Exiting MassiveDataStreamTaskExecutorMesos.run");
+		return completed;
 	}
 
 

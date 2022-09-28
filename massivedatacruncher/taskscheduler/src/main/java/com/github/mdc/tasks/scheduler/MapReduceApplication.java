@@ -16,6 +16,7 @@
 package com.github.mdc.tasks.scheduler;
 
 import java.beans.PropertyChangeListener;
+import java.net.Socket;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -75,7 +76,6 @@ import com.github.mdc.common.DestroyContainers;
 import com.github.mdc.common.Dummy;
 import com.github.mdc.common.HDFSBlockUtils;
 import com.github.mdc.common.HeartBeat;
-import com.github.mdc.common.HeartBeatTaskScheduler;
 import com.github.mdc.common.JobApp;
 import com.github.mdc.common.JobMetrics;
 import com.github.mdc.common.LaunchContainers;
@@ -135,7 +135,6 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 		this.outputfolder = outputfolder;
 	}
 
-	HeartBeatTaskScheduler hbts;
 
 	Map<String, ArrayBlockingQueue> containerqueue = new ConcurrentHashMap<>();
 	List<Integer> ports;
@@ -516,9 +515,7 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 			while (index < ports.size()) {
 					containers.add(tehost+MDCConstants.UNDERSCORE+ports.get(index));
 					while (true) {
-						try {
-							var client = Utils.getClientKryoNetty(tehost, ports.get(index), null);
-							client.send(new Dummy());
+						try (Socket sock = new Socket(tehost, ports.get(index))) {
 							break;
 						} catch (Exception ex) {
 							Thread.sleep(1000);
@@ -531,7 +528,7 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 					jobapp.setContainerid(lc.getContainerid());
 					jobapp.setJobappid(appid);
 					jobapp.setJobtype(JobApp.JOBAPP.MR);
-					Utils.writeObject(tehost + MDCConstants.UNDERSCORE + ports.get(index), jobapp);
+					Utils.getResultObjectByInput(tehost + MDCConstants.UNDERSCORE + ports.get(index), jobapp);
 					index++;
 			}
 		}
@@ -562,13 +559,6 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 			var applicationid = MDCConstants.MDCAPPLICATION + MDCConstants.HYPHEN + Utils.getUniqueAppID();
 			jm.setJobid(applicationid);
 			MDCJobMetrics.put(jm);
-			hbts = new HeartBeatTaskScheduler();
-			hbts.init(Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULER_RESCHEDULEDELAY)), 0,
-					NetworkUtil.getNetworkAddress(MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULER_HOST)),
-					Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULER_INITIALDELAY)),
-					Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULER_PINGDELAY)), MDCConstants.EMPTY,
-					applicationid, MDCConstants.EMPTY);
-			hbts.start();
 			batchsize = Integer.parseInt(jobconf.getBatchsize());
 			numreducers = Integer.parseInt(jobconf.getNumofreducers());
 			var configuration = new Configuration();
@@ -651,7 +641,7 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 					apptask.setApplicationid(applicationid);
 					apptask.setTaskid(taskid);
 					var mdtstm = (TaskSchedulerMapperCombinerSubmitter) getMassiveDataTaskSchedulerThreadMapperCombiner(
-							mapclznames, hbts, combiner, bl, apptask);
+							mapclznames, combiner, bl, apptask);
 					if (containermappercombinermap.get(mdtstm.getHostPort()) == null) {
 						containermappercombinermap.put(mdtstm.getHostPort(), new ArrayList<>());
 					}
@@ -662,7 +652,6 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 
 			}
 			log.debug("Total MapReduce Tasks: " + mrtaskcount);
-			hbts.getHbo().start();
 			var dccmapphases = new ArrayList<DataCruncherContext>();
 			var completed = false;
 			var numexecute = 0;
@@ -701,7 +690,6 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 						log.info(MDCConstants.EMPTY, ex);
 					}
 				};
-				hbts.getHbo().addPropertyChangeListener(pcl);
 				ExecutionResults<DefaultDexecutor, List<ExecutionResult<TaskSchedulerMapperCombinerSubmitter, Boolean>>> execresults = executor.execute(ExecutionConfig.NON_TERMINATING);
 				List<ExecutionResult<DefaultDexecutor, List<ExecutionResult<TaskSchedulerMapperCombinerSubmitter, Boolean>>>> errorresults =  execresults.getAll();
 				completed = true;
@@ -727,8 +715,6 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 						Utils.writeKryoOutput(kryo, jobconf.getOutput(), exec.getId().apptask.getApperrormessage());
 					});
 				}
-				hbts.getHbo().clearQueue();
-				hbts.getHbo().removePropertyChangeListeners();
 				numexecute++;
 			}
 			if (!Objects.isNull(jobconf.getOutput())) {
@@ -766,7 +752,6 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 				var taskid = MDCConstants.TASK + MDCConstants.HYPHEN + mrtaskcount;
 				var mdtstr = new TaskSchedulerReducerSubmitter(
 						currentexecutor, rv, applicationid, taskid, redcount, cf, containers);
-				hbts.apptaskmdtstrmap.put(applicationid + taskid, mdtstr);
 
 				log.debug("Reducer: Submitting " + mrtaskcount + " App And Task:"
 						+ applicationid + taskid + rv.getTuples());
@@ -829,11 +814,6 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 		} finally {
 			try {
 				destroyContainers(containerid);
-				if (!Objects.isNull(hbts)) {
-					hbts.getHbo().stop();
-					hbts.stop();
-					hbts.destroy();
-				}
 				if (!Objects.isNull(hbs)) {
 					hbs.stop();
 					hbs.destroy();
@@ -957,7 +937,6 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 								}
 							}
 						};
-						hbts.getHbo().addPropertyChangeListener(reducercompleteobserver);
 						submitReducer(tsrs);
 
 						log.debug("Waiting for the Reducer to complete------------");
@@ -966,7 +945,6 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 									"Waiting for the Reducer to complete------------");
 						}
 						cdlreducercomplete.await();
-						hbts.getHbo().removePropertyChangeListener(reducercompleteobserver);
 						semaphorereducerresult.release();
 					} catch (Exception ex) {
 						log.error(MDCConstants.EMPTY, ex);
@@ -1013,7 +991,6 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 				public Boolean execute() {
 					try {
 						semaphorebatch.acquire();
-						hbts.apptaskmdtstmmap.put(mdtstmc.apptask.getApplicationid() + mdtstmc.apptask.getTaskid(), mdtstmc);
 						log.info("Submitting to host " + mdtstmc.getHostPort() + " " + mdtstmc.apptask.getApplicationid()
 								+ MDCConstants.HYPHEN + mdtstmc.apptask.getTaskid());
 						cdls.put(mdtstmc.apptask.getApplicationid()
@@ -1037,7 +1014,6 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 												+ mdtstmc.apptask.getTaskid());
 										apptimer.cancel();
 										apptimer.purge();
-										hbts.pingOnce(mdtstmc.apptask, ApplicationTask.TaskStatus.FAILED, ApplicationTask.TaskType.MAPPERCOMBINER, MDCConstants.TSEXCEEDEDEXECUTIONCOUNT);
 									}
 								} catch (Exception ex) {
 									log.error(MDCConstants.EMPTY, ex);
@@ -1162,7 +1138,7 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 		var dc = new DestroyContainers();
 		for (var node : nodes) {
 			dc.setContainerid(containerid);
-			Utils.writeObject(node, dc);
+			Utils.getResultObjectByInput(node, dc);
 			Resources allocresources = MDCNodesResources.get().get(node);
 			var crs = nodecrsmap.get(node);
 			for(ContainerResources cr: crs) {
@@ -1176,14 +1152,12 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 	}
 
 	public TaskSchedulerMapperCombinerSubmitter getMassiveDataTaskSchedulerThreadMapperCombiner(
-			Set<String> mapclz, HeartBeatTaskScheduler hbts,
-			Set<String> combiners, BlocksLocation blockslocation, ApplicationTask apptask) throws Exception {
+			Set<String> mapclz,Set<String> combiners, BlocksLocation blockslocation, ApplicationTask apptask) throws Exception {
 		log.debug("Block To Read :" + blockslocation);
 		var mdtstmc = new TaskSchedulerMapperCombinerSubmitter(
 				blockslocation, true, new LinkedHashSet<>(mapclz), combiners,
-				cf, containers, hbts, apptask);
+				cf, containers, apptask);
 		apptask.setHp(blockslocation.getExecutorhp());
-		hbts.apptaskmdtstmmap.put(apptask.getApplicationid() + apptask.getTaskid(), mdtstmc);
 		blocklocationindex++;
 		return mdtstmc;
 	}

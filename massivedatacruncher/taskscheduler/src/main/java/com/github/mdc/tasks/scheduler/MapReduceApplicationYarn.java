@@ -48,7 +48,6 @@ import com.github.mdc.common.BlocksLocation;
 import com.github.mdc.common.DataCruncherContext;
 import com.github.mdc.common.HDFSBlockUtils;
 import com.github.mdc.common.HeartBeat;
-import com.github.mdc.common.HeartBeatTaskScheduler;
 import com.github.mdc.common.JobMetrics;
 import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.MDCJobMetrics;
@@ -94,7 +93,6 @@ public class MapReduceApplicationYarn implements Callable<List<DataCruncherConte
 		this.outputfolder = outputfolder;
 	}
 
-	HeartBeatTaskScheduler hbts;
 
 	Map<String, ArrayBlockingQueue> containerqueue = new ConcurrentHashMap<>();
 	List<Integer> ports;

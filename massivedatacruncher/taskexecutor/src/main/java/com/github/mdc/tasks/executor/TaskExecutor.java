@@ -15,7 +15,6 @@
  */
 package com.github.mdc.tasks.executor;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.OutputStream;
 import java.net.URI;
@@ -24,7 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Queue;
-import java.util.Set;
+import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -37,8 +36,6 @@ import org.ehcache.Cache;
 import org.h2.util.IOUtils;
 
 import com.esotericsoftware.kryonetty.ServerEndpoint;
-import com.esotericsoftware.kryonetty.network.ReceiveEvent;
-import com.github.mdc.common.ApplicationTask.TaskStatus;
 import com.github.mdc.common.BlocksLocation;
 import com.github.mdc.common.ByteBufferInputStream;
 import com.github.mdc.common.ByteBufferOutputStream;
@@ -48,8 +45,6 @@ import com.github.mdc.common.FileSystemSupport;
 import com.github.mdc.common.FreeResourcesCompletedJob;
 import com.github.mdc.common.HdfsBlockReader;
 import com.github.mdc.common.HeartBeatStream;
-import com.github.mdc.common.HeartBeatTaskScheduler;
-import com.github.mdc.common.HeartBeatTaskSchedulerStream;
 import com.github.mdc.common.JobStage;
 import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.MDCConstants.STORAGE;
@@ -67,7 +62,7 @@ import com.github.mdc.stream.executors.StreamPipelineTaskExecutorInMemory;
 import com.github.mdc.stream.executors.StreamPipelineTaskExecutorInMemoryDisk;
 import com.github.mdc.stream.executors.StreamPipelineTaskExecutorJGroups;
 
-public class TaskExecutor implements Runnable {
+public class TaskExecutor implements Callable {
 	private static Logger log = Logger.getLogger(TaskExecutor.class);
 	ServerEndpoint s;
 	int port;
@@ -79,21 +74,16 @@ public class TaskExecutor implements Runnable {
 	Object deserobj;
 	Map<String, Object> jobstageexecutormap;
 	Map<String, Map<String, Object>> jobidstageidexecutormap;
-	Map<String, HeartBeatTaskScheduler> hbtsappid = new ConcurrentHashMap<>();
-	Map<String, HeartBeatTaskSchedulerStream> hbtssjobid = new ConcurrentHashMap<>();
 	Map<String, HeartBeatStream> containeridhbss = new ConcurrentHashMap<>();
 	Map<String, JobStage> jobidstageidjobstagemap;
 	Queue<Object> taskqueue;
-	ReceiveEvent event;
 	@SuppressWarnings({"rawtypes"})
-	public TaskExecutor(ServerEndpoint s, ClassLoader cl, int port, ExecutorService es, Configuration configuration,
+	public TaskExecutor(ClassLoader cl, int port, ExecutorService es, Configuration configuration,
 			Map<String, Object> apptaskexecutormap, Map<String, Object> jobstageexecutormap,
 			ConcurrentMap<String, OutputStream> resultstream, Cache inmemorycache, Object deserobj,
-			Map<String, HeartBeatTaskScheduler> hbtsappid, Map<String, HeartBeatTaskSchedulerStream> hbtssjobid,
 			Map<String, HeartBeatStream> containeridhbss,
 			Map<String, Map<String, Object>> jobidstageidexecutormap, Queue<Object> taskqueue,
-			Map<String, JobStage> jobidstageidjobstagemap, ReceiveEvent event) {
-		this.s = s;
+			Map<String, JobStage> jobidstageidjobstagemap) {
 		this.cl = cl;
 		this.port = port;
 		this.es = es;
@@ -103,39 +93,34 @@ public class TaskExecutor implements Runnable {
 		this.inmemorycache = inmemorycache;
 		this.jobstageexecutormap = jobstageexecutormap;
 		this.deserobj = deserobj;
-		this.hbtsappid = hbtsappid;
-		this.hbtssjobid = hbtssjobid;
 		this.containeridhbss = containeridhbss;
 		this.jobidstageidexecutormap = jobidstageidexecutormap;
 		this.taskqueue = taskqueue;
 		this.jobidstageidjobstagemap = jobidstageidjobstagemap;
-		this.event = event;
 	}
 
 	ClassLoader cl;
 
 	@SuppressWarnings({"unchecked", "rawtypes"})
-	public void run() {
+	public Object call() {
 		log.debug("Started the run------------------------------------------------------");
 		try {
 			if (deserobj instanceof JobStage jobstage) {
 				log.info("Received Job Stage: " + jobstage);
 				jobidstageidjobstagemap.put(jobstage.getJobid() + jobstage.getStageid(), jobstage);
+				return "Received Job Stage: " + jobstage;
 			} else if (deserobj instanceof Task task) {
 				log.info("Received Task: " + task);
-				var taskexecutor = jobstageexecutormap.get(task.jobid + task.stageid + task.taskid);
-				var hbtss = hbtssjobid.get(task.jobid);
-				var mdste = (StreamPipelineTaskExecutor) taskexecutor;
-				if (taskexecutor == null || mdste.isCompleted() && task.taskstatus == Task.TaskStatus.FAILED) {
+				var taskexecutor = jobstageexecutormap.get(task.jobid + task.stageid + task.taskid);				var spte = (StreamPipelineTaskExecutor) taskexecutor;
+				if (taskexecutor == null || spte.isCompleted() && task.taskstatus == Task.TaskStatus.FAILED) {
 					var key = task.jobid + task.stageid;
-					mdste = task.storage == STORAGE.INMEMORY_DISK ? new StreamPipelineTaskExecutorInMemoryDisk(jobidstageidjobstagemap.get(key), resultstream,
-							inmemorycache, hbtss) : task.storage == STORAGE.INMEMORY ? new StreamPipelineTaskExecutorInMemory(jobidstageidjobstagemap.get(key),
+					spte = task.storage == STORAGE.INMEMORY_DISK ? new StreamPipelineTaskExecutorInMemoryDisk(jobidstageidjobstagemap.get(key), resultstream,
+							inmemorycache) : task.storage == STORAGE.INMEMORY ? new StreamPipelineTaskExecutorInMemory(jobidstageidjobstagemap.get(key),
 							resultstream, inmemorycache) : new StreamPipelineTaskExecutor(jobidstageidjobstagemap.get(key), inmemorycache);
-					mdste.setTask(task);
-					mdste.setHbtss(hbtss);
-					mdste.setExecutor(es);
+					spte.setTask(task);
+					spte.setExecutor(es);
 					jobstageexecutormap.remove(key + task.taskid);
-					jobstageexecutormap.put(key + task.taskid, mdste);
+					jobstageexecutormap.put(key + task.taskid, spte);
 					Map<String, Object> stageidexecutormap;
 					if (Objects.isNull(jobidstageidexecutormap.get(task.jobid))) {
 						stageidexecutormap = new ConcurrentHashMap<>();
@@ -143,26 +128,23 @@ public class TaskExecutor implements Runnable {
 					} else {
 						stageidexecutormap = (Map<String, Object>) jobidstageidexecutormap.get(task.jobid);
 					}
-					stageidexecutormap.put(task.stageid, mdste);
-					CompletableFuture.runAsync(mdste, es);
+					stageidexecutormap.put(task.stageid, spte);
 					log.info("Submitted Task for execution: " + deserobj);
-				} else if (mdste.isCompleted()) {
-					hbtss.setTimetakenseconds(mdste.getHbtss().getTimetakenseconds());
-					hbtss.pingOnce(task, Task.TaskStatus.COMPLETED, new Long[]{mdste.starttime, mdste.endtime}, mdste.getHbtss().getTimetakenseconds(), null);
+					return spte.call();					
 				}
 			} else if (deserobj instanceof TasksGraphExecutor stagesgraph) {
 				int numoftasks = stagesgraph.getTasks().size();
 				var key = stagesgraph.getTasks().get(numoftasks - 1).jobid + stagesgraph.getTasks().get(numoftasks - 1).stageid + stagesgraph.getTasks().get(numoftasks - 1).taskid;
 				var taskexecutor = jobstageexecutormap.get(key);
-				var mdste = (StreamPipelineTaskExecutorJGroups) taskexecutor;
+				var sptej = (StreamPipelineTaskExecutorJGroups) taskexecutor;
 				if (taskexecutor == null) {
-					mdste = new StreamPipelineTaskExecutorJGroups(jobidstageidjobstagemap, stagesgraph.getTasks(),
+					sptej = new StreamPipelineTaskExecutorJGroups(jobidstageidjobstagemap, stagesgraph.getTasks(),
 							port, inmemorycache);
-					mdste.setExecutor(es);
+					sptej.setExecutor(es);
 					for (Task task :stagesgraph.getTasks()) {
-						jobstageexecutormap.put(task.jobid + task.stageid + task.taskid, mdste);
+						jobstageexecutormap.put(task.jobid + task.stageid + task.taskid, sptej);
 					}
-					CompletableFuture.runAsync(mdste, es);
+					sptej.call();
 				}
 			} else if (deserobj instanceof CloseStagesGraphExecutor closestagesgraph) {
 				var key = closestagesgraph.getTasks().get(0).jobid + closestagesgraph.getTasks().get(0).stageid + closestagesgraph.getTasks().get(0).taskid;
@@ -187,7 +169,7 @@ public class TaskExecutor implements Runnable {
 							jobtmpdir.delete();
 						}
 					}
-					s.send(event.getCtx(), true);
+					return true;
 				}
 			} else if (deserobj instanceof FreeResourcesCompletedJob cce) {
 				var jsem = jobidstageidexecutormap.remove(cce.getJobid());
@@ -198,18 +180,6 @@ public class TaskExecutor implements Runnable {
 						jobstageexecutormap.remove(cce.getJobid() + key);
 						log.info("Removed stages: " + cce.getJobid() + key);
 					}
-				}
-				var hbtss = hbtssjobid.remove(cce.getJobid());
-				if (!Objects.isNull(hbtss)) {
-					log.info("Hearbeat task scheduler stream closing....: " + hbtss);
-					hbtss.close();
-					log.info("Hearbeat task scheduler stream closed: " + hbtss);
-				}
-				var hbss = containeridhbss.get(cce.getContainerid());
-				if (!Objects.isNull(hbss)) {
-					log.info("Hearbeat closing....: " + hbtss);
-					hbss.close();
-					log.info("Hearbeat closed: " + hbtss);
 				}
 			} else if (deserobj instanceof RemoteDataFetch rdf) {
 				log.info("Entering RemoteDataFetch: " + deserobj);
@@ -233,13 +203,13 @@ public class TaskExecutor implements Runnable {
 								rdf.setData((byte[]) is.readAllBytes());
 							}
 						}
-						s.send(event.getCtx(), rdf);
+						return rdf;
 					}
 				}
 				else if (rdf.getMode().equals(MDCConstants.JGROUPS)) {
 					try (var is = RemoteDataFetcher.readIntermediatePhaseOutputFromFS(rdf.getJobid(), rdf.getTaskid());) {
 						rdf.setData((byte[]) is.readAllBytes());
-						s.send(event.getCtx(), rdf);
+						return rdf;
 					}
 				} else {
 					if (taskexecutor != null) {
@@ -247,7 +217,7 @@ public class TaskExecutor implements Runnable {
 								.readIntermediatePhaseOutputFromFS(rdf.getJobid(),
 										mdstde.getIntermediateDataRDF(rdf.getTaskid()));) {
 							rdf.setData((byte[]) is.readAllBytes());
-							s.send(event.getCtx(), rdf);
+							return rdf;
 						}
 					}
 				}
@@ -262,36 +232,24 @@ public class TaskExecutor implements Runnable {
 					var taskexecutor = apptaskexecutormap.get(apptaskid);
 					if (object instanceof BlocksLocation blockslocation) {
 						var mdtemc = (TaskExecutorMapperCombiner) taskexecutor;
-						if (taskexecutor == null || mdtemc.getHbts().taskstatus == TaskStatus.FAILED) {
-							if (taskexecutor != null) {
-								mdtemc.getHbts().stop();
-								mdtemc.getHbts().destroy();
-								apptaskexecutormap.remove(apptaskid);
-							}
+						if (taskexecutor == null) {
 							try (var hdfs = FileSystem.newInstance(
 									new URI(MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL, MDCConstants.HDFSNAMENODEURL)),
 									configuration)) {
 								log.debug("Application Submitted:" + applicationid + "-" + taskid);
 
-								var hbts = hbtsappid.get(applicationid);
 								mdtemc = new TaskExecutorMapperCombiner(blockslocation,
 										HdfsBlockReader.getBlockDataInputStream(blockslocation, hdfs), applicationid, taskid, cl,
-										port, hbts);
+										port);
 							}
 							apptaskexecutormap.put(apptaskid, mdtemc);
-							CompletableFuture.runAsync(mdtemc, es);
+							return mdtemc.call();
 						}
 					} else if (object instanceof ReducerValues rv) {
 						var mdter = (TaskExecutorReducer) taskexecutor;
-						if (taskexecutor == null || mdter.getHbts().taskstatus == TaskStatus.FAILED) {
-							if (taskexecutor != null) {
-								mdter.getHbts().stop();
-								mdter.getHbts().destroy();
-								apptaskexecutormap.remove(apptaskid);
-							}
-							var hbts = hbtsappid.get(applicationid);
+						if (taskexecutor == null) {
 							mdter = new TaskExecutorReducer(rv, applicationid, taskid, cl, port,
-									hbts, apptaskexecutormap);
+									apptaskexecutormap);
 							apptaskexecutormap.put(apptaskid, mdter);
 							log.debug("Reducer submission:" + apptaskid);
 							CompletableFuture.runAsync(mdter, es);
@@ -299,18 +257,14 @@ public class TaskExecutor implements Runnable {
 					} else if (object instanceof RetrieveData) {
 						Context ctx = null;
 						if (taskexecutor instanceof TaskExecutorReducer ter) {
-							ter.getHbts().stop();
-							ter.getHbts().destroy();
 							log.info("Obtaining reducer Context: " + apptaskid);
 							ctx = ter.ctx;
 						} else if (taskexecutor instanceof TaskExecutorMapperCombiner temc) {
-							temc.getHbts().stop();
-							temc.getHbts().destroy();
 							log.info("Obtaining reducer Context: " + apptaskid);
 							ctx = temc.ctx;
-						}
-						s.send(event.getCtx(), ctx);
+						}						
 						apptaskexecutormap.remove(apptaskid);
+						return ctx;
 					} else if (object instanceof RetrieveKeys rk) {
 						var mdtemc = (TaskExecutorMapperCombiner) taskexecutor;
 						var keys = mdtemc.ctx.keys();
@@ -318,16 +272,15 @@ public class TaskExecutor implements Runnable {
 						rk.applicationid = applicationid;
 						rk.taskid = taskid;
 						rk.response = true;
-						s.send(event.getCtx(), rk);
-						mdtemc.getHbts().stop();
-						mdtemc.getHbts().destroy();
 						log.debug("destroying MapperCombiner HeartBeat: " + apptaskid);
+						return rk;
 					}
 				}
 			}
 		} catch (Exception ex) {
 			log.error("Job Execution Problem", ex);
 		}
+		return MDCConstants.EMPTY;
 
 	}
 }

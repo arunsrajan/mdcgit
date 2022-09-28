@@ -4,9 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.PrintWriter;
 import java.net.URI;
-import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentMap;
 
@@ -14,7 +12,6 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.log4j.Logger;
 import org.ehcache.Cache;
-import org.xerial.snappy.SnappyInputStream;
 
 import com.github.mdc.common.ByteBufferInputStream;
 import com.github.mdc.common.ByteBufferOutputStream;
@@ -125,7 +122,7 @@ public sealed class StreamPipelineTaskExecutorInMemory extends StreamPipelineTas
 
 
 	@Override
-	public void run() {
+	public Boolean call() {
 		starttime = System.currentTimeMillis();
 		log.info("Entered MassiveDataStreamTaskExecutorInMemory.call for task "+task);
 		String stageTasks = "";
@@ -154,32 +151,13 @@ public sealed class StreamPipelineTaskExecutorInMemory extends StreamPipelineTas
 					}
 				}
 			}
-			if(!Objects.isNull(hbtss)) {
-				endtime = System.currentTimeMillis();
-				hbtss.pingOnce(task, Task.TaskStatus.RUNNING, new Long[]{starttime,endtime}, timetaken, null);
-			}
 			timetaken = computeTasks(task, hdfs);
-			if(!Objects.isNull(hbtss)) {
-				endtime = System.currentTimeMillis();
-				hbtss.pingOnce(task, Task.TaskStatus.COMPLETED, new Long[]{starttime,endtime}, timetaken, null);
-			}
 			log.info("Completed Task: " + task);
+			completed = true;
 		} catch (Exception ex) {
 			log.error("Failed Stage " + stageTasks, ex);
-			completed = true;
+			completed = false;
 			log.error("Failed Stage: " + task.stageid, ex);
-			if(!Objects.isNull(hbtss)) {
-				try {
-					var baos = new ByteArrayOutputStream();
-					var failuremessage = new PrintWriter(baos, true, StandardCharsets.UTF_8);
-					ex.printStackTrace(failuremessage);
-					endtime = System.currentTimeMillis();
-					hbtss.pingOnce(task, Task.TaskStatus.FAILED,new Long[]{starttime,endtime}, 0.0,
-							new String(baos.toByteArray()));
-				} catch (Exception e) {
-					log.error("Message Send Failed for Task Failed: ", e);
-				}
-			}
 		} finally {
 			if(!Objects.isNull(hdfs)) {
 				try {
@@ -190,6 +168,7 @@ public sealed class StreamPipelineTaskExecutorInMemory extends StreamPipelineTas
 			}
 		}
 		log.debug("Exiting MassiveDataStreamTaskExecutorInMemory.call");
+		return completed;
 	}
 	
 }

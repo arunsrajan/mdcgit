@@ -28,7 +28,7 @@ import org.jgroups.View;
  * The Heartbeat server for messaging between task scheduler and
  * task executors implemented using jgroups.
  */
-public sealed class HeartBeatStream implements HeartBeatCloseable permits HeartBeatTaskSchedulerStream {
+public final class HeartBeatStream implements HeartBeatCloseable {
 	JChannel channel;
 	int serverport;
 	int rescheduledelay = 5000;

@@ -22,17 +22,15 @@ import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
 
 import org.apache.log4j.Logger;
 
-import com.github.mdc.common.ApplicationTask.TaskStatus;
-import com.github.mdc.common.ApplicationTask.TaskType;
 import com.github.mdc.common.BlocksLocation;
 import com.github.mdc.common.Context;
-import com.github.mdc.common.HeartBeatTaskScheduler;
 
-public class TaskExecutorMapperCombiner implements Runnable {
+public class TaskExecutorMapperCombiner implements Callable {
 	static Logger log = Logger.getLogger(TaskExecutorMapperCombiner.class);
 	BlocksLocation blockslocation;
 	@SuppressWarnings("rawtypes")
@@ -42,7 +40,6 @@ public class TaskExecutorMapperCombiner implements Runnable {
 	@SuppressWarnings("rawtypes")
 	Context ctx;
 	File file;
-	HeartBeatTaskScheduler hbts;
 	String applicationid;
 	String taskid;
 	InputStream datastream;
@@ -50,8 +47,7 @@ public class TaskExecutorMapperCombiner implements Runnable {
 
 	@SuppressWarnings({"rawtypes"})
 	public TaskExecutorMapperCombiner(BlocksLocation blockslocation, InputStream datastream, String applicationid, String taskid,
-									  ClassLoader cl, int port,
-									  HeartBeatTaskScheduler hbts) throws Exception {
+									  ClassLoader cl, int port) throws Exception {
 		this.blockslocation = blockslocation;
 		this.datastream = datastream;
 		this.port = port;
@@ -75,28 +71,22 @@ public class TaskExecutorMapperCombiner implements Runnable {
 		}
 		this.applicationid = applicationid;
 		this.taskid = taskid;
-		this.hbts = hbts;
 	}
 
-	@Override
-	public void run() {
+	public Context call() {
 		var es = Executors.newSingleThreadExecutor();
 
 		try {
-			hbts.pingOnce(taskid, TaskStatus.SUBMITTED, TaskType.MAPPERCOMBINER, null);
 
 			var mdcmc = new MapperCombinerExecutor(blockslocation, datastream, cm, cc);
-			hbts.pingOnce(taskid, TaskStatus.RUNNING, TaskType.MAPPERCOMBINER, null);
 			var fc = es.submit(mdcmc);
 			ctx = fc.get();
-			
-			hbts.pingOnce(taskid, TaskStatus.COMPLETED, TaskType.MAPPERCOMBINER, null);
+			return ctx;
 		} catch (Throwable ex) {
 			try {
 				var baos = new ByteArrayOutputStream();
 				var failuremessage = new PrintWriter(baos, true, StandardCharsets.UTF_8);
 				ex.printStackTrace(failuremessage);
-				hbts.pingOnce(taskid, TaskStatus.FAILED, TaskType.MAPPERCOMBINER, new String(baos.toByteArray()));
 			} catch (Exception e) {
 				log.info("Exception in Sending message to Failed Task: " + blockslocation, ex);
 			}
@@ -106,10 +96,6 @@ public class TaskExecutorMapperCombiner implements Runnable {
 				es.shutdown();
 			}
 		}
+		return null;
 	}
-
-	public HeartBeatTaskScheduler getHbts() {
-		return hbts;
-	}
-
 }

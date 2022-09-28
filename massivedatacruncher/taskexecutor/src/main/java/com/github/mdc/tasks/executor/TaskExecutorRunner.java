@@ -17,22 +17,24 @@ package com.github.mdc.tasks.executor;
 
 import java.io.OutputStream;
 import java.net.URL;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Queue;
-import java.util.concurrent.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.Future;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
-import com.esotericsoftware.kryo.Kryo;
-import com.esotericsoftware.kryo.serializers.CompatibleFieldSerializer;
-import com.esotericsoftware.kryonetty.ServerEndpoint;
-import com.esotericsoftware.kryonetty.network.ConnectEvent;
-import com.esotericsoftware.kryonetty.network.DisconnectEvent;
-import com.esotericsoftware.kryonetty.network.ReceiveEvent;
-import com.esotericsoftware.kryonetty.network.handler.NetworkHandler;
-import com.esotericsoftware.kryonetty.network.handler.NetworkListener;
-import com.github.mdc.common.*;
-import io.netty.channel.ChannelHandlerContext;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.state.ConnectionState;
@@ -41,10 +43,25 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FsUrlStreamHandlerFactory;
 import org.slf4j.LoggerFactory;
 
+import com.github.mdc.common.ByteBufferPoolDirect;
+import com.github.mdc.common.CacheUtils;
+import com.github.mdc.common.HeartBeatStream;
+import com.github.mdc.common.JobApp;
+import com.github.mdc.common.JobStage;
+import com.github.mdc.common.LoadJar;
+import com.github.mdc.common.MDCCache;
+import com.github.mdc.common.MDCConstants;
+import com.github.mdc.common.MDCMapReducePhaseClassLoader;
+import com.github.mdc.common.MDCProperties;
+import com.github.mdc.common.NetworkUtil;
+import com.github.mdc.common.ServerUtils;
+import com.github.mdc.common.StreamDataCruncher;
+import com.github.mdc.common.TaskExecutorShutdown;
+import com.github.mdc.common.Utils;
+import com.github.mdc.common.WebResourcesServlet;
+import com.github.mdc.common.ZookeeperOperations;
 import com.github.mdc.tasks.executor.web.NodeWebServlet;
 import com.github.mdc.tasks.executor.web.ResourcesMetricsServlet;
-
-import static java.util.Objects.nonNull;
 
 public class TaskExecutorRunner implements TaskExecutorRunnerMBean {
 
@@ -52,8 +69,6 @@ public class TaskExecutorRunner implements TaskExecutorRunnerMBean {
 	Map<String, Object> apptaskexecutormap = new ConcurrentHashMap<>();
 	Map<String, Object> jobstageexecutormap = new ConcurrentHashMap<>();
 	ConcurrentMap<String, OutputStream> resultstream = new ConcurrentHashMap<>();
-	Map<String, HeartBeatTaskScheduler> hbtsappid = new ConcurrentHashMap<>();
-	Map<String, HeartBeatTaskSchedulerStream> hbtssjobid = new ConcurrentHashMap<>();
 	Map<String, HeartBeatStream> containeridhbss = new ConcurrentHashMap<>();
 	Map<String, Map<String, Object>> jobidstageidexecutormap = new ConcurrentHashMap<>();
 	Map<String, JobStage> jobidstageidjobstagemap = new ConcurrentHashMap<>();
@@ -99,9 +114,6 @@ public class TaskExecutorRunner implements TaskExecutorRunnerMBean {
 		log.info("Adding Shutdown Hook...");
 		shutdown.await();
 		try {
-			if(nonNull(server)){
-				server.close();
-			}
 			log.info("Stopping and closes all the connections...");
 			mdted.destroy();
 			ByteBufferPoolDirect.destroy();
@@ -146,8 +158,8 @@ public class TaskExecutorRunner implements TaskExecutorRunnerMBean {
 
 	}
 	ClassLoader cl;
-	static ServerEndpoint server = null;
-	@SuppressWarnings({"rawtypes"})
+	static Registry server = null;
+	@SuppressWarnings({})
 	@Override
 	public void start() throws Exception {
 		var launchtaskpool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
@@ -166,24 +178,12 @@ public class TaskExecutorRunner implements TaskExecutorRunnerMBean {
 		cl = TaskExecutorRunner.class.getClassLoader();
 		log.info("Default Class Loader: "+cl);
 
-		server = Utils.getServerKryoNetty(port, new NetworkListener() {
-
-			@NetworkHandler
-			public void onConnect(ConnectEvent event) {
-				ChannelHandlerContext ctx = event.getCtx();
-				log.info("Client: Connected to server: " + ctx.channel().remoteAddress());
-			}
-
-			@NetworkHandler
-			public void onDisconnect(DisconnectEvent event) {
-				ChannelHandlerContext ctx = event.getCtx();
-				log.info("Server: Client disconnected: " + ctx.channel().remoteAddress());
-			}
-
-			@NetworkHandler
-			public void onReceive(ReceiveEvent event) {
+		server = LocateRegistry.createRegistry(port);
+		
+		dataCruncher = new StreamDataCruncher() {
+			public Object postObject(Object deserobj)throws RemoteException{
+		
 				try{
-					Object deserobj =event.getObject();
 					log.info("Deserialized Object: "+deserobj);
 					if(deserobj instanceof TaskExecutorShutdown){
 						shutdown.countDown();
@@ -192,45 +192,8 @@ public class TaskExecutorRunner implements TaskExecutorRunnerMBean {
 						log.info("Loading the Required jars: "+loadjar.getMrjar());
 						cl = MDCMapReducePhaseClassLoader
 									.newInstance(loadjar.getMrjar(), cl);
-						log.info("Loaded the Required jars with Next registration ID: "+server.getKryoSerialization().obtainKryo().getNextRegistrationId());
-						Kryo kryo = server.getKryoSerialization().obtainKryo();
-						kryo.setClassLoader(cl);
-						server.getKryoSerialization().free(kryo);
-						if(nonNull(loadjar.getClasses()) && !loadjar.getClasses().isEmpty()) {
-							int classindex = 1;
-							for(String clz:loadjar.getClasses()) {
-								var main = Class.forName(clz, true, cl);
-								kryo = server.getKryoSerialization().obtainKryo();
-								kryo.register(main, new CompatibleFieldSerializer(kryo, main), 1000 + classindex);
-								classindex++;
-								log.info("Next registration ID: "+kryo.getNextRegistrationId()+" for class "+clz);
-								server.getKryoSerialization().free(kryo);
-							}
-						}
-						server.send(event.getCtx(),  MDCConstants.JARLOADED);
+						return MDCConstants.JARLOADED;
 					} else if (deserobj instanceof JobApp jobapp) {
-						if (jobapp.getJobtype() == JobApp.JOBAPP.MR) {
-							if (!Objects.isNull(jobapp.getJobappid()) && Objects.isNull(hbtsappid.get(jobapp.getJobappid()))) {
-								var hbts = new HeartBeatTaskScheduler();
-								hbts.init(0,
-										port,
-										NetworkUtil.getNetworkAddress(MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_HOST)),
-										0,
-										Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_PINGDELAY)), "",
-										jobapp.getJobappid(), "");
-								hbtsappid.put(jobapp.getJobappid(), hbts);
-							}
-						}	else if (jobapp.getJobtype() == JobApp.JOBAPP.STREAM) {
-							if (!Objects.isNull(jobapp.getJobappid()) && Objects.isNull(hbtssjobid.get(jobapp.getJobappid()))) {
-								var hbtss = new HeartBeatTaskSchedulerStream();
-								hbtss.init(0, Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_PORT)),
-										NetworkUtil.getNetworkAddress(MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_HOST)), 0,
-										Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_PINGDELAY)),
-										MDCConstants.EMPTY,
-										jobapp.getJobappid());
-								hbtssjobid.put(jobapp.getJobappid(), hbtss);
-							}
-						}
 						var containerid = (String) jobapp.getContainerid();
 						if (Objects.isNull(containeridhbss.get(containerid))) {
 							HeartBeatStream hbss = new HeartBeatStream();
@@ -246,11 +209,12 @@ public class TaskExecutorRunner implements TaskExecutorRunnerMBean {
 							containeridhbss.put(containerid, hbss);
 						}
 					} else if (!Objects.isNull(deserobj)) {
-						launchtaskpool.execute(new TaskExecutor(server, cl, port, es, configuration,
+						TaskExecutor taskexecutor = new TaskExecutor(cl, port, es, configuration,
 								apptaskexecutormap, jobstageexecutormap, resultstream, inmemorycache, deserobj,
-								hbtsappid, hbtssjobid, containeridhbss,
+								containeridhbss,
 								jobidstageidexecutormap,
-								taskqueue, jobidstageidjobstagemap, event));
+								taskqueue, jobidstageidjobstagemap);
+						return taskexecutor.call();
 					}
 				} catch (InterruptedException e) {
 					log.warn("Interrupted!", e);
@@ -259,28 +223,16 @@ public class TaskExecutorRunner implements TaskExecutorRunnerMBean {
 				} catch (Exception ex) {
 					log.info(MDCConstants.EMPTY, ex);
 				}
+				return "Unknown Object";
 			}
-		});
+		};
+		stub = (StreamDataCruncher) UnicastRemoteObject.exportObject(dataCruncher, 0);
+		server.rebind(MDCConstants.BINDTESTUB, stub);
 	}
-
+	static StreamDataCruncher stub = null;
+	static StreamDataCruncher dataCruncher = null;
 	@Override
 	public void destroy() throws Exception {
-		hbtsappid.keySet().stream()
-				.filter(key -> !Objects.isNull(hbtsappid.get(key)))
-				.forEach(key -> {
-					try {
-						hbtsappid.remove(key).close();
-					} catch (Exception e2) {
-					}
-				});
-		hbtssjobid.keySet().stream()
-				.filter(key -> !Objects.isNull(hbtssjobid.get(key)))
-				.forEach(key -> {
-					try {
-						hbtssjobid.remove(key).close();
-					} catch (Exception e1) {
-					}
-				});
 		containeridhbss.keySet().stream()
 				.filter(key -> !Objects.isNull(containeridhbss.get(key)))
 				.forEach(key -> {

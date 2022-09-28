@@ -28,7 +28,6 @@ import org.apache.curator.framework.CuratorFramework;
 
 import com.github.mdc.common.ApplicationTask;
 import com.github.mdc.common.BlocksLocation;
-import com.github.mdc.common.HeartBeatTaskScheduler;
 import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.TaskSchedulerMapperSubmitterMBean;
 import com.github.mdc.common.Utils;
@@ -42,18 +41,15 @@ public class TaskSchedulerMapperSubmitter implements TaskSchedulerMapperSubmitte
 	String hostport[];
 	List<String> containers;
 	Boolean iscompleted;
-	HeartBeatTaskScheduler hbts;
 
 	TaskSchedulerMapperSubmitter(Object blockslocation, boolean mapper, Set<String> mapperclasses,
-			ApplicationTask apptask, CuratorFramework cf, List<String> containers,
-			HeartBeatTaskScheduler hbts) {
+			ApplicationTask apptask, CuratorFramework cf, List<String> containers) {
 		this.blockslocation = (BlocksLocation) blockslocation;
 		this.mapper = mapper;
 		this.mapperclasses = mapperclasses;
 		this.apptask = apptask;
 		this.cf = cf;
 		this.containers = containers;
-		this.hbts = hbts;
 	}
 
 	public BlocksLocation initializeobject(Set<String> mapperclasses, Set<String> combinerclasses)
@@ -70,13 +66,12 @@ public class TaskSchedulerMapperSubmitter implements TaskSchedulerMapperSubmitte
 			objects.add(blockslocation);
 			objects.add(apptask.getApplicationid());
 			objects.add(apptask.getTaskid());
-			Utils.writeObject(blockslocation.getExecutorhp(), objects);
+			Utils.getResultObjectByInput(blockslocation.getExecutorhp(), objects);
 		}
 		catch (IOException ex) {
 			var baos = new ByteArrayOutputStream();
 			var failuremessage = new PrintWriter(baos, true, StandardCharsets.UTF_8);
 			ex.printStackTrace(failuremessage);
-			hbts.pingOnce(apptask, ApplicationTask.TaskStatus.FAILED, ApplicationTask.TaskType.MAPPERCOMBINER, new String(baos.toByteArray()));
 			this.iscompleted = false;
 		}
 	}

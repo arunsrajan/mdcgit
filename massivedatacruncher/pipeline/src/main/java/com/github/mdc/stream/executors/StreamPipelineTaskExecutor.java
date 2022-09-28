@@ -26,6 +26,7 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 import java.util.Vector;
+import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.function.IntSupplier;
@@ -58,7 +59,6 @@ import com.github.mdc.common.BlocksLocation;
 import com.github.mdc.common.ByteBufferOutputStream;
 import com.github.mdc.common.FileSystemSupport;
 import com.github.mdc.common.HdfsBlockReader;
-import com.github.mdc.common.HeartBeatTaskSchedulerStream;
 import com.github.mdc.common.JobStage;
 import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.MDCProperties;
@@ -100,9 +100,8 @@ import com.pivovarit.collectors.ParallelCollectors;
  */
 @SuppressWarnings("rawtypes")
 public sealed class StreamPipelineTaskExecutor implements
-		Runnable permits StreamPipelineTaskExecutorInMemory, StreamPipelineTaskExecutorJGroups, StreamPipelineTaskExecutorMesos, StreamPipelineTaskExecutorYarn, StreamPipelineTaskExecutorLocal {
+		Callable<Boolean> permits StreamPipelineTaskExecutorInMemory, StreamPipelineTaskExecutorJGroups, StreamPipelineTaskExecutorMesos, StreamPipelineTaskExecutorYarn, StreamPipelineTaskExecutorLocal {
 	protected JobStage jobstage;
-	protected HeartBeatTaskSchedulerStream hbtss;
 	private static Logger log = Logger.getLogger(StreamPipelineTaskExecutor.class);
 	protected FileSystem hdfs = null;
 	protected boolean completed = false;
@@ -120,14 +119,6 @@ public sealed class StreamPipelineTaskExecutor implements
 
 	public boolean isCompleted() {
 		return completed;
-	}
-
-	public HeartBeatTaskSchedulerStream getHbtss() {
-		return hbtss;
-	}
-
-	public void setHbtss(HeartBeatTaskSchedulerStream hbtss) {
-		this.hbtss = hbtss;
 	}
 
 	public FileSystem getHdfs() {
@@ -1156,7 +1147,7 @@ public sealed class StreamPipelineTaskExecutor implements
 	}
 
 	@Override
-	public void run() {
+	public Boolean call() {
 		starttime = System.currentTimeMillis();
 		log.debug("Entered MassiveDataStreamTaskDExecutor.call");
 		var stageTasks = getStagesTask();
@@ -1190,28 +1181,24 @@ public sealed class StreamPipelineTaskExecutor implements
 				}
 			}
 			endtime = System.currentTimeMillis();
-			hbtss.pingOnce(task, Task.TaskStatus.RUNNING, new Long[] { starttime, endtime }, timetakenseconds, null);
 			timetakenseconds = computeTasks(task, hdfs);
 			log.debug("Completed Stage: " + stagePartition);
 			completed = true;
-			hbtss.setTimetakenseconds(timetakenseconds);
 			endtime = System.currentTimeMillis();
-			hbtss.pingOnce(task, Task.TaskStatus.COMPLETED, new Long[] { starttime, endtime }, timetakenseconds, null);
 		} catch (Throwable ex) {
 			log.error("Failed Stage: " + stagePartition, ex);
-			completed = true;
+			completed = false;
 			log.error("Failed Stage: " + task.stageid, ex);
 			try (var baos = new ByteArrayOutputStream();) {
 				var failuremessage = new PrintWriter(baos, true, StandardCharsets.UTF_8);
 				ex.printStackTrace(failuremessage);
 				endtime = System.currentTimeMillis();
-				hbtss.pingOnce(task, Task.TaskStatus.FAILED, new Long[] { starttime, endtime }, 0.0,
-						new String(baos.toByteArray()));
 			} catch (Exception e) {
 				log.error("Message Send Failed for Task Failed: ", e);
 			}
 		}
 		log.debug("Exiting MassiveDataStreamTaskDExecutor.call");
+		return completed;
 	}
 
 	@SuppressWarnings("unchecked")

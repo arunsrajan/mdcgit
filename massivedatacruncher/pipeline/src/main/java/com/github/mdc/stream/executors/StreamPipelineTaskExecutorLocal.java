@@ -137,7 +137,7 @@ public final class StreamPipelineTaskExecutorLocal extends StreamPipelineTaskExe
 
 
 	@Override
-	public void run() {
+	public Boolean call() {
 		starttime = System.currentTimeMillis();
 		log.debug("Entered MassiveDataStreamTaskExecutorInMemory.call");
 		var stageTasks = getStagesTask();
@@ -163,33 +163,16 @@ public final class StreamPipelineTaskExecutorLocal extends StreamPipelineTaskExe
 					}
 				}
 			}
-			if (!Objects.isNull(hbtss)) {
-				endtime = System.currentTimeMillis();
-				hbtss.pingOnce(task, Task.TaskStatus.RUNNING, new Long[]{starttime,endtime}, timetaken, null);
-			}
 			timetaken = computeTasks(task, hdfs);
-			if (!Objects.isNull(hbtss)) {
-				hbtss.pingOnce(task, Task.TaskStatus.COMPLETED, new Long[]{starttime,endtime}, timetaken, null);
-			}
 			log.debug("Completed Stage " + stageTasks);
+			completed=true;
 		} catch (Exception ex) {
 			log.error("Failed Stage " + stageTasks, ex);
-			completed = true;
+			completed = false;
 			log.error("Failed Stage: " + task.stageid, ex);
-			if (!Objects.isNull(hbtss)) {
-				try {
-					var baos = new ByteArrayOutputStream();
-					var failuremessage = new PrintWriter(baos, true, StandardCharsets.UTF_8);
-					ex.printStackTrace(failuremessage);
-					endtime = System.currentTimeMillis();
-					hbtss.pingOnce(task, Task.TaskStatus.FAILED, new Long[]{starttime,endtime}, 0.0,
-							new String(baos.toByteArray()));
-				} catch (Exception e) {
-					log.error("Message Send Failed for Task Failed: ", e);
-				}
-			}
 		}
 		log.debug("Exiting MassiveDataStreamTaskExecutorInMemory.call");
+		return completed;
 	}
 
 }

@@ -60,17 +60,11 @@ import com.esotericsoftware.kryo.io.Output;
 import com.github.mdc.common.Blocks;
 import com.github.mdc.common.BlocksLocation;
 import com.github.mdc.common.HdfsBlockReader;
-import com.github.mdc.common.HeartBeatTaskSchedulerStream;
 import com.github.mdc.common.JobStage;
 import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.PipelineConstants;
 import com.github.mdc.common.Task;
 import com.github.mdc.common.Utils;
-import com.github.mdc.stream.CsvOptions;
-import com.github.mdc.stream.Json;
-import com.github.mdc.stream.PipelineException;
-import com.github.mdc.stream.PipelineUtils;
-import com.github.mdc.stream.PipelineIntStreamCollect;
 import com.github.mdc.common.functions.CalculateCount;
 import com.github.mdc.common.functions.Coalesce;
 import com.github.mdc.common.functions.CountByKeyFunction;
@@ -87,6 +81,11 @@ import com.github.mdc.common.functions.StandardDeviation;
 import com.github.mdc.common.functions.Sum;
 import com.github.mdc.common.functions.SummaryStatistics;
 import com.github.mdc.common.functions.UnionFunction;
+import com.github.mdc.stream.CsvOptions;
+import com.github.mdc.stream.Json;
+import com.github.mdc.stream.PipelineException;
+import com.github.mdc.stream.PipelineIntStreamCollect;
+import com.github.mdc.stream.PipelineUtils;
 import com.github.mdc.stream.utils.StreamUtils;
 
 /**
@@ -99,7 +98,6 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 
 	private static final long serialVersionUID = -3824414146677196362L;
 	protected JobStage jobstage;
-	protected HeartBeatTaskSchedulerStream hbtss;
 	private static Logger log = Logger.getLogger(StreamPipelineTaskExecutorIgnite.class);
 	protected FileSystem hdfs;
 	protected boolean completed;
@@ -116,14 +114,6 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 
 	public boolean isCompleted() {
 		return completed;
-	}
-
-	public HeartBeatTaskSchedulerStream getHbtss() {
-		return hbtss;
-	}
-
-	public void setHbtss(HeartBeatTaskSchedulerStream hbtss) {
-		this.hbtss = hbtss;
 	}
 
 	public FileSystem getHdfs() {

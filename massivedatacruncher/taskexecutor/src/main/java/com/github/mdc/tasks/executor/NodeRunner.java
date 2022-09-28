@@ -15,9 +15,10 @@
  */
 package com.github.mdc.tasks.executor;
 
+import static java.util.Objects.nonNull;
+
 import java.io.InputStream;
 import java.net.ServerSocket;
-import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,46 +28,50 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import com.esotericsoftware.kryonetty.ServerEndpoint;
-import com.esotericsoftware.kryonetty.network.ReceiveEvent;
-import com.github.mdc.common.*;
 import org.apache.commons.io.IOUtils;
 import org.apache.hadoop.fs.FileSystem;
 import org.jooq.lambda.tuple.Tuple;
 import org.jooq.lambda.tuple.Tuple2;
 import org.slf4j.LoggerFactory;
 
-import static java.util.Objects.nonNull;
+import com.esotericsoftware.kryonetty.ServerEndpoint;
+import com.esotericsoftware.kryonetty.network.ReceiveEvent;
+import com.github.mdc.common.AllocateContainers;
+import com.github.mdc.common.ContainerLauncher;
+import com.github.mdc.common.DestroyContainer;
+import com.github.mdc.common.DestroyContainers;
+import com.github.mdc.common.HDFSBlockUtils;
+import com.github.mdc.common.LaunchContainers;
+import com.github.mdc.common.MDCConstants;
+import com.github.mdc.common.MDCProperties;
+import com.github.mdc.common.SkipToNewLine;
+import com.github.mdc.common.TaskExecutorShutdown;
+import com.github.mdc.common.Utils;
 
-public class NodeRunner implements Callable<Boolean> {
+public class NodeRunner implements Callable<Object> {
 	private static org.slf4j.Logger log = LoggerFactory.getLogger(NodeRunner.class);
-	ServerEndpoint server;
 	String proploaderpath;
 	ConcurrentMap<String, Map<String, Process>> containerprocesses;
 	FileSystem hdfs;
 	ConcurrentMap<String, Map<String, List<Thread>>> containeridcontainerthreads;
 	ConcurrentMap<String, List<Integer>> containeridports;
 	Object receivedobject;
-	ReceiveEvent event;
-	public NodeRunner(ServerEndpoint server, String proploaderpath,
+	public NodeRunner(String proploaderpath,
 			ConcurrentMap<String, Map<String, Process>> containerprocesses, FileSystem hdfs,
 			ConcurrentMap<String, Map<String, List<Thread>>> containeridcontainerthreads,
 			ConcurrentMap<String, List<Integer>> containeridports,
-			Object receivedobject,
-			ReceiveEvent event) {
-		this.server = server;
+			Object receivedobject) {
 		this.proploaderpath = proploaderpath;
 		this.containerprocesses = containerprocesses;
 		this.hdfs = hdfs;
 		this.containeridcontainerthreads = containeridcontainerthreads;
 		this.containeridports = containeridports;
 		this.receivedobject= receivedobject;
-		this.event = event;
 	}
 
 	ClassLoader cl;
 
-	public Boolean call() {
+	public Object call() {
 		try {
 			Object deserobj = receivedobject;
 			if (deserobj instanceof AllocateContainers ac) {
@@ -79,7 +84,7 @@ public class NodeRunner implements Callable<Boolean> {
 					}
 				}
 				containeridports.put(ac.getContainerid(), ports);
-				server.send(event.getCtx(), ports);
+				return ports;
 			} else if (deserobj instanceof LaunchContainers lc) {
 				Map<String, Process> processes = new ConcurrentHashMap<>();
 				Map<String, List<Thread>> threads = new ConcurrentHashMap<>();
@@ -144,7 +149,7 @@ public class NodeRunner implements Callable<Boolean> {
 						});
 				containeridcontainerthreads.put(lc.getContainerid(), threads);
 				containerprocesses.put(lc.getContainerid(), processes);
-				server.send(event.getCtx(), ports);
+				return ports;
 			} else if (deserobj instanceof DestroyContainers dc) {
 				log.debug("Destroying the Containers with id: " + dc.getContainerid());
 				Map<String, Process> processes = containerprocesses.remove(dc.getContainerid());
@@ -193,7 +198,7 @@ public class NodeRunner implements Callable<Boolean> {
 			} else if (deserobj instanceof SkipToNewLine stnl) {
 				long numberofbytesskipped = HDFSBlockUtils.skipBlockToNewLine(hdfs, stnl.lblock, stnl.l,
 						stnl.xrefaddress);
-				server.send(event.getCtx(), numberofbytesskipped);
+				return numberofbytesskipped;
 			}
 			return true;
 		} catch (Exception ex) {
@@ -206,7 +211,7 @@ public class NodeRunner implements Callable<Boolean> {
 		try {
 			TaskExecutorShutdown taskExecutorshutdown = new TaskExecutorShutdown();
 			log.info("Initiated destroying the TaskExecutor process {}",MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_HOST)+MDCConstants.UNDERSCORE+port);
-			Utils.writeObject(MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_HOST)+MDCConstants.UNDERSCORE+port, taskExecutorshutdown);
+			Utils.getResultObjectByInput(MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_HOST)+MDCConstants.UNDERSCORE+port, taskExecutorshutdown);
 			log.info("Checking the Process is Alive for {} ",MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_HOST)+MDCConstants.UNDERSCORE+port);
 			while(proc.isAlive()){
 				log.info("Attempting destroying the TaskExecutor again {}", MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_HOST)+MDCConstants.UNDERSCORE+port);

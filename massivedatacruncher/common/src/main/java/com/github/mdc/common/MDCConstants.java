@@ -448,6 +448,7 @@ public class MDCConstants {
 	public static final String MDC_JKS_ALGO = "mdc.jks.algo";
 	
 	public static final String REGEX_CSV = ",(?=([^\"]*\"[^\"]*\")*(?![^\"]*\"))";
+	public static final String BINDTESTUB = "TESTUB";
 	
 	
 

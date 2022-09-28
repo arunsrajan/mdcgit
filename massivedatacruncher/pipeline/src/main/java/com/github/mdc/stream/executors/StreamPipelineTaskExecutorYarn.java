@@ -84,7 +84,7 @@ public final class StreamPipelineTaskExecutorYarn extends StreamPipelineTaskExec
 	 * The runnable method executes the streaming api parallely.
 	 */
 	@Override
-	public void run() {
+	public Boolean call() {
 		try (var hdfs = FileSystem.newInstance(new URI(hdfsnn), new Configuration());) {
 			this.hdfs = hdfs;
 			var output = new ArrayList<>();
@@ -104,10 +104,12 @@ public final class StreamPipelineTaskExecutorYarn extends StreamPipelineTaskExec
 			//Join transformation operation of map reduce stream pipelining API.
 			double timetakenseconds = computeTasks(task, hdfs);
 			output.clear();
+			completed = true;
 		} catch (Exception ex) {
 			log.error("Stage " + task.jobid + MDCConstants.SINGLESPACE + task.stageid + " failed, See cause below \n",
 					ex);
 		}
+		return completed;
 	}
 
 

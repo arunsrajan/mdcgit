@@ -29,11 +29,8 @@ import java.util.concurrent.Executors;
 import org.apache.log4j.Logger;
 import org.jooq.lambda.tuple.Tuple3;
 
-import com.github.mdc.common.ApplicationTask.TaskStatus;
-import com.github.mdc.common.ApplicationTask.TaskType;
 import com.github.mdc.common.Context;
 import com.github.mdc.common.DataCruncherContext;
-import com.github.mdc.common.HeartBeatTaskScheduler;
 import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.ReducerValues;
 import com.github.mdc.common.RetrieveData;
@@ -47,7 +44,6 @@ public class TaskExecutorReducer implements Runnable {
 	File file;
 	@SuppressWarnings("rawtypes")
 	Context ctx;
-	HeartBeatTaskScheduler hbts;
 	String applicationid;
 	String taskid;
 	int port;
@@ -56,7 +52,6 @@ public class TaskExecutorReducer implements Runnable {
 	@SuppressWarnings({"rawtypes"})
 	public TaskExecutorReducer(ReducerValues rv, String applicationid, String taskid,
 			ClassLoader cl, int port,
-			HeartBeatTaskScheduler hbts,
 			Map<String, Object> apptaskexecutormap) throws Exception {
 		this.rv = rv;
 		Class<?> clz = null;
@@ -70,7 +65,6 @@ public class TaskExecutorReducer implements Runnable {
 		catch (Exception ex) {
 			log.debug("Exception in loading class:", ex);
 		}
-		this.hbts = hbts;
 		this.apptaskexecutormap = apptaskexecutormap;
 	}
 
@@ -79,7 +73,6 @@ public class TaskExecutorReducer implements Runnable {
 	public void run() {
 		var es = Executors.newSingleThreadExecutor();
 		try {
-			hbts.pingOnce(taskid, TaskStatus.RUNNING, TaskType.REDUCER, null);
 			log.debug("Submitted Reducer:" + applicationid + taskid);
 			var complete = new DataCruncherContext();
 			var apptaskcontextmap = new ConcurrentHashMap<String, Context>();
@@ -113,14 +106,12 @@ public class TaskExecutorReducer implements Runnable {
 				complete.add(results);
 			}
 			ctx = complete;
-			hbts.pingOnce(taskid, TaskStatus.COMPLETED, TaskType.REDUCER, null);
 			log.debug("Submitted Reducer Completed:" + applicationid + taskid);
 		} catch (Throwable ex) {
 			try {
 				var baos = new ByteArrayOutputStream();
 				var failuremessage = new PrintWriter(baos, true, StandardCharsets.UTF_8);
 				ex.printStackTrace(failuremessage);
-				hbts.pingOnce(taskid, TaskStatus.FAILED, TaskType.REDUCER, new String(baos.toByteArray()));
 			} catch (Exception e) {
 				log.error("Send Message Error For Task Failed: ", e);
 			}
@@ -131,10 +122,5 @@ public class TaskExecutorReducer implements Runnable {
 			}
 		}
 	}
-
-	public HeartBeatTaskScheduler getHbts() {
-		return hbts;
-	}
-
 
 }

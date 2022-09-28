@@ -15,22 +15,44 @@
  */
 package com.github.mdc.stream.scheduler;
 
-import com.esotericsoftware.kryo.Kryo;
-import com.esotericsoftware.kryo.io.Input;
-import com.esotericsoftware.kryo.io.Output;
-import com.github.dexecutor.core.DefaultDexecutor;
-import com.github.dexecutor.core.DexecutorConfig;
-import com.github.dexecutor.core.ExecutionConfig;
-import com.github.dexecutor.core.task.ExecutionResult;
-import com.github.dexecutor.core.task.TaskProvider;
-import com.github.mdc.common.*;
-import com.github.mdc.common.functions.*;
-import com.github.mdc.stream.PipelineException;
-import com.github.mdc.stream.executors.StreamPipelineTaskExecutor;
-import com.github.mdc.stream.executors.StreamPipelineTaskExecutorIgnite;
-import com.github.mdc.stream.executors.StreamPipelineTaskExecutorLocal;
-import com.github.mdc.stream.mesos.scheduler.MesosScheduler;
-import com.google.common.collect.Iterables;
+import static java.util.Objects.nonNull;
+
+import java.io.BufferedInputStream;
+import java.io.BufferedWriter;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.StringWriter;
+import java.lang.ref.SoftReference;
+import java.net.MalformedURLException;
+import java.net.Socket;
+import java.net.URI;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Random;
+import java.util.Set;
+import java.util.Timer;
+import java.util.Vector;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
+
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
@@ -51,19 +73,63 @@ import org.springframework.yarn.client.CommandYarnClient;
 import org.xerial.snappy.SnappyInputStream;
 import org.xerial.snappy.SnappyOutputStream;
 
-import java.beans.PropertyChangeListener;
-import java.io.*;
-import java.lang.ref.SoftReference;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URL;
-import java.util.*;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.stream.Collectors;
-
-import static java.util.Objects.isNull;
-import static java.util.Objects.nonNull;
+import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.io.Input;
+import com.esotericsoftware.kryo.io.Output;
+import com.github.dexecutor.core.DefaultDexecutor;
+import com.github.dexecutor.core.DexecutorConfig;
+import com.github.dexecutor.core.ExecutionConfig;
+import com.github.dexecutor.core.task.ExecutionResult;
+import com.github.dexecutor.core.task.TaskProvider;
+import com.github.mdc.common.BlocksLocation;
+import com.github.mdc.common.ByteBufferInputStream;
+import com.github.mdc.common.ByteBufferOutputStream;
+import com.github.mdc.common.CloseStagesGraphExecutor;
+import com.github.mdc.common.ContainerResources;
+import com.github.mdc.common.DAGEdge;
+import com.github.mdc.common.DestroyContainer;
+import com.github.mdc.common.DestroyContainers;
+import com.github.mdc.common.FileSystemSupport;
+import com.github.mdc.common.FreeResourcesCompletedJob;
+import com.github.mdc.common.GlobalContainerAllocDealloc;
+import com.github.mdc.common.HeartBeatStream;
+import com.github.mdc.common.Job;
+import com.github.mdc.common.JobApp;
+import com.github.mdc.common.JobStage;
+import com.github.mdc.common.LoadJar;
+import com.github.mdc.common.MDCCache;
+import com.github.mdc.common.MDCConstants;
+import com.github.mdc.common.MDCNodesResources;
+import com.github.mdc.common.MDCProperties;
+import com.github.mdc.common.NetworkUtil;
+import com.github.mdc.common.PipelineConfig;
+import com.github.mdc.common.PipelineConstants;
+import com.github.mdc.common.RemoteDataFetch;
+import com.github.mdc.common.RemoteDataFetcher;
+import com.github.mdc.common.Resources;
+import com.github.mdc.common.Stage;
+import com.github.mdc.common.Task;
+import com.github.mdc.common.TasksGraphExecutor;
+import com.github.mdc.common.TssHAChannel;
+import com.github.mdc.common.TssHAHostPorts;
+import com.github.mdc.common.Utils;
+import com.github.mdc.common.WhoIsResponse;
+import com.github.mdc.common.functions.AggregateReduceFunction;
+import com.github.mdc.common.functions.Coalesce;
+import com.github.mdc.common.functions.IntersectionFunction;
+import com.github.mdc.common.functions.Join;
+import com.github.mdc.common.functions.JoinPredicate;
+import com.github.mdc.common.functions.LeftJoin;
+import com.github.mdc.common.functions.LeftOuterJoinPredicate;
+import com.github.mdc.common.functions.RightJoin;
+import com.github.mdc.common.functions.RightOuterJoinPredicate;
+import com.github.mdc.common.functions.UnionFunction;
+import com.github.mdc.stream.PipelineException;
+import com.github.mdc.stream.executors.StreamPipelineTaskExecutor;
+import com.github.mdc.stream.executors.StreamPipelineTaskExecutorIgnite;
+import com.github.mdc.stream.executors.StreamPipelineTaskExecutorLocal;
+import com.github.mdc.stream.mesos.scheduler.MesosScheduler;
+import com.google.common.collect.Iterables;
 
 /**
  * 
@@ -82,7 +148,6 @@ public class StreamJobScheduler {
 	@SuppressWarnings("rawtypes")
 	Cache cache;
 	public Semaphore semaphore;
-	public HeartBeatTaskSchedulerStream hbtss;
 	public HeartBeatStream hbss;
 	private Kryo kryo = Utils.getKryoSerializerDeserializer();
 	public PipelineConfig pipelineconfig;
@@ -127,11 +192,9 @@ public class StreamJobScheduler {
 		isignite = Objects.isNull(pipelineconfig.getMode()) ? false
 				: pipelineconfig.getMode().equals(MDCConstants.MODE_DEFAULT) ? true : false;
 
-		try (var hbtss = new HeartBeatTaskSchedulerStream(); 
-				var hbss = new HeartBeatStream();
+		try (var hbss = new HeartBeatStream();
 				var hdfs = FileSystem.newInstance(new URI(hdfsfilepath), new Configuration());) {
 			this.hdfs = hdfs;
-			this.hbtss = hbtss;
 			this.hbss = hbss;
 			TasksGraphExecutor[] tasksgraphexecutor = null;
 			// If not yarn and mesos start the resources and task scheduler
@@ -143,23 +206,6 @@ public class StreamJobScheduler {
 				// Initialize the heart beat for gathering the resources
 				// Initialize the heart beat for gathering the task executors
 				// task statuses information.
-				hbtss.init(Integer.parseInt(pipelineconfig.getRescheduledelay()),
-						Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULERSTREAM_PORT)),
-						MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULERSTREAM_HOST),
-						Integer.parseInt(pipelineconfig.getInitialdelay()),
-						Integer.parseInt(pipelineconfig.getPingdelay()), MDCConstants.EMPTY,  job.getId());
-				// Start the heart beat to receive task executor to task
-				// schedulers task status updates.
-				job.getContainers().parallelStream().forEach(container->hbtss.getHbo().put(container, new HeartBeatTaskObserver<>()));
-				hbtss.start();
-				hbtss.getHbo().values().forEach(hbo-> {
-					try {
-						hbo.start();
-					} catch (Exception e) {
-						log.error("HeartBeat Observer start error");
-					}
-				});
-				hbphysicaladdress = hbtss.getPhysicalAddress();
 				getContainersHostPort();
 				batchsize = Integer.parseInt(pipelineconfig.getBatchsize());
 				var taskexecutorssize = taskexecutors.size();
@@ -342,7 +388,7 @@ public class StreamJobScheduler {
 				log.debug(Arrays.asList(tasksgraphexecutor));
 				for (var stagesgraphexecutor : tasksgraphexecutor) {
 					if (!stagesgraphexecutor.getTasks().isEmpty()) {
-						Utils.writeObject(stagesgraphexecutor.getHostport(), stagesgraphexecutor);
+						Utils.getResultObjectByInput(stagesgraphexecutor.getHostport(), stagesgraphexecutor);
 					}
 				}
 				var stagepartids = tasks.parallelStream().map(taskpart -> taskpart.taskid).collect(Collectors.toSet());
@@ -437,7 +483,7 @@ public class StreamJobScheduler {
 						cce.setJobid( job.getId());
 						cce.setContainerid(job.getContainerid());
 						for (var te : taskexecutors) {
-							Utils.writeObject(te, cce);
+							Utils.getResultObjectByInput(te, cce);
 						}
 					}
 					destroyContainers();
@@ -445,9 +491,6 @@ public class StreamJobScheduler {
 			}
 			if (!Objects.isNull(hbss)) {
 				hbss.close();
-			}
-			if (!Objects.isNull(hbtss)) {
-				hbtss.close();
 			}
 			if (!Objects.isNull(job.getAllstageshostport())) {
 				job.getAllstageshostport().clear();
@@ -462,17 +505,11 @@ public class StreamJobScheduler {
 	}
 
 	public void broadcastJobStageToTaskExecutors() throws Exception {
-		Kryo kryo = Utils.getKryoSerializerDeserializer();
 		jsidjsmap.keySet().stream().forEach(key -> {
 			for (String te : taskexecutors) {
 				try {
 					JobStage js = (JobStage) jsidjsmap.get(key);
-					JobStage clonedjs = (JobStage) js.clone();
-					clonedjs.setStage(new Stage(js.getStage().id,js.getStage().number,
-							null,null,null,js.getStage().isstagecompleted,js.getStage().tovisit));
-					clonedjs.getStage().tasks = new ArrayList<>();
-					clonedjs.getStage().tasks.addAll(js.getStage().tasks);
-					Utils.writeObject(te, clonedjs, pipelineconfig.getCustomclasses());
+					Utils.getResultObjectByInput(te, js);
 				} catch (Exception e) {
 					log.error(MDCConstants.EMPTY, e);
 				}
@@ -517,9 +554,7 @@ public class StreamJobScheduler {
 				String tehost = lc.getNodehostport().split("_")[0];
 				while (index < ports.size()) {
 					while (true) {
-						try {
-							var client = Utils.getClientKryoNetty(tehost, ports.get(index), null);
-							client.send(new Dummy());
+						try (Socket sock = new Socket(tehost, ports.get(index))) {
 							break;
 						} catch (Exception ex) {
 							Thread.sleep(200);
@@ -532,7 +567,7 @@ public class StreamJobScheduler {
 					jobapp.setContainerid(lc.getContainerid());
 					jobapp.setJobappid( job.getId());
 					jobapp.setJobtype(JobApp.JOBAPP.STREAM);
-					Utils.writeObject(tehost + MDCConstants.UNDERSCORE + ports.get(index), jobapp);
+					Utils.getResultObjectByInput(tehost + MDCConstants.UNDERSCORE + ports.get(index), jobapp);
 					index++;
 				}
 			}			
@@ -578,7 +613,7 @@ public class StreamJobScheduler {
 							String node = GlobalContainerAllocDealloc.getContainernode().remove(container);
 							Set<String> containers = GlobalContainerAllocDealloc.getNodecontainers().get(node);
 							containers.remove(container);
-							Utils.writeObject(node, dc);
+							Utils.getResultObjectByInput(node, dc);
 							ContainerResources cr = chpcres.remove(container);
 							Resources allocresources = MDCNodesResources.get().get(node);
 							long maxmemory = cr.getMaxmemory() * MDCConstants.MB;
@@ -595,7 +630,7 @@ public class StreamJobScheduler {
 					dc.setContainerid(job.getContainerid());
 					log.debug("Destroying Containers with id:" + job.getContainerid() + " for the hosts: " + nodes);
 					for (var node : nodes) {
-						Utils.writeObject(node, dc);
+						Utils.getResultObjectByInput(node, dc);
 					}
 				}
 			}
@@ -771,15 +806,6 @@ public class StreamJobScheduler {
 				}
 
 				numexecute++;
-				hbtss.clearStageJobStageMap();
-				hbtss.getHbo().values().forEach(hbo-> {
-					try {
-						hbo.clearQueue();
-						hbo.clearAll();
-					} catch (Exception e) {
-						log.error("HeartBeat Observer start error");
-					}
-				});
 			}
 			Utils.writeKryoOutput(kryo, pipelineconfig.getOutput(), "Number of Executions: " + numexecute);
 			if (!completed) {
@@ -1098,156 +1124,33 @@ public class StreamJobScheduler {
 		ConcurrentMap<String, Timer> jobtimer = new ConcurrentHashMap<>();
 
 		public com.github.dexecutor.core.task.Task<StreamPipelineTaskSubmitter, Boolean> provideTask(
-				final StreamPipelineTaskSubmitter mdstst) {
+				final StreamPipelineTaskSubmitter spts) {
 
 			return new com.github.dexecutor.core.task.Task<StreamPipelineTaskSubmitter, Boolean>() {
-				final StreamPipelineTaskSubmitter mdststlocal = mdstst;
 				private static final long serialVersionUID = 1L;
 
 				public Boolean execute() {
-					log.info("Task Execution: " + mdststlocal.getTask());
-					if (mdststlocal.isCompletedexecution()) {
-						try {
-							printresult.acquire();
-							if (Objects.isNull(tetotaltaskscompleted.get(mdststlocal.getHostPort()))) {
-								tetotaltaskscompleted.put(mdststlocal.getHostPort(), 0d);
-							}
-							counttaskscomp++;
-							tetotaltaskscompleted.put(mdststlocal.getHostPort(), tetotaltaskscompleted.get(mdststlocal.getHostPort()) + 1);
-							double percentagecompleted = Math.floor((tetotaltaskscompleted.get(mdststlocal.getHostPort()) / servertotaltasks.get(mdststlocal.getHostPort())) * 100.0);
-							Utils.writeKryoOutput(kryo, pipelineconfig.getOutput(), "\nPercentage Completed TE("
-									+ mdststlocal.getHostPort() + ") " + percentagecompleted + "% \n");
-							job.getJm().getContainersallocated().put(mdststlocal.getHostPort(), percentagecompleted);
-							printresult.release();
-						} catch (InterruptedException e) {
-							log.warn("Interrupted!", e);
-							// Restore interrupted state...
-							Thread.currentThread().interrupt();
-						} catch (Exception e) {
-							log.info("DAGTaskExecutor error", e);
-						}
-						return true;
-					}
-					var cdl = new CountDownLatch(1);
-					PropertyChangeListener observer = evt -> {
-
-						try {
-							final var task = (Task) evt.getNewValue();
-							if (mdststlocal.getTask().taskid.equals(task.taskid)
-									&& task.taskstatus == Task.TaskStatus.COMPLETED) {
-								var timer = jobtimer.get(task.taskid);
-								if (!Objects.isNull(timer)) {
-									timer.cancel();
-									timer.purge();
-								}
-								jobtimer.remove(task.taskid);
-								mdststlocal.setCompletedexecution(true);
-								printresult.acquire();
-								if (Objects.isNull(tetotaltaskscompleted.get(mdststlocal.getHostPort()))) {
-									tetotaltaskscompleted.put(mdststlocal.getHostPort(), 0d);
-								}
-								counttaskscomp++;
-								tetotaltaskscompleted.put(mdststlocal.getHostPort(), tetotaltaskscompleted.get(mdststlocal.getHostPort()) + 1);
-								double percentagecompleted = Math.floor(tetotaltaskscompleted.get(mdststlocal.getHostPort()) / servertotaltasks.get(mdststlocal.getHostPort()) * 100.0);
-								Object[] input = mdststlocal.getTask().input;
-								Utils.writeKryoOutput(kryo, pipelineconfig.getOutput(), "Task Completed (" + (mdststlocal.getTask()) + ") "
-										+ task.timetakenseconds + " seconds\n");
-								log.info("Task Completed (" + (Objects.isNull(input) ? task : input[0]) + ") "
-										+ task.timetakenseconds + " seconds\n");
-								Utils.writeKryoOutput(kryo, pipelineconfig.getOutput(), "\nPercentage Completed TE(" + mdststlocal.getHostPort() + ") "
-										+ percentagecompleted + "% \n");
-								log.info("\nPercentage Completed TE(" + mdststlocal.getHostPort() + ") "
-										+ percentagecompleted + "% \n");
-								job.getJm().getContainersallocated().put(mdststlocal.getHostPort(), percentagecompleted);
-								printresult.release();
-								cdl.countDown();
-
-							} else if (mdststlocal.getTask().taskid.equals(task.taskid)
-									&& task.taskstatus == Task.TaskStatus.FAILED) {
-								var timer = jobtimer.get(task.taskid);
-								if (!Objects.isNull(timer)) {
-									timer.cancel();
-									timer.purge();
-								}
-								jobtimer.remove(task.taskid);
-								mdststlocal.setCompletedexecution(false);
-								mdststlocal.getTask().stagefailuremessage = task.stagefailuremessage;
-								printresult.acquire();
-								if (Objects.isNull(tetotaltasksfailed.get(mdststlocal.getHostPort()))) {
-									tetotaltasksfailed.put(mdststlocal.getHostPort(), 0d);
-								}
-								counttasksfailed++;
-								tetotaltasksfailed.put(mdststlocal.getHostPort(), tetotaltasksfailed.get(mdststlocal.getHostPort()) + 1);
-								double percentagefailed = Math.floor(tetotaltasksfailed.get(mdststlocal.getHostPort()) / servertotaltasks.get(mdststlocal.getHostPort()) * 100.0);
-								Utils.writeKryoOutput(kryo, pipelineconfig.getOutput(), "\nPercentage Failed TE(" + mdststlocal.getHostPort() + ") "
-										+ percentagefailed + "% \n");
-								log.info("\nPercentage Failed TE(" + mdststlocal.getHostPort() + ") "
-										+ percentagefailed + "% \n");
-								printresult.release();
-								cdl.countDown();
-							}
-							if(isNull(job.getJm().getTaskexcutortasks().get(task.getHostport()))){
-								job.getJm().getTaskexcutortasks().put(task.getHostport(), new ArrayList<>());
-							}
-							job.getJm().getTaskexcutortasks().get(task.getHostport()).add(task);
-						} catch (InterruptedException e) {
-							log.warn("Interrupted!", e);
-							// Restore interrupted state...
-							Thread.currentThread().interrupt();
-						} catch (Exception e) {
-							log.info("DAGTaskExecutor error", e);
-						}
-					};
-
+					
 					try {
-						semaphores.get(mdststlocal.getTask().getHostport()).acquire();
-						hbtss.getHbo().get(mdststlocal.getTask().getHostport()).addPropertyChangeListener(mdststlocal.getTask(), observer);
-						if (taskexecutors.contains(mdststlocal.getHostPort())) {
-							var timer = new Timer();
-							jobtimer.put(mdststlocal.getTask().taskid, timer);
-							var delay = Long.parseLong(pipelineconfig.getInitialdelay());
-							timer.scheduleAtFixedRate(new TimerTask() {
-								int count = 0;
-
-								@Override
-								public void run() {
-									try {
-										if (++count > 10 || !taskexecutors.contains(mdststlocal.getHostPort())) {
-											mdststlocal.setCompletedexecution(false);
-											cdl.countDown();
-											var timer = jobtimer.remove(mdststlocal.getTask().taskid);
-											if (!Objects.isNull(timer)) {
-												timer.cancel();
-												timer.purge();
-											}
-											hbtss.pingOnce(mdststlocal.getTask(), Task.TaskStatus.FAILED, new Long[]{0l,0l}, 0.0d,
-													MDCConstants.TSEXCEEDEDEXECUTIONCOUNT);
-										}
-									} catch (Exception ex) {
-										log.error(MDCConstants.EMPTY, ex);
-									}
-
-								}
-							}, delay, delay);
-							Utils.writeObject(mdststlocal.getHostPort(), mdststlocal.getTask());
-							cdl.await();
-						} else {
-							mdststlocal.setCompletedexecution(false);
+						semaphores.get(spts.getTask().getHostport()).acquire();
+						Boolean result = spts.call();
+						printresult.acquire();
+						if (Objects.isNull(tetotaltaskscompleted.get(spts.getHostPort()))) {
+							tetotaltaskscompleted.put(spts.getHostPort(), 0d);
 						}
-						semaphores.get(mdststlocal.getTask().getHostport()).release();
-						hbtss.getHbo().get(mdststlocal.getHostPort()).removePropertyChangeListener(mdststlocal.getTask());
-					} catch (InterruptedException e) {
-						log.warn("Interrupted!", e);
-						// Restore interrupted state...
-						Thread.currentThread().interrupt();
+						counttaskscomp++;
+						tetotaltaskscompleted.put(spts.getHostPort(), tetotaltaskscompleted.get(spts.getHostPort()) + 1);
+						double percentagecompleted = Math.floor((tetotaltaskscompleted.get(spts.getHostPort()) / servertotaltasks.get(spts.getHostPort())) * 100.0);
+						Utils.writeKryoOutput(kryo, pipelineconfig.getOutput(), "\nPercentage Completed TE("
+								+ spts.getHostPort() + ") " + percentagecompleted + "% \n");
+						job.getJm().getContainersallocated().put(spts.getHostPort(), percentagecompleted);
+						printresult.release();
+						semaphores.get(spts.getTask().getHostport()).release();
+						return result;
 					} catch (Exception e) {
-						log.info("Job Submission error", e);
-						mdststlocal.setCompletedexecution(false);
 					}
-					if (!mdststlocal.isCompletedexecution()) {
-						throw new IllegalArgumentException("Incomplete task");
-					}
-					return mdststlocal.isCompletedexecution();
+					return false;
+					
 				}
 			};
 		}

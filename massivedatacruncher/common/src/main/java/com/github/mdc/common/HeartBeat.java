@@ -22,7 +22,7 @@ import org.jgroups.View;
  * @author Arun
  * The Heartbeat for sending task statuses map reduce frameworks task executors and task schedulers
  */
-public sealed class HeartBeat implements HeartBeatCloseable permits HeartBeatTaskScheduler {
+public final class HeartBeat implements HeartBeatCloseable {
 
 	JChannel channel;
 	int rescheduledelay = 5000;
