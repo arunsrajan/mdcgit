@@ -22,6 +22,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -36,6 +37,7 @@ import java.util.List;
 @AllArgsConstructor
 @ToString
 @EqualsAndHashCode
-public class CloseStagesGraphExecutor {
+public class CloseStagesGraphExecutor implements Serializable{
+	private static final long serialVersionUID = 7279362860447826575L;
 	private List<Task> tasks;
 }

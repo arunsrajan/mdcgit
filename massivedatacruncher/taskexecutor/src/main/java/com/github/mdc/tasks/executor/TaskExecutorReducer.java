@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 
@@ -36,7 +37,7 @@ import com.github.mdc.common.ReducerValues;
 import com.github.mdc.common.RetrieveData;
 import com.github.mdc.common.Utils;
 
-public class TaskExecutorReducer implements Runnable {
+public class TaskExecutorReducer implements Callable<Context> {
 	static Logger log = Logger.getLogger(TaskExecutorReducer.class);
 	@SuppressWarnings("rawtypes")
 	Reducer cr;
@@ -70,7 +71,7 @@ public class TaskExecutorReducer implements Runnable {
 
 	@SuppressWarnings({"rawtypes", "unchecked"})
 	@Override
-	public void run() {
+	public Context call() {
 		var es = Executors.newSingleThreadExecutor();
 		try {
 			log.debug("Submitted Reducer:" + applicationid + taskid);
@@ -121,6 +122,7 @@ public class TaskExecutorReducer implements Runnable {
 				es.shutdown();
 			}
 		}
+		return ctx;
 	}
 
 }

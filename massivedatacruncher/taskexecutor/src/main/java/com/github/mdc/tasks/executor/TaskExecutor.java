@@ -24,7 +24,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Queue;
 import java.util.concurrent.Callable;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutorService;
@@ -62,7 +61,7 @@ import com.github.mdc.stream.executors.StreamPipelineTaskExecutorInMemory;
 import com.github.mdc.stream.executors.StreamPipelineTaskExecutorInMemoryDisk;
 import com.github.mdc.stream.executors.StreamPipelineTaskExecutorJGroups;
 
-public class TaskExecutor implements Callable {
+public class TaskExecutor implements Callable<Object> {
 	private static Logger log = Logger.getLogger(TaskExecutor.class);
 	ServerEndpoint s;
 	int port;
@@ -144,7 +143,7 @@ public class TaskExecutor implements Callable {
 					for (Task task :stagesgraph.getTasks()) {
 						jobstageexecutormap.put(task.jobid + task.stageid + task.taskid, sptej);
 					}
-					sptej.call();
+					return sptej.call();
 				}
 			} else if (deserobj instanceof CloseStagesGraphExecutor closestagesgraph) {
 				var key = closestagesgraph.getTasks().get(0).jobid + closestagesgraph.getTasks().get(0).stageid + closestagesgraph.getTasks().get(0).taskid;
@@ -252,7 +251,7 @@ public class TaskExecutor implements Callable {
 									apptaskexecutormap);
 							apptaskexecutormap.put(apptaskid, mdter);
 							log.debug("Reducer submission:" + apptaskid);
-							CompletableFuture.runAsync(mdter, es);
+							return mdter.call();
 						}
 					} else if (object instanceof RetrieveData) {
 						Context ctx = null;

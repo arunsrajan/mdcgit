@@ -25,6 +25,8 @@ import com.github.mdc.common.RemoteDataFetcher;
 import com.github.mdc.common.Task;
 import com.github.mdc.stream.PipelineException;
 
+import static java.util.Objects.*;
+
 /**
  * 
  * @author Arun
@@ -49,12 +51,11 @@ public sealed class StreamPipelineTaskExecutorInMemory extends StreamPipelineTas
 				);
 		OutputStream os = resultstream.get(path);
 		log.debug("Exiting MassiveDataStreamTaskExecutorInMemory.getIntermediateInputStreamFS");
-		if(Objects.isNull(os)) {
-			log.info("Unable to get Result Stream for path: "+path+" Fetching Remotely");
-			return os;
+		if(isNull(os)) {
+			return null;
 		}
-		else if(os instanceof ByteArrayOutputStream baos) {
-			return os;
+		else if(os instanceof ByteBufferOutputStream baos) {
+			return baos;
 		}
 		else {
 			throw new UnsupportedOperationException("Unknown I/O operation");
@@ -67,9 +68,9 @@ public sealed class StreamPipelineTaskExecutorInMemory extends StreamPipelineTas
 	 */
 	@Override
 	public String getIntermediateDataFSFilePath(Task task) {
-		return (task.jobid + MDCConstants.HYPHEN +
+		return task.jobid + MDCConstants.HYPHEN +
 				task.stageid + MDCConstants.HYPHEN +task.taskid
-						);
+						;
 	}
 	
 	
@@ -110,9 +111,7 @@ public sealed class StreamPipelineTaskExecutorInMemory extends StreamPipelineTas
 		var path = getIntermediateDataFSFilePath(task);
 		log.debug("Exiting MassiveDataStreamTaskExecutorInMemory.getIntermediateInputStreamFS");
 		OutputStream os = resultstream.get(path);
-		if(Objects.isNull(os)) {
-			throw new NullPointerException("Unable to get Result Stream for path: "+path);
-		}else if(os instanceof ByteBufferOutputStream baos) {
+		if(os instanceof ByteBufferOutputStream baos) {
 			return new ByteBufferInputStream(baos.get());
 		} else {
 			throw new UnsupportedOperationException("Unknown I/O operation");
@@ -142,8 +141,8 @@ public sealed class StreamPipelineTaskExecutorInMemory extends StreamPipelineTas
 						var rdf = (RemoteDataFetch) input;
 						var os = getIntermediateInputStreamRDF(rdf);
 						if (os != null) {
-							ByteBufferOutputStream bbos = (ByteBufferOutputStream) os;
-							task.input[inputindex] = new ByteBufferInputStream(bbos.get());
+							ByteBufferOutputStream bbos = (ByteBufferOutputStream) os;							
+							task.input[inputindex] = new ByteBufferInputStream(bbos.get().rewind());
 						} else {
 							RemoteDataFetcher.remoteInMemoryDataFetch(rdf);
 							task.input[inputindex] = new ByteArrayInputStream(rdf.getData());

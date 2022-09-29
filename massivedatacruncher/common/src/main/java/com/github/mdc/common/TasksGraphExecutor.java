@@ -15,6 +15,7 @@
  */
 package com.github.mdc.common;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -24,7 +25,8 @@ import java.util.List;
  * hostport of the taskexecutors for jgroups
  * standalone execution mode.
  */
-public class TasksGraphExecutor {
+public class TasksGraphExecutor implements Serializable{
+	private static final long serialVersionUID = -4313323243733293259L;
 	private List<Task> tasks;
 	private String hostport;
 

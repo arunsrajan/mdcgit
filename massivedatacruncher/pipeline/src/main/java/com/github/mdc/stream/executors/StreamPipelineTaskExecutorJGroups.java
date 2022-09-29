@@ -153,12 +153,14 @@ public final class StreamPipelineTaskExecutorJGroups extends StreamPipelineTaskE
 			}
 			log.debug("StagePartitionId with Stage Statuses: " + taskstatusconcmapreq
 					+ " WhoIs Response stauses: " + taskstatusconcmapresp);
+			completed = true;
 		} catch (InterruptedException e) {
 			log.warn("Interrupted!", e);
 			// Restore interrupted state...
 			Thread.currentThread().interrupt();
 		} catch (Exception ex) {
 			log.error("Failed Stage " + tasks, ex);
+			completed = false;
 		}
 		log.debug("Exiting MassiveDataStreamJGroupsTaskExecutor.call");
 		return completed;
