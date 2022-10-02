@@ -52,11 +52,10 @@ import org.jooq.lambda.tuple.Tuple;
 import org.jooq.lambda.tuple.Tuple2;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import org.nustaq.serialization.FSTObjectInput;
+import org.nustaq.serialization.FSTObjectOutput;
 import org.xerial.snappy.SnappyInputStream;
-import org.xerial.snappy.SnappyOutputStream;
 
-import com.esotericsoftware.kryo.io.Input;
-import com.esotericsoftware.kryo.io.Output;
 import com.github.mdc.common.Blocks;
 import com.github.mdc.common.BlocksLocation;
 import com.github.mdc.common.HdfsBlockReader;
@@ -176,7 +175,7 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 		log.debug("Entered MassiveDataStreamTaskIgnite.processBlockHDFSIntersection");
 
 		try (var fsdos = createIntermediateDataToFS();
-				var output = new Output(new SnappyOutputStream(new BufferedOutputStream(fsdos)));
+				var output = new FSTObjectOutput(new BufferedOutputStream(fsdos),Utils.getConfigForSerialization());
 				var bais1 = getIntermediateInputStreamFS(blocksfirst);
 				var buffer1 = new BufferedReader(new InputStreamReader(bais1));
 				var bais2 = getIntermediateInputStreamFS(blockssecond);
@@ -188,8 +187,8 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 			// Get the result of intersection functions parallel.
 			var result = (List) streamfirst.distinct().filter(setsecond::contains)
 					.collect(Collectors.toCollection(Vector::new));
-			var kryo = Utils.getKryoSerializerDeserializer();
-			kryo.writeClassAndObject(output, result);
+			
+			output.writeObject(result);
 			output.flush();
 			cache.put(task.jobid + task.stageid + task.taskid, fsdos.toByteArray());
 			log.debug("Exiting MassiveDataStreamTaskIgnite.processBlockHDFSIntersection");
@@ -222,18 +221,18 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 		log.debug("Entered MassiveDataStreamTaskIgnite.processBlockHDFSIntersection");
 
 		try (var fsdos = createIntermediateDataToFS();
-				var output = new Output(new SnappyOutputStream(new BufferedOutputStream(fsdos)));
-				var inputfirst = new Input(new BufferedInputStream(fsstreamfirst.iterator().next()));
+				var output = new FSTObjectOutput(new BufferedOutputStream(fsdos),Utils.getConfigForSerialization());
+				var inputfirst = new FSTObjectInput(new BufferedInputStream(fsstreamfirst.iterator().next()), Utils.getConfigForSerialization());
 				var bais2 = getIntermediateInputStreamFS(blockssecond.get(0));
 				var buffer2 = new BufferedReader(new InputStreamReader(bais2));
 				var streamsecond = buffer2.lines().parallel();) {
-			var kryo = Utils.getKryoSerializerDeserializer();
-			var datafirst = (List) kryo.readClassAndObject(inputfirst);
+			
+			var datafirst = (List) inputfirst.readObject();
 			var setsecond = (Set) streamsecond.distinct().collect(Collectors.toSet());
 			// Parallel execution of the intersection function.
 			var result = (List) datafirst.parallelStream().distinct().filter(setsecond::contains)
 					.collect(Collectors.toCollection(Vector::new));
-			kryo.writeClassAndObject(output, result);
+			output.writeObject(result);
 			output.flush();
 			cache.put(task.jobid + task.stageid + task.taskid, fsdos.toByteArray());
 			log.debug("Exiting MassiveDataStreamTaskIgnite.processBlockHDFSIntersection");
@@ -264,19 +263,19 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 		log.debug("Entered MassiveDataStreamTaskIgnite.processBlockHDFSIntersection");
 
 		try (var fsdos = createIntermediateDataToFS();
-				var output = new Output(new SnappyOutputStream(new BufferedOutputStream(fsdos)));
-				var inputfirst = new Input(new BufferedInputStream(fsstreamfirst.iterator().next()));
-				var inputsecond = new Input(new BufferedInputStream(fsstreamsecond.iterator().next()));
+				var output = new FSTObjectOutput(new BufferedOutputStream(fsdos),Utils.getConfigForSerialization());
+				var inputfirst = new FSTObjectInput(new BufferedInputStream(fsstreamfirst.iterator().next()), Utils.getConfigForSerialization());
+				var inputsecond = new FSTObjectInput(new BufferedInputStream(fsstreamsecond.iterator().next()), Utils.getConfigForSerialization());
 
 				) {
 
-			var kryo = Utils.getKryoSerializerDeserializer();
-			var datafirst = (List) kryo.readClassAndObject(inputfirst);
-			var datasecond = (List) kryo.readClassAndObject(inputsecond);
+			
+			var datafirst = (List) inputfirst.readObject();
+			var datasecond = (List) inputsecond.readObject();
 			// parallel execution of intersection function.
 			var result = (List) datafirst.parallelStream().distinct().filter(datasecond::contains)
 					.collect(Collectors.toCollection(Vector::new));
-			kryo.writeClassAndObject(output, result);
+			output.writeObject(result);
 			output.flush();
 			cache.put(task.jobid + task.stageid + task.taskid, fsdos.toByteArray());
 			log.debug("Exiting MassiveDataStreamTaskIgnite.processBlockHDFSIntersection");
@@ -318,7 +317,7 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 	 * @throws Exception
 	 */
 	public InputStream getIntermediateInputStreamFS(Object task) throws Exception {
-		return new SnappyInputStream(new ByteArrayInputStream(cache.get(task)));
+		return new ByteArrayInputStream(cache.get(task));
 	}
 
 	/**
@@ -336,7 +335,7 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 		log.debug("Entered MassiveDataStreamTaskIgnite.processBlockHDFSUnion");
 
 		try (var fsdos = createIntermediateDataToFS();
-				var output = new Output(new SnappyOutputStream(new BufferedOutputStream(fsdos)));
+				var output = new FSTObjectOutput(new BufferedOutputStream(fsdos),Utils.getConfigForSerialization());
 				var bais1 = getIntermediateInputStreamFS(blocksfirst);
 				var buffer1 = new BufferedReader(new InputStreamReader(bais1));
 				var bais2 = getIntermediateInputStreamFS(blockssecond);
@@ -359,8 +358,8 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 						.concat(streamfirst, streamsecond).distinct()
 						.collect(Collectors.toCollection(Vector::new));
 			}
-			var kryo = Utils.getKryoSerializerDeserializer();
-			kryo.writeClassAndObject(output, result);
+			
+			output.writeObject(result);
 			output.flush();
 			cache.put(task.jobid + task.stageid + task.taskid, fsdos.toByteArray());
 			log.debug("Exiting MassiveDataStreamTaskIgnite.processBlockHDFSUnion");
@@ -392,14 +391,14 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 		log.debug("Entered MassiveDataStreamTaskIgnite.processBlockHDFSUnion");
 
 		try (var fsdos = createIntermediateDataToFS();
-				var output = new Output(new SnappyOutputStream(new BufferedOutputStream(fsdos)));
-				var inputfirst = new Input(new BufferedInputStream(fsstreamfirst.iterator().next()));
+				var output = new FSTObjectOutput(new BufferedOutputStream(fsdos),Utils.getConfigForSerialization());
+				var inputfirst = new FSTObjectInput(new BufferedInputStream(fsstreamfirst.iterator().next()), Utils.getConfigForSerialization());
 				var bais2 = getIntermediateInputStreamFS(blockssecond.get(0));
 				var buffer2 = new BufferedReader(new InputStreamReader(bais2));
 				var streamsecond = buffer2.lines().parallel();) {
-			var kryo = Utils.getKryoSerializerDeserializer();
+			
 
-			var datafirst = (List) kryo.readClassAndObject(inputfirst);
+			var datafirst = (List) inputfirst.readObject();
 			var terminalCount = false;
 			if (jobstage.getStage().tasks.get(0) instanceof CalculateCount) {
 				terminalCount = true;
@@ -414,7 +413,7 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 				result = (List) java.util.stream.Stream.concat(datafirst.parallelStream(), streamsecond)
 						.distinct().collect(Collectors.toCollection(Vector::new));
 			}
-			kryo.writeClassAndObject(output, result);
+			output.writeObject(result);
 			output.flush();
 			cache.put(task.jobid + task.stageid + task.taskid, fsdos.toByteArray());
 			log.debug("Exiting MassiveDataStreamTaskIgnite.processBlockHDFSUnion");
@@ -445,14 +444,14 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 		log.debug("Entered MassiveDataStreamTaskIgnite.processBlockHDFSUnion");
 
 		try (var fsdos = createIntermediateDataToFS();
-				var output = new Output(new SnappyOutputStream(new BufferedOutputStream(fsdos)));
-				var inputfirst = new Input(new BufferedInputStream(fsstreamfirst.iterator().next()));
-				var inputsecond = new Input(new BufferedInputStream(fsstreamsecond.iterator().next()));) {
+				var output = new FSTObjectOutput(new BufferedOutputStream(fsdos),Utils.getConfigForSerialization());
+				var inputfirst = new FSTObjectInput(new BufferedInputStream(fsstreamfirst.iterator().next()), Utils.getConfigForSerialization());
+				var inputsecond = new FSTObjectInput(new BufferedInputStream(fsstreamsecond.iterator().next()), Utils.getConfigForSerialization());) {
 
-			var kryo = Utils.getKryoSerializerDeserializer();
+			
 
-			var datafirst = (List) kryo.readClassAndObject(inputfirst);
-			var datasecond = (List) kryo.readClassAndObject(inputsecond);
+			var datafirst = (List) inputfirst.readObject();
+			var datasecond = (List) inputsecond.readObject();
 			List result;
 			var terminalCount = false;
 			if (jobstage.getStage().tasks.get(0) instanceof CalculateCount) {
@@ -469,7 +468,7 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 						.distinct().collect(Collectors.toCollection(Vector::new));
 			}
 
-			kryo.writeClassAndObject(output, result);
+			output.writeObject(result);
 			output.flush();
 			fsdos.flush();
 			cache.put(task.jobid + task.stageid + task.taskid, fsdos.toByteArray());
@@ -500,11 +499,11 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 		log.debug("Entered MassiveDataStreamTaskIgnite.processBlockHDFSMap");
 		var function = jobstage.getStage().tasks.get(jobstage.getStage().tasks.size() - 1);
 		try (var fsdos = createIntermediateDataToFS();
-				var output = new Output(new SnappyOutputStream(new BufferedOutputStream(fsdos)));
+				var output = new FSTObjectOutput(new BufferedOutputStream(fsdos),Utils.getConfigForSerialization());
 				var bais = getIntermediateInputStreamFS(blockslocation);
 				var buffer = new BufferedReader(new InputStreamReader(bais));) {
 
-			var kryo = Utils.getKryoSerializerDeserializer();
+			
 			List datastream = null;
 			var tasks = jobstage.getStage().tasks;
 			Stream intermediatestreamobject;
@@ -588,7 +587,7 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 				} else {
 					out = (List) ((Stream) streammap).collect(Collectors.toCollection(Vector::new));
 				}
-				kryo.writeClassAndObject(output, out);
+				output.writeObject(out);
 				output.flush();
 				fsdos.flush();
 				cache.put(task.jobid + task.stageid + task.taskid, fsdos.toByteArray());
@@ -626,15 +625,15 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 		log.debug("Entered MassiveDataStreamTaskIgnite.processBlockHDFSMap");
 		var function = jobstage.getStage().tasks.get(jobstage.getStage().tasks.size() - 1);
 		try (var fsdos = createIntermediateDataToFS();
-				var output = new Output(new SnappyOutputStream(new BufferedOutputStream(fsdos)));) {
-			var kryo = Utils.getKryoSerializerDeserializer();
+				var output = new FSTObjectOutput(new BufferedOutputStream(fsdos),Utils.getConfigForSerialization());) {
+			
 			var functions = getFunctions();
 
 			List out = new ArrayList<>();
 			for (var InputStream : fsstreamfirst) {
-				try (var input = new Input(InputStream);) {
+				try (var input = new FSTObjectInput(InputStream, Utils.getConfigForSerialization());) {
 					//while (input.available() > 0) {
-					var inputdatas = (List) kryo.readClassAndObject(input);
+					var inputdatas = (List) input.readObject();
 					// Get Streams object from list of map functions.
 					try (var streammap = (BaseStream) StreamUtils.getFunctionsToStream(functions,
 							inputdatas.parallelStream());) {
@@ -690,7 +689,7 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 					throw new PipelineException(PipelineConstants.PROCESSHDFSERROR, ex);
 				}
 			}
-			kryo.writeClassAndObject(output, out);
+			output.writeObject(out);
 			output.flush();
 			fsdos.flush();
 			cache.put(task.jobid + task.stageid + task.taskid, fsdos.toByteArray());
@@ -714,11 +713,11 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 		log.debug("Entered MassiveDataStreamTaskIgnite.processSamplesBlocks");
 		var function = jobstage.getStage().tasks.get(jobstage.getStage().tasks.size() - 1);
 		try (var fsdos = createIntermediateDataToFS();
-				var output = new Output(new SnappyOutputStream(new BufferedOutputStream(fsdos)));
+				var output = new FSTObjectOutput(new BufferedOutputStream(fsdos),Utils.getConfigForSerialization());
 				var bais = getIntermediateInputStreamFS(blockslocation);
 				var buffer = new BufferedReader(new InputStreamReader(bais));
 				var stringdata = buffer.lines().parallel();) {
-			var kryo = Utils.getKryoSerializerDeserializer();
+			
 			// Limit the sample using the limit method.
 			var terminalCount = false;
 			if (function instanceof CalculateCount) {
@@ -731,7 +730,7 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 			} else {
 				out = (List) stringdata.limit(numofsample).collect(Collectors.toCollection(Vector::new));
 			}
-			kryo.writeClassAndObject(output, out);
+			output.writeObject(out);
 			output.flush();
 			cache.put(task.jobid + task.stageid + task.taskid, fsdos.toByteArray());
 			log.debug("Exiting MassiveDataStreamTaskIgnite.processSamplesBlocks");
@@ -761,10 +760,10 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 		log.debug("Entered MassiveDataStreamTaskIgnite.processSamplesObjects");
 		var function = jobstage.getStage().tasks.get(jobstage.getStage().tasks.size() - 1);
 		try (var fsdos = createIntermediateDataToFS();
-				var output = new Output(new SnappyOutputStream(new BufferedOutputStream(fsdos)));
-				var inputfirst = new Input(new BufferedInputStream(((InputStream) (fsstreams.iterator().next()))));) {
-			var kryo = Utils.getKryoSerializerDeserializer();
-			var datafirst = (List) kryo.readClassAndObject(inputfirst);
+				var output = new FSTObjectOutput(new BufferedOutputStream(fsdos),Utils.getConfigForSerialization());
+				var inputfirst = new FSTObjectInput(new BufferedInputStream(((InputStream) (fsstreams.iterator().next()))),  Utils.getConfigForSerialization());) {
+			
+			var datafirst = (List) inputfirst.readObject();
 			var terminalCount = false;
 			if (jobstage.getStage().tasks.get(0) instanceof CalculateCount) {
 				terminalCount = true;
@@ -778,7 +777,7 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 				out = (List) datafirst.parallelStream().limit(numofsample)
 						.collect(Collectors.toCollection(Vector::new));
 			}
-			kryo.writeClassAndObject(output, out);
+			output.writeObject(out);
 			output.flush();
 			cache.put(task.jobid + task.stageid + task.taskid, fsdos.toByteArray());
 			log.debug("Exiting MassiveDataStreamTaskIgnite.processSamplesObjects");
@@ -808,8 +807,8 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 					var input = task.input[inputindex];
 					if (!Objects.isNull(input) && input instanceof Task) {
 						var inputtask = (Task) input;
-						task.input[inputindex] = new SnappyInputStream(new ByteArrayInputStream(
-								cache.get(inputtask.jobid + inputtask.stageid + inputtask.taskid)));
+						task.input[inputindex] = new ByteArrayInputStream(
+								cache.get(inputtask.jobid + inputtask.stageid + inputtask.taskid));
 					}
 				}
 			}
@@ -993,9 +992,9 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 		var starttime = System.currentTimeMillis();
 
 		try (var fsdos = createIntermediateDataToFS();
-				var output = new Output(new SnappyOutputStream(new BufferedOutputStream(fsdos)));
-				var inputfirst = isinputfirstblocks ? null : new Input(streamfirst);
-				var inputsecond = isinputsecondblocks ? null : new Input(streamsecond);
+				var output = new FSTObjectOutput(new BufferedOutputStream(fsdos),Utils.getConfigForSerialization());
+				var inputfirst = isinputfirstblocks ? null : new FSTObjectInput(streamfirst, Utils.getConfigForSerialization());
+				var inputsecond = isinputsecondblocks ? null : new FSTObjectInput(streamsecond, Utils.getConfigForSerialization());
 				var buffreader1 = isinputfirstblocks
 						? new BufferedReader(new InputStreamReader(streamfirst))
 						: null;
@@ -1005,15 +1004,15 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 
 				) {
 
-			var kryo = Utils.getKryoSerializerDeserializer();
+			
 			List inputs1 = null, inputs2 = null;
 			if (Objects.isNull(buffreader1)) {
-				inputs1 = (List) kryo.readClassAndObject(inputfirst);
+				inputs1 = (List) inputfirst.readObject();
 			} else {
 				inputs1 = buffreader1.lines().collect(Collectors.toList());
 			}
 			if (Objects.isNull(buffreader2)) {
-				inputs2 = (List) kryo.readClassAndObject(inputsecond);
+				inputs2 = (List) inputsecond.readObject();
 			} else {
 				inputs2 = buffreader2.lines().collect(Collectors.toList());
 			}
@@ -1044,7 +1043,7 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 				}
 
 			}
-			kryo.writeClassAndObject(output, joinpairsout);
+			output.writeObject(joinpairsout);
 			output.flush();
 			cache.put(task.jobid + task.stageid + task.taskid, fsdos.toByteArray());
 			log.debug("Exiting MassiveDataStreamTaskIgnite.processJoinLZF");
@@ -1068,9 +1067,9 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 		log.debug("Entered MassiveDataStreamTaskIgnite.processLeftOuterJoinLZF");
 
 		try (var fsdos = createIntermediateDataToFS();
-				var output = new Output(new SnappyOutputStream(new BufferedOutputStream(fsdos)));
-				var inputfirst = isinputfirstblocks ? null : new Input(streamfirst);
-				var inputsecond = isinputsecondblocks ? null : new Input(streamsecond);
+				var output = new FSTObjectOutput(new BufferedOutputStream(fsdos),Utils.getConfigForSerialization());
+				var inputfirst = isinputfirstblocks ? null : new FSTObjectInput(streamfirst, Utils.getConfigForSerialization());
+				var inputsecond = isinputsecondblocks ? null : new FSTObjectInput(streamsecond, Utils.getConfigForSerialization());
 				var buffreader1 = isinputfirstblocks
 						? new BufferedReader(new InputStreamReader(streamfirst))
 						: null;
@@ -1080,16 +1079,16 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 
 				) {
 
-			var kryo = Utils.getKryoSerializerDeserializer();
+			
 			List inputs1 = null,inputs2 = null;
 			;
 			if (Objects.isNull(buffreader1)) {
-				inputs1 = (List) kryo.readClassAndObject(inputfirst);
+				inputs1 = (List) inputfirst.readObject();
 			} else {
 				inputs1 = buffreader1.lines().collect(Collectors.toList());
 			}
 			if (Objects.isNull(buffreader2)) {
-				inputs2 = (List) kryo.readClassAndObject(inputsecond);
+				inputs2 = (List) inputsecond.readObject();
 			} else {
 				inputs2 = buffreader2.lines().collect(Collectors.toList());
 			}
@@ -1119,7 +1118,7 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 					throw new PipelineException(PipelineConstants.PROCESSLEFTOUTERJOIN, ex);
 				}
 			}
-			kryo.writeClassAndObject(output, joinpairsout);
+			output.writeObject(joinpairsout);
 			output.flush();
 			cache.put(task.jobid + task.stageid + task.taskid, fsdos.toByteArray());
 			log.debug("Exiting MassiveDataStreamTaskIgnite.processLeftOuterJoinLZF");
@@ -1143,9 +1142,9 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 		log.debug("Entered MassiveDataStreamTaskIgnite.processRightOuterJoinLZF");
 
 		try (var fsdos = createIntermediateDataToFS();
-				var output = new Output(new SnappyOutputStream(new BufferedOutputStream(fsdos)));
-				var inputfirst = isinputfirstblocks ? null : new Input(streamfirst);
-				var inputsecond = isinputsecondblocks ? null : new Input(streamsecond);
+				var output = new FSTObjectOutput(new BufferedOutputStream(fsdos),Utils.getConfigForSerialization());
+				var inputfirst = isinputfirstblocks ? null : new FSTObjectInput(streamfirst, Utils.getConfigForSerialization());
+				var inputsecond = isinputsecondblocks ? null : new FSTObjectInput(streamsecond, Utils.getConfigForSerialization());
 				var buffreader1 = isinputfirstblocks
 						? new BufferedReader(new InputStreamReader(streamfirst))
 						: null;
@@ -1155,16 +1154,16 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 
 				) {
 
-			var kryo = Utils.getKryoSerializerDeserializer();
+			
 			List inputs1 = null,inputs2 = null;
 			;
 			if (Objects.isNull(buffreader1)) {
-				inputs1 = (List) kryo.readClassAndObject(inputfirst);
+				inputs1 = (List) inputfirst.readObject();
 			} else {
 				inputs1 = buffreader1.lines().collect(Collectors.toList());
 			}
 			if (Objects.isNull(buffreader2)) {
-				inputs2 = (List) kryo.readClassAndObject(inputsecond);
+				inputs2 = (List) inputsecond.readObject();
 			} else {
 				inputs2 = buffreader2.lines().collect(Collectors.toList());
 			}
@@ -1194,7 +1193,7 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 					throw new PipelineException(PipelineConstants.PROCESSRIGHTOUTERJOIN, ex);
 				}
 			}
-			kryo.writeClassAndObject(output, joinpairsout);
+			output.writeObject(joinpairsout);
 			output.flush();
 			cache.put(task.jobid + task.stageid + task.taskid, fsdos.toByteArray());
 			log.debug("Exiting MassiveDataStreamTaskIgnite.processRightOuterJoinLZF");
@@ -1220,16 +1219,16 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 		var starttime = System.currentTimeMillis();
 		log.debug("Entered MassiveDataStreamTaskIgnite.processGroupByKeyTuple2");
 
-		try (var fsdos = createIntermediateDataToFS(); Output output = new Output(new SnappyOutputStream(fsdos))) {
-			var kryo = Utils.getKryoSerializerDeserializer();
+		try (var fsdos = createIntermediateDataToFS(); var output = new FSTObjectOutput(fsdos, Utils.getConfigForSerialization())) {
+			
 
 			var allpairs = new ArrayList<Tuple2>();
 			var mapgpbykey = new LinkedHashSet<Map>();
 			for (var fs : task.input) {
 				try (var fsdis = (InputStream) fs; 
-						var input = new Input(new BufferedInputStream(fsdis));) {
+						var input = new FSTObjectInput(new BufferedInputStream(fsdis), Utils.getConfigForSerialization());) {
 					//while (input.available() > 0) {
-						var keyvaluepair = kryo.readClassAndObject(input);
+						var keyvaluepair = input.readObject();
 					if (keyvaluepair instanceof List kvp) {
 						allpairs.addAll(kvp);
 					} else if (keyvaluepair instanceof Map kvpmap) {
@@ -1250,7 +1249,7 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 				var out = (List<Tuple2>) processedgroupbykey.keySet().parallelStream()
 						.map(key -> Tuple.tuple(key, processedgroupbykey.get(key)))
 						.collect(Collectors.toCollection(ArrayList::new));
-				kryo.writeClassAndObject(output, out);
+				output.writeObject(out);
 			} else if (!mapgpbykey.isEmpty()) {
 				Map result = (Map) mapgpbykey.parallelStream().flatMap(map1 -> map1.entrySet().parallelStream())
 						.collect(Collectors.groupingBy((Entry entry) -> entry.getKey(), Collectors
@@ -1258,7 +1257,7 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 				List<Tuple2> out = (List<Tuple2>) result.keySet().parallelStream()
 						.map(key -> Tuple.tuple(key, result.get(key))).collect(Collectors.toCollection(ArrayList::new));
 				result.keySet().parallelStream().forEach(key -> out.add(Tuple.tuple(key, result.get(key))));
-				kryo.writeClassAndObject(output, out);
+				output.writeObject(out);
 			}
 			output.flush();
 			cache.put(task.jobid + task.stageid + task.taskid, fsdos.toByteArray());
@@ -1287,16 +1286,16 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 
 		var function = jobstage.getStage().tasks.get(jobstage.getStage().tasks.size() - 1);
 		try (var fsdos = createIntermediateDataToFS();
-				var output = new Output(new SnappyOutputStream(fsdos));) {
-			var kryo = Utils.getKryoSerializerDeserializer();
+				var output = new FSTObjectOutput(fsdos, Utils.getConfigForSerialization());) {
+			
 
 			var allpairs = new ArrayList<Tuple2>();
 			var mapgpbykey = new LinkedHashSet<Map>();
 			for (var fs : task.input) {
 				try (var fsdis = (InputStream) fs; 
-						var input = new Input(new BufferedInputStream(fsdis));) {
+						var input = new FSTObjectInput(new BufferedInputStream(fsdis), Utils.getConfigForSerialization());) {
 					//while (input.available() > 0) {
-					var keyvaluepair = kryo.readClassAndObject(input);
+					var keyvaluepair = input.readObject();
 					if (keyvaluepair instanceof List kvp) {
 						allpairs.addAll(kvp);
 					} else if (keyvaluepair instanceof Map kvpmap) {
@@ -1325,7 +1324,7 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 					}
 					finalfoldbykeyobj.add(Tuple.tuple(key, foldbykeyresult));
 				}
-				kryo.writeClassAndObject(output, finalfoldbykeyobj);
+				output.writeObject(finalfoldbykeyobj);
 			} else if (!mapgpbykey.isEmpty()) {
 				var result = (Map<Object, List<Object>>) mapgpbykey.parallelStream()
 						.flatMap(map1 -> map1.entrySet().parallelStream())
@@ -1333,7 +1332,7 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 								.mapping((Entry entry) -> entry.getValue(), Collectors.toCollection(Vector::new))));
 				var out = new ArrayList<>();
 				result.keySet().parallelStream().forEach(key -> out.add(Tuple.tuple(key, result.get(key))));
-				kryo.writeClassAndObject(output, out);
+				output.writeObject(out);
 			}
 			output.flush();
 			cache.put(task.jobid + task.stageid + task.taskid, fsdos.toByteArray());
@@ -1359,15 +1358,15 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 		var starttime = System.currentTimeMillis();
 		log.debug("Entered MassiveDataStreamTaskIgnite.processCountByKeyTuple2");
 		try (var fsdos = createIntermediateDataToFS(); 
-				var output = new Output(new SnappyOutputStream(fsdos));) {
-			var kryo = Utils.getKryoSerializerDeserializer();
+				var output = new FSTObjectOutput(fsdos, Utils.getConfigForSerialization());) {
+			
 
 			var allpairs = new ArrayList<Tuple2<Object, Object>>();
 			for (var fs : task.input) {
 				var fsdis = (InputStream) fs;
-				var input = new Input(new BufferedInputStream(fsdis));
+				var input = new FSTObjectInput(new BufferedInputStream(fsdis), Utils.getConfigForSerialization());
 				//while (input.available() > 0) {
-					var keyvaluepair = kryo.readClassAndObject(input);
+					var keyvaluepair = input.readObject();
 				if (keyvaluepair instanceof List kvp) {
 					allpairs.addAll(kvp);
 				}
@@ -1387,7 +1386,7 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 					intermediatelist = (List<Tuple2>) ((Stream) StreamUtils.getFunctionsToStream(functions,
 							intermediatelist.parallelStream())).collect(Collectors.toCollection(Vector::new));
 				}
-				kryo.writeClassAndObject(output, intermediatelist);
+				output.writeObject(intermediatelist);
 			}
 			output.flush();
 			cache.put(task.jobid + task.stageid + task.taskid, fsdos.toByteArray());
@@ -1413,15 +1412,15 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 		var starttime = System.currentTimeMillis();
 		log.debug("Entered MassiveDataStreamTaskIgnite.processCountByValueTuple2");
 		try (var fsdos = createIntermediateDataToFS(); 
-				var output = new Output(new SnappyOutputStream(fsdos));) {
-			var kryo = Utils.getKryoSerializerDeserializer();
+				var output = new FSTObjectOutput(fsdos, Utils.getConfigForSerialization());) {
+			
 
 			var allpairs = new ArrayList<Tuple2<Object, Object>>();
 			for (var fs : task.input) {
 				var fsdis = (InputStream) fs;
-				var input = new Input(new BufferedInputStream(fsdis));
+				var input = new FSTObjectInput(new BufferedInputStream(fsdis), Utils.getConfigForSerialization());
 				//while (input.available() > 0) {
-					var keyvaluepair = kryo.readClassAndObject(input);
+					var keyvaluepair = input.readObject();
 				if (keyvaluepair instanceof List kvp) {
 					allpairs.addAll(kvp);
 				}
@@ -1442,7 +1441,7 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 							intermediatelist.parallelStream())).collect(Collectors.toCollection(Vector::new));
 				}
 
-				kryo.writeClassAndObject(output, intermediatelist);
+				output.writeObject(intermediatelist);
 			}
 			output.flush();
 			cache.put(task.jobid + task.stageid + task.taskid, fsdos.toByteArray());
@@ -1460,7 +1459,7 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 		}
 	}
 
-	public void closeFSOutput(Collection<Output> outvalues, Collection<OutputStream> fsdoss) throws Exception {
+	public void closeFSOutput(Collection<FSTObjectOutput> outvalues, Collection<OutputStream> fsdoss) throws Exception {
 		for (var value : outvalues) {
 			value.close();
 		}
@@ -1478,13 +1477,12 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 		var starttime = System.currentTimeMillis();
 		log.debug("Entered MassiveDataStreamTaskIgnite.processCoalesce");
 		var coalescefunction = (List<Coalesce>) getFunctions();
-		try (var fsdos = createIntermediateDataToFS(); var currentoutput = new Output(new SnappyOutputStream(fsdos));) {
-			var kryo = Utils.getKryoSerializerDeserializer();
+		try (var fsdos = createIntermediateDataToFS(); var currentoutput = new FSTObjectOutput(fsdos, Utils.getConfigForSerialization());) {
 			var keyvaluepairs = new ArrayList<Tuple2>();
 			for (var fs : task.input) {
-				try (var fsos = (InputStream) fs; var input = new Input(new BufferedInputStream(fsos));) {
+				try (var fsos = (InputStream) fs; var input = new FSTObjectInput(new BufferedInputStream(fsos), Utils.getConfigForSerialization());) {
 					// while (input.available() > 0) {
-					keyvaluepairs.addAll((List) kryo.readClassAndObject(input));
+					keyvaluepairs.addAll((List) input.readObject());
 					// }
 				}
 			}
@@ -1514,7 +1512,7 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 					outpairs = (List) ((Stream) stream).collect(Collectors.toCollection(Vector::new));
 				}
 			}
-			kryo.writeClassAndObject(currentoutput, outpairs);
+			currentoutput.writeObject(outpairs);
 			currentoutput.flush();
 			fsdos.flush();
 			cache.put(task.jobid + task.stageid + task.taskid, fsdos.toByteArray());

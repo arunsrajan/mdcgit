@@ -132,7 +132,7 @@ public class MapReduceApplicationIgnite implements Callable<List<DataCruncherCon
 			blocksize = Integer.parseInt(jobconf.getBlocksize());
 			hdfs = FileSystem.get(new URI(MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL)),
 					configuration);
-			var kryo = Utils.getKryoSerializerDeserializer();
+			
 			var combiner = new HashSet<>();
 			var reducer = new HashSet<>();
 			var mapclzchunkfile = new HashMap<String, Set<Class>>();
@@ -281,7 +281,7 @@ public class MapReduceApplicationIgnite implements Callable<List<DataCruncherCon
 			jm.setJobcompletiontime(System.currentTimeMillis());
 			jm.setTotaltimetaken((jm.getJobcompletiontime() - jm.getJobstarttime()) / 1000.0);
 			if (!Objects.isNull(jobconf.getOutput())) {
-				Utils.writeKryoOutput(kryo, jobconf.getOutput(),
+				Utils.writeToOstream(jobconf.getOutput(),
 						"Completed Job in " + (jm.getTotaltimetaken()) + " seconds");
 			}
 			return result;

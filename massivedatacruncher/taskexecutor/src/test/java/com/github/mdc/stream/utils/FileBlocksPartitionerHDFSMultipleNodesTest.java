@@ -18,6 +18,8 @@ package com.github.mdc.stream.utils;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.URI;
+import java.rmi.RemoteException;
+import java.rmi.registry.Registry;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -25,11 +27,9 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.Semaphore;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileStatus;
@@ -43,10 +43,6 @@ import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
-import com.esotericsoftware.kryonetty.ServerEndpoint;
-import com.esotericsoftware.kryonetty.network.ReceiveEvent;
-import com.esotericsoftware.kryonetty.network.handler.NetworkHandler;
-import com.esotericsoftware.kryonetty.network.handler.NetworkListener;
 import com.github.mdc.common.BlocksLocation;
 import com.github.mdc.common.GlobalContainerAllocDealloc;
 import com.github.mdc.common.Job;
@@ -55,6 +51,7 @@ import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.MDCNodesResources;
 import com.github.mdc.common.PipelineConfig;
 import com.github.mdc.common.Resources;
+import com.github.mdc.common.StreamDataCruncher;
 import com.github.mdc.common.Utils;
 import com.github.mdc.stream.StreamPipelineBase;
 import com.github.mdc.tasks.executor.NodeRunner;
@@ -66,13 +63,13 @@ public class FileBlocksPartitionerHDFSMultipleNodesTest extends StreamPipelineBa
 	static ExecutorService escontainer;
 	static ConcurrentMap<String, List<ServerSocket>> containers;
 	static ConcurrentMap<String, List<Thread>> tes;
-	static List<ServerEndpoint> containerlauncher = new ArrayList<>();
+	static List<Registry> containerlauncher = new ArrayList<>();
 	static Logger log = Logger.getLogger(FileBlocksPartitionerHDFSMultipleNodesTest.class);
 	static int nodeindex;
 	static FileSystem hdfs;
 	static Path[] paths;
 	static List<BlocksLocation> bls;
-	static ServerEndpoint server = null;
+	static Registry server = null;
 
 	@BeforeClass
 	public static void launchNodes() throws Exception {
@@ -99,17 +96,17 @@ public class FileBlocksPartitionerHDFSMultipleNodesTest extends StreamPipelineBa
 			resource.setFreememory(memory * 1024 * 1024 * 1024l);
 			resource.setNumberofprocessors(4);
 			noderesourcesmap.put("127.0.0.1_" + (20000 + nodeindex), resource);
-			server = Utils.getServerKryoNetty(20000+nodeindex,
-					new NetworkListener() {
-					@NetworkHandler
-		            public void onReceive(ReceiveEvent event) {
+			server = Utils.getRPCRegistry(20000+nodeindex,
+					new StreamDataCruncher() {
+				public Object postObject(Object object)throws RemoteException {
 						try {
-							Object object = event.getObject();
-							var container = new NodeRunner(server, MDCConstants.PROPLOADERCONFIGFOLDER,
+							var container = new NodeRunner(MDCConstants.PROPLOADERCONFIGFOLDER,
 									containerprocesses, hdfs, containeridthreads, containeridports,
-									object, event);
-							Future<Boolean> containerallocated = escontainer.submit(container);
-							log.info("Containers Allocated: " + containerallocated.get());
+									object);
+							Future<Object> containerallocated = escontainer.submit(container);
+							Object returnresultobject = containerallocated.get();
+							log.info("Containers Allocated: " + returnresultobject);
+							return returnresultobject;
 						} catch (InterruptedException e) {
 							log.warn("Interrupted!", e);
 							// Restore interrupted state...
@@ -117,6 +114,7 @@ public class FileBlocksPartitionerHDFSMultipleNodesTest extends StreamPipelineBa
 						} catch (Exception e) {
 							log.error(MDCConstants.EMPTY, e);
 						}
+						return null;
 					}
 				});
 			containerlauncher.add(server);
@@ -132,11 +130,6 @@ public class FileBlocksPartitionerHDFSMultipleNodesTest extends StreamPipelineBa
 			}
 		});
 		tes.keySet().stream().flatMap(key -> tes.get(key).stream()).forEach(thr -> thr.stop());
-		if (!Objects.isNull(containerlauncher)) {
-			containerlauncher.stream().forEach(ss -> {
-				ss.close();
-			});
-		}
 		if (!Objects.isNull(escontainer)) {
 			escontainer.shutdown();
 		}

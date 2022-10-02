@@ -41,13 +41,12 @@ import org.apache.mesos.Scheduler;
 import org.apache.mesos.SchedulerDriver;
 import org.jgrapht.Graphs;
 import org.jgrapht.graph.SimpleDirectedGraph;
+import org.nustaq.serialization.FSTObjectOutput;
 
-import com.esotericsoftware.kryo.io.Output;
 import com.github.mdc.common.DAGEdge;
 import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.MesosThirdPartyLibraryDistributor;
 import com.github.mdc.common.Task;
-import com.github.mdc.common.Utils;
 import com.github.mdc.stream.scheduler.StreamPipelineTaskSubmitter;
 import com.google.protobuf.ByteString;
 
@@ -122,7 +121,6 @@ public class MesosScheduler implements Scheduler {
 
 			var remainingCpus = offerCpus;
 			var remainingMem = offerMem;
-			var kryo = Utils.getKryoMesos();
 			//Check whether the current offers is suitable to execute the tasks. 
 			if (taskIdCounter < mdststs.size() && remainingCpus >= CPUS_PER_TASK && remainingMem >= MEM_PER_TASK) {
 				try {
@@ -146,14 +144,14 @@ public class MesosScheduler implements Scheduler {
 					}
 					//Check if to execute the tasks.
 					if (toexecute) {
-						var finaloutput = new Output(finalbaos);
-						kryo.writeClassAndObject(finaloutput, mrjar);
+						var finaloutput = new FSTObjectOutput(finalbaos);
+						finaloutput.writeObject( mrjar);
 						finaloutput.flush();
-						var interoutput = new Output(baos);
-						kryo.writeClassAndObject(interoutput, task);
+						var interoutput = new FSTObjectOutput(baos);
+						interoutput.writeObject(task);
 						interoutput.flush();
 						interoutput.close();
-						kryo.writeClassAndObject(finaloutput, baos.toByteArray());
+						finaloutput.writeObject(baos.toByteArray());
 						finaloutput.flush();
 						finaloutput.close();
 						//Get the task proto object.

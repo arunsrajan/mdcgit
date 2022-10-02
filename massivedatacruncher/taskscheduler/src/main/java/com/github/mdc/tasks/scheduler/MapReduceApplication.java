@@ -54,7 +54,6 @@ import org.apache.hadoop.hdfs.protocol.LocatedBlock;
 import org.apache.log4j.Logger;
 import org.jooq.lambda.tuple.Tuple2;
 
-import com.esotericsoftware.kryo.Kryo;
 import com.github.dexecutor.core.DefaultDexecutor;
 import com.github.dexecutor.core.DexecutorConfig;
 import com.github.dexecutor.core.ExecutionConfig;
@@ -657,7 +656,7 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 			var numexecute = 0;
 			var taskexeccount = Integer.parseInt(jobconf.getTaskexeccount());
 			List<ExecutionResult<TaskSchedulerMapperCombinerSubmitter, Boolean>> erroredresult = null;
-			var kryo = Utils.getKryoSerializerDeserializer();
+			
 			while (!completed && numexecute < taskexeccount) {
 				DexecutorConfig<DefaultDexecutor, List<ExecutionResult<TaskSchedulerMapperCombinerSubmitter, Boolean>>> config = new DexecutorConfig(newExecutor(), new DTaskExecutor());
 				DefaultDexecutor<DefaultDexecutor, List<ExecutionResult<TaskSchedulerMapperCombinerSubmitter, Boolean>>> executor = new DefaultDexecutor<>(config);
@@ -710,15 +709,15 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 					}
 				}
 				if (!completed) {
-					erroredresult.forEach(exec -> {
-						Utils.writeKryoOutput(kryo, jobconf.getOutput(), MDCConstants.NEWLINE);
-						Utils.writeKryoOutput(kryo, jobconf.getOutput(), exec.getId().apptask.getApperrormessage());
-					});
+					for(ExecutionResult<TaskSchedulerMapperCombinerSubmitter, Boolean> exec:erroredresult)  {
+						Utils.writeToOstream(jobconf.getOutput(), MDCConstants.NEWLINE);
+						Utils.writeToOstream(jobconf.getOutput(), exec.getId().apptask.getApperrormessage());
+					};
 				}
 				numexecute++;
 			}
 			if (!Objects.isNull(jobconf.getOutput())) {
-				Utils.writeKryoOutput(Utils.getKryoSerializerDeserializer(), jobconf.getOutput(), "Number of Executions: " + numexecute);
+				Utils.writeToOstream(jobconf.getOutput(), "Number of Executions: " + numexecute);
 			}
 			if (!completed) {
 				return Arrays.asList(new DataCruncherContext<>());
@@ -756,7 +755,7 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 				log.debug("Reducer: Submitting " + mrtaskcount + " App And Task:"
 						+ applicationid + taskid + rv.getTuples());
 				if (!Objects.isNull(jobconf.getOutput())) {
-					Utils.writeKryoOutput(Utils.getKryoSerializerDeserializer(), jobconf.getOutput(), "Initial Reducer: Submitting " + mrtaskcount + " App And Task:"
+					Utils.writeToOstream(jobconf.getOutput(), "Initial Reducer: Submitting " + mrtaskcount + " App And Task:"
 							+ applicationid + taskid + rv.getTuples() + " to " + currentexecutor);
 				}
 				executorred.addIndependent(mdtstr);
@@ -766,7 +765,7 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 			log.info("Total Tasks Completed: " + mrtaskcount);
 			if (!isexception) {
 				if (!Objects.isNull(jobconf.getOutput())) {
-					Utils.writeKryoOutput(Utils.getKryoSerializerDeserializer(), jobconf.getOutput(), "Reducer completed------------------------------");
+					Utils.writeToOstream(jobconf.getOutput(), "Reducer completed------------------------------");
 				}
 				var sb = new StringBuilder();
 				var partindex = 1;
@@ -795,13 +794,13 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 				}
 			} else {
 				if (!Objects.isNull(jobconf.getOutput())) {
-					Utils.writeKryoOutput(Utils.getKryoSerializerDeserializer(), jobconf.getOutput(), exceptionmsg);
+					Utils.writeToOstream(jobconf.getOutput(), exceptionmsg);
 				}
 			}
 			jm.setJobcompletiontime(System.currentTimeMillis());
 			jm.setTotaltimetaken((jm.getJobcompletiontime() - jm.getJobstarttime()) / 1000.0);
 			if (!Objects.isNull(jobconf.getOutput())) {
-				Utils.writeKryoOutput(kryo, jobconf.getOutput(),
+				Utils.writeToOstream(jobconf.getOutput(),
 						"Completed Job in " + ((System.currentTimeMillis() - starttime) / 1000.0) + " seconds");
 			}
 			return dccred;
@@ -870,12 +869,10 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 		Semaphore semaphorereducerresult;
 		String applicationid;
 		List<DataCruncherContext> dccred;
-		Kryo kryo;
 
 		protected ReducerTaskExecutor(int batchsize, String applicationid, List<DataCruncherContext> dccred) {
 			semaphorereducerresult = new Semaphore(batchsize);
 			this.applicationid = applicationid;
-			this.kryo = Utils.getKryoSerializerDeserializer();
 			this.dccred = dccred;
 		}
 
@@ -899,7 +896,7 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 									log.debug("Received App And Task Before mutex acquire:" + apptask.getApplicationid()
 											+ apptask.getTaskid());
 									if (!Objects.isNull(jobconf.getOutput())) {
-										Utils.writeKryoOutput(Utils.getKryoSerializerDeserializer(), jobconf.getOutput(),
+										Utils.writeToOstream(jobconf.getOutput(),
 												"Received App And Task Before mutex acquire:" + apptask.getApplicationid()
 														+ apptask.getTaskid());
 									}
@@ -914,7 +911,7 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 										objects.add(apptask.getTaskid());
 										log.debug("Received App And Task:" + apptask.getApplicationid() + apptask.getTaskid());
 										if (!Objects.isNull(jobconf.getOutput())) {
-											Utils.writeKryoOutput(Utils.getKryoSerializerDeserializer(), jobconf.getOutput(),
+											Utils.writeToOstream(jobconf.getOutput(),
 													"Received App And Task:" + apptask.getApplicationid() + apptask.getTaskid());
 										}
 
@@ -941,7 +938,7 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 
 						log.debug("Waiting for the Reducer to complete------------");
 						if (!Objects.isNull(jobconf.getOutput())) {
-							Utils.writeKryoOutput(Utils.getKryoSerializerDeserializer(), jobconf.getOutput(),
+							Utils.writeToOstream(jobconf.getOutput(),
 									"Waiting for the Reducer to complete------------");
 						}
 						cdlreducercomplete.await();
@@ -1054,8 +1051,6 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 		class ResultProcessor implements Runnable {
 			ArrayBlockingQueue bq;
 			int totalouputobtained;
-			Kryo kryo = Utils.getKryoSerializerDeserializer();
-
 			public ResultProcessor(ArrayBlockingQueue bq) {
 				this.bq = bq;
 			}
@@ -1089,7 +1084,7 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 							double percentcompleted = Math.floor(totalouputobtained / (double) totaltasks * 100.0);
 							jm.getContainersallocated().put(apptask.getHp(), percentcompleted);
 							if (jobconf.getOutput() != null) {
-								Utils.writeKryoOutput(kryo, jobconf.getOutput(), apptask.getTaskid() + " " + apptask.getHp() + "'s Mapper Task Status: " + apptask.getTaskstatus() + " Execution Status = " + totalouputobtained + "/" + totaltasks + " = " + percentcompleted + "%");
+								Utils.writeToOstream(jobconf.getOutput(), apptask.getTaskid() + " " + apptask.getHp() + "'s Mapper Task Status: " + apptask.getTaskstatus() + " Execution Status = " + totalouputobtained + "/" + totaltasks + " = " + percentcompleted + "%");
 							}
 							cdls.get(apptask.getApplicationid() + apptask.getTaskid()).countDown();
 							semaphorebatch.release();

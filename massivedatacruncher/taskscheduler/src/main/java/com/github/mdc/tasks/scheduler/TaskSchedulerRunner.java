@@ -14,8 +14,8 @@ import org.apache.curator.framework.state.ConnectionState;
 import org.apache.curator.retry.RetryForever;
 import org.apache.hadoop.fs.FsUrlStreamHandlerFactory;
 import org.apache.log4j.Logger;
+import org.nustaq.serialization.FSTObjectInput;
 
-import com.esotericsoftware.kryo.io.Input;
 import com.github.mdc.common.HeartBeat;
 import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.MDCProperties;
@@ -90,10 +90,10 @@ public class TaskSchedulerRunner {
 						var is = s.getInputStream();
 						var os = s.getOutputStream();
 						var baoss = new ArrayList<byte[]>();
-						var kryo = Utils.getKryoSerializerDeserializer();
-						var input = new Input(s.getInputStream());
+						
+						var input = new FSTObjectInput(s.getInputStream());
 						while (true) {
-							var obj = kryo.readClassAndObject(input);
+							var obj = input.readObject();
 							log.debug("Input Object: " + obj);
 							if (obj instanceof Integer brkval && brkval == -1)
 								break;

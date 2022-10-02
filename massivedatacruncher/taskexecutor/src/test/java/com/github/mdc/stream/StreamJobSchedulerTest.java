@@ -32,12 +32,10 @@ import org.jooq.lambda.tuple.Tuple2;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
+import org.nustaq.serialization.FSTObjectOutput;
 
-import com.esotericsoftware.kryo.io.Output;
 import com.github.mdc.common.DAGEdge;
 import com.github.mdc.common.HeartBeatStream;
-import com.github.mdc.common.HeartBeatTaskObserver;
-import com.github.mdc.common.HeartBeatTaskSchedulerStream;
 import com.github.mdc.common.Job;
 import com.github.mdc.common.JobStage;
 import com.github.mdc.common.MDCConstants;
@@ -58,7 +56,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 
 		PipelineConfig pc = new PipelineConfig();
 		pc.setMode(MDCConstants.MODE_NORMAL);
-		pc.setOutput(new Output(System.out));
+		pc.setOutput(new FSTObjectOutput(System.out));
 		pc.setLocal("true");
 		StreamPipeline<String> mdp = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesample, pc);
 
@@ -101,7 +99,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 
 		PipelineConfig pc = new PipelineConfig();
 		pc.setMode(MDCConstants.MODE_NORMAL);
-		pc.setOutput(new Output(System.out));
+		pc.setOutput(new FSTObjectOutput(System.out));
 		pc.setLocal("true");
 		pc.setIsblocksuserdefined("true");
 		pc.setBlocksize("1");
@@ -144,7 +142,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 
 		PipelineConfig pc = new PipelineConfig();
 		pc.setMode(MDCConstants.MODE_NORMAL);
-		pc.setOutput(new Output(System.out));
+		pc.setOutput(new FSTObjectOutput(System.out));
 		pc.setLocal("true");
 		StreamPipeline<String> mdp = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesample, pc);
 		StreamPipeline<String[]> mdparr = mdp.map(val -> val.split(MDCConstants.COMMA));
@@ -196,7 +194,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 
 		PipelineConfig pc = new PipelineConfig();
 		pc.setMode(MDCConstants.MODE_NORMAL);
-		pc.setOutput(new Output(System.out));
+		pc.setOutput(new FSTObjectOutput(System.out));
 		pc.setLocal("true");
 		pc.setIsblocksuserdefined("true");
 		pc.setBlocksize("1");
@@ -250,7 +248,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 
 		PipelineConfig pc = new PipelineConfig();
 		pc.setMode(MDCConstants.MODE_NORMAL);
-		pc.setOutput(new Output(System.out));
+		pc.setOutput(new FSTObjectOutput(System.out));
 		pc.setLocal("true");
 		StreamPipeline<String> mdp = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesample, pc);
 		StreamPipeline<String[]> mdparr = mdp.map(val -> val.split(MDCConstants.COMMA));
@@ -302,7 +300,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 
 		PipelineConfig pc = new PipelineConfig();
 		pc.setMode(MDCConstants.MODE_NORMAL);
-		pc.setOutput(new Output(System.out));
+		pc.setOutput(new FSTObjectOutput(System.out));
 		pc.setLocal("true");
 		pc.setIsblocksuserdefined("true");
 		pc.setBlocksize("1");
@@ -356,7 +354,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 
 		PipelineConfig pc = new PipelineConfig();
 		pc.setMode(MDCConstants.MODE_NORMAL);
-		pc.setOutput(new Output(System.out));
+		pc.setOutput(new FSTObjectOutput(System.out));
 		pc.setLocal("true");
 		StreamPipeline<String> mdp = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesample, pc);
 		StreamPipeline<String[]> mdparr = mdp.map(val -> val.split(MDCConstants.COMMA));
@@ -395,7 +393,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 
 		PipelineConfig pc = new PipelineConfig();
 		pc.setMode(MDCConstants.MODE_NORMAL);
-		pc.setOutput(new Output(System.out));
+		pc.setOutput(new FSTObjectOutput(System.out));
 		pc.setLocal("true");
 		StreamPipeline<String> mdp = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesample, pc);
 		StreamPipeline<String[]> mdparr = mdp.map(val -> val.split(MDCConstants.COMMA));
@@ -438,7 +436,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 
 		PipelineConfig pc = new PipelineConfig();
 		pc.setMode(MDCConstants.MODE_NORMAL);
-		pc.setOutput(new Output(System.out));
+		pc.setOutput(new FSTObjectOutput(System.out));
 		pc.setLocal("true");
 		StreamPipeline<String> mdp = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesample, pc);
 		StreamPipeline<String[]> mdparr = mdp.map(val -> val.split(MDCConstants.COMMA));
@@ -482,7 +480,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 
 		PipelineConfig pc = new PipelineConfig();
 		pc.setMode(MDCConstants.MODE_NORMAL);
-		pc.setOutput(new Output(System.out));
+		pc.setOutput(new FSTObjectOutput(System.out));
 		pc.setLocal("true");
 		pc.setIsblocksuserdefined("true");
 		pc.setBlocksize("1");
@@ -529,7 +527,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 
 		PipelineConfig pc = new PipelineConfig();
 		pc.setMode(MDCConstants.MODE_NORMAL);
-		pc.setOutput(new Output(System.out));
+		pc.setOutput(new FSTObjectOutput(System.out));
 		pc.setLocal("true");
 		pc.setIsblocksuserdefined("true");
 		pc.setBlocksize("1");
@@ -574,7 +572,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 
 		PipelineConfig pc = new PipelineConfig();
 		pc.setMode(MDCConstants.MODE_NORMAL);
-		pc.setOutput(new Output(System.out));
+		pc.setOutput(new FSTObjectOutput(System.out));
 		pc.setLocal("true");
 		pc.setIsblocksuserdefined("true");
 		pc.setBlocksize("1");
@@ -616,7 +614,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 
 		PipelineConfig pc = new PipelineConfig();
 		pc.setMode(MDCConstants.MODE_NORMAL);
-		pc.setOutput(new Output(System.out));
+		pc.setOutput(new FSTObjectOutput(System.out));
 		pc.setLocal("true");
 		StreamPipeline<String> mdp = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesample, pc);
 		StreamPipeline<String[]> mdparr = mdp.map(val -> val.split(MDCConstants.COMMA));
@@ -669,7 +667,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 
 		PipelineConfig pc = new PipelineConfig();
 		pc.setMode(MDCConstants.MODE_NORMAL);
-		pc.setOutput(new Output(System.out));
+		pc.setOutput(new FSTObjectOutput(System.out));
 		pc.setLocal("true");
 		pc.setIsblocksuserdefined("true");
 		pc.setBlocksize("1");
@@ -724,7 +722,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 
 		PipelineConfig pc = new PipelineConfig();
 		pc.setMode(MDCConstants.MODE_NORMAL);
-		pc.setOutput(new Output(System.out));
+		pc.setOutput(new FSTObjectOutput(System.out));
 		pc.setLocal("true");
 		StreamPipeline<String> mdp = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesample, pc);
 
@@ -769,7 +767,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 
 		PipelineConfig pc = new PipelineConfig();
 		pc.setMode(MDCConstants.MODE_NORMAL);
-		pc.setOutput(new Output(System.out));
+		pc.setOutput(new FSTObjectOutput(System.out));
 		pc.setLocal("true");
 		pc.setIsblocksuserdefined("true");
 		pc.setBlocksize("1");
@@ -812,7 +810,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 
 		PipelineConfig pc = new PipelineConfig();
 		pc.setMode(MDCConstants.MODE_NORMAL);
-		pc.setOutput(new Output(System.out));
+		pc.setOutput(new FSTObjectOutput(System.out));
 		pc.setLocal("false");
 		pc.setJgroups("false");
 		StreamPipeline<String> mdp = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesample, pc);
@@ -842,7 +840,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 
 		PipelineConfig pc = new PipelineConfig();
 		pc.setMode(MDCConstants.MODE_NORMAL);
-		pc.setOutput(new Output(System.out));
+		pc.setOutput(new FSTObjectOutput(System.out));
 		pc.setLocal("false");
 		pc.setIsblocksuserdefined("true");
 		pc.setBlocksize("1");
@@ -864,15 +862,6 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 		js.semaphore = new Semaphore(1);
 		js.resultstream = new ConcurrentHashMap<>();
 		js.batchsize = Integer.parseInt(pc.getBatchsize());
-		js.hbtss = new HeartBeatTaskSchedulerStream();
-		js.hbtss.init(Integer.parseInt(pc.getRescheduledelay()),
-				Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULERSTREAM_PORT)),
-				MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULERSTREAM_HOST),
-				Integer.parseInt(pc.getInitialdelay()), Integer.parseInt(pc.getPingdelay()), MDCConstants.EMPTY,
-				 job.getId());
-		// Start the heart beat to receive task executor to task
-		// schedulers task status updates.
-		js.hbtss.start();		
 		HeartBeatStream hbss = new HeartBeatStream();
 		js.hbss = hbss;
 		js.getContainersHostPort();
@@ -910,16 +899,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 			mdstst.getTask().finalphase = true;
 			mdstst.getTask().hdfsurl = job.getUri();
 			mdstst.getTask().filepath = job.getSavepath() + MDCConstants.HYPHEN + partitionnumber++;
-			mdstst.getTask().hbphysicaladdress = js.hbtss.getPhysicalAddress();
 		}
-		job.getContainers().parallelStream().forEach(container->js.hbtss.getHbo().put(container, new HeartBeatTaskObserver<>()));
-		js.hbtss.getHbo().values().forEach(hbo-> {
-			try {
-				hbo.start();
-			} catch (Exception e) {
-				log.error("HeartBeat Observer start error");
-			}
-		});
 		js.parallelExecutionPhaseDExecutor(graph);
 		List<List> results = js.getLastStageOutput(mdstts, graph, mdststs, false, false, false, false, js.resultstream);
 		int sum = 0;
@@ -927,14 +907,6 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 			sum += result.size();
 		}
 		assertEquals(46361, sum);
-		js.hbtss.getHbo().values().forEach(hbo-> {
-			try {
-				hbo.stop();
-			} catch (Exception e) {
-				log.error("HeartBeat Observer start error");
-			}
-		});
-		js.hbtss.close();
 		js.hbss.stop();
 		js.hbss.destroy();
 		js.destroyContainers();
@@ -947,7 +919,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 
 		PipelineConfig pc = new PipelineConfig();
 		pc.setMode(MDCConstants.MODE_NORMAL);
-		pc.setOutput(new Output(System.out));
+		pc.setOutput(new FSTObjectOutput(System.out));
 		pc.setLocal("true");
 		pc.setBatchsize("1");
 		StreamPipeline<String> mdp = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesample, pc);
@@ -1009,7 +981,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 
 		PipelineConfig pc = new PipelineConfig();
 		pc.setMode(MDCConstants.MODE_NORMAL);
-		pc.setOutput(new Output(System.out));
+		pc.setOutput(new FSTObjectOutput(System.out));
 		pc.setLocal("true");
 		pc.setIsblocksuserdefined("true");
 		pc.setBlocksize("1");
@@ -1076,7 +1048,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 
 		PipelineConfig pc = new PipelineConfig();
 		pc.setMode(MDCConstants.MODE_NORMAL);
-		pc.setOutput(new Output(System.out));
+		pc.setOutput(new FSTObjectOutput(System.out));
 		pc.setLocal("true");
 		pc.setIsblocksuserdefined("true");
 		pc.setBlocksize("1");
@@ -1144,7 +1116,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 
 		PipelineConfig pc = new PipelineConfig();
 		pc.setMode(MDCConstants.MODE_NORMAL);
-		pc.setOutput(new Output(System.out));
+		pc.setOutput(new FSTObjectOutput(System.out));
 		pc.setLocal("false");
 		pc.setJgroups("true");
 		pc.setStorage(MDCConstants.STORAGE.DISK);
@@ -1172,7 +1144,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 
 		PipelineConfig pc = new PipelineConfig();
 		pc.setMode(MDCConstants.MODE_NORMAL);
-		pc.setOutput(new Output(System.out));
+		pc.setOutput(new FSTObjectOutput(System.out));
 		StreamPipeline<String> mdp = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesample, pc);
 		StreamPipeline<String[]> mdparr = mdp.map(val -> val.split(MDCConstants.COMMA));
 		mdparr.finaltasks.add(mdparr.task);
@@ -1194,7 +1166,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 
 		PipelineConfig pc = new PipelineConfig();
 		pc.setMode(MDCConstants.MODE_NORMAL);
-		pc.setOutput(new Output(System.out));
+		pc.setOutput(new FSTObjectOutput(System.out));
 		pc.setLocal("false");
 		pc.setJgroups("false");
 		StreamPipeline<String> mdp = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesample, pc);
@@ -1216,7 +1188,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 	public void testScheduleJobStandalone2() throws Exception {
 		PipelineConfig pc = new PipelineConfig();
 		pc.setMode(MDCConstants.MODE_NORMAL);
-		pc.setOutput(new Output(System.out));
+		pc.setOutput(new FSTObjectOutput(System.out));
 		pc.setLocal("false");
 		pc.setJgroups("false");
 		StreamPipeline<String> mdp = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesample, pc);

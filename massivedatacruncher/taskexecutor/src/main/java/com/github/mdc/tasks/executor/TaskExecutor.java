@@ -34,7 +34,6 @@ import org.apache.log4j.Logger;
 import org.ehcache.Cache;
 import org.h2.util.IOUtils;
 
-import com.esotericsoftware.kryonetty.ServerEndpoint;
 import com.github.mdc.common.BlocksLocation;
 import com.github.mdc.common.ByteBufferInputStream;
 import com.github.mdc.common.ByteBufferOutputStream;
@@ -63,7 +62,6 @@ import com.github.mdc.stream.executors.StreamPipelineTaskExecutorJGroups;
 
 public class TaskExecutor implements Callable<Object> {
 	private static Logger log = Logger.getLogger(TaskExecutor.class);
-	ServerEndpoint s;
 	int port;
 	ExecutorService es;
 	ConcurrentMap<String, OutputStream> resultstream;

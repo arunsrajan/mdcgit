@@ -19,7 +19,6 @@ import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -29,12 +28,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
-import java.lang.invoke.SerializedLambda;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryPoolMXBean;
 import java.lang.management.MemoryType;
 import java.lang.management.MemoryUsage;
-import java.lang.reflect.InvocationHandler;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
@@ -42,20 +39,15 @@ import java.net.Socket;
 import java.net.URI;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
 import java.security.KeyStore;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.GregorianCalendar;
 import java.util.Iterator;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
-import java.util.Set;
-import java.util.Vector;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.jar.Attributes;
@@ -84,7 +76,6 @@ import org.apache.log4j.PropertyConfigurator;
 import org.apache.zookeeper.server.ServerCnxnFactory;
 import org.apache.zookeeper.server.ZooKeeperServer;
 import org.jgrapht.Graph;
-import org.jgrapht.graph.SimpleDirectedGraph;
 import org.jgrapht.io.ComponentNameProvider;
 import org.jgrapht.io.DOTExporter;
 import org.jgrapht.io.ExportException;
@@ -97,52 +88,17 @@ import org.jgroups.Receiver;
 import org.jgroups.View;
 import org.jgroups.util.UUID;
 import org.jooq.lambda.tuple.Tuple2;
-import org.json.simple.JSONObject;
-import org.objenesis.strategy.StdInstantiatorStrategy;
+import org.nustaq.serialization.FSTConfiguration;
+import org.nustaq.serialization.FSTObjectInput;
+import org.nustaq.serialization.FSTObjectOutput;
+import org.nustaq.serialization.simpleapi.DefaultCoder;
 import org.slf4j.LoggerFactory;
 
-import com.esotericsoftware.kryo.Kryo;
-import com.esotericsoftware.kryo.io.Input;
-import com.esotericsoftware.kryo.io.Output;
-import com.esotericsoftware.kryo.serializers.ClosureSerializer;
-import com.esotericsoftware.kryo.serializers.CompatibleFieldSerializer;
-import com.esotericsoftware.kryo.serializers.CompatibleFieldSerializer.CompatibleFieldSerializerConfig;
-import com.esotericsoftware.kryo.serializers.DefaultSerializers.EnumSerializer;
-import com.esotericsoftware.kryo.serializers.JavaSerializer;
-import com.esotericsoftware.kryo.util.DefaultInstantiatorStrategy;
-
-import de.javakaffee.kryoserializers.ArraysAsListSerializer;
-import de.javakaffee.kryoserializers.CollectionsEmptyListSerializer;
-import de.javakaffee.kryoserializers.CollectionsEmptyMapSerializer;
-import de.javakaffee.kryoserializers.CollectionsEmptySetSerializer;
-import de.javakaffee.kryoserializers.CollectionsSingletonListSerializer;
-import de.javakaffee.kryoserializers.CollectionsSingletonMapSerializer;
-import de.javakaffee.kryoserializers.CollectionsSingletonSetSerializer;
-import de.javakaffee.kryoserializers.GregorianCalendarSerializer;
-import de.javakaffee.kryoserializers.JdkProxySerializer;
-import de.javakaffee.kryoserializers.SynchronizedCollectionsSerializer;
-import de.javakaffee.kryoserializers.UnmodifiableCollectionsSerializer;
-import de.javakaffee.kryoserializers.cglib.CGLibProxySerializer;
-import de.javakaffee.kryoserializers.guava.ArrayListMultimapSerializer;
-import de.javakaffee.kryoserializers.guava.ArrayTableSerializer;
-import de.javakaffee.kryoserializers.guava.HashBasedTableSerializer;
-import de.javakaffee.kryoserializers.guava.HashMultimapSerializer;
-import de.javakaffee.kryoserializers.guava.ImmutableListSerializer;
-import de.javakaffee.kryoserializers.guava.ImmutableMapSerializer;
-import de.javakaffee.kryoserializers.guava.ImmutableMultimapSerializer;
-import de.javakaffee.kryoserializers.guava.ImmutableSetSerializer;
-import de.javakaffee.kryoserializers.guava.ImmutableTableSerializer;
-import de.javakaffee.kryoserializers.guava.LinkedHashMultimapSerializer;
-import de.javakaffee.kryoserializers.guava.LinkedListMultimapSerializer;
-import de.javakaffee.kryoserializers.guava.ReverseListSerializer;
-import de.javakaffee.kryoserializers.guava.TreeBasedTableSerializer;
-import de.javakaffee.kryoserializers.guava.TreeMultimapSerializer;
-import de.javakaffee.kryoserializers.guava.UnmodifiableNavigableSetSerializer;
 
 /**
  * 
  * @author arun Utils for adding the shutdown hook and obtaining the shuffled
- *         task executors and much more on kryos and jgroups mode task execution
+ *         task executors and 
  *         utilities and send and receive the objects via socket.
  */
 public class Utils {
@@ -173,190 +129,47 @@ public class Utils {
 		log.debug("Exiting Utils.addShutdownHook");
 	}
 
-	private static Semaphore kryowritesem = new Semaphore(1);
+	static ThreadLocal<FSTConfiguration> conf = new ThreadLocal<>() { 
+		    public FSTConfiguration initialValue() {
+		    	FSTConfiguration conf = FSTConfiguration.createUnsafeBinaryConfiguration();
+		    	conf.setShareReferences(true);
+		    	conf.setForceSerializable(true);
+		    	conf.setPreferSpeed(true);
+		    	conf.registerClass(CSVRecord.class);
+		    	conf.registerClass(CSVParser.class);
+		    	return conf;
+		    }
+		};
+	
 
-	/**
-	 * This method writes object to outputstream via kryo object without class
-	 * information.
-	 * 
-	 * @param kryo
-	 * @param output
-	 * @param outvalue
-	 */
-	public static void writeKryoOutput(Kryo kryo, Output output, Object outvalue) {
-		try {
-			kryowritesem.acquire();
-			log.debug("Entered Utils.writeKryoOutput");
-			if (!Objects.isNull(output)) {
-				kryo.writeObject(output, MDCConstants.NEWLINE + outvalue);
-				output.flush();
-			}
-			log.debug("Exiting Utils.writeKryoOutput");
-		} catch (InterruptedException e) {
-			log.warn("Interrupted!", e);
-			// Restore interrupted state...
-			Thread.currentThread().interrupt();
-		} catch (Exception e) {
-			log.error(MDCConstants.EMPTY, e);
-		} finally {
-			kryowritesem.release();
-		}
+	public static FSTConfiguration getConfigForSerialization() {
+		return conf.get();
 	}
 
-	/**
-	 * This method writes object to outputstream via kryo object with class
-	 * information.
-	 * 
-	 * @param kryo
-	 * @param output
-	 * @param outvalue
-	 */
-	public static void writeKryoOutputClassObject(Kryo kryo, Output output, Object outvalue) {
-		log.debug("Entered Utils.writeKryoOutputClassObject");
-		kryo.writeClassAndObject(output, outvalue);
-		output.flush();
-		log.debug("Exiting Utils.writeKryoOutputClassObject");
-	}
-
-	/**
-	 * This method reads object from inputputstream via kryo object with class
-	 * information.
-	 * 
-	 * @param kryo
-	 * @param input
-	 * @return
-	 */
-	public static Object readKryoInputObjectWithClass(Kryo kryo, Input input) {
-		return kryo.readClassAndObject(input);
-	}
-
-	/**
-	 * This function returns kryo object with the registered classes with
-	 * serializers.
-	 * 
-	 * @return kryo object with the registered classes with serializers.
-	 */
-	public static Kryo getKryoSerializerDeserializer() {
-		log.debug("Entered Utils.getKryoSerializerDeserializer");
-		var kryo = new Kryo();
-		registerKryoSerializerDeserializer(kryo);
-		log.debug("Exiting Utils.getKryoSerializerDeserializer");
-		return kryo;
-	}
-
-	/**
-	 * This function returns kryo object with the registered classes with
-	 * serializers.
-	 * 
-	 * @return kryo object
-	 */
-	public static Kryo getKryo() {
-		var kryo = new Kryo();
-		getKryo(kryo);
-		return kryo;
-	}
-
-	/**
-	 * This method configures kryo object with the registered classes with
-	 * serializers.
-	 * 
-	 * @param kryo
-	 */
-	public static void getKryo(Kryo kryo) {
-		RegisterKyroSerializers.register(kryo);
-		var is = new StdInstantiatorStrategy();
-		var dis = new DefaultInstantiatorStrategy(is);
-		kryo.setInstantiatorStrategy(dis);
-		dis.setFallbackInstantiatorStrategy(new StdInstantiatorStrategy());
-		kryo.register(Vector.class);
-		kryo.register(ArrayList.class);
-		kryo.register(SerializedLambda.class);
-		kryo.register(ClosureSerializer.Closure.class, new ClosureSerializer());
-		kryo.setRegistrationRequired(false);
-		kryo.setReferences(true);
+	public static void writeToOstream(FSTObjectOutput fstoo, Object objtowrite) throws Exception {
+		fstoo.writeObject(objtowrite);
+		fstoo.flush();
 	}
 	
 	/**
-	 * This method configures kryo object with the registered classes with
-	 * serializers.
-	 * 
-	 * @param kryo
+	 * Serialize the object
+	 * @param object
+	 * @return serialized byte array
 	 */
-	public static void registerKryoSerializerDeserializer(Kryo kryo) {
-		log.debug("Entered Utils.registerKryoNonDeflateSerializer");
-		kryo.setRegistrationRequired(false);
-		kryo.setReferences(true);
-		kryo.setWarnUnregisteredClasses(false);
-		RegisterKyroSerializers.register(kryo);
-		var dis = new com.esotericsoftware.kryo.util.DefaultInstantiatorStrategy(new StdInstantiatorStrategy());
-		kryo.setInstantiatorStrategy(dis);
-		dis.setFallbackInstantiatorStrategy(new StdInstantiatorStrategy());
-		kryo.setDefaultSerializer(CompatibleFieldSerializer.class);
-		kryo.register(Object[].class);
-		kryo.register(Object.class);
-		kryo.register(Class.class);
-		kryo.register(MDCConstants.STORAGE.class);
-		kryo.register(SerializedLambda.class);
-		kryo.register(ClosureSerializer.Closure.class, new ClosureSerializer());
-		kryo.register(Vector.class);
-		kryo.register(ArrayList.class);
-		CompatibleFieldSerializerConfig configtuple2 = new CompatibleFieldSerializerConfig();
-		configtuple2.setFieldsCanBeNull(true);
-		CompatibleFieldSerializer<Tuple2> cfs = new CompatibleFieldSerializer<Tuple2>(kryo, Tuple2.class, configtuple2);
-		kryo.register(Tuple2.class, cfs);
-		kryo.register(LinkedHashSet.class);
-		kryo.register(Tuple3Serializable.class);
-		kryo.register(BlocksLocation.class);
-		kryo.register(RetrieveData.class);
-		kryo.register(RetrieveKeys.class);
-		kryo.register(Block.class);
-		kryo.register(Block[].class);
-		kryo.register(ConcurrentHashMap.class);
-		kryo.register(byte[].class);
-		kryo.register(LoadJar.class);
-		kryo.register(JobStage.class, new JavaSerializer());
-		kryo.register(RemoteDataFetch[].class);
-		kryo.register(RemoteDataFetch.class);
-		kryo.register(Stage.class, new JavaSerializer());
-		kryo.register(Task.class, new JavaSerializer());
-		CompatibleFieldSerializerConfig cfsc = new CompatibleFieldSerializerConfig();
-		cfsc.setFieldsCanBeNull(true);
-		cfsc.setFieldsAsAccessible(true);
-		CompatibleFieldSerializer<TasksGraphExecutor> cfstge = new CompatibleFieldSerializer<>(kryo, TasksGraphExecutor.class, cfsc);
-		kryo.register(TasksGraphExecutor.class, cfstge);
-		kryo.register(DAGEdge.class);
-		kryo.register(DataCruncherContext.class);
-		kryo.register(JSONObject.class);
-		kryo.register(PipelineConfig.class);
-		kryo.register(SimpleDirectedGraph.class);
-		CompatibleFieldSerializerConfig config = new CompatibleFieldSerializerConfig();
-		config.setSerializeTransient(false);
-		CompatibleFieldSerializer<CSVParser> transientcsvparser = new CompatibleFieldSerializer<CSVParser>(kryo,
-				CSVParser.class, config);
-		transientcsvparser.removeField("lexer");
-		kryo.register(CSVParser.class, transientcsvparser);
-		config = new CompatibleFieldSerializerConfig();
-		config.setSerializeTransient(true);
-		CompatibleFieldSerializer<CSVRecord> transientcsvser = new CompatibleFieldSerializer<CSVRecord>(kryo,
-				CSVRecord.class, config);
-		kryo.register(CSVRecord.class, transientcsvser);
-		kryo.register(ReducerValues.class);
-		kryo.register(SkipToNewLine.class);
-		kryo.register(CloseStagesGraphExecutor.class);
-		kryo.register(CloseStagesGraphExecutor.class,
-				new CompatibleFieldSerializer(kryo, CloseStagesGraphExecutor.class));
-		kryo.register(AllocateContainers.class);
-		kryo.register(LaunchContainers.class);
-		kryo.register(AllocateContainers.class);
-		kryo.register(ContainerLaunchAttributes.class);
-		kryo.register(ContainerResources.class);
-		kryo.register(LaunchContainers.MODE.class);
-		kryo.register(JobApp.class, new JavaSerializer());
-		kryo.register(JobApp.JOBAPP.class, new EnumSerializer(JobApp.JOBAPP.class));
-		kryo.register(Dummy.class, new JavaSerializer());
-		kryo.register(TaskExecutorShutdown.class, new JavaSerializer());
-		log.debug("Exiting Utils.registerKryoNonDeflateSerializer");
+	public static Object serialiazeObject(Object object) {
+		return conf.get().asByteArray(object);
 	}
+	
+	/**
+	 * DeSerialize the object
+	 * @param object
+	 * @return deserialized object
+	 */
+	public static Object deSerialiazeObject(byte[] object) {
+		return conf.get().asObject(object);
+	}
+
+	
 	
 	/**
 	 * This method configures the log4j properties and obtains the properties from
@@ -482,9 +295,8 @@ public class Utils {
 
 				public void receive(Message msg) {
 					var rawbuffer = (byte[]) ((ObjectMessage) msg).getObject();
-					var kryo = getKryo();
-					try (var bais = new ByteArrayInputStream(rawbuffer); var input = new Input(bais);) {
-						var object = readKryoInputObjectWithClass(kryo, input);
+					try {
+						var object = conf.get().asObject(rawbuffer);
 						if (object instanceof WhoIsRequest whoisrequest) {
 							if (mapreql.containsKey(whoisrequest.getStagepartitionid())) {
 								log.debug("Whois: " + whoisrequest.getStagepartitionid() + " Map Status: " + mapreql
@@ -527,11 +339,9 @@ public class Utils {
 		log.debug("Entered Utils.whois");
 		var whoisrequest = new WhoIsRequest();
 		whoisrequest.setStagepartitionid(stagepartitionid);
-		var kryo = getKryo();
-		try (var baos = new ByteArrayOutputStream(); var output = new Output(baos);) {
-			writeKryoOutputClassObject(kryo, output, whoisrequest);
-			channel.send(new ObjectMessage(null, baos.toByteArray()));
-		}
+		try {
+			channel.send(new ObjectMessage(null, conf.get().asByteArray(whoisrequest)));
+		} finally {}
 		log.debug("Exiting Utils.whois");
 	}
 
@@ -546,11 +356,9 @@ public class Utils {
 	public static void whoare(JChannel channel) throws Exception {
 		log.debug("Entered Utils.whoare");
 		var whoarerequest = new WhoAreRequest();
-		var kryo = getKryo();
-		try (var baos = new ByteArrayOutputStream(); var output = new Output(baos);) {
-			writeKryoOutputClassObject(kryo, output, whoarerequest);
-			channel.send(new ObjectMessage(null, baos.toByteArray()));
-		}
+		try {
+			channel.send(new ObjectMessage(null, conf.get().asByteArray(whoarerequest)));
+		} finally {}
 		log.debug("Exiting Utils.whoare");
 	}
 
@@ -565,13 +373,11 @@ public class Utils {
 	public static void whoareresponse(JChannel channel, Address address, Map<String, WhoIsResponse.STATUS> maptosend)
 			throws Exception {
 		log.debug("Entered Utils.whoareresponse");
-		var kryo = getKryo();
-		try (var baos = new ByteArrayOutputStream(); var output = new Output(baos);) {
+		try {
 			var whoareresp = new WhoAreResponse();
 			whoareresp.setResponsemap(maptosend);
-			writeKryoOutputClassObject(kryo, output, whoareresp);
-			channel.send(new ObjectMessage(address, baos.toByteArray()));
-		}
+			channel.send(new ObjectMessage(address, conf.get().asByteArray(whoareresp)));
+		} finally {}
 		log.debug("Exiting Utils.whoareresponse");
 	}
 
@@ -593,11 +399,9 @@ public class Utils {
 		var whoisresponse = new WhoIsResponse();
 		whoisresponse.setStagepartitionid(stagepartitionid);
 		whoisresponse.setStatus(status);
-		var kryo = getKryo();
-		try (var baos = new ByteArrayOutputStream(); var output = new Output(baos);) {
-			writeKryoOutputClassObject(kryo, output, whoisresponse);
-			jchannel.send(new ObjectMessage(msg.getSrc(), baos.toByteArray()));
-		}
+		try {
+			jchannel.send(new ObjectMessage(msg.getSrc(), conf.get().asByteArray(whoisresponse)));
+		} finally {}
 		log.debug("Exiting Utils.whoisresp");
 	}
 
@@ -703,116 +507,6 @@ public class Utils {
 				+ garbageCollectionTime;
 	}
 
-	/**
-	 * This function returns the kryo object configured for mesos mode execution.
-	 * 
-	 * @return kryo object
-	 */
-	public static Kryo getKryoMesos() {
-		log.debug("Entered Utils.getKryoMesos");
-		var kryo = new Kryo();
-		var is = new StdInstantiatorStrategy();
-		var dis = new DefaultInstantiatorStrategy(is);
-		kryo.setInstantiatorStrategy(dis);
-		kryo.register(Object[].class);
-		kryo.register(Object.class);
-		kryo.register(Class.class);
-		kryo.register(SerializedLambda.class);
-		kryo.register(Vector.class);
-		kryo.register(ArrayList.class);
-		kryo.setDefaultSerializer(CompatibleFieldSerializer.class);
-		kryo.register(ClosureSerializer.Closure.class, new ClosureSerializer());
-		log.debug("Exiting Utils.getKryoMesos");
-		return kryo;
-	}
-
-	/**
-	 * Configures the kryo object with custom serializers for the collection and
-	 * guava objects for serialization and deserialization.
-	 * 
-	 * @param kryo
-	 */
-	public static void registerKryoResult(Kryo kryo) {
-		log.debug("Entered Utils.registerKryoResult");
-		var dis = new DefaultInstantiatorStrategy(new StdInstantiatorStrategy());
-		kryo.setInstantiatorStrategy(dis);
-		dis.setFallbackInstantiatorStrategy(new StdInstantiatorStrategy());
-		kryo.register(Arrays.asList().getClass(), new ArraysAsListSerializer());
-		kryo.register(Collections.EMPTY_LIST.getClass(), new CollectionsEmptyListSerializer());
-		kryo.register(Collections.EMPTY_MAP.getClass(), new CollectionsEmptyMapSerializer());
-		kryo.register(Collections.EMPTY_SET.getClass(), new CollectionsEmptySetSerializer());
-		kryo.register(List.of(MDCConstants.EMPTY).getClass(),
-				new CollectionsSingletonListSerializer());
-		kryo.register(Set.of(MDCConstants.EMPTY).getClass(), new CollectionsSingletonSetSerializer());
-		kryo.register(Map.of(MDCConstants.EMPTY, MDCConstants.EMPTY).getClass(),
-				new CollectionsSingletonMapSerializer());
-		kryo.register(GregorianCalendar.class, new GregorianCalendarSerializer());
-		kryo.register(InvocationHandler.class, new JdkProxySerializer());
-		UnmodifiableCollectionsSerializer.registerSerializers(kryo);
-		SynchronizedCollectionsSerializer.registerSerializers(kryo);
-		kryo.register(CGLibProxySerializer.CGLibProxyMarker.class, new CGLibProxySerializer());
-		ImmutableListSerializer.registerSerializers(kryo);
-		ImmutableSetSerializer.registerSerializers(kryo);
-		ImmutableMapSerializer.registerSerializers(kryo);
-		ImmutableMultimapSerializer.registerSerializers(kryo);
-		ImmutableTableSerializer.registerSerializers(kryo);
-		ReverseListSerializer.registerSerializers(kryo);
-		UnmodifiableNavigableSetSerializer.registerSerializers(kryo);
-		ArrayListMultimapSerializer.registerSerializers(kryo);
-		HashMultimapSerializer.registerSerializers(kryo);
-		LinkedHashMultimapSerializer.registerSerializers(kryo);
-		LinkedListMultimapSerializer.registerSerializers(kryo);
-		TreeMultimapSerializer.registerSerializers(kryo);
-		ArrayTableSerializer.registerSerializers(kryo);
-		HashBasedTableSerializer.registerSerializers(kryo);
-		TreeBasedTableSerializer.registerSerializers(kryo);
-		kryo.register(Object.class);
-		kryo.register(Object[].class);
-		kryo.register(Class.class);
-		kryo.register(SerializedLambda.class);
-		kryo.register(Vector.class);
-		kryo.register(ArrayList.class);
-		kryo.register(Tuple2.class);
-		kryo.register(LinkedHashSet.class);
-		kryo.register(Tuple3Serializable.class);
-		kryo.setDefaultSerializer(CompatibleFieldSerializer.class);
-		kryo.register(ClosureSerializer.Closure.class, new ClosureSerializer());
-		kryo.register(BlocksLocation.class);
-		kryo.register(ReducerValues.class);
-		kryo.register(RetrieveData.class);
-		kryo.register(RetrieveKeys.class);
-		kryo.register(Block.class);
-		kryo.register(Block[].class);
-		kryo.register(java.util.HashSet.class);
-		kryo.register(byte[].class);
-		kryo.register(ConcurrentHashMap.class);
-		kryo.register(java.util.AbstractList.class);
-		kryo.register(LoadJar.class);
-		kryo.register(JobStage.class, new JavaSerializer());
-		kryo.register(RemoteDataFetch[].class);
-		kryo.register(RemoteDataFetch.class);
-		kryo.register(Stage.class);
-		kryo.register(Task.class);
-		kryo.register(DataCruncherContext.class);
-		kryo.register(JSONObject.class);
-		kryo.setRegistrationRequired(false);
-		kryo.setReferences(true);
-		log.debug("Exiting Utils.registerKryoResult");
-	}
-
-	/**
-	 * This function returns the kryo object after configuring the custom
-	 * serializers.
-	 * 
-	 * @return kryo
-	 */
-	public static Kryo getKryoResult() {
-		log.debug("Entered Utils.getKryoResult");
-		var kryo = new Kryo();
-		registerKryoResult(kryo);
-		log.debug("Exiting Utils.getKryoResult");
-		return kryo;
-	}
 
 	/**
 	 * This function returns the object by socket using the host port of the server
@@ -831,45 +525,6 @@ public class Utils {
 			return cruncher.postObject(inputobj);
 		} catch (Exception ex) {
 			log.error("Unable to read result Object: " + inputobj + " " + hp, ex);
-			throw ex;
-		}
-	}
-
-	/**
-	 * This function returns the objects by socket and classloader.
-	 * 
-	 * @param socket
-	 * @param cl
-	 * @return object
-	 * @throws Exception
-	 */
-	public static Object readObject(Socket socket, ClassLoader cl) throws Exception {
-		try {
-			var input = new Input(socket.getInputStream());
-			var kryo = Utils.getKryoSerializerDeserializer();
-			kryo.setClassLoader(cl);
-			return kryo.readClassAndObject(input);
-		} catch (Exception ex) {
-			log.error("Unable to read Object: ", ex);
-			throw ex;
-		}
-	}
-
-	/**
-	 * This method writes the object via socket connection to the server.
-	 * 
-	 * @param socket
-	 * @param object
-	 * @throws Exception 
-	 */
-	public static void writeObject(Socket socket, Object object) throws Exception {
-		try {
-			var output = new Output(socket.getOutputStream());
-			var kryo = Utils.getKryoSerializerDeserializer();
-			kryo.writeClassAndObject(output, object);
-			output.flush();
-		} catch (Exception ex) {
-			log.error("Directing the {} to host {} with port {} Failed", object, socket.getInetAddress(), socket.getPort());
 			throw ex;
 		}
 	}
@@ -1014,10 +669,9 @@ public class Utils {
 				BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(hdfs.create(new Path(hdfsurl + filepath),
 						Short.parseShort(MDCProperties.get().getProperty(MDCConstants.DFSOUTPUTFILEREPLICATION,
 								MDCConstants.DFSOUTPUTFILEREPLICATION_DEFAULT)))));
-				Input input = new Input(is)) {
-			Kryo kryo = getKryoSerializerDeserializer();
-			while (input.available() > 0) {
-				Object result = kryo.readClassAndObject(input);
+				FSTObjectInput in = new FSTObjectInput(is);) {
+			while (is.available() > 0) {				
+				Object result = in.readObject();
 				if (result instanceof List res) {
 					for (var value : res) {
 						bw.write(value.toString());
@@ -1154,6 +808,14 @@ public class Utils {
 			}
 		});
 		GlobalContainerLaunchers.remove(containerid);
+	}
+	static List<Object> objects = new ArrayList<>();
+	public static Registry getRPCRegistry(int port, final StreamDataCruncher streamdatacruncher) throws Exception {
+		objects.add(streamdatacruncher);
+		Registry registry = LocateRegistry.createRegistry(port);
+		StreamDataCruncher stub = (StreamDataCruncher) UnicastRemoteObject.exportObject(streamdatacruncher, 0);
+		registry.rebind(MDCConstants.BINDTESTUB, stub);
+		return registry;
 	}
 
 

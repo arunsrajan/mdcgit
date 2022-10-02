@@ -160,7 +160,7 @@ public class MassiveDataCruncherMRApiTest extends StreamPipelineBase {
 		reducervalues.setReducerclass(AirlineDataMapper.class.getName());
 		task = MDCConstants.TASK + "-1";
 		TaskExecutorReducer reducerexec = new TaskExecutorReducer(reducervalues, app, task, Thread.currentThread().getContextClassLoader(), 12121, apptaskexecutormap);
-		reducerexec.run();
+		reducerexec.call();
 		Context ctx = (Context) reducerexec.ctx;
 		es.shutdown();
 		assertEquals(-63278, (long) (ctx.get("AQ").iterator().next()));

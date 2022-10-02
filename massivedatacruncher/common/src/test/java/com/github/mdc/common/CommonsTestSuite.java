@@ -20,8 +20,7 @@ import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@SuiteClasses({HeartBeatServerStreamTest.class, HeartBeatServerTest.class, HeartBeatTaskSchedulerStreamTest.class,
-		HeartBeatTaskSchedulerTest.class, ResourcesTest.class, ServerUtilsTest.class, ZkChunkPropTest.class, HeartBeatObservableTest.class,
+@SuiteClasses({HeartBeatServerStreamTest.class, HeartBeatServerTest.class, ResourcesTest.class, ServerUtilsTest.class, ZkChunkPropTest.class, HeartBeatObservableTest.class,
 		RemoteDataFetcherTest.class, DataCruncherContextTest.class})
 public class CommonsTestSuite {
 

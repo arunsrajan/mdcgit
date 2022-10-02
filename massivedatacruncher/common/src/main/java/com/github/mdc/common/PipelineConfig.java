@@ -19,7 +19,8 @@ import java.io.Serializable;
 import java.util.Objects;
 import java.util.Set;
 
-import com.esotericsoftware.kryo.io.Output;
+import org.nustaq.serialization.FSTObjectOutput;
+
 import com.github.mdc.common.MDCConstants.STORAGE;
 
 /**
@@ -29,7 +30,7 @@ import com.github.mdc.common.MDCConstants.STORAGE;
  */
 public class PipelineConfig implements Serializable, Cloneable {
 	private static final long serialVersionUID = 1L;
-	private Output output;
+	private FSTObjectOutput  output;
 	private String blocksize;
 	private String isblocksuserdefined;
 	private String pingdelay;
@@ -64,11 +65,11 @@ public class PipelineConfig implements Serializable, Cloneable {
 	private String implicitcontainermemorysize;
 	private Set<Class<?>> customclasses;
 
-	public void setKryoOutput(Output output) {
+	public void setKryoOutput(FSTObjectOutput  output) {
 		this.output = output;
 	}
 
-	public Output getOutput() {
+	public FSTObjectOutput getOutput() {
 		return output;
 	}
 
@@ -171,7 +172,7 @@ public class PipelineConfig implements Serializable, Cloneable {
 		this.randomte = randomte;
 	}
 
-	public void setOutput(Output output) {
+	public void setOutput(FSTObjectOutput output) {
 		this.output = output;
 	}
 

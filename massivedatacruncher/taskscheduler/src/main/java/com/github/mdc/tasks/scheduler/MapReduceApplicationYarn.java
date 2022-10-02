@@ -156,7 +156,7 @@ public class MapReduceApplicationYarn implements Callable<List<DataCruncherConte
 			MDCJobMetrics.put(jm);
 			hdfs = FileSystem.get(new URI(MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL)),
 					configuration);
-			var kryo = Utils.getKryoSerializerDeserializer();
+			
 			var combiner = new HashSet<String>();
 			var reducer = new HashSet<>();
 			var mapclzchunkfile = new HashMap<String, Set<String>>();
@@ -258,7 +258,7 @@ public class MapReduceApplicationYarn implements Callable<List<DataCruncherConte
 			jm.setJobcompletiontime(System.currentTimeMillis());
 			jm.setTotaltimetaken((jm.getJobcompletiontime() - jm.getJobstarttime()) / 1000.0);
 			if (!Objects.isNull(jobconf.getOutput())) {
-				Utils.writeKryoOutput(kryo, jobconf.getOutput(),
+				Utils.writeToOstream(jobconf.getOutput(),
 						"Completed Job in " + (jm.getTotaltimetaken()) + " seconds");
 			}
 			return null;

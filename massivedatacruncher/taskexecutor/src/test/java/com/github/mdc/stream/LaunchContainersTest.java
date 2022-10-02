@@ -25,8 +25,8 @@ import java.util.concurrent.ConcurrentMap;
 import org.jooq.lambda.tuple.Tuple;
 import org.jooq.lambda.tuple.Tuple2;
 import org.junit.Test;
+import org.nustaq.serialization.FSTObjectOutput;
 
-import com.esotericsoftware.kryo.io.Output;
 import com.github.mdc.common.ByteBufferPoolDirect;
 import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.MDCNodesResources;
@@ -49,7 +49,7 @@ public class LaunchContainersTest extends StreamPipelineBaseTestCommon {
 		pc.setJgroups("false");
 		pc.setMesos("false");
 		pc.setYarn("false");
-		pc.setOutput(new Output(System.out));
+		pc.setOutput(new FSTObjectOutput(System.out));
 		pc.setIsblocksuserdefined("true");
 		pc.setBlocksize("64");
 		pc.setMode(MDCConstants.MODE_NORMAL);
@@ -75,7 +75,7 @@ public class LaunchContainersTest extends StreamPipelineBaseTestCommon {
 		pc.setJgroups("false");
 		pc.setMesos("false");
 		pc.setYarn("false");
-		pc.setOutput(new Output(System.out));
+		pc.setOutput(new FSTObjectOutput(System.out));
 		pc.setIsblocksuserdefined("true");
 		pc.setBlocksize("64");
 		pc.setMode(MDCConstants.MODE_NORMAL);

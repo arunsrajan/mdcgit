@@ -32,9 +32,9 @@ import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.RetryForever;
 import org.apache.hadoop.fs.FsUrlStreamHandlerFactory;
 import org.apache.log4j.Logger;
+import org.nustaq.serialization.FSTObjectInput;
+import org.nustaq.serialization.FSTObjectOutput;
 
-import com.esotericsoftware.kryo.io.Input;
-import com.esotericsoftware.kryo.io.Output;
 import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.MDCProperties;
 import com.github.mdc.common.Utils;
@@ -98,7 +98,7 @@ public class ApplicationSubmitter {
 					baos.write(ch);
 				}
 				baos.flush();
-				var kryo = Utils.getKryoSerializerDeserializer();
+				
 				writeDataStream(os, baos.toByteArray());
 				writeDataStream(os, new File(jarpath).getName().getBytes());
 				if (!Objects.isNull(argue)) {
@@ -108,8 +108,8 @@ public class ApplicationSubmitter {
 				}
 				writeInt(os, -1);
 				while (true) {
-					var input = new Input(is);
-					var messagetasksscheduler = (String) kryo.readObject(input, String.class);
+					var input = new FSTObjectInput(is);
+					var messagetasksscheduler = (String) input.readObject(String.class);
 					log.info(messagetasksscheduler);
 					if ("quit".equals(messagetasksscheduler.trim())) {
 						break;
@@ -124,9 +124,9 @@ public class ApplicationSubmitter {
 
 	public static void writeInt(OutputStream os, Integer value) throws ApplicationSubmitterException {
 		try {
-			var kryo = Utils.getKryoSerializerDeserializer();
-			var output = new Output(os);
-			kryo.writeClassAndObject(output, value);
+			
+			var output = new FSTObjectOutput(os);
+			output.writeObject(value);
 			output.flush();
 		} catch(Exception exception){
 			throw new ApplicationSubmitterException(exception, "Unable to write Integer value to the output stream");
@@ -135,9 +135,9 @@ public class ApplicationSubmitter {
 
 	public static void writeDataStream(OutputStream os, byte[] outbyt) throws ApplicationSubmitterException {
 		try {
-			var kryo = Utils.getKryoSerializerDeserializer();
-			var output = new Output(os);
-			kryo.writeClassAndObject(output, outbyt);
+			
+			var output = new FSTObjectOutput(os);
+			output.writeObject(outbyt);
 			output.flush();
 		} catch(Exception exception){
 			throw new ApplicationSubmitterException(exception, "Unable to write Integer value to the output stream");

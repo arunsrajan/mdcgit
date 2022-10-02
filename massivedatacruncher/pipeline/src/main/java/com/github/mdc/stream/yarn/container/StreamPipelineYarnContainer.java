@@ -24,10 +24,10 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nustaq.serialization.FSTObjectInput;
 import org.springframework.yarn.integration.container.AbstractIntegrationYarnContainer;
 import org.springframework.yarn.integration.ip.mind.MindAppmasterServiceClient;
 
-import com.esotericsoftware.kryo.io.Input;
 import com.github.mdc.common.ByteBufferPoolDirect;
 import com.github.mdc.common.JobStage;
 import com.github.mdc.common.MDCConstants;
@@ -98,18 +98,18 @@ public class StreamPipelineYarnContainer extends AbstractIntegrationYarnContaine
 				}
 				else if (response.getState().equals(JobResponse.State.STOREJOBSTAGE)) {
 					job = response.getJob();
-					var kryo = Utils.getKryoSerializerDeserializer();
-					var input = new Input(new ByteArrayInputStream(job));
-					var object = kryo.readClassAndObject(input);
+					
+					var input = new FSTObjectInput(new ByteArrayInputStream(job));
+					var object = input.readObject();
 					this.jsidjsmap = (Map<String, JobStage>) object;
 					sleep(1);
 				}
 				else if (response.getState().equals(JobResponse.State.RUNJOB)) {
 					log.debug(containerid + ": Environment " + getEnvironment());
 					job = response.getJob();
-					var kryo = Utils.getKryoSerializerDeserializer();
-					var input = new Input(new ByteArrayInputStream(job));
-					var object = kryo.readClassAndObject(input);
+					
+					var input = new FSTObjectInput(new ByteArrayInputStream(job));
+					var object = input.readObject();
 					task = (Task) object;
 					System.setProperty(MDCConstants.HDFSNAMENODEURL, containerprops.get(MDCConstants.HDFSNAMENODEURL));
 					prop.putAll(containerprops);

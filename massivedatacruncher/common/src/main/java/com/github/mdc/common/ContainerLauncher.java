@@ -47,9 +47,15 @@ public class ContainerLauncher {
 			argumentsForSpawn.add("-XX:+HeapDumpOnOutOfMemoryError");
 			argumentsForSpawn.add("--enable-preview");
 			argumentsForSpawn.add("--add-opens=java.base/java.nio=ALL-UNNAMED");
-			//argumentsForSpawn.add("--add-opens java.base/java.lang.reflect=ALL-UNNAMED");
-			//argumentsForSpawn.add("--add-opens java.base/java.lang=ALL-UNNAMED");
-			//argumentsForSpawn.add("--add-opens java.base/jdk.internal.reflect=ALL-UNNAMED");
+			argumentsForSpawn.add("--add-opens=java.base/java.math=ALL-UNNAMED");
+			argumentsForSpawn.add("--add-modules=jdk.incubator.foreign");
+			  
+			argumentsForSpawn.add("--add-opens=java.base/java.lang.reflect=ALL-UNNAMED");
+			argumentsForSpawn.add("--add-opens=java.base/java.lang=ALL-UNNAMED");
+			argumentsForSpawn.add("--add-opens=java.base/java.net=ALL-UNNAMED");
+			argumentsForSpawn.add("--add-opens=java.sql/java.sql=ALL-UNNAMED");
+			argumentsForSpawn.add("--add-opens=java.base/java.text=ALL-UNNAMED");
+			
 			argumentsForSpawn.add("--add-opens=java.base/java.util=ALL-UNNAMED");
 			argumentsForSpawn.add("--add-opens=java.base/java.lang.invoke=ALL-UNNAMED");
 			argumentsForSpawn.add("--add-opens=java.base/java.util.concurrent=ALL-UNNAMED");
@@ -64,7 +70,8 @@ public class ContainerLauncher {
 			argumentsForSpawn.add(prop);
 			argumentsForSpawn.add("" + cr.getDirectheap());
 			log.debug("Launching Container Daemon Process: " + argumentsForSpawn);
-			return Runtime.getRuntime().exec(argumentsForSpawn.toArray(new String[argumentsForSpawn.size()]));
+			Process process = Runtime.getRuntime().exec(argumentsForSpawn.toArray(new String[argumentsForSpawn.size()]));
+			return process;
 
 
 		} catch (Exception ex) {

@@ -17,6 +17,8 @@ package com.github.mdc.stream;
 
 import java.io.InputStream;
 import java.net.URI;
+import java.rmi.RemoteException;
+import java.rmi.registry.Registry;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -32,32 +34,31 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataOutputStream;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
+import org.apache.log4j.Logger;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.nustaq.serialization.FSTObjectOutput;
 
-import com.esotericsoftware.kryo.io.Output;
-import com.esotericsoftware.kryonetty.ServerEndpoint;
-import com.esotericsoftware.kryonetty.network.ReceiveEvent;
-import com.esotericsoftware.kryonetty.network.handler.NetworkHandler;
-import com.esotericsoftware.kryonetty.network.handler.NetworkListener;
 import com.github.mdc.common.ByteBufferPoolDirect;
 import com.github.mdc.common.HeartBeatStream;
 import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.MDCProperties;
 import com.github.mdc.common.NetworkUtil;
+import com.github.mdc.common.StreamDataCruncher;
 import com.github.mdc.common.TaskExecutorShutdown;
 import com.github.mdc.common.Utils;
 import com.github.mdc.tasks.executor.NodeRunner;
 
 public class StreamPipelineBaseTestCommon extends StreamPipelineBase {
-	static ServerEndpoint server = null;
+	static Registry server = null;
+	static Logger log = Logger.getLogger(StreamPipelineBaseTestCommon.class);
 	@SuppressWarnings({ "unused" })
 	@BeforeClass
 	public static void setServerUp() throws Exception {
 		try {
 			Utils.loadLog4JSystemProperties(MDCConstants.PREV_FOLDER + MDCConstants.FORWARD_SLASH
 					+ MDCConstants.DIST_CONFIG_FOLDER + MDCConstants.FORWARD_SLASH, "mdctest.properties");
-			Output out = new Output(System.out);
+			var out = new FSTObjectOutput(System.out);
 			pipelineconfig.setKryoOutput(out);
 			pipelineconfig.setMaxmem("1024");
 			pipelineconfig.setMinmem("512");
@@ -105,17 +106,17 @@ public class StreamPipelineBaseTestCommon extends StreamPipelineBase {
 					hb.init(rescheduledelay, nodeport, host, initialdelay, pingdelay, "");
 					hb.ping();
 					hbssl.add(hb);
-					server = Utils.getServerKryoNetty(nodeport,
-							new NetworkListener() {
-							@NetworkHandler
-				            public void onReceive(ReceiveEvent event) {
+					server = Utils.getRPCRegistry(nodeport,
+							new StreamDataCruncher() {
+							public Object postObject(Object object)throws RemoteException {
 								try {
-									Object object = event.getObject();
-									var container = new NodeRunner(server, MDCConstants.PROPLOADERCONFIGFOLDER,
+									var container = new NodeRunner(MDCConstants.PROPLOADERCONFIGFOLDER,
 											containerprocesses, hdfs, containeridthreads, containeridports,
-											object, event);
-									Future<Boolean> containerallocated = threadpool.submit(container);
-									log.info("Containers Allocated: " + containerallocated.get());
+											object);
+									Future<Object> containerallocated = threadpool.submit(container);
+									Object returnresultobject = containerallocated.get();
+									log.info("Containers Allocated: " + returnresultobject);
+									return returnresultobject;
 								} catch (InterruptedException e) {
 									log.warn("Interrupted!", e);
 									// Restore interrupted state...
@@ -123,6 +124,7 @@ public class StreamPipelineBaseTestCommon extends StreamPipelineBase {
 								} catch (Exception e) {
 									log.error(MDCConstants.EMPTY, e);
 								}
+								return null;
 							}
 						});
 					sss.add(server);
@@ -195,13 +197,6 @@ public class StreamPipelineBaseTestCommon extends StreamPipelineBase {
 			hbss.stop();
 			hbss.destroy();
 		}
-		sss.stream().forEach(ss -> {
-			try {
-				ss.close();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		});
 		containerprocesses.keySet().stream().forEach(key -> {
 			containerprocesses.get(key).keySet().stream().forEach(port -> {
 				Process proc = containerprocesses.get(key).get(port);
@@ -212,7 +207,7 @@ public class StreamPipelineBaseTestCommon extends StreamPipelineBase {
 						log.info("Destroying the TaskExecutor: "
 								+ MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_HOST)
 								+ MDCConstants.UNDERSCORE + port);
-						Utils.writeObject(MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_HOST)
+						Utils.getResultObjectByInput(MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_HOST)
 								+ MDCConstants.UNDERSCORE + port, taskExecutorshutdown);
 						log.info("Checking the Process is Alive for: "
 								+ MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_HOST)

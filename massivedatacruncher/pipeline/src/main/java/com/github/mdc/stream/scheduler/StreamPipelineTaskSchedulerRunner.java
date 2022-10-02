@@ -25,9 +25,10 @@ import org.jgroups.Message;
 import org.jgroups.ObjectMessage;
 import org.jgroups.Receiver;
 import org.jgroups.View;
+import org.nustaq.serialization.FSTObjectInput;
+import org.nustaq.serialization.FSTObjectOutput;
 import org.xerial.snappy.SnappyInputStream;
 
-import com.esotericsoftware.kryo.io.Input;
 import com.github.mdc.common.ByteBufferPoolDirect;
 import com.github.mdc.common.CacheUtils;
 import com.github.mdc.common.HeartBeatStream;
@@ -152,11 +153,11 @@ public class StreamPipelineTaskSchedulerRunner {
 									try {
 										var s = ss.accept();
 										var bytesl = new ArrayList<byte[]>();
-										var kryo = Utils.getKryoSerializerDeserializer();
-										var input = new Input(s.getInputStream());
+										
+										var input = new FSTObjectInput(s.getInputStream());
 										log.debug("Obtaining Input Objects From Submitter");
 										while (true) {
-											var obj = kryo.readClassAndObject(input);
+											var obj = input.readObject();
 											log.debug("Input Object: " + obj);
 											if (obj instanceof Integer brkintval && brkintval == -1)
 												break;
@@ -236,7 +237,7 @@ public class StreamPipelineTaskSchedulerRunner {
 				threadpool.execute(() -> {
 					while (true) {
 						try (var socket = server.accept();) {
-							var deserobj = Utils.readObject(socket, cl);
+							var deserobj = new FSTObjectInput(socket.getInputStream()).readObject();
 							if (deserobj instanceof LoadJar loadjar) {
 								log.info("Loading the Required jars");
 								synchronized (deserobj) {
@@ -244,7 +245,7 @@ public class StreamPipelineTaskSchedulerRunner {
 									cl = clsloader;
 								}
 								log.info("Loaded the Required jars");
-								Utils.writeObject(socket, MDCConstants.JARLOADED);
+								new FSTObjectOutput(socket.getOutputStream()).writeObject(MDCConstants.JARLOADED);
 							}
 						} catch (Exception ex) {
 							log.info(MDCConstants.EMPTY, ex);
@@ -269,13 +270,10 @@ public class StreamPipelineTaskSchedulerRunner {
 									try {
 										log.info("Entered MassiveDataStreamTaskSchedulerDaemon.Receiver.receive");
 										var rawbuffer = (byte[]) ((ObjectMessage) msg).getObject();
-										var kryo = Utils.getKryoSerializerDeserializer();
-										kryo.register(StreamPipelineTaskSubmitter.class);
-										kryo.setClassLoader(cl);
 										try (var bais = new ByteArrayInputStream(rawbuffer);
 												var decompressor = new SnappyInputStream(bais);
-												var input = new Input(decompressor);) {
-											var job = (Job) Utils.readKryoInputObjectWithClass(kryo, input);
+												var input = new FSTObjectInput(decompressor);) {
+											var job = (Job) input.readObject();
 											jobidjobmap.put( job.getId(), job);
 											log.info("Received Job: " + jobidjobmap);
 											log.info("Exiting MassiveDataStreamTaskSchedulerDaemon.Receiver.receive");

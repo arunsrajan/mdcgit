@@ -27,9 +27,9 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.hdfs.DistributedFileSystem;
 import org.apache.log4j.Logger;
-
-import com.esotericsoftware.kryo.io.Input;
-import com.esotericsoftware.kryo.io.Output;
+import org.mortbay.jetty.HttpParser.Input;
+import org.nustaq.serialization.FSTObjectInput;
+import org.nustaq.serialization.FSTObjectOutput;
 
 /**
  * 
@@ -92,16 +92,13 @@ public class RemoteDataFetcher {
 		log.debug("Entered RemoteDataFetcher.createFileMR");
 
 		try (var fsdos = hdfs.create(filepathurl); 
-				var output = new Output(fsdos);) {
+				var output = new FSTObjectOutput(fsdos);) {
 
-			// Create a kryo serializer object.
-			var kryo = Utils.getKryoSerializerDeserializer();
-			// Write object output to DFS using kryo serializer.
-			kryo.writeObject(output, new LinkedHashSet<>(serobj.keys()));
+			output.writeObject(new LinkedHashSet<>(serobj.keys()));
 			output.flush();
 			fsdos.hflush();
 			fsdos.hsync();
-			kryo.writeClassAndObject(output, serobj);
+			output.writeObject(serobj);
 			output.flush();
 			fsdos.hflush();
 			fsdos.hsync();
@@ -123,12 +120,8 @@ public class RemoteDataFetcher {
 	protected static void createFile(FileSystem hdfs, Path filepathurl, Object serobj) throws RemoteDataFetcherException {
 		log.debug("Entered RemoteDataFetcher.createFile");
 		try (var fsdos = hdfs.create(filepathurl); 
-				var output = new Output(fsdos);) {
-
-			// Create a kryo serializer object.
-			var kryo = Utils.getKryoSerializerDeserializer();
-			// Write object output to DFS using kryo serializer.
-			kryo.writeClassAndObject(output, serobj);
+				var output = new FSTObjectOutput(fsdos);) {
+			output.writeObject(serobj);
 			output.flush();
 			fsdos.hsync();
 			fsdos.hflush();
@@ -193,11 +186,9 @@ public class RemoteDataFetcher {
 				configuration);
 				var fs = (DistributedFileSystem) hdfs;
 				var dis = fs.getClient().open(new Path(path).toUri().getPath());
-				var input = new Input(dis);) {
-			var kryo = Utils.getKryoSerializerDeserializer();
+				var in = new FSTObjectInput(dis)) {
 			log.debug("Exiting RemoteDataFetcher.readYarnAppmasterServiceDataFromDFS");
-			// Read object information from kryo.
-			return kryo.readClassAndObject(input);
+			return in.readObject();
 		} catch (Exception ioe) {
 			log.error(RemoteDataFetcherException.INTERMEDIATEPHASEREADERROR, ioe);
 			throw new RemoteDataFetcherException(RemoteDataFetcherException.INTERMEDIATEPHASEREADERROR, ioe);
@@ -222,14 +213,13 @@ public class RemoteDataFetcher {
 				configuration);
 				var fs = (DistributedFileSystem) hdfs;
 				var dis = fs.getClient().open(new Path(path).toUri().getPath());
-				var input = new Input(dis);) {
-			var kryo = Utils.getKryoSerializerDeserializer();
-			var keysobj = kryo.readObject(input, LinkedHashSet.class);
+				var in = new FSTObjectInput(dis)) {
+			var keysobj = in.readObject();
 			if (keys) {
 				return keysobj;
 			}
 			log.debug("Exiting RemoteDataFetcher.readIntermediatePhaseOutputFromDFS");
-			return kryo.readClassAndObject(input);
+			return in.readObject();
 		} catch (Exception ioe) {
 			log.error(RemoteDataFetcherException.INTERMEDIATEPHASEREADERROR, ioe);
 			throw new RemoteDataFetcherException(RemoteDataFetcherException.INTERMEDIATEPHASEREADERROR, ioe);

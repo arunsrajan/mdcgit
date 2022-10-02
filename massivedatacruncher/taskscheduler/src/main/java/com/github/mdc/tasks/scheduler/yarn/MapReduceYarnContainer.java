@@ -32,10 +32,10 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.jooq.lambda.tuple.Tuple2;
+import org.nustaq.serialization.FSTObjectInput;
 import org.springframework.yarn.integration.container.AbstractIntegrationYarnContainer;
 import org.springframework.yarn.integration.ip.mind.MindAppmasterServiceClient;
 
-import com.esotericsoftware.kryo.io.Input;
 import com.github.mdc.common.ByteBufferPoolDirect;
 import com.github.mdc.common.CacheUtils;
 import com.github.mdc.common.Context;
@@ -99,9 +99,8 @@ public class MapReduceYarnContainer extends AbstractIntegrationYarnContainer {
 				} else if (response.getState().equals(JobResponse.State.RUNJOB)) {
 					log.info(containerid + ": Environment " + getEnvironment());
 					job = response.getJob();
-					var kryo = Utils.getKryoSerializerDeserializer();
-					var input = new Input(new ByteArrayInputStream(job));
-					var object = kryo.readClassAndObject(input);
+					var input = new FSTObjectInput(new ByteArrayInputStream(job));
+					var object = input.readObject();
 					if (object instanceof MapperCombiner mc) {
 						System.setProperty(MDCConstants.HDFSNAMENODEURL,
 								containerprops.get(MDCConstants.HDFSNAMENODEURL));

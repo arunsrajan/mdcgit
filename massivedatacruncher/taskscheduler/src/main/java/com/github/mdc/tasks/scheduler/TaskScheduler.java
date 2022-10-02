@@ -22,8 +22,8 @@ import java.util.Arrays;
 
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.log4j.Logger;
+import org.nustaq.serialization.FSTObjectOutput;
 
-import com.esotericsoftware.kryo.io.Output;
 import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.MDCMapReducePhaseClassLoader;
 import com.github.mdc.common.Utils;
@@ -52,7 +52,7 @@ public class TaskScheduler implements Runnable {
 			fos.write(mrjar);
 			var clsloader = MDCMapReducePhaseClassLoader.newInstance(mrjar, loader);
 			Thread.currentThread().setContextClassLoader(clsloader);
-			var kryo = Utils.getKryoSerializerDeserializer();
+			
 			String[] argscopy;
 			//Get the main class to execute.
 			String mainclass;
@@ -68,12 +68,12 @@ public class TaskScheduler implements Runnable {
 			var jc = JobConfigurationBuilder.newBuilder().build();
 			jc.setMrjar(mrjar);
 			var tssos = tss.getOutputStream();
-			var output = new Output(tssos);
+			var output = new FSTObjectOutput(tssos);
 			jc.setOutput(output);
 			var mrjob = (Application) main.getDeclaredConstructor().newInstance();
 			mrjob.runMRJob(argscopy, jc);
-			kryo.writeClassAndObject(output, "Successfully Completed executing the task " + mainclass);
-			kryo.writeClassAndObject(output, "quit");
+			output.writeObject("Successfully Completed executing the task " + mainclass);
+			output.writeObject("quit");
 			output.close();
 		} catch (Throwable ex) {
 			log.error("Exception in loading class:", ex);

@@ -17,12 +17,13 @@ package com.github.mdc.tasks.scheduler;
 
 import java.util.Objects;
 
-import com.esotericsoftware.kryo.io.Output;
+import org.nustaq.serialization.FSTObjectOutput;
+
 import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.MDCProperties;
 
 public class JobConfiguration {
-	private Output output;
+	private FSTObjectOutput output;
 	String hdfsurl;
 	String tstempdir;
 	String tshost;
@@ -246,11 +247,11 @@ public class JobConfiguration {
 		this.batchsize = batchsize;
 	}
 
-	public Output getOutput() {
+	public FSTObjectOutput getOutput() {
 		return output;
 	}
 
-	public void setOutput(Output output) {
+	public void setOutput(FSTObjectOutput output) {
 		this.output = output;
 	}
 

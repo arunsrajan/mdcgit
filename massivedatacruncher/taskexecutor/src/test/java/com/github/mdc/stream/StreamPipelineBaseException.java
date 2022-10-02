@@ -16,10 +16,8 @@
 package com.github.mdc.stream;
 
 import java.io.InputStream;
-import java.net.InetAddress;
-import java.net.ServerSocket;
-import java.net.Socket;
 import java.net.URI;
+import java.rmi.registry.Registry;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -30,7 +28,6 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.curator.test.TestingServer;
@@ -41,12 +38,8 @@ import org.apache.hadoop.fs.Path;
 import org.apache.log4j.Logger;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.nustaq.serialization.FSTObjectOutput;
 
-import com.esotericsoftware.kryo.io.Output;
-import com.esotericsoftware.kryonetty.ServerEndpoint;
-import com.esotericsoftware.kryonetty.network.ReceiveEvent;
-import com.esotericsoftware.kryonetty.network.handler.NetworkHandler;
-import com.esotericsoftware.kryonetty.network.handler.NetworkListener;
 import com.github.mdc.common.CacheUtils;
 import com.github.mdc.common.HeartBeatStream;
 import com.github.mdc.common.MDCCacheManager;
@@ -54,6 +47,7 @@ import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.MDCProperties;
 import com.github.mdc.common.NetworkUtil;
 import com.github.mdc.common.PipelineConfig;
+import com.github.mdc.common.StreamDataCruncher;
 import com.github.mdc.common.Utils;
 import com.github.mdc.tasks.executor.NodeRunner;
 import com.github.sakserv.minicluster.impl.HdfsLocalCluster;
@@ -105,7 +99,7 @@ public class StreamPipelineBaseException {
 	static private String host;
 	static Logger log = Logger.getLogger(StreamPipelineBaseException.class);
 	static List<HeartBeatStream> hbssl = new ArrayList<>();
-	static List<ServerEndpoint> sss = new ArrayList<>();
+	static List<Registry> sss = new ArrayList<>();
 	static ExecutorService threadpool, executorpool;
 	static int numberofnodes = 1;
 	static Integer port;
@@ -116,13 +110,13 @@ public class StreamPipelineBaseException {
 	static ConcurrentMap<String, List<Process>> containerprocesses = new ConcurrentHashMap<>();
 	static FileSystem hdfste;
 	protected static PipelineConfig pipelineconfig = new PipelineConfig();
-	private static ServerEndpoint server;
+	private static Registry server;
 
 	@SuppressWarnings({"unused"})
 	@BeforeClass
 	public static void setServerUp() throws Exception {
 		try {
-			Output out = new Output(System.out);
+			var out = new FSTObjectOutput(System.out);
 			pipelineconfig.setKryoOutput(out);
 			pipelineconfig.setMaxmem("1024");
 			pipelineconfig.setMinmem("512");
@@ -170,17 +164,17 @@ public class StreamPipelineBaseException {
 					hb.init(rescheduledelay, nodeport, host, initialdelay, pingdelay, "");
 					hb.ping();
 					hbssl.add(hb);
-					server = Utils.getServerKryoNetty(nodeport,
-							new NetworkListener() {
-							@NetworkHandler
-				            public void onReceive(ReceiveEvent event) {
+					server = Utils.getRPCRegistry(nodeport,
+							new StreamDataCruncher() {
+				            public Object postObject(Object object) {
 								try {
-									Object object = event.getObject();
-									var container = new NodeRunner(server, MDCConstants.PROPLOADERCONFIGFOLDER,
+									var container = new NodeRunner(MDCConstants.PROPLOADERCONFIGFOLDER,
 											containerprocesses, hdfs, containeridthreads, containeridports,
-											object, event);
-									Future<Boolean> containerallocated =threadpool.submit(container);
-									log.info("Containers Allocated: " + containerallocated.get());
+											object);
+									Future<Object> containerallocated =threadpool.submit(container);
+									Object returnobject = containerallocated.get();
+									log.info("Containers Allocated: " + returnobject);
+									return returnobject;
 								} catch (InterruptedException e) {
 									log.warn("Interrupted!", e);
 									// Restore interrupted state...
@@ -188,6 +182,7 @@ public class StreamPipelineBaseException {
 								} catch (Exception e) {
 									log.error(MDCConstants.EMPTY, e);
 								}
+								return null;
 							}
 						});
 					sss.add(server);
@@ -262,12 +257,5 @@ public class StreamPipelineBaseException {
 		}
 		MDCCacheManager.get().close();
 		MDCCacheManager.put(null);
-		sss.stream().forEach(ss -> {
-			try {
-				ss.close();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		});
 	}
 }

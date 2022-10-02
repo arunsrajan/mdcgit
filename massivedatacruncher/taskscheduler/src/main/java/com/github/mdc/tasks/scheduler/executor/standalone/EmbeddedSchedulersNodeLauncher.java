@@ -1,6 +1,8 @@
 package com.github.mdc.tasks.scheduler.executor.standalone;
 
+import java.io.DataInputStream;
 import java.io.IOException;
+import java.net.ServerSocket;
 import java.net.URI;
 import java.net.URL;
 import java.rmi.registry.LocateRegistry;
@@ -24,9 +26,9 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.FsUrlStreamHandlerFactory;
 import org.apache.zookeeper.server.ServerCnxnFactory;
+import org.nustaq.serialization.FSTObjectInput;
 import org.slf4j.LoggerFactory;
 
-import com.esotericsoftware.kryo.io.Input;
 import com.github.mdc.common.ByteBufferPoolDirect;
 import com.github.mdc.common.HeartBeat;
 import com.github.mdc.common.HeartBeatStream;
@@ -216,18 +218,23 @@ public class EmbeddedSchedulersNodeLauncher {
 
 		// Execute when request arrives.
 		esstream.execute(() -> {
-			try (var ss = Utils.createSSLServerSocket(
+			try (var ss = new ServerSocket(
 					Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULERSTREAM_PORT)));) {
 				while (true) {
 					try {
 						var s = ss.accept();
 						var bytesl = new ArrayList<byte[]>();
-						var kryo = Utils.getKryoSerializerDeserializer();
-						var input = new Input(s.getInputStream());
-						log.debug("Obtaining Input Objects From Submitter");
+						var in = new DataInputStream(s.getInputStream());
+						var config = Utils.getConfigForSerialization();
+						log.info("Obtaining Input Objects From Submitter");
 						while (true) {
-							var obj = kryo.readClassAndObject(input);
-							log.debug("Input Object: " + obj);
+							var len = in.readInt();
+							byte buffer[] = new byte[len]; // this could be reused !
+							while (len > 0)
+							    len -= in.read(buffer, buffer.length - len, len);
+							// skipped: check for stream close
+							Object obj = config.getObjectInput(buffer).readObject();
+							log.info("Input Object: " + obj);
 							if (obj instanceof Integer brkintval && brkintval == -1)
 								break;
 							bytesl.add((byte[]) obj);
@@ -329,10 +336,10 @@ public class EmbeddedSchedulersNodeLauncher {
 				try {
 					var s = ss.accept();
 					var baoss = new ArrayList<byte[]>();
-					var kryo = Utils.getKryoSerializerDeserializer();
-					var input = new Input(s.getInputStream());
+					
+					var input = new FSTObjectInput(s.getInputStream());
 					while (true) {
-						var obj = kryo.readClassAndObject(input);
+						var obj = input.readObject();
 						log.debug("Input Object: " + obj);
 						if (obj instanceof Integer brkval && brkval == -1)
 							break;

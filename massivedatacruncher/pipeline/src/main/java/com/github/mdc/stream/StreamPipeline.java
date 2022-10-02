@@ -1260,9 +1260,8 @@ public sealed class StreamPipeline<I1> extends AbstractPipeline permits CsvStrea
 	public List collect(boolean toexecute, IntSupplier supplier) throws PipelineException  {
 		try {
 			log.debug("Collect task begin...");
-			var kryo = Utils.getKryoSerializerDeserializer();
 			var mdp = (StreamPipeline)root;
-			Utils.writeKryoOutput(kryo, mdp.pipelineconfig.getOutput(), "Collect task begin...");
+			Utils.writeToOstream(mdp.pipelineconfig.getOutput(), "Collect task begin...");
 			var mdscollect = (StreamPipeline) root;
 			mdscollect.finaltasks.clear();
 			mdscollect.finaltasks.add(mdscollect.finaltask);
@@ -1284,7 +1283,7 @@ public sealed class StreamPipeline<I1> extends AbstractPipeline permits CsvStrea
 			}		
 			var result = mdscollect.collect(toexecute,Job.TRIGGER.COLLECT);
 			log.debug("Collect task ended.");
-			Utils.writeKryoOutput(kryo, mdp.pipelineconfig.getOutput(), "Collect task ended.");
+			Utils.writeToOstream(mdp.pipelineconfig.getOutput(), "Collect task ended.");
 			return result;
 		}
 		catch(Exception ex) {

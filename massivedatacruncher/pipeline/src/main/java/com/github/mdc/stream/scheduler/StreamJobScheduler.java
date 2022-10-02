@@ -67,15 +67,14 @@ import org.jgrapht.traverse.TopologicalOrderIterator;
 import org.jgroups.JChannel;
 import org.jgroups.ObjectMessage;
 import org.jooq.lambda.tuple.Tuple2;
+import org.nustaq.serialization.FSTObjectInput;
+import org.nustaq.serialization.FSTObjectOutput;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.yarn.YarnSystemConstants;
 import org.springframework.yarn.client.CommandYarnClient;
 import org.xerial.snappy.SnappyInputStream;
 import org.xerial.snappy.SnappyOutputStream;
 
-import com.esotericsoftware.kryo.Kryo;
-import com.esotericsoftware.kryo.io.Input;
-import com.esotericsoftware.kryo.io.Output;
 import com.github.dexecutor.core.DefaultDexecutor;
 import com.github.dexecutor.core.DexecutorConfig;
 import com.github.dexecutor.core.ExecutionConfig;
@@ -149,7 +148,7 @@ public class StreamJobScheduler {
 	Cache cache;
 	public Semaphore semaphore;
 	public HeartBeatStream hbss;
-	private Kryo kryo = Utils.getKryoSerializerDeserializer();
+	
 	public PipelineConfig pipelineconfig;
 	AtomicBoolean istaskcancelled = new AtomicBoolean();
 	public Map<String, JobStage> jsidjsmap = new ConcurrentHashMap<>();
@@ -211,7 +210,7 @@ public class StreamJobScheduler {
 				var taskexecutorssize = taskexecutors.size();
 				taskexecutorssize = taskexecutors.size();
 				log.debug("taskexecutorssize: " + taskexecutorssize);
-				Utils.writeKryoOutput(kryo, pipelineconfig.getOutput(), "taskexecutorssize: " + taskexecutorssize);
+				Utils.writeToOstream( pipelineconfig.getOutput(), "taskexecutorssize: " + taskexecutorssize);
 				boolean haenabled = Boolean.parseBoolean(pipelineconfig.getTsshaenabled());
 				if (!Objects.isNull(pipelineconfig.getJar()) && haenabled) {
 					TssHAHostPorts.get().forEach(hp -> {
@@ -295,7 +294,7 @@ public class StreamJobScheduler {
 					mdstst.getTask().filepath = job.getSavepath() + MDCConstants.HYPHEN + partitionnumber++;
 				}
 			}
-			Utils.writeKryoOutput(kryo, pipelineconfig.getOutput(), "stages: " + mdststs);
+			Utils.writeToOstream( pipelineconfig.getOutput(), "stages: " + mdststs);
 			if (isignite) {
 				parallelExecutionPhaseIgnite(graph, new TaskProviderIgnite());
 			}
@@ -410,7 +409,7 @@ public class StreamJobScheduler {
 						}
 						double percentagecompleted = Math.floor((totalcompleted / totaltasks) * 100.0);
 						if (totalcompleted == totaltasks) {
-							Utils.writeKryoOutput(kryo, pipelineconfig.getOutput(), "\nPercentage Completed "
+							Utils.writeToOstream( pipelineconfig.getOutput(), "\nPercentage Completed "
 									+ percentagecompleted + "% \n");
 							job.getJm().getContainersallocated().put("", percentagecompleted);
 							mdststs.parallelStream().forEach(spts -> spts.setCompletedexecution(true));
@@ -418,7 +417,7 @@ public class StreamJobScheduler {
 						} else {
 							log.debug(
 									"Total Percentage Completed: " + Math.floor((totalcompleted / totaltasks) * 100.0));
-							Utils.writeKryoOutput(kryo, pipelineconfig.getOutput(), "\nPercentage Completed "
+							Utils.writeToOstream( pipelineconfig.getOutput(), "\nPercentage Completed "
 									+ percentagecompleted + "% \n");
 							job.getJm().getContainersallocated().put("", percentagecompleted);
 							Thread.sleep(4000);
@@ -450,11 +449,11 @@ public class StreamJobScheduler {
 			}
 			job.setIscompleted(true);
 			job.getJm().setJobcompletiontime(System.currentTimeMillis());
-			Utils.writeKryoOutput(kryo, pipelineconfig.getOutput(),
+			Utils.writeToOstream( pipelineconfig.getOutput(),
 					"Completed Job in " + ((job.getJm().getJobcompletiontime() - job.getJm().getJobstarttime()) / 1000.0) + " seconds");
 			log.info("Completed Job in " + ((job.getJm().getJobcompletiontime() - job.getJm().getJobstarttime()) / 1000.0) + " seconds");
 			job.getJm().setTotaltimetaken((job.getJm().getJobcompletiontime() - job.getJm().getJobstarttime()) / 1000.0);
-			Utils.writeKryoOutput(kryo, pipelineconfig.getOutput(),
+			Utils.writeToOstream( pipelineconfig.getOutput(),
 					"Job Metrics " + job.getJm());
 			log.info("Job Metrics " + job.getJm());
 			if (Boolean.TRUE.equals(islocal)) {
@@ -807,7 +806,7 @@ public class StreamJobScheduler {
 
 				numexecute++;
 			}
-			Utils.writeKryoOutput(kryo, pipelineconfig.getOutput(), "Number of Executions: " + numexecute);
+			Utils.writeToOstream( pipelineconfig.getOutput(), "Number of Executions: " + numexecute);
 			if (!completed) {
 				StringBuilder sb = new StringBuilder();
 				if (erroredresult != null) {
@@ -1041,14 +1040,14 @@ public class StreamJobScheduler {
 						mdste.setHdfs(hdfs);
 						Future fut =  es.submit(mdste);
 						fut.get();
-						Utils.writeKryoOutput(kryo, pipelineconfig.getOutput(),
+						Utils.writeToOstream( pipelineconfig.getOutput(),
 								"Completed Job And Stages: " + mdstst.getTask().jobid + MDCConstants.HYPHEN
 										+ mdstst.getTask().stageid + MDCConstants.HYPHEN
 										+ mdstst.getTask().taskid + " in " + mdste.timetaken + " seconds");
 						semaphore.release();
 						printresults.acquire();
 						counttaskscomp++;
-						Utils.writeKryoOutput(kryo, pipelineconfig.getOutput(), "\nPercentage Completed "
+						Utils.writeToOstream( pipelineconfig.getOutput(), "\nPercentage Completed "
 								+ Math.floor((counttaskscomp / totaltasks) * 100.0) + "% \n");
 						printresults.release();
 						return mdste;
@@ -1087,9 +1086,6 @@ public class StreamJobScheduler {
 						semaphore.acquire();
 						var compute = job.getIgnite().compute(job.getIgnite().cluster().forServers());
 						compute.affinityRun(MDCConstants.MDCCACHE, task.input[0], mdste);
-						Utils.writeKryoOutput(kryo, pipelineconfig.getOutput(),
-								"Completed Job And Stages: " + task.jobid + MDCConstants.HYPHEN + task.stageid);
-						Utils.writeKryoOutput(kryo, pipelineconfig.getOutput(), "Completed Tasks: " + task);
 						semaphore.release();
 					} catch (InterruptedException e) {
 						log.warn("Interrupted!", e);
@@ -1141,7 +1137,7 @@ public class StreamJobScheduler {
 						counttaskscomp++;
 						tetotaltaskscompleted.put(spts.getHostPort(), tetotaltaskscompleted.get(spts.getHostPort()) + 1);
 						double percentagecompleted = Math.floor((tetotaltaskscompleted.get(spts.getHostPort()) / servertotaltasks.get(spts.getHostPort())) * 100.0);
-						Utils.writeKryoOutput(kryo, pipelineconfig.getOutput(), "\nPercentage Completed TE("
+						Utils.writeToOstream( pipelineconfig.getOutput(), "\nPercentage Completed TE("
 								+ spts.getHostPort() + ") " + percentagecompleted + "% \n");
 						job.getJm().getContainersallocated().put(spts.getHostPort(), percentagecompleted);
 						printresult.release();
@@ -1464,10 +1460,10 @@ public class StreamJobScheduler {
 			Boolean isyarn, Boolean islocal, Boolean isjgroups,
 			ConcurrentMap<String, OutputStream> resultstream) throws PipelineException {
 		log.debug("HDFS Path TO Retrieve Final Task Output: " + hdfsfilepath);
-		var kryofinal = Utils.getKryoSerializerDeserializer();
+		
 		try {
 			log.debug("Final Stages: " + mdstts);
-			Utils.writeKryoOutput(kryo, pipelineconfig.getOutput(), "Final Stages: " + mdstts);
+			Utils.writeToOstream( pipelineconfig.getOutput(), "Final Stages: " + mdstts);
 
 			if (Boolean.TRUE.equals(isignite)) {
 				int partition = 0;
@@ -1483,9 +1479,9 @@ public class StreamJobScheduler {
 					for (var mdstt : mdstts) {
 						var key = getIntermediateResultFS(mdstt.getTask());
 						try (var fsstream = resultstream.get(key);
-								var input = new Input(
-										new ByteBufferInputStream(((ByteBufferOutputStream)fsstream).get()));) {
-							var obj = kryofinal.readClassAndObject(input);
+								var input = new FSTObjectInput(
+										new ByteBufferInputStream(((ByteBufferOutputStream)fsstream).get()), Utils.getConfigForSerialization());) {
+							var obj = input.readObject();
 							resultstream.remove(key);
 							writeOutputToFile(stageoutput.size(), obj);
 							stageoutput.add(obj);
@@ -1518,8 +1514,8 @@ public class StreamJobScheduler {
 						boolean isJGroups = Boolean.parseBoolean(pipelineconfig.getJgroups());
 						rdf.setMode( isJGroups ? MDCConstants.JGROUPS : MDCConstants.STANDALONE);
 						RemoteDataFetcher.remoteInMemoryDataFetch(rdf);
-						try (var input = new Input(!isJGroups ? new SnappyInputStream(new ByteArrayInputStream(rdf.getData())) : new ByteArrayInputStream(rdf.getData()));) {
-							var obj = kryofinal.readClassAndObject(input);
+						try (var input = new FSTObjectInput(new ByteArrayInputStream(rdf.getData()), Utils.getConfigForSerialization());) {
+							var obj = input.readObject();
 							writeOutputToFile(stageoutput.size(), obj);
 							stageoutput.add(obj);
 						} catch (Exception ex) {
@@ -1570,11 +1566,11 @@ public class StreamJobScheduler {
 	}
 
 	@SuppressWarnings({"unchecked", "rawtypes"})
-	public void writeOutputToFileInMemory(StreamPipelineTaskSubmitter mdstst, Kryo kryo, List stageoutput)
+	public void writeOutputToFileInMemory(StreamPipelineTaskSubmitter mdstst, List stageoutput)
 			throws PipelineException {
 		try (var fsstream = getIntermediateInputStreamInMemory(mdstst.getTask());
-					var input = new Input(fsstream);) {
-			var obj = kryo.readClassAndObject(input);
+					var input = new FSTObjectInput(fsstream, Utils.getConfigForSerialization());) {
+			var obj = input.readObject();
 			writeOutputToFile(stageoutput.size(), obj);
 			stageoutput.add(obj);
 		} catch (Exception ex) {
@@ -1628,8 +1624,8 @@ public class StreamJobScheduler {
 					+ MDCConstants.FORWARD_SLASH + task.jobid + MDCConstants.FORWARD_SLASH
 					+ (task.jobid + MDCConstants.HYPHEN + task.stageid + MDCConstants.HYPHEN + task.taskid
 			));
-			try (var input = new Input(new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path)))));) {
-				stageoutput.add(kryo.readClassAndObject(input));
+			try (var input = new FSTObjectInput(new BufferedInputStream(hdfs.open(new Path(path))), Utils.getConfigForSerialization());) {
+				stageoutput.add(input.readObject());
 			} catch (Exception ex) {
 				log.error(PipelineConstants.JOBSCHEDULERFINALSTAGERESULTSERROR, ex);
 				throw new PipelineException(PipelineConstants.FILEIOERROR, ex);
@@ -1674,8 +1670,8 @@ public class StreamJobScheduler {
 
 			try (var sis = new SnappyInputStream(
 					new ByteArrayInputStream(job.getIgcache().get(task.jobid + task.stageid + task.taskid)));
-					var input = new Input(sis);) {
-				var obj = kryo.readClassAndObject(input);
+					var input = new FSTObjectInput(sis, Utils.getConfigForSerialization());) {
+				var obj = input.readObject();
 				if (!Objects.isNull(job.getUri())) {
 					job.setTrigger(job.getTrigger().SAVERESULTSTOFILE);
 					writeOutputToFile(partition, obj);
@@ -1773,16 +1769,14 @@ public class StreamJobScheduler {
 
 	public void ping(Job job) throws Exception {
 		chtssha = TssHAChannel.tsshachannel;
-		var kryo = Utils.getKryoSerializerDeserializer();
-		kryo.register(StreamPipelineTaskSubmitter.class);
 		jobping.execute(() -> {
 			while (!istaskcancelled.get()) {
 				try (var baos = new ByteArrayOutputStream();
 						var lzf = new SnappyOutputStream(baos);
-						var output = new Output(lzf);) {
+						var output = new FSTObjectOutput(lzf);) {
 					job.setPipelineconfig((PipelineConfig) job.getPipelineconfig().clone());
 					job.getPipelineconfig().setOutput(null);
-					Utils.writeKryoOutputClassObject(kryo, output, job);
+					output.writeObject(job);
 					chtssha.send(new ObjectMessage(null, baos.toByteArray()));
 					Thread.sleep(1000);
 				} catch (InterruptedException e) {

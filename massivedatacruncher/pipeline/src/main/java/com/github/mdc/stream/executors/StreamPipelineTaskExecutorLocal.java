@@ -21,6 +21,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.URI;
+import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentMap;
@@ -33,6 +34,7 @@ import org.ehcache.Cache;
 import com.github.mdc.common.ByteBufferInputStream;
 import com.github.mdc.common.ByteBufferOutputStream;
 import com.github.mdc.common.ByteBufferPoolDirect;
+import com.github.mdc.common.DirectByteBufferUtil;
 import com.github.mdc.common.JobStage;
 import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.MDCProperties;
@@ -155,7 +157,8 @@ public final class StreamPipelineTaskExecutorLocal extends StreamPipelineTaskExe
 						var os = getIntermediateInputStreamRDF(rdf);
 						if (os != null) {
 							ByteBufferOutputStream bbos = (ByteBufferOutputStream) os;
-							task.input[inputindex] = new ByteBufferInputStream(bbos.get());
+							ByteBuffer buffer = bbos.get();
+							task.input[inputindex] = new ByteBufferInputStream(buffer.rewind());
 						} else {
 							RemoteDataFetcher.remoteInMemoryDataFetch(rdf);
 							task.input[inputindex] = new ByteArrayInputStream(rdf.getData());

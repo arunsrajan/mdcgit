@@ -15,6 +15,7 @@
  */
 package com.github.mdc.stream;
 
+import java.rmi.registry.Registry;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -27,7 +28,6 @@ import org.apache.curator.test.TestingServer;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.log4j.Logger;
 
-import com.esotericsoftware.kryonetty.ServerEndpoint;
 import com.github.mdc.common.HeartBeatStream;
 import com.github.mdc.common.PipelineConfig;
 import com.github.sakserv.minicluster.impl.HdfsLocalCluster;
@@ -91,7 +91,7 @@ public class StreamPipelineBase {
 	protected static String host;
 	static Logger log = Logger.getLogger(StreamPipelineBase.class);
 	static List<HeartBeatStream> hbssl = new ArrayList<>();
-	static List<ServerEndpoint> sss = new ArrayList<>();
+	static List<Registry> sss = new ArrayList<>();
 	static ExecutorService threadpool, executorpool;
 	static int numberofnodes = 1;
 	static Integer port;

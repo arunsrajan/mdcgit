@@ -178,8 +178,6 @@ public class TaskExecutorRunner implements TaskExecutorRunnerMBean {
 		cl = TaskExecutorRunner.class.getClassLoader();
 		log.info("Default Class Loader: "+cl);
 
-		server = LocateRegistry.createRegistry(port);
-		
 		dataCruncher = new StreamDataCruncher() {
 			public Object postObject(Object deserobj)throws RemoteException{
 		
@@ -226,8 +224,7 @@ public class TaskExecutorRunner implements TaskExecutorRunnerMBean {
 				return "Unknown Object";
 			}
 		};
-		stub = (StreamDataCruncher) UnicastRemoteObject.exportObject(dataCruncher, 0);
-		server.rebind(MDCConstants.BINDTESTUB, stub);
+		server = Utils.getRPCRegistry(port, dataCruncher);
 	}
 	static StreamDataCruncher stub = null;
 	static StreamDataCruncher dataCruncher = null;

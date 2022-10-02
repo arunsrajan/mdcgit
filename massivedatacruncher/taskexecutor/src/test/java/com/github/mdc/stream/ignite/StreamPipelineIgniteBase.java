@@ -33,8 +33,8 @@ import org.apache.hadoop.fs.Path;
 import org.apache.log4j.Logger;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.nustaq.serialization.FSTObjectOutput;
 
-import com.esotericsoftware.kryo.io.Output;
 import com.github.mdc.common.HeartBeatStream;
 import com.github.mdc.common.MDCCacheManager;
 import com.github.mdc.common.MDCConstants;
@@ -105,7 +105,7 @@ public class StreamPipelineIgniteBase {
 				URL.setURLStreamHandlerFactory(new FsUrlStreamHandlerFactory());
 				Utils.loadLog4JSystemProperties(MDCConstants.PREV_FOLDER + MDCConstants.FORWARD_SLASH
 						+ MDCConstants.DIST_CONFIG_FOLDER + MDCConstants.FORWARD_SLASH, "mdctest.properties");
-				Output out = new Output(System.out);
+				var out = new FSTObjectOutput(System.out);
 				pipelineconfig.setKryoOutput(out);
 				pipelineconfig.setLocal("false");
 				pipelineconfig.setIsblocksuserdefined("false");

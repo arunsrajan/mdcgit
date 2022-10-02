@@ -34,7 +34,7 @@ IF EXIST %JAVA_HOME%\bin\java.exe (
 
 echo "%MDC_JAVA_HOME%\bin\java" --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/java.lang.invoke=ALL-UNNAMED %CLASSPATH% %MEMCONFIG% %GCCCONFIG% -Djava.net.preferIPv4Stack=true com.github.mdc.stream.submitter.StreamPipelineJobSubmitter %*
 
-"%MDC_JAVA_HOME%\bin\java" --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/java.lang.invoke=ALL-UNNAMED --enable-preview %CLASSPATH% %MEMCONFIG% %GCCCONFIG% -Djava.net.preferIPv4Stack=true com.github.mdc.stream.submitter.StreamPipelineJobSubmitter %*
+"%MDC_JAVA_HOME%\bin\java" --add-opens java.base/java.math=ALL-UNNAMED --add-opens java.base/java.lang=ALL-UNNAMED --add-modules jdk.incubator.foreign --add-opens java.base/jdk.internal.ref=ALL-UNNAMED --add-opens java.base/java.lang.reflect=ALL-UNNAMED --add-opens java.base/jdk.internal.reflect=ALL-UNNAMED --add-opens java.base/java.util=ALL-UNNAMED --add-opens java.base/java.lang.invoke=ALL-UNNAMED --add-opens java.base/java.nio=ALL-UNNAMED --add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.util.concurrent.atomic=ALL-UNNAMED --add-opens java.base/java.util.concurrent=ALL-UNNAMED --add-opens java.base/java.net=ALL-UNNAMED --add-opens java.base/java.text=ALL-UNNAMED --add-opens java.sql/java.sql=ALL-UNNAMED --enable-preview %CLASSPATH% %MEMCONFIG% %GCCCONFIG% -Djava.net.preferIPv4Stack=true com.github.mdc.stream.submitter.StreamPipelineJobSubmitter %*
 pause
 ) ELSE (
  @echo on

@@ -32,8 +32,8 @@ import org.apache.mesos.Protos.FrameworkInfo;
 import org.apache.mesos.Protos.SlaveInfo;
 import org.apache.mesos.Protos.TaskID;
 import org.apache.mesos.Protos.TaskInfo;
+import org.nustaq.serialization.FSTObjectInput;
 
-import com.esotericsoftware.kryo.io.Input;
 import com.github.mdc.common.JobStage;
 import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.MDCMapReducePhaseClassLoader;
@@ -105,19 +105,18 @@ public class MesosExecutor implements Executor {
 			try {
 
 				Utils.loadPropertiesMesos(MDCConstants.MDC_PROPERTIES);
-				var kryo = Utils.getKryoMesos();
 				var bais = new ByteArrayInputStream(task.getData().toByteArray());
-				var input = new Input(bais);
+				var input = new FSTObjectInput(bais);
 				//Get the jar bytes which contains the  MR job classes
-				var jarandjobstage = (byte[]) kryo.readClassAndObject(input);
+				var jarandjobstage = (byte[]) input.readObject();
 				var clsloader = MDCMapReducePhaseClassLoader
 						.newInstance(jarandjobstage, getClass().getClassLoader());
-				jarandjobstage = (byte[]) kryo.readClassAndObject(input);
+				jarandjobstage = (byte[]) input.readObject();
 				input.close();
 				//Get the job stage object from jar.
-				kryo.setClassLoader(clsloader);
-				var jobstagestream = new Input(new ByteArrayInputStream(jarandjobstage));
-				var job = (JobStage) kryo.readClassAndObject(jobstagestream);
+				//kryo.setClassLoader(clsloader);
+				var jobstagestream = new FSTObjectInput(new ByteArrayInputStream(jarandjobstage));
+				var job = (JobStage) jobstagestream.readObject();
 				jobstagestream.close();
 				//Initialize the mesos task executor.
 				var mdstem = new StreamPipelineTaskExecutorMesos(job, driver, task.getTaskId());
