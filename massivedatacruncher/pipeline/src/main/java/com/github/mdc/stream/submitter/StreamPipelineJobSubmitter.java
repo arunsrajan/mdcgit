@@ -15,11 +15,12 @@
  */
 package com.github.mdc.stream.submitter;
 
+import static java.util.Objects.nonNull;
+
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.Socket;
@@ -32,8 +33,6 @@ import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.RetryForever;
 import org.apache.hadoop.fs.FsUrlStreamHandlerFactory;
 import org.apache.log4j.Logger;
-import org.nustaq.serialization.FSTObjectInput;
-import org.nustaq.serialization.FSTObjectOutput;
 
 import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.MDCProperties;
@@ -115,9 +114,11 @@ public class StreamPipelineJobSubmitter {
 			// Wait for tasks to get completed.
 			while (true) {
 				var messagetasksscheduler = (String) br.readLine();
-				log.info(messagetasksscheduler);
-				if ("quit".equals(messagetasksscheduler.trim())) {
-					break;
+				if(nonNull(messagetasksscheduler)) {
+					log.info(messagetasksscheduler);
+					if (messagetasksscheduler.trim().contains("quit")) {
+						break;
+					}
 				}
 			}
 		} catch (Exception ex) {

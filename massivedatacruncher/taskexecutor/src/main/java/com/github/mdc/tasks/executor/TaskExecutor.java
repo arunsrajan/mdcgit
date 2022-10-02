@@ -141,7 +141,8 @@ public class TaskExecutor implements Callable<Object> {
 					for (Task task :stagesgraph.getTasks()) {
 						jobstageexecutormap.put(task.jobid + task.stageid + task.taskid, sptej);
 					}
-					return sptej.call();
+					es.submit(sptej);
+					return MDCConstants.EMPTY;
 				}
 			} else if (deserobj instanceof CloseStagesGraphExecutor closestagesgraph) {
 				var key = closestagesgraph.getTasks().get(0).jobid + closestagesgraph.getTasks().get(0).stageid + closestagesgraph.getTasks().get(0).taskid;

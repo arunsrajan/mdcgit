@@ -15,7 +15,11 @@
  */
 package com.github.mdc.common;
 
+import java.io.Serializable;
 import java.util.Map;
+
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * 
@@ -23,7 +27,10 @@ import java.util.Map;
  * This class is the response class with the status of the tasks
  * returned by the task executors to the job scheduler. 
  */
-public class WhoAreResponse {
+@Getter
+@Setter
+public class WhoAreResponse implements Serializable{
+	private static final long serialVersionUID = 7477634442817598607L;
 	private Map<String, WhoIsResponse.STATUS> responsemap;
 
 	public Map<String, WhoIsResponse.STATUS> getResponsemap() {
