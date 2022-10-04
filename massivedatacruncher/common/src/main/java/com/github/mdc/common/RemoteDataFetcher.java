@@ -117,8 +117,6 @@ public class RemoteDataFetcher {
 				var output = new FSTObjectOutput(fsdos, Utils.getConfigForSerialization());) {
 			output.writeObject(serobj);
 			output.flush();
-			fsdos.hsync();
-			fsdos.hflush();
 		} catch (Exception ex) {
 			log.error(RemoteDataFetcherException.INTERMEDIATEPHASEWRITEERROR, ex);
 			throw new RemoteDataFetcherException(RemoteDataFetcherException.INTERMEDIATEPHASEWRITEERROR, ex);

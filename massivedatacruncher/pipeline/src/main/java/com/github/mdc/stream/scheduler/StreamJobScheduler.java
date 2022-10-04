@@ -129,6 +129,7 @@ import com.github.mdc.stream.executors.StreamPipelineTaskExecutorIgnite;
 import com.github.mdc.stream.executors.StreamPipelineTaskExecutorLocal;
 import com.github.mdc.stream.mesos.scheduler.MesosScheduler;
 import com.google.common.collect.Iterables;
+import com.nimbusds.jose.util.IOUtils;
 
 /**
  * 
@@ -1618,14 +1619,14 @@ public class StreamJobScheduler {
 	private void writeOutputToHDFS(FileSystem hdfs, Task task, int partition, List stageoutput) throws Exception {
 		try {
 			var path = MDCConstants.FORWARD_SLASH + FileSystemSupport.MDS + MDCConstants.FORWARD_SLASH + task.jobid
-					+ MDCConstants.FORWARD_SLASH + (task.jobid + MDCConstants.HYPHEN + task.stageid
-					+ MDCConstants.HYPHEN + task.taskid);
-			log.debug("Forming URL Final Stage:" + MDCConstants.FORWARD_SLASH + FileSystemSupport.MDS
-					+ MDCConstants.FORWARD_SLASH + task.jobid + MDCConstants.FORWARD_SLASH
-					+ (task.jobid + MDCConstants.HYPHEN + task.stageid + MDCConstants.HYPHEN + task.taskid
-			));
-			try (var input = new FSTObjectInput(new BufferedInputStream(hdfs.open(new Path(path))), Utils.getConfigForSerialization());) {
-				stageoutput.add(input.readObject());
+					+ MDCConstants.FORWARD_SLASH + task.taskid;
+			log.debug("Forming URL Final Stage:" + MDCConstants.FORWARD_SLASH + FileSystemSupport.MDS + MDCConstants.FORWARD_SLASH + task.jobid
+					+ MDCConstants.FORWARD_SLASH + task.taskid);
+			try (var input = hdfs.open(new Path(path));) {
+				byte[] result = input.readAllBytes();
+				try(var objectinput = new FSTObjectInput(new ByteArrayInputStream(result), Utils.getConfigForSerialization())){
+					stageoutput.add(objectinput.readObject());
+				}
 			} catch (Exception ex) {
 				log.error(PipelineConstants.JOBSCHEDULERFINALSTAGERESULTSERROR, ex);
 				throw new PipelineException(PipelineConstants.FILEIOERROR, ex);
