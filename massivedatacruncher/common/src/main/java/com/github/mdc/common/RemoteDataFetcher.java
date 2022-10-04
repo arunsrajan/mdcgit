@@ -94,13 +94,8 @@ public class RemoteDataFetcher {
 				var output = new FSTObjectOutput(fsdos, Utils.getConfigForSerialization());) {
 
 			output.writeObject(new LinkedHashSet<>(serobj.keys()));
-			output.flush();
-			fsdos.hflush();
-			fsdos.hsync();
 			output.writeObject(serobj);
 			output.flush();
-			fsdos.hflush();
-			fsdos.hsync();
 		} catch (Exception ex) {
 			log.error(RemoteDataFetcherException.INTERMEDIATEPHASEWRITEERROR, ex);
 			throw new RemoteDataFetcherException(RemoteDataFetcherException.INTERMEDIATEPHASEWRITEERROR, ex);
@@ -210,8 +205,7 @@ public class RemoteDataFetcher {
 				+ MDCConstants.FORWARD_SLASH + jobid + MDCConstants.FORWARD_SLASH + filename;
 		try (var hdfs = FileSystem.newInstance(new URI(MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL, MDCConstants.HDFSNAMENODEURL_DEFAULT)),
 				configuration);
-				var fs = (DistributedFileSystem) hdfs;
-				var dis = fs.getClient().open(new Path(path).toUri().getPath());
+				var dis = hdfs.open(new Path(path));
 				var in = new FSTObjectInput(dis, Utils.getConfigForSerialization())) {
 			var keysobj = in.readObject();
 			if (keys) {

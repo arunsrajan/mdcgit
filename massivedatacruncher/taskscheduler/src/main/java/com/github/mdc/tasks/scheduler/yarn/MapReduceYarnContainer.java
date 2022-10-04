@@ -192,6 +192,7 @@ public class MapReduceYarnContainer extends AbstractIntegrationYarnContainer {
 			System.exit(0);
 		} catch (Exception ex) {
 			request = new JobRequest();
+			request.setContainerid(containerid);
 			request.setState(JobRequest.State.JOBFAILED);
 			request.setJob(job);
 			if (client != null) {
