@@ -67,7 +67,7 @@ public final class StreamPipelineTaskExecutorYarn extends StreamPipelineTaskExec
 	 * @return
 	 * @throws Exception
 	 */
-	public OutputStream createIntermediateDataToFS(Task task) throws PipelineException {
+	public OutputStream createIntermediateDataToFS(Task task, int numbytes) throws PipelineException {
 		log.debug("Entered StreamPipelineTaskExecutorYarn.createIntermediateDataToFS");
 		try {
 			var path = getIntermediateDataFSFilePath(task);

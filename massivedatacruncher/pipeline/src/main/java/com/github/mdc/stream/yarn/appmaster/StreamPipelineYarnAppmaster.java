@@ -107,7 +107,7 @@ public class StreamPipelineYarnAppmaster extends StaticEventingAppmaster impleme
 			var namenodeurl = getConfiguration().get(MDCConstants.HDFSNAMENODEURL);
 			var containerallocator = (DefaultContainerAllocator) getAllocator();
 			log.debug("Parameters: " + getParameters());
-			log.debug("Container-Memory: " + getParameters().getProperty("container-memory", "1024"));
+			log.info("Container-Memory: " + getParameters().getProperty("container-memory", "1024"));
 			containerallocator.setMemory(Integer.parseInt(getParameters().getProperty("container-memory", "1024")));
 			System.setProperty(MDCConstants.HDFSNAMENODEURL, getConfiguration().get(MDCConstants.HDFSNAMENODEURL));
 			// Thread containing the job stage information.

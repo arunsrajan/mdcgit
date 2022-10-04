@@ -157,25 +157,25 @@ public sealed class StreamPipelineTaskExecutor implements
 	 * @return
 	 */
 	private List getFunctions() {
-		log.debug("Entered MassiveDataStreamTaskDExecutor.getFunctions");
+		log.debug("Entered StreamPipelineTaskExecutor.getFunctions");
 		var tasks = jobstage.getStage().tasks;
 		var functions = new ArrayList<>();
 		for (var task : tasks) {
 			functions.add(task);
 		}
-		log.debug("Exiting MassiveDataStreamTaskDExecutor.getFunctions");
+		log.debug("Exiting StreamPipelineTaskExecutor.getFunctions");
 		return functions;
 	}
 
 	protected String getStagesTask() {
-		log.debug("Entered MassiveDataStreamTaskDExecutor.getStagesTask");
+		log.debug("Entered StreamPipelineTaskExecutor.getStagesTask");
 		var tasks = jobstage.getStage().tasks;
 		var builder = new StringBuilder();
 		for (var task : tasks) {
 			builder.append(PipelineUtils.getFunctions(task));
 			builder.append(", ");
 		}
-		log.debug("Exiting MassiveDataStreamTaskDExecutor.getStagesTask");
+		log.debug("Exiting StreamPipelineTaskExecutor.getStagesTask");
 		return builder.toString();
 	}
 
@@ -190,7 +190,7 @@ public sealed class StreamPipelineTaskExecutor implements
 	public double processBlockHDFSIntersection(BlocksLocation blocksfirst, BlocksLocation blockssecond, FileSystem hdfs)
 			throws Exception {
 		long starttime = System.currentTimeMillis();
-		log.debug("Entered MassiveDataStreamTaskDExecutor.processBlockHDFSIntersection");
+		log.debug("Entered StreamPipelineTaskExecutor.processBlockHDFSIntersection");
 
 		try (var fsdos = new ByteArrayOutputStream();
 				var output = new FSTObjectOutput(fsdos, Utils.getConfigForSerialization());
@@ -238,7 +238,7 @@ public sealed class StreamPipelineTaskExecutor implements
 			cacheAble(fsdos);
 			var wr = new WeakReference<Object>(result);
 			result = null;
-			log.debug("Exiting MassiveDataStreamTaskDExecutor.processBlockHDFSIntersection");
+			log.debug("Exiting StreamPipelineTaskExecutor.processBlockHDFSIntersection");
 			var timetaken = (System.currentTimeMillis() - starttime) / 1000.0;
 			log.debug("Time taken to compute the Intersection Task is " + timetaken + " seconds");
 			log.debug("GC Status Intersection task:" + Utils.getGCStats());
@@ -265,7 +265,7 @@ public sealed class StreamPipelineTaskExecutor implements
 	public double processBlockHDFSIntersection(Set<InputStream> fsstreamfirst, List<BlocksLocation> blockssecond,
 			FileSystem hdfs) throws Exception {
 		var starttime = System.currentTimeMillis();
-		log.debug("Entered MassiveDataStreamTaskDExecutor.processBlockHDFSIntersection");
+		log.debug("Entered StreamPipelineTaskExecutor.processBlockHDFSIntersection");
 
 		try (var fsdos = new ByteArrayOutputStream();
 				var output = new FSTObjectOutput(fsdos, Utils.getConfigForSerialization());
@@ -311,7 +311,7 @@ public sealed class StreamPipelineTaskExecutor implements
 			cacheAble(fsdos);
 			var wr = new WeakReference<Object>(result);
 			result = null;
-			log.debug("Exiting MassiveDataStreamTaskDExecutor.processBlockHDFSIntersection");
+			log.debug("Exiting StreamPipelineTaskExecutor.processBlockHDFSIntersection");
 			var timetaken = (System.currentTimeMillis() - starttime) / 1000.0;
 			log.debug("Time taken to compute the Intersection Task is " + timetaken + " seconds");
 			log.debug("GC Status Intersection task:" + Utils.getGCStats());
@@ -336,7 +336,7 @@ public sealed class StreamPipelineTaskExecutor implements
 	public double processBlockHDFSIntersection(List<InputStream> fsstreamfirst, List<InputStream> fsstreamsecond)
 			throws PipelineException {
 		var starttime = System.currentTimeMillis();
-		log.debug("Entered MassiveDataStreamTaskDExecutor.processBlockHDFSIntersection");
+		log.debug("Entered StreamPipelineTaskExecutor.processBlockHDFSIntersection");
 
 		try (var fsdos = new ByteArrayOutputStream();
 				var output = new FSTObjectOutput(fsdos, Utils.getConfigForSerialization());
@@ -380,7 +380,7 @@ public sealed class StreamPipelineTaskExecutor implements
 			cacheAble(fsdos);
 			var wr = new WeakReference<Object>(result);
 			result = null;
-			log.debug("Exiting MassiveDataStreamTaskDExecutor.processBlockHDFSIntersection");
+			log.debug("Exiting StreamPipelineTaskExecutor.processBlockHDFSIntersection");
 			var timetaken = (System.currentTimeMillis() - starttime) / 1000.0;
 			log.debug("Time taken to compute the Intersection Task is " + timetaken + " seconds");
 			log.debug("GC Status Intersection task:" + Utils.getGCStats());
@@ -411,12 +411,12 @@ public sealed class StreamPipelineTaskExecutor implements
 	 * @throws Exception
 	 */
 	public OutputStream createIntermediateDataToFS(Task task, int buffersize) throws PipelineException {
-		log.debug("Entered MassiveDataStreamTaskDExecutor.createIntermediateDataToFS");
+		log.debug("Entered StreamPipelineTaskExecutor.createIntermediateDataToFS");
 		try {
 			var path = getIntermediateDataFSFilePath(task);
 			new File(MDCProperties.get().getProperty(MDCConstants.TMPDIR) + MDCConstants.FORWARD_SLASH
 					+ FileSystemSupport.MDS + MDCConstants.FORWARD_SLASH + jobstage.getJobid()).mkdirs();
-			log.debug("Exiting MassiveDataStreamTaskDExecutor.createIntermediateDataToFS");
+			log.debug("Exiting StreamPipelineTaskExecutor.createIntermediateDataToFS");
 			return new FileOutputStream(MDCProperties.get().getProperty(MDCConstants.TMPDIR) + path);
 		} catch (IOException ioe) {
 			log.error(PipelineConstants.FILEIOERROR, ioe);
@@ -447,7 +447,7 @@ public sealed class StreamPipelineTaskExecutor implements
 	public double processBlockHDFSUnion(BlocksLocation blocksfirst, BlocksLocation blockssecond, FileSystem hdfs)
 			throws PipelineException {
 		var starttime = System.currentTimeMillis();
-		log.debug("Entered MassiveDataStreamTaskDExecutor.processBlockHDFSUnion");
+		log.debug("Entered StreamPipelineTaskExecutor.processBlockHDFSUnion");
 
 		try (var fsdos = new ByteArrayOutputStream();
 				var output = new FSTObjectOutput(fsdos, Utils.getConfigForSerialization());
@@ -505,7 +505,7 @@ public sealed class StreamPipelineTaskExecutor implements
 			cacheAble(fsdos);
 			var wr = new WeakReference<List>(result);
 			result = null;
-			log.debug("Exiting MassiveDataStreamTaskDExecutor.processBlockHDFSUnion");
+			log.debug("Exiting StreamPipelineTaskExecutor.processBlockHDFSUnion");
 			var timetaken = (System.currentTimeMillis() - starttime) / 1000.0;
 			log.debug("Time taken to compute the Union Task is " + timetaken + " seconds");
 			log.debug("GC Status Union task:" + Utils.getGCStats());
@@ -531,7 +531,7 @@ public sealed class StreamPipelineTaskExecutor implements
 	public double processBlockHDFSUnion(Set<InputStream> fsstreamfirst, List<BlocksLocation> blockssecond,
 			FileSystem hdfs) throws PipelineException {
 		var starttime = System.currentTimeMillis();
-		log.debug("Entered MassiveDataStreamTaskDExecutor.processBlockHDFSUnion");
+		log.debug("Entered StreamPipelineTaskExecutor.processBlockHDFSUnion");
 
 		try (var fsdos = new ByteArrayOutputStream();
 				var output = new FSTObjectOutput(fsdos, Utils.getConfigForSerialization());
@@ -590,7 +590,7 @@ public sealed class StreamPipelineTaskExecutor implements
 			cacheAble(fsdos);
 			var wr = new WeakReference<List>(result);
 			result = null;
-			log.debug("Exiting MassiveDataStreamTaskDExecutor.processBlockHDFSUnion");
+			log.debug("Exiting StreamPipelineTaskExecutor.processBlockHDFSUnion");
 			var timetaken = (System.currentTimeMillis() - starttime) / 1000.0;
 			log.debug("Time taken to compute the Union Task is " + timetaken + " seconds");
 			log.debug("GC Status Union task:" + Utils.getGCStats());
@@ -615,7 +615,7 @@ public sealed class StreamPipelineTaskExecutor implements
 	public double processBlockHDFSUnion(List<InputStream> fsstreamfirst, List<InputStream> fsstreamsecond)
 			throws PipelineException {
 		var starttime = System.currentTimeMillis();
-		log.debug("Entered MassiveDataStreamTaskDExecutor.processBlockHDFSUnion");
+		log.debug("Entered StreamPipelineTaskExecutor.processBlockHDFSUnion");
 
 		try (var fsdos = new ByteArrayOutputStream();
 				var output = new FSTObjectOutput(fsdos, Utils.getConfigForSerialization());
@@ -678,7 +678,7 @@ public sealed class StreamPipelineTaskExecutor implements
 			cacheAble(fsdos);
 			var wr = new WeakReference<List>(result);
 			result = null;
-			log.debug("Exiting MassiveDataStreamTaskDExecutor.processBlockHDFSUnion");
+			log.debug("Exiting StreamPipelineTaskExecutor.processBlockHDFSUnion");
 			var timetaken = (System.currentTimeMillis() - starttime) / 1000.0;
 			log.debug("Time taken to compute the Union Task is " + timetaken + " seconds");
 			log.debug("GC Status Union task:" + Utils.getGCStats());
@@ -702,7 +702,7 @@ public sealed class StreamPipelineTaskExecutor implements
 	@SuppressWarnings("unchecked")
 	public double processBlockHDFSMap(BlocksLocation blockslocation, FileSystem hdfs) throws PipelineException {
 		var starttime = System.currentTimeMillis();
-		log.debug("Entered MassiveDataStreamTaskDExecutor.processBlockHDFSMap");
+		log.debug("Entered StreamPipelineTaskExecutor.processBlockHDFSMap");
 		log.info(blockslocation);
 		CSVParser records = null;
 		try (var fsdos = new ByteArrayOutputStream();
@@ -826,7 +826,7 @@ public sealed class StreamPipelineTaskExecutor implements
 				cacheAble(fsdos);
 				var wr = new WeakReference<List>(out);
 				out = null;
-				log.debug("Exiting MassiveDataStreamTaskDExecutor.processBlockHDFSMap");
+				log.debug("Exiting StreamPipelineTaskExecutor.processBlockHDFSMap");
 				var timetaken = (System.currentTimeMillis() - starttime) / 1000.0;
 				log.debug("Time taken to compute the Map Task is " + timetaken + " seconds");
 				log.debug("GC Status Map task:" + Utils.getGCStats());
@@ -873,7 +873,7 @@ public sealed class StreamPipelineTaskExecutor implements
 	@SuppressWarnings("unchecked")
 	public double processBlockHDFSMap(Set<InputStream> fsstreamfirst) throws PipelineException {
 		var starttime = System.currentTimeMillis();
-		log.debug("Entered MassiveDataStreamTaskDExecutor.processBlockHDFSMap");
+		log.debug("Entered StreamPipelineTaskExecutor.processBlockHDFSMap");
 		try (var fsdos = new ByteArrayOutputStream(); var output = new FSTObjectOutput(fsdos, Utils.getConfigForSerialization());) {
 			
 			var functions = getFunctions();
@@ -975,7 +975,7 @@ public sealed class StreamPipelineTaskExecutor implements
 			cacheAble(fsdos);
 			var wr = new WeakReference<List>(out);
 			out = null;
-			log.debug("Exiting MassiveDataStreamTaskDExecutor.processBlockHDFSMap");
+			log.debug("Exiting StreamPipelineTaskExecutor.processBlockHDFSMap");
 			var timetaken = (System.currentTimeMillis() - starttime) / 1000.0;
 			log.debug("Time taken to compute the Map Task is " + timetaken + " seconds");
 			log.debug("GC Status Map task:" + Utils.getGCStats());
@@ -993,7 +993,7 @@ public sealed class StreamPipelineTaskExecutor implements
 	public double processSamplesBlocks(Integer numofsample, BlocksLocation blockslocation, FileSystem hdfs)
 			throws Exception {
 		var starttime = System.currentTimeMillis();
-		log.debug("Entered MassiveDataStreamTaskDExecutor.processSamplesBlocks");
+		log.debug("Entered StreamPipelineTaskExecutor.processSamplesBlocks");
 		try (var fsdos = new ByteArrayOutputStream();
 				var output = new FSTObjectOutput(fsdos, Utils.getConfigForSerialization());
 				var bais = HdfsBlockReader.getBlockDataInputStream(blockslocation, hdfs);
@@ -1046,7 +1046,7 @@ public sealed class StreamPipelineTaskExecutor implements
 			cacheAble(fsdos);
 			var wr = new WeakReference<List>(out);
 			out = null;
-			log.debug("Exiting MassiveDataStreamTaskDExecutor.processSamplesBlocks");
+			log.debug("Exiting StreamPipelineTaskExecutor.processSamplesBlocks");
 			var timetaken = (System.currentTimeMillis() - starttime) / 1000.0;
 			log.debug("Time taken to compute the Sampling Task is " + timetaken + " seconds");
 			log.debug("GC Status Sampling task:" + Utils.getGCStats());
@@ -1070,7 +1070,7 @@ public sealed class StreamPipelineTaskExecutor implements
 	@SuppressWarnings("unchecked")
 	public double processSamplesObjects(Integer numofsample, List fsstreams) throws PipelineException {
 		var starttime = System.currentTimeMillis();
-		log.debug("Entered MassiveDataStreamTaskDExecutor.processSamplesObjects");
+		log.debug("Entered StreamPipelineTaskExecutor.processSamplesObjects");
 		try (var fsdos = new ByteArrayOutputStream();
 				var output = new FSTObjectOutput(fsdos, Utils.getConfigForSerialization());
 				var inputfirst = new FSTObjectInput((InputStream) fsstreams.iterator().next(),Utils.getConfigForSerialization());) {
@@ -1122,7 +1122,7 @@ public sealed class StreamPipelineTaskExecutor implements
 			cacheAble(fsdos);
 			var wr = new WeakReference<List>(out);
 			out = null;
-			log.debug("Exiting MassiveDataStreamTaskDExecutor.processSamplesObjects");
+			log.debug("Exiting StreamPipelineTaskExecutor.processSamplesObjects");
 			var timetaken = (System.currentTimeMillis() - starttime) / 1000.0;
 			log.debug("Time taken to compute the Sampling Task is " + timetaken + " seconds");
 			log.debug("GC Status Sampling task:" + Utils.getGCStats());
@@ -1147,7 +1147,7 @@ public sealed class StreamPipelineTaskExecutor implements
 	@Override
 	public Boolean call() {
 		starttime = System.currentTimeMillis();
-		log.debug("Entered MassiveDataStreamTaskDExecutor.call");
+		log.debug("Entered StreamPipelineTaskExecutor.call");
 		var stageTasks = getStagesTask();
 		var stagePartition = jobstage.getStageid();
 		var timetakenseconds = 0.0;
@@ -1195,7 +1195,7 @@ public sealed class StreamPipelineTaskExecutor implements
 				log.error("Message Send Failed for Task Failed: ", e);
 			}
 		}
-		log.debug("Exiting MassiveDataStreamTaskDExecutor.call");
+		log.debug("Exiting StreamPipelineTaskExecutor.call");
 		return completed;
 	}
 
@@ -1473,7 +1473,7 @@ public sealed class StreamPipelineTaskExecutor implements
 	@SuppressWarnings("unchecked")
 	public double processJoin(InputStream streamfirst, InputStream streamsecond, boolean isinputfirstblocks,
 			boolean isinputsecondblocks) throws PipelineException {
-		log.debug("Entered MassiveDataStreamTaskDExecutor.processJoin");
+		log.debug("Entered StreamPipelineTaskExecutor.processJoin");
 		var starttime = System.currentTimeMillis();
 
 		try (var fsdos = new ByteArrayOutputStream();
@@ -1557,7 +1557,7 @@ public sealed class StreamPipelineTaskExecutor implements
 			cacheAble(fsdos);
 			var wr = new WeakReference<List>(joinpairsout);
 			joinpairsout = null;
-			log.debug("Exiting MassiveDataStreamTaskDExecutor.processJoin");
+			log.debug("Exiting StreamPipelineTaskExecutor.processJoin");
 			var timetaken = (System.currentTimeMillis() - starttime) / 1000.0;
 			log.debug("Time taken to compute the Join task is " + timetaken + " seconds");
 			log.debug("GC Status Join task:" + Utils.getGCStats());
@@ -1584,7 +1584,7 @@ public sealed class StreamPipelineTaskExecutor implements
 	@SuppressWarnings("unchecked")
 	public double processLeftJoin(InputStream streamfirst, InputStream streamsecond, boolean isinputfirstblocks,
 			boolean isinputsecondblocks) throws PipelineException {
-		log.debug("Entered MassiveDataStreamTaskDExecutor.processLeftJoin");
+		log.debug("Entered StreamPipelineTaskExecutor.processLeftJoin");
 		var starttime = System.currentTimeMillis();
 
 		try (var fsdos = new ByteArrayOutputStream();
@@ -1671,7 +1671,7 @@ public sealed class StreamPipelineTaskExecutor implements
 			cacheAble(fsdos);
 			var wr = new WeakReference<List>(joinpairsout);
 			joinpairsout = null;
-			log.debug("Exiting MassiveDataStreamTaskDExecutor.processLeftJoin");
+			log.debug("Exiting StreamPipelineTaskExecutor.processLeftJoin");
 			var timetaken = (System.currentTimeMillis() - starttime) / 1000.0;
 			log.debug("Time taken to compute the Join task is " + timetaken + " seconds");
 			log.debug("GC Status Join task:" + Utils.getGCStats());
@@ -1698,7 +1698,7 @@ public sealed class StreamPipelineTaskExecutor implements
 	@SuppressWarnings("unchecked")
 	public double processRightJoin(InputStream streamfirst, InputStream streamsecond, boolean isinputfirstblocks,
 			boolean isinputsecondblocks) throws PipelineException {
-		log.debug("Entered MassiveDataStreamTaskDExecutor.processRightJoin");
+		log.debug("Entered StreamPipelineTaskExecutor.processRightJoin");
 		var starttime = System.currentTimeMillis();
 
 		try (var fsdos = new ByteArrayOutputStream();
@@ -1785,7 +1785,7 @@ public sealed class StreamPipelineTaskExecutor implements
 			cacheAble(fsdos);
 			var wr = new WeakReference<List>(joinpairsout);
 			joinpairsout = null;
-			log.debug("Exiting MassiveDataStreamTaskDExecutor.processRightJoin");
+			log.debug("Exiting StreamPipelineTaskExecutor.processRightJoin");
 			var timetaken = (System.currentTimeMillis() - starttime) / 1000.0;
 			log.debug("Time taken to compute the Join task is " + timetaken + " seconds");
 			log.debug("GC Status Join task:" + Utils.getGCStats());
@@ -1809,7 +1809,7 @@ public sealed class StreamPipelineTaskExecutor implements
 	@SuppressWarnings("unchecked")
 	public double processJoinLZF(InputStream streamfirst, InputStream streamsecond, JoinPredicate joinpredicate,
 			boolean isinputfirstblocks, boolean isinputsecondblocks) throws PipelineException {
-		log.debug("Entered MassiveDataStreamTaskDExecutor.processJoinLZF");
+		log.debug("Entered StreamPipelineTaskExecutor.processJoinLZF");
 		var starttime = System.currentTimeMillis();
 
 		try (var fsdos = new ByteArrayOutputStream();
@@ -1933,7 +1933,7 @@ public sealed class StreamPipelineTaskExecutor implements
 			cacheAble(fsdos);
 			var wr = new WeakReference<List>(joinpairsout);
 			joinpairsout = null;
-			log.debug("Exiting MassiveDataStreamTaskDExecutor.processJoinLZF");
+			log.debug("Exiting StreamPipelineTaskExecutor.processJoinLZF");
 			var timetaken = (System.currentTimeMillis() - starttime) / 1000.0;
 			log.debug("Time taken to compute the Join task is " + timetaken + " seconds");
 			log.debug("GC Status Join task:" + Utils.getGCStats());
@@ -1952,7 +1952,7 @@ public sealed class StreamPipelineTaskExecutor implements
 			LeftOuterJoinPredicate leftouterjoinpredicate, boolean isinputfirstblocks, boolean isinputsecondblocks)
 			throws PipelineException {
 		var starttime = System.currentTimeMillis();
-		log.debug("Entered MassiveDataStreamTaskDExecutor.processLeftOuterJoinLZF");
+		log.debug("Entered StreamPipelineTaskExecutor.processLeftOuterJoinLZF");
 
 		try (var fsdos = new ByteArrayOutputStream();
 				var output = new FSTObjectOutput(fsdos, Utils.getConfigForSerialization());
@@ -2074,7 +2074,7 @@ public sealed class StreamPipelineTaskExecutor implements
 			cacheAble(fsdos);
 			var wr = new WeakReference<List>(joinpairsout);
 			joinpairsout = null;
-			log.debug("Exiting MassiveDataStreamTaskDExecutor.processLeftOuterJoinLZF");
+			log.debug("Exiting StreamPipelineTaskExecutor.processLeftOuterJoinLZF");
 			var timetaken = (System.currentTimeMillis() - starttime) / 1000.0;
 			log.debug("Time taken to compute the Left Outer Join task is " + timetaken + " seconds");
 			log.debug("GC Status Left Outer Join task:" + Utils.getGCStats());
@@ -2093,7 +2093,7 @@ public sealed class StreamPipelineTaskExecutor implements
 			RightOuterJoinPredicate rightouterjoinpredicate, boolean isinputfirstblocks, boolean isinputsecondblocks)
 			throws PipelineException {
 		var starttime = System.currentTimeMillis();
-		log.debug("Entered MassiveDataStreamTaskDExecutor.processRightOuterJoinLZF");
+		log.debug("Entered StreamPipelineTaskExecutor.processRightOuterJoinLZF");
 
 		try (var fsdos = new ByteArrayOutputStream();
 				var output = new FSTObjectOutput(fsdos, Utils.getConfigForSerialization());
@@ -2215,7 +2215,7 @@ public sealed class StreamPipelineTaskExecutor implements
 			cacheAble(fsdos);
 			var wr = new WeakReference<List>(joinpairsout);
 			joinpairsout = null;
-			log.debug("Exiting MassiveDataStreamTaskDExecutor.processRightOuterJoinLZF");
+			log.debug("Exiting StreamPipelineTaskExecutor.processRightOuterJoinLZF");
 			var timetaken = (System.currentTimeMillis() - starttime) / 1000.0;
 			log.debug("Time taken to compute the Right Outer Join task is " + timetaken + " seconds");
 			log.debug("GC Status Right Outer Join task:" + Utils.getGCStats());
@@ -2237,7 +2237,7 @@ public sealed class StreamPipelineTaskExecutor implements
 	@SuppressWarnings("unchecked")
 	public double processGroupByKeyTuple2() throws PipelineException {
 		var starttime = System.currentTimeMillis();
-		log.debug("Entered MassiveDataStreamTaskDExecutor.processGroupByKeyTuple2");
+		log.debug("Entered StreamPipelineTaskExecutor.processGroupByKeyTuple2");
 
 		try (var fsdos = new ByteArrayOutputStream(); var output = new FSTObjectOutput(fsdos, Utils.getConfigForSerialization());) {
 			
@@ -2324,7 +2324,7 @@ public sealed class StreamPipelineTaskExecutor implements
 				bbos.get().flip();
 			}
 			cacheAble(fsdos);
-			log.debug("Exiting MassiveDataStreamTaskDExecutor.processGroupByKeyTuple2");
+			log.debug("Exiting StreamPipelineTaskExecutor.processGroupByKeyTuple2");
 			var timetaken = (System.currentTimeMillis() - starttime) / 1000.0;
 			log.debug("Time taken to compute the Group By Key Task is " + timetaken + " seconds");
 			log.debug("GC Status Group By Key task:" + Utils.getGCStats());
@@ -2346,7 +2346,7 @@ public sealed class StreamPipelineTaskExecutor implements
 	@SuppressWarnings("unchecked")
 	public double processFoldByKeyTuple2() throws PipelineException {
 		var starttime = System.currentTimeMillis();
-		log.debug("Entered MassiveDataStreamTaskDExecutor.processFoldByKeyTuple2");
+		log.debug("Entered StreamPipelineTaskExecutor.processFoldByKeyTuple2");
 
 		try (var fsdos = new ByteArrayOutputStream(); var output = new FSTObjectOutput(fsdos, Utils.getConfigForSerialization());) {
 			
@@ -2452,7 +2452,7 @@ public sealed class StreamPipelineTaskExecutor implements
 				bbos.get().flip();
 			}
 			cacheAble(fsdos);
-			log.debug("Exiting MassiveDataStreamTaskDExecutor.processFoldByKeyTuple2");
+			log.debug("Exiting StreamPipelineTaskExecutor.processFoldByKeyTuple2");
 			var timetaken = (System.currentTimeMillis() - starttime) / 1000.0;
 			log.debug("Time taken to compute the Fold By Key Task is " + timetaken + " seconds");
 			log.debug("GC Status Fold By Key task:" + Utils.getGCStats());
@@ -2474,7 +2474,7 @@ public sealed class StreamPipelineTaskExecutor implements
 	@SuppressWarnings("unchecked")
 	public double processCountByKeyTuple2() throws PipelineException {
 		var starttime = System.currentTimeMillis();
-		log.debug("Entered MassiveDataStreamTaskDExecutor.processCountByKeyTuple2");
+		log.debug("Entered StreamPipelineTaskExecutor.processCountByKeyTuple2");
 		try (var fsdos = new ByteArrayOutputStream(); var output = new FSTObjectOutput(fsdos, Utils.getConfigForSerialization());) {
 			
 
@@ -2548,7 +2548,7 @@ public sealed class StreamPipelineTaskExecutor implements
 			cacheAble(fsdos);
 			var wr = new WeakReference<List>(intermediatelist);
 			intermediatelist = null;
-			log.debug("Exiting MassiveDataStreamTaskDExecutor.processCountByKeyTuple2");
+			log.debug("Exiting StreamPipelineTaskExecutor.processCountByKeyTuple2");
 			var timetaken = (System.currentTimeMillis() - starttime) / 1000.0;
 			log.debug("Time taken to compute the Count By Key Task is " + timetaken + " seconds");
 			log.debug("GC Status Count By Key task:" + Utils.getGCStats());
@@ -2570,7 +2570,7 @@ public sealed class StreamPipelineTaskExecutor implements
 	@SuppressWarnings("unchecked")
 	public double processCountByValueTuple2() throws PipelineException {
 		var starttime = System.currentTimeMillis();
-		log.debug("Entered MassiveDataStreamTaskDExecutor.processCountByValueTuple2");
+		log.debug("Entered StreamPipelineTaskExecutor.processCountByValueTuple2");
 		try (var fsdos = new ByteArrayOutputStream(); var output = new FSTObjectOutput(fsdos, Utils.getConfigForSerialization());) {
 			
 
@@ -2645,7 +2645,7 @@ public sealed class StreamPipelineTaskExecutor implements
 			cacheAble(fsdos);
 			var wr = new WeakReference<List>(intermediatelist);
 			intermediatelist = null;
-			log.debug("Exiting MassiveDataStreamTaskDExecutor.processCountByValueTuple2");
+			log.debug("Exiting StreamPipelineTaskExecutor.processCountByValueTuple2");
 			var timetaken = (System.currentTimeMillis() - starttime) / 1000.0;
 			log.debug("Time taken to compute the Count By Value Task is " + timetaken + " seconds");
 			log.debug("GC Status Count By Value task:" + Utils.getGCStats());
@@ -2676,7 +2676,7 @@ public sealed class StreamPipelineTaskExecutor implements
 	@SuppressWarnings("unchecked")
 	public double processCoalesce() throws PipelineException {
 		var starttime = System.currentTimeMillis();
-		log.debug("Entered MassiveDataStreamTaskDExecutor.processCoalesce");
+		log.debug("Entered StreamPipelineTaskExecutor.processCoalesce");
 		var coalescefunction = (List<Coalesce>) getFunctions();
 		try (var fsdos = new ByteArrayOutputStream();
 				var currentoutput = Utils.getConfigForSerialization().getObjectOutput(fsdos);) {
@@ -2773,7 +2773,7 @@ public sealed class StreamPipelineTaskExecutor implements
 			cacheAble(fsdos);
 			var wr = new WeakReference<List>(outpairs);
 			outpairs = null;
-			log.debug("Exiting MassiveDataStreamTaskDExecutor.processCoalesce");
+			log.debug("Exiting StreamPipelineTaskExecutor.processCoalesce");
 			var timetaken = (System.currentTimeMillis() - starttime) / 1000.0;
 			log.debug("Time taken to compute the Coalesce Task is " + timetaken + " seconds");
 			log.debug("GC Status Count By Value task:" + Utils.getGCStats());

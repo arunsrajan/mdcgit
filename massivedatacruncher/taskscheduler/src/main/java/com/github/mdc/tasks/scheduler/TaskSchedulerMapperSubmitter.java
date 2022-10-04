@@ -29,6 +29,7 @@ import org.apache.curator.framework.CuratorFramework;
 import com.github.mdc.common.ApplicationTask;
 import com.github.mdc.common.BlocksLocation;
 import com.github.mdc.common.MDCConstants;
+import com.github.mdc.common.RetrieveKeys;
 import com.github.mdc.common.TaskSchedulerMapperSubmitterMBean;
 import com.github.mdc.common.Utils;
 
@@ -60,13 +61,13 @@ public class TaskSchedulerMapperSubmitter implements TaskSchedulerMapperSubmitte
 		return blockslocation;
 	}
 
-	public void sendChunk(BlocksLocation blockslocation) throws Exception {
+	public RetrieveKeys sendChunk(BlocksLocation blockslocation) throws Exception {
 		try {
 			var objects = new ArrayList<>();
 			objects.add(blockslocation);
 			objects.add(apptask.getApplicationid());
 			objects.add(apptask.getTaskid());
-			Utils.getResultObjectByInput(blockslocation.getExecutorhp(), objects);
+			return (RetrieveKeys) Utils.getResultObjectByInput(blockslocation.getExecutorhp(), objects);
 		}
 		catch (IOException ex) {
 			var baos = new ByteArrayOutputStream();
@@ -74,6 +75,7 @@ public class TaskSchedulerMapperSubmitter implements TaskSchedulerMapperSubmitte
 			ex.printStackTrace(failuremessage);
 			this.iscompleted = false;
 		}
+		return null;
 	}
 
 	@Override

@@ -15,6 +15,8 @@
  */
 package com.github.mdc.common;
 
+import static java.util.Objects.nonNull;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -48,7 +50,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
-import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
@@ -87,13 +88,10 @@ import org.jgroups.ObjectMessage;
 import org.jgroups.Receiver;
 import org.jgroups.View;
 import org.jgroups.util.UUID;
-import org.jooq.lambda.tuple.Tuple2;
 import org.nustaq.serialization.FSTConfiguration;
 import org.nustaq.serialization.FSTObjectInput;
 import org.nustaq.serialization.FSTObjectOutput;
-import org.nustaq.serialization.simpleapi.DefaultCoder;
 import org.slf4j.LoggerFactory;
-
 
 /**
  * 
@@ -147,8 +145,10 @@ public class Utils {
 	}
 
 	public static void writeToOstream(FSTObjectOutput fstoo, Object objtowrite) throws Exception {
-		fstoo.writeObject(objtowrite);
-		fstoo.flush();
+		if (nonNull(fstoo)) {
+			fstoo.writeObject(objtowrite);
+			fstoo.flush();
+		}
 	}
 	
 	/**

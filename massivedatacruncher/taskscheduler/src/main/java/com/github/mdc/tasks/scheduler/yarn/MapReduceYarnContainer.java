@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
@@ -99,7 +98,7 @@ public class MapReduceYarnContainer extends AbstractIntegrationYarnContainer {
 				} else if (response.getState().equals(JobResponse.State.RUNJOB)) {
 					log.info(containerid + ": Environment " + getEnvironment());
 					job = response.getJob();
-					var input = new FSTObjectInput(new ByteArrayInputStream(job));
+					var input = new FSTObjectInput(new ByteArrayInputStream(job), Utils.getConfigForSerialization());
 					var object = input.readObject();
 					if (object instanceof MapperCombiner mc) {
 						System.setProperty(MDCConstants.HDFSNAMENODEURL,

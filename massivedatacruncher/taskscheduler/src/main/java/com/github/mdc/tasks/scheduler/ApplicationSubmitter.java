@@ -15,6 +15,7 @@
  */
 package com.github.mdc.tasks.scheduler;
 
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.OutputStream;
@@ -125,9 +126,11 @@ public class ApplicationSubmitter {
 	public static void writeInt(OutputStream os, Integer value) throws ApplicationSubmitterException {
 		try {
 			
-			var output = new FSTObjectOutput(os);
-			output.writeObject(value);
-			output.flush();
+			byte[] bytes = Utils.getConfigForSerialization().asByteArray(value);
+			DataOutputStream dos = new DataOutputStream(os);
+			dos.writeInt(bytes.length);
+			dos.write(bytes);
+			dos.flush();
 		} catch(Exception exception){
 			throw new ApplicationSubmitterException(exception, "Unable to write Integer value to the output stream");
 		}
@@ -135,10 +138,11 @@ public class ApplicationSubmitter {
 
 	public static void writeDataStream(OutputStream os, byte[] outbyt) throws ApplicationSubmitterException {
 		try {
-			
-			var output = new FSTObjectOutput(os);
-			output.writeObject(outbyt);
-			output.flush();
+			byte[] bytes = Utils.getConfigForSerialization().asByteArray(outbyt);
+			DataOutputStream dos = new DataOutputStream(os);
+			dos.writeInt(bytes.length);
+			dos.write(bytes);
+			dos.flush();
 		} catch(Exception exception){
 			throw new ApplicationSubmitterException(exception, "Unable to write Integer value to the output stream");
 		}

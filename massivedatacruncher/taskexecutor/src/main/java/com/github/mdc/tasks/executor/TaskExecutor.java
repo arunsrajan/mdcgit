@@ -241,7 +241,15 @@ public class TaskExecutor implements Callable<Object> {
 										port);
 							}
 							apptaskexecutormap.put(apptaskid, mdtemc);
-							return mdtemc.call();
+							mdtemc.call();
+							var keys = mdtemc.ctx.keys();
+							RetrieveKeys rk = new RetrieveKeys();
+							rk.keys = new LinkedHashSet<>(keys);
+							rk.applicationid = applicationid;
+							rk.taskid = taskid;
+							rk.response = true;
+							log.debug("destroying MapperCombiner HeartBeat: " + apptaskid);
+							return rk;
 						}
 					} else if (object instanceof ReducerValues rv) {
 						var mdter = (TaskExecutorReducer) taskexecutor;

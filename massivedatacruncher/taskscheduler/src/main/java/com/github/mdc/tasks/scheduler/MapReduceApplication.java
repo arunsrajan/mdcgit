@@ -15,7 +15,6 @@
  */
 package com.github.mdc.tasks.scheduler;
 
-import java.beans.PropertyChangeListener;
 import java.net.Socket;
 import java.net.URI;
 import java.util.ArrayList;
@@ -29,14 +28,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.Vector;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Semaphore;
@@ -63,16 +59,12 @@ import com.github.dexecutor.core.task.Task;
 import com.github.dexecutor.core.task.TaskProvider;
 import com.github.mdc.common.AllocateContainers;
 import com.github.mdc.common.ApplicationTask;
-import com.github.mdc.common.ApplicationTask.TaskStatus;
-import com.github.mdc.common.ApplicationTask.TaskType;
 import com.github.mdc.common.Block;
 import com.github.mdc.common.BlocksLocation;
 import com.github.mdc.common.ContainerLaunchAttributes;
 import com.github.mdc.common.ContainerResources;
-import com.github.mdc.common.Context;
 import com.github.mdc.common.DataCruncherContext;
 import com.github.mdc.common.DestroyContainers;
-import com.github.mdc.common.Dummy;
 import com.github.mdc.common.HDFSBlockUtils;
 import com.github.mdc.common.HeartBeat;
 import com.github.mdc.common.JobApp;
@@ -83,16 +75,13 @@ import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.MDCJobMetrics;
 import com.github.mdc.common.MDCNodesResources;
 import com.github.mdc.common.MDCProperties;
-import com.github.mdc.common.NetworkUtil;
 import com.github.mdc.common.PipelineConstants;
 import com.github.mdc.common.ReducerValues;
 import com.github.mdc.common.Resources;
-import com.github.mdc.common.RetrieveData;
 import com.github.mdc.common.RetrieveKeys;
 import com.github.mdc.common.Tuple3Serializable;
 import com.github.mdc.common.Utils;
 import com.github.mdc.stream.PipelineException;
-import com.github.mdc.stream.scheduler.StreamPipelineTaskSubmitter;
 import com.google.common.collect.Iterables;
 
 @SuppressWarnings("rawtypes")
@@ -655,64 +644,40 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 			var completed = false;
 			var numexecute = 0;
 			var taskexeccount = Integer.parseInt(jobconf.getTaskexeccount());
-			List<ExecutionResult<TaskSchedulerMapperCombinerSubmitter, Boolean>> erroredresult = null;
+			List<ExecutionResults<TaskSchedulerMapperCombinerSubmitter, Boolean>> erroredresult = new ArrayList<>();
 			
+			var semaphores = new ConcurrentHashMap<String, Semaphore>();
+			for(var node:nodessorted) {
+				var crs = nodecrsmap.get(node);
+				String[] nodehp = node.split(MDCConstants.UNDERSCORE);
+				for(ContainerResources cr: crs) {
+					batchsize += cr.getCpu()*2;
+					semaphores.put(nodehp[0]+MDCConstants.UNDERSCORE+cr.getPort(), new Semaphore(cr.getCpu()*2));
+				}
+			}
 			while (!completed && numexecute < taskexeccount) {
-				DexecutorConfig<DefaultDexecutor, List<ExecutionResult<TaskSchedulerMapperCombinerSubmitter, Boolean>>> config = new DexecutorConfig(newExecutor(), new DTaskExecutor());
-				DefaultDexecutor<DefaultDexecutor, List<ExecutionResult<TaskSchedulerMapperCombinerSubmitter, Boolean>>> executor = new DefaultDexecutor<>(config);
 				for (var containerkey : containermappercombinermap.keySet()) {
 					var dccmapphase = new DataCruncherContext();
 					dccmapphases.add(dccmapphase);
-					var mdtstms = containermappercombinermap
-							.get(containerkey);
-					if (!mdtstms.isEmpty()) {
-						var clq = new ArrayBlockingQueue(mdtstms.size(), true);
-						containerqueue.put(containerkey.trim(), clq);
-						DexecutorConfig<TaskSchedulerMapperCombinerSubmitter, Boolean> configexec = new DexecutorConfig(
-								newExecutor(),
-								new MapCombinerTaskExecutor(new Semaphore(batchsize), clq, dccmapphase, mdtstms.size()));
-						DefaultDexecutor<TaskSchedulerMapperCombinerSubmitter, Boolean> dexecutor = new DefaultDexecutor<>(
-								configexec);
-
-						for (var mdtstm : mdtstms) {
-							dexecutor.addIndependent(mdtstm);
-						}
-						executor.addIndependent(dexecutor);
-					}
+					List<TaskSchedulerMapperCombinerSubmitter> tasks = containermappercombinermap.get(containerkey);
+					DexecutorConfig<TaskSchedulerMapperCombinerSubmitter, Boolean> configexec = new DexecutorConfig(
+							newExecutor(),
+							new MapCombinerTaskExecutor(semaphores.get(containerkey), dccmapphase, tasks.size()));
+					DefaultDexecutor<TaskSchedulerMapperCombinerSubmitter, Boolean> dexecutor = new DefaultDexecutor<>(
+							configexec);
+					tasks.stream().forEach(task -> dexecutor.addIndependent(task));
+					
+					erroredresult.add(dexecutor.execute(ExecutionConfig.NON_TERMINATING));
 				}
-				PropertyChangeListener pcl = evt -> {
-					try {
-						var apptask = (ApplicationTask) evt.getNewValue();
-						containerqueue.get(apptask.getHp().trim()).put(apptask);
-						log.info(apptask.getHp() + ": " + containerqueue.get(apptask.getHp()));
-					} catch (Exception ex) {
-						log.info(MDCConstants.EMPTY, ex);
-					}
-				};
-				ExecutionResults<DefaultDexecutor, List<ExecutionResult<TaskSchedulerMapperCombinerSubmitter, Boolean>>> execresults = executor.execute(ExecutionConfig.NON_TERMINATING);
-				List<ExecutionResult<DefaultDexecutor, List<ExecutionResult<TaskSchedulerMapperCombinerSubmitter, Boolean>>>> errorresults =  execresults.getAll();
 				completed = true;
-				var currentcontainers = new ArrayList<String>(containers);
-				var containersremoved = new ArrayList<String>(containers);
-				containersremoved.removeAll(currentcontainers);
-				currentcontainers.stream().forEach(containerhp -> containermappercombinermap.get(containerhp).clear());
-				containersremoved.stream().forEach(containerhp -> containermappercombinermap.remove(containerhp));
-				for (var execresult :errorresults) {
-					erroredresult = execresult.getResult();
-					if (!erroredresult.isEmpty()) {
+				for (ExecutionResults<TaskSchedulerMapperCombinerSubmitter, Boolean> execs : erroredresult) {
+					if(execs.getErrored().size()>0) {
 						completed = false;
-						erroredresult.stream()
-								.forEach(execres -> {
-									reConfigureContainerForStageExecution(execres.getId(), currentcontainers);
-									containermappercombinermap.get(execres.getId().getHostPort()).add(execres.getId());
-								});
 					}
-				}
-				if (!completed) {
-					for(ExecutionResult<TaskSchedulerMapperCombinerSubmitter, Boolean> exec:erroredresult)  {
+					for (ExecutionResult exec : execs.getErrored()) {
 						Utils.writeToOstream(jobconf.getOutput(), MDCConstants.NEWLINE);
-						Utils.writeToOstream(jobconf.getOutput(), exec.getId().apptask.getApperrormessage());
-					};
+						Utils.writeToOstream(jobconf.getOutput(), exec.getId());
+					}
 				}
 				numexecute++;
 			}
@@ -885,63 +850,7 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 				public Boolean execute() {
 					try {
 						semaphorereducerresult.acquire();
-						CountDownLatch cdlreducercomplete = new CountDownLatch(1);
-						final PropertyChangeListener reducercompleteobserver = evt -> {
-							var apptask = (ApplicationTask) evt.getNewValue();
-							if (apptask != null
-									&& apptask.getTasktype() == TaskType.REDUCER
-									&& apptask.getApplicationid().equals(tsrs.applicationid)
-									&& apptask.getTaskid().equals(tsrs.taskid)) {
-								try {
-									log.debug("Received App And Task Before mutex acquire:" + apptask.getApplicationid()
-											+ apptask.getTaskid());
-									if (!Objects.isNull(jobconf.getOutput())) {
-										Utils.writeToOstream(jobconf.getOutput(),
-												"Received App And Task Before mutex acquire:" + apptask.getApplicationid()
-														+ apptask.getTaskid());
-									}
-									if (apptask != null && apptask.getTaskstatus() == TaskStatus.COMPLETED
-											&& apptask.getTasktype() == TaskType.REDUCER) {
-										semaphorereducerresult.acquire();
-										log.debug("Received App And Task After mutex acquire:" + apptask.getApplicationid()
-												+ apptask.getTaskid());
-										var objects = new ArrayList<>();
-										objects.add(new RetrieveData());
-										objects.add(apptask.getApplicationid());
-										objects.add(apptask.getTaskid());
-										log.debug("Received App And Task:" + apptask.getApplicationid() + apptask.getTaskid());
-										if (!Objects.isNull(jobconf.getOutput())) {
-											Utils.writeToOstream(jobconf.getOutput(),
-													"Received App And Task:" + apptask.getApplicationid() + apptask.getTaskid());
-										}
-
-										var ctxreducer = (Context) Utils.getResultObjectByInput(apptask.getHp(), objects);
-										dccred.add((DataCruncherContext) ctxreducer);
-										tsrs.iscompleted = true;
-									} else if (apptask != null && apptask.getTaskstatus() == TaskStatus.FAILED
-											&& apptask.getTasktype() == TaskType.REDUCER) {
-										isexception = true;
-										exceptionmsg = apptask.getApperrormessage();
-										tsrs.iscompleted = false;
-									}
-									cdlreducercomplete.countDown();
-								} catch (InterruptedException e) {
-									log.warn("Interrupted!", e);
-									// Restore interrupted state...
-									Thread.currentThread().interrupt();
-								} catch (Exception ex) {
-									log.error(MDCConstants.EMPTY, ex);
-								}
-							}
-						};
-						submitReducer(tsrs);
-
-						log.debug("Waiting for the Reducer to complete------------");
-						if (!Objects.isNull(jobconf.getOutput())) {
-							Utils.writeToOstream(jobconf.getOutput(),
-									"Waiting for the Reducer to complete------------");
-						}
-						cdlreducercomplete.await();
+						dccred.add((DataCruncherContext) tsrs.call());
 						semaphorereducerresult.release();
 					} catch (Exception ex) {
 						log.error(MDCConstants.EMPTY, ex);
@@ -957,82 +866,38 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 			TaskProvider<TaskSchedulerMapperCombinerSubmitter, Boolean> {
 
 		Semaphore semaphorebatch;
-		ArrayBlockingQueue bq;
 		DataCruncherContext dccmapphase;
-		CountDownLatch cdl;
 		int totaltasks;
-		int totalsubmitted;
-		ConcurrentMap<String, CountDownLatch> cdls = new ConcurrentHashMap<>();
-		ConcurrentMap<String, TaskSchedulerMapperCombinerSubmitter> mdstsmap = new ConcurrentHashMap<>();
-		ConcurrentMap<String, Timer> timermap = new ConcurrentHashMap<>();
-		private Semaphore totalsubmittedmutex = new Semaphore(1);
-		ExecutorService thrpool;
+		int taskexecuted = 0;
+		private Semaphore resultmerge = new Semaphore(1);
 
-		public MapCombinerTaskExecutor(Semaphore semaphore, ArrayBlockingQueue bq, DataCruncherContext dccmapphase,
+		public MapCombinerTaskExecutor(Semaphore semaphore, DataCruncherContext dccmapphase,
 				int totaltasks) {
 			this.semaphorebatch = semaphore;
-			this.bq = bq;
 			this.dccmapphase = dccmapphase;
 			this.totaltasks = totaltasks;
-			thrpool = Executors.newWorkStealingPool();
-			cdl = new CountDownLatch(totaltasks);
 		}
 
 		public com.github.dexecutor.core.task.Task<TaskSchedulerMapperCombinerSubmitter, Boolean> provideTask(
-				final TaskSchedulerMapperCombinerSubmitter mdtstmcmeth) {
+				final TaskSchedulerMapperCombinerSubmitter tsmcs) {
 
 			return new com.github.dexecutor.core.task.Task<TaskSchedulerMapperCombinerSubmitter, Boolean>() {
-				private TaskSchedulerMapperCombinerSubmitter mdtstmc = mdtstmcmeth;
+				private TaskSchedulerMapperCombinerSubmitter tsmcsl = tsmcs;
 				private static final long serialVersionUID = 1L;
 
 				public Boolean execute() {
 					try {
-						semaphorebatch.acquire();
-						log.info("Submitting to host " + mdtstmc.getHostPort() + " " + mdtstmc.apptask.getApplicationid()
-								+ MDCConstants.HYPHEN + mdtstmc.apptask.getTaskid());
-						cdls.put(mdtstmc.apptask.getApplicationid()
-								+ mdtstmc.apptask.getTaskid(), new CountDownLatch(1));
-						mdstsmap.put(mdtstmc.apptask.getApplicationid()
-								+ mdtstmc.apptask.getTaskid(), mdtstmc);
-						submitMapper(mdtstmc);
-						var timer = new Timer();
-						timermap.put(mdtstmc.apptask.getApplicationid()
-								+ mdtstmc.apptask.getTaskid(), timer);
-						var delay = Long.parseLong(jobconf.getTsinitialdelay());
-						timer.scheduleAtFixedRate(new TimerTask() {
-							int count = 0;
-							@Override
-							public void run() {
-								try {
-									if (++count > 10 ) {
-										log.info(mdtstmc.getHostPort() + " Task Failed:" + mdtstmc.apptask.getApplicationid()
-												+ mdtstmc.apptask.getTaskid());
-										var apptimer = timermap.remove(mdtstmc.apptask.getApplicationid()
-												+ mdtstmc.apptask.getTaskid());
-										apptimer.cancel();
-										apptimer.purge();
-									}
-								} catch (Exception ex) {
-									log.error(MDCConstants.EMPTY, ex);
-								}
-							}
-
-						}, delay, delay);
-						totalsubmittedmutex.acquire();
-						totalsubmitted++;
-						if (totalsubmitted == 1) {
-							thrpool.submit(new ResultProcessor(bq));
-						}
-						if (totalsubmitted == totaltasks) {
-							log.info("All Tasks Submitted: " + totalsubmitted + "/" + totaltasks);
-							cdl.await();
-							thrpool.shutdown();
-						}
-
-						totalsubmittedmutex.release();
-						cdls.get(mdtstmc.apptask.getApplicationid()
-								+ mdtstmc.apptask.getTaskid()).await();
-
+						semaphorebatch.acquire();						
+						RetrieveKeys rk = tsmcsl.call();
+						resultmerge.acquire();
+						taskexecuted++;
+						double percentagecompleted = Math.floor(((float)taskexecuted) / totaltasks * 100.0);
+						Utils.writeToOstream( jobconf.getOutput(), "\nPercentage Completed TE("
+								+ tsmcsl.getHostPort() + ") " + percentagecompleted + "% \n");
+						dccmapphase.putAll(rk.keys, rk.applicationid + rk.taskid);
+						resultmerge.release();
+						semaphorebatch.release();
+						return true;
 					} catch (InterruptedException e) {
 						log.warn("Interrupted!", e);
 						// Restore interrupted state...
@@ -1040,91 +905,15 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 					} catch (Exception ex) {
 						log.error("MapCombinerTaskExecutor error", ex);
 					}
-					if (!mdtstmc.iscompleted) {
-						throw new IllegalArgumentException("Incomplete task");
-					}
-					return mdtstmc.iscompleted;
+					return false;
 				}
 			};
-		}
-
-		class ResultProcessor implements Runnable {
-			ArrayBlockingQueue bq;
-			int totalouputobtained;
-			public ResultProcessor(ArrayBlockingQueue bq) {
-				this.bq = bq;
-			}
-
-			public void run() {
-				while (totalouputobtained < totaltasks) {
-					try {
-						var apptask = (ApplicationTask) bq.take();
-						var mdtstm = mdstsmap.remove(apptask.getApplicationid() + apptask.getTaskid());
-						if (!Objects.isNull(mdtstm)) {
-							var timer = timermap.remove(apptask.getApplicationid() + apptask.getTaskid());
-							if (!Objects.isNull(timer)) {
-								timer.cancel();
-								timer.purge();
-							}
-							if (apptask.getTaskstatus() == ApplicationTask.TaskStatus.COMPLETED) {
-								log.info("Processing the App Task: " + apptask);
-								var objects = new ArrayList<>();
-								objects.add(new RetrieveKeys());
-								objects.add(apptask.getApplicationid());
-								objects.add(apptask.getTaskid());
-								var rk = (RetrieveKeys) Utils.getResultObjectByInput(apptask.getHp(), objects);
-								dccmapphase.putAll(rk.keys, rk.applicationid + rk.taskid);
-								mdtstm.iscompleted = true;
-								mdtstm.apptask.setApperrormessage(null);
-							} else if (apptask.getTaskstatus() == ApplicationTask.TaskStatus.FAILED) {
-								mdtstm.apptask.setApperrormessage(apptask.getApperrormessage());
-								mdtstm.iscompleted = false;
-							}
-							totalouputobtained++;
-							double percentcompleted = Math.floor(totalouputobtained / (double) totaltasks * 100.0);
-							jm.getContainersallocated().put(apptask.getHp(), percentcompleted);
-							if (jobconf.getOutput() != null) {
-								Utils.writeToOstream(jobconf.getOutput(), apptask.getTaskid() + " " + apptask.getHp() + "'s Mapper Task Status: " + apptask.getTaskstatus() + " Execution Status = " + totalouputobtained + "/" + totaltasks + " = " + percentcompleted + "%");
-							}
-							cdls.get(apptask.getApplicationid() + apptask.getTaskid()).countDown();
-							semaphorebatch.release();
-							cdl.countDown();
-						}
-					} catch (InterruptedException e) {
-						log.warn("Interrupted!", e);
-						// Restore interrupted state...
-						Thread.currentThread().interrupt();
-					} catch (Exception ex) {
-						log.info("Mapper Submitted Failed For Getting Response: ", ex);
-					}
-				}
-			}
 		}
 
 	}
 
 	private ExecutorService newExecutor() {
 		return Executors.newWorkStealingPool();
-	}
-
-	private class DTaskExecutor implements
-			TaskProvider<DefaultDexecutor<StreamPipelineTaskSubmitter, Boolean>, List<ExecutionResult<StreamPipelineTaskSubmitter, Boolean>>> {
-
-		@Override
-		public com.github.dexecutor.core.task.Task<DefaultDexecutor<StreamPipelineTaskSubmitter, Boolean>, List<ExecutionResult<StreamPipelineTaskSubmitter, Boolean>>> provideTask(
-				DefaultDexecutor<StreamPipelineTaskSubmitter, Boolean> dexecutor) {
-			return new com.github.dexecutor.core.task.Task<DefaultDexecutor<StreamPipelineTaskSubmitter, Boolean>, List<ExecutionResult<StreamPipelineTaskSubmitter, Boolean>>>() {
-
-				private static final long serialVersionUID = 1L;
-
-				@Override
-				public List<ExecutionResult<StreamPipelineTaskSubmitter, Boolean>> execute() {
-					var execresults = dexecutor.execute(ExecutionConfig.NON_TERMINATING);
-					return execresults.getErrored();
-				}
-			};
-		}
-
 	}
 
 	protected void destroyContainers(String containerid) throws Exception {
@@ -1159,15 +948,5 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 
 	public String getTaskExecutor(long blocklocationindex) {
 		return containers.get((int) blocklocationindex % containers.size());
-	}
-
-	public synchronized void submitMapper(TaskSchedulerMapperCombinerSubmitter mdtstmc) throws Exception {
-		log.info("Submitting Mapper Task :");
-		es.submit(mdtstmc);
-	}
-
-	public synchronized void submitReducer(TaskSchedulerReducerSubmitter mdtstr) throws Exception {
-		log.info("Submitting Reducer Task :");
-		es.submit(mdtstr);
 	}
 }

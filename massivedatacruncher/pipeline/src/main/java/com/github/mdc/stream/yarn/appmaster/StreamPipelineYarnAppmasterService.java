@@ -28,6 +28,7 @@ import org.springframework.yarn.integration.ip.mind.MindRpcMessageHolder;
 import org.springframework.yarn.integration.ip.mind.binding.BaseObject;
 
 import com.github.mdc.common.Task;
+import com.github.mdc.common.Utils;
 
 /**
  * 
@@ -79,7 +80,7 @@ public class StreamPipelineYarnAppmasterService extends MindAppmasterService {
 			//Kryo for object serialization and deserialization.
 			
 			if (request.getJob() != null) {
-				try (var input = new FSTObjectInput(new ByteArrayInputStream(request.getJob()));) {
+				try (var input = new FSTObjectInput(new ByteArrayInputStream(request.getJob()), Utils.getConfigForSerialization());) {
 					var object = input.readObject();
 					var task = (Task) object;
 					// Update statuses to App Master if job has been completed.
@@ -104,7 +105,7 @@ public class StreamPipelineYarnAppmasterService extends MindAppmasterService {
 			//Job is available
 			if (job != null) {
 				var baos = new ByteArrayOutputStream();
-				var output = new FSTObjectOutput(baos);
+				var output = new FSTObjectOutput(baos, Utils.getConfigForSerialization());
 				output.writeObject(job);
 				output.flush();
 				output.close();

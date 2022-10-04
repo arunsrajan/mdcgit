@@ -26,6 +26,8 @@ import org.springframework.yarn.integration.ip.mind.MindAppmasterService;
 import org.springframework.yarn.integration.ip.mind.MindRpcMessageHolder;
 import org.springframework.yarn.integration.ip.mind.binding.BaseObject;
 
+import com.github.mdc.common.Utils;
+
 /**
  * 
  * @author Arun
@@ -74,7 +76,7 @@ public class MapReduceYarnAppmasterService extends MindAppmasterService {
 		response.setContainerid(request.getContainerid());
 		try {
 			if (request.getJob() != null) {
-				try (var input = new FSTObjectInput(new ByteArrayInputStream(request.getJob()));) {
+				try (var input = new FSTObjectInput(new ByteArrayInputStream(request.getJob()), Utils.getConfigForSerialization());) {
 					var object = input.readObject();
 					if (object instanceof MapperCombiner mc) {
 						// Update statuses to App Master if job has been completed.
@@ -108,7 +110,7 @@ public class MapReduceYarnAppmasterService extends MindAppmasterService {
 			//Job is available
 			if (job != null) {
 				var baos = new ByteArrayOutputStream();
-				var output = new FSTObjectOutput(baos);
+				var output = new FSTObjectOutput(baos, Utils.getConfigForSerialization());
 				output.writeObject(job);
 				output.flush();
 				output.close();

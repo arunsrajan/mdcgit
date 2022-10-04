@@ -22,12 +22,11 @@ import java.util.concurrent.Callable;
 import org.apache.curator.framework.CuratorFramework;
 
 import com.github.mdc.common.ApplicationTask;
-import com.github.mdc.common.Context;
+import com.github.mdc.common.RetrieveKeys;
 import com.github.mdc.common.TaskSchedulerMapperCombinerSubmitterMBean;
 
-@SuppressWarnings("rawtypes")
 public class TaskSchedulerMapperCombinerSubmitter extends TaskSchedulerMapperSubmitter
-		implements TaskSchedulerMapperCombinerSubmitterMBean,Callable<Context> {
+		implements TaskSchedulerMapperCombinerSubmitterMBean,Callable<RetrieveKeys> {
 	Set<String> combinerclasses;
 
 	TaskSchedulerMapperCombinerSubmitter(Object blockslocation, boolean mapper,
@@ -39,10 +38,9 @@ public class TaskSchedulerMapperCombinerSubmitter extends TaskSchedulerMapperSub
 	}
 
 	@Override
-	public Context call() throws Exception {
+	public RetrieveKeys call() throws Exception {
 		var blockslocation = initializeobject(mapperclasses, combinerclasses);
-		sendChunk(blockslocation);
-		return null;
+		return (RetrieveKeys) sendChunk(blockslocation);
 	}
 
 	@Override

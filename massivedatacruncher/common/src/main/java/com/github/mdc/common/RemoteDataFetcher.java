@@ -27,7 +27,6 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.hdfs.DistributedFileSystem;
 import org.apache.log4j.Logger;
-import org.mortbay.jetty.HttpParser.Input;
 import org.nustaq.serialization.FSTObjectInput;
 import org.nustaq.serialization.FSTObjectOutput;
 
@@ -92,7 +91,7 @@ public class RemoteDataFetcher {
 		log.debug("Entered RemoteDataFetcher.createFileMR");
 
 		try (var fsdos = hdfs.create(filepathurl); 
-				var output = new FSTObjectOutput(fsdos);) {
+				var output = new FSTObjectOutput(fsdos, Utils.getConfigForSerialization());) {
 
 			output.writeObject(new LinkedHashSet<>(serobj.keys()));
 			output.flush();
@@ -120,7 +119,7 @@ public class RemoteDataFetcher {
 	protected static void createFile(FileSystem hdfs, Path filepathurl, Object serobj) throws RemoteDataFetcherException {
 		log.debug("Entered RemoteDataFetcher.createFile");
 		try (var fsdos = hdfs.create(filepathurl); 
-				var output = new FSTObjectOutput(fsdos);) {
+				var output = new FSTObjectOutput(fsdos, Utils.getConfigForSerialization());) {
 			output.writeObject(serobj);
 			output.flush();
 			fsdos.hsync();
@@ -186,7 +185,7 @@ public class RemoteDataFetcher {
 				configuration);
 				var fs = (DistributedFileSystem) hdfs;
 				var dis = fs.getClient().open(new Path(path).toUri().getPath());
-				var in = new FSTObjectInput(dis)) {
+				var in = new FSTObjectInput(dis, Utils.getConfigForSerialization())) {
 			log.debug("Exiting RemoteDataFetcher.readYarnAppmasterServiceDataFromDFS");
 			return in.readObject();
 		} catch (Exception ioe) {
@@ -213,7 +212,7 @@ public class RemoteDataFetcher {
 				configuration);
 				var fs = (DistributedFileSystem) hdfs;
 				var dis = fs.getClient().open(new Path(path).toUri().getPath());
-				var in = new FSTObjectInput(dis)) {
+				var in = new FSTObjectInput(dis, Utils.getConfigForSerialization())) {
 			var keysobj = in.readObject();
 			if (keys) {
 				return keysobj;

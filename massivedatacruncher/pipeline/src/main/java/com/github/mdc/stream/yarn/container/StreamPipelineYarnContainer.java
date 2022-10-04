@@ -19,7 +19,7 @@ import java.io.ByteArrayInputStream;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.logging.Log;
@@ -63,7 +63,7 @@ public class StreamPipelineYarnContainer extends AbstractIntegrationYarnContaine
 		byte[] job = null;
 		var containerid = getEnvironment().get(MDCConstants.SHDP_CONTAINERID);
 		MindAppmasterServiceClient client = null;
-		executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+		executor = new ForkJoinPool(Runtime.getRuntime().availableProcessors());
 		try {
 			var prop = new Properties();
 			prop.putAll(System.getProperties());
@@ -99,7 +99,7 @@ public class StreamPipelineYarnContainer extends AbstractIntegrationYarnContaine
 				else if (response.getState().equals(JobResponse.State.STOREJOBSTAGE)) {
 					job = response.getJob();
 					
-					var input = new FSTObjectInput(new ByteArrayInputStream(job));
+					var input = new FSTObjectInput(new ByteArrayInputStream(job), Utils.getConfigForSerialization());
 					var object = input.readObject();
 					this.jsidjsmap = (Map<String, JobStage>) object;
 					sleep(1);
@@ -108,7 +108,7 @@ public class StreamPipelineYarnContainer extends AbstractIntegrationYarnContaine
 					log.debug(containerid + ": Environment " + getEnvironment());
 					job = response.getJob();
 					
-					var input = new FSTObjectInput(new ByteArrayInputStream(job));
+					var input = new FSTObjectInput(new ByteArrayInputStream(job), Utils.getConfigForSerialization());
 					var object = input.readObject();
 					task = (Task) object;
 					System.setProperty(MDCConstants.HDFSNAMENODEURL, containerprops.get(MDCConstants.HDFSNAMENODEURL));

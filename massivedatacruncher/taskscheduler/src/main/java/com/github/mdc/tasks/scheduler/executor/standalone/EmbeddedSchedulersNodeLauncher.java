@@ -329,35 +329,38 @@ public class EmbeddedSchedulersNodeLauncher {
 				NetworkUtil.getNetworkAddress(MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULER_HOST))
 						+ MDCConstants.UNDERSCORE + MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULER_PORT));
 
-		boolean ishdfs = Boolean.parseBoolean(MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULER_ISHDFS));
 		var ss = Utils.createSSLServerSocket(Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULER_PORT)));
 		essingle.execute(() -> {
 			while (true) {
 				try {
 					var s = ss.accept();
-					var baoss = new ArrayList<byte[]>();
+					var bytesl = new ArrayList<byte[]>();
 					
-					var input = new FSTObjectInput(s.getInputStream());
+					var in = new DataInputStream(s.getInputStream());
+					var config = Utils.getConfigForSerialization();
+					log.info("Obtaining Input Objects From Submitter");
 					while (true) {
-						var obj = input.readObject();
-						log.debug("Input Object: " + obj);
-						if (obj instanceof Integer brkval && brkval == -1)
+						var len = in.readInt();
+						byte buffer[] = new byte[len]; // this could be reused !
+						while (len > 0)
+						    len -= in.read(buffer, buffer.length - len, len);
+						// skipped: check for stream close
+						Object obj = config.getObjectInput(buffer).readObject();
+						log.info("Input Object: " + obj);
+						if (obj instanceof Integer brkintval && brkintval == -1)
 							break;
-						baoss.add((byte[]) obj);
+						bytesl.add((byte[]) obj);
 					}
-					if (ishdfs) {
-						var mrjar = baoss.remove(0);
-						var filename = baoss.remove(0);
-						String[] argues = null;
-						if (!baoss.isEmpty()) {
-							var argsl = new ArrayList<>();
-							for (var arg : baoss) {
-								argsl.add(new String(arg));
-							}
-							argues = argsl.toArray(new String[argsl.size()]);
+					String[] arguments = null;
+					if (bytesl.size() > 2) {
+						var totalargs = bytesl.size();
+						arguments = new String[totalargs - 1];
+						for (var index = 2; index < totalargs; index++) {
+							arguments[index - 2] = new String(bytesl.get(index));
 						}
-						es.execute(new TaskScheduler(cf, mrjar, argues, s, new String(filename)));
 					}
+						es.execute(new TaskScheduler(cf, bytesl.get(0), arguments, s, new String(bytesl.get(1))));
+					
 				} catch (Exception ex) {
 					log.error(MDCConstants.EMPTY, ex);
 				}

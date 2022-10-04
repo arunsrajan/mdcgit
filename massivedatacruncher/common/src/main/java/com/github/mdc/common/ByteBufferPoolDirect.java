@@ -20,6 +20,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Semaphore;
 
+import org.apache.log4j.Logger;
+
 /**
  * Direct Byte buffer pool which allocates byte buffer 
  * @author arun
@@ -27,6 +29,8 @@ import java.util.concurrent.Semaphore;
  */
 public class ByteBufferPoolDirect {
 
+	private static Logger log = Logger.getLogger(ByteBufferPoolDirect.class);
+	
 	private static long directMemorySize;
 	private static long memoryallocated=0;
 	private static long totalmemoryallocated=0;
@@ -39,8 +43,9 @@ public class ByteBufferPoolDirect {
 	
 	public static void init() {
 		int heappercentage = Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.HEAP_PERCENTAGE, MDCConstants.HEAP_PERCENTAGE_DEFAULT));
-		long totalmemory = Runtime.getRuntime().totalMemory();
+		long totalmemory = Runtime.getRuntime().maxMemory();
 		directMemorySize = totalmemory*(100-heappercentage)/100;
+		log.info("Max Heap Allocated: "+((totalmemory-directMemorySize)/MDCConstants.MB)+ " MB, Max Direct Memory: "+(directMemorySize/MDCConstants.MB)+" MB");
 	}
 
 	public static ByteBuffer get(long memorytoallocate) throws Exception {
