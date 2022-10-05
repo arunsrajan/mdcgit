@@ -175,7 +175,7 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 		log.debug("Entered MassiveDataStreamTaskIgnite.processBlockHDFSIntersection");
 
 		try (var fsdos = createIntermediateDataToFS();
-				var output = new FSTObjectOutput(new BufferedOutputStream(fsdos),Utils.getConfigForSerialization());
+				var output = new FSTObjectOutput(fsdos,Utils.getConfigForSerialization());
 				var bais1 = getIntermediateInputStreamFS(blocksfirst);
 				var buffer1 = new BufferedReader(new InputStreamReader(bais1));
 				var bais2 = getIntermediateInputStreamFS(blockssecond);
@@ -221,7 +221,7 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 		log.debug("Entered MassiveDataStreamTaskIgnite.processBlockHDFSIntersection");
 
 		try (var fsdos = createIntermediateDataToFS();
-				var output = new FSTObjectOutput(new BufferedOutputStream(fsdos),Utils.getConfigForSerialization());
+				var output = new FSTObjectOutput(fsdos,Utils.getConfigForSerialization());
 				var inputfirst = new FSTObjectInput(new BufferedInputStream(fsstreamfirst.iterator().next()), Utils.getConfigForSerialization());
 				var bais2 = getIntermediateInputStreamFS(blockssecond.get(0));
 				var buffer2 = new BufferedReader(new InputStreamReader(bais2));
@@ -263,7 +263,7 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 		log.debug("Entered MassiveDataStreamTaskIgnite.processBlockHDFSIntersection");
 
 		try (var fsdos = createIntermediateDataToFS();
-				var output = new FSTObjectOutput(new BufferedOutputStream(fsdos),Utils.getConfigForSerialization());
+				var output = new FSTObjectOutput(fsdos,Utils.getConfigForSerialization());
 				var inputfirst = new FSTObjectInput(new BufferedInputStream(fsstreamfirst.iterator().next()), Utils.getConfigForSerialization());
 				var inputsecond = new FSTObjectInput(new BufferedInputStream(fsstreamsecond.iterator().next()), Utils.getConfigForSerialization());
 
@@ -317,6 +317,15 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 	 * @throws Exception
 	 */
 	public InputStream getIntermediateInputStreamFS(Object task) throws Exception {
+		return new SnappyInputStream(new ByteArrayInputStream(cache.get(task)));
+	}
+	
+	/**
+	 * Open the already existing file using the job and stageid.
+	 * @return
+	 * @throws Exception
+	 */
+	public InputStream getIntermediateInputStream(Object task) throws Exception {
 		return new ByteArrayInputStream(cache.get(task));
 	}
 
@@ -335,7 +344,7 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 		log.debug("Entered MassiveDataStreamTaskIgnite.processBlockHDFSUnion");
 
 		try (var fsdos = createIntermediateDataToFS();
-				var output = new FSTObjectOutput(new BufferedOutputStream(fsdos),Utils.getConfigForSerialization());
+				var output = new FSTObjectOutput(fsdos,Utils.getConfigForSerialization());
 				var bais1 = getIntermediateInputStreamFS(blocksfirst);
 				var buffer1 = new BufferedReader(new InputStreamReader(bais1));
 				var bais2 = getIntermediateInputStreamFS(blockssecond);
@@ -391,7 +400,7 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 		log.debug("Entered MassiveDataStreamTaskIgnite.processBlockHDFSUnion");
 
 		try (var fsdos = createIntermediateDataToFS();
-				var output = new FSTObjectOutput(new BufferedOutputStream(fsdos),Utils.getConfigForSerialization());
+				var output = new FSTObjectOutput(fsdos,Utils.getConfigForSerialization());
 				var inputfirst = new FSTObjectInput(new BufferedInputStream(fsstreamfirst.iterator().next()), Utils.getConfigForSerialization());
 				var bais2 = getIntermediateInputStreamFS(blockssecond.get(0));
 				var buffer2 = new BufferedReader(new InputStreamReader(bais2));
@@ -444,7 +453,7 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 		log.debug("Entered MassiveDataStreamTaskIgnite.processBlockHDFSUnion");
 
 		try (var fsdos = createIntermediateDataToFS();
-				var output = new FSTObjectOutput(new BufferedOutputStream(fsdos),Utils.getConfigForSerialization());
+				var output = new FSTObjectOutput(fsdos,Utils.getConfigForSerialization());
 				var inputfirst = new FSTObjectInput(new BufferedInputStream(fsstreamfirst.iterator().next()), Utils.getConfigForSerialization());
 				var inputsecond = new FSTObjectInput(new BufferedInputStream(fsstreamsecond.iterator().next()), Utils.getConfigForSerialization());) {
 
@@ -470,7 +479,7 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 
 			output.writeObject(result);
 			output.flush();
-			fsdos.flush();
+			
 			cache.put(task.jobid + task.stageid + task.taskid, fsdos.toByteArray());
 			log.debug("Exiting MassiveDataStreamTaskIgnite.processBlockHDFSUnion");
 			var timetaken = (System.currentTimeMillis() - starttime) / 1000.0;
@@ -499,7 +508,7 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 		log.debug("Entered MassiveDataStreamTaskIgnite.processBlockHDFSMap");
 		var function = jobstage.getStage().tasks.get(jobstage.getStage().tasks.size() - 1);
 		try (var fsdos = createIntermediateDataToFS();
-				var output = new FSTObjectOutput(new BufferedOutputStream(fsdos),Utils.getConfigForSerialization());
+				var output = new FSTObjectOutput(fsdos,Utils.getConfigForSerialization());
 				var bais = getIntermediateInputStreamFS(blockslocation);
 				var buffer = new BufferedReader(new InputStreamReader(bais));) {
 
@@ -589,7 +598,7 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 				}
 				output.writeObject(out);
 				output.flush();
-				fsdos.flush();
+				
 				cache.put(task.jobid + task.stageid + task.taskid, fsdos.toByteArray());
 				log.debug("Exiting MassiveDataStreamTaskIgnite.processBlockHDFSMap");
 				var timetaken = (System.currentTimeMillis() - starttime) / 1000.0;
@@ -625,7 +634,7 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 		log.debug("Entered MassiveDataStreamTaskIgnite.processBlockHDFSMap");
 		var function = jobstage.getStage().tasks.get(jobstage.getStage().tasks.size() - 1);
 		try (var fsdos = createIntermediateDataToFS();
-				var output = new FSTObjectOutput(new BufferedOutputStream(fsdos),Utils.getConfigForSerialization());) {
+				var output = new FSTObjectOutput(fsdos,Utils.getConfigForSerialization());) {
 			
 			var functions = getFunctions();
 
@@ -691,7 +700,7 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 			}
 			output.writeObject(out);
 			output.flush();
-			fsdos.flush();
+			
 			cache.put(task.jobid + task.stageid + task.taskid, fsdos.toByteArray());
 			log.debug("Exiting MassiveDataStreamTaskIgnite.processBlockHDFSMap");
 			var timetaken = (System.currentTimeMillis() - starttime) / 1000.0;
@@ -713,7 +722,7 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 		log.debug("Entered MassiveDataStreamTaskIgnite.processSamplesBlocks");
 		var function = jobstage.getStage().tasks.get(jobstage.getStage().tasks.size() - 1);
 		try (var fsdos = createIntermediateDataToFS();
-				var output = new FSTObjectOutput(new BufferedOutputStream(fsdos),Utils.getConfigForSerialization());
+				var output = new FSTObjectOutput(fsdos,Utils.getConfigForSerialization());
 				var bais = getIntermediateInputStreamFS(blockslocation);
 				var buffer = new BufferedReader(new InputStreamReader(bais));
 				var stringdata = buffer.lines().parallel();) {
@@ -760,7 +769,7 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 		log.debug("Entered MassiveDataStreamTaskIgnite.processSamplesObjects");
 		var function = jobstage.getStage().tasks.get(jobstage.getStage().tasks.size() - 1);
 		try (var fsdos = createIntermediateDataToFS();
-				var output = new FSTObjectOutput(new BufferedOutputStream(fsdos),Utils.getConfigForSerialization());
+				var output = new FSTObjectOutput(fsdos,Utils.getConfigForSerialization());
 				var inputfirst = new FSTObjectInput(new BufferedInputStream(((InputStream) (fsstreams.iterator().next()))),  Utils.getConfigForSerialization());) {
 			
 			var datafirst = (List) inputfirst.readObject();
@@ -992,7 +1001,7 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 		var starttime = System.currentTimeMillis();
 
 		try (var fsdos = createIntermediateDataToFS();
-				var output = new FSTObjectOutput(new BufferedOutputStream(fsdos),Utils.getConfigForSerialization());
+				var output = new FSTObjectOutput(fsdos,Utils.getConfigForSerialization());
 				var inputfirst = isinputfirstblocks ? null : new FSTObjectInput(streamfirst, Utils.getConfigForSerialization());
 				var inputsecond = isinputsecondblocks ? null : new FSTObjectInput(streamsecond, Utils.getConfigForSerialization());
 				var buffreader1 = isinputfirstblocks
@@ -1067,7 +1076,7 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 		log.debug("Entered MassiveDataStreamTaskIgnite.processLeftOuterJoinLZF");
 
 		try (var fsdos = createIntermediateDataToFS();
-				var output = new FSTObjectOutput(new BufferedOutputStream(fsdos),Utils.getConfigForSerialization());
+				var output = new FSTObjectOutput(fsdos,Utils.getConfigForSerialization());
 				var inputfirst = isinputfirstblocks ? null : new FSTObjectInput(streamfirst, Utils.getConfigForSerialization());
 				var inputsecond = isinputsecondblocks ? null : new FSTObjectInput(streamsecond, Utils.getConfigForSerialization());
 				var buffreader1 = isinputfirstblocks
@@ -1142,7 +1151,7 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 		log.debug("Entered MassiveDataStreamTaskIgnite.processRightOuterJoinLZF");
 
 		try (var fsdos = createIntermediateDataToFS();
-				var output = new FSTObjectOutput(new BufferedOutputStream(fsdos),Utils.getConfigForSerialization());
+				var output = new FSTObjectOutput(fsdos,Utils.getConfigForSerialization());
 				var inputfirst = isinputfirstblocks ? null : new FSTObjectInput(streamfirst, Utils.getConfigForSerialization());
 				var inputsecond = isinputsecondblocks ? null : new FSTObjectInput(streamsecond, Utils.getConfigForSerialization());
 				var buffreader1 = isinputfirstblocks
@@ -1514,7 +1523,7 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 			}
 			currentoutput.writeObject(outpairs);
 			currentoutput.flush();
-			fsdos.flush();
+			
 			cache.put(task.jobid + task.stageid + task.taskid, fsdos.toByteArray());
 			log.debug("Exiting MassiveDataStreamTaskIgnite.processCoalesce");
 			var timetaken = (System.currentTimeMillis() - starttime) / 1000.0;

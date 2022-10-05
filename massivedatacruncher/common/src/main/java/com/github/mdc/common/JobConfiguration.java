@@ -13,14 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.mdc.tasks.scheduler;
+package com.github.mdc.common;
 
 import java.util.Objects;
 
 import org.nustaq.serialization.FSTObjectOutput;
-
-import com.github.mdc.common.MDCConstants;
-import com.github.mdc.common.MDCProperties;
 
 public class JobConfiguration {
 	private FSTObjectOutput output;

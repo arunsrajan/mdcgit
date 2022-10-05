@@ -48,11 +48,11 @@ import com.github.mdc.common.BlocksLocation;
 import com.github.mdc.common.ByteBufferPoolDirect;
 import com.github.mdc.common.Context;
 import com.github.mdc.common.DataCruncherContext;
+import com.github.mdc.common.JobConfiguration;
 import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.MDCProperties;
 import com.github.mdc.common.RemoteDataFetcher;
 import com.github.mdc.common.Tuple2Serializable;
-import com.github.mdc.tasks.scheduler.JobConfiguration;
 import com.google.common.collect.Iterables;
 
 /**

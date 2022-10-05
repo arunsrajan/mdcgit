@@ -1669,8 +1669,8 @@ public class StreamJobScheduler {
 		try {
 			log.info("Final Results Ignite Task: " + task);
 
-			try (var sis = new SnappyInputStream(
-					new ByteArrayInputStream(job.getIgcache().get(task.jobid + task.stageid + task.taskid)));
+			try (var sis = 
+					new ByteArrayInputStream(job.getIgcache().get(task.jobid + task.stageid + task.taskid));
 					var input = new FSTObjectInput(sis, Utils.getConfigForSerialization());) {
 				var obj = input.readObject();
 				if (!Objects.isNull(job.getUri())) {

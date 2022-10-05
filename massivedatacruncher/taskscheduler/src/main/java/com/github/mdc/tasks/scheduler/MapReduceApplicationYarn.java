@@ -48,6 +48,7 @@ import com.github.mdc.common.BlocksLocation;
 import com.github.mdc.common.DataCruncherContext;
 import com.github.mdc.common.HDFSBlockUtils;
 import com.github.mdc.common.HeartBeat;
+import com.github.mdc.common.JobConfiguration;
 import com.github.mdc.common.JobMetrics;
 import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.MDCJobMetrics;
@@ -198,7 +199,7 @@ public class MapReduceApplicationYarn implements Callable<List<DataCruncherConte
 
 			jm.setTotalfilesize(jm.getTotalfilesize() / MDCConstants.MB);
 			jm.setFiles(allfiles);
-			jm.setMode(jobconf.execmode);
+			jm.setMode(jobconf.getExecmode());
 			jm.setTotalblocks(bls.size());
 			log.debug("Total MapReduce Tasks: " + mrtaskcount);
 			for (var mapperinput : mappers) {

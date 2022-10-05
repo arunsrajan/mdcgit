@@ -67,5 +67,34 @@ public class MDCIgniteClient {
 		}
 		return ignite;
 	}
+	
+	
+	public synchronized static Ignite instanceMR(JobConfiguration jobconf) {
+		if (isNull(ignite) || nonNull(ignite) && !ignite.active()) {
+			var cfg = new IgniteConfiguration();
+			TcpCommunicationSpi commspi = new TcpCommunicationSpi();
+			commspi.setMessageQueueLimit(20);
+			commspi.setSlowClientQueueLimit(10);
+			cfg.setCommunicationSpi(commspi);
+			// The node will be started as a client node.
+			cfg.setClientMode(true);
+			cfg.setDeploymentMode(DeploymentMode.CONTINUOUS);
+			// Classes of custom Java logic will be transferred over the wire from
+			// this app.
+			cfg.setPeerClassLoadingEnabled(true);
+			// Setting up an IP Finder to ensure the client can locate the servers.
+			var ipFinder = new TcpDiscoveryMulticastIpFinder();
+			ipFinder.setMulticastGroup(jobconf.getIgnitemulticastgroup());
+			cfg.setDiscoverySpi(new TcpDiscoverySpi().setIpFinder(ipFinder));
+			var cc = new CacheConfiguration(MDCConstants.MDCCACHE);
+			cc.setCacheMode(CacheMode.PARTITIONED);
+			cc.setAtomicityMode(CacheAtomicityMode.ATOMIC);
+			cc.setBackups(Integer.parseInt(jobconf.getIgnitebackup()));
+			cfg.setCacheConfiguration(cc);
+			ignite = Ignition.start(cfg);
+		}
+		return ignite;
+	}
+	
 
 }

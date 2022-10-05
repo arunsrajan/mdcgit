@@ -53,9 +53,6 @@ import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.Stage;
 import com.github.mdc.common.Task;
 import com.github.mdc.common.Utils;
-import com.github.mdc.stream.CsvOptions;
-import com.github.mdc.stream.Json;
-import com.github.mdc.stream.StreamPipelineTestCommon;
 import com.github.mdc.common.functions.CalculateCount;
 import com.github.mdc.common.functions.Coalesce;
 import com.github.mdc.common.functions.CountByKeyFunction;
@@ -74,6 +71,9 @@ import com.github.mdc.common.functions.StandardDeviation;
 import com.github.mdc.common.functions.Sum;
 import com.github.mdc.common.functions.SummaryStatistics;
 import com.github.mdc.common.functions.UnionFunction;
+import com.github.mdc.stream.CsvOptions;
+import com.github.mdc.stream.Json;
+import com.github.mdc.stream.StreamPipelineTestCommon;
 import com.github.mdc.stream.utils.FileBlocksPartitionerHDFS;
 import com.github.mdc.stream.utils.MDCIgniteServer;
 
@@ -126,18 +126,19 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		mdsti.processBlockHDFSIntersection(bls.get(0), bls.get(0), hdfs);
 		
 
-		InputStream is = mdsti.getIntermediateInputStreamFS(task.jobid + task.stageid + task.taskid);
+		InputStream is = mdsti.getIntermediateInputStream(task.jobid + task.stageid + task.taskid);
 		List<String> intersectiondata = (List<String>) new FSTObjectInput(is,  Utils.getConfigForSerialization()).readObject();
 		assertEquals(46361, intersectiondata.size());
 		is.close();
 	}
 
 	public void sendDataBlockToIgniteServer(BlocksLocation bsl) {
-		try (var baos = new ByteArrayOutputStream(); var lzfos = new SnappyOutputStream(baos);) {
+		try (var baos = new ByteArrayOutputStream();
+			var lzfos = new SnappyOutputStream(baos);){
 			var databytes = HdfsBlockReader.getBlockDataMR(bsl, hdfs);
 			lzfos.write(databytes);
 			lzfos.flush();
-			ignitecache.putIfAbsent(bsl, baos.toByteArray());
+			ignitecache.put(bsl, baos.toByteArray());
 		} catch (Exception e) {
 
 		}
@@ -185,7 +186,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		mdsti.processBlockHDFSIntersection(bls1.get(0), bls2.get(0), hdfs);
 		
 
-		InputStream is = mdsti.getIntermediateInputStreamFS(task.jobid + task.stageid + task.taskid);
+		InputStream is = mdsti.getIntermediateInputStream(task.jobid + task.stageid + task.taskid);
 		List<String> intersectiondata = (List<String>) new FSTObjectInput(is,  Utils.getConfigForSerialization()).readObject();
 		assertEquals(20, intersectiondata.size());
 		is.close();
@@ -233,7 +234,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		mdsti.processBlockHDFSIntersection(bls1.get(0), bls1.get(0), hdfs);
 		
 
-		InputStream is = mdsti.getIntermediateInputStreamFS(task.jobid + task.stageid + task.taskid);
+		InputStream is = mdsti.getIntermediateInputStream(task.jobid + task.stageid + task.taskid);
 		Set<InputStream> istreams = new LinkedHashSet<>(Arrays.asList(is));
 		task = new Task();
 		task.jobid = js.getJobid();
@@ -247,7 +248,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		mdsti.cache = ignitecache;
 		mdsti.processBlockHDFSIntersection(istreams, Arrays.asList(bls2.get(0)), hdfs);
 		is.close();
-		is = mdsti.getIntermediateInputStreamFS(task.jobid + task.stageid + task.taskid);
+		is = mdsti.getIntermediateInputStream(task.jobid + task.stageid + task.taskid);
 		List<String> intersectiondata = (List<String>) new FSTObjectInput(is,  Utils.getConfigForSerialization()).readObject();
 		assertEquals(20, intersectiondata.size());
 		is.close();
@@ -299,13 +300,13 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		function = new IntersectionFunction();
 		js.getStage().tasks.clear();
 		js.getStage().tasks.add(function);
-		InputStream is1 = mdsti.getIntermediateInputStreamFS(task1.jobid + task1.stageid + task1.taskid);
+		InputStream is1 = mdsti.getIntermediateInputStream(task1.jobid + task1.stageid + task1.taskid);
 		List<InputStream> istreams1 = Arrays.asList(is1);
 		mdsti.setTask(task2);
 		mdsti.processBlockHDFSIntersection(bls2.get(0), bls2.get(0), hdfs);
 		
 		mdsti.setTask(task2);
-		InputStream is2 = mdsti.getIntermediateInputStreamFS(task2.jobid + task2.stageid + task2.taskid);
+		InputStream is2 = mdsti.getIntermediateInputStream(task2.jobid + task2.stageid + task2.taskid);
 		List<InputStream> istreams2 = Arrays.asList(is2);
 
 		Task taskinter = new Task();
@@ -320,7 +321,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		is1.close();
 		is2.close();
 
-		InputStream is = mdsti.getIntermediateInputStreamFS(taskinter.jobid + taskinter.stageid + taskinter.taskid);
+		InputStream is = mdsti.getIntermediateInputStream(taskinter.jobid + taskinter.stageid + taskinter.taskid);
 		List<String> intersectiondata = (List<String>) new FSTObjectInput(is,  Utils.getConfigForSerialization()).readObject();
 		assertEquals(20, intersectiondata.size());
 		is.close();
@@ -359,7 +360,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		mdsti.processBlockHDFSUnion(bls.get(0), bls.get(0), hdfs);
 		
 
-		InputStream is = mdsti.getIntermediateInputStreamFS(task.jobid + task.stageid + task.taskid);
+		InputStream is = mdsti.getIntermediateInputStream(task.jobid + task.stageid + task.taskid);
 		List<String> uniondata = (List<String>) new FSTObjectInput(is,  Utils.getConfigForSerialization()).readObject();
 		assertEquals(46361, uniondata.size());
 		is.close();
@@ -407,7 +408,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		mdsti.processBlockHDFSUnion(bls1.get(0), bls2.get(0), hdfs);
 		
 
-		InputStream is = mdsti.getIntermediateInputStreamFS(task.jobid + task.stageid + task.taskid);
+		InputStream is = mdsti.getIntermediateInputStream(task.jobid + task.stageid + task.taskid);
 		List<String> uniondata = (List<String>) new FSTObjectInput(is,  Utils.getConfigForSerialization()).readObject();
 		assertEquals(60, uniondata.size());
 		is.close();
@@ -455,7 +456,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		mdsti.processBlockHDFSUnion(bls1.get(0), bls1.get(0), hdfs);
 		
 
-		InputStream is = mdsti.getIntermediateInputStreamFS(task.jobid + task.stageid + task.taskid);
+		InputStream is = mdsti.getIntermediateInputStream(task.jobid + task.stageid + task.taskid);
 		Set<InputStream> istreams = new LinkedHashSet<>(Arrays.asList(is));
 		task = new Task();
 		task.jobid = js.getJobid();
@@ -467,7 +468,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		mdsti.processBlockHDFSUnion(istreams, Arrays.asList(bls2.get(0)), hdfs);
 		is.close();
 
-		is = mdsti.getIntermediateInputStreamFS(task.jobid + task.stageid + task.taskid);
+		is = mdsti.getIntermediateInputStream(task.jobid + task.stageid + task.taskid);
 		List<String> uniondata = (List<String>) new FSTObjectInput(is,  Utils.getConfigForSerialization()).readObject();
 		assertEquals(60, uniondata.size());
 		is.close();
@@ -523,10 +524,10 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		mdsti.setTask(task2);
 		mdsti.processBlockHDFSUnion(bls2.get(0), bls2.get(0), hdfs);
 		
-		InputStream is1 = mdsti.getIntermediateInputStreamFS(task1.jobid + task1.stageid + task1.taskid);
+		InputStream is1 = mdsti.getIntermediateInputStream(task1.jobid + task1.stageid + task1.taskid);
 		List<InputStream> istreams1 = Arrays.asList(is1);
 
-		InputStream is2 = mdsti.getIntermediateInputStreamFS(task2.jobid + task2.stageid + task2.taskid);
+		InputStream is2 = mdsti.getIntermediateInputStream(task2.jobid + task2.stageid + task2.taskid);
 		List<InputStream> istreams2 = Arrays.asList(is2);
 
 		Task taskunion = new Task();
@@ -540,7 +541,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		is1.close();
 		is2.close();
 
-		InputStream is = mdsti.getIntermediateInputStreamFS(taskunion.jobid + taskunion.stageid + taskunion.taskid);
+		InputStream is = mdsti.getIntermediateInputStream(taskunion.jobid + taskunion.stageid + taskunion.taskid);
 		List<String> uniondata = (List<String>) new FSTObjectInput(is,  Utils.getConfigForSerialization()).readObject();
 		assertEquals(60, uniondata.size());
 		is.close();
@@ -580,7 +581,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		sendDataBlockToIgniteServer(bls1.get(0));
 		mdsti.processBlockHDFSMap(bls1.get(0), hdfs);
 		
-		InputStream is = mdsti.getIntermediateInputStreamFS(filtertask.jobid + filtertask.stageid + filtertask.taskid);
+		InputStream is = mdsti.getIntermediateInputStream(filtertask.jobid + filtertask.stageid + filtertask.taskid);
 		List<String[]> mapfilterdata = (List<String[]>) new FSTObjectInput(is,  Utils.getConfigForSerialization()).readObject();
 		assertEquals(45957, mapfilterdata.size());
 		is.close();
@@ -621,7 +622,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		sendDataBlockToIgniteServer(bls1.get(0));
 		mdsti.processBlockHDFSMap(bls1.get(0), hdfs);
 		
-		InputStream is = mdsti.getIntermediateInputStreamFS(
+		InputStream is = mdsti.getIntermediateInputStream(
 				calculatecounttask.jobid + calculatecounttask.stageid + calculatecounttask.taskid);
 		List<Long> mapfiltercountdata = (List<Long>) new FSTObjectInput(is,  Utils.getConfigForSerialization()).readObject();
 		assertEquals(45957l, (long) mapfiltercountdata.get(0));
@@ -641,8 +642,8 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		sstask.jobid = js.getJobid();
 		sstask.stageid = js.getStageid();
 		MapFunction<String, String[]> map = (String str) -> str.split(MDCConstants.COMMA);
-		PredicateSerializable<String[]> filter = (String str[]) -> !"ArrDelay".equals(str[14]) && !"NA".equals(str[14]);
-		ToIntFunction<String[]> toint = (String str[]) -> Integer.parseInt(str[14]);
+		PredicateSerializable<String[]> filter = strarr -> !"ArrDelay".equals(strarr[14]) && !"NA".equals(strarr[14]);
+		ToIntFunction<String[]> toint = strtoint -> Integer.parseInt(strtoint[14]);
 		js.getStage().tasks.add(map);
 		js.getStage().tasks.add(filter);
 		js.getStage().tasks.add(toint);
@@ -665,7 +666,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		sendDataBlockToIgniteServer(bls1.get(0));
 		mdsti.processBlockHDFSMap(bls1.get(0), hdfs);
 		
-		InputStream is = mdsti.getIntermediateInputStreamFS(sstask.jobid + sstask.stageid + sstask.taskid);
+		InputStream is = mdsti.getIntermediateInputStream(sstask.jobid + sstask.stageid + sstask.taskid);
 		List<IntSummaryStatistics> mapfilterssdata = (List<IntSummaryStatistics>) new FSTObjectInput(is,  Utils.getConfigForSerialization()).readObject();
 		assertEquals(1, (long) mapfilterssdata.size());
 		assertEquals(623, (long) mapfilterssdata.get(0).getMax());
@@ -713,7 +714,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		sendDataBlockToIgniteServer(bls1.get(0));
 		mdsti.processBlockHDFSMap(bls1.get(0), hdfs);
 		
-		InputStream is = mdsti.getIntermediateInputStreamFS(maxtask.jobid + maxtask.stageid + maxtask.taskid);
+		InputStream is = mdsti.getIntermediateInputStream(maxtask.jobid + maxtask.stageid + maxtask.taskid);
 		List<Integer> mapfiltermaxdata = (List<Integer>) new FSTObjectInput(is,  Utils.getConfigForSerialization()).readObject();
 		is.close();
 		assertEquals(623, (int) mapfiltermaxdata.get(0));
@@ -755,7 +756,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		sendDataBlockToIgniteServer(bls1.get(0));
 		mdsti.processBlockHDFSMap(bls1.get(0), hdfs);
 		
-		InputStream is = mdsti.getIntermediateInputStreamFS(mintask.jobid + mintask.stageid + mintask.taskid);
+		InputStream is = mdsti.getIntermediateInputStream(mintask.jobid + mintask.stageid + mintask.taskid);
 		List<Integer> mapfiltermaxdata = (List<Integer>) new FSTObjectInput(is,  Utils.getConfigForSerialization()).readObject();
 		is.close();
 		assertEquals(-89, (int) mapfiltermaxdata.get(0));
@@ -798,7 +799,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		sendDataBlockToIgniteServer(bls1.get(0));
 		mdsti.processBlockHDFSMap(bls1.get(0), hdfs);
 		
-		InputStream is = mdsti.getIntermediateInputStreamFS(sumtask.jobid + sumtask.stageid + sumtask.taskid);
+		InputStream is = mdsti.getIntermediateInputStream(sumtask.jobid + sumtask.stageid + sumtask.taskid);
 		List<Integer> mapfiltermaxdata = (List<Integer>) new FSTObjectInput(is,  Utils.getConfigForSerialization()).readObject();
 		is.close();
 		assertEquals(-63278, (int) mapfiltermaxdata.get(0));
@@ -841,7 +842,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		sendDataBlockToIgniteServer(bls1.get(0));
 		mdsti.processBlockHDFSMap(bls1.get(0), hdfs);
 		
-		InputStream is = mdsti.getIntermediateInputStreamFS(sdtask.jobid + sdtask.stageid + sdtask.taskid);
+		InputStream is = mdsti.getIntermediateInputStream(sdtask.jobid + sdtask.stageid + sdtask.taskid);
 		List<Double> mapfiltermaxdata = (List<Double>) new FSTObjectInput(is,  Utils.getConfigForSerialization()).readObject();
 		is.close();
 		assertEquals(1, mapfiltermaxdata.size());
@@ -883,7 +884,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		sendDataBlockToIgniteServer(bls1.get(0));
 		mdsti.processBlockHDFSMap(bls1.get(0), hdfs);
 		
-		InputStream is = mdsti.getIntermediateInputStreamFS(
+		InputStream is = mdsti.getIntermediateInputStream(
 				calcultecounttask.jobid + calcultecounttask.stageid + calcultecounttask.taskid);
 		List<Long> mapfiltercountdata = (List<Long>) new FSTObjectInput(is,  Utils.getConfigForSerialization()).readObject();
 		assertEquals(45957l, (long) mapfiltercountdata.get(0));
@@ -903,8 +904,8 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		Task filtertask = new Task();
 		filtertask.jobid = js.getJobid();
 		filtertask.stageid = js.getStageid();
-		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !"ArrDelay".equals(csvrecord.get("ArrDelay"))
-				&& !"NA".equals(csvrecord.get("ArrDelay"));
+		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !"ArrDelay".equals(csvrecord.get(14))
+				&& !"NA".equals(csvrecord.get(14));
 		js.getStage().tasks.add(csvoptions);
 		js.getStage().tasks.add(filter);
 
@@ -925,7 +926,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		sendDataBlockToIgniteServer(bls1.get(0));
 		mdsti.processBlockHDFSMap(bls1.get(0), hdfs);
 		
-		InputStream is = mdsti.getIntermediateInputStreamFS(filtertask.jobid + filtertask.stageid + filtertask.taskid);
+		InputStream is = mdsti.getIntermediateInputStream(filtertask.jobid + filtertask.stageid + filtertask.taskid);
 		List<CSVRecord> filterdata = (List<CSVRecord>) new FSTObjectInput(is,  Utils.getConfigForSerialization()).readObject();
 		assertEquals(45957l, (long) filterdata.size());
 		is.close();
@@ -944,9 +945,9 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		Task summarystaticstask = new Task();
 		summarystaticstask.jobid = js.getJobid();
 		summarystaticstask.stageid = js.getStageid();
-		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !"ArrDelay".equals(csvrecord.get("ArrDelay"))
-				&& !"NA".equals(csvrecord.get("ArrDelay"));
-		ToIntFunction<CSVRecord> csvint = (CSVRecord csvrecord) -> Integer.parseInt(csvrecord.get("ArrDelay"));
+		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !"ArrDelay".equals(csvrecord.get(14))
+				&& !"NA".equals(csvrecord.get(14));
+		ToIntFunction<CSVRecord> csvint = (CSVRecord csvrecord) -> Integer.parseInt(csvrecord.get(14));
 		js.getStage().tasks.add(csvoptions);
 		js.getStage().tasks.add(filter);
 		js.getStage().tasks.add(csvint);
@@ -969,7 +970,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		sendDataBlockToIgniteServer(bls1.get(0));
 		mdsti.processBlockHDFSMap(bls1.get(0), hdfs);
 		
-		InputStream is = mdsti.getIntermediateInputStreamFS(
+		InputStream is = mdsti.getIntermediateInputStream(
 				summarystaticstask.jobid + summarystaticstask.stageid + summarystaticstask.taskid);
 		List<IntSummaryStatistics> mapfilterssdata = (List<IntSummaryStatistics>) new FSTObjectInput(is,  Utils.getConfigForSerialization()).readObject();
 		assertEquals(1, (long) mapfilterssdata.size());
@@ -993,9 +994,9 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		Task maxtask = new Task();
 		maxtask.jobid = js.getJobid();
 		maxtask.stageid = js.getStageid();
-		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !"ArrDelay".equals(csvrecord.get("ArrDelay"))
-				&& !"NA".equals(csvrecord.get("ArrDelay"));
-		ToIntFunction<CSVRecord> csvint = (CSVRecord csvrecord) -> Integer.parseInt(csvrecord.get("ArrDelay"));
+		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !"ArrDelay".equals(csvrecord.get(14))
+				&& !"NA".equals(csvrecord.get(14));
+		ToIntFunction<CSVRecord> csvint = (CSVRecord csvrecord) -> Integer.parseInt(csvrecord.get(14));
 		js.getStage().tasks.add(csvoptions);
 		js.getStage().tasks.add(filter);
 		js.getStage().tasks.add(csvint);
@@ -1018,7 +1019,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		sendDataBlockToIgniteServer(bls1.get(0));
 		mdsti.processBlockHDFSMap(bls1.get(0), hdfs);
 		
-		InputStream is = mdsti.getIntermediateInputStreamFS(maxtask.jobid + maxtask.stageid + maxtask.taskid);
+		InputStream is = mdsti.getIntermediateInputStream(maxtask.jobid + maxtask.stageid + maxtask.taskid);
 		List<Integer> mapfilterssdata = (List<Integer>) new FSTObjectInput(is,  Utils.getConfigForSerialization()).readObject();
 		assertEquals(623, (long) mapfilterssdata.get(0));
 		is.close();
@@ -1037,9 +1038,9 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		Task mintask = new Task();
 		mintask.jobid = js.getJobid();
 		mintask.stageid = js.getStageid();
-		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !"ArrDelay".equals(csvrecord.get("ArrDelay"))
-				&& !"NA".equals(csvrecord.get("ArrDelay"));
-		ToIntFunction<CSVRecord> csvint = (CSVRecord csvrecord) -> Integer.parseInt(csvrecord.get("ArrDelay"));
+		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !"ArrDelay".equals(csvrecord.get(14))
+				&& !"NA".equals(csvrecord.get(14));
+		ToIntFunction<CSVRecord> csvint = (CSVRecord csvrecord) -> Integer.parseInt(csvrecord.get(14));
 		js.getStage().tasks.add(csvoptions);
 		js.getStage().tasks.add(filter);
 		js.getStage().tasks.add(csvint);
@@ -1062,7 +1063,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		sendDataBlockToIgniteServer(bls1.get(0));
 		mdsti.processBlockHDFSMap(bls1.get(0), hdfs);
 		
-		InputStream is = mdsti.getIntermediateInputStreamFS(mintask.jobid + mintask.stageid + mintask.taskid);
+		InputStream is = mdsti.getIntermediateInputStream(mintask.jobid + mintask.stageid + mintask.taskid);
 		List<Integer> mapfilterssdata = (List<Integer>) new FSTObjectInput(is,  Utils.getConfigForSerialization()).readObject();
 		assertEquals(-89, (long) mapfilterssdata.get(0));
 		is.close();
@@ -1081,9 +1082,9 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		Task sumtask = new Task();
 		sumtask.jobid = js.getJobid();
 		sumtask.stageid = js.getStageid();
-		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !"ArrDelay".equals(csvrecord.get("ArrDelay"))
-				&& !"NA".equals(csvrecord.get("ArrDelay"));
-		ToIntFunction<CSVRecord> csvint = (CSVRecord csvrecord) -> Integer.parseInt(csvrecord.get("ArrDelay"));
+		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !"ArrDelay".equals(csvrecord.get(14))
+				&& !"NA".equals(csvrecord.get(14));
+		ToIntFunction<CSVRecord> csvint = (CSVRecord csvrecord) -> Integer.parseInt(csvrecord.get(14));
 		js.getStage().tasks.add(csvoptions);
 		js.getStage().tasks.add(filter);
 		js.getStage().tasks.add(csvint);
@@ -1106,7 +1107,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		sendDataBlockToIgniteServer(bls1.get(0));
 		mdsti.processBlockHDFSMap(bls1.get(0), hdfs);
 		
-		InputStream is = mdsti.getIntermediateInputStreamFS(sumtask.jobid + sumtask.stageid + sumtask.taskid);
+		InputStream is = mdsti.getIntermediateInputStream(sumtask.jobid + sumtask.stageid + sumtask.taskid);
 		List<Integer> mapfilterssdata = (List<Integer>) new FSTObjectInput(is,  Utils.getConfigForSerialization()).readObject();
 		assertEquals(-63278, (long) mapfilterssdata.get(0));
 		is.close();
@@ -1125,9 +1126,9 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		Task sdtask = new Task();
 		sdtask.jobid = js.getJobid();
 		sdtask.stageid = js.getStageid();
-		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !"ArrDelay".equals(csvrecord.get("ArrDelay"))
-				&& !"NA".equals(csvrecord.get("ArrDelay"));
-		ToIntFunction<CSVRecord> csvint = (CSVRecord csvrecord) -> Integer.parseInt(csvrecord.get("ArrDelay"));
+		PredicateSerializable<CSVRecord> filter = (CSVRecord csvrecord) -> !"ArrDelay".equals(csvrecord.get(14))
+				&& !"NA".equals(csvrecord.get(14));
+		ToIntFunction<CSVRecord> csvint = (CSVRecord csvrecord) -> Integer.parseInt(csvrecord.get(14));
 		js.getStage().tasks.add(csvoptions);
 		js.getStage().tasks.add(filter);
 		js.getStage().tasks.add(csvint);
@@ -1150,7 +1151,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		sendDataBlockToIgniteServer(bls1.get(0));
 		mdsti.processBlockHDFSMap(bls1.get(0), hdfs);
 		
-		InputStream is = mdsti.getIntermediateInputStreamFS(sdtask.jobid + sdtask.stageid + sdtask.taskid);
+		InputStream is = mdsti.getIntermediateInputStream(sdtask.jobid + sdtask.stageid + sdtask.taskid);
 		List<Double> mapfiltersddata = (List<Double>) new FSTObjectInput(is,  Utils.getConfigForSerialization()).readObject();
 		assertEquals(1, (long) mapfiltersddata.size());
 		is.close();
@@ -1190,7 +1191,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		fbp.getDnXref(bls1, false);
 		sendDataBlockToIgniteServer(bls1.get(0));
 		mdsti.processBlockHDFSMap(bls1.get(0), hdfs);
-		InputStream is = mdsti.getIntermediateInputStreamFS(filtertask.jobid + filtertask.stageid + filtertask.taskid);
+		InputStream is = mdsti.getIntermediateInputStream(filtertask.jobid + filtertask.stageid + filtertask.taskid);
 		Set<InputStream> inputtocount = new LinkedHashSet<>(Arrays.asList(is));
 		Task calcultecounttask = new Task();
 		calcultecounttask.jobid = js.getJobid();
@@ -1201,7 +1202,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		mdsti.processBlockHDFSMap(inputtocount);
 		is.close();
 		
-		is = mdsti.getIntermediateInputStreamFS(
+		is = mdsti.getIntermediateInputStream(
 				calcultecounttask.jobid + calcultecounttask.stageid + calcultecounttask.taskid);
 		List<Long> csvreccount = (List<Long>) new FSTObjectInput(is,  Utils.getConfigForSerialization()).readObject();
 		assertEquals(45957l, (long) csvreccount.get(0));
@@ -1242,9 +1243,9 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		fbp.getDnXref(bls1, false);
 		sendDataBlockToIgniteServer(bls1.get(0));
 		mdsti.processBlockHDFSMap(bls1.get(0), hdfs);
-		InputStream is = mdsti.getIntermediateInputStreamFS(filtertask.jobid + filtertask.stageid + filtertask.taskid);
+		InputStream is = mdsti.getIntermediateInputStream(filtertask.jobid + filtertask.stageid + filtertask.taskid);
 		Set<InputStream> inputtocount = new LinkedHashSet<>(Arrays.asList(is));
-		ToIntFunction<CSVRecord> csvint = (CSVRecord csvrecord) -> Integer.parseInt(csvrecord.get("ArrDelay"));
+		ToIntFunction<CSVRecord> csvint = (CSVRecord csvrecord) -> Integer.parseInt(csvrecord.get(14));
 		Task summarystaticstask = new Task();
 		summarystaticstask.jobid = js.getJobid();
 		summarystaticstask.stageid = js.getStageid();
@@ -1255,9 +1256,9 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		mdsti.processBlockHDFSMap(inputtocount);
 		is.close();
 		
-		is = mdsti.getIntermediateInputStreamFS(
+		is = mdsti.getIntermediateInputStream(
 				summarystaticstask.jobid + summarystaticstask.stageid + summarystaticstask.taskid);
-		List<IntSummaryStatistics> mapfilterssdata = (List<IntSummaryStatistics>)new FSTObjectInput(is).readObject();
+		List<IntSummaryStatistics> mapfilterssdata = (List<IntSummaryStatistics>)new FSTObjectInput(is, Utils.getConfigForSerialization()).readObject();
 		assertEquals(1, (long) mapfilterssdata.size());
 		assertEquals(623, (long) mapfilterssdata.get(0).getMax());
 		assertEquals(-89, (long) mapfilterssdata.get(0).getMin());
@@ -1302,9 +1303,9 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		fbp.getDnXref(bls1, false);
 		sendDataBlockToIgniteServer(bls1.get(0));
 		mdsti.processBlockHDFSMap(bls1.get(0), hdfs);
-		InputStream is = mdsti.getIntermediateInputStreamFS(filtertask.jobid + filtertask.stageid + filtertask.taskid);
+		InputStream is = mdsti.getIntermediateInputStream(filtertask.jobid + filtertask.stageid + filtertask.taskid);
 		Set<InputStream> inputtocount = new LinkedHashSet<>(Arrays.asList(is));
-		ToIntFunction<CSVRecord> csvint = (CSVRecord csvrecord) -> Integer.parseInt(csvrecord.get("ArrDelay"));
+		ToIntFunction<CSVRecord> csvint = (CSVRecord csvrecord) -> Integer.parseInt(csvrecord.get(14));
 		Task maxtask = new Task();
 		maxtask.jobid = js.getJobid();
 		maxtask.stageid = js.getStageid();
@@ -1318,7 +1319,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		mdsti.processBlockHDFSMap(inputtocount);
 		is.close();
 		
-		is = mdsti.getIntermediateInputStreamFS(maxtask.jobid + maxtask.stageid + maxtask.taskid);
+		is = mdsti.getIntermediateInputStream(maxtask.jobid + maxtask.stageid + maxtask.taskid);
 		List<Integer> mapfiltermaxdata = (List<Integer>) new FSTObjectInput(is,  Utils.getConfigForSerialization()).readObject();
 		assertEquals(623, (int) mapfiltermaxdata.get(0));
 		is.close();
@@ -1360,9 +1361,9 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		fbp.getDnXref(bls1, false);
 		sendDataBlockToIgniteServer(bls1.get(0));
 		mdsti.processBlockHDFSMap(bls1.get(0), hdfs);
-		InputStream is = mdsti.getIntermediateInputStreamFS(filtertask.jobid + filtertask.stageid + filtertask.taskid);
+		InputStream is = mdsti.getIntermediateInputStream(filtertask.jobid + filtertask.stageid + filtertask.taskid);
 		Set<InputStream> inputtocount = new LinkedHashSet<>(Arrays.asList(is));
-		ToIntFunction<CSVRecord> csvint = (CSVRecord csvrecord) -> Integer.parseInt(csvrecord.get("ArrDelay"));
+		ToIntFunction<CSVRecord> csvint = (CSVRecord csvrecord) -> Integer.parseInt(csvrecord.get(14));
 		Task mintask = new Task();
 		mintask.jobid = js.getJobid();
 		mintask.stageid = js.getStageid();
@@ -1376,7 +1377,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		mdsti.processBlockHDFSMap(inputtocount);
 		is.close();
 		
-		is = mdsti.getIntermediateInputStreamFS(mintask.jobid + mintask.stageid + mintask.taskid);
+		is = mdsti.getIntermediateInputStream(mintask.jobid + mintask.stageid + mintask.taskid);
 		List<Integer> mapfiltermindata = (List<Integer>) new FSTObjectInput(is,  Utils.getConfigForSerialization()).readObject();
 		assertEquals(-89, (int) mapfiltermindata.get(0));
 		is.close();
@@ -1418,9 +1419,9 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		fbp.getDnXref(bls1, false);
 		sendDataBlockToIgniteServer(bls1.get(0));
 		mdsti.processBlockHDFSMap(bls1.get(0), hdfs);
-		InputStream is = mdsti.getIntermediateInputStreamFS(filtertask.jobid + filtertask.stageid + filtertask.taskid);
+		InputStream is = mdsti.getIntermediateInputStream(filtertask.jobid + filtertask.stageid + filtertask.taskid);
 		Set<InputStream> inputtocount = new LinkedHashSet<>(Arrays.asList(is));
-		ToIntFunction<CSVRecord> csvint = (CSVRecord csvrecord) -> Integer.parseInt(csvrecord.get("ArrDelay"));
+		ToIntFunction<CSVRecord> csvint = (CSVRecord csvrecord) -> Integer.parseInt(csvrecord.get(14));
 		Task sumtask = new Task();
 		sumtask.jobid = js.getJobid();
 		sumtask.stageid = js.getStageid();
@@ -1434,7 +1435,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		mdsti.processBlockHDFSMap(inputtocount);
 		is.close();
 		
-		is = mdsti.getIntermediateInputStreamFS(sumtask.jobid + sumtask.stageid + sumtask.taskid);
+		is = mdsti.getIntermediateInputStream(sumtask.jobid + sumtask.stageid + sumtask.taskid);
 		List<Integer> mapfiltersumdata = (List<Integer>) new FSTObjectInput(is,  Utils.getConfigForSerialization()).readObject();
 		assertEquals(-63278, (int) mapfiltersumdata.get(0));
 		is.close();
@@ -1476,9 +1477,9 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		fbp.getDnXref(bls1, false);
 		sendDataBlockToIgniteServer(bls1.get(0));
 		mdsti.processBlockHDFSMap(bls1.get(0), hdfs);
-		InputStream is = mdsti.getIntermediateInputStreamFS(filtertask.jobid + filtertask.stageid + filtertask.taskid);
+		InputStream is = mdsti.getIntermediateInputStream(filtertask.jobid + filtertask.stageid + filtertask.taskid);
 		Set<InputStream> inputtocount = new LinkedHashSet<>(Arrays.asList(is));
-		ToIntFunction<CSVRecord> csvint = (CSVRecord csvrecord) -> Integer.parseInt(csvrecord.get("ArrDelay"));
+		ToIntFunction<CSVRecord> csvint = (CSVRecord csvrecord) -> Integer.parseInt(csvrecord.get(14));
 		Task sdtask = new Task();
 		sdtask.jobid = js.getJobid();
 		sdtask.stageid = js.getStageid();
@@ -1492,7 +1493,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		mdsti.processBlockHDFSMap(inputtocount);
 		is.close();
 		
-		is = mdsti.getIntermediateInputStreamFS(sdtask.jobid + sdtask.stageid + sdtask.taskid);
+		is = mdsti.getIntermediateInputStream(sdtask.jobid + sdtask.stageid + sdtask.taskid);
 		List<Integer> mapfiltersddata = (List<Integer>) new FSTObjectInput(is,  Utils.getConfigForSerialization()).readObject();
 		assertEquals(1, (int) mapfiltersddata.size());
 		is.close();
@@ -1535,7 +1536,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		sendDataBlockToIgniteServer(bls1.get(0));
 		mdsti.processSamplesBlocks(100, bls1.get(0), hdfs);
 		
-		InputStream is = mdsti.getIntermediateInputStreamFS(filtertask.jobid + filtertask.stageid + filtertask.taskid);
+		InputStream is = mdsti.getIntermediateInputStream(filtertask.jobid + filtertask.stageid + filtertask.taskid);
 		List<Long> csvreccount = (List<Long>) new FSTObjectInput(is,  Utils.getConfigForSerialization()).readObject();
 		assertEquals(100, (long) csvreccount.size());
 		is.close();
@@ -1578,7 +1579,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		sendDataBlockToIgniteServer(bls1.get(0));
 		mdsti.processSamplesBlocks(150, bls1.get(0), hdfs);
 		
-		InputStream is = mdsti.getIntermediateInputStreamFS(counttask.jobid + counttask.stageid + counttask.taskid);
+		InputStream is = mdsti.getIntermediateInputStream(counttask.jobid + counttask.stageid + counttask.taskid);
 		List<Long> csvreccount = (List<Long>) new FSTObjectInput(is,  Utils.getConfigForSerialization()).readObject();
 		assertEquals(150l, (long) csvreccount.get(0));
 		is.close();
@@ -1620,7 +1621,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		fbp.getDnXref(bls1, false);
 		sendDataBlockToIgniteServer(bls1.get(0));
 		mdsti.processBlockHDFSMap(bls1.get(0), hdfs);
-		InputStream is = mdsti.getIntermediateInputStreamFS(filtertask.jobid + filtertask.stageid + filtertask.taskid);
+		InputStream is = mdsti.getIntermediateInputStream(filtertask.jobid + filtertask.stageid + filtertask.taskid);
 		List<InputStream> inputtocount = Arrays.asList(is);
 		Task sample = new Task();
 		sample.jobid = js.getJobid();
@@ -1632,7 +1633,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		mdsti.processSamplesObjects(150, inputtocount);
 		is.close();
 		
-		is = mdsti.getIntermediateInputStreamFS(sample.jobid + sample.stageid + sample.taskid);
+		is = mdsti.getIntermediateInputStream(sample.jobid + sample.stageid + sample.taskid);
 		List<Integer> mapfiltersddata = (List<Integer>) new FSTObjectInput(is,  Utils.getConfigForSerialization()).readObject();
 		assertEquals(150, (int) mapfiltersddata.size());
 		is.close();
@@ -1674,7 +1675,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		fbp.getDnXref(bls1, false);
 		sendDataBlockToIgniteServer(bls1.get(0));
 		mdsti.processBlockHDFSMap(bls1.get(0), hdfs);
-		InputStream is = mdsti.getIntermediateInputStreamFS(filtertask.jobid + filtertask.stageid + filtertask.taskid);
+		InputStream is = mdsti.getIntermediateInputStream(filtertask.jobid + filtertask.stageid + filtertask.taskid);
 		List<InputStream> inputtocount = Arrays.asList(is);
 		Task counttask = new Task();
 		counttask.jobid = js.getJobid();
@@ -1686,7 +1687,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		mdsti.processSamplesObjects(150, inputtocount);
 		is.close();
 		
-		is = mdsti.getIntermediateInputStreamFS(counttask.jobid + counttask.stageid + counttask.taskid);
+		is = mdsti.getIntermediateInputStream(counttask.jobid + counttask.stageid + counttask.taskid);
 		List<Long> mapfiltersddata = (List<Long>) new FSTObjectInput(is,  Utils.getConfigForSerialization()).readObject();
 		assertEquals(150l, (long) mapfiltersddata.get(0));
 		is.close();
@@ -1755,9 +1756,9 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		mdsti.processBlockHDFSMap(bls2.get(0), hdfs);
 
 		
-		InputStream is1 = mdsti.getIntermediateInputStreamFS(
+		InputStream is1 = mdsti.getIntermediateInputStream(
 				reducebykeytask1.jobid + reducebykeytask1.stageid + reducebykeytask1.taskid);
-		InputStream is2 = mdsti.getIntermediateInputStreamFS(
+		InputStream is2 = mdsti.getIntermediateInputStream(
 				reducebykeytask2.jobid + reducebykeytask2.stageid + reducebykeytask2.taskid);
 		Task jointask = new Task();
 		jointask.jobid = js.getJobid();
@@ -1777,7 +1778,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		is2.close();
 
 		
-		InputStream is = mdsti.getIntermediateInputStreamFS(jointask.jobid + jointask.stageid + jointask.taskid);
+		InputStream is = mdsti.getIntermediateInputStream(jointask.jobid + jointask.stageid + jointask.taskid);
 		List<Tuple2<Tuple2<String, Integer>, Tuple2<String, Integer>>> mapfiltersddata = (List) new FSTObjectInput(is,  Utils.getConfigForSerialization()).readObject();
 		assertEquals(1, (long) mapfiltersddata.size());
 		Tuple2<Tuple2<String, Integer>, Tuple2<String, Integer>> tupleresult = mapfiltersddata.get(0);
@@ -1848,9 +1849,9 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		mdsti.processBlockHDFSMap(bls2.get(0), hdfs);
 
 		
-		InputStream is1 = mdsti.getIntermediateInputStreamFS(
+		InputStream is1 = mdsti.getIntermediateInputStream(
 				reducebykeytask1.jobid + reducebykeytask1.stageid + reducebykeytask1.taskid);
-		InputStream is2 = mdsti.getIntermediateInputStreamFS(
+		InputStream is2 = mdsti.getIntermediateInputStream(
 				reducebykeytask2.jobid + reducebykeytask2.stageid + reducebykeytask2.taskid);
 		Task jointask = new Task();
 		jointask.jobid = js.getJobid();
@@ -1870,7 +1871,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		is2.close();
 
 		
-		InputStream is = mdsti.getIntermediateInputStreamFS(jointask.jobid + jointask.stageid + jointask.taskid);
+		InputStream is = mdsti.getIntermediateInputStream(jointask.jobid + jointask.stageid + jointask.taskid);
 		List<Tuple2<Tuple2<String, Integer>, Tuple2<String, Integer>>> mapfiltersddata = (List) new FSTObjectInput(is,  Utils.getConfigForSerialization()).readObject();
 		assertEquals(1, (long) mapfiltersddata.size());
 		Tuple2<Tuple2<String, Integer>, Tuple2<String, Integer>> tupleresult = mapfiltersddata.get(0);
@@ -1948,9 +1949,9 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		mdsti.processBlockHDFSMap(bls2.get(0), hdfs);
 
 		
-		InputStream is1 = mdsti.getIntermediateInputStreamFS(
+		InputStream is1 = mdsti.getIntermediateInputStream(
 				reducebykeytask1.jobid + reducebykeytask1.stageid + reducebykeytask1.taskid);
-		InputStream is2 = mdsti.getIntermediateInputStreamFS(
+		InputStream is2 = mdsti.getIntermediateInputStream(
 				reducebykeytask2.jobid + reducebykeytask2.stageid + reducebykeytask2.taskid);
 		Task jointask = new Task();
 		jointask.jobid = js.getJobid();
@@ -1968,7 +1969,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		is2.close();
 
 		
-		InputStream is = mdsti.getIntermediateInputStreamFS(jointask.jobid + jointask.stageid + jointask.taskid);
+		InputStream is = mdsti.getIntermediateInputStream(jointask.jobid + jointask.stageid + jointask.taskid);
 		List<Tuple2<Tuple2<String, Integer>, Tuple2<String, Integer>>> mapfiltersddata = (List) new FSTObjectInput(is,  Utils.getConfigForSerialization()).readObject();
 		assertEquals(1, (long) mapfiltersddata.size());
 		Tuple2<Tuple2<String, Integer>, Tuple2<String, Integer>> tupleresult = mapfiltersddata.get(0);
@@ -2019,7 +2020,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 
 		
 		InputStream is1 = mdsti
-				.getIntermediateInputStreamFS(mappairtask1.jobid + mappairtask1.stageid + mappairtask1.taskid);
+				.getIntermediateInputStream(mappairtask1.jobid + mappairtask1.stageid + mappairtask1.taskid);
 		Task gbktask = new Task();
 		gbktask.jobid = js.getJobid();
 		gbktask.stageid = js.getStageid();
@@ -2037,7 +2038,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 
 		
 
-		InputStream is = mdsti.getIntermediateInputStreamFS(gbktask.jobid + gbktask.stageid + gbktask.taskid);
+		InputStream is = mdsti.getIntermediateInputStream(gbktask.jobid + gbktask.stageid + gbktask.taskid);
 		List<Tuple2<String, List<Integer>>> mapfiltersddata = (List) new FSTObjectInput(is,  Utils.getConfigForSerialization()).readObject();
 		assertEquals(1, (long) mapfiltersddata.size());
 		Tuple2<String, List<Integer>> tupleresult = mapfiltersddata.get(0);
@@ -2084,7 +2085,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 
 		
 		InputStream is1 = mdsti
-				.getIntermediateInputStreamFS(mappairtask1.jobid + mappairtask1.stageid + mappairtask1.taskid);
+				.getIntermediateInputStream(mappairtask1.jobid + mappairtask1.stageid + mappairtask1.taskid);
 		Task fbktask = new Task();
 		fbktask.jobid = js.getJobid();
 		fbktask.stageid = js.getStageid();
@@ -2098,7 +2099,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		is1.close();
 
 		
-		InputStream is = mdsti.getIntermediateInputStreamFS(fbktask.jobid + fbktask.stageid + fbktask.taskid);
+		InputStream is = mdsti.getIntermediateInputStream(fbktask.jobid + fbktask.stageid + fbktask.taskid);
 		List<Tuple2<String, Long>> mapfiltersddata = (List) new FSTObjectInput(is,  Utils.getConfigForSerialization()).readObject();
 
 		Tuple2<String, Long> tupleresult = mapfiltersddata.get(0);
@@ -2146,7 +2147,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		
 
 		InputStream is1 = mdsti
-				.getIntermediateInputStreamFS(mappairtask1.jobid + mappairtask1.stageid + mappairtask1.taskid);
+				.getIntermediateInputStream(mappairtask1.jobid + mappairtask1.stageid + mappairtask1.taskid);
 		Task fbktask = new Task();
 		fbktask.jobid = js.getJobid();
 		fbktask.stageid = js.getStageid();
@@ -2163,7 +2164,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		is1.close();
 
 		
-		InputStream is = mdsti.getIntermediateInputStreamFS(fbktask.jobid + fbktask.stageid + fbktask.taskid);
+		InputStream is = mdsti.getIntermediateInputStream(fbktask.jobid + fbktask.stageid + fbktask.taskid);
 		List<Tuple2<String, Long>> mapfiltersddata = (List) new FSTObjectInput(is,  Utils.getConfigForSerialization()).readObject();
 
 		Tuple2<String, Long> tupleresult = mapfiltersddata.get(0);
@@ -2211,7 +2212,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 
 		
 		InputStream is1 = mdsti
-				.getIntermediateInputStreamFS(mappairtask1.jobid + mappairtask1.stageid + mappairtask1.taskid);
+				.getIntermediateInputStream(mappairtask1.jobid + mappairtask1.stageid + mappairtask1.taskid);
 		Task cbktask = new Task();
 		js.getStage().tasks.clear();
 		js.getStage().tasks.add(new CountByKeyFunction());
@@ -2225,7 +2226,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		is1.close();
 
 		
-		InputStream is = mdsti.getIntermediateInputStreamFS(cbktask.jobid + cbktask.stageid + cbktask.taskid);
+		InputStream is = mdsti.getIntermediateInputStream(cbktask.jobid + cbktask.stageid + cbktask.taskid);
 		List<Tuple2<String, Long>> mapfiltersddata = (List) new FSTObjectInput(is,  Utils.getConfigForSerialization()).readObject();
 
 		Tuple2<String, Long> tupleresult = mapfiltersddata.get(0);
@@ -2272,7 +2273,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 
 		
 		InputStream is1 = mdsti
-				.getIntermediateInputStreamFS(mappairtask1.jobid + mappairtask1.stageid + mappairtask1.taskid);
+				.getIntermediateInputStream(mappairtask1.jobid + mappairtask1.stageid + mappairtask1.taskid);
 		Task cbktask = new Task();
 		cbktask.jobid = js.getJobid();
 		cbktask.stageid = js.getStageid();
@@ -2287,7 +2288,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		is1.close();
 
 		
-		InputStream is = mdsti.getIntermediateInputStreamFS(cbktask.jobid + cbktask.stageid + cbktask.taskid);
+		InputStream is = mdsti.getIntermediateInputStream(cbktask.jobid + cbktask.stageid + cbktask.taskid);
 		List<Tuple2<Tuple2<String, Long>, Long>> mapfiltersddata = (List) new FSTObjectInput(is,  Utils.getConfigForSerialization()).readObject();
 		int sum = 0;
 		for (Tuple2<Tuple2<String, Long>, Long> tupleresult : mapfiltersddata) {
@@ -2362,9 +2363,9 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		mdsti.processBlockHDFSMap(bls2.get(0), hdfs);
 
 		
-		InputStream is1 = mdsti.getIntermediateInputStreamFS(
+		InputStream is1 = mdsti.getIntermediateInputStream(
 				reducebykeytask1.jobid + reducebykeytask1.stageid + reducebykeytask1.taskid);
-		InputStream is2 = mdsti.getIntermediateInputStreamFS(
+		InputStream is2 = mdsti.getIntermediateInputStream(
 				reducebykeytask2.jobid + reducebykeytask2.stageid + reducebykeytask2.taskid);
 		Task coalescetask = new Task();
 		coalescetask.jobid = js.getJobid();
@@ -2387,7 +2388,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 
 		
 		InputStream is = mdsti
-				.getIntermediateInputStreamFS(coalescetask.jobid + coalescetask.stageid + coalescetask.taskid);
+				.getIntermediateInputStream(coalescetask.jobid + coalescetask.stageid + coalescetask.taskid);
 		List<Tuple2<String, Integer>> mapfiltersddata = (List) new FSTObjectInput(is,  Utils.getConfigForSerialization()).readObject();
 		assertEquals(1, (long) mapfiltersddata.size());
 		Tuple2<String, Integer> tupleresult = mapfiltersddata.get(0);
@@ -2434,7 +2435,7 @@ public class StreamPipelineTaskExecutorIgniteTest extends StreamPipelineTestComm
 		sendDataBlockToIgniteServer(bls1.get(0));
 		mdsti.processBlockHDFSMap(bls1.get(0), hdfs);
 		
-		InputStream is = mdsti.getIntermediateInputStreamFS(filtertask.jobid + filtertask.stageid + filtertask.taskid);
+		InputStream is = mdsti.getIntermediateInputStream(filtertask.jobid + filtertask.stageid + filtertask.taskid);
 		List<JSONObject> jsonfilterdata = (List<JSONObject>) new FSTObjectInput(is,  Utils.getConfigForSerialization()).readObject();
 		assertEquals(11l, (long) jsonfilterdata.size());
 		is.close();

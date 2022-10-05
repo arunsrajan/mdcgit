@@ -13,10 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.mdc.tasks.scheduler;
-
-import com.github.mdc.common.MDCConstants;
-import com.github.mdc.common.MDCProperties;
+package com.github.mdc.common;
 
 public class JobConfigurationBuilder {
 	String hdfsurl;

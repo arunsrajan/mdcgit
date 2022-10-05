@@ -68,6 +68,7 @@ import com.github.mdc.common.DestroyContainers;
 import com.github.mdc.common.HDFSBlockUtils;
 import com.github.mdc.common.HeartBeat;
 import com.github.mdc.common.JobApp;
+import com.github.mdc.common.JobConfiguration;
 import com.github.mdc.common.JobMetrics;
 import com.github.mdc.common.LaunchContainers;
 import com.github.mdc.common.LoadJar;
@@ -608,7 +609,7 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 			jm.setNodes(new LinkedHashSet<>(nodessorted));
 			jm.setContainersallocated(containers.stream().collect(Collectors.toMap(key -> key, value -> 0d)));
 			;
-			jm.setMode(jobconf.execmode);
+			jm.setMode(jobconf.getExecmode());
 			jm.setTotalblocks(allfilebls.size());
 			for (var cls : combiners) {
 				if (cls != null) {

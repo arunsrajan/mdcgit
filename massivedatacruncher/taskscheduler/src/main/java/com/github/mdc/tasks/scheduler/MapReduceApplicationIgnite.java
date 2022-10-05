@@ -62,8 +62,10 @@ import com.github.mdc.common.Context;
 import com.github.mdc.common.DataCruncherContext;
 import com.github.mdc.common.HDFSBlockUtils;
 import com.github.mdc.common.HdfsBlockReader;
+import com.github.mdc.common.JobConfiguration;
 import com.github.mdc.common.JobMetrics;
 import com.github.mdc.common.MDCConstants;
+import com.github.mdc.common.MDCIgniteClient;
 import com.github.mdc.common.MDCJobMetrics;
 import com.github.mdc.common.MDCProperties;
 import com.github.mdc.common.Utils;
@@ -156,24 +158,8 @@ public class MapReduceApplicationIgnite implements Callable<List<DataCruncherCon
 			jm.setJobstarttime(System.currentTimeMillis());
 			jm.setJobid(MDCConstants.MDCAPPLICATION + MDCConstants.HYPHEN + System.currentTimeMillis());
 			MDCJobMetrics.put(jm);
-			var cfg = new IgniteConfiguration();
-			// The node will be started as a client node.
-			cfg.setClientMode(true);
-			cfg.setDeploymentMode(DeploymentMode.CONTINUOUS);
-			// Classes of custom Java logic will be transferred over the wire from
-			// this app.
-			cfg.setPeerClassLoadingEnabled(true);
-			// Setting up an IP Finder to ensure the client can locate the servers.
-			var ipFinder = new TcpDiscoveryMulticastIpFinder();
-			ipFinder.setMulticastGroup(jobconf.getIgnitemulticastgroup());
-			cfg.setDiscoverySpi(new TcpDiscoverySpi().setIpFinder(ipFinder));
-			var cc = new CacheConfiguration(MDCConstants.MDCCACHE);
-			cc.setCacheMode(CacheMode.PARTITIONED);
-			cc.setAtomicityMode(CacheAtomicityMode.ATOMIC);
-			cc.setBackups(Integer.parseInt(jobconf.getIgnitebackup()));
-			cfg.setCacheConfiguration(cc);
 			// Starting the node
-			ignite = Ignition.start(cfg);
+			ignite = MDCIgniteClient.instanceMR(jobconf);
 			ignitecache = ignite.getOrCreateCache(MDCConstants.MDCCACHE);
 			var mdcmcs = new ArrayList<IgniteMapperCombiner>();
 			var allfiles = new ArrayList<String>();
@@ -213,7 +199,7 @@ public class MapReduceApplicationIgnite implements Callable<List<DataCruncherCon
 			}
 			jm.setTotalfilesize(jm.getTotalfilesize() / MDCConstants.MB);
 			jm.setFiles(allfiles);
-			jm.setMode(jobconf.execmode);
+			jm.setMode(jobconf.getExecmode());
 			jm.setTotalblocks(bls.size());
 			log.debug("Total MapReduce Tasks: " + mdcmcs.size());
 
