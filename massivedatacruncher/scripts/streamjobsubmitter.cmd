@@ -22,7 +22,6 @@ IF EXIST %MDC_JAVA_HOME%\bin\java.exe (
 
 "%MDC_JAVA_HOME%\bin\java" %MEMCONFIG% %ADDOPENSMODULES% %GCCONFIG% %DEBUGCONFIG% %CLASSPATH% -Djava.net.preferIPv4Stack=true com.github.mdc.stream.submitter.StreamPipelineJobSubmitter %*
 
-pause
 ) ELSE (
  @echo on
  echo %MDC_JAVA_HOME% doesnot exists, please set JAVA_HOME environment variable with correct path.

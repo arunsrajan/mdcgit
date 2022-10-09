@@ -740,22 +740,8 @@ public class FileBlocksPartitionerHDFS {
 			if (actualmemory < (128 * MDCConstants.MB)) {
 				throw new PipelineException(PipelineConstants.MEMORYALLOCATIONERROR);
 			}
-			if (totalmem < (512 * MDCConstants.MB) && totalmem > 0 && cpu >= 1) {
-				if (actualmemory >= totalmem) {
-					res.setCpu(cpu);
-					var heapmem = 1024 * Integer.valueOf(pipelineconfig.getHeappercent()) / 100;
-					res.setMinmemory(heapmem);
-					res.setMaxmemory(heapmem);
-					res.setDirectheap(1024 - heapmem);
-					res.setGctype(gctype);
-					cr.add(res);
-					return cr;
-				} else {
-					throw new PipelineException(PipelineConstants.INSUFFMEMORYALLOCATIONERROR);
-				}
-			}
 			res.setCpu(cpu);
-			var memoryrequire = totalmem < actualmemory ? totalmem : actualmemory;
+			var memoryrequire = actualmemory;
 			var meminmb = memoryrequire / MDCConstants.MB;
 			var heapmem = meminmb * Integer.valueOf(pipelineconfig.getHeappercent()) / 100;
 			res.setMinmemory(heapmem);
@@ -769,46 +755,13 @@ public class FileBlocksPartitionerHDFS {
 			if (actualmemory < (128 * MDCConstants.MB)) {
 				throw new PipelineException(PipelineConstants.MEMORYALLOCATIONERROR);
 			}
-			if (totalmem < (512 * MDCConstants.MB) && totalmem > 0 && cpu >= 1) {
-				if (actualmemory >= totalmem) {
-					var res = new ContainerResources();
-					res.setCpu(1);
-					var heapmem = 1024 * Integer.valueOf(pipelineconfig.getHeappercent()) / 100;
-					res.setMinmemory(heapmem);
-					res.setMaxmemory(heapmem);
-					res.setDirectheap(1024 - heapmem);
-					res.setGctype(gctype);
-					cr.add(res);
-					return cr;
-				} else {
-					throw new PipelineException(PipelineConstants.INSUFFMEMORYALLOCATIONERROR);
-				}
-			}
-			if (cpu == 0) {
-				return cr;
-			}
 			var numofcontainerspermachine = Integer.parseInt(pipelineconfig.getNumberofcontainers());
 			var dividedcpus = cpu / numofcontainerspermachine;
 			var maxmemory = actualmemory / numofcontainerspermachine;
 			var maxmemmb = maxmemory / MDCConstants.MB;
-			var totalmemmb = totalmem / MDCConstants.MB;
-			if (dividedcpus == 0 && cpu >= 1) {
-				dividedcpus = 1;
-			}
-			if (totalmem < maxmemory && dividedcpus >= 1) {
-				var res = new ContainerResources();
-				res.setCpu(dividedcpus);
-				var heapmem = totalmemmb * Integer.valueOf(pipelineconfig.getHeappercent()) / 100;
-				res.setMinmemory(heapmem);
-				res.setMaxmemory(heapmem);
-				res.setDirectheap(totalmemmb - heapmem);
-				res.setGctype(gctype);
-				cr.add(res);
-				return cr;
-			}
 			var numberofcontainer = 0;
 			while (true) {
-				if (cpu >= dividedcpus && totalmem >= 0) {
+				if (cpu >= dividedcpus && actualmemory >= 0) {
 					var res = new ContainerResources();
 					res.setCpu(dividedcpus);
 					var heapmem = maxmemmb * Integer.valueOf(pipelineconfig.getHeappercent()) / 100;
@@ -816,8 +769,10 @@ public class FileBlocksPartitionerHDFS {
 					res.setMaxmemory(heapmem);
 					res.setDirectheap(maxmemmb - heapmem);
 					res.setGctype(gctype);
+					cpu -= dividedcpus;
+					actualmemory -= maxmemory;
 					cr.add(res);
-				} else if (cpu >= 1 && totalmem >= 0) {
+				} else if (cpu >= 1 && actualmemory >= 0) {
 					var res = new ContainerResources();
 					res.setCpu(cpu);
 					var heapmem = maxmemmb * Integer.valueOf(pipelineconfig.getHeappercent()) / 100;
@@ -825,6 +780,8 @@ public class FileBlocksPartitionerHDFS {
 					res.setMaxmemory(heapmem);
 					res.setDirectheap(maxmemmb - heapmem);
 					res.setGctype(gctype);
+					cpu = 0;
+					actualmemory -= maxmemory;
 					cr.add(res);
 				} else {
 					break;
@@ -833,8 +790,7 @@ public class FileBlocksPartitionerHDFS {
 				if (numofcontainerspermachine == numberofcontainer) {
 					break;
 				}
-				cpu -= dividedcpus;
-				totalmem -= maxmemory;
+				
 			}
 			return cr;
 		} else if (pipelineconfig.getContaineralloc().equals(MDCConstants.CONTAINER_ALLOC_IMPLICIT)) {

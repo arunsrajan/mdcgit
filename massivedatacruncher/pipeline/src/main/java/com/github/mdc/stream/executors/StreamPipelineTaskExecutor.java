@@ -132,6 +132,23 @@ public sealed class StreamPipelineTaskExecutor implements
 		return task;
 	}
 
+	private void writeIntermediateDataToDirectByteBuffer(final ByteArrayOutputStream fsdos) throws PipelineException {
+		byte[] intermediatedata = fsdos.toByteArray();
+		try (OutputStream os = createIntermediateDataToFS(task, intermediatedata.length);) {
+			IOUtils.write(intermediatedata, os);
+			os.flush();
+			if (os instanceof ByteBufferOutputStream bbos) {
+				bbos.get().flip();
+			}
+		} catch (IOException ioe) {
+			log.error(PipelineConstants.UNKNOWNERROR, ioe);
+			throw new PipelineException(PipelineConstants.UNKNOWNERROR, ioe);
+		} catch (Exception ex) {
+			log.error(PipelineConstants.UNKNOWNERROR, ex);
+			throw new PipelineException(PipelineConstants.UNKNOWNERROR, ex);
+		}
+	}
+
 	public void setTask(Task task) {
 		this.task = task;
 		if (task.finalphase && task.saveresulttohdfs) {
@@ -192,8 +209,8 @@ public sealed class StreamPipelineTaskExecutor implements
 		long starttime = System.currentTimeMillis();
 		log.debug("Entered StreamPipelineTaskExecutor.processBlockHDFSIntersection");
 
-		try (var fsdos = new ByteArrayOutputStream();
-				var output = new FSTObjectOutput(fsdos, Utils.getConfigForSerialization());
+		var fsdos = new ByteArrayOutputStream();
+		try (var output = new FSTObjectOutput(fsdos, Utils.getConfigForSerialization());
 
 				var bais1 = HdfsBlockReader.getBlockDataInputStream(blocksfirst, hdfs);
 				var buffer1 = new BufferedReader(new InputStreamReader(bais1));
@@ -229,14 +246,7 @@ public sealed class StreamPipelineTaskExecutor implements
 			Object result = cf.get();
 			output.writeObject(result);
 			output.flush();
-			byte[] intermediatedata = fsdos.toByteArray();
-			try (OutputStream os = createIntermediateDataToFS(task, intermediatedata.length);) {
-				IOUtils.write(intermediatedata, os);
-				os.flush();
-				if (os instanceof ByteBufferOutputStream bbos) {
-					bbos.get().flip();
-				}
-			}
+
 			cacheAble(fsdos);
 			var wr = new WeakReference<Object>(result);
 			result = null;
@@ -251,8 +261,9 @@ public sealed class StreamPipelineTaskExecutor implements
 		} catch (Exception ex) {
 			log.error(PipelineConstants.PROCESSHDFSINTERSECTION, ex);
 			throw new PipelineException(PipelineConstants.PROCESSHDFSINTERSECTION, ex);
+		} finally {
+			writeIntermediateDataToDirectByteBuffer(fsdos);
 		}
-
 	}
 
 	/**
@@ -269,8 +280,8 @@ public sealed class StreamPipelineTaskExecutor implements
 		var starttime = System.currentTimeMillis();
 		log.debug("Entered StreamPipelineTaskExecutor.processBlockHDFSIntersection");
 
-		try (var fsdos = new ByteArrayOutputStream();
-				var output = new FSTObjectOutput(fsdos, Utils.getConfigForSerialization());
+		var fsdos = new ByteArrayOutputStream();
+		try (var output = new FSTObjectOutput(fsdos, Utils.getConfigForSerialization());
 				var inputfirst = new FSTObjectInput(fsstreamfirst.iterator().next(), Utils.getConfigForSerialization());
 				var bais2 = HdfsBlockReader.getBlockDataInputStream(blockssecond.get(0), hdfs);
 				var buffer2 = new BufferedReader(new InputStreamReader(bais2));
@@ -304,14 +315,7 @@ public sealed class StreamPipelineTaskExecutor implements
 			Object result = cf.get();
 			output.writeObject(result);
 			output.flush();
-			byte[] intermediatedata = fsdos.toByteArray();
-			try (OutputStream os = createIntermediateDataToFS(task, intermediatedata.length);) {
-				IOUtils.write(intermediatedata, os);
-				os.flush();
-				if (os instanceof ByteBufferOutputStream bbos) {
-					bbos.get().flip();
-				}
-			}
+
 			cacheAble(fsdos);
 			var wr = new WeakReference<Object>(result);
 			result = null;
@@ -326,6 +330,8 @@ public sealed class StreamPipelineTaskExecutor implements
 		} catch (Exception ex) {
 			log.error(PipelineConstants.PROCESSHDFSINTERSECTION, ex);
 			throw new PipelineException(PipelineConstants.PROCESSHDFSINTERSECTION, ex);
+		} finally {
+			writeIntermediateDataToDirectByteBuffer(fsdos);
 		}
 	}
 
@@ -342,8 +348,8 @@ public sealed class StreamPipelineTaskExecutor implements
 		var starttime = System.currentTimeMillis();
 		log.debug("Entered StreamPipelineTaskExecutor.processBlockHDFSIntersection");
 
-		try (var fsdos = new ByteArrayOutputStream();
-				var output = new FSTObjectOutput(fsdos, Utils.getConfigForSerialization());
+		var fsdos = new ByteArrayOutputStream();
+		try (var output = new FSTObjectOutput(fsdos, Utils.getConfigForSerialization());
 				var inputfirst = new FSTObjectInput(fsstreamfirst.iterator().next(), Utils.getConfigForSerialization());
 				var inputsecond = new FSTObjectInput(fsstreamsecond.iterator().next(),
 						Utils.getConfigForSerialization());
@@ -375,15 +381,6 @@ public sealed class StreamPipelineTaskExecutor implements
 			Object result = cf.get();
 			output.writeObject(result);
 			output.flush();
-			byte[] intermediatedata = fsdos.toByteArray();
-			try (OutputStream os = createIntermediateDataToFS(task, intermediatedata.length);) {
-				IOUtils.write(intermediatedata, os);
-				os.flush();
-				if (os instanceof ByteBufferOutputStream bbos) {
-					bbos.get().flip();
-				}
-			}
-
 			cacheAble(fsdos);
 			var wr = new WeakReference<Object>(result);
 			result = null;
@@ -398,6 +395,8 @@ public sealed class StreamPipelineTaskExecutor implements
 		} catch (Exception ex) {
 			log.error(PipelineConstants.PROCESSHDFSINTERSECTION, ex);
 			throw new PipelineException(PipelineConstants.PROCESSHDFSINTERSECTION, ex);
+		} finally {
+			writeIntermediateDataToDirectByteBuffer(fsdos);
 		}
 	}
 
@@ -456,8 +455,8 @@ public sealed class StreamPipelineTaskExecutor implements
 		var starttime = System.currentTimeMillis();
 		log.debug("Entered StreamPipelineTaskExecutor.processBlockHDFSUnion");
 
-		try (var fsdos = new ByteArrayOutputStream();
-				var output = new FSTObjectOutput(fsdos, Utils.getConfigForSerialization());
+		var fsdos = new ByteArrayOutputStream();
+		try (var output = new FSTObjectOutput(fsdos, Utils.getConfigForSerialization());
 				var bais1 = HdfsBlockReader.getBlockDataInputStream(blocksfirst, hdfs);
 				var buffer1 = new BufferedReader(new InputStreamReader(bais1));
 				var bais2 = HdfsBlockReader.getBlockDataInputStream(blockssecond, hdfs);
@@ -503,14 +502,6 @@ public sealed class StreamPipelineTaskExecutor implements
 
 			output.writeObject(result);
 			output.flush();
-			byte[] intermediatedata = fsdos.toByteArray();
-			try (OutputStream os = createIntermediateDataToFS(task, intermediatedata.length);) {
-				IOUtils.write(intermediatedata, os);
-				os.flush();
-				if (os instanceof ByteBufferOutputStream bbos) {
-					bbos.get().flip();
-				}
-			}
 
 			cacheAble(fsdos);
 			var wr = new WeakReference<List>(result);
@@ -526,6 +517,8 @@ public sealed class StreamPipelineTaskExecutor implements
 		} catch (Exception ex) {
 			log.error(PipelineConstants.PROCESSHDFSUNION, ex);
 			throw new PipelineException(PipelineConstants.PROCESSHDFSUNION, ex);
+		} finally {
+			writeIntermediateDataToDirectByteBuffer(fsdos);
 		}
 	}
 
@@ -543,8 +536,8 @@ public sealed class StreamPipelineTaskExecutor implements
 		var starttime = System.currentTimeMillis();
 		log.debug("Entered StreamPipelineTaskExecutor.processBlockHDFSUnion");
 
-		try (var fsdos = new ByteArrayOutputStream();
-				var output = new FSTObjectOutput(fsdos, Utils.getConfigForSerialization());
+		var fsdos = new ByteArrayOutputStream();
+		try (var output = new FSTObjectOutput(fsdos, Utils.getConfigForSerialization());
 				var inputfirst = new FSTObjectInput(fsstreamfirst.iterator().next(), Utils.getConfigForSerialization());
 				var bais2 = HdfsBlockReader.getBlockDataInputStream(blockssecond.get(0), hdfs);
 				var buffer2 = new BufferedReader(new InputStreamReader(bais2));
@@ -590,14 +583,6 @@ public sealed class StreamPipelineTaskExecutor implements
 			}
 			output.writeObject(result);
 			output.flush();
-			byte[] intermediatedata = fsdos.toByteArray();
-			try (OutputStream os = createIntermediateDataToFS(task, intermediatedata.length);) {
-				IOUtils.write(intermediatedata, os);
-				os.flush();
-				if (os instanceof ByteBufferOutputStream bbos) {
-					bbos.get().flip();
-				}
-			}
 
 			cacheAble(fsdos);
 			var wr = new WeakReference<List>(result);
@@ -613,6 +598,8 @@ public sealed class StreamPipelineTaskExecutor implements
 		} catch (Exception ex) {
 			log.error(PipelineConstants.PROCESSHDFSUNION, ex);
 			throw new PipelineException(PipelineConstants.PROCESSHDFSUNION, ex);
+		} finally {
+			writeIntermediateDataToDirectByteBuffer(fsdos);
 		}
 	}
 
@@ -629,8 +616,8 @@ public sealed class StreamPipelineTaskExecutor implements
 		var starttime = System.currentTimeMillis();
 		log.debug("Entered StreamPipelineTaskExecutor.processBlockHDFSUnion");
 
-		try (var fsdos = new ByteArrayOutputStream();
-				var output = new FSTObjectOutput(fsdos, Utils.getConfigForSerialization());
+		var fsdos = new ByteArrayOutputStream();
+		try (var output = new FSTObjectOutput(fsdos, Utils.getConfigForSerialization());
 				var inputfirst = new FSTObjectInput(fsstreamfirst.iterator().next(), Utils.getConfigForSerialization());
 				var inputsecond = new FSTObjectInput(fsstreamsecond.iterator().next(),
 						Utils.getConfigForSerialization());) {
@@ -679,16 +666,6 @@ public sealed class StreamPipelineTaskExecutor implements
 
 			output.writeObject(result);
 			output.flush();
-			fsdos.flush();
-			byte[] intermediatedata = fsdos.toByteArray();
-			try (OutputStream os = createIntermediateDataToFS(task, intermediatedata.length);) {
-				IOUtils.write(intermediatedata, os);
-				os.flush();
-				if (os instanceof ByteBufferOutputStream bbos) {
-					bbos.get().flip();
-				}
-			}
-
 			cacheAble(fsdos);
 			var wr = new WeakReference<List>(result);
 			result = null;
@@ -703,6 +680,8 @@ public sealed class StreamPipelineTaskExecutor implements
 		} catch (Exception ex) {
 			log.error(PipelineConstants.PROCESSHDFSUNION, ex);
 			throw new PipelineException(PipelineConstants.PROCESSHDFSUNION, ex);
+		} finally {
+			writeIntermediateDataToDirectByteBuffer(fsdos);
 		}
 	}
 
@@ -719,8 +698,8 @@ public sealed class StreamPipelineTaskExecutor implements
 		log.debug("Entered StreamPipelineTaskExecutor.processBlockHDFSMap");
 		log.info(blockslocation);
 		CSVParser records = null;
-		try (var fsdos = new ByteArrayOutputStream();
-				var output = new FSTObjectOutput(fsdos, Utils.getConfigForSerialization());
+		var fsdos = new ByteArrayOutputStream();
+		try (var output = new FSTObjectOutput(fsdos, Utils.getConfigForSerialization());
 				var bais = HdfsBlockReader.getBlockDataInputStream(blockslocation, hdfs);
 				var buffer = new BufferedReader(new InputStreamReader(bais));) {
 
@@ -830,15 +809,6 @@ public sealed class StreamPipelineTaskExecutor implements
 				}
 				output.writeObject(out);
 				output.flush();
-				byte[] intermediatedata = fsdos.toByteArray();
-				try (OutputStream os = createIntermediateDataToFS(task, intermediatedata.length);) {
-					IOUtils.write(intermediatedata, os);
-					os.flush();
-					if (os instanceof ByteBufferOutputStream bbos) {
-						bbos.get().flip();
-					}
-				}
-
 				cacheAble(fsdos);
 				var wr = new WeakReference<List>(out);
 				out = null;
@@ -861,6 +831,7 @@ public sealed class StreamPipelineTaskExecutor implements
 			log.error(PipelineConstants.PROCESSHDFSERROR, ex);
 			throw new PipelineException(PipelineConstants.PROCESSHDFSERROR, ex);
 		} finally {
+			writeIntermediateDataToDirectByteBuffer(fsdos);
 			if (!Objects.isNull(records)) {
 				try {
 					records.close();
@@ -890,8 +861,8 @@ public sealed class StreamPipelineTaskExecutor implements
 	public double processBlockHDFSMap(Set<InputStream> fsstreamfirst) throws PipelineException {
 		var starttime = System.currentTimeMillis();
 		log.debug("Entered StreamPipelineTaskExecutor.processBlockHDFSMap");
-		try (var fsdos = new ByteArrayOutputStream();
-				var output = new FSTObjectOutput(fsdos, Utils.getConfigForSerialization());) {
+		var fsdos = new ByteArrayOutputStream();
+		try (var output = new FSTObjectOutput(fsdos, Utils.getConfigForSerialization());) {
 
 			var functions = getFunctions();
 
@@ -982,17 +953,7 @@ public sealed class StreamPipelineTaskExecutor implements
 			}
 			output.writeObject(out);
 			output.flush();
-			fsdos.flush();
-			byte[] intermediatedata = fsdos.toByteArray();
-			try (OutputStream os = createIntermediateDataToFS(task, intermediatedata.length);) {
-				IOUtils.write(intermediatedata, os);
-				os.flush();
-				if (os instanceof ByteBufferOutputStream bbos) {
-					bbos.get().flip();
-				}
-			}
 
-			cacheAble(fsdos);
 			var wr = new WeakReference<List>(out);
 			out = null;
 			log.debug("Exiting StreamPipelineTaskExecutor.processBlockHDFSMap");
@@ -1006,6 +967,8 @@ public sealed class StreamPipelineTaskExecutor implements
 		} catch (Exception ex) {
 			log.error(PipelineConstants.PROCESSHDFSERROR, ex);
 			throw new PipelineException(PipelineConstants.PROCESSHDFSERROR, ex);
+		} finally {
+			writeIntermediateDataToDirectByteBuffer(fsdos);
 		}
 	}
 
@@ -1014,8 +977,8 @@ public sealed class StreamPipelineTaskExecutor implements
 			throws Exception {
 		var starttime = System.currentTimeMillis();
 		log.debug("Entered StreamPipelineTaskExecutor.processSamplesBlocks");
-		try (var fsdos = new ByteArrayOutputStream();
-				var output = new FSTObjectOutput(fsdos, Utils.getConfigForSerialization());
+		var fsdos = new ByteArrayOutputStream();
+		try (var output = new FSTObjectOutput(fsdos, Utils.getConfigForSerialization());
 				var bais = HdfsBlockReader.getBlockDataInputStream(blockslocation, hdfs);
 				var buffer = new BufferedReader(new InputStreamReader(bais));
 				var stringdata = buffer.lines();) {
@@ -1057,15 +1020,6 @@ public sealed class StreamPipelineTaskExecutor implements
 			output.writeObject(out);
 			output.flush();
 
-			byte[] intermediatedata = fsdos.toByteArray();
-			try (OutputStream os = createIntermediateDataToFS(task, intermediatedata.length);) {
-				IOUtils.write(intermediatedata, os);
-				os.flush();
-				if (os instanceof ByteBufferOutputStream bbos) {
-					bbos.get().flip();
-				}
-			}
-
 			cacheAble(fsdos);
 			var wr = new WeakReference<List>(out);
 			out = null;
@@ -1080,6 +1034,8 @@ public sealed class StreamPipelineTaskExecutor implements
 		} catch (Exception ex) {
 			log.error(PipelineConstants.PROCESSSAMPLE, ex);
 			throw new PipelineException(PipelineConstants.PROCESSSAMPLE, ex);
+		} finally {
+			writeIntermediateDataToDirectByteBuffer(fsdos);
 		}
 	}
 
@@ -1094,8 +1050,8 @@ public sealed class StreamPipelineTaskExecutor implements
 	public double processSamplesObjects(Integer numofsample, List fsstreams) throws PipelineException {
 		var starttime = System.currentTimeMillis();
 		log.debug("Entered StreamPipelineTaskExecutor.processSamplesObjects");
-		try (var fsdos = new ByteArrayOutputStream();
-				var output = new FSTObjectOutput(fsdos, Utils.getConfigForSerialization());
+		var fsdos = new ByteArrayOutputStream();
+		try (var output = new FSTObjectOutput(fsdos, Utils.getConfigForSerialization());
 				var inputfirst = new FSTObjectInput((InputStream) fsstreams.iterator().next(),
 						Utils.getConfigForSerialization());) {
 
@@ -1137,14 +1093,6 @@ public sealed class StreamPipelineTaskExecutor implements
 			}
 			output.writeObject(out);
 			output.flush();
-			byte[] intermediatedata = fsdos.toByteArray();
-			try (OutputStream os = createIntermediateDataToFS(task, intermediatedata.length);) {
-				IOUtils.write(intermediatedata, os);
-				os.flush();
-				if (os instanceof ByteBufferOutputStream bbos) {
-					bbos.get().flip();
-				}
-			}
 
 			cacheAble(fsdos);
 			var wr = new WeakReference<List>(out);
@@ -1160,6 +1108,8 @@ public sealed class StreamPipelineTaskExecutor implements
 		} catch (Exception ex) {
 			log.error(PipelineConstants.PROCESSSAMPLE, ex);
 			throw new PipelineException(PipelineConstants.PROCESSSAMPLE, ex);
+		} finally {
+			writeIntermediateDataToDirectByteBuffer(fsdos);
 		}
 	}
 
@@ -1502,8 +1452,8 @@ public sealed class StreamPipelineTaskExecutor implements
 		log.debug("Entered StreamPipelineTaskExecutor.processJoin");
 		var starttime = System.currentTimeMillis();
 
-		try (var fsdos = new ByteArrayOutputStream();
-				var output = new FSTObjectOutput(fsdos, Utils.getConfigForSerialization());
+		var fsdos = new ByteArrayOutputStream();
+		try (var output = new FSTObjectOutput(fsdos, Utils.getConfigForSerialization());
 				var inputfirst = isinputfirstblocks ? null
 						: new FSTObjectInput(streamfirst, Utils.getConfigForSerialization());
 				var inputsecond = isinputsecondblocks ? null
@@ -1575,14 +1525,6 @@ public sealed class StreamPipelineTaskExecutor implements
 			}
 			output.writeObject(joinpairsout);
 			output.flush();
-			byte[] intermediatedata = fsdos.toByteArray();
-			try (OutputStream os = createIntermediateDataToFS(task, intermediatedata.length);) {
-				IOUtils.write(intermediatedata, os);
-				os.flush();
-				if (os instanceof ByteBufferOutputStream bbos) {
-					bbos.get().flip();
-				}
-			}
 
 			cacheAble(fsdos);
 			var wr = new WeakReference<List>(joinpairsout);
@@ -1598,6 +1540,8 @@ public sealed class StreamPipelineTaskExecutor implements
 		} catch (Exception ex) {
 			log.error(PipelineConstants.PROCESSJOIN, ex);
 			throw new PipelineException(PipelineConstants.PROCESSJOIN, ex);
+		} finally {
+			writeIntermediateDataToDirectByteBuffer(fsdos);
 		}
 	}
 
@@ -1617,8 +1561,8 @@ public sealed class StreamPipelineTaskExecutor implements
 		log.debug("Entered StreamPipelineTaskExecutor.processLeftJoin");
 		var starttime = System.currentTimeMillis();
 
-		try (var fsdos = new ByteArrayOutputStream();
-				var output = new FSTObjectOutput(fsdos, Utils.getConfigForSerialization());
+		var fsdos = new ByteArrayOutputStream();
+		try (var output = new FSTObjectOutput(fsdos, Utils.getConfigForSerialization());
 				var inputfirst = isinputfirstblocks ? null
 						: new FSTObjectInput(streamfirst, Utils.getConfigForSerialization());
 				var inputsecond = isinputsecondblocks ? null
@@ -1693,14 +1637,6 @@ public sealed class StreamPipelineTaskExecutor implements
 			}
 			output.writeObject(joinpairsout);
 			output.flush();
-			byte[] intermediatedata = fsdos.toByteArray();
-			try (OutputStream os = createIntermediateDataToFS(task, intermediatedata.length);) {
-				IOUtils.write(intermediatedata, os);
-				os.flush();
-				if (os instanceof ByteBufferOutputStream bbos) {
-					bbos.get().flip();
-				}
-			}
 
 			cacheAble(fsdos);
 			var wr = new WeakReference<List>(joinpairsout);
@@ -1716,6 +1652,8 @@ public sealed class StreamPipelineTaskExecutor implements
 		} catch (Exception ex) {
 			log.error(PipelineConstants.PROCESSJOIN, ex);
 			throw new PipelineException(PipelineConstants.PROCESSJOIN, ex);
+		} finally {
+			writeIntermediateDataToDirectByteBuffer(fsdos);
 		}
 	}
 
@@ -1735,8 +1673,8 @@ public sealed class StreamPipelineTaskExecutor implements
 		log.debug("Entered StreamPipelineTaskExecutor.processRightJoin");
 		var starttime = System.currentTimeMillis();
 
-		try (var fsdos = new ByteArrayOutputStream();
-				var output = new FSTObjectOutput(fsdos, Utils.getConfigForSerialization());
+		var fsdos = new ByteArrayOutputStream();
+		try (var output = new FSTObjectOutput(fsdos, Utils.getConfigForSerialization());
 				var inputfirst = isinputfirstblocks ? null
 						: new FSTObjectInput(streamfirst, Utils.getConfigForSerialization());
 				var inputsecond = isinputsecondblocks ? null
@@ -1811,14 +1749,6 @@ public sealed class StreamPipelineTaskExecutor implements
 			}
 			output.writeObject(joinpairsout);
 			output.flush();
-			byte[] intermediatedata = fsdos.toByteArray();
-			try (OutputStream os = createIntermediateDataToFS(task, intermediatedata.length);) {
-				IOUtils.write(intermediatedata, os);
-				os.flush();
-				if (os instanceof ByteBufferOutputStream bbos) {
-					bbos.get().flip();
-				}
-			}
 
 			cacheAble(fsdos);
 			var wr = new WeakReference<List>(joinpairsout);
@@ -1834,6 +1764,8 @@ public sealed class StreamPipelineTaskExecutor implements
 		} catch (Exception ex) {
 			log.error(PipelineConstants.PROCESSJOIN, ex);
 			throw new PipelineException(PipelineConstants.PROCESSJOIN, ex);
+		} finally {
+			writeIntermediateDataToDirectByteBuffer(fsdos);
 		}
 	}
 
@@ -1850,8 +1782,8 @@ public sealed class StreamPipelineTaskExecutor implements
 		log.debug("Entered StreamPipelineTaskExecutor.processJoinLZF");
 		var starttime = System.currentTimeMillis();
 
-		try (var fsdos = new ByteArrayOutputStream();
-				var output = new FSTObjectOutput(fsdos, Utils.getConfigForSerialization());
+		var fsdos = new ByteArrayOutputStream();
+		try (var output = new FSTObjectOutput(fsdos, Utils.getConfigForSerialization());
 				var inputfirst = isinputfirstblocks ? null
 						: new FSTObjectInput(streamfirst, Utils.getConfigForSerialization());
 				var inputsecond = isinputsecondblocks ? null
@@ -1963,15 +1895,6 @@ public sealed class StreamPipelineTaskExecutor implements
 			}
 			output.writeObject(joinpairsout);
 			output.flush();
-			byte[] intermediatedata = fsdos.toByteArray();
-			try (OutputStream os = createIntermediateDataToFS(task, intermediatedata.length);) {
-				IOUtils.write(intermediatedata, os);
-				os.flush();
-				if (os instanceof ByteBufferOutputStream bbos) {
-					bbos.get().flip();
-				}
-			}
-
 			cacheAble(fsdos);
 			var wr = new WeakReference<List>(joinpairsout);
 			joinpairsout = null;
@@ -1986,6 +1909,8 @@ public sealed class StreamPipelineTaskExecutor implements
 		} catch (Exception ex) {
 			log.error(PipelineConstants.PROCESSJOIN, ex);
 			throw new PipelineException(PipelineConstants.PROCESSJOIN, ex);
+		} finally {
+			writeIntermediateDataToDirectByteBuffer(fsdos);
 		}
 	}
 
@@ -1996,8 +1921,8 @@ public sealed class StreamPipelineTaskExecutor implements
 		var starttime = System.currentTimeMillis();
 		log.debug("Entered StreamPipelineTaskExecutor.processLeftOuterJoinLZF");
 
-		try (var fsdos = new ByteArrayOutputStream();
-				var output = new FSTObjectOutput(fsdos, Utils.getConfigForSerialization());
+		var fsdos = new ByteArrayOutputStream();
+		try (var output = new FSTObjectOutput(fsdos, Utils.getConfigForSerialization());
 				var inputfirst = isinputfirstblocks ? null
 						: new FSTObjectInput(streamfirst, Utils.getConfigForSerialization());
 				var inputsecond = isinputsecondblocks ? null
@@ -2108,14 +2033,6 @@ public sealed class StreamPipelineTaskExecutor implements
 			}
 			output.writeObject(joinpairsout);
 			output.flush();
-			byte[] intermediatedata = fsdos.toByteArray();
-			try (OutputStream os = createIntermediateDataToFS(task, intermediatedata.length);) {
-				IOUtils.write(intermediatedata, os);
-				os.flush();
-				if (os instanceof ByteBufferOutputStream bbos) {
-					bbos.get().flip();
-				}
-			}
 
 			cacheAble(fsdos);
 			var wr = new WeakReference<List>(joinpairsout);
@@ -2131,6 +2048,8 @@ public sealed class StreamPipelineTaskExecutor implements
 		} catch (Exception ex) {
 			log.error(PipelineConstants.PROCESSLEFTOUTERJOIN, ex);
 			throw new PipelineException(PipelineConstants.PROCESSLEFTOUTERJOIN, ex);
+		} finally {
+			writeIntermediateDataToDirectByteBuffer(fsdos);
 		}
 	}
 
@@ -2141,8 +2060,8 @@ public sealed class StreamPipelineTaskExecutor implements
 		var starttime = System.currentTimeMillis();
 		log.debug("Entered StreamPipelineTaskExecutor.processRightOuterJoinLZF");
 
-		try (var fsdos = new ByteArrayOutputStream();
-				var output = new FSTObjectOutput(fsdos, Utils.getConfigForSerialization());
+		var fsdos = new ByteArrayOutputStream();
+		try (var output = new FSTObjectOutput(fsdos, Utils.getConfigForSerialization());
 				var inputfirst = isinputfirstblocks ? null
 						: new FSTObjectInput(streamfirst, Utils.getConfigForSerialization());
 				var inputsecond = isinputsecondblocks ? null
@@ -2253,14 +2172,6 @@ public sealed class StreamPipelineTaskExecutor implements
 			}
 			output.writeObject(joinpairsout);
 			output.flush();
-			byte[] intermediatedata = fsdos.toByteArray();
-			try (OutputStream os = createIntermediateDataToFS(task, intermediatedata.length);) {
-				IOUtils.write(intermediatedata, os);
-				os.flush();
-				if (os instanceof ByteBufferOutputStream bbos) {
-					bbos.get().flip();
-				}
-			}
 
 			cacheAble(fsdos);
 			var wr = new WeakReference<List>(joinpairsout);
@@ -2276,6 +2187,8 @@ public sealed class StreamPipelineTaskExecutor implements
 		} catch (Exception ex) {
 			log.error(PipelineConstants.PROCESSRIGHTOUTERJOIN, ex);
 			throw new PipelineException(PipelineConstants.PROCESSRIGHTOUTERJOIN, ex);
+		} finally {
+			writeIntermediateDataToDirectByteBuffer(fsdos);
 		}
 	}
 
@@ -2289,8 +2202,8 @@ public sealed class StreamPipelineTaskExecutor implements
 		var starttime = System.currentTimeMillis();
 		log.debug("Entered StreamPipelineTaskExecutor.processGroupByKeyTuple2");
 
-		try (var fsdos = new ByteArrayOutputStream();
-				var output = new FSTObjectOutput(fsdos, Utils.getConfigForSerialization());) {
+		var fsdos = new ByteArrayOutputStream();
+		try (var output = new FSTObjectOutput(fsdos, Utils.getConfigForSerialization());) {
 
 			var allpairs = new ArrayList<>();
 			var mapgpbykey = new LinkedHashSet<Map>();
@@ -2368,14 +2281,6 @@ public sealed class StreamPipelineTaskExecutor implements
 				output.writeObject(out);
 			}
 			output.flush();
-			byte[] intermediatedata = fsdos.toByteArray();
-			try (OutputStream os = createIntermediateDataToFS(task, intermediatedata.length);) {
-				IOUtils.write(intermediatedata, os);
-				os.flush();
-				if (os instanceof ByteBufferOutputStream bbos) {
-					bbos.get().flip();
-				}
-			}
 
 			cacheAble(fsdos);
 			log.debug("Exiting StreamPipelineTaskExecutor.processGroupByKeyTuple2");
@@ -2389,6 +2294,8 @@ public sealed class StreamPipelineTaskExecutor implements
 		} catch (Exception ex) {
 			log.error(PipelineConstants.PROCESSGROUPBYKEY, ex);
 			throw new PipelineException(PipelineConstants.PROCESSGROUPBYKEY, ex);
+		} finally {
+			writeIntermediateDataToDirectByteBuffer(fsdos);
 		}
 	}
 
@@ -2402,8 +2309,8 @@ public sealed class StreamPipelineTaskExecutor implements
 		var starttime = System.currentTimeMillis();
 		log.debug("Entered StreamPipelineTaskExecutor.processFoldByKeyTuple2");
 
-		try (var fsdos = new ByteArrayOutputStream();
-				var output = new FSTObjectOutput(fsdos, Utils.getConfigForSerialization());) {
+		var fsdos = new ByteArrayOutputStream();
+		try (var output = new FSTObjectOutput(fsdos, Utils.getConfigForSerialization());) {
 
 			var allpairs = new ArrayList<Tuple2>();
 			var mapgpbykey = new LinkedHashSet<Map>();
@@ -2501,14 +2408,6 @@ public sealed class StreamPipelineTaskExecutor implements
 				var wr = new WeakReference<List>(out);
 				out = null;
 			}
-			byte[] intermediatedata = fsdos.toByteArray();
-			try (OutputStream os = createIntermediateDataToFS(task, intermediatedata.length);) {
-				IOUtils.write(intermediatedata, os);
-				os.flush();
-				if (os instanceof ByteBufferOutputStream bbos) {
-					bbos.get().flip();
-				}
-			}
 
 			cacheAble(fsdos);
 			log.debug("Exiting StreamPipelineTaskExecutor.processFoldByKeyTuple2");
@@ -2522,6 +2421,8 @@ public sealed class StreamPipelineTaskExecutor implements
 		} catch (Exception ex) {
 			log.error(PipelineConstants.PROCESSFOLDBYKEY, ex);
 			throw new PipelineException(PipelineConstants.PROCESSFOLDBYKEY, ex);
+		} finally {
+			writeIntermediateDataToDirectByteBuffer(fsdos);
 		}
 	}
 
@@ -2534,8 +2435,8 @@ public sealed class StreamPipelineTaskExecutor implements
 	public double processCountByKeyTuple2() throws PipelineException {
 		var starttime = System.currentTimeMillis();
 		log.debug("Entered StreamPipelineTaskExecutor.processCountByKeyTuple2");
-		try (var fsdos = new ByteArrayOutputStream();
-				var output = new FSTObjectOutput(fsdos, Utils.getConfigForSerialization());) {
+		var fsdos = new ByteArrayOutputStream();
+		try (var output = new FSTObjectOutput(fsdos, Utils.getConfigForSerialization());) {
 
 			var allpairs = new ArrayList<Tuple2<Object, Object>>();
 			for (var fs : task.input) {
@@ -2598,14 +2499,6 @@ public sealed class StreamPipelineTaskExecutor implements
 				output.writeObject(intermediatelist);
 			}
 			output.flush();
-			byte[] intermediatedata = fsdos.toByteArray();
-			try (OutputStream os = createIntermediateDataToFS(task, intermediatedata.length);) {
-				IOUtils.write(intermediatedata, os);
-				os.flush();
-				if (os instanceof ByteBufferOutputStream bbos) {
-					bbos.get().flip();
-				}
-			}
 
 			cacheAble(fsdos);
 			var wr = new WeakReference<List>(intermediatelist);
@@ -2621,6 +2514,8 @@ public sealed class StreamPipelineTaskExecutor implements
 		} catch (Exception ex) {
 			log.error(PipelineConstants.PROCESSCOUNTBYKEY, ex);
 			throw new PipelineException(PipelineConstants.PROCESSCOUNTBYKEY, ex);
+		} finally {
+			writeIntermediateDataToDirectByteBuffer(fsdos);
 		}
 	}
 
@@ -2633,8 +2528,8 @@ public sealed class StreamPipelineTaskExecutor implements
 	public double processCountByValueTuple2() throws PipelineException {
 		var starttime = System.currentTimeMillis();
 		log.debug("Entered StreamPipelineTaskExecutor.processCountByValueTuple2");
-		try (var fsdos = new ByteArrayOutputStream();
-				var output = new FSTObjectOutput(fsdos, Utils.getConfigForSerialization());) {
+		var fsdos = new ByteArrayOutputStream();
+		try (var output = new FSTObjectOutput(fsdos, Utils.getConfigForSerialization());) {
 
 			var allpairs = new ArrayList<Tuple2<Object, Object>>();
 			for (var fs : task.input) {
@@ -2698,15 +2593,6 @@ public sealed class StreamPipelineTaskExecutor implements
 				output.writeObject(intermediatelist);
 			}
 			output.flush();
-			byte[] intermediatedata = fsdos.toByteArray();
-			try (OutputStream os = createIntermediateDataToFS(task, intermediatedata.length);) {
-				IOUtils.write(intermediatedata, os);
-				os.flush();
-				if (os instanceof ByteBufferOutputStream bbos) {
-					bbos.get().flip();
-				}
-			}
-
 			cacheAble(fsdos);
 			var wr = new WeakReference<List>(intermediatelist);
 			intermediatelist = null;
@@ -2721,6 +2607,8 @@ public sealed class StreamPipelineTaskExecutor implements
 		} catch (Exception ex) {
 			log.error(PipelineConstants.PROCESSCOUNTBYVALUE, ex);
 			throw new PipelineException(PipelineConstants.PROCESSCOUNTBYVALUE, ex);
+		} finally {
+			writeIntermediateDataToDirectByteBuffer(fsdos);
 		}
 	}
 
@@ -2743,8 +2631,8 @@ public sealed class StreamPipelineTaskExecutor implements
 		var starttime = System.currentTimeMillis();
 		log.debug("Entered StreamPipelineTaskExecutor.processCoalesce");
 		var coalescefunction = (List<Coalesce>) getFunctions();
-		try (var fsdos = new ByteArrayOutputStream();
-				var currentoutput = Utils.getConfigForSerialization().getObjectOutput(fsdos);) {
+		var fsdos = new ByteArrayOutputStream();
+		try (var currentoutput = Utils.getConfigForSerialization().getObjectOutput(fsdos);) {
 
 			var keyvaluepairs = new ArrayList<Tuple2>();
 			for (var fs : task.input) {
@@ -2829,15 +2717,6 @@ public sealed class StreamPipelineTaskExecutor implements
 			}
 			currentoutput.writeObject(outpairs);
 			currentoutput.flush();
-			fsdos.flush();
-			byte[] intermediatedata = fsdos.toByteArray();
-			try (OutputStream os = createIntermediateDataToFS(task, intermediatedata.length);) {
-				IOUtils.write(intermediatedata, os);
-				os.flush();
-				if (os instanceof ByteBufferOutputStream bbos) {
-					bbos.get().flip();
-				}
-			}
 
 			cacheAble(fsdos);
 			var wr = new WeakReference<List>(outpairs);
@@ -2853,6 +2732,8 @@ public sealed class StreamPipelineTaskExecutor implements
 		} catch (Exception ex) {
 			log.error(PipelineConstants.PROCESSCOALESCE, ex);
 			throw new PipelineException(PipelineConstants.PROCESSCOALESCE, ex);
+		} finally {
+			writeIntermediateDataToDirectByteBuffer(fsdos);
 		}
 	}
 
