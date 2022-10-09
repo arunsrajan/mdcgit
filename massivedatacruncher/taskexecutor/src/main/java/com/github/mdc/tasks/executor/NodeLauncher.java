@@ -31,7 +31,8 @@ import java.util.stream.Collectors;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.FsUrlStreamHandlerFactory;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.github.mdc.common.HeartBeat;
 import com.github.mdc.common.HeartBeatStream;
@@ -46,7 +47,7 @@ import com.github.mdc.tasks.executor.web.NodeWebServlet;
 import com.github.mdc.tasks.executor.web.ResourcesMetricsServlet;
 
 public class NodeLauncher {
-	static Logger log = Logger.getLogger(NodeLauncher.class);
+	static Logger log = LoggerFactory.getLogger(NodeLauncher.class);
 	static Registry server = null;
 	static StreamDataCruncher stub = null;
 	static StreamDataCruncher sdc =	null;
@@ -100,9 +101,9 @@ public class NodeLauncher {
 			};
 			stub = (StreamDataCruncher) UnicastRemoteObject.exportObject(sdc, 0);
 			server.rebind(MDCConstants.BINDTESTUB, stub);
-			log.debug("NodeLauncher started at port....."
-					+ MDCProperties.get().getProperty(MDCConstants.NODE_PORT));
-			log.debug("Adding Shutdown Hook...");
+			log.info("NodeLauncher started at port {}.....",
+					MDCProperties.get().getProperty(MDCConstants.NODE_PORT));
+			log.info("Adding Shutdown Hook...");
 			var cdl = new CountDownLatch(1);
 			Utils.addShutdownHook(() -> {
 				try {

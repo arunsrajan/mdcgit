@@ -17,7 +17,6 @@ package com.github.mdc.stream.scheduler;
 
 import static java.util.Objects.nonNull;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -67,8 +66,10 @@ import org.jgrapht.traverse.TopologicalOrderIterator;
 import org.jgroups.JChannel;
 import org.jgroups.ObjectMessage;
 import org.jooq.lambda.tuple.Tuple2;
+import org.nustaq.serialization.FSTConfiguration;
 import org.nustaq.serialization.FSTObjectInput;
 import org.nustaq.serialization.FSTObjectOutput;
+import org.nustaq.serialization.FSTSerialisationListener;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.yarn.YarnSystemConstants;
 import org.springframework.yarn.client.CommandYarnClient;
@@ -129,7 +130,6 @@ import com.github.mdc.stream.executors.StreamPipelineTaskExecutorIgnite;
 import com.github.mdc.stream.executors.StreamPipelineTaskExecutorLocal;
 import com.github.mdc.stream.mesos.scheduler.MesosScheduler;
 import com.google.common.collect.Iterables;
-import com.nimbusds.jose.util.IOUtils;
 
 /**
  * 
@@ -509,7 +509,26 @@ public class StreamJobScheduler {
 			for (String te : taskexecutors) {
 				try {
 					JobStage js = (JobStage) jsidjsmap.get(key);
-					Utils.getResultObjectByInput(te, js);
+					FSTConfiguration conf = Utils.getConfigForSerialization();
+					try(var baos = new ByteArrayOutputStream(); 
+							var output = new FSTObjectOutput(baos, conf)){
+						output.setListener(new FSTSerialisationListener() {
+							
+							@Override
+							public void objectWillBeWritten(Object obj, int streamPosition) {
+								log.info(obj.getClass());
+							}
+							
+							@Override
+							public void objectHasBeenWritten(Object obj, int oldStreamPosition, int streamPosition) {
+								log.info(obj.getClass());
+								
+							}
+						});
+						output.writeObject(js);
+						output.flush();
+						Utils.getResultObjectByInput(te, baos.toByteArray());
+					}
 				} catch (Exception e) {
 					log.error(MDCConstants.EMPTY, e);
 				}

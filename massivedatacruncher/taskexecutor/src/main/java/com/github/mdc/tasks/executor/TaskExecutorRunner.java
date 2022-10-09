@@ -15,7 +15,9 @@
  */
 package com.github.mdc.tasks.executor;
 
+import java.io.ByteArrayInputStream;
 import java.io.OutputStream;
+import java.lang.reflect.Field;
 import java.net.URL;
 import java.rmi.RemoteException;
 import java.rmi.registry.Registry;
@@ -39,6 +41,8 @@ import org.apache.curator.framework.state.ConnectionState;
 import org.apache.curator.retry.RetryForever;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FsUrlStreamHandlerFactory;
+import org.nustaq.serialization.FSTConfiguration;
+import org.nustaq.serialization.FSTObjectInput;
 import org.slf4j.LoggerFactory;
 
 import com.github.mdc.common.ByteBufferPoolDirect;
@@ -181,6 +185,22 @@ public class TaskExecutorRunner implements TaskExecutorRunnerMBean {
 		
 				try{
 					log.info("Deserialized Object: "+deserobj);
+					if (deserobj instanceof byte[] bytes) {
+						FSTConfiguration conf = Utils.getConfigForSerialization();
+						conf.setClassLoader(cl);
+						FSTObjectInput.ConditionalCallback conditionalCallback = new FSTObjectInput.ConditionalCallback() {
+							@Override
+							public boolean shouldSkip(Object halfDecoded, int streamPosition, Field field) {
+								log.info("Skip HalfDecoded: "+halfDecoded);
+								return true;
+							}
+						};
+						try (ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
+								FSTObjectInput fstin = new FSTObjectInput(bais, conf);) {
+							fstin.setConditionalCallback(conditionalCallback);
+							deserobj = fstin.readObject();
+						}
+					}
 					if(deserobj instanceof TaskExecutorShutdown){
 						shutdown.countDown();
 					}

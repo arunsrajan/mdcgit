@@ -70,6 +70,7 @@ import com.github.mdc.common.functions.ReduceByKeyFunction;
 import com.github.mdc.common.functions.RightOuterJoinPredicate;
 
 public class StreamPipelineSqlBuilder implements Serializable{
+	private static final long serialVersionUID = -3378044679174633759L;
 	String sql;
 	String hdfs;
 	transient PipelineConfig pc;
@@ -533,6 +534,7 @@ public class StreamPipelineSqlBuilder implements Serializable{
 	}
 
 	class OperandSqlFunction implements Serializable{
+		private static final long serialVersionUID = -7602590184000371067L;
 		private String column;
 		private String sqltype;
 

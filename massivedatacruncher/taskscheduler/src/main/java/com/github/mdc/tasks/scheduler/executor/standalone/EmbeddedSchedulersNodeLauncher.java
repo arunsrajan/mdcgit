@@ -26,7 +26,6 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.FsUrlStreamHandlerFactory;
 import org.apache.zookeeper.server.ServerCnxnFactory;
-import org.nustaq.serialization.FSTObjectInput;
 import org.slf4j.LoggerFactory;
 
 import com.github.mdc.common.ByteBufferPoolDirect;
@@ -75,6 +74,12 @@ public class EmbeddedSchedulersNodeLauncher {
 			startTaskScheduler(cf, cdl);
 			startTaskSchedulerStream(cf, cdl);
 			startContainerLauncher(cdl);
+			String nodeport = MDCProperties.get().getProperty(MDCConstants.NODE_PORT);
+			String streamport = MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULERSTREAM_PORT);
+			String streamwebport = MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULERSTREAM_WEB_PORT);
+			String mrport = MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULER_PORT);
+			String mrwebport = MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULER_WEB_PORT);
+			log.info("Scheduler started in the port Stream[port={},webport={}] MapReduce[port={},webport={}] Node[port={}]",streamport, streamwebport, mrport, mrwebport, nodeport);
 			cdl.await();
 		} catch (InterruptedException e) {
 			log.warn("Interrupted!", e);
