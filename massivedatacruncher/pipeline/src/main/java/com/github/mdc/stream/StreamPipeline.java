@@ -900,7 +900,7 @@ public sealed class StreamPipeline<I1> extends AbstractPipeline permits CsvStrea
 		}
 		else {
 			jobCreated = new Job();
-			jobCreated.setId(MDCConstants.JOB+MDCConstants.HYPHEN+Utils.getUniqueJobID());
+			jobCreated.setId(MDCConstants.JOB+MDCConstants.HYPHEN+System.currentTimeMillis()+MDCConstants.HYPHEN+Utils.getUniqueJobID());
 			jobCreated.setJm(new JobMetrics());
 			jobCreated.getJm().setJobstarttime(System.currentTimeMillis());
 			jobCreated.getJm().setJobid(jobCreated.getId());

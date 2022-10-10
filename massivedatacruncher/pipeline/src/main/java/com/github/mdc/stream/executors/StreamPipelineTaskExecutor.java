@@ -262,7 +262,9 @@ public sealed class StreamPipelineTaskExecutor implements
 			log.error(PipelineConstants.PROCESSHDFSINTERSECTION, ex);
 			throw new PipelineException(PipelineConstants.PROCESSHDFSINTERSECTION, ex);
 		} finally {
-			writeIntermediateDataToDirectByteBuffer(fsdos);
+			if (!(task.finalphase && task.saveresulttohdfs)) {
+				writeIntermediateDataToDirectByteBuffer(fsdos);
+			}
 		}
 	}
 
@@ -331,7 +333,9 @@ public sealed class StreamPipelineTaskExecutor implements
 			log.error(PipelineConstants.PROCESSHDFSINTERSECTION, ex);
 			throw new PipelineException(PipelineConstants.PROCESSHDFSINTERSECTION, ex);
 		} finally {
-			writeIntermediateDataToDirectByteBuffer(fsdos);
+			if (!(task.finalphase && task.saveresulttohdfs)) {
+				writeIntermediateDataToDirectByteBuffer(fsdos);
+			}
 		}
 	}
 
@@ -396,7 +400,9 @@ public sealed class StreamPipelineTaskExecutor implements
 			log.error(PipelineConstants.PROCESSHDFSINTERSECTION, ex);
 			throw new PipelineException(PipelineConstants.PROCESSHDFSINTERSECTION, ex);
 		} finally {
-			writeIntermediateDataToDirectByteBuffer(fsdos);
+			if (!(task.finalphase && task.saveresulttohdfs)) {
+				writeIntermediateDataToDirectByteBuffer(fsdos);
+			}
 		}
 	}
 
@@ -518,7 +524,9 @@ public sealed class StreamPipelineTaskExecutor implements
 			log.error(PipelineConstants.PROCESSHDFSUNION, ex);
 			throw new PipelineException(PipelineConstants.PROCESSHDFSUNION, ex);
 		} finally {
-			writeIntermediateDataToDirectByteBuffer(fsdos);
+			if (!(task.finalphase && task.saveresulttohdfs)) {
+				writeIntermediateDataToDirectByteBuffer(fsdos);
+			}
 		}
 	}
 
@@ -599,7 +607,9 @@ public sealed class StreamPipelineTaskExecutor implements
 			log.error(PipelineConstants.PROCESSHDFSUNION, ex);
 			throw new PipelineException(PipelineConstants.PROCESSHDFSUNION, ex);
 		} finally {
-			writeIntermediateDataToDirectByteBuffer(fsdos);
+			if (!(task.finalphase && task.saveresulttohdfs)) {
+				writeIntermediateDataToDirectByteBuffer(fsdos);
+			}
 		}
 	}
 
@@ -681,7 +691,9 @@ public sealed class StreamPipelineTaskExecutor implements
 			log.error(PipelineConstants.PROCESSHDFSUNION, ex);
 			throw new PipelineException(PipelineConstants.PROCESSHDFSUNION, ex);
 		} finally {
-			writeIntermediateDataToDirectByteBuffer(fsdos);
+			if (!(task.finalphase && task.saveresulttohdfs)) {
+				writeIntermediateDataToDirectByteBuffer(fsdos);
+			}
 		}
 	}
 
@@ -831,7 +843,9 @@ public sealed class StreamPipelineTaskExecutor implements
 			log.error(PipelineConstants.PROCESSHDFSERROR, ex);
 			throw new PipelineException(PipelineConstants.PROCESSHDFSERROR, ex);
 		} finally {
-			writeIntermediateDataToDirectByteBuffer(fsdos);
+			if (!(task.finalphase && task.saveresulttohdfs)) {
+				writeIntermediateDataToDirectByteBuffer(fsdos);
+			}
 			if (!Objects.isNull(records)) {
 				try {
 					records.close();
@@ -953,7 +967,7 @@ public sealed class StreamPipelineTaskExecutor implements
 			}
 			output.writeObject(out);
 			output.flush();
-
+			cacheAble(fsdos);
 			var wr = new WeakReference<List>(out);
 			out = null;
 			log.debug("Exiting StreamPipelineTaskExecutor.processBlockHDFSMap");
@@ -968,7 +982,9 @@ public sealed class StreamPipelineTaskExecutor implements
 			log.error(PipelineConstants.PROCESSHDFSERROR, ex);
 			throw new PipelineException(PipelineConstants.PROCESSHDFSERROR, ex);
 		} finally {
-			writeIntermediateDataToDirectByteBuffer(fsdos);
+			if (!(task.finalphase && task.saveresulttohdfs)) {
+				writeIntermediateDataToDirectByteBuffer(fsdos);
+			}
 		}
 	}
 
@@ -1035,7 +1051,9 @@ public sealed class StreamPipelineTaskExecutor implements
 			log.error(PipelineConstants.PROCESSSAMPLE, ex);
 			throw new PipelineException(PipelineConstants.PROCESSSAMPLE, ex);
 		} finally {
-			writeIntermediateDataToDirectByteBuffer(fsdos);
+			if (!(task.finalphase && task.saveresulttohdfs)) {
+				writeIntermediateDataToDirectByteBuffer(fsdos);
+			}
 		}
 	}
 
@@ -1109,7 +1127,9 @@ public sealed class StreamPipelineTaskExecutor implements
 			log.error(PipelineConstants.PROCESSSAMPLE, ex);
 			throw new PipelineException(PipelineConstants.PROCESSSAMPLE, ex);
 		} finally {
-			writeIntermediateDataToDirectByteBuffer(fsdos);
+			if (!(task.finalphase && task.saveresulttohdfs)) {
+				writeIntermediateDataToDirectByteBuffer(fsdos);
+			}
 		}
 	}
 
@@ -1199,7 +1219,7 @@ public sealed class StreamPipelineTaskExecutor implements
 			}
 			try (var streamfirsttocompute = ((InputStream) streamfirst);
 					var streamsecondtocompute = ((InputStream) streamsecond);) {
-				timetakenseconds = processJoinLZF(streamfirsttocompute, streamsecondtocompute, jp,
+				timetakenseconds = processJoin(streamfirsttocompute, streamsecondtocompute, jp,
 						task.input[0] instanceof BlocksLocation, task.input[1] instanceof BlocksLocation);
 			} catch (IOException ioe) {
 				log.error(PipelineConstants.FILEIOERROR, ioe);
@@ -1230,7 +1250,7 @@ public sealed class StreamPipelineTaskExecutor implements
 			}
 			try (var streamfirsttocompute = ((InputStream) streamfirst);
 					var streamsecondtocompute = ((InputStream) streamsecond);) {
-				timetakenseconds = processLeftOuterJoinLZF(streamfirsttocompute, streamsecondtocompute, ljp,
+				timetakenseconds = processLeftOuterJoin(streamfirsttocompute, streamsecondtocompute, ljp,
 						task.input[0] instanceof BlocksLocation, task.input[1] instanceof BlocksLocation);
 			} catch (IOException ioe) {
 				log.error(PipelineConstants.FILEIOERROR, ioe);
@@ -1260,7 +1280,7 @@ public sealed class StreamPipelineTaskExecutor implements
 			}
 			try (var streamfirsttocompute = ((InputStream) streamfirst);
 					var streamsecondtocompute = ((InputStream) streamsecond);) {
-				timetakenseconds = processRightOuterJoinLZF(streamfirsttocompute, streamsecondtocompute, rjp,
+				timetakenseconds = processRightOuterJoin(streamfirsttocompute, streamsecondtocompute, rjp,
 						task.input[0] instanceof BlocksLocation, task.input[1] instanceof BlocksLocation);
 			} catch (IOException ioe) {
 				log.error(PipelineConstants.FILEIOERROR, ioe);
@@ -1541,7 +1561,9 @@ public sealed class StreamPipelineTaskExecutor implements
 			log.error(PipelineConstants.PROCESSJOIN, ex);
 			throw new PipelineException(PipelineConstants.PROCESSJOIN, ex);
 		} finally {
-			writeIntermediateDataToDirectByteBuffer(fsdos);
+			if (!(task.finalphase && task.saveresulttohdfs)) {
+				writeIntermediateDataToDirectByteBuffer(fsdos);
+			}
 		}
 	}
 
@@ -1653,7 +1675,9 @@ public sealed class StreamPipelineTaskExecutor implements
 			log.error(PipelineConstants.PROCESSJOIN, ex);
 			throw new PipelineException(PipelineConstants.PROCESSJOIN, ex);
 		} finally {
-			writeIntermediateDataToDirectByteBuffer(fsdos);
+			if (!(task.finalphase && task.saveresulttohdfs)) {
+				writeIntermediateDataToDirectByteBuffer(fsdos);
+			}
 		}
 	}
 
@@ -1765,7 +1789,9 @@ public sealed class StreamPipelineTaskExecutor implements
 			log.error(PipelineConstants.PROCESSJOIN, ex);
 			throw new PipelineException(PipelineConstants.PROCESSJOIN, ex);
 		} finally {
-			writeIntermediateDataToDirectByteBuffer(fsdos);
+			if (!(task.finalphase && task.saveresulttohdfs)) {
+				writeIntermediateDataToDirectByteBuffer(fsdos);
+			}
 		}
 	}
 
@@ -1777,9 +1803,9 @@ public sealed class StreamPipelineTaskExecutor implements
 	 * @throws Exception
 	 */
 	@SuppressWarnings("unchecked")
-	public double processJoinLZF(InputStream streamfirst, InputStream streamsecond, JoinPredicate joinpredicate,
+	public double processJoin(InputStream streamfirst, InputStream streamsecond, JoinPredicate joinpredicate,
 			boolean isinputfirstblocks, boolean isinputsecondblocks) throws PipelineException {
-		log.debug("Entered StreamPipelineTaskExecutor.processJoinLZF");
+		log.debug("Entered StreamPipelineTaskExecutor.processJoin");
 		var starttime = System.currentTimeMillis();
 
 		var fsdos = new ByteArrayOutputStream();
@@ -1898,7 +1924,7 @@ public sealed class StreamPipelineTaskExecutor implements
 			cacheAble(fsdos);
 			var wr = new WeakReference<List>(joinpairsout);
 			joinpairsout = null;
-			log.debug("Exiting StreamPipelineTaskExecutor.processJoinLZF");
+			log.debug("Exiting StreamPipelineTaskExecutor.processJoin");
 			var timetaken = (System.currentTimeMillis() - starttime) / 1000.0;
 			log.debug("Time taken to compute the Join task is " + timetaken + " seconds");
 			log.debug("GC Status Join task:" + Utils.getGCStats());
@@ -1910,16 +1936,18 @@ public sealed class StreamPipelineTaskExecutor implements
 			log.error(PipelineConstants.PROCESSJOIN, ex);
 			throw new PipelineException(PipelineConstants.PROCESSJOIN, ex);
 		} finally {
-			writeIntermediateDataToDirectByteBuffer(fsdos);
+			if (!(task.finalphase && task.saveresulttohdfs)) {
+				writeIntermediateDataToDirectByteBuffer(fsdos);
+			}
 		}
 	}
 
 	@SuppressWarnings("unchecked")
-	public double processLeftOuterJoinLZF(InputStream streamfirst, InputStream streamsecond,
+	public double processLeftOuterJoin(InputStream streamfirst, InputStream streamsecond,
 			LeftOuterJoinPredicate leftouterjoinpredicate, boolean isinputfirstblocks, boolean isinputsecondblocks)
 			throws PipelineException {
 		var starttime = System.currentTimeMillis();
-		log.debug("Entered StreamPipelineTaskExecutor.processLeftOuterJoinLZF");
+		log.debug("Entered StreamPipelineTaskExecutor.processLeftOuterJoin");
 
 		var fsdos = new ByteArrayOutputStream();
 		try (var output = new FSTObjectOutput(fsdos, Utils.getConfigForSerialization());
@@ -2037,7 +2065,7 @@ public sealed class StreamPipelineTaskExecutor implements
 			cacheAble(fsdos);
 			var wr = new WeakReference<List>(joinpairsout);
 			joinpairsout = null;
-			log.debug("Exiting StreamPipelineTaskExecutor.processLeftOuterJoinLZF");
+			log.debug("Exiting StreamPipelineTaskExecutor.processLeftOuterJoin");
 			var timetaken = (System.currentTimeMillis() - starttime) / 1000.0;
 			log.debug("Time taken to compute the Left Outer Join task is " + timetaken + " seconds");
 			log.debug("GC Status Left Outer Join task:" + Utils.getGCStats());
@@ -2049,16 +2077,18 @@ public sealed class StreamPipelineTaskExecutor implements
 			log.error(PipelineConstants.PROCESSLEFTOUTERJOIN, ex);
 			throw new PipelineException(PipelineConstants.PROCESSLEFTOUTERJOIN, ex);
 		} finally {
-			writeIntermediateDataToDirectByteBuffer(fsdos);
+			if (!(task.finalphase && task.saveresulttohdfs)) {
+				writeIntermediateDataToDirectByteBuffer(fsdos);
+			}
 		}
 	}
 
 	@SuppressWarnings("unchecked")
-	public double processRightOuterJoinLZF(InputStream streamfirst, InputStream streamsecond,
+	public double processRightOuterJoin(InputStream streamfirst, InputStream streamsecond,
 			RightOuterJoinPredicate rightouterjoinpredicate, boolean isinputfirstblocks, boolean isinputsecondblocks)
 			throws PipelineException {
 		var starttime = System.currentTimeMillis();
-		log.debug("Entered StreamPipelineTaskExecutor.processRightOuterJoinLZF");
+		log.debug("Entered StreamPipelineTaskExecutor.processRightOuterJoin");
 
 		var fsdos = new ByteArrayOutputStream();
 		try (var output = new FSTObjectOutput(fsdos, Utils.getConfigForSerialization());
@@ -2176,7 +2206,7 @@ public sealed class StreamPipelineTaskExecutor implements
 			cacheAble(fsdos);
 			var wr = new WeakReference<List>(joinpairsout);
 			joinpairsout = null;
-			log.debug("Exiting StreamPipelineTaskExecutor.processRightOuterJoinLZF");
+			log.debug("Exiting StreamPipelineTaskExecutor.processRightOuterJoin");
 			var timetaken = (System.currentTimeMillis() - starttime) / 1000.0;
 			log.debug("Time taken to compute the Right Outer Join task is " + timetaken + " seconds");
 			log.debug("GC Status Right Outer Join task:" + Utils.getGCStats());
@@ -2188,7 +2218,9 @@ public sealed class StreamPipelineTaskExecutor implements
 			log.error(PipelineConstants.PROCESSRIGHTOUTERJOIN, ex);
 			throw new PipelineException(PipelineConstants.PROCESSRIGHTOUTERJOIN, ex);
 		} finally {
-			writeIntermediateDataToDirectByteBuffer(fsdos);
+			if (!(task.finalphase && task.saveresulttohdfs)) {
+				writeIntermediateDataToDirectByteBuffer(fsdos);
+			}
 		}
 	}
 
@@ -2295,7 +2327,9 @@ public sealed class StreamPipelineTaskExecutor implements
 			log.error(PipelineConstants.PROCESSGROUPBYKEY, ex);
 			throw new PipelineException(PipelineConstants.PROCESSGROUPBYKEY, ex);
 		} finally {
-			writeIntermediateDataToDirectByteBuffer(fsdos);
+			if (!(task.finalphase && task.saveresulttohdfs)) {
+				writeIntermediateDataToDirectByteBuffer(fsdos);
+			}
 		}
 	}
 
@@ -2422,7 +2456,9 @@ public sealed class StreamPipelineTaskExecutor implements
 			log.error(PipelineConstants.PROCESSFOLDBYKEY, ex);
 			throw new PipelineException(PipelineConstants.PROCESSFOLDBYKEY, ex);
 		} finally {
-			writeIntermediateDataToDirectByteBuffer(fsdos);
+			if (!(task.finalphase && task.saveresulttohdfs)) {
+				writeIntermediateDataToDirectByteBuffer(fsdos);
+			}
 		}
 	}
 
@@ -2515,7 +2551,9 @@ public sealed class StreamPipelineTaskExecutor implements
 			log.error(PipelineConstants.PROCESSCOUNTBYKEY, ex);
 			throw new PipelineException(PipelineConstants.PROCESSCOUNTBYKEY, ex);
 		} finally {
-			writeIntermediateDataToDirectByteBuffer(fsdos);
+			if (!(task.finalphase && task.saveresulttohdfs)) {
+				writeIntermediateDataToDirectByteBuffer(fsdos);
+			}
 		}
 	}
 
@@ -2608,7 +2646,9 @@ public sealed class StreamPipelineTaskExecutor implements
 			log.error(PipelineConstants.PROCESSCOUNTBYVALUE, ex);
 			throw new PipelineException(PipelineConstants.PROCESSCOUNTBYVALUE, ex);
 		} finally {
-			writeIntermediateDataToDirectByteBuffer(fsdos);
+			if (!(task.finalphase && task.saveresulttohdfs)) {
+				writeIntermediateDataToDirectByteBuffer(fsdos);
+			}
 		}
 	}
 
@@ -2632,12 +2672,12 @@ public sealed class StreamPipelineTaskExecutor implements
 		log.debug("Entered StreamPipelineTaskExecutor.processCoalesce");
 		var coalescefunction = (List<Coalesce>) getFunctions();
 		var fsdos = new ByteArrayOutputStream();
-		try (var currentoutput = Utils.getConfigForSerialization().getObjectOutput(fsdos);) {
+		try (var currentoutput = new FSTObjectOutput(fsdos, Utils.getConfigForSerialization());) {
 
 			var keyvaluepairs = new ArrayList<Tuple2>();
 			for (var fs : task.input) {
 				try (var fsis = (InputStream) fs;
-						var input = Utils.getConfigForSerialization().getObjectInput(new BufferedInputStream(fsis));) {
+						var input = new FSTObjectInput(fsis, Utils.getConfigForSerialization());) {
 					keyvaluepairs.addAll((List) input.readObject());
 				}
 			}
@@ -2733,7 +2773,9 @@ public sealed class StreamPipelineTaskExecutor implements
 			log.error(PipelineConstants.PROCESSCOALESCE, ex);
 			throw new PipelineException(PipelineConstants.PROCESSCOALESCE, ex);
 		} finally {
-			writeIntermediateDataToDirectByteBuffer(fsdos);
+			if (!(task.finalphase && task.saveresulttohdfs)) {
+				writeIntermediateDataToDirectByteBuffer(fsdos);
+			}
 		}
 	}
 

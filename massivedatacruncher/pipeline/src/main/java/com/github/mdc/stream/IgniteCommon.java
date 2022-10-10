@@ -142,7 +142,7 @@ public sealed class IgniteCommon extends AbstractPipeline permits IgnitePipeline
 	protected Job createJob() throws PipelineException, ExportException, IOException, URISyntaxException  {
 		Job job;
 		job = new Job();
-		job.setId(MDCConstants.JOB+MDCConstants.HYPHEN+Utils.getUniqueJobID());
+		job.setId(MDCConstants.JOB+MDCConstants.HYPHEN+System.currentTimeMillis()+MDCConstants.HYPHEN+Utils.getUniqueJobID());
 		job.setJm(new JobMetrics());
 		job.getJm().setJobstarttime(System.currentTimeMillis());
 		job.getJm().setJobid(job.getId());

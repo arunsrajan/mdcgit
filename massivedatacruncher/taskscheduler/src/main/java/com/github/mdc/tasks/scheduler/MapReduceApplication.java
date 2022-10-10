@@ -356,139 +356,94 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 
 	protected List<ContainerResources> getNumberOfContainers(String gctype, long totalmem, Resources resources)
 			throws PipelineException {
-		{
-			var cpu = resources.getNumberofprocessors() - 1;
-			var cr = new ArrayList<ContainerResources>();
-			if (jobconf.getContaineralloc().equals(MDCConstants.CONTAINER_ALLOC_DEFAULT)) {
-				var res = new ContainerResources();
-				var actualmemory = resources.getFreememory() - 256 * MDCConstants.MB;
-				if (actualmemory < (128 * MDCConstants.MB)) {
-					throw new PipelineException(PipelineConstants.MEMORYALLOCATIONERROR);
-				}
-				if (totalmem < (512 * MDCConstants.MB) && totalmem > 0 && cpu >= 1) {
-					if (actualmemory >= totalmem) {
-						res.setCpu(cpu);
-						var heapmem = 1024 * Integer.valueOf(jobconf.getHeappercentage()) / 100;
-						res.setMinmemory(heapmem);
-						res.setMaxmemory(heapmem);
-						res.setDirectheap(1024 - heapmem);
-						res.setGctype(gctype);
-						cr.add(res);
-						return cr;
-					} else {
-						throw new PipelineException(PipelineConstants.INSUFFMEMORYALLOCATIONERROR);
-					}
-				}
-				res.setCpu(cpu);
-				var memoryrequire = totalmem < actualmemory ? totalmem : actualmemory;
-				var meminmb = memoryrequire / MDCConstants.MB;
-				var heapmem = meminmb * Integer.valueOf(jobconf.getHeappercentage()) / 100;
-				res.setMinmemory(heapmem);
-				res.setMaxmemory(heapmem);
-				res.setDirectheap(meminmb - heapmem);
-				res.setGctype(gctype);
-				cr.add(res);
-				return cr;
-			} else if (jobconf.getContaineralloc().equals(MDCConstants.CONTAINER_ALLOC_DIVIDED)) {
-				var actualmemory = resources.getFreememory() - 256 * MDCConstants.MB;
-				if (actualmemory < (128 * MDCConstants.MB)) {
-					throw new PipelineException(PipelineConstants.MEMORYALLOCATIONERROR);
-				}
-				if (totalmem < (512 * MDCConstants.MB) && totalmem > 0 && cpu >= 1) {
-					if (actualmemory >= totalmem) {
-						var res = new ContainerResources();
-						res.setCpu(1);
-						var heapmem = 1024 * Integer.valueOf(jobconf.getHeappercentage()) / 100;
-						res.setMinmemory(heapmem);
-						res.setMaxmemory(heapmem);
-						res.setDirectheap(1024 - heapmem);
-						res.setGctype(gctype);
-						cr.add(res);
-						return cr;
-					} else {
-						throw new PipelineException(PipelineConstants.INSUFFMEMORYALLOCATIONERROR);
-					}
-				}
-				if (cpu == 0) {
-					return cr;
-				}
-				var numofcontainerspermachine = Integer.parseInt(jobconf.getNumberofcontainers());
-				var dividedcpus = cpu / numofcontainerspermachine;
-				var maxmemory = actualmemory / numofcontainerspermachine;
-				var maxmemmb = maxmemory / MDCConstants.MB;
-				var totalmemmb = totalmem / MDCConstants.MB;
-				if (dividedcpus == 0 && cpu >= 1) {
-					dividedcpus = 1;
-				}
-				if (totalmem < maxmemory && dividedcpus >= 1) {
+		var cpu = resources.getNumberofprocessors() - 1;
+		var cr = new ArrayList<ContainerResources>();
+		if (jobconf.getContaineralloc().equals(MDCConstants.CONTAINER_ALLOC_DEFAULT)) {
+			var res = new ContainerResources();
+			var actualmemory = resources.getFreememory() - 256 * MDCConstants.MB;
+			if (actualmemory < (128 * MDCConstants.MB)) {
+				throw new PipelineException(PipelineConstants.MEMORYALLOCATIONERROR);
+			}
+			res.setCpu(cpu);
+			var memoryrequire = actualmemory;
+			var meminmb = memoryrequire / MDCConstants.MB;
+			var heapmem = meminmb * Integer.valueOf(jobconf.getHeappercentage()) / 100;
+			res.setMinmemory(heapmem);
+			res.setMaxmemory(heapmem);
+			res.setDirectheap(meminmb - heapmem);
+			res.setGctype(gctype);
+			cr.add(res);
+			return cr;
+		} else if (jobconf.getContaineralloc().equals(MDCConstants.CONTAINER_ALLOC_DIVIDED)) {
+			var actualmemory = resources.getFreememory() - 256 * MDCConstants.MB;
+			if (actualmemory < (128 * MDCConstants.MB)) {
+				throw new PipelineException(PipelineConstants.MEMORYALLOCATIONERROR);
+			}
+			var numofcontainerspermachine = Integer.parseInt(jobconf.getNumberofcontainers());
+			var dividedcpus = cpu / numofcontainerspermachine;
+			var maxmemory = actualmemory / numofcontainerspermachine;
+			var maxmemmb = maxmemory / MDCConstants.MB;
+			var numberofcontainer = 0;
+			while (true) {
+				if (cpu >= dividedcpus && actualmemory >= 0) {
 					var res = new ContainerResources();
 					res.setCpu(dividedcpus);
-					var heapmem = totalmemmb * Integer.valueOf(jobconf.getHeappercentage()) / 100;
+					var heapmem = maxmemmb * Integer.valueOf(jobconf.getHeappercentage()) / 100;
 					res.setMinmemory(heapmem);
 					res.setMaxmemory(heapmem);
-					res.setDirectheap(totalmemmb - heapmem);
+					res.setDirectheap(maxmemmb - heapmem);
 					res.setGctype(gctype);
-					cr.add(res);
-					return cr;
-				}
-				var numberofcontainer = 0;
-				while (true) {
-					if (cpu >= dividedcpus && totalmem >= 0) {
-						var res = new ContainerResources();
-						res.setCpu(dividedcpus);
-						var heapmem = maxmemmb * Integer.valueOf(jobconf.getHeappercentage()) / 100;
-						res.setMinmemory(heapmem);
-						res.setMaxmemory(heapmem);
-						res.setDirectheap(maxmemmb - heapmem);
-						res.setGctype(gctype);
-						cr.add(res);
-					} else if (cpu >= 1 && totalmem >= 0) {
-						var res = new ContainerResources();
-						res.setCpu(cpu);
-						var heapmem = maxmemmb * Integer.valueOf(jobconf.getHeappercentage()) / 100;
-						res.setMinmemory(heapmem);
-						res.setMaxmemory(heapmem);
-						res.setDirectheap(maxmemmb - heapmem);
-						res.setGctype(gctype);
-						cr.add(res);
-					} else {
-						break;
-					}
-					numberofcontainer++;
-					if (numofcontainerspermachine == numberofcontainer) {
-						break;
-					}
 					cpu -= dividedcpus;
-					totalmem -= maxmemory;
-				}
-				return cr;
-			} else if (jobconf.getContaineralloc().equals(MDCConstants.CONTAINER_ALLOC_IMPLICIT)) {
-				var actualmemory = resources.getFreememory() - 256 * MDCConstants.MB;
-				var numberofimplicitcontainers = Integer.valueOf(jobconf.getImplicitcontainerallocanumber());
-				var numberofimplicitcontainercpu = Integer.valueOf(jobconf.getImplicitcontainercpu());
-				var numberofimplicitcontainermemory = jobconf.getImplicitcontainermemory();
-				var numberofimplicitcontainermemorysize = Long.valueOf(jobconf.getImplicitcontainermemorysize());
-				var memorysize = "GB".equals(numberofimplicitcontainermemory) ? MDCConstants.GB : MDCConstants.MB;
-				if (actualmemory < numberofimplicitcontainermemorysize * memorysize * numberofimplicitcontainers) {
-					throw new PipelineException(PipelineConstants.INSUFFMEMORYALLOCATIONERROR);
-				}
-				if (cpu < numberofimplicitcontainercpu * numberofimplicitcontainers) {
-					throw new PipelineException(PipelineConstants.INSUFFCPUALLOCATIONERROR);
-				}
-				for (var count = 0; count < numberofimplicitcontainers; count++) {
+					actualmemory -= maxmemory;
+					cr.add(res);
+				} else if (cpu >= 1 && actualmemory >= 0) {
 					var res = new ContainerResources();
-					res.setCpu(numberofimplicitcontainercpu);
-					var heapmem = numberofimplicitcontainermemorysize * Integer.valueOf(jobconf.getHeappercentage()) / 100;
+					res.setCpu(cpu);
+					var heapmem = maxmemmb * Integer.valueOf(jobconf.getHeappercentage()) / 100;
 					res.setMinmemory(heapmem);
 					res.setMaxmemory(heapmem);
-					res.setDirectheap(numberofimplicitcontainermemorysize - heapmem);
+					res.setDirectheap(maxmemmb - heapmem);
 					res.setGctype(gctype);
+					cpu = 0;
+					actualmemory -= maxmemory;
 					cr.add(res);
+				} else {
+					break;
 				}
-				return cr;
-			} else {
-				throw new PipelineException(PipelineConstants.UNSUPPORTEDMEMORYALLOCATIONMODE);
+				numberofcontainer++;
+				if (numofcontainerspermachine == numberofcontainer) {
+					break;
+				}
+
 			}
+			return cr;
+		} else if (jobconf.getContaineralloc().equals(MDCConstants.CONTAINER_ALLOC_IMPLICIT)) {
+			var actualmemory = resources.getFreememory() - 256 * MDCConstants.MB;
+			var numberofimplicitcontainers = Integer.valueOf(jobconf.getImplicitcontainerallocanumber());
+			var numberofimplicitcontainercpu = Integer.valueOf(jobconf.getImplicitcontainercpu());
+			var numberofimplicitcontainermemory = jobconf.getImplicitcontainermemory();
+			var numberofimplicitcontainermemorysize = Long.valueOf(jobconf.getImplicitcontainermemorysize());
+			var memorysize = "GB".equals(numberofimplicitcontainermemory) ? MDCConstants.GB : MDCConstants.MB;
+			if (actualmemory < numberofimplicitcontainermemorysize * memorysize * numberofimplicitcontainers) {
+				throw new PipelineException(PipelineConstants.INSUFFMEMORYALLOCATIONERROR);
+			}
+			if (cpu < numberofimplicitcontainercpu * numberofimplicitcontainers) {
+				throw new PipelineException(PipelineConstants.INSUFFCPUALLOCATIONERROR);
+			}
+			for (var count = 0; count < numberofimplicitcontainers; count++) {
+				var res = new ContainerResources();
+				res.setCpu(numberofimplicitcontainercpu);
+				var heapmem = numberofimplicitcontainermemorysize * Integer.valueOf(jobconf.getHeappercentage())
+						/ 100;
+				res.setMinmemory(heapmem);
+				res.setMaxmemory(heapmem);
+				res.setDirectheap(numberofimplicitcontainermemorysize - heapmem);
+				res.setGctype(gctype);
+				cr.add(res);
+			}
+			return cr;
+		} else {
+			throw new PipelineException(PipelineConstants.UNSUPPORTEDMEMORYALLOCATIONMODE);
 		}
 	}
 	int containercount;
@@ -545,7 +500,7 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 
 			jm.setJobstarttime(System.currentTimeMillis());
 			var isblocksuserdefined = Boolean.parseBoolean(jobconf.getIsblocksuserdefined());
-			var applicationid = MDCConstants.MDCAPPLICATION + MDCConstants.HYPHEN + Utils.getUniqueAppID();
+			var applicationid = MDCConstants.MDCAPPLICATION + MDCConstants.HYPHEN + System.currentTimeMillis() + MDCConstants.HYPHEN + Utils.getUniqueAppID();
 			jm.setJobid(applicationid);
 			MDCJobMetrics.put(jm);
 			batchsize = Integer.parseInt(jobconf.getBatchsize());

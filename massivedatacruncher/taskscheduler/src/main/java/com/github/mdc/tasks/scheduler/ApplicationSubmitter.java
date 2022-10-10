@@ -108,12 +108,13 @@ public class ApplicationSubmitter {
 					}
 				}
 				writeInt(os, -1);
-				while (true) {
-					var input = new FSTObjectInput(is);
-					var messagetasksscheduler = (String) input.readObject(String.class);
-					log.info(messagetasksscheduler);
-					if ("quit".equals(messagetasksscheduler.trim())) {
-						break;
+				try (var input = new FSTObjectInput(is)) {
+					while (true) {					
+						var messagetasksscheduler = (String) input.readObject();						
+						if ("quit".equals(messagetasksscheduler.trim())) {
+							break;
+						}
+						log.info(messagetasksscheduler);
 					}
 				}
 			} catch (Exception ex) {

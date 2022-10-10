@@ -17,6 +17,7 @@ package com.github.mdc.common;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.nio.ByteBuffer;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -29,7 +30,8 @@ import org.slf4j.LoggerFactory;
  * @author arun
  *
  */
-public class ByteBufferInputStream extends InputStream {
+public class ByteBufferInputStream extends InputStream implements Serializable{
+	private static final long serialVersionUID = -296327349247183144L;
 	static AtomicInteger allocation = new AtomicInteger(1);
 	static AtomicInteger deallocation = new AtomicInteger(1);
 	static Logger log = LoggerFactory.getLogger(ByteBufferInputStream.class);

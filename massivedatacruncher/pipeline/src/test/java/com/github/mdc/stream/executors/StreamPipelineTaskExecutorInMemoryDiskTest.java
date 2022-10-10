@@ -41,7 +41,6 @@ import org.jooq.lambda.tuple.Tuple2;
 import org.json.simple.JSONObject;
 import org.junit.Test;
 import org.nustaq.serialization.FSTObjectInput;
-import org.xerial.snappy.SnappyInputStream;
 
 import com.github.mdc.common.BlocksLocation;
 import com.github.mdc.common.HDFSBlockUtils;

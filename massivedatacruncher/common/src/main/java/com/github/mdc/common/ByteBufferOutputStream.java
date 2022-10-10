@@ -17,6 +17,7 @@ package com.github.mdc.common;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.Serializable;
 import java.nio.ByteBuffer;
 
 /**
@@ -24,7 +25,8 @@ import java.nio.ByteBuffer;
  * @author arun
  *
  */
-public class ByteBufferOutputStream extends OutputStream {
+public class ByteBufferOutputStream extends OutputStream implements Serializable{
+	private static final long serialVersionUID = 281956849242378938L;
 	private ByteBuffer bb;
 
 	public ByteBufferOutputStream(ByteBuffer bb) {

@@ -232,7 +232,7 @@ public class RemoteDataFetcher {
 		try {
 			var path = MDCConstants.FORWARD_SLASH + FileSystemSupport.MDS + MDCConstants.FORWARD_SLASH + jobid + MDCConstants.FORWARD_SLASH + filename;
 			log.debug("Exiting RemoteDataFetcher.readIntermediatePhaseOutputFromDFS");
-			return new BufferedInputStream(hdfs.open(new Path(path)));
+			return hdfs.open(new Path(path));
 		}
 		catch (Exception ioe) {
 			log.error(RemoteDataFetcherException.INTERMEDIATEPHASEREADERROR, ioe);

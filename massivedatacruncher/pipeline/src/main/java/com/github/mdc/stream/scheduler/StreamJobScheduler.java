@@ -1513,9 +1513,11 @@ public class StreamJobScheduler {
 				}
 			} else if (Boolean.TRUE.equals(ismesos) || Boolean.TRUE.equals(isyarn)) {
 				int partition = 0;
-				for (var mdstt : mdstts) {
-					// Get final stage results mesos or yarn
-					writeOutputToHDFS(hdfs, mdstt.getTask(), partition++, stageoutput);
+				if (job.getTrigger() != job.getTrigger().SAVERESULTSTOFILE) {
+					for (var mdstt : mdstts) {
+						// Get final stage results mesos or yarn
+						writeOutputToHDFS(hdfs, mdstt.getTask(), partition++, stageoutput);
+					}
 				}
 			} else {
 				var ishdfs = false;

@@ -579,7 +579,7 @@
                                 <include>**/CommonsTestSuite.java</include>
                                 <include>**/PipelineExecutorsTestSuite.java</include>
                                 <include>**/StreamPipelineTestSuite.java</include>
-                                <!--include>**/IgnitePipelineTestSuite.java</include-->
+                                <include>**/IgnitePipelineTestSuite.java</include>
                                 <include>**/TaskSchedulerTestSuite.java</include>                                
                             </includes>
                         </configuration>

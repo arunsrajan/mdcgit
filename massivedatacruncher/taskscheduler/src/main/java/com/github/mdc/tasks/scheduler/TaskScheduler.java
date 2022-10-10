@@ -69,13 +69,13 @@ public class TaskScheduler implements Runnable {
 			var jc = JobConfigurationBuilder.newBuilder().build();
 			jc.setMrjar(mrjar);
 			var tssos = tss.getOutputStream();
-			var output = new FSTObjectOutput(tssos);
-			jc.setOutput(output);
-			var mrjob = (Application) main.getDeclaredConstructor().newInstance();
-			mrjob.runMRJob(argscopy, jc);
-			output.writeObject("Successfully Completed executing the task " + mainclass);
-			output.writeObject("quit");
-			output.close();
+			try(var output = new FSTObjectOutput(tssos);){
+				jc.setOutput(output);
+				var mrjob = (Application) main.getDeclaredConstructor().newInstance();
+				mrjob.runMRJob(argscopy, jc);
+				output.writeObject("Successfully Completed executing the task " + mainclass);
+				output.writeObject("quit");
+			}
 		} catch (Throwable ex) {
 			log.error("Exception in loading class:", ex);
 		} finally {
