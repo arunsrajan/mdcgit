@@ -1777,7 +1777,7 @@ public class StreamPipelineTaskExecutorJGroupsTest extends StreamPipelineTestCom
 		JoinPredicate<Tuple2<String, Long>, Tuple2<String, Long>> jp = (Tuple2<String, Long> tup1,
 				Tuple2<String, Long> tup2) -> tup1.v1.equals(tup2.v1);
 		mdsjte.setTask(jointask);
-		mdsjte.processJoinLZF(fsdis1, fsdis2, jp, false, false);
+		mdsjte.processJoin(fsdis1, fsdis2, jp, false, false);
 		fsdis1.close();
 		fsdis2.close();
 
@@ -1866,7 +1866,7 @@ public class StreamPipelineTaskExecutorJGroupsTest extends StreamPipelineTestCom
 		LeftOuterJoinPredicate<Tuple2<String, Long>, Tuple2<String, Long>> jp = (Tuple2<String, Long> tup1,
 				Tuple2<String, Long> tup2) -> tup1.v1.equals(tup2.v1);
 		mdsjte.setTask(jointask);
-		mdsjte.processLeftOuterJoinLZF(fsdis1, fsdis2, jp, false, false);
+		mdsjte.processLeftOuterJoin(fsdis1, fsdis2, jp, false, false);
 		fsdis1.close();
 		fsdis2.close();
 
@@ -1959,7 +1959,7 @@ public class StreamPipelineTaskExecutorJGroupsTest extends StreamPipelineTestCom
 		RightOuterJoinPredicate<Tuple2<String, Long>, Tuple2<String, Long>> jp = (Tuple2<String, Long> tup1,
 				Tuple2<String, Long> tup2) -> tup1.v1.equals(tup2.v1);
 		mdsjte.setTask(jointask);
-		mdsjte.processRightOuterJoinLZF(fsdis2, fsdis1, jp, false, false);
+		mdsjte.processRightOuterJoin(fsdis2, fsdis1, jp, false, false);
 		fsdis1.close();
 		fsdis2.close();
 

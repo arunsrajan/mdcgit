@@ -1702,7 +1702,7 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		JoinPredicate<Tuple2<String, Long>, Tuple2<String, Long>> jp = (Tuple2<String, Long> tup1,
 				Tuple2<String, Long> tup2) -> tup1.v1.equals(tup2.v1);
 		mdstde.setTask(jointask);
-		mdstde.processJoinLZF(is1, is2, jp, false, false);
+		mdstde.processJoin(is1, is2, jp, false, false);
 		is1.close();
 		is2.close();
 
@@ -1789,7 +1789,7 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		LeftOuterJoinPredicate<Tuple2<String, Long>, Tuple2<String, Long>> jp = (Tuple2<String, Long> tup1,
 				Tuple2<String, Long> tup2) -> tup1.v1.equals(tup2.v1);
 		mdstde.setTask(jointask);
-		mdstde.processLeftOuterJoinLZF(is1, is2, jp, false, false);
+		mdstde.processLeftOuterJoin(is1, is2, jp, false, false);
 		is1.close();
 		is2.close();
 
@@ -1880,7 +1880,7 @@ public class StreamPipelineTaskExecutorYarnTest extends StreamPipelineTestCommon
 		RightOuterJoinPredicate<Tuple2<String, Long>, Tuple2<String, Long>> jp = (Tuple2<String, Long> tup1,
 				Tuple2<String, Long> tup2) -> tup1.v1.equals(tup2.v1);
 		mdstde.setTask(jointask);
-		mdstde.processRightOuterJoinLZF(is2, is1, jp, false, false);
+		mdstde.processRightOuterJoin(is2, is1, jp, false, false);
 		is1.close();
 		is2.close();
 
