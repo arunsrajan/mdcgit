@@ -31,16 +31,13 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class ByteBufferInputStream extends InputStream implements Serializable{
-	private static final long serialVersionUID = -296327349247183144L;
-	static AtomicInteger allocation = new AtomicInteger(1);
-	static AtomicInteger deallocation = new AtomicInteger(1);
+	private static final long serialVersionUID = -296327349247183144L;	
 	static Logger log = LoggerFactory.getLogger(ByteBufferInputStream.class);
 	private ByteBuffer bb;
 
 	public ByteBufferInputStream(ByteBuffer bb) {
 		try {
-			this.bb = bb;
-			log.info("ByteBuffer Input Stream allocation number {} with object info {}", allocation.incrementAndGet(),  bb);
+			this.bb = bb;			
 		}
 		catch (Exception e) {
 			log.error(MDCConstants.EMPTY, e);
@@ -72,9 +69,7 @@ public class ByteBufferInputStream extends InputStream implements Serializable{
 	@Override
 	public void close() {
 		if (!Objects.isNull(bb)) {
-			try {
-				log.info("ByteBuffer Input Stream returning to pool deallocation number {} with buffer info {}",
-						deallocation.incrementAndGet(), bb);
+			try {				
 				ByteBufferPoolDirect.destroy(bb);
 			} catch (Exception e) {
 				log.error(MDCConstants.EMPTY, e);

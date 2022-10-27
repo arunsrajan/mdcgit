@@ -49,9 +49,12 @@ import com.github.mdc.common.TaskExecutorShutdown;
 import com.github.mdc.common.Utils;
 import com.github.mdc.tasks.executor.NodeRunner;
 
+import static java.util.Objects.*;
+
 public class StreamPipelineBaseTestCommon extends StreamPipelineBase {
 	static Registry server = null;
 	static Logger log = Logger.getLogger(StreamPipelineBaseTestCommon.class);
+
 	@SuppressWarnings({ "unused" })
 	@BeforeClass
 	public static void setServerUp() throws Exception {
@@ -106,13 +109,12 @@ public class StreamPipelineBaseTestCommon extends StreamPipelineBase {
 					hb.init(rescheduledelay, nodeport, host, initialdelay, pingdelay, "");
 					hb.ping();
 					hbssl.add(hb);
-					server = Utils.getRPCRegistry(nodeport,
-							new StreamDataCruncher() {
-							public Object postObject(Object object)throws RemoteException {
+					if (isNull(server)) {
+						server = Utils.getRPCRegistry(nodeport, new StreamDataCruncher() {
+							public Object postObject(Object object) throws RemoteException {
 								try {
 									var container = new NodeRunner(MDCConstants.PROPLOADERCONFIGFOLDER,
-											containerprocesses, hdfs, containeridthreads, containeridports,
-											object);
+											containerprocesses, hdfs, containeridthreads, containeridports, object);
 									Future<Object> containerallocated = threadpool.submit(container);
 									Object returnresultobject = containerallocated.get();
 									log.info("Containers Allocated: " + returnresultobject);
@@ -127,7 +129,8 @@ public class StreamPipelineBaseTestCommon extends StreamPipelineBase {
 								return null;
 							}
 						});
-					sss.add(server);
+						sss.add(server);
+					}
 					port += 100;
 					executorsindex++;
 				}

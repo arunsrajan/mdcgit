@@ -15,85 +15,77 @@
  */
 package com.github.mdc.common;
 
+import static java.util.Objects.nonNull;
+
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.Semaphore;
 
 import org.apache.log4j.Logger;
 
 /**
- * Direct Byte buffer pool which allocates byte buffer 
+ * Direct Byte buffer pool which allocates byte buffer
+ * 
  * @author arun
  *
  */
 public class ByteBufferPoolDirect {
 
 	private static Logger log = Logger.getLogger(ByteBufferPoolDirect.class);
-	
+
 	private static long directmemorysize;
 	private static long heapsize;
-	private static long memoryallocated=0;
-	private static long totalmemoryallocated=0;
-	private static List<ByteBuffer> byteBuffers = new ArrayList<>();
+	private static long memoryallocated = 0;
+	private static long totalmemoryallocated = 0;
 	private static Semaphore allocatedeallocate = new Semaphore(1);
 	private static Object lock = new Object();
-	private static final int MEMRETRY = 10;
-	
+	private static final int MEMRETRY = 100;
+
 	public static void init() {
-		int heappercentage = Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.HEAP_PERCENTAGE, MDCConstants.HEAP_PERCENTAGE_DEFAULT));
+		int heappercentage = Integer.parseInt(
+				MDCProperties.get().getProperty(MDCConstants.HEAP_PERCENTAGE, MDCConstants.HEAP_PERCENTAGE_DEFAULT));
 		long totalmemory = Runtime.getRuntime().maxMemory();
-		directmemorysize = totalmemory*(100-heappercentage)/100;
-		heapsize = totalmemory-directmemorysize;
-		log.info("Max Heap Allocated: "+((heapsize)/MDCConstants.MB)+ " MB, Max Direct Memory: "+(directmemorysize/MDCConstants.MB)+" MB");
+		directmemorysize = totalmemory * (100 - heappercentage) / 100;
+		heapsize = totalmemory - directmemorysize;
+		log.info("Max Heap Allocated: " + ((heapsize) / MDCConstants.MB) + " MB, Max Direct Memory: "
+				+ (directmemorysize / MDCConstants.MB) + " MB");
 	}
 
-	public static ByteBuffer get(long memorytoallocate) throws Exception {		
-		if(directmemorysize-memoryallocated>=memorytoallocate) {
-			allocatedeallocate.acquire();
+	public static synchronized ByteBuffer get(long memorytoallocate) throws Exception {
+		if (directmemorysize - memoryallocated >= memorytoallocate) {
 			totalmemoryallocated += memorytoallocate;
 			memoryallocated += memorytoallocate;
-			ByteBuffer bb = ByteBuffer.allocateDirect((int) memorytoallocate);
-			byteBuffers.add(bb);
-			allocatedeallocate.release();
-			return bb;
+			ByteBuffer bb = DirectByteBufferUtil.allocateDirect((int) memorytoallocate);
+			if (bb != null) {
+				return bb;
+			}
 		}
 		int retry = 0;
-		while(true) {
+		while (true) {
 			synchronized (lock) {
 				lock.wait(300);
 			}
 			retry++;
-			if(directmemorysize-memoryallocated>=memorytoallocate) {
-				allocatedeallocate.acquire();
+			if (directmemorysize - memoryallocated >= memorytoallocate) {
 				totalmemoryallocated += memorytoallocate;
 				memoryallocated += memorytoallocate;
-				ByteBuffer bb = ByteBuffer.allocateDirect((int) memorytoallocate);
-				byteBuffers.add(bb);
-				allocatedeallocate.release();
-				return bb;
-			} else if(retry >= MEMRETRY && memorytoallocate <= Runtime.getRuntime().freeMemory()) {
-				allocatedeallocate.acquire();
+				ByteBuffer bb = DirectByteBufferUtil.allocateDirect((int) memorytoallocate);
+				if (nonNull(bb))
+					return bb;
+			} else if (retry >= MEMRETRY && memorytoallocate <= Runtime.getRuntime().freeMemory()) {
 				ByteBuffer bb = ByteBuffer.allocate((int) memorytoallocate);
-				allocatedeallocate.release();
 				return bb;
 			}
-			
 		}
 	}
-	
+
 	public static void destroy() {
-		byteBuffers.stream().forEach(bb->DirectByteBufferUtil.freeDirectBufferMemory(bb));
 	}
-	
-	public static void destroy(ByteBuffer bb) throws Exception {
-		allocatedeallocate.acquire();
-		if(bb.isDirect()) {			
+
+	public static synchronized void destroy(ByteBuffer bb) throws Exception {
+		if (nonNull(bb) && bb.isDirect()) {
 			memoryallocated -= bb.capacity();
-			byteBuffers.remove(bb);					
-			DirectByteBufferUtil.freeDirectBufferMemory(bb);			
+			DirectByteBufferUtil.freeDirectBufferMemory(bb);
 		}
-		allocatedeallocate.release();
 	}
 
 	private ByteBufferPoolDirect() {

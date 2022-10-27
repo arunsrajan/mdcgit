@@ -89,6 +89,7 @@ import com.github.mdc.common.ContainerResources;
 import com.github.mdc.common.DAGEdge;
 import com.github.mdc.common.DestroyContainer;
 import com.github.mdc.common.DestroyContainers;
+import com.github.mdc.common.DirectByteBufferUtil;
 import com.github.mdc.common.FileSystemSupport;
 import com.github.mdc.common.FreeResourcesCompletedJob;
 import com.github.mdc.common.GlobalContainerAllocDealloc;
@@ -1499,8 +1500,9 @@ public class StreamJobScheduler {
 					for (var mdstt : mdstts) {
 						var key = getIntermediateResultFS(mdstt.getTask());
 						try (var fsstream = resultstream.get(key);
-								var input = new FSTObjectInput(
-										new ByteBufferInputStream(((ByteBufferOutputStream)fsstream).get()), Utils.getConfigForSerialization());) {
+								ByteBufferInputStream bbis = new ByteBufferInputStream(((ByteBufferOutputStream)fsstream).get());
+								var input = new FSTObjectInput(bbis
+										, Utils.getConfigForSerialization());) {
 							var obj = input.readObject();
 							resultstream.remove(key);
 							writeOutputToFile(stageoutput.size(), obj);
