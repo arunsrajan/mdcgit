@@ -61,8 +61,8 @@ public class StreamPipelineBaseTestCommon extends StreamPipelineBase {
 		try {
 			Utils.loadLog4JSystemProperties(MDCConstants.PREV_FOLDER + MDCConstants.FORWARD_SLASH
 					+ MDCConstants.DIST_CONFIG_FOLDER + MDCConstants.FORWARD_SLASH, "mdctest.properties");
-			var out = new FSTObjectOutput(System.out);
-			pipelineconfig.setKryoOutput(out);
+			var out = System.out;
+			pipelineconfig.setOutput(out);
 			pipelineconfig.setMaxmem("1024");
 			pipelineconfig.setMinmem("512");
 			pipelineconfig.setGctype(MDCConstants.ZGC);

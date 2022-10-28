@@ -632,7 +632,7 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 					}
 					for (ExecutionResult exec : execs.getErrored()) {
 						Utils.writeToOstream(jobconf.getOutput(), MDCConstants.NEWLINE);
-						Utils.writeToOstream(jobconf.getOutput(), exec.getId());
+						Utils.writeToOstream(jobconf.getOutput(), exec.getId().toString());
 					}
 				}
 				numexecute++;

@@ -15,12 +15,13 @@
  */
 package com.github.mdc.common;
 
+import java.io.OutputStream;
 import java.util.Objects;
 
 import org.nustaq.serialization.FSTObjectOutput;
 
 public class JobConfiguration {
-	private FSTObjectOutput output;
+	private OutputStream output;
 	String hdfsurl;
 	String tstempdir;
 	String tshost;
@@ -244,11 +245,11 @@ public class JobConfiguration {
 		this.batchsize = batchsize;
 	}
 
-	public FSTObjectOutput getOutput() {
+	public OutputStream getOutput() {
 		return output;
 	}
 
-	public void setOutput(FSTObjectOutput output) {
+	public void setOutput(OutputStream output) {
 		this.output = output;
 	}
 

@@ -90,26 +90,26 @@ public class StreamPipelineTaskScheduler implements Runnable {
 			Set<Class<?>> classes = new LinkedHashSet<>();
 			pipelineconfig.setCustomclasses(classes);
 			classes.add(main);
-			pipelineconfig.setKryoOutput(new FSTObjectOutput(tss.getOutputStream()));
+			pipelineconfig.setOutput(tss.getOutputStream());
 			var pipeline = (Pipeline) main.getDeclaredConstructor().newInstance();
 			pipelineconfig.setJobname(main.getSimpleName());
 			pipeline.runPipeline(args, pipelineconfig);
 			message = "Successfully Completed executing the Job from main class " + mainclass;
-			Utils.writeToOstream(new FSTObjectOutput(tss.getOutputStream()), message);
+			Utils.writeToOstream(tss.getOutputStream(), message);
 		}
 		catch (Throwable ex) {
 			log.error("Job execution Error, See cause below \n", ex);
 			try (var baos = new ByteArrayOutputStream();) {
 				var failuremessage = new PrintWriter(baos, true, StandardCharsets.UTF_8);
 				ex.printStackTrace(failuremessage);
-				Utils.writeToOstream(new FSTObjectOutput(tss.getOutputStream()), new String(baos.toByteArray()));
+				Utils.writeToOstream(tss.getOutputStream(), new String(baos.toByteArray()));
 			} catch (Exception e) {
 				log.error("Message Send Failed for Task Failed: ", e);
 			}
 		}
 		finally {
 			try {
-				Utils.writeToOstream(new FSTObjectOutput(tss.getOutputStream()), "quit");
+				Utils.writeToOstream(tss.getOutputStream(), "quit");
 				tss.close();
 			} catch (Exception ex) {
 				log.error("Socket Stream close error, See cause below \n", ex);

@@ -15,6 +15,7 @@
  */
 package com.github.mdc.common;
 
+import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.Objects;
 import java.util.Set;
@@ -30,7 +31,7 @@ import com.github.mdc.common.MDCConstants.STORAGE;
  */
 public class PipelineConfig implements Serializable, Cloneable {
 	private static final long serialVersionUID = 1L;
-	private FSTObjectOutput  output;
+	private OutputStream  output;
 	private String blocksize;
 	private String isblocksuserdefined;
 	private String pingdelay;
@@ -65,11 +66,11 @@ public class PipelineConfig implements Serializable, Cloneable {
 	private String implicitcontainermemorysize;
 	private Set<Class<?>> customclasses;
 
-	public void setKryoOutput(FSTObjectOutput  output) {
+	public void setOutput(OutputStream  output) {
 		this.output = output;
 	}
 
-	public FSTObjectOutput getOutput() {
+	public OutputStream getOutput() {
 		return output;
 	}
 
@@ -170,10 +171,6 @@ public class PipelineConfig implements Serializable, Cloneable {
 
 	public void setRandomte(String randomte) {
 		this.randomte = randomte;
-	}
-
-	public void setOutput(FSTObjectOutput output) {
-		this.output = output;
 	}
 
 	public String getMinmem() {

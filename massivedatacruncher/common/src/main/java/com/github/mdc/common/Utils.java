@@ -28,6 +28,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.lang.management.ManagementFactory;
@@ -146,10 +147,11 @@ public class Utils {
 		return conf.get();
 	}
 
-	public static void writeToOstream(FSTObjectOutput fstoo, Object objtowrite) throws Exception {
-		if (nonNull(fstoo)) {
-			fstoo.writeObject(objtowrite);
-			fstoo.flush();
+	public static void writeToOstream(OutputStream os, String message) throws Exception {
+		if (nonNull(os)) {
+			os.write(message.getBytes());
+			os.write('\n');
+			os.flush();
 		}
 	}
 	

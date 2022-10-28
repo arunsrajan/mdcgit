@@ -116,8 +116,8 @@ public class StreamPipelineBaseException {
 	@BeforeClass
 	public static void setServerUp() throws Exception {
 		try {
-			var out = new FSTObjectOutput(System.out);
-			pipelineconfig.setKryoOutput(out);
+			var out = System.out;
+			pipelineconfig.setOutput(out);
 			pipelineconfig.setMaxmem("1024");
 			pipelineconfig.setMinmem("512");
 			pipelineconfig.setGctype(MDCConstants.ZGC);

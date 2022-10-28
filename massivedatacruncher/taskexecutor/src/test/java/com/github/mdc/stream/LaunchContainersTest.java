@@ -49,7 +49,7 @@ public class LaunchContainersTest extends StreamPipelineBaseTestCommon {
 		pc.setJgroups("false");
 		pc.setMesos("false");
 		pc.setYarn("false");
-		pc.setOutput(new FSTObjectOutput(System.out));
+		pc.setOutput(System.out);
 		pc.setIsblocksuserdefined("true");
 		pc.setBlocksize("64");
 		pc.setMode(MDCConstants.MODE_NORMAL);
@@ -75,7 +75,7 @@ public class LaunchContainersTest extends StreamPipelineBaseTestCommon {
 		pc.setJgroups("false");
 		pc.setMesos("false");
 		pc.setYarn("false");
-		pc.setOutput(new FSTObjectOutput(System.out));
+		pc.setOutput(System.out);
 		pc.setIsblocksuserdefined("true");
 		pc.setBlocksize("64");
 		pc.setMode(MDCConstants.MODE_NORMAL);
