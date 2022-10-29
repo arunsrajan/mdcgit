@@ -682,8 +682,8 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 				executorred.addIndependent(mdtstr);
 			}
 			executorred.execute(ExecutionConfig.NON_TERMINATING);
-			log.info("Reducer completed------------------------------");
-			log.info("Total Tasks Completed: " + mrtaskcount);
+			log.info("Reducer concluded------------------------------");
+			log.info("Total tasks done: " + mrtaskcount);
 			if (!isexception) {
 				if (!Objects.isNull(jobconf.getOutput())) {
 					Utils.writeToOstream(jobconf.getOutput(), "Reducer completed------------------------------");
@@ -730,7 +730,7 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 			// Restore interrupted state...
 			Thread.currentThread().interrupt();
 		} catch (Exception ex) {
-			log.info("Unable To Execute Job, See Cause Below:", ex);
+			log.error("Unable To Execute Job, See Cause Below:", ex);
 		} finally {
 			try {
 				destroyContainers(containerid);

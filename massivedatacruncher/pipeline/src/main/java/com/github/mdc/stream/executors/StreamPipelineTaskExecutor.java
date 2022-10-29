@@ -708,7 +708,6 @@ public sealed class StreamPipelineTaskExecutor implements
 	public double processBlockHDFSMap(BlocksLocation blockslocation, FileSystem hdfs) throws PipelineException {
 		var starttime = System.currentTimeMillis();
 		log.debug("Entered StreamPipelineTaskExecutor.processBlockHDFSMap");
-		log.info(blockslocation);
 		CSVParser records = null;
 		var fsdos = new ByteArrayOutputStream();
 		try (var output = new FSTObjectOutput(fsdos, Utils.getConfigForSerialization());
@@ -812,12 +811,12 @@ public sealed class StreamPipelineTaskExecutor implements
 					var timetaken = (System.currentTimeMillis() - starttime) / 1000.0;
 					return timetaken;
 				} else {
-					log.info("Map Collect Start");
+					log.info("Map assembly deriving");
 					CompletableFuture<List> cf = (CompletableFuture) ((Stream) streammap)
 							.collect(ParallelCollectors.parallel(value -> value, Collectors.toCollection(Vector::new),
 									executor, Runtime.getRuntime().availableProcessors()));
 					out = cf.get();
-					log.info("Map Collect End");
+					log.info("Map assembly concluded");
 				}
 				output.writeObject(out);
 				output.flush();

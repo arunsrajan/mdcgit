@@ -221,9 +221,9 @@ public class StreamJobScheduler {
 							lj.setMrjar(pipelineconfig.getJar());
 							String jarloaded = (String) Utils.getResultObjectByInput(hp, lj);
 							if (!Objects.isNull(jarloaded) && jarloaded.equals(MDCConstants.JARLOADED)) {
-								log.info("Jar Loaded in server " + hp);
+								log.info("Jar bundled to the server with host and port " + hp);
 							} else {
-								log.info("Jar Not Loaded in server " + hp);
+								log.info("Jar not bundled to the server with host and port " + hp);
 							}
 
 						} catch (Exception e) {
@@ -452,12 +452,12 @@ public class StreamJobScheduler {
 			job.setIscompleted(true);
 			job.getJm().setJobcompletiontime(System.currentTimeMillis());
 			Utils.writeToOstream( pipelineconfig.getOutput(),
-					"Completed Job in " + ((job.getJm().getJobcompletiontime() - job.getJm().getJobstarttime()) / 1000.0) + " seconds");
-			log.info("Completed Job in " + ((job.getJm().getJobcompletiontime() - job.getJm().getJobstarttime()) / 1000.0) + " seconds");
+					"Concluded job in " + ((job.getJm().getJobcompletiontime() - job.getJm().getJobstarttime()) / 1000.0) + " seconds");
+			log.info("Concluded job in " + ((job.getJm().getJobcompletiontime() - job.getJm().getJobstarttime()) / 1000.0) + " seconds");
 			job.getJm().setTotaltimetaken((job.getJm().getJobcompletiontime() - job.getJm().getJobstarttime()) / 1000.0);
 			Utils.writeToOstream( pipelineconfig.getOutput(),
-					"Job Metrics " + job.getJm());
-			log.info("Job Metrics " + job.getJm());
+					"Job stats " + job.getJm());
+			log.info("Job stats " + job.getJm());
 			if (Boolean.TRUE.equals(islocal)) {
 				var srresultstore = new SoftReference<ConcurrentMap<String, OutputStream>>(resultstream);
 				srresultstore.clear();
@@ -517,12 +517,12 @@ public class StreamJobScheduler {
 							
 							@Override
 							public void objectWillBeWritten(Object obj, int streamPosition) {
-								log.info(obj.getClass());
+								log.debug(obj.getClass());
 							}
 							
 							@Override
 							public void objectHasBeenWritten(Object obj, int oldStreamPosition, int streamPosition) {
-								log.info(obj.getClass());
+								log.debug(obj.getClass());
 								
 							}
 						});
@@ -581,7 +581,8 @@ public class StreamJobScheduler {
 						}
 					}
 					if (!Objects.isNull(loadjar.getMrjar())) {
-						log.info(Utils.getResultObjectByInput(tehost+MDCConstants.UNDERSCORE+ports.get(index), loadjar));
+						log.debug(Utils.getResultObjectByInput(tehost + MDCConstants.UNDERSCORE + ports.get(index),
+								loadjar));
 					}
 					JobApp jobapp = new JobApp();
 					jobapp.setContainerid(lc.getContainerid());
@@ -674,7 +675,7 @@ public class StreamJobScheduler {
 			if (!taskgraphexecutor.getTasks().isEmpty()) {
 				var hp = taskgraphexecutor.getHostport();
 				if((boolean) Utils.getResultObjectByInput(hp, new CloseStagesGraphExecutor(taskgraphexecutor.getTasks()))) {
-					log.info("Cleanup of tasks completed successfully for host "+hp);				}
+					log.info("Wrap up of tasks completed successfully for host "+hp);				}
 			}
 		}
 	}
@@ -802,7 +803,7 @@ public class StreamJobScheduler {
 					if (predecessors.size() > 0) {
 						for (var pred : predecessors) {
 							dexecutor.addDependency(pred, mdstst);
-							log.info(pred + "->" + mdstst);
+							log.debug(pred + "->" + mdstst);
 						}
 					} else {
 						dexecutor.addIndependent(mdstst);
@@ -815,7 +816,7 @@ public class StreamJobScheduler {
 				}
 				var executionresultscomplete = dexecutor.execute(ExecutionConfig.NON_TERMINATING);
 				erroredresult = executionresultscomplete.getErrored();
-				log.info("Errored Tasks: " + erroredresult);
+				log.info("Faulty tasks: " + erroredresult);
 				if (erroredresult.isEmpty()) {
 					completed = true;
 				} else {
@@ -1690,7 +1691,7 @@ public class StreamJobScheduler {
 	@SuppressWarnings({"rawtypes", "unchecked"})
 	private void writeResultsFromIgnite(Task task, int partition, List stageoutput) throws Exception {
 		try {
-			log.info("Final Results Ignite Task: " + task);
+			log.info("Eventual outcome Ignite task: " + task);
 
 			try (var sis = 
 					new ByteArrayInputStream(job.getIgcache().get(task.jobid + task.stageid + task.taskid));

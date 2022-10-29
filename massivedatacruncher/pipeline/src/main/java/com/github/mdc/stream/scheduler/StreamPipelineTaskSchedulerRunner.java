@@ -118,7 +118,6 @@ public class StreamPipelineTaskSchedulerRunner {
 						var bytesl = new ArrayList<byte[]>();
 						var in = new DataInputStream(s.getInputStream());
 						var config = Utils.getConfigForSerialization();
-						log.info("Obtaining Input Objects From Submitter");
 						while (true) {
 							var len = in.readInt();
 							byte buffer[] = new byte[len]; // this could be reused !
@@ -126,7 +125,6 @@ public class StreamPipelineTaskSchedulerRunner {
 							    len -= in.read(buffer, buffer.length - len, len);
 							// skipped: check for stream close
 							Object obj = config.getObjectInput(buffer).readObject();
-							log.info("Input Object: " + obj);
 							if (obj instanceof Integer brkintval && brkintval == -1)
 								break;
 							bytesl.add((byte[]) obj);
@@ -144,7 +142,7 @@ public class StreamPipelineTaskSchedulerRunner {
 						es.execute(new StreamPipelineTaskScheduler(cf, new String(bytesl.get(1)), bytesl.get(0),
 								arguments, s));
 					} catch (Exception ex) {
-						log.info("Launching Stream Task scheduler error, See cause below \n", ex);
+						log.error("Launching Stream Task scheduler error, See cause below \n", ex);
 					}
 				}
 			} catch (Exception ex) {
@@ -172,14 +170,14 @@ public class StreamPipelineTaskSchedulerRunner {
 					su.destroy();
 				}
 				cdl.countDown();
-				log.info("Halting...");
+				log.info("Program terminated...");
 			} catch (Exception e) {
 				log.error(MDCConstants.EMPTY, e);
 			}
 		});
 		String streamport = MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULERSTREAM_PORT);
 		String streamwebport = MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULERSTREAM_WEB_PORT);
-		log.info("Scheduler started in the port Stream[port={},webport={}]", streamport, streamwebport);
+		log.info("Program kickoff amidst port Stream[port={},webport={}]", streamport, streamwebport);
 		cdl.await();
 	}
 

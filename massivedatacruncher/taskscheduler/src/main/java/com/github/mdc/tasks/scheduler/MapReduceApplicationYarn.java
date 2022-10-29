@@ -268,7 +268,7 @@ public class MapReduceApplicationYarn implements Callable<List<DataCruncherConte
 			// Restore interrupted state...
 			Thread.currentThread().interrupt();
 		} catch (Exception ex) {
-			log.info("Unable To Execute Job, See Cause Below:", ex);
+			log.error("Unable To Execute Job, See Cause Below:", ex);
 		}
 		return null;
 	}

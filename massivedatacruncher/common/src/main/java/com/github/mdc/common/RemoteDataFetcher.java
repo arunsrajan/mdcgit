@@ -254,13 +254,11 @@ public class RemoteDataFetcher {
 		log.debug("Entered RemoteDataFetcher.readIntermediatePhaseOutputFromDFS");
 		try {
 			var path = MDCConstants.FORWARD_SLASH + FileSystemSupport.MDS + MDCConstants.FORWARD_SLASH + jobid + MDCConstants.FORWARD_SLASH + filename;			
-			log.info("RemoteDataFetcher.readIntermediatePhaseOutputFromDFS: "+MDCProperties.get().getProperty(MDCConstants.TMPDIR) + path);
 			File file = new File(MDCProperties.get().getProperty(MDCConstants.TMPDIR) + path);
 			log.debug("Exiting RemoteDataFetcher.readIntermediatePhaseOutputFromDFS");
 			if (file.isFile() && file.exists()) {
 				return new BufferedInputStream(new FileInputStream(file));
 			}
-			log.info("RemoteDataFetcher.readIntermediatePhaseOutputFromDFS: "+(file.isFile() && file.exists()));
 			return null;
 		}
 		catch (Exception ioe) {
@@ -297,7 +295,7 @@ public class RemoteDataFetcher {
 	 */
 	public static void remoteInMemoryDataFetch(RemoteDataFetch rdf) throws Exception {
 		log.debug("Entered RemoteDataFetcher.remoteInMemoryDataFetch");
-		log.info("Remote Data Fetch with hp: " + rdf.getHp());
+		log.info("Remote data recover with hp: " + rdf.getHp());
 		var rdfwithdata = (RemoteDataFetch) Utils.getResultObjectByInput(rdf.getHp(), rdf);
 		rdf.setData(rdfwithdata.getData());
 		log.debug("Exiting RemoteDataFetcher.remoteInMemoryDataFetch");

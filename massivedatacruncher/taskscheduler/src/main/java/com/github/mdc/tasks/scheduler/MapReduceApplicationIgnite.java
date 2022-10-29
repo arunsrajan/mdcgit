@@ -272,7 +272,7 @@ public class MapReduceApplicationIgnite implements Callable<List<DataCruncherCon
 			}
 			return result;
 		} catch (Exception ex) {
-			log.info("Unable To Execute Job, See Cause Below:", ex);
+			log.error("Unable To Execute Job, See Cause Below:", ex);
 		} finally {
 			if (!Objects.isNull(ignitecache)) {
 				ignitecache.close();

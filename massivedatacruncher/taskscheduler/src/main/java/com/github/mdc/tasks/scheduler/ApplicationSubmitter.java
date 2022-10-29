@@ -15,9 +15,11 @@
  */
 package com.github.mdc.tasks.scheduler;
 
+import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.net.URL;
@@ -108,9 +110,9 @@ public class ApplicationSubmitter {
 					}
 				}
 				writeInt(os, -1);
-				try (var input = new FSTObjectInput(is)) {
+				try (var br = new BufferedReader(new InputStreamReader(is));) {
 					while (true) {					
-						var messagetasksscheduler = (String) input.readObject();						
+						var messagetasksscheduler = (String) br.readLine();
 						if ("quit".equals(messagetasksscheduler.trim())) {
 							break;
 						}

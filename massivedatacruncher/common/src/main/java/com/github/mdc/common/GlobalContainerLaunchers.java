@@ -41,7 +41,7 @@ public class GlobalContainerLaunchers {
 			lcsmap.put(cid, lcs);
 		}
 		else {
-			log.info("Container Launched Already: " + cid + " With Resources: " + lcs);
+			log.info("Chamber launched already: " + cid + " with assets: " + lcs);
 		}
 	}
 

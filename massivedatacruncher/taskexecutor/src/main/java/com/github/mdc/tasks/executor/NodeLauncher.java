@@ -87,7 +87,7 @@ public class NodeLauncher {
 								object);
 						Future<Object> containerallocated = escontainer.submit(container);
 						Object obj = containerallocated.get();
-						log.info("Containers Allocated: " + obj);
+						log.info("Chamber reply: " + obj);
 						return obj;
 					} catch (InterruptedException e) {
 						log.warn("Interrupted!", e);
@@ -101,9 +101,9 @@ public class NodeLauncher {
 			};
 			stub = (StreamDataCruncher) UnicastRemoteObject.exportObject(sdc, 0);
 			server.rebind(MDCConstants.BINDTESTUB, stub);
-			log.info("NodeLauncher started at port {}.....",
+			log.info("NodeLauncher kickoff at port {}.....",
 					MDCProperties.get().getProperty(MDCConstants.NODE_PORT));
-			log.info("Adding Shutdown Hook...");
+			log.info("Reckoning closedown lock...");
 			var cdl = new CountDownLatch(1);
 			Utils.addShutdownHook(() -> {
 				try {

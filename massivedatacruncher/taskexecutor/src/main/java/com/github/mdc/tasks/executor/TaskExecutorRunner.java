@@ -102,24 +102,21 @@ public class TaskExecutorRunner implements TaskExecutorRunnerMBean {
 					+ MDCConstants.DIST_CONFIG_FOLDER + MDCConstants.FORWARD_SLASH, MDCConstants.MDC_PROPERTIES);
 		}
 		ByteBufferPoolDirect.init();
-		log.info("Direct Memory Allocated: " + args[1]);
-		int directmemory = Integer.valueOf(args[1]) / 128;
-		log.info("Number Of 128 MB directmemory: " + directmemory);
 		CacheUtils.initCache();
 		int numberofprocessors = Runtime.getRuntime().availableProcessors();
 		es = new ForkJoinPool(numberofprocessors*2);
 		var mdted = new TaskExecutorRunner();
 		mdted.init();
 		mdted.start();
-		log.info("TaskExecuterRunner started at port....."
+		log.info("TaskExecuterRunner evoked at port....."
 				+ System.getProperty(MDCConstants.TASKEXECUTOR_PORT));
-		log.info("Adding Shutdown Hook...");
+		log.info("Reckoning stoppage holder...");
 		shutdown.await();
 		try {
-			log.info("Stopping and closes all the connections...");
+			log.info("Ceasing the connections...");
 			mdted.destroy();
 			ByteBufferPoolDirect.destroy();
-			log.info("Freed the resources...");
+			log.info("Freed the assets...");
 			Runtime.getRuntime().halt(0);
 		} catch (Exception e) {
 			log.error("", e);
@@ -178,20 +175,18 @@ public class TaskExecutorRunner implements TaskExecutorRunnerMBean {
 
 		var inmemorycache = MDCCache.get();
 		cl = TaskExecutorRunner.class.getClassLoader();
-		log.info("Default Class Loader: "+cl);
-
 		dataCruncher = new StreamDataCruncher() {
 			public Object postObject(Object deserobj)throws RemoteException{
 		
 				try{
-					log.info("Deserialized Object: "+deserobj);
+					log.info("Deserialized object: "+deserobj);
 					if (deserobj instanceof byte[] bytes) {
 						FSTConfiguration conf = Utils.getConfigForSerialization();
 						conf.setClassLoader(cl);
 						FSTObjectInput.ConditionalCallback conditionalCallback = new FSTObjectInput.ConditionalCallback() {
 							@Override
 							public boolean shouldSkip(Object halfDecoded, int streamPosition, Field field) {
-								log.info("Skip HalfDecoded: "+halfDecoded);
+								log.info("Skip half decoded: "+halfDecoded);
 								return true;
 							}
 						};
@@ -205,7 +200,7 @@ public class TaskExecutorRunner implements TaskExecutorRunnerMBean {
 						shutdown.countDown();
 					}
 					else if (deserobj instanceof LoadJar loadjar) {
-						log.info("Loading the Required jars: "+loadjar.getMrjar());
+						log.info("Unpacking jars: "+loadjar.getMrjar());
 						cl = MDCMapReducePhaseClassLoader
 									.newInstance(loadjar.getMrjar(), cl);
 						return MDCConstants.JARLOADED;
@@ -219,7 +214,7 @@ public class TaskExecutorRunner implements TaskExecutorRunnerMBean {
 									.parseInt(MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULER_PINGDELAY));
 							var host = NetworkUtil
 									.getNetworkAddress(MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_HOST));
-							log.info("Starting Hearbeat for container id: {} with host {} and port {}",containerid,host,teport);
+							log.info("Kickoff hearbeat for chamber id: {} with host {} and port {}",containerid,host,teport);
 							hbss.init(0, teport, host, 0, pingdelay, containerid);
 							hbss.ping();
 							containeridhbss.put(containerid, hbss);
@@ -237,7 +232,7 @@ public class TaskExecutorRunner implements TaskExecutorRunnerMBean {
 					// Restore interrupted state...
 					Thread.currentThread().interrupt();
 				} catch (Exception ex) {
-					log.info(MDCConstants.EMPTY, ex);
+					log.error(MDCConstants.EMPTY, ex);
 				}
 				return "Unknown Object";
 			}

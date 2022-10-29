@@ -805,7 +805,7 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 
 	@Override
 	public void run() {
-		log.info("Entered MassiveDataStreamTaskIgnite.call");
+		log.debug("Entered MassiveDataStreamTaskIgnite.call");
 		var stagePartition = jobstage.getStageid();
 		try {
 			cache = ignite.getOrCreateCache(MDCConstants.MDCCACHE);
@@ -822,12 +822,12 @@ public class StreamPipelineTaskExecutorIgnite implements IgniteRunnable {
 				}
 			}
 			computeTasks(task);
-			log.info("Completed Stage: " + stagePartition);
+			log.info("Finished step: " + stagePartition);
 			completed = true;
 		} catch (Exception ex) {
-			log.info("Failed Stage: " + stagePartition, ex);
+			log.error("Failed stage: " + stagePartition, ex);
 		}
-		log.info("Exiting MassiveDataStreamTaskIgnite.call");
+		log.debug("Exiting MassiveDataStreamTaskIgnite.call");
 	}
 
 

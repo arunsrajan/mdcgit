@@ -88,7 +88,6 @@ public class TaskSchedulerRunner {
 					
 					var in = new DataInputStream(s.getInputStream());
 					var config = Utils.getConfigForSerialization();
-					log.info("Obtaining Input Objects From Submitter");
 					while (true) {
 						var len = in.readInt();
 						byte buffer[] = new byte[len]; // this could be reused !
@@ -96,7 +95,6 @@ public class TaskSchedulerRunner {
 						    len -= in.read(buffer, buffer.length - len, len);
 						// skipped: check for stream close
 						Object obj = config.getObjectInput(buffer).readObject();
-						log.info("Input Object: " + obj);
 						if (obj instanceof Integer brkintval && brkintval == -1)
 							break;
 						bytesl.add((byte[]) obj);
@@ -134,7 +132,7 @@ public class TaskSchedulerRunner {
 		});
 		String mrport = MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULER_PORT);
 		String mrwebport = MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULER_WEB_PORT);
-		log.info("Map Reduce Scheduler started at the ports[port={},webport={}]", mrport, mrwebport);
+		log.info("MapReduce scheduler kickoff at the ports[port={},webport={}]", mrport, mrwebport);
 		cdl.await();
 	}
 

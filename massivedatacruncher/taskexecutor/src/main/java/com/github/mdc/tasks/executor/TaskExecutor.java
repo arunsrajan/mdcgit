@@ -103,11 +103,11 @@ public class TaskExecutor implements Callable<Object> {
 		log.debug("Started the run------------------------------------------------------");
 		try {
 			if (deserobj instanceof JobStage jobstage) {
-				log.info("Received Job Stage: " + jobstage);
+				log.info("Acquired : " + jobstage);
 				jobidstageidjobstagemap.put(jobstage.getJobid() + jobstage.getStageid(), jobstage);
-				return "Received Job Stage: " + jobstage;
+				return "Acquired job stage: " + jobstage;
 			} else if (deserobj instanceof Task task) {
-				log.info("Received Task: " + task);
+				log.info("Acquired Task: " + task);
 				var taskexecutor = jobstageexecutormap.get(task.jobid + task.stageid + task.taskid);				var spte = (StreamPipelineTaskExecutor) taskexecutor;
 				if (taskexecutor == null || spte.isCompleted() && task.taskstatus == Task.TaskStatus.FAILED) {
 					var key = task.jobid + task.stageid;
@@ -126,7 +126,7 @@ public class TaskExecutor implements Callable<Object> {
 						stageidexecutormap = (Map<String, Object>) jobidstageidexecutormap.get(task.jobid);
 					}
 					stageidexecutormap.put(task.stageid, spte);
-					log.info("Submitted Task for execution: " + deserobj);
+					log.info("Submitted kickoff execution: " + deserobj);
 					return spte.call();					
 				}
 			} else if (deserobj instanceof TasksGraphExecutor stagesgraph) {
@@ -155,7 +155,7 @@ public class TaskExecutor implements Callable<Object> {
 						File todelete = new File(MDCProperties.get().getProperty(MDCConstants.TMPDIR) + MDCConstants.FORWARD_SLASH
 								+ FileSystemSupport.MDS + MDCConstants.FORWARD_SLASH + task.jobid + MDCConstants.FORWARD_SLASH + task.taskid);
 						todelete.delete();
-						log.info("Cleaning Up the Intermedite Task " + todelete);
+						log.info("Sanitize the task " + todelete);
 					}
 					File jobtmpdir = new File(MDCProperties.get().getProperty(MDCConstants.TMPDIR) + MDCConstants.FORWARD_SLASH
 							+ FileSystemSupport.MDS + MDCConstants.FORWARD_SLASH + closestagesgraph.getTasks().get(0).jobid);
@@ -176,14 +176,12 @@ public class TaskExecutor implements Callable<Object> {
 					for (var key : keys) {
 						jsem.remove(key);
 						jobstageexecutormap.remove(cce.getJobid() + key);
-						log.info("Removed stages: " + cce.getJobid() + key);
+						log.info("Sanitize stages: " + cce.getJobid() + key);
 					}
 				}
 			} else if (deserobj instanceof RemoteDataFetch rdf) {
-				log.info("Entering RemoteDataFetch: " + deserobj);
 				var taskexecutor = jobstageexecutormap.get(rdf.getJobid() + rdf.getStageid() + rdf.getTaskid());
 				var mdstde = (StreamPipelineTaskExecutor) taskexecutor;
-				log.info("Executor: " + mdstde);
 				if (rdf.getMode().equals(MDCConstants.STANDALONE)) {
 					if (taskexecutor != null) {
 						Task task  = mdstde.getTask();
@@ -219,8 +217,6 @@ public class TaskExecutor implements Callable<Object> {
 						}
 					}
 				}
-
-				log.info("Exiting RemoteDataFetch: ");
 			} else if (deserobj instanceof List objects) {
 				var object = objects.get(0);
 				var applicationid = (String) objects.get(1);
@@ -263,10 +259,10 @@ public class TaskExecutor implements Callable<Object> {
 					} else if (object instanceof RetrieveData) {
 						Context ctx = null;
 						if (taskexecutor instanceof TaskExecutorReducer ter) {
-							log.info("Obtaining reducer Context: " + apptaskid);
+							log.info("Gathering reducer context: " + apptaskid);
 							ctx = ter.ctx;
 						} else if (taskexecutor instanceof TaskExecutorMapperCombiner temc) {
-							log.info("Obtaining reducer Context: " + apptaskid);
+							log.info("Gathering reducer context: " + apptaskid);
 							ctx = temc.ctx;
 						}						
 						apptaskexecutormap.remove(apptaskid);

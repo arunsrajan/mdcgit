@@ -101,8 +101,7 @@ public final class HeartBeatStream implements HeartBeatCloseable {
 		channel.setDiscardOwnMessages(true);
 		channel.setReceiver(new Receiver() {
 			public void viewAccepted(View newView) {
-				log.info("Entered Receiver.viewAccepted");
-				log.info("Nodes View: "+newView.getMembers());
+				log.info("Nodes perspective: "+newView.getMembers());
 				var addresses = newView.getMembers();
 				
 				var schedulerHostPort = networkaddress + MDCConstants.UNDERSCORE + serverport;
@@ -127,7 +126,7 @@ public final class HeartBeatStream implements HeartBeatCloseable {
 				ResponseReceived respreceived = new ResponseReceived();
 				respreceived.setHp(msg.getSrc().toString());
 				channel.send(msg.getSrc(), respreceived);
-				log.info("Resources Updated: "+hpresmap);
+				log.info("Assets renovated: "+hpresmap);
 				log.debug("Exiting Receiver.receive");
 			} catch (Exception e) {
 				log.error("Unable to receive and process resources, See below for the cause: ", e);
@@ -258,8 +257,7 @@ public final class HeartBeatStream implements HeartBeatCloseable {
 							pingtimer.purge();							
 						}
 					} catch (Exception ex) {
-						ex.printStackTrace();
-						log.info("Heartbeat ping error, See Cause below: \n", ex);
+						log.error("Heartbeat knock error, See Cause below: \n", ex);
 					}
 				}
 			}, pingdelay, pingdelay);

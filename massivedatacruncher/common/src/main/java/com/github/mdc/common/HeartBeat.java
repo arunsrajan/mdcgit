@@ -121,7 +121,7 @@ public final class HeartBeat implements HeartBeatCloseable {
 						ResponseReceived respreceived = new ResponseReceived();
 						respreceived.setHp(msg.getSrc().toString());
 						channel.send(msg.getSrc(), respreceived);
-						log.info("Resources Updated: "+hpresmap);
+						log.info("Assets updated: "+hpresmap);
 						log.debug("Exiting Receiver.receive");
 					} catch (Exception e) {
 						log.error("Unable to receive and process resources, See below for the cause: ",e);

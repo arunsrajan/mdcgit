@@ -79,7 +79,7 @@ public final class StreamPipelineTaskExecutorMesos extends StreamPipelineTaskExe
 			}
 
 			double timetakenseconds = computeTasks(task, hdfs);
-			log.info("Total Time Taken: " + timetakenseconds + " Seconds");
+			log.info("Absolute Time Taken: " + timetakenseconds + " Seconds");
 			status = Protos.TaskStatus.newBuilder().setTaskId(taskid).setState(Protos.TaskState.TASK_FINISHED).build();
 			driver.sendStatusUpdate(status);
 			output.clear();

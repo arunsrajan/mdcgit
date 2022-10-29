@@ -88,9 +88,9 @@ public class TaskExecutorMapperCombiner implements Callable {
 				var failuremessage = new PrintWriter(baos, true, StandardCharsets.UTF_8);
 				ex.printStackTrace(failuremessage);
 			} catch (Exception e) {
-				log.info("Exception in Sending message to Failed Task: " + blockslocation, ex);
+				log.error("Exception in Sending message to Failed Task: " + blockslocation, ex);
 			}
-			log.info("Exception in Executing Task: " + blockslocation, ex);
+			log.error("Exception in Executing Task: " + blockslocation, ex);
 		} finally {
 			if (es != null) {
 				es.shutdown();

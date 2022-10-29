@@ -1,6 +1,7 @@
 package com.github.mdc.common;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -42,27 +43,32 @@ public final class DirectByteBufferUtil {
 	 * @param directBuffer The direct buffer whose memory allocation will be freed
 	 * @return Whether or not the memory allocation was freed
 	 */
-	public static synchronized boolean freeDirectBufferMemory(ByteBuffer directBuffer) {
-		if (!directBuffer.isDirect()) {
-			return false;
+	public static synchronized boolean freeDirectBufferMemory(ByteBuffer buffer) {
+		if(buffer != null) {
+			if (!buffer.isDirect()) {
+				return false;
+			}
+			try {
+				Method cleanerMethod = buffer.getClass().getMethod("cleaner");
+				cleanerMethod.setAccessible(true);
+				Object cleaner = cleanerMethod.invoke(buffer);
+				Method cleanMethod = cleaner.getClass().getMethod("clean");
+				cleanMethod.setAccessible(true);
+				cleanMethod.invoke(cleaner);
+				log.info("Direct Byte Buffer recovering to pool exhaustion number {} with buffer info {}",
+						deallocation.incrementAndGet(), buffer);
+				return true;
+			} catch (Exception ex) {
+				ex.printStackTrace();
+				return false;
+			}
 		}
-		try {
-			Field addressField = Buffer.class.getDeclaredField("address");
-			addressField.setAccessible(true);
-			//getUnsafe().freeMemory(addressField.getLong(directBuffer));
-			getUnsafe().invokeCleaner(directBuffer);
-			log.info("Direct Byte Buffer returning to pool deallocation number {} with buffer info {}",
-					deallocation.incrementAndGet(), directBuffer);
-			return true;
-		} catch (Exception ex) {
-			ex.printStackTrace();
-			return false;
-		}
+		return false;
 	}
 
 	public static synchronized ByteBuffer allocateDirect(int cap) throws Exception {
 		ByteBuffer buffer = ByteBuffer.allocateDirect(cap);
-		log.info("Direct Byte Buffer allocation number {} with object info {}", allocation.incrementAndGet(),  buffer);
+		log.info("Direct Byte Buffer quota number {} with object info {}", allocation.incrementAndGet(),  buffer);
 		return buffer;
 	}
 

@@ -68,7 +68,7 @@ public final class StreamPipelineTaskExecutorLocal extends StreamPipelineTaskExe
 		OutputStream os = resultstream.get(path);
 		log.debug("Exiting MassiveDataStreamTaskExecutorInMemory.getIntermediateInputStreamFS");
 		if (Objects.isNull(os)) {
-			log.info("Unable to get Result Stream for path: " + path + " Fetching Remotely");
+			log.info("Inadequate event stream for the trail: " + path);
 			return os;
 		}
 		else if (os instanceof ByteBufferOutputStream baos) {

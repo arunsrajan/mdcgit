@@ -79,7 +79,7 @@ public class EmbeddedSchedulersNodeLauncher {
 			String streamwebport = MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULERSTREAM_WEB_PORT);
 			String mrport = MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULER_PORT);
 			String mrwebport = MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULER_WEB_PORT);
-			log.info("Scheduler started in the port Stream[port={},webport={}] MapReduce[port={},webport={}] Node[port={}]",streamport, streamwebport, mrport, mrwebport, nodeport);
+			log.info("Program evoked in the port Stream[port={},webport={}] MapReduce[port={},webport={}] Node[port={}]",streamport, streamwebport, mrport, mrwebport, nodeport);
 			cdl.await();
 		} catch (InterruptedException e) {
 			log.warn("Interrupted!", e);
@@ -129,7 +129,7 @@ public class EmbeddedSchedulersNodeLauncher {
 									object);
 							Future<Object> containerallocated = escontainer.submit(container);
 							Object retobj = containerallocated.get();
-							log.info("Node Processor processed the {} with status {} ", object, retobj);
+							log.info("Node processor refined the {} with status {} ", object, retobj);
 							return retobj;
 						} catch (InterruptedException e) {
 							log.warn("Interrupted!", e);
@@ -231,7 +231,6 @@ public class EmbeddedSchedulersNodeLauncher {
 						var bytesl = new ArrayList<byte[]>();
 						var in = new DataInputStream(s.getInputStream());
 						var config = Utils.getConfigForSerialization();
-						log.info("Obtaining Input Objects From Submitter");
 						while (true) {
 							var len = in.readInt();
 							byte buffer[] = new byte[len]; // this could be reused !
@@ -239,7 +238,6 @@ public class EmbeddedSchedulersNodeLauncher {
 							    len -= in.read(buffer, buffer.length - len, len);
 							// skipped: check for stream close
 							Object obj = config.getObjectInput(buffer).readObject();
-							log.info("Input Object: " + obj);
 							if (obj instanceof Integer brkintval && brkintval == -1)
 								break;
 							bytesl.add((byte[]) obj);
@@ -257,7 +255,7 @@ public class EmbeddedSchedulersNodeLauncher {
 						es.execute(new StreamPipelineTaskScheduler(cf, new String(bytesl.get(1)), bytesl.get(0),
 								arguments, s));
 					} catch (Exception ex) {
-						log.info("Launching Stream Task scheduler error, See cause below \n", ex);
+						log.error("Launching Stream Task scheduler error, See cause below \n", ex);
 					}
 				}
 			} catch (Exception ex) {
@@ -286,7 +284,7 @@ public class EmbeddedSchedulersNodeLauncher {
 					su.destroy();
 				}
 				cdl.countDown();
-				log.info("Halting...");
+				log.info("Faltering the stream...");
 			} catch (Exception e) {
 				log.error(MDCConstants.EMPTY, e);
 			}
@@ -343,7 +341,6 @@ public class EmbeddedSchedulersNodeLauncher {
 					
 					var in = new DataInputStream(s.getInputStream());
 					var config = Utils.getConfigForSerialization();
-					log.info("Obtaining Input Objects From Submitter");
 					while (true) {
 						var len = in.readInt();
 						byte buffer[] = new byte[len]; // this could be reused !
@@ -351,7 +348,6 @@ public class EmbeddedSchedulersNodeLauncher {
 						    len -= in.read(buffer, buffer.length - len, len);
 						// skipped: check for stream close
 						Object obj = config.getObjectInput(buffer).readObject();
-						log.info("Input Object: " + obj);
 						if (obj instanceof Integer brkintval && brkintval == -1)
 							break;
 						bytesl.add((byte[]) obj);

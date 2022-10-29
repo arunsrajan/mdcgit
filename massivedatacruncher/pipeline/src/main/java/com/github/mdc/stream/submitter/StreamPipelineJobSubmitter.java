@@ -77,7 +77,7 @@ public class StreamPipelineJobSubmitter {
 					var rand = new Random(System.currentTimeMillis());
 					currenttaskscheduler = taskscheduler;
 				}
-				log.info("Using TaskScheduler host port: " + currenttaskscheduler);
+				log.info("Adopting job scheduler for host with port: " + currenttaskscheduler);
 				var mrjarpath = args[0];
 				var ts = currenttaskscheduler.split(MDCConstants.UNDERSCORE);
 				writeToTaskScheduler(ts, mrjarpath, args);
@@ -106,7 +106,7 @@ public class StreamPipelineJobSubmitter {
 			if (args.length > 1) {
 				for (var argsindex = 1; argsindex < args.length; argsindex++) {
 					var arg = args[argsindex];
-					log.info("Sending Arguments To Application: " + arg);
+					log.info("Dispatching arguments to application: " + arg);
 					writeDataStream(os, arg.getBytes());
 				}
 			}

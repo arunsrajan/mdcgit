@@ -37,7 +37,6 @@ public class ByteBufferPoolDirect {
 	private static long memoryallocated = 0;
 	private static long totalmemoryallocated = 0;
 	private static Semaphore allocatedeallocate = new Semaphore(1);
-	private static Object lock = new Object();
 	private static final int MEMRETRY = 100;
 
 	public static void init() {
@@ -51,31 +50,19 @@ public class ByteBufferPoolDirect {
 	}
 
 	public static synchronized ByteBuffer get(long memorytoallocate) throws Exception {
+		allocatedeallocate.acquire();
 		if (directmemorysize - memoryallocated >= memorytoallocate) {
 			totalmemoryallocated += memorytoallocate;
 			memoryallocated += memorytoallocate;
 			ByteBuffer bb = DirectByteBufferUtil.allocateDirect((int) memorytoallocate);
 			if (bb != null) {
+				allocatedeallocate.release();
 				return bb;
 			}
 		}
-		int retry = 0;
-		while (true) {
-			synchronized (lock) {
-				lock.wait(300);
-			}
-			retry++;
-			if (directmemorysize - memoryallocated >= memorytoallocate) {
-				totalmemoryallocated += memorytoallocate;
-				memoryallocated += memorytoallocate;
-				ByteBuffer bb = DirectByteBufferUtil.allocateDirect((int) memorytoallocate);
-				if (nonNull(bb))
-					return bb;
-			} else if (retry >= MEMRETRY && memorytoallocate <= Runtime.getRuntime().freeMemory()) {
-				ByteBuffer bb = ByteBuffer.allocate((int) memorytoallocate);
-				return bb;
-			}
-		}
+		allocatedeallocate.release();
+		ByteBuffer bb = ByteBuffer.allocate((int) memorytoallocate);
+		return bb;
 	}
 
 	public static void destroy() {
@@ -83,8 +70,10 @@ public class ByteBufferPoolDirect {
 
 	public static synchronized void destroy(ByteBuffer bb) throws Exception {
 		if (nonNull(bb) && bb.isDirect()) {
+			allocatedeallocate.acquire();
 			memoryallocated -= bb.capacity();
 			DirectByteBufferUtil.freeDirectBufferMemory(bb);
+			allocatedeallocate.release();
 		}
 	}
 

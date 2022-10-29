@@ -55,7 +55,7 @@ public class MapperExecutor implements Callable<Context> {
 			return ctx;
 		}
 		catch (Exception ex) {
-			log.info(MDCConstants.EMPTY, ex);
+			log.error(MDCConstants.EMPTY, ex);
 			throw ex;
 		}
 

@@ -77,9 +77,8 @@ public final class StreamPipelineTaskExecutorJGroups extends StreamPipelineTaskE
 			channel = Utils.getChannelTaskExecutor(jobstage.getJobid(),
 					host,
 					port, taskstatusconcmapreq, taskstatusconcmapresp);
-			log.info("Tasks In Jgroups executor: " + tasks + " in host: " + host + " port: " + port);
+			log.info("Work in Jgroups agent: " + tasks + " in host: " + host + " port: " + port);
 			for (var task : tasks) {
-				log.info("Task In Jgroups executor: " + task + " in host: " + host + " port: " + port + " with task hostport: " + task.hostport);
 				this.task = task;
 				this.jobstage = jsidjsmap.get(task.jobid + task.stageid);
 				var stageTasks = getStagesTask();

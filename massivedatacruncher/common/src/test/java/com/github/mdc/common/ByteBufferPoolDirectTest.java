@@ -26,6 +26,7 @@ public class ByteBufferPoolDirectTest {
 		int count = 0;
 		Random rand = new Random(System.currentTimeMillis());
 		List<Thread> threads = new Vector<>();
+		int processors = Runtime.getRuntime().availableProcessors();
 		while(count<numiteration) {
 			Thread thr = new Thread(() -> {
 				ByteBuffer bf = null;
@@ -49,6 +50,9 @@ public class ByteBufferPoolDirectTest {
 			threads.add(thr);
 			thr.start();
 			count++;
+			if(count%processors==0) {
+				Thread.sleep(1000);
+			}
 		}
 		while(true) {
 			if(threads.size()==0)break;

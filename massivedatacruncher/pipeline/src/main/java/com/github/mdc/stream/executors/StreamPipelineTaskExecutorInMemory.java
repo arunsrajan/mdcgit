@@ -124,16 +124,14 @@ public sealed class StreamPipelineTaskExecutorInMemory extends StreamPipelineTas
 	@Override
 	public Boolean call() {
 		starttime = System.currentTimeMillis();
-		log.info("Entered MassiveDataStreamTaskExecutorInMemory.call for task "+task);
+		log.debug("Entered MassiveDataStreamTaskExecutorInMemory.call for task "+task);
 		String stageTasks = "";
-		log.info("Init Stage tasks");
 		var hdfsfilepath = MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL, MDCConstants.HDFSNAMENODEURL_DEFAULT);
-		log.info("Obtaining Namenode URL "+hdfsfilepath);
+		log.info("Acclaimed namenode URL "+hdfsfilepath);
 		var configuration = new Configuration();
 		try(var hdfs = FileSystem.newInstance(new URI(hdfsfilepath), configuration);) {
 			stageTasks = getStagesTask();
-			log.info("Submitted Task " + task);
-			log.info("Running Task " + task);
+			log.info("Submitted Task " + task);			
 			if (task.input != null && task.parentremotedatafetch != null) {
 				var numinputs = task.parentremotedatafetch.length;
 				for (var inputindex = 0; inputindex<numinputs;inputindex++) {
@@ -152,6 +150,7 @@ public sealed class StreamPipelineTaskExecutorInMemory extends StreamPipelineTas
 					}
 				}
 			}
+			log.info("Functioning Task " + task);
 			timetaken = computeTasks(task, hdfs);
 			log.info("Completed Task: " + task);
 			completed = true;

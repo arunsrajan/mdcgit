@@ -171,7 +171,7 @@ public class MDCConstants {
 	public static final String NUMBEROFCONTAINERS = "containers.number";
 	public static final String CONTAINER_MINMEMORY_DEFAULT = "1024";
 	public static final String CONTAINER_MAXMEMORY_DEFAULT = "1024";
-	public static final String GCCONFIG_DEFAULT = "-XX:+UseG1GC";
+	public static final String GCCONFIG_DEFAULT = "-XX:+UseZGC";
 	public static final String NUMBEROFCONTAINERS_DEFAULT = "1";
 	public static final String ISUSERDEFINEDBLOCKSIZE_DEFAULT = "false";
 
