@@ -27,10 +27,8 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.hdfs.DistributedFileSystem;
 import org.apache.log4j.Logger;
-import org.xerial.snappy.SnappyInputStream;
-
-import com.esotericsoftware.kryo.io.Input;
-import com.esotericsoftware.kryo.io.Output;
+import org.nustaq.serialization.FSTObjectInput;
+import org.nustaq.serialization.FSTObjectOutput;
 
 /**
  * 
@@ -93,19 +91,11 @@ public class RemoteDataFetcher {
 		log.debug("Entered RemoteDataFetcher.createFileMR");
 
 		try (var fsdos = hdfs.create(filepathurl); 
-				var output = new Output(fsdos);) {
+				var output = new FSTObjectOutput(fsdos, Utils.getConfigForSerialization());) {
 
-			// Create a kryo serializer object.
-			var kryo = Utils.getKryoSerializerDeserializer();
-			// Write object output to DFS using kryo serializer.
-			kryo.writeObject(output, new LinkedHashSet<>(serobj.keys()));
+			output.writeObject(new LinkedHashSet<>(serobj.keys()));
+			output.writeObject(serobj);
 			output.flush();
-			fsdos.hflush();
-			fsdos.hsync();
-			kryo.writeClassAndObject(output, serobj);
-			output.flush();
-			fsdos.hflush();
-			fsdos.hsync();
 		} catch (Exception ex) {
 			log.error(RemoteDataFetcherException.INTERMEDIATEPHASEWRITEERROR, ex);
 			throw new RemoteDataFetcherException(RemoteDataFetcherException.INTERMEDIATEPHASEWRITEERROR, ex);
@@ -124,15 +114,9 @@ public class RemoteDataFetcher {
 	protected static void createFile(FileSystem hdfs, Path filepathurl, Object serobj) throws RemoteDataFetcherException {
 		log.debug("Entered RemoteDataFetcher.createFile");
 		try (var fsdos = hdfs.create(filepathurl); 
-				var output = new Output(fsdos);) {
-
-			// Create a kryo serializer object.
-			var kryo = Utils.getKryoSerializerDeserializer();
-			// Write object output to DFS using kryo serializer.
-			kryo.writeClassAndObject(output, serobj);
+				var output = new FSTObjectOutput(fsdos, Utils.getConfigForSerialization());) {
+			output.writeObject(serobj);
 			output.flush();
-			fsdos.hsync();
-			fsdos.hflush();
 		} catch (Exception ex) {
 			log.error(RemoteDataFetcherException.INTERMEDIATEPHASEWRITEERROR, ex);
 			throw new RemoteDataFetcherException(RemoteDataFetcherException.INTERMEDIATEPHASEWRITEERROR, ex);
@@ -194,11 +178,9 @@ public class RemoteDataFetcher {
 				configuration);
 				var fs = (DistributedFileSystem) hdfs;
 				var dis = fs.getClient().open(new Path(path).toUri().getPath());
-				var input = new Input(dis);) {
-			var kryo = Utils.getKryoSerializerDeserializer();
+				var in = new FSTObjectInput(dis, Utils.getConfigForSerialization())) {
 			log.debug("Exiting RemoteDataFetcher.readYarnAppmasterServiceDataFromDFS");
-			// Read object information from kryo.
-			return kryo.readClassAndObject(input);
+			return in.readObject();
 		} catch (Exception ioe) {
 			log.error(RemoteDataFetcherException.INTERMEDIATEPHASEREADERROR, ioe);
 			throw new RemoteDataFetcherException(RemoteDataFetcherException.INTERMEDIATEPHASEREADERROR, ioe);
@@ -221,16 +203,14 @@ public class RemoteDataFetcher {
 				+ MDCConstants.FORWARD_SLASH + jobid + MDCConstants.FORWARD_SLASH + filename;
 		try (var hdfs = FileSystem.newInstance(new URI(MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL, MDCConstants.HDFSNAMENODEURL_DEFAULT)),
 				configuration);
-				var fs = (DistributedFileSystem) hdfs;
-				var dis = fs.getClient().open(new Path(path).toUri().getPath());
-				var input = new Input(dis);) {
-			var kryo = Utils.getKryoSerializerDeserializer();
-			var keysobj = kryo.readObject(input, LinkedHashSet.class);
+				var dis = hdfs.open(new Path(path));
+				var in = new FSTObjectInput(dis, Utils.getConfigForSerialization())) {
+			var keysobj = in.readObject();
 			if (keys) {
 				return keysobj;
 			}
 			log.debug("Exiting RemoteDataFetcher.readIntermediatePhaseOutputFromDFS");
-			return kryo.readClassAndObject(input);
+			return in.readObject();
 		} catch (Exception ioe) {
 			log.error(RemoteDataFetcherException.INTERMEDIATEPHASEREADERROR, ioe);
 			throw new RemoteDataFetcherException(RemoteDataFetcherException.INTERMEDIATEPHASEREADERROR, ioe);
@@ -252,7 +232,7 @@ public class RemoteDataFetcher {
 		try {
 			var path = MDCConstants.FORWARD_SLASH + FileSystemSupport.MDS + MDCConstants.FORWARD_SLASH + jobid + MDCConstants.FORWARD_SLASH + filename;
 			log.debug("Exiting RemoteDataFetcher.readIntermediatePhaseOutputFromDFS");
-			return new SnappyInputStream(new BufferedInputStream(hdfs.open(new Path(path))));
+			return hdfs.open(new Path(path));
 		}
 		catch (Exception ioe) {
 			log.error(RemoteDataFetcherException.INTERMEDIATEPHASEREADERROR, ioe);
@@ -274,13 +254,11 @@ public class RemoteDataFetcher {
 		log.debug("Entered RemoteDataFetcher.readIntermediatePhaseOutputFromDFS");
 		try {
 			var path = MDCConstants.FORWARD_SLASH + FileSystemSupport.MDS + MDCConstants.FORWARD_SLASH + jobid + MDCConstants.FORWARD_SLASH + filename;			
-			log.info("RemoteDataFetcher.readIntermediatePhaseOutputFromDFS: "+MDCProperties.get().getProperty(MDCConstants.TMPDIR) + path);
 			File file = new File(MDCProperties.get().getProperty(MDCConstants.TMPDIR) + path);
 			log.debug("Exiting RemoteDataFetcher.readIntermediatePhaseOutputFromDFS");
 			if (file.isFile() && file.exists()) {
-				return new SnappyInputStream(new BufferedInputStream(new FileInputStream(file)));
+				return new BufferedInputStream(new FileInputStream(file));
 			}
-			log.info("RemoteDataFetcher.readIntermediatePhaseOutputFromDFS: "+(file.isFile() && file.exists()));
 			return null;
 		}
 		catch (Exception ioe) {
@@ -317,9 +295,9 @@ public class RemoteDataFetcher {
 	 */
 	public static void remoteInMemoryDataFetch(RemoteDataFetch rdf) throws Exception {
 		log.debug("Entered RemoteDataFetcher.remoteInMemoryDataFetch");
-		log.info("Remote Data Fetch with hp: " + rdf.hp);
-		var rdfwithdata = (RemoteDataFetch) Utils.getResultObjectByInput(rdf.hp, rdf);
-		rdf.data = rdfwithdata.data;
+		log.info("Remote data recover with hp: " + rdf.getHp());
+		var rdfwithdata = (RemoteDataFetch) Utils.getResultObjectByInput(rdf.getHp(), rdf);
+		rdf.setData(rdfwithdata.getData());
 		log.debug("Exiting RemoteDataFetcher.remoteInMemoryDataFetch");
 	}
 

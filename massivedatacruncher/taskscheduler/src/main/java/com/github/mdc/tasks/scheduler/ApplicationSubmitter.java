@@ -15,8 +15,11 @@
  */
 package com.github.mdc.tasks.scheduler;
 
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.net.URL;
@@ -32,9 +35,9 @@ import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.RetryForever;
 import org.apache.hadoop.fs.FsUrlStreamHandlerFactory;
 import org.apache.log4j.Logger;
+import org.nustaq.serialization.FSTObjectInput;
+import org.nustaq.serialization.FSTObjectOutput;
 
-import com.esotericsoftware.kryo.io.Input;
-import com.esotericsoftware.kryo.io.Output;
 import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.MDCProperties;
 import com.github.mdc.common.Utils;
@@ -98,7 +101,7 @@ public class ApplicationSubmitter {
 					baos.write(ch);
 				}
 				baos.flush();
-				var kryo = Utils.getKryoSerializerDeserializer();
+				
 				writeDataStream(os, baos.toByteArray());
 				writeDataStream(os, new File(jarpath).getName().getBytes());
 				if (!Objects.isNull(argue)) {
@@ -107,12 +110,13 @@ public class ApplicationSubmitter {
 					}
 				}
 				writeInt(os, -1);
-				while (true) {
-					var input = new Input(is);
-					var messagetasksscheduler = (String) kryo.readObject(input, String.class);
-					log.info(messagetasksscheduler);
-					if ("quit".equals(messagetasksscheduler.trim())) {
-						break;
+				try (var br = new BufferedReader(new InputStreamReader(is));) {
+					while (true) {					
+						var messagetasksscheduler = (String) br.readLine();
+						if ("quit".equals(messagetasksscheduler.trim())) {
+							break;
+						}
+						log.info(messagetasksscheduler);
 					}
 				}
 			} catch (Exception ex) {
@@ -124,10 +128,12 @@ public class ApplicationSubmitter {
 
 	public static void writeInt(OutputStream os, Integer value) throws ApplicationSubmitterException {
 		try {
-			var kryo = Utils.getKryoSerializerDeserializer();
-			var output = new Output(os);
-			kryo.writeClassAndObject(output, value);
-			output.flush();
+			
+			byte[] bytes = Utils.getConfigForSerialization().asByteArray(value);
+			DataOutputStream dos = new DataOutputStream(os);
+			dos.writeInt(bytes.length);
+			dos.write(bytes);
+			dos.flush();
 		} catch(Exception exception){
 			throw new ApplicationSubmitterException(exception, "Unable to write Integer value to the output stream");
 		}
@@ -135,10 +141,11 @@ public class ApplicationSubmitter {
 
 	public static void writeDataStream(OutputStream os, byte[] outbyt) throws ApplicationSubmitterException {
 		try {
-			var kryo = Utils.getKryoSerializerDeserializer();
-			var output = new Output(os);
-			kryo.writeClassAndObject(output, outbyt);
-			output.flush();
+			byte[] bytes = Utils.getConfigForSerialization().asByteArray(outbyt);
+			DataOutputStream dos = new DataOutputStream(os);
+			dos.writeInt(bytes.length);
+			dos.write(bytes);
+			dos.flush();
 		} catch(Exception exception){
 			throw new ApplicationSubmitterException(exception, "Unable to write Integer value to the output stream");
 		}

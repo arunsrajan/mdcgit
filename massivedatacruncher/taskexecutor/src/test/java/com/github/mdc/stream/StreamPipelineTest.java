@@ -94,12 +94,12 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		CsvStream<CSVRecord> datastream = StreamPipeline.newCsvStreamHDFS(hdfsfilepath, airlinesample,
 				pipelineconfig, airlineheader);
 		List<List<CSVRecord>> result = (List) datastream
-				.filter(record -> !"ArrDelay".equals(record.get("ArrDelay")) && !"NA".equals(record.get("ArrDelay"))
-						&& "4".equals(record.get("Month")) && "13".equals(record.get("DayofMonth")))
+				.filter(record -> !"ArrDelay".equals(record.get(14)) && !"NA".equals(record.get(14))
+						&& "4".equals(record.get(1)) && "13".equals(record.get("DayofMonth")))
 				.collect(toexecute, null);
 		for (CSVRecord csvrec : result.get(0)) {
 			log.info(csvrec);
-			assertEquals(true, "4".equals(csvrec.get("Month")) && "13".equals(csvrec.get("DayofMonth")));
+			assertEquals(true, "4".equals(csvrec.get(1)) && "13".equals(csvrec.get(2)));
 		}
 
 		log.info("testCsvStreamFilterCollect After---------------------------------------");
@@ -129,7 +129,7 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		CsvStream<CSVRecord> datastream = StreamPipeline.newCsvStreamHDFS(hdfsfilepath, airlinesample,
 				pipelineconfig, airlineheader);
 		List<List<Tuple2>> results = (List) datastream
-				.flatMapToTuple2(csvrec -> Arrays.asList(Tuple.tuple(csvrec.get("ArrDelay"), csvrec.get("DayofMonth"))))
+				.flatMapToTuple2(csvrec -> Arrays.asList(Tuple.tuple(csvrec.get("ArrDelay"), csvrec.get(2))))
 				.collect(toexecute, null);
 		double sum = results.stream().flatMap(str -> str.stream())
 				.filter(t2 -> !t2.v1.equals("ArrDelay") && !t2.v1.equals("NA"))
@@ -146,14 +146,14 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 				pipelineconfig, airlineheader);
 		CsvStream<CSVRecord> csvStream = (CsvStream) datastream;
 		StreamPipeline filter9 = csvStream.filter(
-				record -> !"ArrDelay".equals(record.get("ArrDelay")) && Long.parseLong(record.get("Month")) > 9l);
+				record -> !"ArrDelay".equals(record.get(14)) && Long.parseLong(record.get(1)) > 9l);
 		StreamPipeline filter11 = csvStream.filter(
-				record -> !"ArrDelay".equals(record.get("ArrDelay")) && Long.parseLong(record.get("Month")) > 8l);
+				record -> !"ArrDelay".equals(record.get(14)) && Long.parseLong(record.get(1)) > 8l);
 		List<List<CSVRecord>> csvrecords = (List) filter9.intersection(filter11).collect(toexecute, null);
 		for (CSVRecord csvrec : csvrecords.get(0)) {
 			log.info(csvrec);
-			assertEquals(true, "10".equals(csvrec.get("Month")) || "11".equals(csvrec.get("Month"))
-					|| "12".equals(csvrec.get("Month")));
+			assertEquals(true, "10".equals(csvrec.get(1)) || "11".equals(csvrec.get(1))
+					|| "12".equals(csvrec.get(1)));
 
 		}
 		log.info("testCsvStreamIntersection After---------------------------------------");
@@ -166,17 +166,17 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		CsvStream<CSVRecord> datastream = StreamPipeline.newCsvStreamHDFS(hdfsfilepath, airlinesample,
 				pipelineconfig, airlineheader);
 		CsvStream<CSVRecord> csvStream = (CsvStream) datastream;
-		StreamPipeline filter10 = csvStream.filter(record -> !"ArrDelay".equals(record.get("ArrDelay"))
-				&& Long.parseLong(record.get("Month")) == 10l);
-		StreamPipeline filter8 = csvStream.filter(record -> !"ArrDelay".equals(record.get("ArrDelay"))
-				&& Long.parseLong(record.get("Month")) == 8l);
-		StreamPipeline filtergt10 = csvStream.filter(record -> !"ArrDelay".equals(record.get("ArrDelay"))
-				&& Long.parseLong(record.get("Month")) > 10l);
+		StreamPipeline filter10 = csvStream.filter(record -> !"ArrDelay".equals(record.get(14))
+				&& Long.parseLong(record.get(1)) == 10l);
+		StreamPipeline filter8 = csvStream.filter(record -> !"ArrDelay".equals(record.get(14))
+				&& Long.parseLong(record.get(1)) == 8l);
+		StreamPipeline filtergt10 = csvStream.filter(record -> !"ArrDelay".equals(record.get(14))
+				&& Long.parseLong(record.get(1)) > 10l);
 		List<List<CSVRecord>> csvrecords = (List) filter10.intersection(filter8).union(filtergt10).collect(toexecute,
 				null);
 		for (CSVRecord csvrec : csvrecords.get(0)) {
 			log.info(csvrec);
-			assertEquals(true, "11".equals(csvrec.get("Month")) || "12".equals(csvrec.get("Month")));
+			assertEquals(true, "11".equals(csvrec.get(1)) || "12".equals(csvrec.get(1)));
 		}
 		log.info("testCsvStreamIntersection10_8UnionGt10 After---------------------------------------");
 	}
@@ -189,16 +189,16 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 				pipelineconfig, airlineheader);
 		CsvStream<CSVRecord> csvStream = (CsvStream) datastream;
 		StreamPipeline filter9 = csvStream.filter(
-				record -> !"ArrDelay".equals(record.get("ArrDelay")) && Long.parseLong(record.get("Month")) > 9l);
+				record -> !"ArrDelay".equals(record.get(14)) && Long.parseLong(record.get(1)) > 9l);
 		StreamPipeline filter8 = csvStream.filter(
-				record -> !"ArrDelay".equals(record.get("ArrDelay")) && Long.parseLong(record.get("Month")) > 8l);
-		StreamPipeline filter11 = csvStream.filter(record -> !"ArrDelay".equals(record.get("ArrDelay"))
-				&& Long.parseLong(record.get("Month")) > 11l);
+				record -> !"ArrDelay".equals(record.get(14)) && Long.parseLong(record.get(1)) > 8l);
+		StreamPipeline filter11 = csvStream.filter(record -> !"ArrDelay".equals(record.get(14))
+				&& Long.parseLong(record.get(1)) > 11l);
 		List<List<CSVRecord>> csvrecords = (List) filter9.intersection(filter8).intersection(filter11)
 				.collect(toexecute, null);
 		for (CSVRecord csvrec : csvrecords.get(0)) {
 			log.info(csvrec);
-			assertEquals(true, "12".equals(csvrec.get("Month")));
+			assertEquals(true, "12".equals(csvrec.get(1)));
 		}
 		log.info("testCsvStreamIntersectionIntersection After---------------------------------------");
 	}
@@ -210,7 +210,7 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		CsvStream<CSVRecord> datastream = StreamPipeline.newCsvStreamHDFS(hdfsfilepath, airlinesample,
 				pipelineconfig, airlineheader);
 		List<List<Tuple2>> results = (List) datastream
-				.mapToPair(csvrec -> Tuple.tuple(csvrec.get("ArrDelay"), csvrec.get("DayofMonth")))
+				.mapToPair(csvrec -> Tuple.tuple(csvrec.get("ArrDelay"), csvrec.get(2)))
 				.collect(toexecute, null);
 		double sum = results.stream().flatMap(str -> str.stream())
 				.filter(t2 -> !t2.v1.equals("ArrDelay") && !t2.v1.equals("NA"))
@@ -226,14 +226,14 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		CsvStream<CSVRecord> datastream = StreamPipeline.newCsvStreamHDFS(hdfsfilepath, airlinesample,
 				pipelineconfig, airlineheader);
 		CsvStream<CSVRecord> csvStream = (CsvStream) datastream;
-		StreamPipeline filter9 = csvStream.filter(record -> !"ArrDelay".equals(record.get("ArrDelay"))
-				&& Long.parseLong(record.get("Month")) == 9l);
-		StreamPipeline filter8 = csvStream.filter(record -> !"ArrDelay".equals(record.get("ArrDelay"))
-				&& Long.parseLong(record.get("Month")) == 8l);
+		StreamPipeline filter9 = csvStream.filter(record -> !"ArrDelay".equals(record.get(14))
+				&& Long.parseLong(record.get(1)) == 9l);
+		StreamPipeline filter8 = csvStream.filter(record -> !"ArrDelay".equals(record.get(14))
+				&& Long.parseLong(record.get(1)) == 8l);
 		List<List<CSVRecord>> csvrecords = (List) filter9.union(filter8).collect(toexecute, null);
 		for (CSVRecord csvrec : csvrecords.get(0)) {
 			log.info(csvrec);
-			assertEquals(true, "9".equals(csvrec.get("Month")) || "8".equals(csvrec.get("Month")));
+			assertEquals(true, "9".equals(csvrec.get(1)) || "8".equals(csvrec.get(1)));
 		}
 		log.info("testCsvStreamUnion After---------------------------------------");
 	}
@@ -245,17 +245,17 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		CsvStream<CSVRecord> datastream = StreamPipeline.newCsvStreamHDFS(hdfsfilepath, airlinesample,
 				pipelineconfig, airlineheader);
 		CsvStream<CSVRecord> csvStream = (CsvStream) datastream;
-		StreamPipeline filter10 = csvStream.filter(record -> !"ArrDelay".equals(record.get("ArrDelay"))
-				&& Long.parseLong(record.get("Month")) == 10l);
-		StreamPipeline filter8 = csvStream.filter(record -> !"ArrDelay".equals(record.get("ArrDelay"))
-				&& Long.parseLong(record.get("Month")) == 8l);
+		StreamPipeline filter10 = csvStream.filter(record -> !"ArrDelay".equals(record.get(14))
+				&& Long.parseLong(record.get(1)) == 10l);
+		StreamPipeline filter8 = csvStream.filter(record -> !"ArrDelay".equals(record.get(14))
+				&& Long.parseLong(record.get(1)) == 8l);
 		StreamPipeline filtergt8 = csvStream.filter(
-				record -> !"ArrDelay".equals(record.get("ArrDelay")) && Long.parseLong(record.get("Month")) > 8l);
+				record -> !"ArrDelay".equals(record.get(14)) && Long.parseLong(record.get(1)) > 8l);
 		List<List<CSVRecord>> csvrecords = (List) filter10.union(filter8).intersection(filtergt8).collect(toexecute,
 				null);
 		for (CSVRecord csvrec : csvrecords.get(0)) {
 			log.info(csvrec);
-			assertEquals(true, "10".equals(csvrec.get("Month")));
+			assertEquals(true, "10".equals(csvrec.get(1)));
 		}
 		log.info("testCsvStreamUnion10_8Intersectiongt8 After---------------------------------------");
 	}
@@ -267,16 +267,16 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		CsvStream<CSVRecord> datastream = StreamPipeline.newCsvStreamHDFS(hdfsfilepath, airlinesample,
 				pipelineconfig, airlineheader);
 		CsvStream<CSVRecord> csvStream = (CsvStream) datastream;
-		StreamPipeline filter10 = csvStream.filter(record -> !"ArrDelay".equals(record.get("ArrDelay"))
-				&& Long.parseLong(record.get("Month")) == 10l);
-		StreamPipeline filter8 = csvStream.filter(record -> !"ArrDelay".equals(record.get("ArrDelay"))
-				&& Long.parseLong(record.get("Month")) == 8l);
-		StreamPipeline filter10_2 = csvStream.filter(record -> !"ArrDelay".equals(record.get("ArrDelay"))
-				&& Long.parseLong(record.get("Month")) == 10l);
+		StreamPipeline filter10 = csvStream.filter(record -> !"ArrDelay".equals(record.get(14))
+				&& Long.parseLong(record.get(1)) == 10l);
+		StreamPipeline filter8 = csvStream.filter(record -> !"ArrDelay".equals(record.get(14))
+				&& Long.parseLong(record.get(1)) == 8l);
+		StreamPipeline filter10_2 = csvStream.filter(record -> !"ArrDelay".equals(record.get(14))
+				&& Long.parseLong(record.get(1)) == 10l);
 		List<List<CSVRecord>> csvrecords = (List) filter10.union(filter8).union(filter10_2).collect(toexecute, null);
 		for (CSVRecord csvrec : csvrecords.get(0)) {
 			log.info(csvrec);
-			assertEquals(true, "10".equals(csvrec.get("Month")) || "8".equals(csvrec.get("Month")));
+			assertEquals(true, "10".equals(csvrec.get(1)) || "8".equals(csvrec.get(1)));
 		}
 		log.info("testCsvStreamUnion10_8Union8_10 After---------------------------------------");
 	}
@@ -288,17 +288,17 @@ public class StreamPipelineTest extends StreamPipelineBaseTestCommon {
 		CsvStream<CSVRecord> datastream = StreamPipeline.newCsvStreamHDFS(hdfsfilepath, airlinesample,
 				pipelineconfig, airlineheader);
 		CsvStream<CSVRecord> csvStream = (CsvStream) datastream;
-		StreamPipeline filter10 = csvStream.filter(record -> !"ArrDelay".equals(record.get("ArrDelay"))
-				&& Long.parseLong(record.get("Month")) == 10l);
-		StreamPipeline filter8 = csvStream.filter(record -> !"ArrDelay".equals(record.get("ArrDelay"))
-				&& Long.parseLong(record.get("Month")) == 8l);
-		StreamPipeline filter12 = csvStream.filter(record -> !"ArrDelay".equals(record.get("ArrDelay"))
-				&& Long.parseLong(record.get("Month")) == 12l);
+		StreamPipeline filter10 = csvStream.filter(record -> !"ArrDelay".equals(record.get(14))
+				&& Long.parseLong(record.get(1)) == 10l);
+		StreamPipeline filter8 = csvStream.filter(record -> !"ArrDelay".equals(record.get(14))
+				&& Long.parseLong(record.get(1)) == 8l);
+		StreamPipeline filter12 = csvStream.filter(record -> !"ArrDelay".equals(record.get(14))
+				&& Long.parseLong(record.get(1)) == 12l);
 		List<List<CSVRecord>> csvrecords = (List) filter10.union(filter8).union(filter12).collect(toexecute, null);
 		for (CSVRecord csvrec : csvrecords.get(0)) {
 			log.info(csvrec);
-			assertEquals(true, "10".equals(csvrec.get("Month")) || "8".equals(csvrec.get("Month"))
-					|| "12".equals(csvrec.get("Month")));
+			assertEquals(true, "10".equals(csvrec.get(1)) || "8".equals(csvrec.get(1))
+					|| "12".equals(csvrec.get(1)));
 		}
 		log.info("testCsvStreamUnion10_8Union8_12 After---------------------------------------");
 	}

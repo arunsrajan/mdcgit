@@ -95,14 +95,14 @@ public sealed class IgniteCommon extends AbstractPipeline permits IgnitePipeline
 	protected Job cacheInternal(boolean isresults,URI uri, String path) throws PipelineException  {
 		try {
 			var job = createJob();
-			job.isresultrequired = isresults;
+			job.setIsresultrequired(isresults);
 			if(!Objects.isNull(uri)) {
-				job.uri = uri.toString();
+				job.setUri(uri.toString());
 			}
 			if(!Objects.isNull(path)) {
-				job.savepath = path;
+				job.setSavepath(path);
 			}
-			job.results = submitJob(job);
+			job.setResults(submitJob(job));
 			return job;
 		}
 		catch(Exception ex) {
@@ -125,7 +125,7 @@ public sealed class IgniteCommon extends AbstractPipeline permits IgnitePipeline
 			pc = mti.pipelineconfig;
 		}
 		var js = new StreamJobScheduler();
-		job.pipelineconfig = pc;
+		job.setPipelineconfig(pc);
 		return js.schedule(job);
 
 	}
@@ -142,25 +142,25 @@ public sealed class IgniteCommon extends AbstractPipeline permits IgnitePipeline
 	protected Job createJob() throws PipelineException, ExportException, IOException, URISyntaxException  {
 		Job job;
 		job = new Job();
-		job.id = MDCConstants.JOB+MDCConstants.HYPHEN+Utils.getUniqueID();
-		job.jm = new JobMetrics();
-		job.jm.jobstarttime = System.currentTimeMillis();
-		job.jm.jobid = job.id;
-		MDCJobMetrics.put(job.jm);
+		job.setId(MDCConstants.JOB+MDCConstants.HYPHEN+System.currentTimeMillis()+MDCConstants.HYPHEN+Utils.getUniqueJobID());
+		job.setJm(new JobMetrics());
+		job.getJm().setJobstarttime(System.currentTimeMillis());
+		job.getJm().setJobid(job.getId());
+		MDCJobMetrics.put(job.getJm());
 		PipelineConfig pipelineconfig = null;
 		if(root instanceof IgnitePipeline ip) {
 			pipelineconfig = ip.pipelineconfig;
 		}else if(root instanceof MapPairIgnite mpi) {
 			pipelineconfig = mpi.pipelineconfig;
 		}
-		job.jm.mode = pipelineconfig.getMode();
+		job.getJm().setMode(pipelineconfig.getMode());
 		if(!this.mdsroots.isEmpty()) {
 			for(AbstractPipeline root:this.mdsroots) {
 				if(root instanceof IgnitePipeline mdpi && !Objects.isNull(mdpi.job)) {
-					job.input.add(mdpi.job.output);
+					job.getInput().add(mdpi.job.getOutput());
 				}
 				else if(root instanceof MapPairIgnite mpi && !Objects.isNull(mpi.job)){
-					job.input.add(mpi.job.output);
+					job.getInput().add(mpi.job.getOutput());
 				}
 			}
 		}else {
@@ -195,7 +195,7 @@ public sealed class IgniteCommon extends AbstractPipeline permits IgnitePipeline
 		return tasksnames.toString();
 	}
 	private String printStages(Set<Stage> stages) {
-		var stagenames = stages.stream().map(sta->sta.getStageid()).collect(Collectors.toList());
+		var stagenames = stages.stream().map(sta->sta.getId()).collect(Collectors.toList());
 		return stagenames.toString();
 	}
 	private Set<Stage> finalstages = new LinkedHashSet<>();
@@ -240,9 +240,6 @@ public sealed class IgniteCommon extends AbstractPipeline permits IgnitePipeline
 				// child stage and form the edge between stages.
 				if ((af instanceof IgnitePipeline || af instanceof MapPairIgnite) && af.task instanceof Dummy) {
 					var parentstage = new Stage();
-					parentstage.setStageid("Stage" + stageid);
-					stageid++;
-					parentstage.id = MDCConstants.STAGE + MDCConstants.HYPHEN + Utils.getUniqueID();
 					rootstages.add(parentstage);
 					graphstages.addVertex(parentstage);
 					taskstagemap.put(af.task, parentstage);
@@ -254,10 +251,6 @@ public sealed class IgniteCommon extends AbstractPipeline permits IgnitePipeline
 				// between parent and child.
 				else if (af.parents.size() >= 2) {
 					var childstage = new Stage();
-					childstage.setStageid("Stage" + stageid);
-					stageid++;
-					childstage.id = MDCConstants.STAGE + MDCConstants.HYPHEN 
-							+ Utils.getUniqueID();
 					for (var afparent : af.parents) {
 						var parentstage = taskstagemap.get(afparent.task);
 						graphstages.addVertex(parentstage);
@@ -284,9 +277,6 @@ public sealed class IgniteCommon extends AbstractPipeline permits IgnitePipeline
 					// and pushed to stack.
 					if (af.parents.get(0).childs.size() >= 2) {
 						var childstage = new Stage();
-						childstage.setStageid("Stage" + stageid);
-						stageid++;
-						childstage.id = MDCConstants.STAGE + MDCConstants.HYPHEN + Utils.getUniqueID();
 						for (var afparent : af.parents) {
 							Stage parentstage = taskstagemap.get(afparent.task);
 							graphstages.addVertex(parentstage);
@@ -338,14 +328,13 @@ public sealed class IgniteCommon extends AbstractPipeline permits IgnitePipeline
 			log.debug("Stages----------------------------------------");
 			var stagesprocessed = graphstages.vertexSet();
 			for (Stage stagetoprint : stagesprocessed) {
-				log.debug("\n\nStage " + stagetoprint.getStageid());
+				log.debug("\n\nStage " + stagetoprint.getId());
 				log.debug("[Parent] [Child]");
 				log.debug(printStages(stagetoprint.parent) + " , " + printStages(stagetoprint.child));
 				log.debug("Tasks");
 				for (var task : stagetoprint.tasks) {
 					log.debug(PipelineUtils.getFunctions(task));
 				}
-				stagetoprint.tasksdescription = PipelineUtils.getFunctions(stagetoprint.tasks).toString();
 			}
 
 			finalstages.clear();
@@ -378,9 +367,9 @@ public sealed class IgniteCommon extends AbstractPipeline permits IgnitePipeline
 			// result been computed.
 			Iterator<Stage> topostages = new TopologicalOrderIterator(graphstages);
 			while (topostages.hasNext())
-				job.topostages.add(topostages.next());
-			job.topostages.retainAll(stages);
-			if(job.input.isEmpty()) {
+				job.getTopostages().add(topostages.next());
+			job.getTopostages().retainAll(stages);
+			if(job.getInput().isEmpty()) {
 				if(protocol.equals(FileSystemSupport.HDFS)) {
 					var fbpartitioner = new FileBlocksPartitionerHDFS();
 					fbpartitioner.getJobStageBlocks(job, supplier, ((IgnitePipeline)root).protocol, rootstages, mdsroots, ((IgnitePipeline)root).blocksize, ((IgnitePipeline)root).pipelineconfig);
@@ -410,24 +399,24 @@ public sealed class IgniteCommon extends AbstractPipeline permits IgnitePipeline
 				// Starting the node
 				var ignite = Ignition.start(cfg);
 				IgniteCache<Object, byte[]> ignitecache = ignite.cache(MDCConstants.MDCCACHE);
-				job.ignite = ignite;
-				var computeservers = job.ignite.cluster().forServers();
-				job.jm.containersallocated = computeservers.hostNames().stream().collect(Collectors.toMap(key->key, value->0d));
-				job.igcache = ignitecache;
-				job.stageoutputmap = new ConcurrentHashMap<>();
+				job.setIgnite(ignite);
+				var computeservers = job.getIgnite().cluster().forServers();
+				job.getJm().setContainersallocated(computeservers.hostNames().stream().collect(Collectors.toMap(key->key, value->0d)));
+				job.setIgcache(ignitecache);
+				job.setStageoutputmap(new ConcurrentHashMap<>());
 				var inputstages = new ArrayList<Stage>();
-				for(var stage:job.topostages) {
+				for(var stage:job.getTopostages()) {
 					if(stage.tasks.isEmpty()) {
 						inputstages.add(stage);
 					}
 				}
 				if(inputstages.size()==1) {
-					job.stageoutputmap.put(job.topostages.get(0),job.input.get(0));
+					job.getStageoutputmap().put(job.getTopostages().get(0),job.getInput().get(0));
 				}
 				else {
 					int index = 0;
 					for(Stage stage:inputstages) {
-						job.stageoutputmap.put(stage,job.input.get(index));
+						job.getStageoutputmap().put(stage,job.getInput().get(index));
 						index++;
 					}
 				}
@@ -462,9 +451,6 @@ public sealed class IgniteCommon extends AbstractPipeline permits IgnitePipeline
 	Map<Object, Stage> taskstagemap,AbstractPipeline af) {
 		var parentstage = taskstagemap.get(af.parents.get(0).task);
 		var childstage = new Stage();
-		childstage.setStageid("Stage"+stageid);
-		stageid++;
-		childstage.id = MDCConstants.STAGE + MDCConstants.HYPHEN + Utils.getUniqueID();
 		childstage.tasks.add(af.task);
 		graphstages.addVertex(parentstage);
 		graphstages.addVertex(childstage);

@@ -21,33 +21,21 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Semaphore;
 
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.ToString;
+
 public class GlobalContainerAllocDealloc {
+	@Getter
 	private static Map<String, List<String>> containercontainerids = new ConcurrentHashMap<>();
+	@Getter
 	private static Semaphore globalcontainerallocdeallocsem = new Semaphore(1);
+	@Getter
 	private static Map<String, ContainerResources> hportcrs = new ConcurrentHashMap<>();
+	@Getter
 	private static Map<String, String> containernode = new ConcurrentHashMap<>();
+	@Getter
 	private static Map<String, Set<String>> nodecontainers = new ConcurrentHashMap<>();
-
-	public static Map<String, List<String>> getContainercontainerids() {
-		return containercontainerids;
-	}
-
-	public static Semaphore getGlobalcontainerallocdeallocsem() {
-		return globalcontainerallocdeallocsem;
-	}
-
-
-	public static Map<String, ContainerResources> getHportcrs() {
-		return hportcrs;
-	}
-
-	public static Map<String, String> getContainernode() {
-		return containernode;
-	}
-
-	public static Map<String, Set<String>> getNodecontainers() {
-		return nodecontainers;
-	}
 
 	private GlobalContainerAllocDealloc() {
 	}

@@ -56,7 +56,7 @@ public final class StreamPipelineTaskExecutorYarn extends StreamPipelineTaskExec
 	 * @return
 	 */
 	public String getIntermediateDataFSFilePath(Task task) {
-		return MDCConstants.FORWARD_SLASH + FileSystemSupport.MDS + MDCConstants.FORWARD_SLASH + jobstage.jobid
+		return MDCConstants.FORWARD_SLASH + FileSystemSupport.MDS + MDCConstants.FORWARD_SLASH + jobstage.getJobid()
 				+ MDCConstants.FORWARD_SLASH + task.taskid;
 	}
 
@@ -67,7 +67,7 @@ public final class StreamPipelineTaskExecutorYarn extends StreamPipelineTaskExec
 	 * @return
 	 * @throws Exception
 	 */
-	public OutputStream createIntermediateDataToFS(Task task) throws PipelineException {
+	public OutputStream createIntermediateDataToFS(Task task, int numbytes) throws PipelineException {
 		log.debug("Entered StreamPipelineTaskExecutorYarn.createIntermediateDataToFS");
 		try {
 			var path = getIntermediateDataFSFilePath(task);
@@ -84,7 +84,7 @@ public final class StreamPipelineTaskExecutorYarn extends StreamPipelineTaskExec
 	 * The runnable method executes the streaming api parallely.
 	 */
 	@Override
-	public StreamPipelineTaskExecutor call() {
+	public Boolean call() {
 		try (var hdfs = FileSystem.newInstance(new URI(hdfsnn), new Configuration());) {
 			this.hdfs = hdfs;
 			var output = new ArrayList<>();
@@ -96,19 +96,20 @@ public final class StreamPipelineTaskExecutorYarn extends StreamPipelineTaskExec
 					if (input != null) {
 						var rdf = (RemoteDataFetch) input;
 						//Intermediate data fetch from HDFS streaming API.
-						task.input[inputindex] = RemoteDataFetcher.readIntermediatePhaseOutputFromDFS(rdf.jobid,
-								rdf.taskid, hdfs);
+						task.input[inputindex] = RemoteDataFetcher.readIntermediatePhaseOutputFromDFS(rdf.getJobid(),
+								rdf.getTaskid(), hdfs);
 					}
 				}
 			}
 			//Join transformation operation of map reduce stream pipelining API.
 			double timetakenseconds = computeTasks(task, hdfs);
 			output.clear();
+			completed = true;
 		} catch (Exception ex) {
 			log.error("Stage " + task.jobid + MDCConstants.SINGLESPACE + task.stageid + " failed, See cause below \n",
 					ex);
 		}
-		return this;
+		return completed;
 	}
 
 

@@ -31,7 +31,7 @@ public class HeartBeatServerStreamTest extends HeartBeatCommon {
 	@Test
 	public void testHeartBeatServerStreamInitWithNoArgs() {
 		try {
-			HeartBeatServerStream hbss = new HeartBeatServerStream();
+			HeartBeatStream hbss = new HeartBeatStream();
 			hbss.init();
 		} catch (Exception ex) {
 			assertEquals(MDCConstants.HEARTBEAT_EXCEPTION_MESSAGE, ex.getMessage());
@@ -41,7 +41,7 @@ public class HeartBeatServerStreamTest extends HeartBeatCommon {
 	@Test
 	public void testHeartBeatServerStreamInitWithImproperArgs() {
 		try {
-			HeartBeatServerStream hbss = new HeartBeatServerStream();
+			HeartBeatStream hbss = new HeartBeatStream();
 			hbss.init("224.0.0.1");
 		} catch (Exception ex) {
 			assertEquals(MDCConstants.HEARTBEAT_EXCEPTION_MESSAGE, ex.getMessage());
@@ -51,7 +51,7 @@ public class HeartBeatServerStreamTest extends HeartBeatCommon {
 	@Test
 	public void testHeartBeatServerStreamInitWithImproperRescheduleDelay() {
 		try {
-			HeartBeatServerStream hbss = new HeartBeatServerStream();
+			HeartBeatStream hbss = new HeartBeatStream();
 			hbss.init("224.0.0.1", 3000, "127.0.0.1", 1000, 5000, MDCConstants.EMPTY);
 		} catch (Exception ex) {
 			assertEquals(MDCConstants.HEARTBEAT_EXCEPTION_RESCHEDULE_DELAY, ex.getMessage());
@@ -62,7 +62,7 @@ public class HeartBeatServerStreamTest extends HeartBeatCommon {
 	@Test
 	public void testHeartBeatServerStreamInitWithImproperServerPort() {
 		try {
-			HeartBeatServerStream hbss = new HeartBeatServerStream();
+			HeartBeatStream hbss = new HeartBeatStream();
 			hbss.init(10000, "IMPROPERPORT", "127.0.0.1", 1000, 5000, MDCConstants.EMPTY);
 		} catch (Exception ex) {
 			assertEquals(MDCConstants.HEARTBEAT_EXCEPTION_SERVER_PORT, ex.getMessage());
@@ -72,7 +72,7 @@ public class HeartBeatServerStreamTest extends HeartBeatCommon {
 	@Test
 	public void testHeartBeatServerStreamInitWithImproperHost() {
 		try {
-			HeartBeatServerStream hbss = new HeartBeatServerStream();
+			HeartBeatStream hbss = new HeartBeatStream();
 			hbss.init(10000, 2000, 1000, 1000, 5000, MDCConstants.EMPTY);
 		} catch (Exception ex) {
 			assertEquals(MDCConstants.HEARTBEAT_EXCEPTION_SERVER_HOST, ex.getMessage());
@@ -82,7 +82,7 @@ public class HeartBeatServerStreamTest extends HeartBeatCommon {
 	@Test
 	public void testHeartBeatServerStreamInitWithImproperInitialDelay() {
 		try {
-			HeartBeatServerStream hbss = new HeartBeatServerStream();
+			HeartBeatStream hbss = new HeartBeatStream();
 			hbss.init(10000, 2000, "127.0.0.1", "IMPROPERINITIALDELAY", 5000, MDCConstants.EMPTY);
 		} catch (Exception ex) {
 			assertEquals(MDCConstants.HEARTBEAT_EXCEPTION_INITIAL_DELAY, ex.getMessage());
@@ -92,7 +92,7 @@ public class HeartBeatServerStreamTest extends HeartBeatCommon {
 	@Test
 	public void testHeartBeatServerStreamInitWithImproperPingDelay() {
 		try {
-			HeartBeatServerStream hbss = new HeartBeatServerStream();
+			HeartBeatStream hbss = new HeartBeatStream();
 			hbss.init(10000, 2000, "127.0.0.1", 1000, "IMPROPERPINGDELAY", MDCConstants.EMPTY);
 		} catch (Exception ex) {
 			assertEquals(MDCConstants.HEARTBEAT_EXCEPTION_PING_DELAY, ex.getMessage());
@@ -102,7 +102,7 @@ public class HeartBeatServerStreamTest extends HeartBeatCommon {
 	@Test
 	public void testHeartBeatServerStreamInitWithImproperContainerId() {
 		try {
-			HeartBeatServerStream hbss = new HeartBeatServerStream();
+			HeartBeatStream hbss = new HeartBeatStream();
 			hbss.init(10000, 2000, "127.0.0.1", 1000, 5000, 1000.0);
 		} catch (Exception ex) {
 			assertEquals(MDCConstants.HEARTBEAT_EXCEPTION_CONTAINER_ID, ex.getMessage());
@@ -111,7 +111,7 @@ public class HeartBeatServerStreamTest extends HeartBeatCommon {
 
 	@Test
 	public void testHeartBeatServerStreamInitWithArgs() throws Exception {
-		HeartBeatServerStream hbss = new HeartBeatServerStream();
+		HeartBeatStream hbss = new HeartBeatStream();
 		hbss.init(10000, 2000, "127.0.0.1", 1000, 5000, MDCConstants.EMPTY);
 		assertEquals(5000, hbss.pingdelay);
 		assertEquals(2000, hbss.serverport);
@@ -120,7 +120,7 @@ public class HeartBeatServerStreamTest extends HeartBeatCommon {
 
 	@Test
 	public void testHeartBeatServerStreamStart() throws Exception {
-		HeartBeatServerStream hbss = new HeartBeatServerStream();
+		HeartBeatStream hbss = new HeartBeatStream();
 		hbss.init(10000, 2000, "127.0.0.1", 1000, 5000, MDCConstants.EMPTY);
 		System.setProperty(MDCConstants.CLUSTERNAME, "heartbeattestcluster");
 		hbss.start();
@@ -130,11 +130,11 @@ public class HeartBeatServerStreamTest extends HeartBeatCommon {
 
 	@Test
 	public void testHeartBeatServerStreamStartAndPing() throws Exception {
-		HeartBeatServerStream hbss = new HeartBeatServerStream();
+		HeartBeatStream hbss = new HeartBeatStream();
 		hbss.init(10000, 2000, "127.0.0.1", 1000, 5000, MDCConstants.EMPTY);
 		hbss.start();
 
-		HeartBeatServerStream hbs1 = new HeartBeatServerStream();
+		HeartBeatStream hbs1 = new HeartBeatStream();
 		hbs1.init(10000, 2000, "127.0.0.1", 1000, 5000, MDCConstants.EMPTY);
 		hbs1.ping();
 
@@ -155,11 +155,11 @@ public class HeartBeatServerStreamTest extends HeartBeatCommon {
 	@Test
 	public void testHeartBeatServerStreamStartAndPingContainerId() throws Exception {
 		String containerid = UUID.randomUUID().toString();
-		HeartBeatServerStream hbss = new HeartBeatServerStream();
+		HeartBeatStream hbss = new HeartBeatStream();
 		hbss.init(10000, 2000, "127.0.0.1", 1000, 5000, containerid);
 		hbss.start();
 
-		HeartBeatServerStream hbs1 = new HeartBeatServerStream();
+		HeartBeatStream hbs1 = new HeartBeatStream();
 		hbs1.init(10000, 2001, "127.0.0.1", 1000, 5000, containerid);
 		hbs1.ping();
 
@@ -177,14 +177,14 @@ public class HeartBeatServerStreamTest extends HeartBeatCommon {
 
 	@Test
 	public void testHeartBeatMultipleServerStartAndPing() throws Exception {
-		HeartBeatServerStream hbss = new HeartBeatServerStream();
+		HeartBeatStream hbss = new HeartBeatStream();
 		hbss.init(10000, 2000, "127.0.0.1", 1000, 1000, MDCConstants.EMPTY);
 		hbss.start();
 		int numberOfServers = 5;
-		List<HeartBeatServerStream> heartBeatServerStreams = new ArrayList<>();
+		List<HeartBeatStream> heartBeatServerStreams = new ArrayList<>();
 		int count = 1;
 		while (count <= numberOfServers) {
-			HeartBeatServerStream hbs1 = new HeartBeatServerStream();
+			HeartBeatStream hbs1 = new HeartBeatStream();
 			hbs1.init(10000, 2000 + count, "127.0.0.1", 1000, 1000, MDCConstants.EMPTY);
 			hbs1.ping();
 			heartBeatServerStreams.add(hbs1);
@@ -206,7 +206,7 @@ public class HeartBeatServerStreamTest extends HeartBeatCommon {
 		}
 		count = 1;
 		while (count <= numberOfServers) {
-			HeartBeatServerStream hbs1 = heartBeatServerStreams.get(count - 1);
+			HeartBeatStream hbs1 = heartBeatServerStreams.get(count - 1);
 			hbs1.stop();
 			hbs1.destroy();
 			count++;

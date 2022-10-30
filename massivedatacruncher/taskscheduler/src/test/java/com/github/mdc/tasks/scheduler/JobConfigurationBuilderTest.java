@@ -19,6 +19,8 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
+import com.github.mdc.common.JobConfiguration;
+import com.github.mdc.common.JobConfigurationBuilder;
 import com.github.mdc.common.MDCConstants;
 
 public class JobConfigurationBuilderTest extends TaskSchedulerCommon {

@@ -21,12 +21,12 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nustaq.serialization.FSTObjectInput;
+import org.nustaq.serialization.FSTObjectOutput;
 import org.springframework.yarn.integration.ip.mind.MindAppmasterService;
 import org.springframework.yarn.integration.ip.mind.MindRpcMessageHolder;
 import org.springframework.yarn.integration.ip.mind.binding.BaseObject;
 
-import com.esotericsoftware.kryo.io.Input;
-import com.esotericsoftware.kryo.io.Output;
 import com.github.mdc.common.Task;
 import com.github.mdc.common.Utils;
 
@@ -78,10 +78,10 @@ public class StreamPipelineYarnAppmasterService extends MindAppmasterService {
 		response.setContainerid(request.getContainerid());
 		try {
 			//Kryo for object serialization and deserialization.
-			var kryo = Utils.getKryoSerializerDeserializer();
+			
 			if (request.getJob() != null) {
-				try (var input = new Input(new ByteArrayInputStream(request.getJob()));) {
-					var object = kryo.readClassAndObject(input);
+				try (var input = new FSTObjectInput(new ByteArrayInputStream(request.getJob()), Utils.getConfigForSerialization());) {
+					var object = input.readObject();
 					var task = (Task) object;
 					// Update statuses to App Master if job has been completed.
 					if (request.getState().equals(JobRequest.State.JOBDONE)) {
@@ -105,8 +105,8 @@ public class StreamPipelineYarnAppmasterService extends MindAppmasterService {
 			//Job is available
 			if (job != null) {
 				var baos = new ByteArrayOutputStream();
-				var output = new Output(baos);
-				kryo.writeClassAndObject(output, job);
+				var output = new FSTObjectOutput(baos, Utils.getConfigForSerialization());
+				output.writeObject(job);
 				output.flush();
 				output.close();
 				response.setJob(baos.toByteArray());

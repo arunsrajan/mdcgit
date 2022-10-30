@@ -33,7 +33,7 @@ public class StreamReduceCoalescePartition implements Serializable, Pipeline {
 
 	public void runPipeline(String[] args, PipelineConfig pipelineconfig) throws Exception {
 		pipelineconfig.setIsblocksuserdefined("false");
-		pipelineconfig.setLocal("true");
+		pipelineconfig.setLocal("false");
 		pipelineconfig.setMesos("false");
 		pipelineconfig.setYarn("false");
 		pipelineconfig.setJgroups("false");

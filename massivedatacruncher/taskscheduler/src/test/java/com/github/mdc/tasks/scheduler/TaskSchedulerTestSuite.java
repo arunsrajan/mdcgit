@@ -5,7 +5,7 @@ import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@SuiteClasses({JobConfigurationBuilderTest.class,MdcJobBuilderTest.class})
+@SuiteClasses({MdcJobBuilderTest.class, JobConfigurationBuilderTest.class})
 public class TaskSchedulerTestSuite {
 
 }

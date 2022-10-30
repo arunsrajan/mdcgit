@@ -15,6 +15,7 @@
  */
 package com.github.mdc.common;
 
+import java.io.InputStream;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,7 +36,6 @@ import org.ehcache.Cache;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.xerial.snappy.SnappyInputStream;
 
 import static org.junit.Assert.assertNotNull;
 
@@ -50,7 +50,6 @@ public class CacheUtilsTest {
 				+ MDCConstants.DIST_CONFIG_FOLDER + MDCConstants.FORWARD_SLASH, MDCConstants.MDC_TEST_PROPERTIES);
 		CacheUtils.initCache();
 		ByteBufferPoolDirect.init();
-		ByteBufferPool.init(Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.BYTEBUFFERPOOL_MAX, MDCConstants.BYTEBUFFERPOOL_MAX_DEFAULT)));
 	}
 
 	@Test
@@ -70,7 +69,7 @@ public class CacheUtilsTest {
 		int blscount = 0;
 		Cache<String, byte[]> cache = (Cache<String, byte[]>) MDCCache.get();
 		for (BlocksLocation bl :bls) {
-			SnappyInputStream sis = HdfsBlockReader.getBlockDataSnappyStream(bl, hdfs);
+			InputStream sis = HdfsBlockReader.getBlockDataInputStream(bl, hdfs);
 			byte[] byt = sis.readAllBytes();
 			cache.put(cacheblock + blscount, byt);
 			blscount++;
@@ -123,7 +122,7 @@ public class CacheUtilsTest {
 	public static void destroyCache() throws Exception {
 		MDCCache.get().clear();
 		MDCCacheManager.get().close();
-		ByteBufferPoolDirect.get().close();
+		ByteBufferPoolDirect.destroy();
 	}
 
 }

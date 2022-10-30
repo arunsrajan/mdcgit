@@ -15,24 +15,29 @@
  */
 package com.github.mdc.common;
 
-public class AllocateContainers {
+import java.io.Serializable;
+
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+
+/**
+ * Class holds with container id and number of containers to allocate containers.
+ * @author arun
+ *
+ */
+@Getter
+@Setter
+@EqualsAndHashCode
+@ToString
+@NoArgsConstructor
+@AllArgsConstructor
+public class AllocateContainers implements Serializable{
+	private static final long serialVersionUID = 5722412378550026294L;
 	private String containerid;
 	private int numberofcontainers;
-
-	public String getContainerid() {
-		return containerid;
-	}
-
-	public void setContainerid(String containerid) {
-		this.containerid = containerid;
-	}
-
-	public int getNumberofcontainers() {
-		return numberofcontainers;
-	}
-
-	public void setNumberofcontainers(int numberofcontainers) {
-		this.numberofcontainers = numberofcontainers;
-	}
 
 }

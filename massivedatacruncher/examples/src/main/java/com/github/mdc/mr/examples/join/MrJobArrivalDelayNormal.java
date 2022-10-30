@@ -17,8 +17,8 @@ package com.github.mdc.mr.examples.join;
 
 import org.apache.log4j.Logger;
 
+import com.github.mdc.common.JobConfiguration;
 import com.github.mdc.common.MDCConstants;
-import com.github.mdc.tasks.scheduler.JobConfiguration;
 import com.github.mdc.tasks.scheduler.MapReduceApplication;
 import com.github.mdc.tasks.scheduler.MapReduceApplicationBuilder;
 

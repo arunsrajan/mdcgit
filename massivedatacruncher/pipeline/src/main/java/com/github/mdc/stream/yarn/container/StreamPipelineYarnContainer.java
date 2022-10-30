@@ -19,16 +19,15 @@ import java.io.ByteArrayInputStream;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nustaq.serialization.FSTObjectInput;
 import org.springframework.yarn.integration.container.AbstractIntegrationYarnContainer;
 import org.springframework.yarn.integration.ip.mind.MindAppmasterServiceClient;
 
-import com.esotericsoftware.kryo.io.Input;
-import com.github.mdc.common.ByteBufferPool;
 import com.github.mdc.common.ByteBufferPoolDirect;
 import com.github.mdc.common.JobStage;
 import com.github.mdc.common.MDCConstants;
@@ -64,13 +63,12 @@ public class StreamPipelineYarnContainer extends AbstractIntegrationYarnContaine
 		byte[] job = null;
 		var containerid = getEnvironment().get(MDCConstants.SHDP_CONTAINERID);
 		MindAppmasterServiceClient client = null;
-		executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+		executor = new ForkJoinPool(Runtime.getRuntime().availableProcessors());
 		try {
 			var prop = new Properties();
 			prop.putAll(System.getProperties());
 			MDCProperties.put(prop);
 			ByteBufferPoolDirect.init();
-			ByteBufferPool.init(3);
 			while (true) {
 				request = new JobRequest();
 				request.setState(JobRequest.State.WHATTODO);
@@ -100,18 +98,18 @@ public class StreamPipelineYarnContainer extends AbstractIntegrationYarnContaine
 				}
 				else if (response.getState().equals(JobResponse.State.STOREJOBSTAGE)) {
 					job = response.getJob();
-					var kryo = Utils.getKryoSerializerDeserializer();
-					var input = new Input(new ByteArrayInputStream(job));
-					var object = kryo.readClassAndObject(input);
+					
+					var input = new FSTObjectInput(new ByteArrayInputStream(job), Utils.getConfigForSerialization());
+					var object = input.readObject();
 					this.jsidjsmap = (Map<String, JobStage>) object;
 					sleep(1);
 				}
 				else if (response.getState().equals(JobResponse.State.RUNJOB)) {
 					log.debug(containerid + ": Environment " + getEnvironment());
 					job = response.getJob();
-					var kryo = Utils.getKryoSerializerDeserializer();
-					var input = new Input(new ByteArrayInputStream(job));
-					var object = kryo.readClassAndObject(input);
+					
+					var input = new FSTObjectInput(new ByteArrayInputStream(job), Utils.getConfigForSerialization());
+					var object = input.readObject();
 					task = (Task) object;
 					System.setProperty(MDCConstants.HDFSNAMENODEURL, containerprops.get(MDCConstants.HDFSNAMENODEURL));
 					prop.putAll(containerprops);
@@ -136,7 +134,7 @@ public class StreamPipelineYarnContainer extends AbstractIntegrationYarnContaine
 
 			}
 			log.debug(containerid + ": Completed Job Exiting with status 0...");
-			ByteBufferPoolDirect.get().close();
+			ByteBufferPoolDirect.destroy();
 			shutdownExecutor();
 			System.exit(0);
 		}
@@ -153,7 +151,7 @@ public class StreamPipelineYarnContainer extends AbstractIntegrationYarnContaine
 				var response = (JobResponse) client.doMindRequest(request);
 				log.debug("Job Completion Error..." + response.getState() + "..., See cause below \n", ex);
 			}
-			ByteBufferPoolDirect.get().close();
+			ByteBufferPoolDirect.destroy();
 			try {
 				shutdownExecutor();
 			} catch (InterruptedException e) {

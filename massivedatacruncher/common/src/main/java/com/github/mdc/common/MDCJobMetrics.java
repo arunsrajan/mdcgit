@@ -18,13 +18,18 @@ package com.github.mdc.common;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * Global job metrics inmemory store
+ * @author arun
+ *
+ */
 public class MDCJobMetrics {
 	private MDCJobMetrics() {
 	}
 	static Map<String, JobMetrics> jms = new ConcurrentHashMap<String, JobMetrics>();
 
 	public static void put(JobMetrics jm) {
-		jms.put(jm.jobid, jm);
+		jms.put(jm.getJobid(), jm);
 	}
 
 	public static Map<String, JobMetrics> get() {

@@ -18,6 +18,7 @@ package com.github.mdc.stream;
 import static org.junit.Assert.assertEquals;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.junit.Test;
@@ -114,7 +115,6 @@ public class StreamPipelineSqlBiggerFilesTest extends StreamPipelineBaseTestComm
 		log.info("In testMDPSqlBuilderCountArrivalDelayBiggerFiles() method Exit");
 	}
 
-
 	@SuppressWarnings({"unchecked"})
 	@Test
 	public void testMDPSqlBuilderSumArrivalDelayDisk() throws Exception {
@@ -141,4 +141,36 @@ public class StreamPipelineSqlBiggerFilesTest extends StreamPipelineBaseTestComm
 		log.info("In testMDPSqlBuilderSumArrivalDelayDisk() method Exit");
 		pipelineconfig.setLocal("true");
 	}
+	
+	
+	
+	
+	@SuppressWarnings({"unchecked"})
+	@Test
+	public void testSqlUniqueCarrierSumCountArrDelaySAInMemory() throws Exception {
+		pipelineconfig.setLocal("false");
+		pipelineconfig.setStorage(STORAGE.INMEMORY);
+		pipelineconfig.setBlocksize("128");
+		pipelineconfig.setBatchsize("2");
+		pipelineconfig.setIsblocksuserdefined("true");
+		log.info("In testSqlUniqueCarrierSumCountArrDelaySAInMemory() method Entry");
+		String statement = "SELECT UniqueCarrier,sum(ArrDelay),count(ArrDelay) "
+				+ "FROM airline where ArrDelay<>'NA' and ArrDelay<>'ArrDelay' group by UniqueCarrier";
+		StreamPipelineSql mdpsql = StreamPipelineSqlBuilder.newBuilder().add(airlines, "airline", airlineheader, airsqltype)
+				.setHdfs(hdfsfilepath)
+				.setPipelineConfig(pipelineconfig).setSql(statement).build();
+		List<List<Map<String, Object>>> records = (List<List<Map<String, Object>>>) mdpsql.collect(true, null);
+		long sum = 0;
+		for (List<Map<String, Object>> recs : records) {
+			for (Map<String, Object> rec : recs) {
+				log.info(rec);
+				sum += (Long) rec.get("sum(ArrDelay)");
+			}
+		}
+		log.info("Sum = " + sum);
+		log.info("In testSqlUniqueCarrierSumCountArrDelaySAInMemory() method Exit");
+		pipelineconfig.setLocal("true");
+	}
+	
+	
 }

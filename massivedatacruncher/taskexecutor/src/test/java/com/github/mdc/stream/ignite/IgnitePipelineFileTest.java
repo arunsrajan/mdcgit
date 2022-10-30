@@ -48,14 +48,14 @@ public class IgnitePipelineFileTest  extends StreamPipelineIgniteBase {
 				.filter(dat -> dat != null && !"ArrDelay".equals(dat[14]) && !"NA".equals(dat[14])).cache(false);
 		IgnitePipeline<Tuple2<String, Integer>> tupresult = mdpi.map(dat -> new Tuple2<String, Integer>(dat[8], Integer.parseInt(dat[14]))).cache(true);
 		int sum = 0;
-		List<List> results = (List) ((List) tupresult.job.results);
+		List<List> results = (List) ((List) tupresult.job.getResults());
 		sum = 0;
 		for (List result :results) {
 			sum += result.size();
 		}
 		assertEquals(1288326, sum);
 		IgnitePipeline<Tuple2<String, Integer>> tupresult1 = mdpi.map(dat -> new Tuple2<String, Integer>(dat[0], Integer.parseInt(dat[14]))).cache(true);
-		results = (List) ((List) tupresult1.job.results);
+		results = (List) ((List) tupresult1.job.getResults());
 		sum = 0;
 		for (List result :results) {
 			sum += result.size();
@@ -76,11 +76,11 @@ public class IgnitePipelineFileTest  extends StreamPipelineIgniteBase {
 		MapPairIgnite<String, Integer> mti = datastream.map(dat -> dat.split(","))
 				.filter(dat -> dat != null && !"ArrDelay".equals(dat[14]) && !"NA".equals(dat[14])).mapToPair(dat -> new Tuple2<String, Integer>(dat[8], Integer.parseInt(dat[14]))).cache(false);
 		MapPairIgnite<String, Integer> tupresult = mti.reduceByKey((a, b) -> a + b).coalesce(1, (a, b) -> a + b).cache(true);
-		assertEquals(14, ((List) ((List) tupresult.job.results).get(0)).size());
+		assertEquals(14, ((List) ((List) tupresult.job.getResults()).get(0)).size());
 		MapPairIgnite<String, Integer> tupresult1 = mti.reduceByKey((a, b) -> a + b).coalesce(1, (a, b) -> a + b).cache(true);
-		assertEquals(14, ((List) ((List) tupresult1.job.results).get(0)).size());
+		assertEquals(14, ((List) ((List) tupresult1.job.getResults()).get(0)).size());
 		MapPairIgnite<Tuple2<String, Integer>, Tuple2<String, Integer>> joinresult = (MapPairIgnite) tupresult.join(tupresult1, (tup1, tup2) -> tup1.v1.equals(tup2.v1)).cache(true);
-		assertEquals(14, ((List) ((List) joinresult.job.results).get(0)).size());
+		assertEquals(14, ((List) ((List) joinresult.job.getResults()).get(0)).size());
 		log.info("testMapFilterMapPairRbkIgniteJoin After---------------------------------------");
 	}
 

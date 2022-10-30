@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
@@ -32,11 +31,10 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.jooq.lambda.tuple.Tuple2;
+import org.nustaq.serialization.FSTObjectInput;
 import org.springframework.yarn.integration.container.AbstractIntegrationYarnContainer;
 import org.springframework.yarn.integration.ip.mind.MindAppmasterServiceClient;
 
-import com.esotericsoftware.kryo.io.Input;
-import com.github.mdc.common.ByteBufferPool;
 import com.github.mdc.common.ByteBufferPoolDirect;
 import com.github.mdc.common.CacheUtils;
 import com.github.mdc.common.Context;
@@ -47,8 +45,8 @@ import com.github.mdc.common.RemoteDataFetcher;
 import com.github.mdc.common.Utils;
 import com.github.mdc.tasks.executor.Combiner;
 import com.github.mdc.tasks.executor.Mapper;
-import com.github.mdc.tasks.executor.Reducer;
 import com.github.mdc.tasks.executor.MapperCombinerExecutor;
+import com.github.mdc.tasks.executor.Reducer;
 import com.github.mdc.tasks.executor.ReducerExecutor;
 
 /**
@@ -81,7 +79,6 @@ public class MapReduceYarnContainer extends AbstractIntegrationYarnContainer {
 			var prop = new Properties();
 			MDCProperties.put(prop);
 			ByteBufferPoolDirect.init();
-			ByteBufferPool.init(3);
 			while (true) {
 				request = new JobRequest();
 				request.setState(JobRequest.State.WHATTODO);
@@ -101,9 +98,8 @@ public class MapReduceYarnContainer extends AbstractIntegrationYarnContainer {
 				} else if (response.getState().equals(JobResponse.State.RUNJOB)) {
 					log.info(containerid + ": Environment " + getEnvironment());
 					job = response.getJob();
-					var kryo = Utils.getKryoSerializerDeserializer();
-					var input = new Input(new ByteArrayInputStream(job));
-					var object = kryo.readClassAndObject(input);
+					var input = new FSTObjectInput(new ByteArrayInputStream(job), Utils.getConfigForSerialization());
+					var object = input.readObject();
 					if (object instanceof MapperCombiner mc) {
 						System.setProperty(MDCConstants.HDFSNAMENODEURL,
 								containerprops.get(MDCConstants.HDFSNAMENODEURL));
@@ -192,19 +188,18 @@ public class MapReduceYarnContainer extends AbstractIntegrationYarnContainer {
 
 			}
 			log.info(containerid + ": Completed Job Exiting with status 0...");
-			ByteBufferPoolDirect.get().close();
+			ByteBufferPoolDirect.destroy();
 			System.exit(0);
 		} catch (Exception ex) {
 			request = new JobRequest();
+			request.setContainerid(containerid);
 			request.setState(JobRequest.State.JOBFAILED);
 			request.setJob(job);
 			if (client != null) {
 				JobResponse response = (JobResponse) client.doMindRequest(request);
 				log.info("Job Completion Error..." + response.getState() + "..., See cause below \n", ex);
 			}
-			if (Objects.isNull(ByteBufferPoolDirect.get())) {
-				ByteBufferPoolDirect.get().close();
-			}
+			ByteBufferPoolDirect.destroy();
 			System.exit(-1);
 		}
 	}

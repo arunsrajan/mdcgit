@@ -31,7 +31,7 @@ public class HeartBeatServerTest extends HeartBeatCommon {
 	@Test
 	public void testHeartBeatServerInitWithNoArgs() {
 		try {
-			HeartBeatServer hbs = new HeartBeatServer();
+			HeartBeat hbs = new HeartBeat();
 			hbs.init();
 		} catch (Exception ex) {
 			assertEquals(MDCConstants.HEARTBEAT_EXCEPTION_MESSAGE, ex.getMessage());
@@ -41,7 +41,7 @@ public class HeartBeatServerTest extends HeartBeatCommon {
 	@Test
 	public void testHeartBeatServerInitWithImproperArgs() {
 		try {
-			HeartBeatServer hbs = new HeartBeatServer();
+			HeartBeat hbs = new HeartBeat();
 			hbs.init("224.0.0.1");
 		} catch (Exception ex) {
 			assertEquals(MDCConstants.HEARTBEAT_EXCEPTION_MESSAGE, ex.getMessage());
@@ -51,7 +51,7 @@ public class HeartBeatServerTest extends HeartBeatCommon {
 	@Test
 	public void testHeartBeatServerInitWithImproperRescheduleDelay() {
 		try {
-			HeartBeatServer hbs = new HeartBeatServer();
+			HeartBeat hbs = new HeartBeat();
 			hbs.init("224.0.0.1", 2000, "127.0.0.1", 1000, 5000, MDCConstants.EMPTY);
 		} catch (Exception ex) {
 			assertEquals(MDCConstants.HEARTBEAT_EXCEPTION_RESCHEDULE_DELAY, ex.getMessage());
@@ -61,7 +61,7 @@ public class HeartBeatServerTest extends HeartBeatCommon {
 	@Test
 	public void testHeartBeatServerInitWithImproperServerPort() {
 		try {
-			HeartBeatServer hbs = new HeartBeatServer();
+			HeartBeat hbs = new HeartBeat();
 			hbs.init(10000, "IMPROPERPORT", "127.0.0.1", 1000, 5000, MDCConstants.EMPTY);
 		} catch (Exception ex) {
 			assertEquals(MDCConstants.HEARTBEAT_EXCEPTION_SERVER_PORT, ex.getMessage());
@@ -71,7 +71,7 @@ public class HeartBeatServerTest extends HeartBeatCommon {
 	@Test
 	public void testHeartBeatServerInitWithImproperHost() {
 		try {
-			HeartBeatServer hbs = new HeartBeatServer();
+			HeartBeat hbs = new HeartBeat();
 			hbs.init(10000, 2000, 1000, 1000, 5000, MDCConstants.EMPTY);
 		} catch (Exception ex) {
 			assertEquals(MDCConstants.HEARTBEAT_EXCEPTION_SERVER_HOST, ex.getMessage());
@@ -81,7 +81,7 @@ public class HeartBeatServerTest extends HeartBeatCommon {
 	@Test
 	public void testHeartBeatServerInitWithImproperInitialDelay() {
 		try {
-			HeartBeatServer hbs = new HeartBeatServer();
+			HeartBeat hbs = new HeartBeat();
 			hbs.init(10000, 2000, "127.0.0.1", "IMPROPERINITIALDELAY", 5000, MDCConstants.EMPTY);
 		} catch (Exception ex) {
 			assertEquals(MDCConstants.HEARTBEAT_EXCEPTION_INITIAL_DELAY, ex.getMessage());
@@ -91,7 +91,7 @@ public class HeartBeatServerTest extends HeartBeatCommon {
 	@Test
 	public void testHeartBeatServerInitWithImproperPingDelay() {
 		try {
-			HeartBeatServer hbs = new HeartBeatServer();
+			HeartBeat hbs = new HeartBeat();
 			hbs.init(10000, 2000, "127.0.0.1", 1000, "IMPROPERPINGDELAY", MDCConstants.EMPTY);
 		} catch (Exception ex) {
 			assertEquals(MDCConstants.HEARTBEAT_EXCEPTION_PING_DELAY, ex.getMessage());
@@ -101,7 +101,7 @@ public class HeartBeatServerTest extends HeartBeatCommon {
 	@Test
 	public void testHeartBeatServerInitWithImproperContainerId() {
 		try {
-			HeartBeatServer hbs = new HeartBeatServer();
+			HeartBeat hbs = new HeartBeat();
 			hbs.init(10000, 2000, "127.0.0.1", 1000, 5000, 1000.0);
 		} catch (Exception ex) {
 			assertEquals(MDCConstants.HEARTBEAT_EXCEPTION_CONTAINER_ID, ex.getMessage());
@@ -110,7 +110,7 @@ public class HeartBeatServerTest extends HeartBeatCommon {
 
 	@Test
 	public void testHeartBeatServerInitWithArgs() throws Exception {
-		HeartBeatServer hbs = new HeartBeatServer();
+		HeartBeat hbs = new HeartBeat();
 		hbs.init(10000, 2000, "127.0.0.1", 1000, 5000, MDCConstants.EMPTY);
 		assertEquals(5000, hbs.pingdelay);
 		assertEquals(2000, hbs.serverport);
@@ -119,7 +119,7 @@ public class HeartBeatServerTest extends HeartBeatCommon {
 
 	@Test
 	public void testHeartBeatServerStart() throws Exception {
-		HeartBeatServer hbs = new HeartBeatServer();
+		HeartBeat hbs = new HeartBeat();
 		hbs.init(10000, 2000, "127.0.0.1", 1000, 5000, MDCConstants.EMPTY);
 		System.setProperty(MDCConstants.CLUSTERNAME, "heartbeattestcluster");
 		hbs.start();
@@ -130,11 +130,11 @@ public class HeartBeatServerTest extends HeartBeatCommon {
 	@Test
 	public void testHeartBeatServerStartAndPing() throws Exception {
 		System.setProperty(MDCConstants.CLUSTERNAME, "heartbeattestcluster1");
-		HeartBeatServer hbs = new HeartBeatServer();
+		HeartBeat hbs = new HeartBeat();
 		hbs.init(10000, 2000, "127.0.0.1", 1000, 5000, MDCConstants.EMPTY);
 		hbs.start();
 
-		HeartBeatServer hbs1 = new HeartBeatServer();
+		HeartBeat hbs1 = new HeartBeat();
 		hbs1.init(10000, 2001, "127.0.0.1", 1000, 5000, MDCConstants.EMPTY);
 		hbs1.ping();
 
@@ -155,11 +155,11 @@ public class HeartBeatServerTest extends HeartBeatCommon {
 	@Test
 	public void testHeartBeatServerStartAndPingContainerId() throws Exception {
 		String containerid = UUID.randomUUID().toString();
-		HeartBeatServer hbs = new HeartBeatServer();
+		HeartBeat hbs = new HeartBeat();
 		hbs.init(10000, 2000, "127.0.0.1", 1000, 5000, containerid);
 		hbs.start();
 
-		HeartBeatServer hbs1 = new HeartBeatServer();
+		HeartBeat hbs1 = new HeartBeat();
 		hbs1.init(10000, 2001, "127.0.0.1", 1000, 5000, containerid);
 		hbs1.ping();
 
@@ -177,14 +177,14 @@ public class HeartBeatServerTest extends HeartBeatCommon {
 
 	@Test
 	public void testHeartBeatMultipleServerStartAndPing() throws Exception {
-		HeartBeatServer hbss = new HeartBeatServer();
+		HeartBeat hbss = new HeartBeat();
 		hbss.init(10000, 2000, "127.0.0.1", 1000, 1000, MDCConstants.EMPTY);
 		hbss.start();
 		int numberOfServers = 3;
-		List<HeartBeatServer> heartBeatServer = new ArrayList<>();
+		List<HeartBeat> heartBeatServer = new ArrayList<>();
 		int count = 1;
 		while (count <= numberOfServers) {
-			HeartBeatServer hbs1 = new HeartBeatServer();
+			HeartBeat hbs1 = new HeartBeat();
 			hbs1.init(10000, 2000 + count, "127.0.0.1", 1000, 1000, MDCConstants.EMPTY);
 			hbs1.ping();
 			heartBeatServer.add(hbs1);
@@ -197,7 +197,7 @@ public class HeartBeatServerTest extends HeartBeatCommon {
 		;
 		count = 1;
 		while (count <= numberOfServers) {
-			HeartBeatServer hbs1 = heartBeatServer.get(count - 1);
+			HeartBeat hbs1 = heartBeatServer.get(count - 1);
 			int port = 2000 + count;
 			assertNotNull(hbss.hpresmap.get("127.0.0.1" + "_" + port));
 			assertTrue(hbss.hpresmap.get("127.0.0.1" + "_" + port) instanceof Resources);
@@ -207,7 +207,7 @@ public class HeartBeatServerTest extends HeartBeatCommon {
 		}
 		count = 1;
 		while (count <= numberOfServers) {
-			HeartBeatServer hbs1 = heartBeatServer.get(count - 1);
+			HeartBeat hbs1 = heartBeatServer.get(count - 1);
 			hbs1.stop();
 			hbs1.destroy();
 			count++;

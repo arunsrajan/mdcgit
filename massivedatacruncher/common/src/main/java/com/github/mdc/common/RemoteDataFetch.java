@@ -17,24 +17,32 @@ package com.github.mdc.common;
 
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.List;
+
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 /**
  * 
  * @author Arun
  * The Holder of job and stage information to receive the final stage output.
  */
+@Getter
+@Setter
+@EqualsAndHashCode
+@ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class RemoteDataFetch implements Serializable {
 	private static final long serialVersionUID = 2952764365767007054L;
-	public String jobid;
-	public String stageid;
-	public String taskid;
-	public String hp;
-	public byte[] data;
-	public String mode;
-
-	@Override
-	public String toString() {
-		return "RemoteDataFetch [jobid=" + jobid + ", stageid=" + stageid + ", taskid=" + taskid + ", hp=" + hp
-				+ ", data=" + Arrays.toString(data) + ", mode=" + mode + "]";
-	}
+	private String jobid;
+	private String stageid;
+	private String taskid;
+	private String hp;
+	private byte[] data;
+	private String mode;
 }

@@ -17,34 +17,31 @@ package com.github.mdc.common;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
+import java.lang.ref.SoftReference;
 import java.nio.ByteBuffer;
 import java.util.Objects;
-import java.util.concurrent.Semaphore;
+import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class ByteBufferInputStream extends InputStream {
-	static int allocation;
-	static int deallocation;
-	static Logger log = Logger.getLogger(ByteBufferInputStream.class);
+/**
+ * The direct byte buffer closeable input stream 
+ * @author arun
+ *
+ */
+public class ByteBufferInputStream extends InputStream implements Serializable{
+	private static final long serialVersionUID = -296327349247183144L;	
+	static Logger log = LoggerFactory.getLogger(ByteBufferInputStream.class);
 	private ByteBuffer bb;
-	static Semaphore printallocdealloc = new Semaphore(1);
 
 	public ByteBufferInputStream(ByteBuffer bb) {
 		try {
-			this.bb = bb;
-			printallocdealloc.acquire();
-			log.info("ByteBuffer Input Stream allocated:" + allocation++ + bb);
-
-		}
-		catch (InterruptedException ie) {
-			log.error(MDCConstants.EMPTY, ie);
-			Thread.currentThread().interrupt();
+			this.bb = bb;			
 		}
 		catch (Exception e) {
 			log.error(MDCConstants.EMPTY, e);
-		} finally {
-			printallocdealloc.release();
 		}
 
 	}
@@ -72,22 +69,14 @@ public class ByteBufferInputStream extends InputStream {
 
 	@Override
 	public void close() {
+		new SoftReference<>(bb);
 		if (!Objects.isNull(bb)) {
-			try {
-				printallocdealloc.acquire();
-				log.info("ByteBuffer Input Stream returning to pool: " + deallocation++ + bb);
-				bb.clear();
-				bb.rewind();
-				ByteBufferPool.get().returnObject(bb);
-			} catch (InterruptedException ie) {
-				log.error(MDCConstants.EMPTY, ie);
-				Thread.currentThread().interrupt();
+			try {				
+				ByteBufferPoolDirect.destroy(bb);
 			} catch (Exception e) {
 				log.error(MDCConstants.EMPTY, e);
-			} finally {
-				printallocdealloc.release();
-			}
-			bb = null;
+			}			
 		}
+		bb = null;
 	}
 }

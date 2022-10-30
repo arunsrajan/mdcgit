@@ -15,6 +15,8 @@
  */
 package com.github.mdc.tasks.scheduler;
 
+import com.github.mdc.common.JobConfiguration;
+
 public interface Application {
 	public abstract void runMRJob(String[] args, JobConfiguration jobconfiguration);
 }

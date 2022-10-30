@@ -44,7 +44,7 @@ public class Task implements Serializable,Cloneable {
 	public boolean visited;
 	public String jobid;
 	public String stageid;
-	public String taskid = MDCConstants.TASK + MDCConstants.HYPHEN + Utils.getUniqueID();
+	public String taskid = MDCConstants.TASK + MDCConstants.HYPHEN + Utils.getUniqueTaskID();
 	public String hostport;
 	public String stagefailuremessage;
 	public double timetakenseconds;
@@ -55,6 +55,9 @@ public class Task implements Serializable,Cloneable {
 	public String hdfsurl;
 	public String filepath;
 	public boolean saveresulttohdfs;
+	public Long taskexecutionstartime;
+	public Long taskexecutionendtime;
+	public String hbphysicaladdress;
 
 	@Override
 	public int hashCode() {

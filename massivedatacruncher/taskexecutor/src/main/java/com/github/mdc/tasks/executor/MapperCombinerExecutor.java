@@ -15,6 +15,7 @@
  */
 package com.github.mdc.tasks.executor;
 
+import java.io.InputStream;
 import java.util.List;
 
 import org.xerial.snappy.SnappyInputStream;
@@ -31,8 +32,8 @@ public class MapperCombinerExecutor extends MapperExecutor {
 	List<Combiner> crunchcombiners;
 
 	@SuppressWarnings("rawtypes")
-	public MapperCombinerExecutor(BlocksLocation blockslocation, SnappyInputStream datastream, List<Mapper> crunchmappers,
-			List<Combiner> crunchcombiners) {
+	public MapperCombinerExecutor(BlocksLocation blockslocation, InputStream datastream, List<Mapper> crunchmappers,
+								  List<Combiner> crunchcombiners) {
 		super(blockslocation, datastream, crunchmappers);
 		this.crunchcombiners = crunchcombiners;
 	}
@@ -48,7 +49,7 @@ public class MapperCombinerExecutor extends MapperExecutor {
 			return ctx;
 		}
 		var timetaken = (System.currentTimeMillis() - starttime) / 1000.0;
-		log.info("Time taken to compute mapper Task is " + timetaken + " seconds");
+		log.info("Time taken to guage mapper task is " + timetaken + " seconds");
 		return ctx;
 	}
 

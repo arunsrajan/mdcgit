@@ -17,9 +17,11 @@ package com.github.mdc.tasks.executor;
 
 import java.net.URI;
 import java.net.URL;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
@@ -29,36 +31,36 @@ import java.util.stream.Collectors;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.FsUrlStreamHandlerFactory;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import com.esotericsoftware.kryonetty.ServerEndpoint;
-import com.esotericsoftware.kryonetty.network.ReceiveEvent;
-import com.esotericsoftware.kryonetty.network.handler.NetworkHandler;
-import com.esotericsoftware.kryonetty.network.handler.NetworkListener;
-import com.github.mdc.common.HeartBeatServer;
-import com.github.mdc.common.HeartBeatServerStream;
+import com.github.mdc.common.HeartBeat;
+import com.github.mdc.common.HeartBeatStream;
 import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.MDCProperties;
 import com.github.mdc.common.NetworkUtil;
 import com.github.mdc.common.ServerUtils;
+import com.github.mdc.common.StreamDataCruncher;
 import com.github.mdc.common.Utils;
 import com.github.mdc.common.WebResourcesServlet;
 import com.github.mdc.tasks.executor.web.NodeWebServlet;
 import com.github.mdc.tasks.executor.web.ResourcesMetricsServlet;
 
 public class NodeLauncher {
-	static Logger log = Logger.getLogger(NodeLauncher.class);
-	static ServerEndpoint server = null;
+	static Logger log = LoggerFactory.getLogger(NodeLauncher.class);
+	static Registry server = null;
+	static StreamDataCruncher stub = null;
+	static StreamDataCruncher sdc =	null;
 	public static void main(String[] args) throws Exception {
 		URL.setURLStreamHandlerFactory(new FsUrlStreamHandlerFactory());
 		Utils.loadLog4JSystemProperties(MDCConstants.PREV_FOLDER + MDCConstants.FORWARD_SLASH
 				+ MDCConstants.DIST_CONFIG_FOLDER + MDCConstants.FORWARD_SLASH, MDCConstants.MDC_PROPERTIES);
 		var port = Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.NODE_PORT));
-		try (var hbss = new HeartBeatServerStream();) {
+		try (var hbss = new HeartBeatStream();) {
 			var pingdelay = Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULER_PINGDELAY));
 			var host = NetworkUtil.getNetworkAddress(MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_HOST));
 			hbss.init(0, port, host, 0, pingdelay, "");
-			var hb = new HeartBeatServer();
+			var hb = new HeartBeat();
 			hb.init(0, port, host, 0, pingdelay, "");
 			hbss.ping();
 			hb.ping();
@@ -76,17 +78,17 @@ public class NodeLauncher {
 					new ResourcesMetricsServlet(), MDCConstants.FORWARD_SLASH + MDCConstants.DATA + MDCConstants.FORWARD_SLASH + MDCConstants.ASTERIX
 			);
 			su.start();
-			server = Utils.getServerKryoNetty(port,
-				new NetworkListener() {
-				@NetworkHandler
-	            public void onReceive(ReceiveEvent event) {
+			server = LocateRegistry.createRegistry(port);
+			sdc = new StreamDataCruncher() {
+	            public Object postObject(Object object) {
 					try {
-						Object object = event.getObject();
-						var container = new NodeRunner(server, MDCConstants.PROPLOADERCONFIGFOLDER,
+						var container = new NodeRunner(MDCConstants.PROPLOADERCONFIGFOLDER,
 								containerprocesses, hdfs, containeridthreads, containeridports,
-								object, event);
-						Future<Boolean> containerallocated = escontainer.submit(container);
-						log.info("Containers Allocated: " + containerallocated.get());
+								object);
+						Future<Object> containerallocated = escontainer.submit(container);
+						Object obj = containerallocated.get();
+						log.info("Chamber reply: " + obj);
+						return obj;
 					} catch (InterruptedException e) {
 						log.warn("Interrupted!", e);
 						// Restore interrupted state...
@@ -94,11 +96,14 @@ public class NodeLauncher {
 					} catch (Exception e) {
 						log.error(MDCConstants.EMPTY, e);
 					}
+					return null;
 				}
-			});
-			log.debug("NodeLauncher started at port....."
-					+ MDCProperties.get().getProperty(MDCConstants.NODE_PORT));
-			log.debug("Adding Shutdown Hook...");
+			};
+			stub = (StreamDataCruncher) UnicastRemoteObject.exportObject(sdc, 0);
+			server.rebind(MDCConstants.BINDTESTUB, stub);
+			log.info("NodeLauncher kickoff at port {}.....",
+					MDCProperties.get().getProperty(MDCConstants.NODE_PORT));
+			log.info("Reckoning closedown lock...");
 			var cdl = new CountDownLatch(1);
 			Utils.addShutdownHook(() -> {
 				try {
@@ -110,9 +115,6 @@ public class NodeLauncher {
 					log.debug("Stopping and closes all the connections...");
 					log.debug("Destroying...");
 					hdfs.close();
-					if(Objects.nonNull(server)) {
-						server.close();
-					}
 					cdl.countDown();
 					Runtime.getRuntime().halt(0);
 				} catch (Exception e) {

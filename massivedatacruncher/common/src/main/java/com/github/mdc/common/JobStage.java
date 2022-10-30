@@ -17,18 +17,25 @@ package com.github.mdc.common;
 
 import java.io.Serializable;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 /**
  * 
  * @author Arun
  * The Holder of job with stage information and also the job statuses
  */
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class JobStage implements Serializable,Cloneable {
 	private static final long serialVersionUID = 7292002084722232039L;
-	public int currentstageindex;
-	public String jobid;
-	public String stageid;
-	public Stage stage;
-	public boolean isalreadyprocessed;
+	private String jobid;
+	private String stageid;
+	private Stage stage;
 
 	@Override
 	public int hashCode() {

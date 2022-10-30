@@ -27,6 +27,7 @@ public class MDCConstants {
 	static final String MDC = "MDC";
 	public static final String NEWLINE = "\n";
 	public static final String HYPHEN = "-";
+	public static final String AMPERSAND = "&";
 	static final String SLASH = "\\";
 	public static final String FORWARD_SLASH = "/";
 	public static final String BACKWARD_SLASH = "\\";
@@ -170,7 +171,7 @@ public class MDCConstants {
 	public static final String NUMBEROFCONTAINERS = "containers.number";
 	public static final String CONTAINER_MINMEMORY_DEFAULT = "1024";
 	public static final String CONTAINER_MAXMEMORY_DEFAULT = "1024";
-	public static final String GCCONFIG_DEFAULT = "-XX:+UseG1GC";
+	public static final String GCCONFIG_DEFAULT = "-XX:+UseZGC";
 	public static final String NUMBEROFCONTAINERS_DEFAULT = "1";
 	public static final String ISUSERDEFINEDBLOCKSIZE_DEFAULT = "false";
 
@@ -419,7 +420,7 @@ public class MDCConstants {
 	public static final String BR = "<BR/>";
 
 	public static final String HEAP_PERCENTAGE = "heap.percent";
-	public static final String HEAP_PERCENTAGE_DEFAULT = "40";
+	public static final String HEAP_PERCENTAGE_DEFAULT = "80";
 
 	public static final String USEGLOBALTASKEXECUTORS = "taskexecutors.isglobal";
 	public static final String USEGLOBALTASKEXECUTORS_DEFAULT = "false";
@@ -445,5 +446,10 @@ public class MDCConstants {
 	public static final String MDC_JKS = "mdc.jks.path";
 	public static final String MDC_KEYSTORE_PASSWORD = "mdc.jks.pass";
 	public static final String MDC_JKS_ALGO = "mdc.jks.algo";
+	
+	public static final String REGEX_CSV = ",(?=([^\"]*\"[^\"]*\")*(?![^\"]*\"))";
+	public static final String BINDTESTUB = "TESTUB";
+	
+	
 
 }

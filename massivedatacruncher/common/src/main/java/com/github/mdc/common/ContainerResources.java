@@ -15,12 +15,28 @@
  */
 package com.github.mdc.common;
 
+import java.io.Serializable;
+
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+
 /**
  * 
  * @author arun
  * The required container parameters or resources information for launching single container. 
  */
-public class ContainerResources {
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@ToString
+@EqualsAndHashCode
+public class ContainerResources implements Serializable{
+	private static final long serialVersionUID = 1492654050202561687L;
 	private long minmemory;
 	private long maxmemory;
 	private long directheap;
@@ -28,62 +44,4 @@ public class ContainerResources {
 	private int cpu;
 	private int port;
 	private boolean islaunched;
-
-	public long getMinmemory() {
-		return minmemory;
-	}
-
-	public void setMinmemory(long minmemory) {
-		this.minmemory = minmemory;
-	}
-
-	public long getMaxmemory() {
-		return maxmemory;
-	}
-
-	public void setMaxmemory(long maxmemory) {
-		this.maxmemory = maxmemory;
-	}
-
-	public String getGctype() {
-		return gctype;
-	}
-
-	public void setGctype(String gctype) {
-		this.gctype = gctype;
-	}
-
-	public int getCpu() {
-		return cpu;
-	}
-
-	public void setCpu(int cpu) {
-		this.cpu = cpu;
-	}
-
-	public int getPort() {
-		return port;
-	}
-
-	public void setPort(int port) {
-		this.port = port;
-	}
-
-	public boolean isIslaunched() {
-		return islaunched;
-	}
-
-	public void setIslaunched(boolean islaunched) {
-		this.islaunched = islaunched;
-	}
-
-	public long getDirectheap() {
-		return directheap;
-	}
-
-	public void setDirectheap(long directheap) {
-		this.directheap = directheap;
-	}
-
-
 }
