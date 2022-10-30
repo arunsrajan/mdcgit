@@ -15,14 +15,22 @@
  */
 package com.github.mdc.common;
 
+import java.io.Serializable;
+
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * 
  * @author arun
  * This class is the request class to fetch information on the status of the tasks
  * during the stage execution from task executors.
  */
-public class WhoIsRequest {
+@Getter
+@Setter
+public class WhoIsRequest implements Serializable{
 
+	private static final long serialVersionUID = 4221335659547935394L;
 	private String stagepartitionid;
 
 	public String getStagepartitionid() {

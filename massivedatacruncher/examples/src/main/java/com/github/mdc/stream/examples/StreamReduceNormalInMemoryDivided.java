@@ -44,7 +44,7 @@ public class StreamReduceNormalInMemoryDivided implements Serializable, Pipeline
 
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	public void testReduce(String[] args, PipelineConfig pipelineconfig) throws Exception {
-		log.info("StreamReduceNormal.testReduce Before---------------------------------------");
+		log.info("StreamReduceNormalInMemoryDivided.testReduce Before---------------------------------------");
 		var datastream = StreamPipeline.newStreamHDFS(args[0], args[1], pipelineconfig);
 		var mappair1 = datastream.map(dat -> dat.split(","))
 				.filter(dat -> !"ArrDelay".equals(dat[14]) && !"NA".equals(dat[14]))
@@ -61,6 +61,6 @@ public class StreamReduceNormalInMemoryDivided implements Serializable, Pipeline
 
 		carriers.join(airlinesamples, (tuple1, tuple2) -> ((Tuple2) tuple1).v1.equals(((Tuple2) tuple2).v1))
 				.saveAsTextFile(new URI(args[0]), args[3] + "/StreamOutReduce-" + System.currentTimeMillis());
-		log.info("StreamReduceNormal.testReduce After---------------------------------------");
+		log.info("StreamReduceNormalInMemoryDivided.testReduce After---------------------------------------");
 	}
 }

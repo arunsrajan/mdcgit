@@ -15,8 +15,10 @@
  */
 package com.github.mdc.common;
 
+import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
@@ -33,6 +35,8 @@ import java.util.Set;
 @Getter
 @Setter
 @ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class Block implements Serializable {
 	private static final long serialVersionUID = 1641172215309142006L;
 	private long blockOffset;

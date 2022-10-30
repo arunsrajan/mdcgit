@@ -15,45 +15,63 @@
  */
 package com.github.mdc.tasks.executor;
 
+import java.io.ByteArrayInputStream;
 import java.io.OutputStream;
-import java.net.ServerSocket;
+import java.lang.reflect.Field;
 import java.net.URL;
+import java.rmi.RemoteException;
+import java.rmi.registry.Registry;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Queue;
-import java.util.concurrent.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.Future;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
-import com.esotericsoftware.kryonetty.ServerEndpoint;
-import com.esotericsoftware.kryonetty.network.ConnectEvent;
-import com.esotericsoftware.kryonetty.network.DisconnectEvent;
-import com.esotericsoftware.kryonetty.network.ReceiveEvent;
-import com.esotericsoftware.kryonetty.network.handler.NetworkHandler;
-import com.esotericsoftware.kryonetty.network.handler.NetworkListener;
-import com.github.mdc.common.*;
-import io.netty.channel.ChannelHandlerContext;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.state.ConnectionState;
 import org.apache.curator.retry.RetryForever;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FsUrlStreamHandlerFactory;
-import org.apache.log4j.Logger;
+import org.nustaq.serialization.FSTConfiguration;
+import org.nustaq.serialization.FSTObjectInput;
+import org.slf4j.LoggerFactory;
 
+import com.github.mdc.common.ByteBufferPoolDirect;
+import com.github.mdc.common.CacheUtils;
+import com.github.mdc.common.HeartBeatStream;
+import com.github.mdc.common.JobApp;
+import com.github.mdc.common.JobStage;
+import com.github.mdc.common.LoadJar;
+import com.github.mdc.common.MDCCache;
+import com.github.mdc.common.MDCConstants;
+import com.github.mdc.common.MDCMapReducePhaseClassLoader;
+import com.github.mdc.common.MDCProperties;
+import com.github.mdc.common.NetworkUtil;
+import com.github.mdc.common.ServerUtils;
+import com.github.mdc.common.StreamDataCruncher;
+import com.github.mdc.common.TaskExecutorShutdown;
+import com.github.mdc.common.Utils;
+import com.github.mdc.common.WebResourcesServlet;
+import com.github.mdc.common.ZookeeperOperations;
 import com.github.mdc.tasks.executor.web.NodeWebServlet;
 import com.github.mdc.tasks.executor.web.ResourcesMetricsServlet;
 
-import static java.util.Objects.nonNull;
-
 public class TaskExecutorRunner implements TaskExecutorRunnerMBean {
 
-	static Logger log = Logger.getLogger(TaskExecutorRunner.class);
+	static org.slf4j.Logger log = LoggerFactory.getLogger(TaskExecutorRunner.class);
 	Map<String, Object> apptaskexecutormap = new ConcurrentHashMap<>();
 	Map<String, Object> jobstageexecutormap = new ConcurrentHashMap<>();
 	ConcurrentMap<String, OutputStream> resultstream = new ConcurrentHashMap<>();
-	Map<String, HeartBeatTaskScheduler> hbtsappid = new ConcurrentHashMap<>();
-	Map<String, HeartBeatTaskSchedulerStream> hbtssjobid = new ConcurrentHashMap<>();
-	Map<String, HeartBeatServerStream> containeridhbss = new ConcurrentHashMap<>();
+	Map<String, HeartBeatStream> containeridhbss = new ConcurrentHashMap<>();
 	Map<String, Map<String, Object>> jobidstageidexecutormap = new ConcurrentHashMap<>();
 	Map<String, JobStage> jobidstageidjobstagemap = new ConcurrentHashMap<>();
 	Queue<Object> taskqueue = new LinkedBlockingQueue<Object>();
@@ -84,28 +102,21 @@ public class TaskExecutorRunner implements TaskExecutorRunnerMBean {
 					+ MDCConstants.DIST_CONFIG_FOLDER + MDCConstants.FORWARD_SLASH, MDCConstants.MDC_PROPERTIES);
 		}
 		ByteBufferPoolDirect.init();
-		log.info("Direct Memory Allocated: " + args[1]);
-		int directmemory = Integer.valueOf(args[1]) / 128;
-		log.info("Number Of 128 MB directmemory: " + directmemory);
-		ByteBufferPool.init(directmemory);
 		CacheUtils.initCache();
-		es = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+		int numberofprocessors = Runtime.getRuntime().availableProcessors();
+		es = new ForkJoinPool(numberofprocessors*2);
 		var mdted = new TaskExecutorRunner();
 		mdted.init();
 		mdted.start();
-		log.info("TaskExecuterRunner started at port....."
+		log.info("TaskExecuterRunner evoked at port....."
 				+ System.getProperty(MDCConstants.TASKEXECUTOR_PORT));
-		log.info("Adding Shutdown Hook...");
+		log.info("Reckoning stoppage holder...");
 		shutdown.await();
 		try {
-			if(nonNull(server)){
-				server.close();
-			}
-			log.info("Stopping and closes all the connections...");
+			log.info("Ceasing the connections...");
 			mdted.destroy();
 			ByteBufferPoolDirect.destroy();
-			ByteBufferPool.destroyByteBuffer();
-			log.info("Freed the resources...");
+			log.info("Freed the assets...");
 			Runtime.getRuntime().halt(0);
 		} catch (Exception e) {
 			log.error("", e);
@@ -146,13 +157,11 @@ public class TaskExecutorRunner implements TaskExecutorRunnerMBean {
 
 	}
 	ClassLoader cl;
-	static ServerEndpoint server = null;
-	@SuppressWarnings({"unchecked", "rawtypes"})
+	static Registry server = null;
+	@SuppressWarnings({})
 	@Override
 	public void start() throws Exception {
-		var threadpool = Executors.newSingleThreadExecutor();
 		var launchtaskpool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-		var taskpool = Executors.newFixedThreadPool(2);
 		var port = Integer.parseInt(System.getProperty(MDCConstants.TASKEXECUTOR_PORT));
 		log.info("TaskExecutor Port: " + port);
 		var su = new ServerUtils();
@@ -166,151 +175,74 @@ public class TaskExecutorRunner implements TaskExecutorRunnerMBean {
 
 		var inmemorycache = MDCCache.get();
 		cl = TaskExecutorRunner.class.getClassLoader();
-		log.info("Default Class Loader: "+cl);
-
-		server = Utils.getServerKryoNetty(port, new NetworkListener() {
-
-			@NetworkHandler
-			public void onConnect(ConnectEvent event) {
-				ChannelHandlerContext ctx = event.getCtx();
-				log.info("Client: Connected to server: " + ctx.channel().remoteAddress());
-			}
-
-			@NetworkHandler
-			public void onDisconnect(DisconnectEvent event) {
-				ChannelHandlerContext ctx = event.getCtx();
-				log.info("Server: Client disconnected: " + ctx.channel().remoteAddress());
-			}
-
-			@NetworkHandler
-			public void onReceive(ReceiveEvent event) {
+		dataCruncher = new StreamDataCruncher() {
+			public Object postObject(Object deserobj)throws RemoteException{
+		
 				try{
-					Object deserobj =event.getObject();
-					log.info("Deserialized Object: "+deserobj);
+					log.info("Deserialized object: "+deserobj);
+					if (deserobj instanceof byte[] bytes) {
+						FSTConfiguration conf = Utils.getConfigForSerialization();
+						conf.setClassLoader(cl);
+						FSTObjectInput.ConditionalCallback conditionalCallback = new FSTObjectInput.ConditionalCallback() {
+							@Override
+							public boolean shouldSkip(Object halfDecoded, int streamPosition, Field field) {
+								log.info("Skip half decoded: "+halfDecoded);
+								return true;
+							}
+						};
+						try (ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
+								FSTObjectInput fstin = new FSTObjectInput(bais, conf);) {
+							fstin.setConditionalCallback(conditionalCallback);
+							deserobj = fstin.readObject();
+						}
+					}
 					if(deserobj instanceof TaskExecutorShutdown){
 						shutdown.countDown();
 					}
 					else if (deserobj instanceof LoadJar loadjar) {
-						log.info("Loading the Required jars: "+loadjar.mrjar);
+						log.info("Unpacking jars: "+loadjar.getMrjar());
 						cl = MDCMapReducePhaseClassLoader
-									.newInstance(loadjar.mrjar, cl);
-						log.info("Loaded the Required jars");
-						server.getKryoSerialization().obtainKryo().setClassLoader(cl);
-						server.send(event.getCtx(),  MDCConstants.JARLOADED);
+									.newInstance(loadjar.getMrjar(), cl);
+						return MDCConstants.JARLOADED;
 					} else if (deserobj instanceof JobApp jobapp) {
-						if (jobapp.getJobtype() == JobApp.JOBAPP.MR) {
-							if (!Objects.isNull(jobapp.getJobappid()) && Objects.isNull(hbtsappid.get(jobapp.getJobappid()))) {
-								var hbts = new HeartBeatTaskScheduler();
-								hbts.init(0,
-										port,
-										NetworkUtil.getNetworkAddress(MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_HOST)),
-										0,
-										Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_PINGDELAY)), "",
-										jobapp.getJobappid(), "");
-								hbtsappid.put(jobapp.getJobappid(), hbts);
-							}
-						}	else if (jobapp.getJobtype() == JobApp.JOBAPP.STREAM) {
-							if (!Objects.isNull(jobapp.getJobappid()) && Objects.isNull(hbtssjobid.get(jobapp.getJobappid()))) {
-								var hbtss = new HeartBeatTaskSchedulerStream();
-								hbtss.init(0, Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_PORT)),
-										NetworkUtil.getNetworkAddress(MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_HOST)), 0,
-										Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_PINGDELAY)),
-										MDCConstants.EMPTY,
-										jobapp.getJobappid());
-								hbtssjobid.put(jobapp.getJobappid(), hbtss);
-							}
-						}
 						var containerid = (String) jobapp.getContainerid();
 						if (Objects.isNull(containeridhbss.get(containerid))) {
-							HeartBeatServerStream hbss = new HeartBeatServerStream();
+							HeartBeatStream hbss = new HeartBeatStream();
 							var teport = Integer
 									.parseInt(MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_PORT));
 							var pingdelay = Integer
 									.parseInt(MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULER_PINGDELAY));
 							var host = NetworkUtil
 									.getNetworkAddress(MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_HOST));
-							log.info("Starting Hearbeat for container id: " + containerid);
+							log.info("Kickoff hearbeat for chamber id: {} with host {} and port {}",containerid,host,teport);
 							hbss.init(0, teport, host, 0, pingdelay, containerid);
 							hbss.ping();
 							containeridhbss.put(containerid, hbss);
 						}
 					} else if (!Objects.isNull(deserobj)) {
-						launchtaskpool.execute(new TaskExecutor(server, cl, port, es, configuration,
+						TaskExecutor taskexecutor = new TaskExecutor(cl, port, es, configuration,
 								apptaskexecutormap, jobstageexecutormap, resultstream, inmemorycache, deserobj,
-								hbtsappid, hbtssjobid, containeridhbss,
+								containeridhbss,
 								jobidstageidexecutormap,
-								taskqueue, jobidstageidjobstagemap, event));
+								taskqueue, jobidstageidjobstagemap);
+						return taskexecutor.call();
 					}
 				} catch (InterruptedException e) {
 					log.warn("Interrupted!", e);
 					// Restore interrupted state...
 					Thread.currentThread().interrupt();
 				} catch (Exception ex) {
-					log.info(MDCConstants.EMPTY, ex);
+					log.error(MDCConstants.EMPTY, ex);
 				}
+				return "Unknown Object";
 			}
-		});
-		var taskresultqueue = new LinkedBlockingQueue<ExecutorsFutureTask>();
-		taskpool.execute(() -> {
-			while (true) {
-				try {
-					if (!taskqueue.isEmpty()) {
-						ExecutorService estask = Executors.newScheduledThreadPool(1);
-						Future future = estask.submit((Callable) taskqueue.poll());
-						ExecutorsFutureTask eft = new ExecutorsFutureTask();
-						eft.future = future;
-						eft.estask = estask;
-						if (!taskresultqueue.offer(eft)) {
-							log.info("Task Exceution Queue Full");
-						}
-					}
-					Thread.sleep(300);
-				} catch (InterruptedException e) {
-					log.warn("Interrupted!", e);
-					// Restore interrupted state...
-					Thread.currentThread().interrupt();
-				} catch (Exception e) {
-				}
-			}
-		});
-		taskpool.execute(() -> {
-			while (true) {
-				try {
-					if (!taskresultqueue.isEmpty()) {
-						ExecutorsFutureTask eft = taskresultqueue.poll();
-						eft.future.get();
-						eft.estask.shutdown();
-					}
-					Thread.sleep(300);
-				} catch (InterruptedException e) {
-					log.warn("Interrupted!", e);
-					// Restore interrupted state...
-					Thread.currentThread().interrupt();
-				} catch (Exception e) {
-				}
-			}
-
-		});
+		};
+		server = Utils.getRPCRegistry(port, dataCruncher);
 	}
-
+	static StreamDataCruncher stub = null;
+	static StreamDataCruncher dataCruncher = null;
 	@Override
 	public void destroy() throws Exception {
-		hbtsappid.keySet().stream()
-				.filter(key -> !Objects.isNull(hbtsappid.get(key)))
-				.forEach(key -> {
-					try {
-						hbtsappid.remove(key).close();
-					} catch (Exception e2) {
-					}
-				});
-		hbtssjobid.keySet().stream()
-				.filter(key -> !Objects.isNull(hbtssjobid.get(key)))
-				.forEach(key -> {
-					try {
-						hbtssjobid.remove(key).close();
-					} catch (Exception e1) {
-					}
-				});
 		containeridhbss.keySet().stream()
 				.filter(key -> !Objects.isNull(containeridhbss.get(key)))
 				.forEach(key -> {

@@ -15,24 +15,27 @@
  */
 package com.github.mdc.common;
 
+import java.io.Serializable;
+import java.util.Set;
+
+import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-
-import java.io.Serializable;
-import java.util.Arrays;
-import java.util.Set;
 
 /**
  * 
  * @author Arun
- * This class is blocks information with the mapper and combiner class information
+ * This class holds the information of the block to read, executors hostport and datanode address
  */
 @EqualsAndHashCode
 @Getter
 @Setter
 @ToString
+@AllArgsConstructor
+@NoArgsConstructor
 public class BlocksLocation implements Serializable {
 	private static final long serialVersionUID = 6205828696011624985L;
 	private Block[] block = new Block[2];

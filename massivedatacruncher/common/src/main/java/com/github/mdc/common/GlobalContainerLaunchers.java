@@ -22,6 +22,11 @@ import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
 
+/**
+ * Holds LaunchContainer object globally
+ * @author arun
+ *
+ */
 public class GlobalContainerLaunchers {
 
 	private static Logger log = Logger.getLogger(GlobalContainerLaunchers.class);
@@ -36,7 +41,7 @@ public class GlobalContainerLaunchers {
 			lcsmap.put(cid, lcs);
 		}
 		else {
-			log.info("Container Launched Already: " + cid + " With Resources: " + lcs);
+			log.info("Chamber launched already: " + cid + " with assets: " + lcs);
 		}
 	}
 

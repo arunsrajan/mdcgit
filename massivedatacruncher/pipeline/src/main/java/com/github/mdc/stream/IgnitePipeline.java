@@ -772,22 +772,20 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 	/**
 	 * Terminal operation save as file.
 	 * @param path
-	 * @throws Throwable 
-	 * @
+	 * @throws Exception 
 	 */
 	@SuppressWarnings({"rawtypes", "unchecked"})
-	public void saveAsTextFile(URI uri, String path) throws PipelineException  {
+	public void saveAsTextFile(URI uri, String path) throws Exception  {
 		log.debug("Caching...");
-		var kryo = Utils.getKryoSerializerDeserializer();
 		var mdp = (IgnitePipeline) root;
-		Utils.writeKryoOutput(kryo, mdp.pipelineconfig.getOutput(), "Caching...");
+		Utils.writeToOstream(mdp.pipelineconfig.getOutput(), "Caching...");
 		var mdscollect = (IgnitePipeline) root;
 		mdscollect.finaltasks.clear();
 		mdscollect.finaltasks.add(mdscollect.finaltask);
 		mdscollect.mdsroots.add(root);
 		mdscollect.cacheInternal(true, uri, path);
 		log.debug("Cached....");
-		Utils.writeKryoOutput(kryo, mdp.pipelineconfig.getOutput(), "Cached...");
+		Utils.writeToOstream(mdp.pipelineconfig.getOutput(), "Cached...");
 	}
 
 
@@ -804,16 +802,15 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 	public IgnitePipeline<I1> cache(boolean isresults) throws PipelineException  {
 		try {
 			log.debug("Caching...");
-			var kryo = Utils.getKryoSerializerDeserializer();
 			var mdp = (IgnitePipeline) root;
-			Utils.writeKryoOutput(kryo, mdp.pipelineconfig.getOutput(), "Caching...");
+			Utils.writeToOstream(mdp.pipelineconfig.getOutput(), "Caching...");
 			var mdscollect = (IgnitePipeline) root;
 			mdscollect.finaltasks.clear();
 			mdscollect.finaltasks.add(mdscollect.finaltask);
 			mdscollect.mdsroots.add(root);
 			var job = mdscollect.cacheInternal(isresults, null, null);
 			log.debug("Cached....");
-			Utils.writeKryoOutput(kryo, mdp.pipelineconfig.getOutput(), "Cached...");
+			Utils.writeToOstream(mdp.pipelineconfig.getOutput(), "Cached...");
 			var mdpcached = new IgnitePipeline();
 			mdpcached.job = job;
 			mdpcached.pipelineconfig = mdp.pipelineconfig;
@@ -837,15 +834,14 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 	public List collect(boolean toexecute, IntSupplier supplier) throws PipelineException {
 		try {
 			log.debug("Caching...");
-			var kryo = Utils.getKryoSerializerDeserializer();
 			var mdp = (IgnitePipeline) root;
-			Utils.writeKryoOutput(kryo, mdp.pipelineconfig.getOutput(), "Caching...");
+			Utils.writeToOstream(mdp.pipelineconfig.getOutput(), "Caching...");
 			var mdscollect = (IgnitePipeline) root;
 			mdscollect.finaltasks.clear();
 			mdscollect.finaltasks.add(mdscollect.finaltask);
 			mdscollect.mdsroots.add(root);
 			var job = mdscollect.cacheInternal(true, null, null);
-			return (List) job.results;
+			return (List) job.getResults();
 		} catch (Exception ex) {
 			log.error(PipelineConstants.PIPELINECOLLECTERROR, ex);
 			throw new PipelineException(PipelineConstants.PIPELINECOLLECTERROR, ex);
@@ -869,7 +865,7 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 			mdscollect.finaltasks.add(mdp.task);
 			mdscollect.mdsroots.add(root);
 			var job = mdscollect.cacheInternal(true, null, null);
-			return (List) job.results;
+			return (List) job.getResults();
 		}
 		catch (Exception ex) {
 			log.error(PipelineConstants.PIPELINECOUNTERROR, ex);
@@ -892,7 +888,7 @@ public final class IgnitePipeline<I1> extends IgniteCommon {
 
 			mdscollect.mdsroots.add(root);
 			var job = mdscollect.cacheInternal(true, null, null);
-			var results = (List<?>) job.results;
+			var results = (List<?>) job.getResults();
 			results.stream().forEach((Consumer) consumer);
 		}
 		catch (Exception ex) {

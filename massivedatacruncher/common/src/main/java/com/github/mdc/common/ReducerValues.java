@@ -18,20 +18,30 @@ package com.github.mdc.common;
 import java.io.Serializable;
 import java.util.List;
 
+import org.jooq.lambda.tuple.Tuple3;
+
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+
 /**
  * 
  * @author Arun
  * Holder of reducer information for running 
  * the Reducer tasks in the task executor daemon.
  */
-@SuppressWarnings("serial")
+@Getter
+@Setter
+@EqualsAndHashCode
+@ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class ReducerValues implements Serializable {
-	public List tuples;
-	public String reducerclass;
-	public String appid;
-
-	@Override
-	public String toString() {
-		return "ReducerValues [tuples=" + tuples + ", reducerclass=" + reducerclass + ", appid=" + appid + "]";
-	}
+	private static final long serialVersionUID = -8329337737535175061L;
+	private List<Tuple3> tuples;
+	private String reducerclass;
+	private String appid;
 }

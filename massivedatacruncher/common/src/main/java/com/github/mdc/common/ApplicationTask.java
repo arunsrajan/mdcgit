@@ -28,6 +28,8 @@ import java.io.Serializable;
 @ToString
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class ApplicationTask implements Serializable {
 
 	private static final long serialVersionUID = -3860457009382190198L;

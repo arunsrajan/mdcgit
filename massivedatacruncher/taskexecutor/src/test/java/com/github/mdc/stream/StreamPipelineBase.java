@@ -15,9 +15,10 @@
  */
 package com.github.mdc.stream;
 
-import java.net.ServerSocket;
+import java.rmi.registry.Registry;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutorService;
@@ -27,8 +28,7 @@ import org.apache.curator.test.TestingServer;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.log4j.Logger;
 
-import com.esotericsoftware.kryonetty.ServerEndpoint;
-import com.github.mdc.common.HeartBeatServerStream;
+import com.github.mdc.common.HeartBeatStream;
 import com.github.mdc.common.PipelineConfig;
 import com.github.sakserv.minicluster.impl.HdfsLocalCluster;
 import com.github.sakserv.minicluster.impl.YarnLocalCluster;
@@ -87,11 +87,11 @@ public class StreamPipelineBase {
 	static int namenodeport = 9000;
 	static int namenodehttpport = 60070;
 	public static final String ZK_BASE_PATH = "/mdc/cluster1";
-	protected static HeartBeatServerStream hb;
+	protected static HeartBeatStream hb;
 	protected static String host;
 	static Logger log = Logger.getLogger(StreamPipelineBase.class);
-	static List<HeartBeatServerStream> hbssl = new ArrayList<>();
-	static List<ServerEndpoint> sss = new ArrayList<>();
+	static List<HeartBeatStream> hbssl = new ArrayList<>();
+	static List<Registry> sss = new ArrayList<>();
 	static ExecutorService threadpool, executorpool;
 	static int numberofnodes = 1;
 	static Integer port;
@@ -99,7 +99,7 @@ public class StreamPipelineBase {
 	protected static FileSystem hdfs;
 	static boolean setupdone,toteardownclass;
 	static TestingServer testingserver;
-	static ConcurrentMap<String, List<Process>> containerprocesses = new ConcurrentHashMap<>();
+	static ConcurrentMap<String, Map<String, Process>> containerprocesses = new ConcurrentHashMap<>();
 	static FileSystem hdfste;
 	protected static PipelineConfig pipelineconfig = new PipelineConfig();
 

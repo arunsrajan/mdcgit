@@ -17,13 +17,14 @@ package com.github.mdc.tasks.scheduler;
 
 import java.io.InputStream;
 import java.net.URI;
+import java.rmi.RemoteException;
+import java.rmi.registry.Registry;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -39,17 +40,13 @@ import org.apache.log4j.PropertyConfigurator;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 
-import com.esotericsoftware.kryonetty.ServerEndpoint;
-import com.esotericsoftware.kryonetty.network.ReceiveEvent;
-import com.esotericsoftware.kryonetty.network.handler.NetworkHandler;
-import com.esotericsoftware.kryonetty.network.handler.NetworkListener;
-import com.github.mdc.common.ByteBufferPool;
 import com.github.mdc.common.ByteBufferPoolDirect;
 import com.github.mdc.common.CacheUtils;
-import com.github.mdc.common.HeartBeatServer;
+import com.github.mdc.common.HeartBeat;
 import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.MDCProperties;
 import com.github.mdc.common.NetworkUtil;
+import com.github.mdc.common.StreamDataCruncher;
 import com.github.mdc.common.Utils;
 import com.github.mdc.tasks.executor.NodeRunner;
 import com.github.sakserv.minicluster.impl.HdfsLocalCluster;
@@ -92,14 +89,13 @@ public class MassiveDataMRJobBase {
 	static String githubevents = "/githubevents";
 	private static int numberofnodes = 1;
 	private static int port;
-	static List<HeartBeatServer> hbssl = new ArrayList<>();
+	static List<HeartBeat> hbssl = new ArrayList<>();
 	static ExecutorService executorpool;
-	static List<ServerEndpoint> ssl = new ArrayList<>();
 	static int zookeeperport = 2181;
 
 	private static TestingServer testingserver;
 
-	private static ServerEndpoint server;
+	private static Registry server;
 
 	@BeforeClass
 	public static void setServerUp() throws Exception {
@@ -110,7 +106,6 @@ public class MassiveDataMRJobBase {
 			Utils.loadLog4JSystemProperties(MDCConstants.PREV_FOLDER + MDCConstants.FORWARD_SLASH
 					+ MDCConstants.DIST_CONFIG_FOLDER + MDCConstants.FORWARD_SLASH, "mdctest.properties");
 			ByteBufferPoolDirect.init();
-			ByteBufferPool.init(4);
 			CacheUtils.initCache();
 			testingserver = new TestingServer(zookeeperport);
 			testingserver.start();
@@ -120,7 +115,7 @@ public class MassiveDataMRJobBase {
 			int pingdelay = Integer.parseInt(MDCProperties.get().getProperty("taskscheduler.pingdelay"));
 			String host = NetworkUtil.getNetworkAddress(MDCProperties.get().getProperty("taskscheduler.host"));
 			port = Integer.parseInt(MDCProperties.get().getProperty("taskscheduler.port"));
-			HeartBeatServer hb = new HeartBeatServer();
+			HeartBeat hb = new HeartBeat();
 			hb.init(rescheduledelay, port, host, initialdelay, pingdelay, "");
 			hb.start();
 			Configuration configuration = new Configuration();
@@ -135,24 +130,24 @@ public class MassiveDataMRJobBase {
 				ExecutorService es = Executors.newWorkStealingPool();
 				var containeridports = new ConcurrentHashMap<String, List<Integer>>();
 				while (executorsindex < numberofnodes) {
-					hb = new HeartBeatServer();
+					hb = new HeartBeat();
 					host = NetworkUtil
 							.getNetworkAddress(MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_HOST));
 					hb.init(rescheduledelay, port, host, initialdelay, pingdelay, "");
 					hb.ping();
 					hbssl.add(hb);
 					Thread.sleep(3000);
-					server = Utils.getServerKryoNetty(port,
-							new NetworkListener() {
-							@NetworkHandler
-				            public void onReceive(ReceiveEvent event) {
+					server = Utils.getRPCRegistry(port,
+							new StreamDataCruncher() {
+						public Object postObject(Object object)throws RemoteException {
 								try {
-									Object object = event.getObject();
-									var container = new NodeRunner(server, MDCConstants.PROPLOADERCONFIGFOLDER,
+									var container = new NodeRunner(MDCConstants.PROPLOADERCONFIGFOLDER,
 											containerprocesses, hdfs, containeridthreads, containeridports,
-											object, event);
-									Future<Boolean> containerallocated = es.submit(container);
-									log.info("Containers Allocated: " + containerallocated.get());
+											object);
+									Future<Object> containerallocated = es.submit(container);
+									Object returnresultobject = containerallocated.get();
+									log.info("Containers Allocated: " + returnresultobject);
+									return returnresultobject;
 								} catch (InterruptedException e) {
 									log.warn("Interrupted!", e);
 									// Restore interrupted state...
@@ -160,6 +155,7 @@ public class MassiveDataMRJobBase {
 								} catch (Exception e) {
 									log.error(MDCConstants.EMPTY, e);
 								}
+								return null;
 							}
 						});
 					port++;
@@ -206,12 +202,9 @@ public class MassiveDataMRJobBase {
 	@AfterClass
 	public static void closeResources() throws Exception {
 		executorpool.shutdown();
-		for (HeartBeatServer hbss : hbssl) {
+		for (HeartBeat hbss : hbssl) {
 			hbss.stop();
 			hbss.destroy();
-		}
-		for (ServerEndpoint ss : ssl) {
-			ss.close();
 		}
 		testingserver.stop();
 		testingserver.close();

@@ -34,10 +34,10 @@ public class StreamPipelineTest extends StreamPipelineTestCommon {
 		mdparr.finaltasks.add(mdparr.task);
 		mdparr.mdsroots.add(mdp);
 		Job job = new Job();
-		job.jm = new JobMetrics();
+		job.setJm(new JobMetrics());
 		mdparr.getDAG(job);
-		assertEquals(1, job.stageoutputmap.size());
-		assertEquals(1, job.topostages.size());
+		assertEquals(1, job.getStageoutputmap().size());
+		assertEquals(1, job.getTopostages().size());
 	}
 
 	@Test

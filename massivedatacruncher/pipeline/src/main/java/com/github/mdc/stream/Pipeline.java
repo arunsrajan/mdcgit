@@ -15,6 +15,8 @@
  */
 package com.github.mdc.stream;
 
+import java.io.Serializable;
+
 import com.github.mdc.common.PipelineConfig;
 
 /**
@@ -22,6 +24,6 @@ import com.github.mdc.common.PipelineConfig;
  * @author arun
  * The interface for the pipeline.
  */
-public interface Pipeline {
+public interface Pipeline extends Serializable{
 	public abstract void runPipeline(String[] args, PipelineConfig pipelineconfig) throws Exception;
 }

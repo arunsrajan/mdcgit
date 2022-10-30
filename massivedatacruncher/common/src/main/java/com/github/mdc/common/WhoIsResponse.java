@@ -15,6 +15,11 @@
  */
 package com.github.mdc.common;
 
+import java.io.Serializable;
+
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * 
  * @author arun
@@ -22,7 +27,11 @@ package com.github.mdc.common;
  * during the stage execution from task executors. This class is returned 
  * between task executors.
  */
-public class WhoIsResponse {
+@Getter
+@Setter
+public class WhoIsResponse implements Serializable{
+	private static final long serialVersionUID = -9121734276018568796L;
+
 	public static enum STATUS {
 		YETTOSTART,RUNNING,COMPLETED,FAILED
 	}

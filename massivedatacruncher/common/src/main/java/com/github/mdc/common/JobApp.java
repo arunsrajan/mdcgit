@@ -16,7 +16,33 @@
 package com.github.mdc.common;
 
 import java.io.Serializable;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ConcurrentMap;
 
+import org.apache.ignite.Ignite;
+import org.apache.ignite.IgniteCache;
+
+import com.github.mdc.common.Job.TRIGGER;
+
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+
+/**
+ * The class holds container id with streaming job or mr app id  
+ * @author arun
+ *
+ */
+@Getter
+@Setter
+@EqualsAndHashCode
+@ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class JobApp implements Serializable {
 	private static final long serialVersionUID = -667681829064359241L;
 
@@ -26,29 +52,5 @@ public class JobApp implements Serializable {
 	JOBAPP jobtype;
 	private String containerid;
 	private String jobappid;
-
-	public String getContainerid() {
-		return containerid;
-	}
-
-	public void setContainerid(String containerid) {
-		this.containerid = containerid;
-	}
-
-	public String getJobappid() {
-		return jobappid;
-	}
-
-	public void setJobappid(String jobappid) {
-		this.jobappid = jobappid;
-	}
-
-	public JOBAPP getJobtype() {
-		return jobtype;
-	}
-
-	public void setJobtype(JOBAPP jobtype) {
-		this.jobtype = jobtype;
-	}
-
+	
 }

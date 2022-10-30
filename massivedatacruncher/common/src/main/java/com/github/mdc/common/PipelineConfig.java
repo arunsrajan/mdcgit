@@ -15,10 +15,13 @@
  */
 package com.github.mdc.common;
 
+import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.Objects;
+import java.util.Set;
 
-import com.esotericsoftware.kryo.io.Output;
+import org.nustaq.serialization.FSTObjectOutput;
+
 import com.github.mdc.common.MDCConstants.STORAGE;
 
 /**
@@ -28,7 +31,7 @@ import com.github.mdc.common.MDCConstants.STORAGE;
  */
 public class PipelineConfig implements Serializable, Cloneable {
 	private static final long serialVersionUID = 1L;
-	private Output output;
+	private OutputStream  output;
 	private String blocksize;
 	private String isblocksuserdefined;
 	private String pingdelay;
@@ -61,12 +64,13 @@ public class PipelineConfig implements Serializable, Cloneable {
 	private String implicitcontainercpu;
 	private String implicitcontainermemory;
 	private String implicitcontainermemorysize;
+	private Set<Class<?>> customclasses;
 
-	public void setKryoOutput(Output output) {
+	public void setOutput(OutputStream  output) {
 		this.output = output;
 	}
 
-	public Output getOutput() {
+	public OutputStream getOutput() {
 		return output;
 	}
 
@@ -169,10 +173,6 @@ public class PipelineConfig implements Serializable, Cloneable {
 		this.randomte = randomte;
 	}
 
-	public void setOutput(Output output) {
-		this.output = output;
-	}
-
 	public String getMinmem() {
 		return Objects.isNull(minmem)
 				? Objects.nonNull(MDCProperties.get()) ? MDCProperties.get().getProperty(MDCConstants.MINMEMORY, MDCConstants.CONTAINER_MINMEMORY_DEFAULT) : MDCConstants.CONTAINER_MINMEMORY_DEFAULT : minmem;
@@ -218,6 +218,17 @@ public class PipelineConfig implements Serializable, Cloneable {
 			throw new UnsupportedOperationException();
 		}
 		this.jar = jar;
+	}
+	
+	public void setCustomclasses(Set<Class<?>> customclasses) {
+		if (Objects.isNull(customclasses)) {
+			throw new UnsupportedOperationException();
+		}
+		this.customclasses = customclasses;
+	}
+
+	public Set<Class<?>> getCustomclasses() {
+		return customclasses;
 	}
 
 	public String getIsblocksusedefined() {

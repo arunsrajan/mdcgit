@@ -15,14 +15,16 @@
  */
 package com.github.mdc.stream.scheduler;
 
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.util.concurrent.Callable;
 
 import org.apache.log4j.Logger;
 
-import com.github.mdc.common.Context;
+import com.github.mdc.common.MDCConstants;
+import com.github.mdc.common.StreamDataCruncher;
 import com.github.mdc.common.StreamPipelineTaskSubmitterMBean;
 import com.github.mdc.common.Task;
-import com.github.mdc.common.Utils;
 
 /**
  * 
@@ -37,6 +39,7 @@ public class StreamPipelineTaskSubmitter implements StreamPipelineTaskSubmitterM
 	private String hp;
 	private boolean completedexecution;
 	private boolean resultobtainedte;
+	
 
 	public StreamPipelineTaskSubmitter() {
 	}
@@ -68,17 +71,17 @@ public class StreamPipelineTaskSubmitter implements StreamPipelineTaskSubmitterM
 	/**
 	 * Submit the job stages to task exectuors.
 	 */
-	@SuppressWarnings("rawtypes")
 	@Override
-	public Context call() throws Exception {
+	public Boolean call() throws Exception {
 		try {
-			Utils.writeObject(hp, task);
-
+			String hostport[] = hp.split(MDCConstants.UNDERSCORE);
+			Registry registry = LocateRegistry.getRegistry(hostport[0], Integer.parseInt(hostport[1]));
+			StreamDataCruncher sdc = (StreamDataCruncher) registry.lookup(MDCConstants.BINDTESTUB);
+			return (Boolean) sdc.postObject(task);
 		} catch (Exception ex) {
 			log.error("Unable to connect and submit tasks to executor: ", ex);
 			throw ex;
 		}
-		return null;
 	}
 
 

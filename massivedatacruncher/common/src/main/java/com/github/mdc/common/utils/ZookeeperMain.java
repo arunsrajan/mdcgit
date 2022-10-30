@@ -41,12 +41,12 @@ public class ZookeeperMain {
 			ServerCnxnFactory scf = Utils.startZookeeperServer(clientport, numconnections, ticktime);
 			Utils.addShutdownHook(() -> {
 				cdl.countDown();
-				log.info("Halting Zookeeper...");
+				log.info("Bumbling Zookeeper...");
 				scf.closeAll();
 
 			});
 		} catch (Exception e) {
-			log.error("Error in starting zookeeper", e);
+			log.error("Error in bumbling zookeeper", e);
 		}
 		cdl.await();
 	}

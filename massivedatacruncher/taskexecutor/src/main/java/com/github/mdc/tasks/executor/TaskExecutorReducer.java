@@ -19,23 +19,25 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 
 import org.apache.log4j.Logger;
-import org.jooq.lambda.tuple.Tuple2;
+import org.jooq.lambda.tuple.Tuple3;
 
 import com.github.mdc.common.Context;
 import com.github.mdc.common.DataCruncherContext;
-import com.github.mdc.common.HeartBeatTaskScheduler;
+import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.ReducerValues;
-import com.github.mdc.common.RemoteDataFetcher;
-import com.github.mdc.common.ApplicationTask.TaskStatus;
-import com.github.mdc.common.ApplicationTask.TaskType;
+import com.github.mdc.common.RetrieveData;
+import com.github.mdc.common.Utils;
 
-public class TaskExecutorReducer implements Runnable {
+public class TaskExecutorReducer implements Callable<Context> {
 	static Logger log = Logger.getLogger(TaskExecutorReducer.class);
 	@SuppressWarnings("rawtypes")
 	Reducer cr;
@@ -43,20 +45,20 @@ public class TaskExecutorReducer implements Runnable {
 	File file;
 	@SuppressWarnings("rawtypes")
 	Context ctx;
-	HeartBeatTaskScheduler hbts;
 	String applicationid;
 	String taskid;
 	int port;
+	Map<String, Object> apptaskexecutormap;
 
 	@SuppressWarnings({"rawtypes"})
 	public TaskExecutorReducer(ReducerValues rv, String applicationid, String taskid,
 			ClassLoader cl, int port,
-			HeartBeatTaskScheduler hbts) throws Exception {
+			Map<String, Object> apptaskexecutormap) throws Exception {
 		this.rv = rv;
 		Class<?> clz = null;
 		this.port = port;
 		try {
-			clz = cl.loadClass(rv.reducerclass);
+			clz = cl.loadClass(rv.getReducerclass());
 			cr = (Reducer) clz.getDeclaredConstructor().newInstance();
 			this.applicationid = applicationid;
 			this.taskid = taskid;
@@ -64,49 +66,53 @@ public class TaskExecutorReducer implements Runnable {
 		catch (Exception ex) {
 			log.debug("Exception in loading class:", ex);
 		}
-		this.hbts = hbts;
+		this.apptaskexecutormap = apptaskexecutormap;
 	}
 
 	@SuppressWarnings({"rawtypes", "unchecked"})
 	@Override
-	public void run() {
+	public Context call() {
 		var es = Executors.newSingleThreadExecutor();
 		try {
-			hbts.pingOnce(taskid, TaskStatus.RUNNING, TaskType.REDUCER, null);
 			log.debug("Submitted Reducer:" + applicationid + taskid);
 			var complete = new DataCruncherContext();
 			var apptaskcontextmap = new ConcurrentHashMap<String, Context>();
 			Context currentctx;
-			for (var tuple2 : (List<Tuple2>) rv.tuples) {
+			for (var tuple3 : (List<Tuple3>) rv.getTuples()) {
 				var ctx = new DataCruncherContext();
-				for (var apptaskids : (Collection<String>) tuple2.v2) {
+				int hpcount = 0;
+				for (var apptaskids : (Collection<String>) tuple3.v2) {
 					if (apptaskcontextmap.get(apptaskids) != null) {
 						currentctx = apptaskcontextmap.get(apptaskids);
 					}
 					else {
-						currentctx = (Context) RemoteDataFetcher.readIntermediatePhaseOutputFromDFS(rv.appid,
-								apptaskids, false);
+						TaskExecutorMapperCombiner temc = (TaskExecutorMapperCombiner) apptaskexecutormap.get(apptaskids);
+						currentctx = (Context) temc.ctx;
+						if(currentctx == null) {
+							var objects = new ArrayList<>();
+							objects.add(new RetrieveData());
+							objects.add(applicationid);
+							objects.add(apptaskids.replace(applicationid, MDCConstants.EMPTY));
+							currentctx = (Context) Utils.getResultObjectByInput((String)((List)tuple3.v3).get(hpcount), objects);
+						}
 						apptaskcontextmap.put(apptaskids, currentctx);
 					}
-					ctx.addAll(tuple2.v1, currentctx.get(tuple2.v1));
+					ctx.addAll(tuple3.v1, currentctx.get(tuple3.v1));
+					hpcount++;
 				}
 				var mdcr = new ReducerExecutor((DataCruncherContext) ctx, cr,
-						tuple2.v1);
+						tuple3.v1);
 				var fc = es.submit(mdcr);
 				var results = fc.get();
 				complete.add(results);
 			}
-			RemoteDataFetcher.writerIntermediatePhaseOutputToDFS(complete, applicationid,
-					(applicationid + taskid));
-			ctx = null;
-			hbts.pingOnce(taskid, TaskStatus.COMPLETED, TaskType.REDUCER, null);
+			ctx = complete;
 			log.debug("Submitted Reducer Completed:" + applicationid + taskid);
 		} catch (Throwable ex) {
 			try {
 				var baos = new ByteArrayOutputStream();
 				var failuremessage = new PrintWriter(baos, true, StandardCharsets.UTF_8);
 				ex.printStackTrace(failuremessage);
-				hbts.pingOnce(taskid, TaskStatus.FAILED, TaskType.REDUCER, new String(baos.toByteArray()));
 			} catch (Exception e) {
 				log.error("Send Message Error For Task Failed: ", e);
 			}
@@ -116,11 +122,7 @@ public class TaskExecutorReducer implements Runnable {
 				es.shutdown();
 			}
 		}
+		return ctx;
 	}
-
-	public HeartBeatTaskScheduler getHbts() {
-		return hbts;
-	}
-
 
 }
