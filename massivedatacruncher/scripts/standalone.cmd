@@ -4,7 +4,7 @@ title MDC Standlone
 
 setLocal EnableDelayedExpansion
 
-echo STARTING DataCruncher....
+echo STARTING standalone....
 
 SET DATACRUNCHER=%~dp0\\..
 
