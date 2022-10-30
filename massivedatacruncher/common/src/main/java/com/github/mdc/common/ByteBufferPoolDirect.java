@@ -15,27 +15,66 @@
  */
 package com.github.mdc.common;
 
-import java.util.Objects;
+import static java.util.Objects.nonNull;
 
-import com.github.pbbl.direct.DirectByteBufferPool;
+import java.nio.ByteBuffer;
+import java.util.concurrent.Semaphore;
 
+import org.apache.log4j.Logger;
+
+/**
+ * Direct Byte buffer pool which allocates byte buffer
+ * 
+ * @author arun
+ *
+ */
 public class ByteBufferPoolDirect {
-	private static DirectByteBufferPool pool;
+
+	private static Logger log = Logger.getLogger(ByteBufferPoolDirect.class);
+
+	private static long directmemorysize;
+	private static long heapsize;
+	private static long memoryallocated = 0;
+	private static long totalmemoryallocated = 0;
+	private static Semaphore allocatedeallocate = new Semaphore(1);
+	private static final int MEMRETRY = 100;
 
 	public static void init() {
-		if (Objects.isNull(pool)) {
-			ByteBufferPoolDirect.pool = new DirectByteBufferPool();
-		}
+		int heappercentage = Integer.parseInt(
+				MDCProperties.get().getProperty(MDCConstants.HEAP_PERCENTAGE, MDCConstants.HEAP_PERCENTAGE_DEFAULT));
+		long totalmemory = Runtime.getRuntime().maxMemory();
+		directmemorysize = totalmemory * (100 - heappercentage) / 100;
+		heapsize = totalmemory - directmemorysize;
+		log.info("Max Heap Allocated: " + ((heapsize) / MDCConstants.MB) + " MB, Max Direct Memory: "
+				+ (directmemorysize / MDCConstants.MB) + " MB");
 	}
 
-	public static DirectByteBufferPool get() {
-		return ByteBufferPoolDirect.pool;
+	public static synchronized ByteBuffer get(long memorytoallocate) throws Exception {
+		allocatedeallocate.acquire();
+		if (directmemorysize - memoryallocated >= memorytoallocate) {
+			totalmemoryallocated += memorytoallocate;
+			memoryallocated += memorytoallocate;
+			ByteBuffer bb = DirectByteBufferUtil.allocateDirect((int) memorytoallocate);
+			if (bb != null) {
+				allocatedeallocate.release();
+				return bb;
+			}
+		}
+		allocatedeallocate.release();
+		ByteBuffer bb = ByteBuffer.allocate((int) memorytoallocate);
+		return bb;
 	}
-	
+
 	public static void destroy() {
-		if(Objects.nonNull(pool)) {
-			pool.close();
-		}		
+	}
+
+	public static synchronized void destroy(ByteBuffer bb) throws Exception {
+		if (nonNull(bb) && bb.isDirect()) {
+			allocatedeallocate.acquire();
+			memoryallocated -= bb.capacity();
+			DirectByteBufferUtil.freeDirectBufferMemory(bb);
+			allocatedeallocate.release();
+		}
 	}
 
 	private ByteBufferPoolDirect() {

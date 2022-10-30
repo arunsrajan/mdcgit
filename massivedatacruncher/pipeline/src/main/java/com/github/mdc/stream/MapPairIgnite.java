@@ -1076,7 +1076,7 @@ public sealed class MapPairIgnite<I1, I2> extends IgniteCommon permits MapValues
 				job = mti.cacheInternal(true,null,null);
 				log.debug("Cached....");
 			}
-			var results = (List<?>) job.results;
+			var results = (List<?>) job.getResults();
 			results.stream().forEach((Consumer) consumer);
 
 		} catch (Exception e) {
@@ -1112,7 +1112,7 @@ public sealed class MapPairIgnite<I1, I2> extends IgniteCommon permits MapValues
 				job = mti.cacheInternal(true,null,null);
 				log.debug("Cached....");
 			}
-			return (List) job.results;
+			return (List) job.getResults();
 		} catch (Exception ex) {
 			log.error(PipelineConstants.PIPELINECOUNTERROR, ex);
 			throw new PipelineException(PipelineConstants.PIPELINECOUNTERROR, ex);
@@ -1144,7 +1144,7 @@ public sealed class MapPairIgnite<I1, I2> extends IgniteCommon permits MapValues
 				job = mti.cacheInternal(true,null,null);
 				log.debug("Cached....");
 			}
-			return (List) job.results;
+			return (List) job.getResults();
 		} catch (Exception ex) {
 			log.error(PipelineConstants.PIPELINECOUNTERROR, ex);
 			throw new PipelineException(PipelineConstants.PIPELINECOUNTERROR, ex);

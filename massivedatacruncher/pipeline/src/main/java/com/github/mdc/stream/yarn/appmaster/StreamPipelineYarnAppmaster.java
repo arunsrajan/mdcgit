@@ -40,7 +40,6 @@ import org.springframework.yarn.am.allocate.DefaultContainerAllocator;
 import org.springframework.yarn.am.container.AbstractLauncher;
 
 import com.github.mdc.common.BlocksLocation;
-import com.github.mdc.common.ByteBufferPool;
 import com.github.mdc.common.ByteBufferPoolDirect;
 import com.github.mdc.common.DAGEdge;
 import com.github.mdc.common.JobStage;
@@ -99,7 +98,6 @@ public class StreamPipelineYarnAppmaster extends StaticEventingAppmaster impleme
 			var prop = new Properties();
 			MDCProperties.put(prop);
 			ByteBufferPoolDirect.init();
-			ByteBufferPool.init(3);
 			log.debug("Task Id Counter: " + taskidcounter);
 			log.debug("Environment: " + getEnvironment());
 			var yarninputfolder = MDCConstants.YARNINPUTFOLDER + MDCConstants.FORWARD_SLASH
@@ -109,7 +107,7 @@ public class StreamPipelineYarnAppmaster extends StaticEventingAppmaster impleme
 			var namenodeurl = getConfiguration().get(MDCConstants.HDFSNAMENODEURL);
 			var containerallocator = (DefaultContainerAllocator) getAllocator();
 			log.debug("Parameters: " + getParameters());
-			log.debug("Container-Memory: " + getParameters().getProperty("container-memory", "1024"));
+			log.info("Container-Memory: " + getParameters().getProperty("container-memory", "1024"));
 			containerallocator.setMemory(Integer.parseInt(getParameters().getProperty("container-memory", "1024")));
 			System.setProperty(MDCConstants.HDFSNAMENODEURL, getConfiguration().get(MDCConstants.HDFSNAMENODEURL));
 			// Thread containing the job stage information.

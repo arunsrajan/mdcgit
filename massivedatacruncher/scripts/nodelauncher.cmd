@@ -1,37 +1,30 @@
-title MDC Node Launcher
-
 @echo off
+
+title Node
 
 setLocal EnableDelayedExpansion
 
-echo STARTING DataCruncher....
+echo STARTING Node....
 
 SET DATACRUNCHER=%~dp0\\..
 
-SET DATACRUNCHERLIB=%DATACRUNCHER%\lib
-
-SET DATACRUNCHERMODULES=%DATACRUNCHER%\modules
-
-set JMXPORT=33330
-
-set DEBUGPORT=4001
-
-set PORTOFFSET=0
-
-set JMXCONFIG=-Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=%JMXPORT% -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false
-
-set ZOOKEEPERADMINCONFIG=-Dzookeeper.admin.serverPort=%ZOOADMINPORT%
+set DEBUGPORT=4006
 
 set CLASSPATH=-classpath ".;../lib/*;../modules/*"
 
-set DEBUGCONFIG=-Xdebug -Xrunjdwp:server=y,transport=dt_socket,address=%DEBUGPORT%,suspend=n -Dorg.singam.debug.port=%DEBUGPORT%
+set DEBUGCONFIG=-Xdebug -Xrunjdwp:server=y,transport=dt_socket,address=%DEBUGPORT%,suspend=n
 
-set GCCONFIG=-server -Xms2G -Xmx2G -XX:+UnlockExperimentalVMOptions -XX:ConcGCThreads=4 -XX:G1NewSizePercent=10 -XX:G1MaxNewSizePercent=75 -XX:+UseG1GC
-rem set GCCONFIG=-server -Xms2G -Xmx2G -XX:+UseG1GC -XX:+UnlockExperimentalVMOptions -XX:MaxGCPauseMillis=100 -XX:+DisableExplicitGC -XX:TargetSurvivorRatio=90 -XX:G1NewSizePercent=50 -XX:G1MaxNewSizePercent=80 -XX:G1MixedGCLiveThresholdPercent=35 -XX:+AlwaysPreTouch -XX:+ParallelRefProcEnabled
+set MEMCONFIG=-Xms1G -Xmx2G
+
+set ADDOPENSMODULES=--enable-preview --add-opens java.base/java.math=ALL-UNNAMED --add-opens java.base/java.lang=ALL-UNNAMED --add-modules jdk.incubator.foreign --add-opens java.base/jdk.internal.ref=ALL-UNNAMED --add-opens java.base/java.lang.reflect=ALL-UNNAMED --add-opens java.base/jdk.internal.reflect=ALL-UNNAMED --add-opens java.base/java.util=ALL-UNNAMED --add-opens java.base/java.lang.invoke=ALL-UNNAMED --add-opens java.base/java.nio=ALL-UNNAMED --add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.util.concurrent.atomic=ALL-UNNAMED --add-opens java.base/java.util.concurrent=ALL-UNNAMED --add-opens java.base/java.net=ALL-UNNAMED --add-opens java.base/java.text=ALL-UNNAMED --add-opens java.sql/java.sql=ALL-UNNAMED
+
+set GCCONFIG=-XX:+UseZGC -XX:InitiatingHeapOccupancyPercent=80
 
 IF EXIST %MDC_JAVA_HOME%\bin\java.exe (
 
-"%MDC_JAVA_HOME%\bin\java" --add-opens java.base/java.util=ALL-UNNAMED --add-opens java.base/java.lang.invoke=ALL-UNNAMED --enable-preview %DEBUGCONFIG% %CLASSPATH% %GCCONFIG% -Djava.net.preferIPv4Stack=true com.github.mdc.tasks.executor.NodeLauncher
+"%MDC_JAVA_HOME%\bin\java" -version
+
+"%MDC_JAVA_HOME%\bin\java" %MEMCONFIG% %ADDOPENSMODULES% %GCCONFIG% %DEBUGCONFIG% %CLASSPATH% -Djava.net.preferIPv4Stack=true com.github.mdc.tasks.executor.NodeLauncher
 
 ) ELSE (
  @echo on

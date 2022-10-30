@@ -25,13 +25,11 @@ import java.util.concurrent.ConcurrentMap;
 import org.jooq.lambda.tuple.Tuple;
 import org.jooq.lambda.tuple.Tuple2;
 import org.junit.Test;
+import org.nustaq.serialization.FSTObjectOutput;
 
-import com.esotericsoftware.kryo.io.Output;
-import com.github.mdc.common.ByteBufferPool;
 import com.github.mdc.common.ByteBufferPoolDirect;
 import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.MDCNodesResources;
-import com.github.mdc.common.MDCProperties;
 import com.github.mdc.common.PipelineConfig;
 import com.github.mdc.common.Resources;
 import com.github.mdc.common.Utils;
@@ -51,7 +49,7 @@ public class LaunchContainersTest extends StreamPipelineBaseTestCommon {
 		pc.setJgroups("false");
 		pc.setMesos("false");
 		pc.setYarn("false");
-		pc.setOutput(new Output(System.out));
+		pc.setOutput(System.out);
 		pc.setIsblocksuserdefined("true");
 		pc.setBlocksize("64");
 		pc.setMode(MDCConstants.MODE_NORMAL);
@@ -77,7 +75,7 @@ public class LaunchContainersTest extends StreamPipelineBaseTestCommon {
 		pc.setJgroups("false");
 		pc.setMesos("false");
 		pc.setYarn("false");
-		pc.setOutput(new Output(System.out));
+		pc.setOutput(System.out);
 		pc.setIsblocksuserdefined("true");
 		pc.setBlocksize("64");
 		pc.setMode(MDCConstants.MODE_NORMAL);
@@ -91,7 +89,6 @@ public class LaunchContainersTest extends StreamPipelineBaseTestCommon {
 		var lc = Utils.launchContainers(1);
 		assertNotNull(lc);
 		ByteBufferPoolDirect.init();
-		ByteBufferPool.init(Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.BYTEBUFFERPOOL_MAX, MDCConstants.BYTEBUFFERPOOL_MAX_DEFAULT)));
 		pc.setLocal("false");
 		pc.setUseglobaltaskexecutors(true);
 		StreamPipeline<String> datastream = StreamPipeline.newStreamHDFS("hdfs://127.0.0.1:9000", "/airline1989", pc);

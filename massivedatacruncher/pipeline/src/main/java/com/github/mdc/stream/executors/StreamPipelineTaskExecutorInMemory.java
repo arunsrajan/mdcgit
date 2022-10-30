@@ -1,14 +1,12 @@
 package com.github.mdc.stream.executors;
 
+import static java.util.Objects.isNull;
+
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.PrintWriter;
 import java.net.URI;
-import java.net.URISyntaxException;
-import java.nio.charset.StandardCharsets;
+import java.nio.ByteBuffer;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentMap;
 
@@ -16,11 +14,11 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.log4j.Logger;
 import org.ehcache.Cache;
-import org.xerial.snappy.SnappyInputStream;
 
-import com.github.mdc.common.ByteBufferPool;
+import com.github.mdc.common.ByteBufferInputStream;
+import com.github.mdc.common.ByteBufferOutputStream;
 import com.github.mdc.common.ByteBufferPoolDirect;
-import com.github.mdc.common.CloseableByteBufferOutputStream;
+import com.github.mdc.common.DirectByteBufferUtil;
 import com.github.mdc.common.JobStage;
 import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.MDCProperties;
@@ -49,17 +47,16 @@ public sealed class StreamPipelineTaskExecutorInMemory extends StreamPipelineTas
 	
 	public OutputStream getIntermediateInputStreamRDF(RemoteDataFetch rdf) throws Exception {
 		log.debug("Entered MassiveDataStreamTaskExecutorInMemory.getIntermediateInputStreamRDF");
-		var path = (rdf.jobid + MDCConstants.HYPHEN +
-				rdf.stageid + MDCConstants.HYPHEN +rdf.taskid
+		var path = (rdf.getJobid() + MDCConstants.HYPHEN +
+				rdf.getStageid() + MDCConstants.HYPHEN +rdf.getTaskid()
 				);
 		OutputStream os = resultstream.get(path);
 		log.debug("Exiting MassiveDataStreamTaskExecutorInMemory.getIntermediateInputStreamFS");
-		if(Objects.isNull(os)) {
-			log.info("Unable to get Result Stream for path: "+path+" Fetching Remotely");
-			return os;
+		if(isNull(os)) {
+			return null;
 		}
-		else if(os instanceof ByteArrayOutputStream baos) {
-			return os;
+		else if(os instanceof ByteBufferOutputStream baos) {
+			return baos;
 		}
 		else {
 			throw new UnsupportedOperationException("Unknown I/O operation");
@@ -72,9 +69,9 @@ public sealed class StreamPipelineTaskExecutorInMemory extends StreamPipelineTas
 	 */
 	@Override
 	public String getIntermediateDataFSFilePath(Task task) {
-		return (task.jobid + MDCConstants.HYPHEN +
+		return task.jobid + MDCConstants.HYPHEN +
 				task.stageid + MDCConstants.HYPHEN +task.taskid
-						);
+						;
 	}
 	
 	
@@ -86,18 +83,13 @@ public sealed class StreamPipelineTaskExecutorInMemory extends StreamPipelineTas
 	 * @throws Exception
 	 */
 	@Override
-	public OutputStream createIntermediateDataToFS(Task task) throws PipelineException {
+	public OutputStream createIntermediateDataToFS(Task task,int buffersize) throws PipelineException {
 		log.debug("Entered MassiveDataStreamTaskExecutorInMemory.createIntermediateDataToFS");
 		try {
 			var path = getIntermediateDataFSFilePath(task);
 			OutputStream os;
-			if(task.finalphase && task.saveresulttohdfs) {
-				os = new CloseableByteBufferOutputStream(ByteBufferPool.get().borrowObject());
-			}
-			else {
-				os = new ByteArrayOutputStream();
-				resultstream.put(path, os);
-			}
+			os = new ByteBufferOutputStream(ByteBufferPoolDirect.get(buffersize));
+			resultstream.put(path, os);
 			log.debug("Exiting MassiveDataStreamTaskExecutorInMemory.createIntermediateDataToFS");
 			return os;
 		} catch (Exception e) {
@@ -120,29 +112,26 @@ public sealed class StreamPipelineTaskExecutorInMemory extends StreamPipelineTas
 		var path = getIntermediateDataFSFilePath(task);
 		log.debug("Exiting MassiveDataStreamTaskExecutorInMemory.getIntermediateInputStreamFS");
 		OutputStream os = resultstream.get(path);
-		if(Objects.isNull(os)) {
-			throw new NullPointerException("Unable to get Result Stream for path: "+path);
-		}else if(os instanceof ByteArrayOutputStream baos) {
-			return new ByteArrayInputStream(baos.toByteArray());
+		if(os instanceof ByteBufferOutputStream baos) {
+			return new ByteBufferInputStream(baos.get());
 		} else {
 			throw new UnsupportedOperationException("Unknown I/O operation");
 		}
 		
 	}
 
-	
+
 	@Override
-	public StreamPipelineTaskExecutorInMemory call() {
-		log.info("Entered MassiveDataStreamTaskExecutorInMemory.call for task "+task);
+	public Boolean call() {
+		starttime = System.currentTimeMillis();
+		log.debug("Entered MassiveDataStreamTaskExecutorInMemory.call for task "+task);
 		String stageTasks = "";
-		log.info("Init Stage tasks");
 		var hdfsfilepath = MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL, MDCConstants.HDFSNAMENODEURL_DEFAULT);
-		log.info("Obtaining Namenode URL "+hdfsfilepath);
+		log.info("Acclaimed namenode URL "+hdfsfilepath);
 		var configuration = new Configuration();
 		try(var hdfs = FileSystem.newInstance(new URI(hdfsfilepath), configuration);) {
 			stageTasks = getStagesTask();
-			log.info("Submitted Task " + task);
-			log.info("Running Task " + task);
+			log.info("Submitted Task " + task);			
 			if (task.input != null && task.parentremotedatafetch != null) {
 				var numinputs = task.parentremotedatafetch.length;
 				for (var inputindex = 0; inputindex<numinputs;inputindex++) {
@@ -151,35 +140,24 @@ public sealed class StreamPipelineTaskExecutorInMemory extends StreamPipelineTas
 						var rdf = (RemoteDataFetch) input;
 						var os = getIntermediateInputStreamRDF(rdf);
 						if (os != null) {
-							task.input[inputindex] = new SnappyInputStream(new ByteArrayInputStream(((ByteArrayOutputStream)os).toByteArray()));
+							ByteBufferOutputStream bbos = (ByteBufferOutputStream) os;
+							ByteBuffer buffer = bbos.get();
+							task.input[inputindex] = new ByteBufferInputStream(buffer.rewind());
 						} else {
 							RemoteDataFetcher.remoteInMemoryDataFetch(rdf);
-							task.input[inputindex] = new SnappyInputStream(new ByteArrayInputStream(rdf.data));
+							task.input[inputindex] = new ByteArrayInputStream(rdf.getData());
 						}
 					}
 				}
 			}
-			if(!Objects.isNull(hbtss))
-			hbtss.pingOnce(task.stageid, task.taskid, task.hostport, Task.TaskStatus.RUNNING, timetaken, null);
+			log.info("Functioning Task " + task);
 			timetaken = computeTasks(task, hdfs);
-			if(!Objects.isNull(hbtss))
-			hbtss.pingOnce(task.stageid, task.taskid, task.hostport, Task.TaskStatus.COMPLETED, timetaken, null);
 			log.info("Completed Task: " + task);
+			completed = true;
 		} catch (Exception ex) {
 			log.error("Failed Stage " + stageTasks, ex);
-			completed = true;
+			completed = false;
 			log.error("Failed Stage: " + task.stageid, ex);
-			if(!Objects.isNull(hbtss)) {
-				try {
-					var baos = new ByteArrayOutputStream();
-					var failuremessage = new PrintWriter(baos, true, StandardCharsets.UTF_8);
-					ex.printStackTrace(failuremessage);
-					hbtss.pingOnce(task.stageid, task.taskid, task.hostport, Task.TaskStatus.FAILED, 0.0,
-							new String(baos.toByteArray()));
-				} catch (Exception e) {
-					log.error("Message Send Failed for Task Failed: ", e);
-				}
-			}
 		} finally {
 			if(!Objects.isNull(hdfs)) {
 				try {
@@ -190,7 +168,7 @@ public sealed class StreamPipelineTaskExecutorInMemory extends StreamPipelineTas
 			}
 		}
 		log.debug("Exiting MassiveDataStreamTaskExecutorInMemory.call");
-		return this;
+		return completed;
 	}
 	
 }

@@ -33,31 +33,25 @@
             <artifactId>rxjava</artifactId>
             <version>3.1.0</version>
         </dependency>
-        <dependency>
-            <groupId>com.github.jhg023</groupId>
-            <artifactId>Pbbl</artifactId>
-            <version>1.0.2</version>
-        </dependency>
+
         <dependency>
             <groupId>org.apache.calcite</groupId>
             <artifactId>calcite-core</artifactId>
             <version>${calcite.version}</version>
         </dependency>
+        
         <dependency>
-            <groupId>io.netty</groupId>
-            <artifactId>netty-all</artifactId>
-            <version>4.1.10.Final</version>
+            <groupId>com.github.jsqlparser</groupId>
+            <artifactId>jsqlparser</artifactId>
+            <version>3.0</version>
         </dependency>
+        
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
             <version>2.6</version>
         </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-pool2</artifactId>
-            <version>2.10.0</version>
-        </dependency>
+       
         <dependency>
             <groupId>org.apache.curator</groupId>
             <artifactId>curator-framework</artifactId>
@@ -86,24 +80,6 @@
         </dependency>
 
         <dependency>
-            <groupId>org.apache.flume</groupId>
-            <artifactId>flume-ng-sdk</artifactId>
-            <version>1.7.0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.google.protobuf</groupId>
-            <artifactId>protobuf-java</artifactId>
-            <version>3.7.0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.google.protobuf</groupId>
-            <artifactId>protobuf-java-util</artifactId>
-            <version>3.7.0</version>
-        </dependency>
-
-        <dependency>
             <groupId>org.reflections</groupId>
             <artifactId>reflections</artifactId>
             <version>0.9.12</version>
@@ -113,12 +89,6 @@
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
             <version>21.0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>dom4j</groupId>
-            <artifactId>dom4j</artifactId>
-            <version>1.6.1</version>
         </dependency>
 
         <dependency>
@@ -184,22 +154,32 @@
             <artifactId>jgrapht-io</artifactId>
             <version>1.3.0</version>
         </dependency>
+        
         <dependency>
-            <groupId>de.javakaffee</groupId>
-            <artifactId>kryo-serializers</artifactId>
-            <version>0.45</version>
-        </dependency>
-        <dependency>
-            <groupId>com.esotericsoftware</groupId>
-            <artifactId>kryo</artifactId>
-            <version>5.3.0</version>
-        </dependency>
+		    <groupId>de.ruedigermoeller</groupId>
+		    <artifactId>fst</artifactId>
+		    <version>3.0.1</version>
+		</dependency>
 
         <dependency>
             <groupId>org.apache.mesos</groupId>
             <artifactId>mesos</artifactId>
             <version>1.9.0</version>
         </dependency>
+        
+        <dependency>
+            <groupId>com.google.protobuf</groupId>
+            <artifactId>protobuf-java</artifactId>
+            <version>3.7.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.protobuf</groupId>
+            <artifactId>protobuf-java-util</artifactId>
+            <version>3.7.0</version>
+        </dependency>
+        
+        
         <dependency>
             <groupId>net.sf.trove4j</groupId>
             <artifactId>trove4j</artifactId>
@@ -258,27 +238,18 @@
             <artifactId>commons-lang3</artifactId>
             <version>3.11</version>
         </dependency>
-        <dependency>
-            <groupId>com.github.jsqlparser</groupId>
-            <artifactId>jsqlparser</artifactId>
-            <version>3.0</version>
-        </dependency>
 
         <dependency>
             <groupId>com.github.dexecutor</groupId>
             <artifactId>dexecutor-core</artifactId>
-            <version>2.1.2</version>
+            <version>2.1.4</version>
         </dependency>
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
             <version>1.4.200</version>
         </dependency>
-        <dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-core</artifactId>
-            <version>5.4.24.Final</version>
-        </dependency>
+       
         <dependency>
             <groupId>org.jgroups</groupId>
             <artifactId>jgroups</artifactId>
@@ -289,20 +260,11 @@
             <artifactId>json-simple</artifactId>
             <version>1.1.1</version>
         </dependency>
-        <dependency>
-            <groupId>com.ning</groupId>
-            <artifactId>compress-lzf</artifactId>
-            <version>1.0.4</version>
-        </dependency>
+        
         <dependency>
             <groupId>org.xerial.snappy</groupId>
             <artifactId>snappy-java</artifactId>
             <version>1.1.8.4</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-compress</artifactId>
-            <version>1.20</version>
         </dependency>
 
         <dependency>
@@ -369,13 +331,12 @@
             <scope>provided</scope>
         </dependency>
 
-        <dependency>
-            <groupId>com.esotericsoftware</groupId>
-            <artifactId>kryonetty</artifactId>
-            <version>0.10</version>
-            <scope>system</scope>
-            <systemPath>${main.basedir}/kryolib/kryonetty-0.10.jar</systemPath>
-        </dependency>
+		<dependency>
+		    <groupId>joda-time</groupId>
+		    <artifactId>joda-time</artifactId>
+		    <version>2.11.2</version>
+		</dependency>
+
 
     </dependencies>
     <dependencyManagement>
@@ -589,11 +550,22 @@
                             <reuseForks>true</reuseForks>
                             <argLine>
                             	-Xms256m -Xmx10g
+                                --add-opens java.base/java.math=ALL-UNNAMED
+                                --add-opens java.base/java.lang=ALL-UNNAMED
+                                --add-modules jdk.incubator.foreign
+                                --add-opens java.base/jdk.internal.ref=ALL-UNNAMED
+                                --add-opens java.base/jdk.internal.loader=ALL-UNNAMED
+                                --add-opens java.base/java.lang.reflect=ALL-UNNAMED
+                                --add-opens java.base/jdk.internal.reflect=ALL-UNNAMED
                                 --add-opens java.base/java.util=ALL-UNNAMED
                                 --add-opens java.base/java.lang.invoke=ALL-UNNAMED
                                 --add-opens java.base/java.nio=ALL-UNNAMED
                                 --add-opens java.base/java.lang=ALL-UNNAMED
                                 --add-opens java.base/java.util.concurrent.atomic=ALL-UNNAMED
+                                --add-opens java.base/java.util.concurrent=ALL-UNNAMED
+                                --add-opens java.base/java.net=ALL-UNNAMED
+                                --add-opens java.base/java.text=ALL-UNNAMED
+                                --add-opens java.sql/java.sql=ALL-UNNAMED
                                 -Djava.net.preferIPv4Stack=true
                                 -Dcom.sun.management.jmxremote=false
                             </argLine>
@@ -607,7 +579,8 @@
                                 <include>**/CommonsTestSuite.java</include>
                                 <include>**/PipelineExecutorsTestSuite.java</include>
                                 <include>**/StreamPipelineTestSuite.java</include>
-                                <include>**/TaskSchedulerTestSuite.java</include>
+                                <include>**/IgnitePipelineTestSuite.java</include>
+                                <include>**/TaskSchedulerTestSuite.java</include>                                
                             </includes>
                         </configuration>
                     </plugin>
@@ -919,10 +892,6 @@
         <repository>
             <id>mavencentral</id>
             <url>https://repo.maven.apache.org/maven2</url>
-        </repository>
-        <repository>
-            <id>kryonetty</id>
-            <url>https://jitpack.io</url>
         </repository>
         <repository>
             <id>mavenrepo</id>

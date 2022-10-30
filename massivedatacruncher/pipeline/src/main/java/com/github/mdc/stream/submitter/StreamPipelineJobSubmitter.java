@@ -15,8 +15,13 @@
  */
 package com.github.mdc.stream.submitter;
 
+import static java.util.Objects.nonNull;
+
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.net.URL;
@@ -29,8 +34,6 @@ import org.apache.curator.retry.RetryForever;
 import org.apache.hadoop.fs.FsUrlStreamHandlerFactory;
 import org.apache.log4j.Logger;
 
-import com.esotericsoftware.kryo.io.Input;
-import com.esotericsoftware.kryo.io.Output;
 import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.MDCProperties;
 import com.github.mdc.common.Utils;
@@ -74,7 +77,7 @@ public class StreamPipelineJobSubmitter {
 					var rand = new Random(System.currentTimeMillis());
 					currenttaskscheduler = taskscheduler;
 				}
-				log.info("Using TaskScheduler host port: " + currenttaskscheduler);
+				log.info("Adopting job scheduler for host with port: " + currenttaskscheduler);
 				var mrjarpath = args[0];
 				var ts = currenttaskscheduler.split(MDCConstants.UNDERSCORE);
 				writeToTaskScheduler(ts, mrjarpath, args);
@@ -86,12 +89,12 @@ public class StreamPipelineJobSubmitter {
 
 
 	public static void writeToTaskScheduler(String[] ts, String mrjarpath, String[] args) {
-		try (var s = Utils.createSSLSocket(ts[0], Integer.parseInt(ts[1]));
+		try (var s = new Socket(ts[0], Integer.parseInt(ts[1]));
 				var is = s.getInputStream();
 				var os = s.getOutputStream();
 				var baos = new ByteArrayOutputStream();
 				var fisjarpath = new FileInputStream(mrjarpath);
-				var input = new Input(is);) {
+				var br = new BufferedReader(new InputStreamReader(is));) {
 			int ch;
 			while ((ch = fisjarpath.read()) != -1) {
 				baos.write(ch);
@@ -99,22 +102,23 @@ public class StreamPipelineJobSubmitter {
 			// File bytes sent from localfile system to scheduler.
 			writeDataStream(os, baos.toByteArray());
 			// File name is sent to scheduler.
-			writeDataStream(os, new File(mrjarpath).getName().getBytes());
+			writeDataStream(os, new File(mrjarpath).getName().getBytes());			
 			if (args.length > 1) {
 				for (var argsindex = 1; argsindex < args.length; argsindex++) {
 					var arg = args[argsindex];
-					log.info("Sending Arguments To Application: " + arg);
+					log.info("Dispatching arguments to application: " + arg);
 					writeDataStream(os, arg.getBytes());
 				}
 			}
 			writeInt(os, -1);
-			var kryo = Utils.getKryoSerializerDeserializer();
 			// Wait for tasks to get completed.
 			while (true) {
-				var messagetasksscheduler = (String) kryo.readObject(input, String.class);
-				log.info(messagetasksscheduler);
-				if ("quit".equals(messagetasksscheduler.trim())) {
-					break;
+				var messagetasksscheduler = (String) br.readLine();
+				if(nonNull(messagetasksscheduler)) {
+					log.info(messagetasksscheduler);
+					if (messagetasksscheduler.trim().contains("quit")) {
+						break;
+					}
 				}
 			}
 		} catch (Exception ex) {
@@ -126,26 +130,28 @@ public class StreamPipelineJobSubmitter {
 	 * Write integer value to scheduler 
 	 * @param os
 	 * @param value
-	 * @throws Exception
+	 * @throws Exception 
 	 */
-	public static void writeInt(OutputStream os, Integer value) {
-		var kryo = Utils.getKryoSerializerDeserializer();
-		var output = new Output(os);
-		kryo.writeClassAndObject(output, value);
-		output.flush();
+	public static void writeInt(OutputStream os, Integer value) throws Exception {
+		byte[] bytes = Utils.getConfigForSerialization().asByteArray(value);
+		DataOutputStream dos = new DataOutputStream(os);
+		dos.writeInt(bytes.length);
+		dos.write(bytes);
+		dos.flush();
 	}
 
 	/**
 	 * Write bytes information to schedulers outputstream via kryo serializer.
 	 * @param os
 	 * @param outbyt
-	 * @throws Exception
+	 * @throws Exception 
 	 */
-	public static void writeDataStream(OutputStream os, byte[] outbyt) {
-		var kryo = Utils.getKryoSerializerDeserializer();
-		var output = new Output(os);
-		kryo.writeClassAndObject(output, outbyt);
-		output.flush();
+	public static void writeDataStream(OutputStream os, byte[] outbyt) throws Exception {
+		byte[] bytes = Utils.getConfigForSerialization().asByteArray(outbyt);
+		DataOutputStream dos = new DataOutputStream(os);
+		dos.writeInt(bytes.length);
+		dos.write(bytes);
+		dos.flush();
 	}
 
 

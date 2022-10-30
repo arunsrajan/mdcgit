@@ -16,10 +16,13 @@
 package com.github.mdc.common;
 
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -32,6 +35,9 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CloseStagesGraphExecutor {
+@ToString
+@EqualsAndHashCode
+public class CloseStagesGraphExecutor implements Serializable{
+	private static final long serialVersionUID = 7279362860447826575L;
 	private List<Task> tasks;
 }

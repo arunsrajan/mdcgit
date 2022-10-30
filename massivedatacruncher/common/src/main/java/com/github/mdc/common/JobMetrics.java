@@ -15,33 +15,38 @@
  */
 package com.github.mdc.common;
 
+import lombok.*;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * The class holds metrics for job execution
+ * @author arun
+ *
+ */
+@Getter
+@Setter
+@EqualsAndHashCode
+@ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class JobMetrics {
-	public String jobname;
-	public String jobid;
-	public List<String> files;
-	public String mode;
-	public double totalfilesize;
-	public List<String> stages;
-	public List<String> containerresources;
-	public Map<String, Double> containersallocated;
-	public Set<String> nodes;
-	public long totalblocks;
-	public long jobstarttime;
-	public long jobcompletiontime;
-	public double totaltimetaken;
-	public List<String> stagecompletiontime;
+	private String jobname;
+	private String jobid;
+	private List<String> files;
+	private String mode;
+	private double totalfilesize;
+	private List<String> stages;
+	private List<String> containerresources;
+	private Map<String, Double> containersallocated;
+	private Set<String> nodes;
+	private long totalblocks;
+	private long jobstarttime;
+	private long jobcompletiontime;
+	private double totaltimetaken;
+	private Map<String, List<Task>> taskexcutortasks = new ConcurrentHashMap<>();
 
-	@Override
-	public String toString() {
-		return "JobMetrics [jobname=" + jobname + ", jobid=" + jobid + ", files=" + files + ", mode=" + mode
-				+ ", totalfilesize=" + totalfilesize + ", stages=" + stages + ", containerresources="
-				+ containerresources + ", containersallocated=" + containersallocated + ", nodes=" + nodes
-				+ ", totalblocks=" + totalblocks + ", jobstarttime=" + jobstarttime + ", jobcompletiontime="
-				+ jobcompletiontime + ", totaltimetaken=" + totaltimetaken + ", stagecompletiontime="
-				+ stagecompletiontime + "]";
-	}
 }

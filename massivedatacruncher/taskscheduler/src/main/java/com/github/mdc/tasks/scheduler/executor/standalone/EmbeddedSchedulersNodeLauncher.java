@@ -1,7 +1,13 @@
 package com.github.mdc.tasks.scheduler.executor.standalone;
 
+import java.io.DataInputStream;
 import java.io.IOException;
-import java.net.*;
+import java.net.ServerSocket;
+import java.net.URI;
+import java.net.URL;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -10,10 +16,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-import com.github.mdc.common.*;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.state.ConnectionState;
@@ -21,14 +25,21 @@ import org.apache.curator.retry.RetryForever;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.FsUrlStreamHandlerFactory;
-import org.apache.log4j.Logger;
 import org.apache.zookeeper.server.ServerCnxnFactory;
+import org.slf4j.LoggerFactory;
 
-import com.esotericsoftware.kryo.io.Input;
-import com.esotericsoftware.kryonetty.ServerEndpoint;
-import com.esotericsoftware.kryonetty.network.ReceiveEvent;
-import com.esotericsoftware.kryonetty.network.handler.NetworkHandler;
-import com.esotericsoftware.kryonetty.network.handler.NetworkListener;
+import com.github.mdc.common.ByteBufferPoolDirect;
+import com.github.mdc.common.HeartBeat;
+import com.github.mdc.common.HeartBeatStream;
+import com.github.mdc.common.MDCConstants;
+import com.github.mdc.common.MDCProperties;
+import com.github.mdc.common.NetworkUtil;
+import com.github.mdc.common.ServerUtils;
+import com.github.mdc.common.StreamDataCruncher;
+import com.github.mdc.common.TaskSchedulerWebServlet;
+import com.github.mdc.common.Utils;
+import com.github.mdc.common.WebResourcesServlet;
+import com.github.mdc.common.ZookeeperOperations;
 import com.github.mdc.stream.scheduler.StreamPipelineTaskScheduler;
 import com.github.mdc.tasks.executor.NodeRunner;
 import com.github.mdc.tasks.executor.web.NodeWebServlet;
@@ -36,13 +47,12 @@ import com.github.mdc.tasks.executor.web.ResourcesMetricsServlet;
 import com.github.mdc.tasks.scheduler.TaskScheduler;
 
 public class EmbeddedSchedulersNodeLauncher {
-	static Logger log = Logger.getLogger(EmbeddedSchedulersNodeLauncher.class);
+	static org.slf4j.Logger log = LoggerFactory.getLogger(EmbeddedSchedulersNodeLauncher.class);
 
 	public static final String STOPPINGANDCLOSECONNECTION = "Stopping and closes all the connections...";
 
 	public static void main(String[] args) throws Exception {
 		URL.setURLStreamHandlerFactory(new FsUrlStreamHandlerFactory());
-		log.info(MDCScalaConstants.SCALA_VERSION());
 		Utils.loadLog4JSystemProperties(MDCConstants.PREV_FOLDER + MDCConstants.FORWARD_SLASH
 				+ MDCConstants.DIST_CONFIG_FOLDER + MDCConstants.FORWARD_SLASH, MDCConstants.MDC_PROPERTIES);
 		var cdl = new CountDownLatch(3);
@@ -61,11 +71,15 @@ public class EmbeddedSchedulersNodeLauncher {
 			cf.start();
 			cf.blockUntilConnected();
 			ByteBufferPoolDirect.init();
-			ByteBufferPool.init(Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.BYTEBUFFERPOOL_MAX,
-					MDCConstants.BYTEBUFFERPOOL_MAX_DEFAULT)));
 			startTaskScheduler(cf, cdl);
 			startTaskSchedulerStream(cf, cdl);
 			startContainerLauncher(cdl);
+			String nodeport = MDCProperties.get().getProperty(MDCConstants.NODE_PORT);
+			String streamport = MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULERSTREAM_PORT);
+			String streamwebport = MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULERSTREAM_WEB_PORT);
+			String mrport = MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULER_PORT);
+			String mrwebport = MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULER_WEB_PORT);
+			log.info("Program evoked in the port Stream[port={},webport={}] MapReduce[port={},webport={}] Node[port={}]",streamport, streamwebport, mrport, mrwebport, nodeport);
 			cdl.await();
 		} catch (InterruptedException e) {
 			log.warn("Interrupted!", e);
@@ -79,16 +93,16 @@ public class EmbeddedSchedulersNodeLauncher {
 		}
 		Runtime.getRuntime().halt(0);
 	}
-	static ServerEndpoint server = null;
+	static Registry server = null;
 	@SuppressWarnings("resource")
 	public static void startContainerLauncher(CountDownLatch cdl) {
-		HeartBeatServerStream hbss = new HeartBeatServerStream();
+		HeartBeatStream hbss = new HeartBeatStream();
 		try {
 			var port = Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.NODE_PORT));
 			var pingdelay = Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULER_PINGDELAY));
 			var host = NetworkUtil.getNetworkAddress(MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_HOST));
 			hbss.init(0, port, host, 0, pingdelay, "");
-			var hb = new HeartBeatServer();
+			var hb = new HeartBeat();
 			hb.init(0, port, host, 0, pingdelay, "");
 			hbss.ping();
 			var escontainer = Executors.newWorkStealingPool();
@@ -106,17 +120,17 @@ public class EmbeddedSchedulersNodeLauncher {
 					new ResourcesMetricsServlet(), MDCConstants.FORWARD_SLASH + MDCConstants.DATA
 							+ MDCConstants.FORWARD_SLASH + MDCConstants.ASTERIX);
 			su.start();
-			server = Utils.getServerKryoNetty(port,
-					new NetworkListener() {
-					@NetworkHandler
-		            public void onReceive(ReceiveEvent event) {
+			server = LocateRegistry.createRegistry(port);
+			datacruncher = new StreamDataCruncher() {
+		            public Object postObject(Object object) {
 						try {
-							Object object = event.getObject();
-							var container = new NodeRunner(server, MDCConstants.PROPLOADERCONFIGFOLDER,
+							var container = new NodeRunner(MDCConstants.PROPLOADERCONFIGFOLDER,
 									containerprocesses, hdfs, containeridthreads, containeridports,
-									object, event);
-							Future<Boolean> containerallocated = escontainer.submit(container);
-							log.info("Containers Allocated: " + containerallocated.get());
+									object);
+							Future<Object> containerallocated = escontainer.submit(container);
+							Object retobj = containerallocated.get();
+							log.info("Node processor refined the {} with status {} ", object, retobj);
+							return retobj;
 						} catch (InterruptedException e) {
 							log.warn("Interrupted!", e);
 							// Restore interrupted state...
@@ -124,8 +138,11 @@ public class EmbeddedSchedulersNodeLauncher {
 						} catch (Exception e) {
 							log.error(MDCConstants.EMPTY, e);
 						}
+						return null;
 					}
-				});
+			};
+			stub = (StreamDataCruncher) UnicastRemoteObject.exportObject(datacruncher, 0);
+			server.rebind(MDCConstants.BINDTESTUB, stub);
 			log.debug("NodeLauncher started at port....." + MDCProperties.get().getProperty(MDCConstants.NODE_PORT));
 			log.debug("Adding Shutdown Hook...");
 			Utils.addShutdownHook(() -> {
@@ -145,9 +162,6 @@ public class EmbeddedSchedulersNodeLauncher {
 					if (!Objects.isNull(hdfs)) {
 						hdfs.close();
 					}
-					if (!Objects.isNull(server)) {
-						server.close();
-					}
 					cdl.countDown();
 				} catch (Exception e) {
 					log.debug("", e);
@@ -157,7 +171,8 @@ public class EmbeddedSchedulersNodeLauncher {
 			log.error("Unable to start Node Manager due to ", ex);
 		}
 	}
-
+	static StreamDataCruncher stub = null;
+	static StreamDataCruncher datacruncher = null;
 	public static void startTaskSchedulerStream(CuratorFramework cf, CountDownLatch cdl) throws Exception {
 		var esstream = Executors.newFixedThreadPool(1);
 		var es = Executors.newWorkStealingPool();
@@ -196,7 +211,7 @@ public class EmbeddedSchedulersNodeLauncher {
 									+ MDCConstants.UNDERSCORE
 									+ MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULERSTREAM_PORT));
 		}
-		var hbss = new HeartBeatServerStream();
+		var hbss = new HeartBeatStream();
 		hbss.init(Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULERSTREAM_RESCHEDULEDELAY)),
 				Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULERSTREAM_PORT)),
 				NetworkUtil.getNetworkAddress(MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULERSTREAM_HOST)),
@@ -208,18 +223,21 @@ public class EmbeddedSchedulersNodeLauncher {
 
 		// Execute when request arrives.
 		esstream.execute(() -> {
-			try (var ss = Utils.createSSLServerSocket(
+			try (var ss = new ServerSocket(
 					Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULERSTREAM_PORT)));) {
 				while (true) {
 					try {
 						var s = ss.accept();
 						var bytesl = new ArrayList<byte[]>();
-						var kryo = Utils.getKryoSerializerDeserializer();
-						var input = new Input(s.getInputStream());
-						log.debug("Obtaining Input Objects From Submitter");
+						var in = new DataInputStream(s.getInputStream());
+						var config = Utils.getConfigForSerialization();
 						while (true) {
-							var obj = kryo.readClassAndObject(input);
-							log.debug("Input Object: " + obj);
+							var len = in.readInt();
+							byte buffer[] = new byte[len]; // this could be reused !
+							while (len > 0)
+							    len -= in.read(buffer, buffer.length - len, len);
+							// skipped: check for stream close
+							Object obj = config.getObjectInput(buffer).readObject();
 							if (obj instanceof Integer brkintval && brkintval == -1)
 								break;
 							bytesl.add((byte[]) obj);
@@ -237,7 +255,7 @@ public class EmbeddedSchedulersNodeLauncher {
 						es.execute(new StreamPipelineTaskScheduler(cf, new String(bytesl.get(1)), bytesl.get(0),
 								arguments, s));
 					} catch (Exception ex) {
-						log.info("Launching Stream Task scheduler error, See cause below \n", ex);
+						log.error("Launching Stream Task scheduler error, See cause below \n", ex);
 					}
 				}
 			} catch (Exception ex) {
@@ -266,7 +284,7 @@ public class EmbeddedSchedulersNodeLauncher {
 					su.destroy();
 				}
 				cdl.countDown();
-				log.info("Halting...");
+				log.info("Faltering the stream...");
 			} catch (Exception e) {
 				log.error(MDCConstants.EMPTY, e);
 			}
@@ -275,7 +293,7 @@ public class EmbeddedSchedulersNodeLauncher {
 
 	@SuppressWarnings({ "unchecked", "resource" })
 	public static void startTaskScheduler(CuratorFramework cf, CountDownLatch cdl) throws Exception {
-		var hbs = new HeartBeatServer();
+		var hbs = new HeartBeat();
 		hbs.init(Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULER_RESCHEDULEDELAY)),
 				Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULER_PORT)),
 				NetworkUtil.getNetworkAddress(MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULER_HOST)),
@@ -314,35 +332,36 @@ public class EmbeddedSchedulersNodeLauncher {
 				NetworkUtil.getNetworkAddress(MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULER_HOST))
 						+ MDCConstants.UNDERSCORE + MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULER_PORT));
 
-		boolean ishdfs = Boolean.parseBoolean(MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULER_ISHDFS));
 		var ss = Utils.createSSLServerSocket(Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULER_PORT)));
 		essingle.execute(() -> {
 			while (true) {
 				try {
 					var s = ss.accept();
-					var baoss = new ArrayList<byte[]>();
-					var kryo = Utils.getKryoSerializerDeserializer();
-					var input = new Input(s.getInputStream());
+					var bytesl = new ArrayList<byte[]>();
+					
+					var in = new DataInputStream(s.getInputStream());
+					var config = Utils.getConfigForSerialization();
 					while (true) {
-						var obj = kryo.readClassAndObject(input);
-						log.debug("Input Object: " + obj);
-						if (obj instanceof Integer brkval && brkval == -1)
+						var len = in.readInt();
+						byte buffer[] = new byte[len]; // this could be reused !
+						while (len > 0)
+						    len -= in.read(buffer, buffer.length - len, len);
+						// skipped: check for stream close
+						Object obj = config.getObjectInput(buffer).readObject();
+						if (obj instanceof Integer brkintval && brkintval == -1)
 							break;
-						baoss.add((byte[]) obj);
+						bytesl.add((byte[]) obj);
 					}
-					if (ishdfs) {
-						var mrjar = baoss.remove(0);
-						var filename = baoss.remove(0);
-						String[] argues = null;
-						if (!baoss.isEmpty()) {
-							var argsl = new ArrayList<>();
-							for (var arg : baoss) {
-								argsl.add(new String(arg));
-							}
-							argues = argsl.toArray(new String[argsl.size()]);
+					String[] arguments = null;
+					if (bytesl.size() > 2) {
+						var totalargs = bytesl.size();
+						arguments = new String[totalargs - 1];
+						for (var index = 2; index < totalargs; index++) {
+							arguments[index - 2] = new String(bytesl.get(index));
 						}
-						es.execute(new TaskScheduler(cf, mrjar, argues, s, new String(filename)));
 					}
+						es.execute(new TaskScheduler(cf, bytesl.get(0), arguments, s, new String(bytesl.get(1))));
+					
 				} catch (Exception ex) {
 					log.error(MDCConstants.EMPTY, ex);
 				}

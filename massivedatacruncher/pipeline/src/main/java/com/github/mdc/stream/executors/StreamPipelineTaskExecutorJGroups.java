@@ -22,6 +22,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.apache.hadoop.conf.Configuration;
@@ -34,11 +39,12 @@ import com.github.mdc.common.JobStage;
 import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.MDCProperties;
 import com.github.mdc.common.NetworkUtil;
-import com.github.mdc.common.RemoteDataFetch;
 import com.github.mdc.common.RemoteDataFetcher;
 import com.github.mdc.common.Task;
 import com.github.mdc.common.Utils;
 import com.github.mdc.common.WhoIsResponse;
+
+import static java.util.Objects.nonNull;
 
 /**
  * 
@@ -60,9 +66,9 @@ public final class StreamPipelineTaskExecutorJGroups extends StreamPipelineTaskE
 		this.tasks = tasks;
 		this.port = port;
 	}
-
+	ExecutorService es = null;
 	@Override
-	public StreamPipelineTaskExecutorJGroups call() {
+	public Boolean call() {
 		log.debug("Entered MassiveDataStreamJGroupsTaskExecutor.call");
 		var taskstatusmap = tasks.parallelStream()
 				.map(task -> task.taskid)
@@ -72,96 +78,119 @@ public final class StreamPipelineTaskExecutorJGroups extends StreamPipelineTaskE
 		var taskstatusconcmapresp = new ConcurrentHashMap<String, WhoIsResponse.STATUS>();
 		var hdfsfilepath = MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL, MDCConstants.HDFSNAMENODEURL);
 		String host = NetworkUtil.getNetworkAddress(MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_HOST));
-		try (var hdfs = FileSystem.newInstance(new URI(hdfsfilepath), new Configuration());) {
-			this.hdfs = hdfs;
-			channel = Utils.getChannelTaskExecutor(jobstage.jobid,
+		es = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+		Semaphore semaphore = new Semaphore(Runtime.getRuntime().availableProcessors());
+		try (var hdfscompute = FileSystem.newInstance(new URI(hdfsfilepath), new Configuration());) {
+			this.hdfs = hdfscompute;
+			channel = Utils.getChannelTaskExecutor(jobstage.getJobid(),
 					host,
 					port, taskstatusconcmapreq, taskstatusconcmapresp);
-			log.info("Tasks In Jgroups executor: " + tasks + " in host: " + host + " port: " + port);
-			for (var task : tasks) {
-				log.info("Task In Jgroups executor: " + task + " in host: " + host + " port: " + port + " with task hostport: " + task.hostport);
-				this.task = task;
-				this.jobstage = jsidjsmap.get(task.jobid + task.stageid);
-				var stageTasks = getStagesTask();
-				var stagePartition = task.taskid;
-				try {
-					var taskspredecessor = task.taskspredecessor;
-					if (!taskspredecessor.isEmpty()) {
-						var taskids = taskspredecessor.parallelStream()
-								.map(tk -> tk.taskid)
-								.collect(Collectors.toList());
-						var breakloop = false;
-						while (true) {
-							var tasktatusconcmap = new ConcurrentHashMap<String, WhoIsResponse.STATUS>(
-									taskstatusconcmapreq);
-							tasktatusconcmap.putAll(taskstatusconcmapresp);
-							breakloop = true;
-							for (var taskid : taskids) {
-								if (taskstatusconcmapresp.get(taskid) != null
-										&& taskstatusconcmapresp
-										.get(taskid) != WhoIsResponse.STATUS.COMPLETED) {
-									Utils.whois(channel, taskid);
-									breakloop = false;
-									continue;
-								} else if (tasktatusconcmap.get(taskid) != null) {
-									if (tasktatusconcmap
-											.get(taskid) != WhoIsResponse.STATUS.COMPLETED) {
-										breakloop = false;
-										continue;
+			log.info("Work in Jgroups agent: " + tasks + " in host: " + host + " port: " + port);
+			var cd = new CountDownLatch(tasks.size());
+			var exec = executor;
+			for (var tasktocompute : tasks) {
+				semaphore.acquire();
+				es.submit(new StreamPipelineTaskExecutor(jsidjsmap.get(tasktocompute.jobid + tasktocompute.stageid),
+						cache) {
+					public Boolean call() {
+						hdfs = hdfscompute;
+						task = tasktocompute;
+						executor = exec;
+						var stageTasks = getStagesTask();
+						var stagePartition = task.taskid;
+						try {
+							var taskspredecessor = task.taskspredecessor;
+							if (!taskspredecessor.isEmpty()) {
+								var taskids = taskspredecessor.parallelStream().map(tk -> tk.taskid)
+										.collect(Collectors.toList());
+								var breakloop = false;
+								while (true) {
+									var tasktatusconcmap = new ConcurrentHashMap<String, WhoIsResponse.STATUS>(
+											taskstatusconcmapreq);
+									tasktatusconcmap.putAll(taskstatusconcmapresp);
+									breakloop = true;
+									for (var taskid : taskids) {
+										if (taskstatusconcmapresp.get(taskid) != null && taskstatusconcmapresp
+												.get(taskid) != WhoIsResponse.STATUS.COMPLETED) {
+											Utils.whois(channel, taskid);
+											breakloop = false;
+											continue;
+										} else if (tasktatusconcmap.get(taskid) != null) {
+											if (tasktatusconcmap.get(taskid) != WhoIsResponse.STATUS.COMPLETED) {
+												breakloop = false;
+												continue;
+											}
+
+										} else {
+											Utils.whois(channel, taskid);
+											breakloop = false;
+											continue;
+										}
 									}
-
-								} else {
-									Utils.whois(channel, taskid);
-									breakloop = false;
-									continue;
+									if (breakloop)
+										break;
+									Thread.sleep(1000);
 								}
 							}
-							if (breakloop)
-								break;
-							Thread.sleep(1000);
-						}
-					}
-					log.debug("Submitted Stage " + stagePartition);
-					log.debug("Running Stage " + stageTasks);
+							log.debug("Submitted Stage " + stagePartition);
+							log.debug("Running Stage " + stageTasks);
 
-					taskstatusconcmapreq.put(stagePartition, WhoIsResponse.STATUS.RUNNING);
-					if (task.input != null && task.parentremotedatafetch != null) {
-						var numinputs = task.parentremotedatafetch.length;
-						for (var inputindex = 0; inputindex < numinputs; inputindex++) {
-							var input = task.parentremotedatafetch[inputindex];
-							if (input != null) {
-								var rdf = input;
-								InputStream is = RemoteDataFetcher.readIntermediatePhaseOutputFromFS(rdf.jobid,
-										getIntermediateDataRDF(rdf.taskid));
-								if (Objects.isNull(is)) {
-									RemoteDataFetcher.remoteInMemoryDataFetch(rdf);
-									task.input[inputindex] =
-											new ByteArrayInputStream(rdf.data);
-								} else {
-									task.input[inputindex] = is;
+							taskstatusconcmapreq.put(stagePartition, WhoIsResponse.STATUS.RUNNING);
+							if (task.input != null && task.parentremotedatafetch != null) {
+								var numinputs = task.parentremotedatafetch.length;
+								for (var inputindex = 0; inputindex < numinputs; inputindex++) {
+									var input = task.parentremotedatafetch[inputindex];
+									if (input != null) {
+										var rdf = input;
+										InputStream is = RemoteDataFetcher.readIntermediatePhaseOutputFromFS(
+												rdf.getJobid(), getIntermediateDataRDF(rdf.getTaskid()));
+										if (Objects.isNull(is)) {
+											RemoteDataFetcher.remoteInMemoryDataFetch(rdf);
+											task.input[inputindex] = new ByteArrayInputStream(rdf.getData());
+										} else {
+											task.input[inputindex] = is;
+										}
+									}
 								}
 							}
+
+							var timetakenseconds = computeTasks(task, hdfs);
+							log.debug("Completed Stage " + stagePartition + " in " + timetakenseconds);
+							taskstatusconcmapreq.put(stagePartition, WhoIsResponse.STATUS.COMPLETED);
+						} catch (Exception ex) {
+							log.error("Failed Stage " + tasks, ex);
+							completed = false;
+						} finally {
+							semaphore.release();
+							cd.countDown();
 						}
+						return completed;
 					}
-
-					var timetakenseconds = computeTasks(task, hdfs);
-					log.debug("Completed Stage " + stagePartition + " in " + timetakenseconds);
-					taskstatusconcmapreq.put(stagePartition, WhoIsResponse.STATUS.COMPLETED);
-				} finally {
-
-				}
+				});
 			}
 			log.debug("StagePartitionId with Stage Statuses: " + taskstatusconcmapreq
 					+ " WhoIs Response stauses: " + taskstatusconcmapresp);
+			cd.await();
+			completed = true;			
 		} catch (InterruptedException e) {
 			log.warn("Interrupted!", e);
 			// Restore interrupted state...
 			Thread.currentThread().interrupt();
 		} catch (Exception ex) {
 			log.error("Failed Stage " + tasks, ex);
+			completed = false;
+		} finally {
+			if(nonNull(es)) {
+				es.shutdown();
+				try {
+					es.awaitTermination(2, TimeUnit.SECONDS);
+				} catch (InterruptedException e) {
+					log.error("Failed Shutdown executors"+ es);
+				}
+			}
 		}
 		log.debug("Exiting MassiveDataStreamJGroupsTaskExecutor.call");
-		return this;
+		return completed;
 	}
 
 }

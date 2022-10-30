@@ -17,9 +17,16 @@ package com.github.mdc.common;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.Serializable;
 import java.nio.ByteBuffer;
 
-public class ByteBufferOutputStream extends OutputStream {
+/**
+ * The direct byte buffer output stream
+ * @author arun
+ *
+ */
+public class ByteBufferOutputStream extends OutputStream implements Serializable{
+	private static final long serialVersionUID = 281956849242378938L;
 	private ByteBuffer bb;
 
 	public ByteBufferOutputStream(ByteBuffer bb) {

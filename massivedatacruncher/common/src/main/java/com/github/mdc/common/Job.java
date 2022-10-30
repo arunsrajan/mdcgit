@@ -23,36 +23,49 @@ import java.util.concurrent.ConcurrentMap;
 import org.apache.ignite.Ignite;
 import org.apache.ignite.IgniteCache;
 
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+
 /**
  * 
  * @author Arun
  * Holder of job information required to execute the job
  */
+@Getter
+@Setter
+@EqualsAndHashCode
+@ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class Job {
 	public static enum TRIGGER {
 		COUNT,COLLECT,SAVERESULTSTOFILE,FOREACH
 	}
-	public String id;
-	public String containerid;
-	public ConcurrentMap<Stage, Object> stageoutputmap;
-	public ConcurrentMap<String, String> allstageshostport;
-	public List<Stage> topostages = new Vector<>();
-	public Long noofpartitions;
-	public List<String> containers;
-	public Set<String> nodes;
-	public IgniteCache<Object, byte[]> igcache;
-	public Ignite ignite;
-	public List<Object> input = new Vector<>();
-	public List<Object> output = new Vector<>();
-	public Object results;
-	public boolean isresultrequired;
-	public JobMetrics jm;
-	public PipelineConfig pipelineconfig;
-	public boolean iscompleted;
-	public Set vertices;
-	public Set<DAGEdge> edges;
-	public TRIGGER trigger;
-	public String uri;
-	public String savepath;
-	public List<LaunchContainers> lcs;
+	private String id;
+	private String containerid;
+	private ConcurrentMap<Stage, Object> stageoutputmap;
+	private ConcurrentMap<String, String> allstageshostport;
+	private List<Stage> topostages = new Vector<>();
+	private Long noofpartitions;
+	private List<String> containers;
+	private Set<String> nodes;
+	private IgniteCache<Object, byte[]> igcache;
+	private Ignite ignite;
+	private List<Object> input = new Vector<>();
+	private List<Object> output = new Vector<>();
+	private Object results;
+	private boolean isresultrequired;
+	private JobMetrics jm;
+	private PipelineConfig pipelineconfig;
+	private boolean iscompleted;
+	private Set vertices;
+	private Set<DAGEdge> edges;
+	private TRIGGER trigger;
+	private String uri;
+	private String savepath;
+	private List<LaunchContainers> lcs;
 }

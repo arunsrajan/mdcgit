@@ -32,14 +32,14 @@ import org.jooq.lambda.tuple.Tuple2;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
+import org.nustaq.serialization.FSTObjectOutput;
 
-import com.esotericsoftware.kryo.io.Output;
 import com.github.mdc.common.DAGEdge;
-import com.github.mdc.common.HeartBeatServerStream;
-import com.github.mdc.common.HeartBeatTaskSchedulerStream;
+import com.github.mdc.common.HeartBeatStream;
 import com.github.mdc.common.Job;
 import com.github.mdc.common.JobStage;
 import com.github.mdc.common.MDCConstants;
+import com.github.mdc.common.MDCConstants.STORAGE;
 import com.github.mdc.common.MDCProperties;
 import com.github.mdc.common.PipelineConfig;
 import com.github.mdc.common.Stage;
@@ -56,7 +56,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 
 		PipelineConfig pc = new PipelineConfig();
 		pc.setMode(MDCConstants.MODE_NORMAL);
-		pc.setOutput(new Output(System.out));
+		pc.setOutput(System.out);
 		pc.setLocal("true");
 		StreamPipeline<String> mdp = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesample, pc);
 
@@ -68,14 +68,14 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 		((StreamPipeline) intersection.root).mdsroots.add(mdp);
 		Job job = ((StreamPipeline) intersection.root).createJob();
 		StreamJobScheduler js = new StreamJobScheduler();
-		job.pipelineconfig = pc;
+		job.setPipelineconfig(pc);
 		js.isignite = Objects.isNull(pc.getMode()) ? false
 				: pc.getMode().equals(MDCConstants.MODE_DEFAULT) ? true : false;
 		js.job = job;
 		js.pipelineconfig = pc;
 		js.semaphore = new Semaphore(1);
 		js.resultstream = new ConcurrentHashMap<>();
-		List<Stage> uniquestagestoprocess = new ArrayList<>(job.topostages);
+		List<Stage> uniquestagestoprocess = new ArrayList<>(job.getTopostages());
 		int stagenumber = 0;
 		SimpleDirectedGraph<StreamPipelineTaskSubmitter, DAGEdge> graph = new SimpleDirectedGraph<>(
 				DAGEdge.class);
@@ -86,7 +86,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 					? uniquestagestoprocess.get(stagenumber + 1)
 					: null;
 			stage.number = stagenumber;
-			js.generatePhysicalExecutionPlan(stage, nextstage, job.stageoutputmap, job.id, graph, taskgraph);
+			js.generatePhysicalExecutionPlan(stage, nextstage, job.getStageoutputmap(), job.getId(), graph, taskgraph);
 			stagenumber++;
 		}
 		assertEquals(3, graph.vertexSet().size());
@@ -99,7 +99,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 
 		PipelineConfig pc = new PipelineConfig();
 		pc.setMode(MDCConstants.MODE_NORMAL);
-		pc.setOutput(new Output(System.out));
+		pc.setOutput(System.out);
 		pc.setLocal("true");
 		pc.setIsblocksuserdefined("true");
 		pc.setBlocksize("1");
@@ -111,14 +111,14 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 		((StreamPipeline) intersection.root).mdsroots.add(mdp);
 		Job job = ((StreamPipeline) intersection.root).createJob();
 		StreamJobScheduler js = new StreamJobScheduler();
-		job.pipelineconfig = pc;
+		job.setPipelineconfig(pc);
 		js.isignite = Objects.isNull(pc.getMode()) ? false
 				: pc.getMode().equals(MDCConstants.MODE_DEFAULT) ? true : false;
 		js.job = job;
 		js.pipelineconfig = pc;
 		js.semaphore = new Semaphore(1);
 		js.resultstream = new ConcurrentHashMap<>();
-		List<Stage> uniquestagestoprocess = new ArrayList<>(job.topostages);
+		List<Stage> uniquestagestoprocess = new ArrayList<>(job.getTopostages());
 		int stagenumber = 0;
 		SimpleDirectedGraph<StreamPipelineTaskSubmitter, DAGEdge> graph = new SimpleDirectedGraph<>(
 				DAGEdge.class);
@@ -129,7 +129,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 					? uniquestagestoprocess.get(stagenumber + 1)
 					: null;
 			stage.number = stagenumber;
-			js.generatePhysicalExecutionPlan(stage, nextstage, job.stageoutputmap, job.id, graph, taskgraph);
+			js.generatePhysicalExecutionPlan(stage, nextstage, job.getStageoutputmap(), job.getId(), graph, taskgraph);
 			stagenumber++;
 		}
 		assertEquals(35, graph.vertexSet().size());
@@ -142,7 +142,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 
 		PipelineConfig pc = new PipelineConfig();
 		pc.setMode(MDCConstants.MODE_NORMAL);
-		pc.setOutput(new Output(System.out));
+		pc.setOutput(System.out);
 		pc.setLocal("true");
 		StreamPipeline<String> mdp = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesample, pc);
 		StreamPipeline<String[]> mdparr = mdp.map(val -> val.split(MDCConstants.COMMA));
@@ -163,14 +163,14 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 		((StreamPipeline) join.root).mdsroots.add(mdp);
 		Job job = ((StreamPipeline) join.root).createJob();
 		StreamJobScheduler js = new StreamJobScheduler();
-		job.pipelineconfig = pc;
+		job.setPipelineconfig(pc);
 		js.isignite = Objects.isNull(pc.getMode()) ? false
 				: pc.getMode().equals(MDCConstants.MODE_DEFAULT) ? true : false;
 		js.job = job;
 		js.pipelineconfig = pc;
 		js.semaphore = new Semaphore(1);
 		js.resultstream = new ConcurrentHashMap<>();
-		List<Stage> uniquestagestoprocess = new ArrayList<>(job.topostages);
+		List<Stage> uniquestagestoprocess = new ArrayList<>(job.getTopostages());
 		int stagenumber = 0;
 		SimpleDirectedGraph<StreamPipelineTaskSubmitter, DAGEdge> graph = new SimpleDirectedGraph<>(
 				DAGEdge.class);
@@ -181,7 +181,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 					? uniquestagestoprocess.get(stagenumber + 1)
 					: null;
 			stage.number = stagenumber;
-			js.generatePhysicalExecutionPlan(stage, nextstage, job.stageoutputmap, job.id, graph, taskgraph);
+			js.generatePhysicalExecutionPlan(stage, nextstage, job.getStageoutputmap(), job.getId(), graph, taskgraph);
 			stagenumber++;
 		}
 		assertEquals(3, graph.vertexSet().size());
@@ -194,7 +194,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 
 		PipelineConfig pc = new PipelineConfig();
 		pc.setMode(MDCConstants.MODE_NORMAL);
-		pc.setOutput(new Output(System.out));
+		pc.setOutput(System.out);
 		pc.setLocal("true");
 		pc.setIsblocksuserdefined("true");
 		pc.setBlocksize("1");
@@ -217,14 +217,14 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 		((StreamPipeline) join.root).mdsroots.add(mdp);
 		Job job = ((StreamPipeline) join.root).createJob();
 		StreamJobScheduler js = new StreamJobScheduler();
-		job.pipelineconfig = pc;
+		job.setPipelineconfig(pc);
 		js.isignite = Objects.isNull(pc.getMode()) ? false
 				: pc.getMode().equals(MDCConstants.MODE_DEFAULT) ? true : false;
 		js.job = job;
 		js.pipelineconfig = pc;
 		js.semaphore = new Semaphore(1);
 		js.resultstream = new ConcurrentHashMap<>();
-		List<Stage> uniquestagestoprocess = new ArrayList<>(job.topostages);
+		List<Stage> uniquestagestoprocess = new ArrayList<>(job.getTopostages());
 		int stagenumber = 0;
 		SimpleDirectedGraph<StreamPipelineTaskSubmitter, DAGEdge> graph = new SimpleDirectedGraph<>(
 				DAGEdge.class);
@@ -235,7 +235,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 					? uniquestagestoprocess.get(stagenumber + 1)
 					: null;
 			stage.number = stagenumber;
-			js.generatePhysicalExecutionPlan(stage, nextstage, job.stageoutputmap, job.id, graph, taskgraph);
+			js.generatePhysicalExecutionPlan(stage, nextstage, job.getStageoutputmap(), job.getId(), graph, taskgraph);
 			stagenumber++;
 		}
 		assertEquals(35, graph.vertexSet().size());
@@ -248,7 +248,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 
 		PipelineConfig pc = new PipelineConfig();
 		pc.setMode(MDCConstants.MODE_NORMAL);
-		pc.setOutput(new Output(System.out));
+		pc.setOutput(System.out);
 		pc.setLocal("true");
 		StreamPipeline<String> mdp = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesample, pc);
 		StreamPipeline<String[]> mdparr = mdp.map(val -> val.split(MDCConstants.COMMA));
@@ -269,14 +269,14 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 		((StreamPipeline) join.root).mdsroots.add(mdp);
 		Job job = ((StreamPipeline) join.root).createJob();
 		StreamJobScheduler js = new StreamJobScheduler();
-		job.pipelineconfig = pc;
+		job.setPipelineconfig(pc);
 		js.isignite = Objects.isNull(pc.getMode()) ? false
 				: pc.getMode().equals(MDCConstants.MODE_DEFAULT) ? true : false;
 		js.job = job;
 		js.pipelineconfig = pc;
 		js.semaphore = new Semaphore(1);
 		js.resultstream = new ConcurrentHashMap<>();
-		List<Stage> uniquestagestoprocess = new ArrayList<>(job.topostages);
+		List<Stage> uniquestagestoprocess = new ArrayList<>(job.getTopostages());
 		int stagenumber = 0;
 		SimpleDirectedGraph<StreamPipelineTaskSubmitter, DAGEdge> graph = new SimpleDirectedGraph<>(
 				DAGEdge.class);
@@ -287,7 +287,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 					? uniquestagestoprocess.get(stagenumber + 1)
 					: null;
 			stage.number = stagenumber;
-			js.generatePhysicalExecutionPlan(stage, nextstage, job.stageoutputmap, job.id, graph, taskgraph);
+			js.generatePhysicalExecutionPlan(stage, nextstage, job.getStageoutputmap(), job.getId(), graph, taskgraph);
 			stagenumber++;
 		}
 		assertEquals(3, graph.vertexSet().size());
@@ -300,7 +300,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 
 		PipelineConfig pc = new PipelineConfig();
 		pc.setMode(MDCConstants.MODE_NORMAL);
-		pc.setOutput(new Output(System.out));
+		pc.setOutput(System.out);
 		pc.setLocal("true");
 		pc.setIsblocksuserdefined("true");
 		pc.setBlocksize("1");
@@ -324,14 +324,14 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 
 		Job job = ((StreamPipeline) join.root).createJob();
 		StreamJobScheduler js = new StreamJobScheduler();
-		job.pipelineconfig = pc;
+		job.setPipelineconfig(pc);
 		js.isignite = Objects.isNull(pc.getMode()) ? false
 				: pc.getMode().equals(MDCConstants.MODE_DEFAULT) ? true : false;
 		js.job = job;
 		js.pipelineconfig = pc;
 		js.semaphore = new Semaphore(1);
 		js.resultstream = new ConcurrentHashMap<>();
-		List<Stage> uniquestagestoprocess = new ArrayList<>(job.topostages);
+		List<Stage> uniquestagestoprocess = new ArrayList<>(job.getTopostages());
 		int stagenumber = 0;
 		SimpleDirectedGraph<StreamPipelineTaskSubmitter, DAGEdge> graph = new SimpleDirectedGraph<>(
 				DAGEdge.class);
@@ -342,7 +342,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 					? uniquestagestoprocess.get(stagenumber + 1)
 					: null;
 			stage.number = stagenumber;
-			js.generatePhysicalExecutionPlan(stage, nextstage, job.stageoutputmap, job.id, graph, taskgraph);
+			js.generatePhysicalExecutionPlan(stage, nextstage, job.getStageoutputmap(), job.getId(), graph, taskgraph);
 			stagenumber++;
 		}
 		assertEquals(35, graph.vertexSet().size());
@@ -354,7 +354,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 
 		PipelineConfig pc = new PipelineConfig();
 		pc.setMode(MDCConstants.MODE_NORMAL);
-		pc.setOutput(new Output(System.out));
+		pc.setOutput(System.out);
 		pc.setLocal("true");
 		StreamPipeline<String> mdp = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesample, pc);
 		StreamPipeline<String[]> mdparr = mdp.map(val -> val.split(MDCConstants.COMMA));
@@ -363,14 +363,14 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 
 		Job job = mdparr.createJob();
 		StreamJobScheduler js = new StreamJobScheduler();
-		job.pipelineconfig = pc;
+		job.setPipelineconfig(pc);
 		js.isignite = Objects.isNull(pc.getMode()) ? false
 				: pc.getMode().equals(MDCConstants.MODE_DEFAULT) ? true : false;
 		js.job = job;
 		js.pipelineconfig = pc;
 		js.semaphore = new Semaphore(1);
 		js.resultstream = new ConcurrentHashMap<>();
-		List<Stage> uniquestagestoprocess = new ArrayList<>(job.topostages);
+		List<Stage> uniquestagestoprocess = new ArrayList<>(job.getTopostages());
 		int stagenumber = 0;
 		SimpleDirectedGraph<StreamPipelineTaskSubmitter, DAGEdge> graph = new SimpleDirectedGraph<>(
 				DAGEdge.class);
@@ -381,7 +381,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 					? uniquestagestoprocess.get(stagenumber + 1)
 					: null;
 			stage.number = stagenumber;
-			js.generatePhysicalExecutionPlan(stage, nextstage, job.stageoutputmap, job.id, graph, taskgraph);
+			js.generatePhysicalExecutionPlan(stage, nextstage, job.getStageoutputmap(), job.getId(), graph, taskgraph);
 			stagenumber++;
 		}
 		assertEquals(1, graph.vertexSet().size());
@@ -393,7 +393,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 
 		PipelineConfig pc = new PipelineConfig();
 		pc.setMode(MDCConstants.MODE_NORMAL);
-		pc.setOutput(new Output(System.out));
+		pc.setOutput(System.out);
 		pc.setLocal("true");
 		StreamPipeline<String> mdp = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesample, pc);
 		StreamPipeline<String[]> mdparr = mdp.map(val -> val.split(MDCConstants.COMMA));
@@ -406,14 +406,14 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 
 		Job job = mdparr.createJob();
 		StreamJobScheduler js = new StreamJobScheduler();
-		job.pipelineconfig = pc;
+		job.setPipelineconfig(pc);
 		js.isignite = Objects.isNull(pc.getMode()) ? false
 				: pc.getMode().equals(MDCConstants.MODE_DEFAULT) ? true : false;
 		js.job = job;
 		js.pipelineconfig = pc;
 		js.semaphore = new Semaphore(1);
 		js.resultstream = new ConcurrentHashMap<>();
-		List<Stage> uniquestagestoprocess = new ArrayList<>(job.topostages);
+		List<Stage> uniquestagestoprocess = new ArrayList<>(job.getTopostages());
 		int stagenumber = 0;
 		SimpleDirectedGraph<StreamPipelineTaskSubmitter, DAGEdge> graph = new SimpleDirectedGraph<>(
 				DAGEdge.class);
@@ -424,7 +424,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 					? uniquestagestoprocess.get(stagenumber + 1)
 					: null;
 			stage.number = stagenumber;
-			js.generatePhysicalExecutionPlan(stage, nextstage, job.stageoutputmap, job.id, graph, taskgraph);
+			js.generatePhysicalExecutionPlan(stage, nextstage, job.getStageoutputmap(), job.getId(), graph, taskgraph);
 			stagenumber++;
 		}
 		assertEquals(1, graph.vertexSet().size());
@@ -436,7 +436,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 
 		PipelineConfig pc = new PipelineConfig();
 		pc.setMode(MDCConstants.MODE_NORMAL);
-		pc.setOutput(new Output(System.out));
+		pc.setOutput(System.out);
 		pc.setLocal("true");
 		StreamPipeline<String> mdp = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesample, pc);
 		StreamPipeline<String[]> mdparr = mdp.map(val -> val.split(MDCConstants.COMMA));
@@ -450,14 +450,14 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 
 		Job job = mdparr.createJob();
 		StreamJobScheduler js = new StreamJobScheduler();
-		job.pipelineconfig = pc;
+		job.setPipelineconfig(pc);
 		js.isignite = Objects.isNull(pc.getMode()) ? false
 				: pc.getMode().equals(MDCConstants.MODE_DEFAULT) ? true : false;
 		js.job = job;
 		js.pipelineconfig = pc;
 		js.semaphore = new Semaphore(1);
 		js.resultstream = new ConcurrentHashMap<>();
-		List<Stage> uniquestagestoprocess = new ArrayList<>(job.topostages);
+		List<Stage> uniquestagestoprocess = new ArrayList<>(job.getTopostages());
 		int stagenumber = 0;
 		SimpleDirectedGraph<StreamPipelineTaskSubmitter, DAGEdge> graph = new SimpleDirectedGraph<>(
 				DAGEdge.class);
@@ -468,7 +468,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 					? uniquestagestoprocess.get(stagenumber + 1)
 					: null;
 			stage.number = stagenumber;
-			js.generatePhysicalExecutionPlan(stage, nextstage, job.stageoutputmap, job.id, graph, taskgraph);
+			js.generatePhysicalExecutionPlan(stage, nextstage, job.getStageoutputmap(), job.getId(), graph, taskgraph);
 			stagenumber++;
 		}
 		assertEquals(2, graph.vertexSet().size());
@@ -480,7 +480,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 
 		PipelineConfig pc = new PipelineConfig();
 		pc.setMode(MDCConstants.MODE_NORMAL);
-		pc.setOutput(new Output(System.out));
+		pc.setOutput(System.out);
 		pc.setLocal("true");
 		pc.setIsblocksuserdefined("true");
 		pc.setBlocksize("1");
@@ -497,14 +497,14 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 
 		Job job = mdparr.createJob();
 		StreamJobScheduler js = new StreamJobScheduler();
-		job.pipelineconfig = pc;
+		job.setPipelineconfig(pc);
 		js.isignite = Objects.isNull(pc.getMode()) ? false
 				: pc.getMode().equals(MDCConstants.MODE_DEFAULT) ? true : false;
 		js.job = job;
 		js.pipelineconfig = pc;
 		js.semaphore = new Semaphore(1);
 		js.resultstream = new ConcurrentHashMap<>();
-		List<Stage> uniquestagestoprocess = new ArrayList<>(job.topostages);
+		List<Stage> uniquestagestoprocess = new ArrayList<>(job.getTopostages());
 		int stagenumber = 0;
 		SimpleDirectedGraph<StreamPipelineTaskSubmitter, DAGEdge> graph = new SimpleDirectedGraph<>(
 				DAGEdge.class);
@@ -515,7 +515,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 					? uniquestagestoprocess.get(stagenumber + 1)
 					: null;
 			stage.number = stagenumber;
-			js.generatePhysicalExecutionPlan(stage, nextstage, job.stageoutputmap, job.id, graph, taskgraph);
+			js.generatePhysicalExecutionPlan(stage, nextstage, job.getStageoutputmap(), job.getId(), graph, taskgraph);
 			stagenumber++;
 		}
 		assertEquals(6, graph.vertexSet().size());
@@ -527,7 +527,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 
 		PipelineConfig pc = new PipelineConfig();
 		pc.setMode(MDCConstants.MODE_NORMAL);
-		pc.setOutput(new Output(System.out));
+		pc.setOutput(System.out);
 		pc.setLocal("true");
 		pc.setIsblocksuserdefined("true");
 		pc.setBlocksize("1");
@@ -542,14 +542,14 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 
 		Job job = mdparr.createJob();
 		StreamJobScheduler js = new StreamJobScheduler();
-		job.pipelineconfig = pc;
+		job.setPipelineconfig(pc);
 		js.isignite = Objects.isNull(pc.getMode()) ? false
 				: pc.getMode().equals(MDCConstants.MODE_DEFAULT) ? true : false;
 		js.job = job;
 		js.pipelineconfig = pc;
 		js.semaphore = new Semaphore(1);
 		js.resultstream = new ConcurrentHashMap<>();
-		List<Stage> uniquestagestoprocess = new ArrayList<>(job.topostages);
+		List<Stage> uniquestagestoprocess = new ArrayList<>(job.getTopostages());
 		int stagenumber = 0;
 		SimpleDirectedGraph<StreamPipelineTaskSubmitter, DAGEdge> graph = new SimpleDirectedGraph<>(
 				DAGEdge.class);
@@ -560,7 +560,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 					? uniquestagestoprocess.get(stagenumber + 1)
 					: null;
 			stage.number = stagenumber;
-			js.generatePhysicalExecutionPlan(stage, nextstage, job.stageoutputmap, job.id, graph, taskgraph);
+			js.generatePhysicalExecutionPlan(stage, nextstage, job.getStageoutputmap(), job.getId(), graph, taskgraph);
 			stagenumber++;
 		}
 		assertEquals(5, graph.vertexSet().size());
@@ -572,7 +572,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 
 		PipelineConfig pc = new PipelineConfig();
 		pc.setMode(MDCConstants.MODE_NORMAL);
-		pc.setOutput(new Output(System.out));
+		pc.setOutput(System.out);
 		pc.setLocal("true");
 		pc.setIsblocksuserdefined("true");
 		pc.setBlocksize("1");
@@ -583,14 +583,14 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 
 		Job job = mdparr.createJob();
 		StreamJobScheduler js = new StreamJobScheduler();
-		job.pipelineconfig = pc;
+		job.setPipelineconfig(pc);
 		js.isignite = Objects.isNull(pc.getMode()) ? false
 				: pc.getMode().equals(MDCConstants.MODE_DEFAULT) ? true : false;
 		js.job = job;
 		js.pipelineconfig = pc;
 		js.semaphore = new Semaphore(1);
 		js.resultstream = new ConcurrentHashMap<>();
-		List<Stage> uniquestagestoprocess = new ArrayList<>(job.topostages);
+		List<Stage> uniquestagestoprocess = new ArrayList<>(job.getTopostages());
 		int stagenumber = 0;
 		SimpleDirectedGraph<StreamPipelineTaskSubmitter, DAGEdge> graph = new SimpleDirectedGraph<>(
 				DAGEdge.class);
@@ -601,7 +601,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 					? uniquestagestoprocess.get(stagenumber + 1)
 					: null;
 			stage.number = stagenumber;
-			js.generatePhysicalExecutionPlan(stage, nextstage, job.stageoutputmap, job.id, graph, taskgraph);
+			js.generatePhysicalExecutionPlan(stage, nextstage, job.getStageoutputmap(), job.getId(), graph, taskgraph);
 			stagenumber++;
 		}
 		assertEquals(5, graph.vertexSet().size());
@@ -614,7 +614,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 
 		PipelineConfig pc = new PipelineConfig();
 		pc.setMode(MDCConstants.MODE_NORMAL);
-		pc.setOutput(new Output(System.out));
+		pc.setOutput(System.out);
 		pc.setLocal("true");
 		StreamPipeline<String> mdp = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesample, pc);
 		StreamPipeline<String[]> mdparr = mdp.map(val -> val.split(MDCConstants.COMMA));
@@ -636,14 +636,14 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 
 		Job job = ((StreamPipeline) join.root).createJob();
 		StreamJobScheduler js = new StreamJobScheduler();
-		job.pipelineconfig = pc;
+		job.setPipelineconfig(pc);
 		js.isignite = Objects.isNull(pc.getMode()) ? false
 				: pc.getMode().equals(MDCConstants.MODE_DEFAULT) ? true : false;
 		js.job = job;
 		js.pipelineconfig = pc;
 		js.semaphore = new Semaphore(1);
 		js.resultstream = new ConcurrentHashMap<>();
-		List<Stage> uniquestagestoprocess = new ArrayList<>(job.topostages);
+		List<Stage> uniquestagestoprocess = new ArrayList<>(job.getTopostages());
 		int stagenumber = 0;
 		SimpleDirectedGraph<StreamPipelineTaskSubmitter, DAGEdge> graph = new SimpleDirectedGraph<>(
 				DAGEdge.class);
@@ -654,7 +654,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 					? uniquestagestoprocess.get(stagenumber + 1)
 					: null;
 			stage.number = stagenumber;
-			js.generatePhysicalExecutionPlan(stage, nextstage, job.stageoutputmap, job.id, graph, taskgraph);
+			js.generatePhysicalExecutionPlan(stage, nextstage, job.getStageoutputmap(), job.getId(), graph, taskgraph);
 			stagenumber++;
 		}
 		assertEquals(3, graph.vertexSet().size());
@@ -667,7 +667,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 
 		PipelineConfig pc = new PipelineConfig();
 		pc.setMode(MDCConstants.MODE_NORMAL);
-		pc.setOutput(new Output(System.out));
+		pc.setOutput(System.out);
 		pc.setLocal("true");
 		pc.setIsblocksuserdefined("true");
 		pc.setBlocksize("1");
@@ -691,14 +691,14 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 
 		Job job = ((StreamPipeline) join.root).createJob();
 		StreamJobScheduler js = new StreamJobScheduler();
-		job.pipelineconfig = pc;
+		job.setPipelineconfig(pc);
 		js.isignite = Objects.isNull(pc.getMode()) ? false
 				: pc.getMode().equals(MDCConstants.MODE_DEFAULT) ? true : false;
 		js.job = job;
 		js.pipelineconfig = pc;
 		js.semaphore = new Semaphore(1);
 		js.resultstream = new ConcurrentHashMap<>();
-		List<Stage> uniquestagestoprocess = new ArrayList<>(job.topostages);
+		List<Stage> uniquestagestoprocess = new ArrayList<>(job.getTopostages());
 		int stagenumber = 0;
 		SimpleDirectedGraph<StreamPipelineTaskSubmitter, DAGEdge> graph = new SimpleDirectedGraph<>(
 				DAGEdge.class);
@@ -709,7 +709,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 					? uniquestagestoprocess.get(stagenumber + 1)
 					: null;
 			stage.number = stagenumber;
-			js.generatePhysicalExecutionPlan(stage, nextstage, job.stageoutputmap, job.id, graph, taskgraph);
+			js.generatePhysicalExecutionPlan(stage, nextstage, job.getStageoutputmap(), job.getId(), graph, taskgraph);
 			stagenumber++;
 		}
 		assertEquals(35, graph.vertexSet().size());
@@ -722,7 +722,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 
 		PipelineConfig pc = new PipelineConfig();
 		pc.setMode(MDCConstants.MODE_NORMAL);
-		pc.setOutput(new Output(System.out));
+		pc.setOutput(System.out);
 		pc.setLocal("true");
 		StreamPipeline<String> mdp = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesample, pc);
 
@@ -736,14 +736,14 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 
 		Job job = ((StreamPipeline) union.root).createJob();
 		StreamJobScheduler js = new StreamJobScheduler();
-		job.pipelineconfig = pc;
+		job.setPipelineconfig(pc);
 		js.isignite = Objects.isNull(pc.getMode()) ? false
 				: pc.getMode().equals(MDCConstants.MODE_DEFAULT) ? true : false;
 		js.job = job;
 		js.pipelineconfig = pc;
 		js.semaphore = new Semaphore(1);
 		js.resultstream = new ConcurrentHashMap<>();
-		List<Stage> uniquestagestoprocess = new ArrayList<>(job.topostages);
+		List<Stage> uniquestagestoprocess = new ArrayList<>(job.getTopostages());
 		int stagenumber = 0;
 		SimpleDirectedGraph<StreamPipelineTaskSubmitter, DAGEdge> graph = new SimpleDirectedGraph<>(
 				DAGEdge.class);
@@ -754,7 +754,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 					? uniquestagestoprocess.get(stagenumber + 1)
 					: null;
 			stage.number = stagenumber;
-			js.generatePhysicalExecutionPlan(stage, nextstage, job.stageoutputmap, job.id, graph, taskgraph);
+			js.generatePhysicalExecutionPlan(stage, nextstage, job.getStageoutputmap(), job.getId(), graph, taskgraph);
 			stagenumber++;
 		}
 		assertEquals(3, graph.vertexSet().size());
@@ -767,7 +767,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 
 		PipelineConfig pc = new PipelineConfig();
 		pc.setMode(MDCConstants.MODE_NORMAL);
-		pc.setOutput(new Output(System.out));
+		pc.setOutput(System.out);
 		pc.setLocal("true");
 		pc.setIsblocksuserdefined("true");
 		pc.setBlocksize("1");
@@ -779,14 +779,14 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 		((StreamPipeline) union.root).mdsroots.add(mdp);
 		Job job = ((StreamPipeline) union.root).createJob();
 		StreamJobScheduler js = new StreamJobScheduler();
-		job.pipelineconfig = pc;
+		job.setPipelineconfig(pc);
 		js.isignite = Objects.isNull(pc.getMode()) ? false
 				: pc.getMode().equals(MDCConstants.MODE_DEFAULT) ? true : false;
 		js.job = job;
 		js.pipelineconfig = pc;
 		js.semaphore = new Semaphore(1);
 		js.resultstream = new ConcurrentHashMap<>();
-		List<Stage> uniquestagestoprocess = new ArrayList<>(job.topostages);
+		List<Stage> uniquestagestoprocess = new ArrayList<>(job.getTopostages());
 		int stagenumber = 0;
 		SimpleDirectedGraph<StreamPipelineTaskSubmitter, DAGEdge> graph = new SimpleDirectedGraph<>(
 				DAGEdge.class);
@@ -797,7 +797,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 					? uniquestagestoprocess.get(stagenumber + 1)
 					: null;
 			stage.number = stagenumber;
-			js.generatePhysicalExecutionPlan(stage, nextstage, job.stageoutputmap, job.id, graph, taskgraph);
+			js.generatePhysicalExecutionPlan(stage, nextstage, job.getStageoutputmap(), job.getId(), graph, taskgraph);
 			stagenumber++;
 		}
 		assertEquals(35, graph.vertexSet().size());
@@ -810,7 +810,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 
 		PipelineConfig pc = new PipelineConfig();
 		pc.setMode(MDCConstants.MODE_NORMAL);
-		pc.setOutput(new Output(System.out));
+		pc.setOutput(System.out);
 		pc.setLocal("false");
 		pc.setJgroups("false");
 		StreamPipeline<String> mdp = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesample, pc);
@@ -825,11 +825,11 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 				: pc.getMode().equals(MDCConstants.MODE_DEFAULT) ? true : false;
 		js.job = job;
 		js.pipelineconfig = pc;
-		HeartBeatServerStream hbss = new HeartBeatServerStream();
+		HeartBeatStream hbss = new HeartBeatStream();
 		js.hbss = hbss;
 		js.getContainersHostPort();
-		assertEquals(job.containers.size(), js.taskexecutors.size());
-		assertTrue(job.containers.containsAll(js.taskexecutors));
+		assertEquals(job.getContainers().size(), js.taskexecutors.size());
+		assertTrue(job.getContainers().containsAll(js.taskexecutors));
 		js.destroyContainers();
 		pc.setLocal("true");
 	}
@@ -840,18 +840,19 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 
 		PipelineConfig pc = new PipelineConfig();
 		pc.setMode(MDCConstants.MODE_NORMAL);
-		pc.setOutput(new Output(System.out));
+		pc.setOutput(System.out);
 		pc.setLocal("false");
 		pc.setIsblocksuserdefined("true");
 		pc.setBlocksize("1");
 		pc.setGctype(MDCConstants.ZGC);
+		pc.setStorage(STORAGE.INMEMORY);
 		StreamPipeline<String> mdp = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesample, pc);
 		StreamPipeline<String[]> mdparr = mdp.map(val -> val.split(MDCConstants.COMMA));
 		mdparr.finaltasks.add(mdparr.task);
 		mdparr.mdsroots.add(mdp);
 
 		Job job = mdparr.createJob();
-		job.trigger = Job.TRIGGER.COLLECT;
+		job.setTrigger(Job.TRIGGER.COLLECT);
 		StreamJobScheduler js = new StreamJobScheduler();
 		js.pipelineconfig = pc;
 		js.isignite = Objects.isNull(pc.getMode()) ? false
@@ -861,21 +862,11 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 		js.semaphore = new Semaphore(1);
 		js.resultstream = new ConcurrentHashMap<>();
 		js.batchsize = Integer.parseInt(pc.getBatchsize());
-		js.hbtss = new HeartBeatTaskSchedulerStream();
-		js.hbtss.init(Integer.parseInt(pc.getRescheduledelay()),
-				Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULERSTREAM_PORT)),
-				MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULERSTREAM_HOST),
-				Integer.parseInt(pc.getInitialdelay()), Integer.parseInt(pc.getPingdelay()), MDCConstants.EMPTY,
-				job.id);
-		// Start the heart beat to receive task executor to task
-		// schedulers task status updates.
-		js.hbtss.start();
-		js.hbtss.getHbo().start();
-		HeartBeatServerStream hbss = new HeartBeatServerStream();
+		HeartBeatStream hbss = new HeartBeatStream();
 		js.hbss = hbss;
 		js.getContainersHostPort();
 		js.hbss = hbss;
-		List<Stage> uniquestagestoprocess = new ArrayList<>(job.topostages);
+		List<Stage> uniquestagestoprocess = new ArrayList<>(job.getTopostages());
 		int stagenumber = 0;
 		SimpleDirectedGraph<StreamPipelineTaskSubmitter, DAGEdge> graph = new SimpleDirectedGraph<>(
 				DAGEdge.class);
@@ -883,15 +874,15 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 		// Generate Physical execution plan for each stages.
 		for (Stage stage : uniquestagestoprocess) {
 			JobStage jobstage = new JobStage();
-			jobstage.jobid = job.id;
-			jobstage.stageid = stage.id;
-			jobstage.stage = stage;
-			js.jsidjsmap.put(job.id + stage.id, jobstage);
+			jobstage.setJobid(job.getId());
+			jobstage.setStageid(stage.id);
+			jobstage.setStage(stage);
+			js.jsidjsmap.put( job.getId() + stage.id, jobstage);
 			Stage nextstage = stagenumber + 1 < uniquestagestoprocess.size()
 					? uniquestagestoprocess.get(stagenumber + 1)
 					: null;
 			stage.number = stagenumber;
-			js.generatePhysicalExecutionPlan(stage, nextstage, job.stageoutputmap, job.id, graph, taskgraph);
+			js.generatePhysicalExecutionPlan(stage, nextstage, job.getStageoutputmap(), job.getId(), graph, taskgraph);
 			stagenumber++;
 		}
 		js.broadcastJobStageToTaskExecutors();
@@ -906,8 +897,8 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 		var partitionnumber = 0;
 		for (var mdstst :mdstts) {
 			mdstst.getTask().finalphase = true;
-			mdstst.getTask().hdfsurl = job.uri;
-			mdstst.getTask().filepath = job.savepath + MDCConstants.HYPHEN + partitionnumber++;
+			mdstst.getTask().hdfsurl = job.getUri();
+			mdstst.getTask().filepath = job.getSavepath() + MDCConstants.HYPHEN + partitionnumber++;
 		}
 		js.parallelExecutionPhaseDExecutor(graph);
 		List<List> results = js.getLastStageOutput(mdstts, graph, mdststs, false, false, false, false, js.resultstream);
@@ -916,8 +907,6 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 			sum += result.size();
 		}
 		assertEquals(46361, sum);
-		js.hbtss.getHbo().stop();
-		js.hbtss.close();
 		js.hbss.stop();
 		js.hbss.destroy();
 		js.destroyContainers();
@@ -930,7 +919,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 
 		PipelineConfig pc = new PipelineConfig();
 		pc.setMode(MDCConstants.MODE_NORMAL);
-		pc.setOutput(new Output(System.out));
+		pc.setOutput(System.out);
 		pc.setLocal("true");
 		pc.setBatchsize("1");
 		StreamPipeline<String> mdp = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesample, pc);
@@ -948,7 +937,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 		js.pipelineconfig = pc;
 		js.semaphore = new Semaphore(1);
 		js.resultstream = new ConcurrentHashMap<>();
-		List<Stage> uniquestagestoprocess = new ArrayList<>(job.topostages);
+		List<Stage> uniquestagestoprocess = new ArrayList<>(job.getTopostages());
 		int stagenumber = 0;
 		SimpleDirectedGraph<StreamPipelineTaskSubmitter, DAGEdge> graph = new SimpleDirectedGraph<>(
 				DAGEdge.class);
@@ -956,15 +945,15 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 		// Generate Physical execution plan for each stages.
 		for (Stage stage : uniquestagestoprocess) {
 			JobStage jobstage = new JobStage();
-			jobstage.jobid = job.id;
-			jobstage.stageid = stage.id;
-			jobstage.stage = stage;
-			js.jsidjsmap.put(job.id + stage.id, jobstage);
+			jobstage.setJobid(job.getId());
+			jobstage.setStageid(stage.id);
+			jobstage.setStage(stage);
+			js.jsidjsmap.put( job.getId() + stage.id, jobstage);
 			Stage nextstage = stagenumber + 1 < uniquestagestoprocess.size()
 					? uniquestagestoprocess.get(stagenumber + 1)
 					: null;
 			stage.number = stagenumber;
-			js.generatePhysicalExecutionPlan(stage, nextstage, job.stageoutputmap, job.id, graph, taskgraph);
+			js.generatePhysicalExecutionPlan(stage, nextstage, job.getStageoutputmap(), job.getId(), graph, taskgraph);
 			stagenumber++;
 		}
 		Iterator<StreamPipelineTaskSubmitter> topostages = new TopologicalOrderIterator(graph);
@@ -978,8 +967,8 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 		var partitionnumber = 0;
 		for (var mdstst :mdstts) {
 			mdstst.getTask().finalphase = true;
-			mdstst.getTask().hdfsurl = job.uri;
-			mdstst.getTask().filepath = job.savepath + MDCConstants.HYPHEN + partitionnumber++;
+			mdstst.getTask().hdfsurl = job.getUri();
+			mdstst.getTask().filepath = job.getSavepath() + MDCConstants.HYPHEN + partitionnumber++;
 		}
 		js.parallelExecutionPhaseDExecutorLocalMode(graph, js.new TaskProviderLocalMode(graph.vertexSet().size()));
 		List<List> result = js.getLastStageOutput(mdstts, graph, mdststs, false, false, true, false, js.resultstream);
@@ -992,7 +981,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 
 		PipelineConfig pc = new PipelineConfig();
 		pc.setMode(MDCConstants.MODE_NORMAL);
-		pc.setOutput(new Output(System.out));
+		pc.setOutput(System.out);
 		pc.setLocal("true");
 		pc.setIsblocksuserdefined("true");
 		pc.setBlocksize("1");
@@ -1011,7 +1000,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 		js.pipelineconfig = pc;
 		js.semaphore = new Semaphore(1);
 		js.resultstream = new ConcurrentHashMap<>();
-		List<Stage> uniquestagestoprocess = new ArrayList<>(job.topostages);
+		List<Stage> uniquestagestoprocess = new ArrayList<>(job.getTopostages());
 		int stagenumber = 0;
 		SimpleDirectedGraph<StreamPipelineTaskSubmitter, DAGEdge> graph = new SimpleDirectedGraph<>(
 				DAGEdge.class);
@@ -1019,15 +1008,15 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 		// Generate Physical execution plan for each stages.
 		for (Stage stage : uniquestagestoprocess) {
 			JobStage jobstage = new JobStage();
-			jobstage.jobid = job.id;
-			jobstage.stageid = stage.id;
-			jobstage.stage = stage;
-			js.jsidjsmap.put(job.id + stage.id, jobstage);
+			jobstage.setJobid(job.getId());
+			jobstage.setStageid(stage.id);
+			jobstage.setStage(stage);
+			js.jsidjsmap.put( job.getId() + stage.id, jobstage);
 			Stage nextstage = stagenumber + 1 < uniquestagestoprocess.size()
 					? uniquestagestoprocess.get(stagenumber + 1)
 					: null;
 			stage.number = stagenumber;
-			js.generatePhysicalExecutionPlan(stage, nextstage, job.stageoutputmap, job.id, graph, taskgraph);
+			js.generatePhysicalExecutionPlan(stage, nextstage, job.getStageoutputmap(), job.getId(), graph, taskgraph);
 			stagenumber++;
 		}
 		Iterator<StreamPipelineTaskSubmitter> topostages = new TopologicalOrderIterator(graph);
@@ -1041,8 +1030,8 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 		var partitionnumber = 0;
 		for (var mdstst :mdstts) {
 			mdstst.getTask().finalphase = true;
-			mdstst.getTask().hdfsurl = job.uri;
-			mdstst.getTask().filepath = job.savepath + MDCConstants.HYPHEN + partitionnumber++;
+			mdstst.getTask().hdfsurl = job.getUri();
+			mdstst.getTask().filepath = job.getSavepath() + MDCConstants.HYPHEN + partitionnumber++;
 		}
 		js.parallelExecutionPhaseDExecutorLocalMode(graph, js.new TaskProviderLocalMode(graph.vertexSet().size()));
 		List<List> results = js.getLastStageOutput(mdstts, graph, mdststs, false, false, true, false, js.resultstream);
@@ -1059,7 +1048,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 
 		PipelineConfig pc = new PipelineConfig();
 		pc.setMode(MDCConstants.MODE_NORMAL);
-		pc.setOutput(new Output(System.out));
+		pc.setOutput(System.out);
 		pc.setLocal("true");
 		pc.setIsblocksuserdefined("true");
 		pc.setBlocksize("1");
@@ -1079,7 +1068,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 		js.pipelineconfig = pc;
 		js.semaphore = new Semaphore(1);
 		js.resultstream = new ConcurrentHashMap<>();
-		List<Stage> uniquestagestoprocess = new ArrayList<>(job.topostages);
+		List<Stage> uniquestagestoprocess = new ArrayList<>(job.getTopostages());
 		int stagenumber = 0;
 		SimpleDirectedGraph<StreamPipelineTaskSubmitter, DAGEdge> graph = new SimpleDirectedGraph<>(
 				DAGEdge.class);
@@ -1087,15 +1076,15 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 		// Generate Physical execution plan for each stages.
 		for (Stage stage : uniquestagestoprocess) {
 			JobStage jobstage = new JobStage();
-			jobstage.jobid = job.id;
-			jobstage.stageid = stage.id;
-			jobstage.stage = stage;
-			js.jsidjsmap.put(job.id + stage.id, jobstage);
+			jobstage.setJobid(job.getId());
+			jobstage.setStageid(stage.id);
+			jobstage.setStage(stage);
+			js.jsidjsmap.put( job.getId() + stage.id, jobstage);
 			Stage nextstage = stagenumber + 1 < uniquestagestoprocess.size()
 					? uniquestagestoprocess.get(stagenumber + 1)
 					: null;
 			stage.number = stagenumber;
-			js.generatePhysicalExecutionPlan(stage, nextstage, job.stageoutputmap, job.id, graph, taskgraph);
+			js.generatePhysicalExecutionPlan(stage, nextstage, job.getStageoutputmap(), job.getId(), graph, taskgraph);
 			stagenumber++;
 		}
 		Iterator<StreamPipelineTaskSubmitter> topostages = new TopologicalOrderIterator(graph);
@@ -1109,8 +1098,8 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 		var partitionnumber = 0;
 		for (var mdstst :mdstts) {
 			mdstst.getTask().finalphase = true;
-			mdstst.getTask().hdfsurl = job.uri;
-			mdstst.getTask().filepath = job.savepath + MDCConstants.HYPHEN + partitionnumber++;
+			mdstst.getTask().hdfsurl = job.getUri();
+			mdstst.getTask().filepath = job.getSavepath() + MDCConstants.HYPHEN + partitionnumber++;
 		}
 		js.parallelExecutionPhaseDExecutorLocalMode(graph, js.new TaskProviderLocalMode(graph.vertexSet().size()));
 		List<List> results = js.getLastStageOutput(mdstts, graph, mdststs, false, false, true, false, js.resultstream);
@@ -1127,7 +1116,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 
 		PipelineConfig pc = new PipelineConfig();
 		pc.setMode(MDCConstants.MODE_NORMAL);
-		pc.setOutput(new Output(System.out));
+		pc.setOutput(System.out);
 		pc.setLocal("false");
 		pc.setJgroups("true");
 		pc.setStorage(MDCConstants.STORAGE.DISK);
@@ -1136,9 +1125,9 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 		mdparr.finaltasks.add(mdparr.task);
 		mdparr.mdsroots.add(mdp);
 		Job job = mdparr.createJob();
-		job.trigger = Job.TRIGGER.COLLECT;
+		job.setTrigger(Job.TRIGGER.COLLECT);
 		StreamJobScheduler js = new StreamJobScheduler();
-		job.pipelineconfig = pc;
+		job.setPipelineconfig(pc);
 		js.pipelineconfig = pc;
 		js.isignite = Objects.isNull(pc.getMode()) ? false
 				: pc.getMode().equals(MDCConstants.MODE_DEFAULT) ? true : false;
@@ -1155,7 +1144,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 
 		PipelineConfig pc = new PipelineConfig();
 		pc.setMode(MDCConstants.MODE_NORMAL);
-		pc.setOutput(new Output(System.out));
+		pc.setOutput(System.out);
 		StreamPipeline<String> mdp = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesample, pc);
 		StreamPipeline<String[]> mdparr = mdp.map(val -> val.split(MDCConstants.COMMA));
 		mdparr.finaltasks.add(mdparr.task);
@@ -1163,7 +1152,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 
 		Job job = mdparr.createJob();
 		StreamJobScheduler js = new StreamJobScheduler();
-		job.pipelineconfig = pc;
+		job.setPipelineconfig(pc);
 		js.isignite = Objects.isNull(pc.getMode()) ? false
 				: pc.getMode().equals(MDCConstants.MODE_DEFAULT) ? true : false;
 		List<List> result = (List<List>) js.schedule(job);
@@ -1177,7 +1166,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 
 		PipelineConfig pc = new PipelineConfig();
 		pc.setMode(MDCConstants.MODE_NORMAL);
-		pc.setOutput(new Output(System.out));
+		pc.setOutput(System.out);
 		pc.setLocal("false");
 		pc.setJgroups("false");
 		StreamPipeline<String> mdp = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesample, pc);
@@ -1186,7 +1175,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 		mdparr.mdsroots.add(mdp);
 		Job job = mdparr.createJob();
 		StreamJobScheduler js = new StreamJobScheduler();
-		job.pipelineconfig = pc;
+		job.setPipelineconfig(pc);
 		js.isignite = Objects.isNull(pc.getMode()) ? false
 				: pc.getMode().equals(MDCConstants.MODE_DEFAULT) ? true : false;
 		List<List> result = (List<List>) js.schedule(job);
@@ -1199,7 +1188,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 	public void testScheduleJobStandalone2() throws Exception {
 		PipelineConfig pc = new PipelineConfig();
 		pc.setMode(MDCConstants.MODE_NORMAL);
-		pc.setOutput(new Output(System.out));
+		pc.setOutput(System.out);
 		pc.setLocal("false");
 		pc.setJgroups("false");
 		StreamPipeline<String> mdp = StreamPipeline.newStreamHDFS(hdfsfilepath, airlinesample, pc);
@@ -1208,7 +1197,7 @@ public class StreamJobSchedulerTest extends StreamPipelineBaseTestCommon {
 		mdparr.mdsroots.add(mdp);
 		Job job = mdparr.createJob();
 		StreamJobScheduler js = new StreamJobScheduler();
-		job.pipelineconfig = pc;
+		job.setPipelineconfig(pc);
 		js.isignite = Objects.isNull(pc.getMode()) ? false
 				: pc.getMode().equals(MDCConstants.MODE_DEFAULT) ? true : false;
 		List<List> result = (List<List>) js.schedule(job);

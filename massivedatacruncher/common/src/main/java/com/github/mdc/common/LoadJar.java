@@ -16,6 +16,14 @@
 package com.github.mdc.common;
 
 import java.io.Serializable;
+import java.util.Set;
+
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 /**
  * 
@@ -24,7 +32,14 @@ import java.io.Serializable;
  * by the task schedulers before executing the tasks
  *  
  */
+@Getter
+@Setter
+@EqualsAndHashCode
+@ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class LoadJar implements Serializable {
 	private static final long serialVersionUID = 3379246177932569561L;
-	public byte[] mrjar;
+	private byte[] mrjar;
+	private Set<String> classes;
 }

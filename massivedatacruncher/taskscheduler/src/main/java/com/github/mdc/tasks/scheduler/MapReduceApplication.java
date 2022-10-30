@@ -15,7 +15,6 @@
  */
 package com.github.mdc.tasks.scheduler;
 
-import java.beans.PropertyChangeListener;
 import java.net.Socket;
 import java.net.URI;
 import java.util.ArrayList;
@@ -29,14 +28,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.Vector;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Semaphore;
@@ -54,7 +50,6 @@ import org.apache.hadoop.hdfs.protocol.LocatedBlock;
 import org.apache.log4j.Logger;
 import org.jooq.lambda.tuple.Tuple2;
 
-import com.esotericsoftware.kryo.Kryo;
 import com.github.dexecutor.core.DefaultDexecutor;
 import com.github.dexecutor.core.DexecutorConfig;
 import com.github.dexecutor.core.ExecutionConfig;
@@ -64,39 +59,30 @@ import com.github.dexecutor.core.task.Task;
 import com.github.dexecutor.core.task.TaskProvider;
 import com.github.mdc.common.AllocateContainers;
 import com.github.mdc.common.ApplicationTask;
-import com.github.mdc.common.ApplicationTask.TaskStatus;
-import com.github.mdc.common.ApplicationTask.TaskType;
 import com.github.mdc.common.Block;
-import com.github.mdc.common.BlockExecutors;
 import com.github.mdc.common.BlocksLocation;
 import com.github.mdc.common.ContainerLaunchAttributes;
 import com.github.mdc.common.ContainerResources;
-import com.github.mdc.common.Context;
 import com.github.mdc.common.DataCruncherContext;
 import com.github.mdc.common.DestroyContainers;
-import com.github.mdc.common.Dummy;
 import com.github.mdc.common.HDFSBlockUtils;
-import com.github.mdc.common.HeartBeatServer;
-import com.github.mdc.common.HeartBeatTaskScheduler;
+import com.github.mdc.common.HeartBeat;
 import com.github.mdc.common.JobApp;
+import com.github.mdc.common.JobConfiguration;
 import com.github.mdc.common.JobMetrics;
 import com.github.mdc.common.LaunchContainers;
 import com.github.mdc.common.LoadJar;
 import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.MDCJobMetrics;
-import com.github.mdc.common.MDCNodes;
 import com.github.mdc.common.MDCNodesResources;
 import com.github.mdc.common.MDCProperties;
-import com.github.mdc.common.NetworkUtil;
 import com.github.mdc.common.PipelineConstants;
 import com.github.mdc.common.ReducerValues;
 import com.github.mdc.common.Resources;
-import com.github.mdc.common.RetrieveData;
 import com.github.mdc.common.RetrieveKeys;
-import com.github.mdc.common.Tuple2Serializable;
+import com.github.mdc.common.Tuple3Serializable;
 import com.github.mdc.common.Utils;
 import com.github.mdc.stream.PipelineException;
-import com.github.mdc.stream.scheduler.StreamPipelineTaskSubmitter;
 import com.google.common.collect.Iterables;
 
 @SuppressWarnings("rawtypes")
@@ -122,14 +108,12 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 	List<String> nodes;
 	CuratorFramework cf;
 	static Logger log = Logger.getLogger(MapReduceApplication.class);
-	Set<BlockExecutors> locations;
 	List<LocatedBlock> locatedBlocks;
-	Collection<String> locationsblock;
 	int executorindex;
 	ExecutorService es;
-	HeartBeatServer hbs;
+	HeartBeat hbs;
 	JobMetrics jm = new JobMetrics();
-
+	Map<String, String> apptaskhp = new ConcurrentHashMap<>();
 	public MapReduceApplication(String jobname, JobConfiguration jobconf, List<MapperInput> mappers,
 			List<Class<?>> combiners, List<Class<?>> reducers, String outputfolder) {
 		this.jobname = jobname;
@@ -140,7 +124,6 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 		this.outputfolder = outputfolder;
 	}
 
-	HeartBeatTaskScheduler hbts;
 
 	Map<String, ArrayBlockingQueue> containerqueue = new ConcurrentHashMap<>();
 	List<Integer> ports;
@@ -216,7 +199,7 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 				totalcontainersallocated += cr.size();
 				nodecrsmap.put(node, cr);
 			}
-			jm.containerresources = lcs.stream().flatMap(lc -> {
+			jm.setContainerresources(lcs.stream().flatMap(lc -> {
 				var crs = lc.getCla().getCr();
 				return crs.stream().map(cr -> {
 					var node = lc.getNodehostport().split(MDCConstants.UNDERSCORE)[0];
@@ -232,7 +215,7 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 							+ MDCConstants.ROUNDED_BRACKET_CLOSE;
 
 				}).collect(Collectors.toList()).stream();
-			}).collect(Collectors.toList());
+			}).collect(Collectors.toList()));
 			log.debug("Total Containers Allocated:"	+ totalcontainersallocated);
 		} catch (Exception ex) {
 			log.error(PipelineConstants.TASKEXECUTORSALLOCATIONERROR, ex);
@@ -373,146 +356,101 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 
 	protected List<ContainerResources> getNumberOfContainers(String gctype, long totalmem, Resources resources)
 			throws PipelineException {
-		{
-			var cpu = resources.getNumberofprocessors() - 1;
-			var cr = new ArrayList<ContainerResources>();
-			if (jobconf.getContaineralloc().equals(MDCConstants.CONTAINER_ALLOC_DEFAULT)) {
-				var res = new ContainerResources();
-				var actualmemory = resources.getFreememory() - 256 * MDCConstants.MB;
-				if (actualmemory < (128 * MDCConstants.MB)) {
-					throw new PipelineException(PipelineConstants.MEMORYALLOCATIONERROR);
-				}
-				if (totalmem < (512 * MDCConstants.MB) && totalmem > 0 && cpu >= 1) {
-					if (actualmemory >= totalmem) {
-						res.setCpu(cpu);
-						var heapmem = 1024 * Integer.valueOf(jobconf.getHeappercentage()) / 100;
-						res.setMinmemory(heapmem);
-						res.setMaxmemory(heapmem);
-						res.setDirectheap(1024 - heapmem);
-						res.setGctype(gctype);
-						cr.add(res);
-						return cr;
-					} else {
-						throw new PipelineException(PipelineConstants.INSUFFMEMORYALLOCATIONERROR);
-					}
-				}
-				res.setCpu(cpu);
-				var memoryrequire = totalmem < actualmemory ? totalmem : actualmemory;
-				var meminmb = memoryrequire / MDCConstants.MB;
-				var heapmem = meminmb * Integer.valueOf(jobconf.getHeappercentage()) / 100;
-				res.setMinmemory(heapmem);
-				res.setMaxmemory(heapmem);
-				res.setDirectheap(meminmb - heapmem);
-				res.setGctype(gctype);
-				cr.add(res);
-				return cr;
-			} else if (jobconf.getContaineralloc().equals(MDCConstants.CONTAINER_ALLOC_DIVIDED)) {
-				var actualmemory = resources.getFreememory() - 256 * MDCConstants.MB;
-				if (actualmemory < (128 * MDCConstants.MB)) {
-					throw new PipelineException(PipelineConstants.MEMORYALLOCATIONERROR);
-				}
-				if (totalmem < (512 * MDCConstants.MB) && totalmem > 0 && cpu >= 1) {
-					if (actualmemory >= totalmem) {
-						var res = new ContainerResources();
-						res.setCpu(1);
-						var heapmem = 1024 * Integer.valueOf(jobconf.getHeappercentage()) / 100;
-						res.setMinmemory(heapmem);
-						res.setMaxmemory(heapmem);
-						res.setDirectheap(1024 - heapmem);
-						res.setGctype(gctype);
-						cr.add(res);
-						return cr;
-					} else {
-						throw new PipelineException(PipelineConstants.INSUFFMEMORYALLOCATIONERROR);
-					}
-				}
-				if (cpu == 0) {
-					return cr;
-				}
-				var numofcontainerspermachine = Integer.parseInt(jobconf.getNumberofcontainers());
-				var dividedcpus = cpu / numofcontainerspermachine;
-				var maxmemory = actualmemory / numofcontainerspermachine;
-				var maxmemmb = maxmemory / MDCConstants.MB;
-				var totalmemmb = totalmem / MDCConstants.MB;
-				if (dividedcpus == 0 && cpu >= 1) {
-					dividedcpus = 1;
-				}
-				if (totalmem < maxmemory && dividedcpus >= 1) {
+		var cpu = resources.getNumberofprocessors() - 1;
+		var cr = new ArrayList<ContainerResources>();
+		if (jobconf.getContaineralloc().equals(MDCConstants.CONTAINER_ALLOC_DEFAULT)) {
+			var res = new ContainerResources();
+			var actualmemory = resources.getFreememory() - 256 * MDCConstants.MB;
+			if (actualmemory < (128 * MDCConstants.MB)) {
+				throw new PipelineException(PipelineConstants.MEMORYALLOCATIONERROR);
+			}
+			res.setCpu(cpu);
+			var memoryrequire = actualmemory;
+			var meminmb = memoryrequire / MDCConstants.MB;
+			var heapmem = meminmb * Integer.valueOf(jobconf.getHeappercentage()) / 100;
+			res.setMinmemory(heapmem);
+			res.setMaxmemory(heapmem);
+			res.setDirectheap(meminmb - heapmem);
+			res.setGctype(gctype);
+			cr.add(res);
+			return cr;
+		} else if (jobconf.getContaineralloc().equals(MDCConstants.CONTAINER_ALLOC_DIVIDED)) {
+			var actualmemory = resources.getFreememory() - 256 * MDCConstants.MB;
+			if (actualmemory < (128 * MDCConstants.MB)) {
+				throw new PipelineException(PipelineConstants.MEMORYALLOCATIONERROR);
+			}
+			var numofcontainerspermachine = Integer.parseInt(jobconf.getNumberofcontainers());
+			var dividedcpus = cpu / numofcontainerspermachine;
+			var maxmemory = actualmemory / numofcontainerspermachine;
+			var maxmemmb = maxmemory / MDCConstants.MB;
+			var numberofcontainer = 0;
+			while (true) {
+				if (cpu >= dividedcpus && actualmemory >= 0) {
 					var res = new ContainerResources();
 					res.setCpu(dividedcpus);
-					var heapmem = totalmemmb * Integer.valueOf(jobconf.getHeappercentage()) / 100;
+					var heapmem = maxmemmb * Integer.valueOf(jobconf.getHeappercentage()) / 100;
 					res.setMinmemory(heapmem);
 					res.setMaxmemory(heapmem);
-					res.setDirectheap(totalmemmb - heapmem);
+					res.setDirectheap(maxmemmb - heapmem);
 					res.setGctype(gctype);
-					cr.add(res);
-					return cr;
-				}
-				var numberofcontainer = 0;
-				while (true) {
-					if (cpu >= dividedcpus && totalmem >= 0) {
-						var res = new ContainerResources();
-						res.setCpu(dividedcpus);
-						var heapmem = maxmemmb * Integer.valueOf(jobconf.getHeappercentage()) / 100;
-						res.setMinmemory(heapmem);
-						res.setMaxmemory(heapmem);
-						res.setDirectheap(maxmemmb - heapmem);
-						res.setGctype(gctype);
-						cr.add(res);
-					} else if (cpu >= 1 && totalmem >= 0) {
-						var res = new ContainerResources();
-						res.setCpu(cpu);
-						var heapmem = maxmemmb * Integer.valueOf(jobconf.getHeappercentage()) / 100;
-						res.setMinmemory(heapmem);
-						res.setMaxmemory(heapmem);
-						res.setDirectheap(maxmemmb - heapmem);
-						res.setGctype(gctype);
-						cr.add(res);
-					} else {
-						break;
-					}
-					numberofcontainer++;
-					if (numofcontainerspermachine == numberofcontainer) {
-						break;
-					}
 					cpu -= dividedcpus;
-					totalmem -= maxmemory;
-				}
-				return cr;
-			} else if (jobconf.getContaineralloc().equals(MDCConstants.CONTAINER_ALLOC_IMPLICIT)) {
-				var actualmemory = resources.getFreememory() - 256 * MDCConstants.MB;
-				var numberofimplicitcontainers = Integer.valueOf(jobconf.getImplicitcontainerallocanumber());
-				var numberofimplicitcontainercpu = Integer.valueOf(jobconf.getImplicitcontainercpu());
-				var numberofimplicitcontainermemory = jobconf.getImplicitcontainermemory();
-				var numberofimplicitcontainermemorysize = Long.valueOf(jobconf.getImplicitcontainermemorysize());
-				var memorysize = "GB".equals(numberofimplicitcontainermemory) ? MDCConstants.GB : MDCConstants.MB;
-				if (actualmemory < numberofimplicitcontainermemorysize * memorysize * numberofimplicitcontainers) {
-					throw new PipelineException(PipelineConstants.INSUFFMEMORYALLOCATIONERROR);
-				}
-				if (cpu < numberofimplicitcontainercpu * numberofimplicitcontainers) {
-					throw new PipelineException(PipelineConstants.INSUFFCPUALLOCATIONERROR);
-				}
-				for (var count = 0; count < numberofimplicitcontainers; count++) {
+					actualmemory -= maxmemory;
+					cr.add(res);
+				} else if (cpu >= 1 && actualmemory >= 0) {
 					var res = new ContainerResources();
-					res.setCpu(numberofimplicitcontainercpu);
-					var heapmem = numberofimplicitcontainermemorysize * Integer.valueOf(jobconf.getHeappercentage()) / 100;
+					res.setCpu(cpu);
+					var heapmem = maxmemmb * Integer.valueOf(jobconf.getHeappercentage()) / 100;
 					res.setMinmemory(heapmem);
 					res.setMaxmemory(heapmem);
-					res.setDirectheap(numberofimplicitcontainermemorysize - heapmem);
+					res.setDirectheap(maxmemmb - heapmem);
 					res.setGctype(gctype);
+					cpu = 0;
+					actualmemory -= maxmemory;
 					cr.add(res);
+				} else {
+					break;
 				}
-				return cr;
-			} else {
-				throw new PipelineException(PipelineConstants.UNSUPPORTEDMEMORYALLOCATIONMODE);
+				numberofcontainer++;
+				if (numofcontainerspermachine == numberofcontainer) {
+					break;
+				}
+
 			}
+			return cr;
+		} else if (jobconf.getContaineralloc().equals(MDCConstants.CONTAINER_ALLOC_IMPLICIT)) {
+			var actualmemory = resources.getFreememory() - 256 * MDCConstants.MB;
+			var numberofimplicitcontainers = Integer.valueOf(jobconf.getImplicitcontainerallocanumber());
+			var numberofimplicitcontainercpu = Integer.valueOf(jobconf.getImplicitcontainercpu());
+			var numberofimplicitcontainermemory = jobconf.getImplicitcontainermemory();
+			var numberofimplicitcontainermemorysize = Long.valueOf(jobconf.getImplicitcontainermemorysize());
+			var memorysize = "GB".equals(numberofimplicitcontainermemory) ? MDCConstants.GB : MDCConstants.MB;
+			if (actualmemory < numberofimplicitcontainermemorysize * memorysize * numberofimplicitcontainers) {
+				throw new PipelineException(PipelineConstants.INSUFFMEMORYALLOCATIONERROR);
+			}
+			if (cpu < numberofimplicitcontainercpu * numberofimplicitcontainers) {
+				throw new PipelineException(PipelineConstants.INSUFFCPUALLOCATIONERROR);
+			}
+			for (var count = 0; count < numberofimplicitcontainers; count++) {
+				var res = new ContainerResources();
+				res.setCpu(numberofimplicitcontainercpu);
+				var heapmem = numberofimplicitcontainermemorysize * Integer.valueOf(jobconf.getHeappercentage())
+						/ 100;
+				res.setMinmemory(heapmem);
+				res.setMaxmemory(heapmem);
+				res.setDirectheap(numberofimplicitcontainermemorysize - heapmem);
+				res.setGctype(gctype);
+				cr.add(res);
+			}
+			return cr;
+		} else {
+			throw new PipelineException(PipelineConstants.UNSUPPORTEDMEMORYALLOCATIONMODE);
 		}
 	}
 	int containercount;
 
 	public void getContainers(String containerid, String appid) throws Exception {
 		var loadjar = new LoadJar();
-		loadjar.mrjar = jobconf.getMrjar();
+		loadjar.setMrjar(jobconf.getMrjar());
 		List<String> containers = new ArrayList<>();
 		for (var lc : lcs) {
 			List<Integer> ports = (List<Integer>) Utils.getResultObjectByInput(lc.getNodehostport(), lc);
@@ -521,22 +459,20 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 			while (index < ports.size()) {
 					containers.add(tehost+MDCConstants.UNDERSCORE+ports.get(index));
 					while (true) {
-						try {
-							var client = Utils.getClientKryoNetty(tehost, ports.get(index), null);
-							client.send(new Dummy());
+						try (Socket sock = new Socket(tehost, ports.get(index))) {
 							break;
 						} catch (Exception ex) {
 							Thread.sleep(1000);
 						}
 					}
-					if (!Objects.isNull(loadjar.mrjar)) {
+					if (!Objects.isNull(loadjar.getMrjar())) {
 						log.info(Utils.getResultObjectByInput(tehost+MDCConstants.UNDERSCORE+ports.get(index), loadjar));
 					}
 					JobApp jobapp = new JobApp();
 					jobapp.setContainerid(lc.getContainerid());
 					jobapp.setJobappid(appid);
 					jobapp.setJobtype(JobApp.JOBAPP.MR);
-					Utils.writeObject(tehost + MDCConstants.UNDERSCORE + ports.get(index), jobapp);
+					Utils.getResultObjectByInput(tehost + MDCConstants.UNDERSCORE + ports.get(index), jobapp);
 					index++;
 			}
 		}
@@ -545,6 +481,11 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 	boolean isexception;
 	String exceptionmsg = MDCConstants.EMPTY;
 
+	protected List<String> getHostPort(Collection<String> appidtaskids) {
+		return appidtaskids.stream().map(apptaskid->apptaskhp.get(apptaskid))
+				.collect(Collectors.toList());
+	}
+	
 	@SuppressWarnings({"unchecked"})
 	public List<DataCruncherContext> call() {
 		var containerid = MDCConstants.CONTAINER + MDCConstants.HYPHEN + System.currentTimeMillis();
@@ -557,18 +498,11 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 							Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.ZOOKEEPER_RETRYDELAY))));
 			cf.start();
 
-			jm.jobstarttime = System.currentTimeMillis();
+			jm.setJobstarttime(System.currentTimeMillis());
 			var isblocksuserdefined = Boolean.parseBoolean(jobconf.getIsblocksuserdefined());
-			var applicationid = MDCConstants.MDCAPPLICATION + MDCConstants.HYPHEN + Utils.getUniqueID();
-			jm.jobid = applicationid;
+			var applicationid = MDCConstants.MDCAPPLICATION + MDCConstants.HYPHEN + System.currentTimeMillis() + MDCConstants.HYPHEN + Utils.getUniqueAppID();
+			jm.setJobid(applicationid);
 			MDCJobMetrics.put(jm);
-			hbts = new HeartBeatTaskScheduler();
-			hbts.init(Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULER_RESCHEDULEDELAY)), 0,
-					NetworkUtil.getNetworkAddress(MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULER_HOST)),
-					Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULER_INITIALDELAY)),
-					Integer.parseInt(MDCProperties.get().getProperty(MDCConstants.TASKSCHEDULER_PINGDELAY)), MDCConstants.EMPTY,
-					applicationid, MDCConstants.EMPTY);
-			hbts.start();
 			batchsize = Integer.parseInt(jobconf.getBatchsize());
 			numreducers = Integer.parseInt(jobconf.getNumofreducers());
 			var configuration = new Configuration();
@@ -614,7 +548,7 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 				folderblocks.put(hdfsdir, bls);
 				allfilebls.addAll(bls);
 				allfiles.addAll(Utils.getAllFilePaths(blockpath));
-				jm.totalfilesize += Utils.getTotalLengthByFiles(hdfs, blockpath);
+				jm.setTotalfilesize(jm.getTotalfilesize() + Utils.getTotalLengthByFiles(hdfs, blockpath));
 				blockpath.clear();
 				fileStatuses.clear();
 			}
@@ -625,13 +559,13 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 			getContainers(containerid, applicationid);
 			containerscount = containers.size();
 
-			jm.totalfilesize = jm.totalfilesize / MDCConstants.MB;
-			jm.files = allfiles;
-			jm.nodes = new LinkedHashSet<>(nodessorted);
-			jm.containersallocated = containers.stream().collect(Collectors.toMap(key -> key, value -> 0d));
+			jm.setTotalfilesize(jm.getTotalfilesize() / MDCConstants.MB);
+			jm.setFiles(allfiles);
+			jm.setNodes(new LinkedHashSet<>(nodessorted));
+			jm.setContainersallocated(containers.stream().collect(Collectors.toMap(key -> key, value -> 0d)));
 			;
-			jm.mode = jobconf.execmode;
-			jm.totalblocks = allfilebls.size();
+			jm.setMode(jobconf.getExecmode());
+			jm.setTotalblocks(allfilebls.size());
 			for (var cls : combiners) {
 				if (cls != null) {
 					combiner.add(cls.getName());
@@ -641,7 +575,7 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 				if (reducer != null) {
 					reducer.add(cls.getName());
 				}
-			}
+			}			
 			for (var folder : hdfsdirpath) {
 				var mapclznames = mapclz.get(folder);
 				var bls = folderblocks.get(folder);
@@ -651,93 +585,66 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 					apptask.setApplicationid(applicationid);
 					apptask.setTaskid(taskid);
 					var mdtstm = (TaskSchedulerMapperCombinerSubmitter) getMassiveDataTaskSchedulerThreadMapperCombiner(
-							mapclznames, hbts, combiner, bl, apptask);
+							mapclznames, combiner, bl, apptask);
 					if (containermappercombinermap.get(mdtstm.getHostPort()) == null) {
 						containermappercombinermap.put(mdtstm.getHostPort(), new ArrayList<>());
 					}
 					containermappercombinermap.get(mdtstm.getHostPort()).add(mdtstm);
+					apptaskhp.put(applicationid + taskid, mdtstm.getHostPort());
 					mrtaskcount++;
 				}
 
 			}
 			log.debug("Total MapReduce Tasks: " + mrtaskcount);
-			hbts.getHbo().start();
 			var dccmapphases = new ArrayList<DataCruncherContext>();
 			var completed = false;
 			var numexecute = 0;
 			var taskexeccount = Integer.parseInt(jobconf.getTaskexeccount());
-			List<ExecutionResult<TaskSchedulerMapperCombinerSubmitter, Boolean>> erroredresult = null;
-			var kryo = Utils.getKryoSerializerDeserializer();
+			List<ExecutionResults<TaskSchedulerMapperCombinerSubmitter, Boolean>> erroredresult = new ArrayList<>();
+			
+			var semaphores = new ConcurrentHashMap<String, Semaphore>();
+			for(var node:nodessorted) {
+				var crs = nodecrsmap.get(node);
+				String[] nodehp = node.split(MDCConstants.UNDERSCORE);
+				for(ContainerResources cr: crs) {
+					batchsize += cr.getCpu()*2;
+					semaphores.put(nodehp[0]+MDCConstants.UNDERSCORE+cr.getPort(), new Semaphore(cr.getCpu()*2));
+				}
+			}
 			while (!completed && numexecute < taskexeccount) {
-				DexecutorConfig<DefaultDexecutor, List<ExecutionResult<TaskSchedulerMapperCombinerSubmitter, Boolean>>> config = new DexecutorConfig(newExecutor(), new DTaskExecutor());
-				DefaultDexecutor<DefaultDexecutor, List<ExecutionResult<TaskSchedulerMapperCombinerSubmitter, Boolean>>> executor = new DefaultDexecutor<>(config);
 				for (var containerkey : containermappercombinermap.keySet()) {
 					var dccmapphase = new DataCruncherContext();
 					dccmapphases.add(dccmapphase);
-					var mdtstms = containermappercombinermap
-							.get(containerkey);
-					if (!mdtstms.isEmpty()) {
-						var clq = new ArrayBlockingQueue(mdtstms.size(), true);
-						containerqueue.put(containerkey.trim(), clq);
-						DexecutorConfig<TaskSchedulerMapperCombinerSubmitter, Boolean> configexec = new DexecutorConfig(
-								newExecutor(),
-								new MapCombinerTaskExecutor(new Semaphore(batchsize), clq, dccmapphase, mdtstms.size()));
-						DefaultDexecutor<TaskSchedulerMapperCombinerSubmitter, Boolean> dexecutor = new DefaultDexecutor<>(
-								configexec);
-
-						for (var mdtstm : mdtstms) {
-							dexecutor.addIndependent(mdtstm);
-						}
-						executor.addIndependent(dexecutor);
-					}
+					List<TaskSchedulerMapperCombinerSubmitter> tasks = containermappercombinermap.get(containerkey);
+					DexecutorConfig<TaskSchedulerMapperCombinerSubmitter, Boolean> configexec = new DexecutorConfig(
+							newExecutor(),
+							new MapCombinerTaskExecutor(semaphores.get(containerkey), dccmapphase, tasks.size()));
+					DefaultDexecutor<TaskSchedulerMapperCombinerSubmitter, Boolean> dexecutor = new DefaultDexecutor<>(
+							configexec);
+					tasks.stream().forEach(task -> dexecutor.addIndependent(task));
+					
+					erroredresult.add(dexecutor.execute(ExecutionConfig.NON_TERMINATING));
 				}
-				PropertyChangeListener pcl = evt -> {
-					try {
-						var apptask = (ApplicationTask) evt.getNewValue();
-						containerqueue.get(apptask.getHp().trim()).put(apptask);
-						log.info(apptask.getHp() + ": " + containerqueue.get(apptask.getHp()));
-					} catch (Exception ex) {
-						log.info(MDCConstants.EMPTY, ex);
-					}
-				};
-				hbts.getHbo().addPropertyChangeListener(pcl);
-				ExecutionResults<DefaultDexecutor, List<ExecutionResult<TaskSchedulerMapperCombinerSubmitter, Boolean>>> execresults = executor.execute(ExecutionConfig.NON_TERMINATING);
-				List<ExecutionResult<DefaultDexecutor, List<ExecutionResult<TaskSchedulerMapperCombinerSubmitter, Boolean>>>> errorresults =  execresults.getAll();
 				completed = true;
-				var currentcontainers = new ArrayList<String>(containers);
-				var containersremoved = new ArrayList<String>(containers);
-				containersremoved.removeAll(currentcontainers);
-				currentcontainers.stream().forEach(containerhp -> containermappercombinermap.get(containerhp).clear());
-				containersremoved.stream().forEach(containerhp -> containermappercombinermap.remove(containerhp));
-				for (var execresult :errorresults) {
-					erroredresult = execresult.getResult();
-					if (!erroredresult.isEmpty()) {
+				for (ExecutionResults<TaskSchedulerMapperCombinerSubmitter, Boolean> execs : erroredresult) {
+					if(execs.getErrored().size()>0) {
 						completed = false;
-						erroredresult.stream()
-								.forEach(execres -> {
-									reConfigureContainerForStageExecution(execres.getId(), currentcontainers);
-									containermappercombinermap.get(execres.getId().getHostPort()).add(execres.getId());
-								});
+					}
+					for (ExecutionResult exec : execs.getErrored()) {
+						Utils.writeToOstream(jobconf.getOutput(), MDCConstants.NEWLINE);
+						Utils.writeToOstream(jobconf.getOutput(), exec.getId().toString());
 					}
 				}
-				if (!completed) {
-					erroredresult.forEach(exec -> {
-						Utils.writeKryoOutput(kryo, jobconf.getOutput(), MDCConstants.NEWLINE);
-						Utils.writeKryoOutput(kryo, jobconf.getOutput(), exec.getId().apptask.getApperrormessage());
-					});
-				}
-				hbts.getHbo().clearQueue();
-				hbts.getHbo().removePropertyChangeListeners();
 				numexecute++;
 			}
 			if (!Objects.isNull(jobconf.getOutput())) {
-				Utils.writeKryoOutput(Utils.getKryoSerializerDeserializer(), jobconf.getOutput(), "Number of Executions: " + numexecute);
+				Utils.writeToOstream(jobconf.getOutput(), "Number of Executions: " + numexecute);
 			}
 			if (!completed) {
 				return Arrays.asList(new DataCruncherContext<>());
 			}
 			var dccred = new ArrayList<DataCruncherContext>();
-			List<Tuple2Serializable> keyapptasks;
+			List<Tuple3Serializable> keyapptasks;
 			var dccmapphase = new DataCruncherContext();
 			for (var dcc : dccmapphases) {
 				dcc.keys().stream().forEach(dcckey -> {
@@ -746,8 +653,8 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 					});
 				});
 			}
-			keyapptasks = (List<Tuple2Serializable>) dccmapphase.keys().parallelStream()
-					.map(key -> new Tuple2Serializable(key, dccmapphase.get(key)))
+			keyapptasks = (List<Tuple3Serializable>) dccmapphase.keys().parallelStream()
+					.map(key -> new Tuple3Serializable(key, dccmapphase.get(key), getHostPort(dccmapphase.get(key))))
 					.collect(Collectors.toCollection(ArrayList::new));
 			var partkeys = Iterables
 					.partition(keyapptasks, (keyapptasks.size()) / numreducers).iterator();
@@ -759,28 +666,27 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 				mrtaskcount++;
 				var currentexecutor = getTaskExecutor(mrtaskcount);
 				var rv = new ReducerValues();
-				rv.appid = applicationid;
-				rv.tuples = new ArrayList<>(partkeys.next());
-				rv.reducerclass = reducers.iterator().next().getName();
+				rv.setAppid(applicationid);
+				rv.setTuples(new ArrayList<>(partkeys.next()));
+				rv.setReducerclass(reducers.iterator().next().getName());
 				var taskid = MDCConstants.TASK + MDCConstants.HYPHEN + mrtaskcount;
 				var mdtstr = new TaskSchedulerReducerSubmitter(
 						currentexecutor, rv, applicationid, taskid, redcount, cf, containers);
-				hbts.apptaskmdtstrmap.put(applicationid + taskid, mdtstr);
 
 				log.debug("Reducer: Submitting " + mrtaskcount + " App And Task:"
-						+ applicationid + taskid + rv.tuples);
+						+ applicationid + taskid + rv.getTuples());
 				if (!Objects.isNull(jobconf.getOutput())) {
-					Utils.writeKryoOutput(Utils.getKryoSerializerDeserializer(), jobconf.getOutput(), "Initial Reducer: Submitting " + mrtaskcount + " App And Task:"
-							+ applicationid + taskid + rv.tuples + " to " + currentexecutor);
+					Utils.writeToOstream(jobconf.getOutput(), "Initial Reducer: Submitting " + mrtaskcount + " App And Task:"
+							+ applicationid + taskid + rv.getTuples() + " to " + currentexecutor);
 				}
 				executorred.addIndependent(mdtstr);
 			}
 			executorred.execute(ExecutionConfig.NON_TERMINATING);
-			log.info("Reducer completed------------------------------");
-			log.info("Total Tasks Completed: " + mrtaskcount);
+			log.info("Reducer concluded------------------------------");
+			log.info("Total tasks done: " + mrtaskcount);
 			if (!isexception) {
 				if (!Objects.isNull(jobconf.getOutput())) {
-					Utils.writeKryoOutput(Utils.getKryoSerializerDeserializer(), jobconf.getOutput(), "Reducer completed------------------------------");
+					Utils.writeToOstream(jobconf.getOutput(), "Reducer completed------------------------------");
 				}
 				var sb = new StringBuilder();
 				var partindex = 1;
@@ -809,13 +715,13 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 				}
 			} else {
 				if (!Objects.isNull(jobconf.getOutput())) {
-					Utils.writeKryoOutput(Utils.getKryoSerializerDeserializer(), jobconf.getOutput(), exceptionmsg);
+					Utils.writeToOstream(jobconf.getOutput(), exceptionmsg);
 				}
 			}
-			jm.jobcompletiontime = System.currentTimeMillis();
-			jm.totaltimetaken = (jm.jobcompletiontime - jm.jobstarttime) / 1000.0;
+			jm.setJobcompletiontime(System.currentTimeMillis());
+			jm.setTotaltimetaken((jm.getJobcompletiontime() - jm.getJobstarttime()) / 1000.0);
 			if (!Objects.isNull(jobconf.getOutput())) {
-				Utils.writeKryoOutput(kryo, jobconf.getOutput(),
+				Utils.writeToOstream(jobconf.getOutput(),
 						"Completed Job in " + ((System.currentTimeMillis() - starttime) / 1000.0) + " seconds");
 			}
 			return dccred;
@@ -824,15 +730,10 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 			// Restore interrupted state...
 			Thread.currentThread().interrupt();
 		} catch (Exception ex) {
-			log.info("Unable To Execute Job, See Cause Below:", ex);
+			log.error("Unable To Execute Job, See Cause Below:", ex);
 		} finally {
 			try {
 				destroyContainers(containerid);
-				if (!Objects.isNull(hbts)) {
-					hbts.getHbo().stop();
-					hbts.stop();
-					hbts.destroy();
-				}
 				if (!Objects.isNull(hbs)) {
 					hbs.stop();
 					hbs.destroy();
@@ -854,7 +755,6 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 	public void reConfigureContainerForStageExecution(TaskSchedulerMapperCombinerSubmitter mdtsstm,
 			List<String> availablecontainers) {
 		var bsl = (BlocksLocation) mdtsstm.blockslocation;
-		bsl.getContainers().retainAll(availablecontainers);
 		var containersgrouped = availablecontainers.stream()
 				.collect(Collectors.groupingBy(key -> key.split(MDCConstants.UNDERSCORE)[0],
 						Collectors.mapping(value -> value, Collectors.toCollection(Vector::new))));
@@ -890,12 +790,10 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 		Semaphore semaphorereducerresult;
 		String applicationid;
 		List<DataCruncherContext> dccred;
-		Kryo kryo;
 
 		protected ReducerTaskExecutor(int batchsize, String applicationid, List<DataCruncherContext> dccred) {
 			semaphorereducerresult = new Semaphore(batchsize);
 			this.applicationid = applicationid;
-			this.kryo = Utils.getKryoSerializerDeserializer();
 			this.dccred = dccred;
 		}
 
@@ -908,65 +806,7 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 				public Boolean execute() {
 					try {
 						semaphorereducerresult.acquire();
-						CountDownLatch cdlreducercomplete = new CountDownLatch(1);
-						final PropertyChangeListener reducercompleteobserver = evt -> {
-							var apptask = (ApplicationTask) evt.getNewValue();
-							if (apptask != null
-									&& apptask.getTasktype() == TaskType.REDUCER
-									&& apptask.getApplicationid().equals(tsrs.applicationid)
-									&& apptask.getTaskid().equals(tsrs.taskid)) {
-								try {
-									log.debug("Received App And Task Before mutex acquire:" + apptask.getApplicationid()
-											+ apptask.getTaskid());
-									if (!Objects.isNull(jobconf.getOutput())) {
-										Utils.writeKryoOutput(Utils.getKryoSerializerDeserializer(), jobconf.getOutput(),
-												"Received App And Task Before mutex acquire:" + apptask.getApplicationid()
-														+ apptask.getTaskid());
-									}
-									if (apptask != null && apptask.getTaskstatus() == TaskStatus.COMPLETED
-											&& apptask.getTasktype() == TaskType.REDUCER) {
-										semaphorereducerresult.acquire();
-										log.debug("Received App And Task After mutex acquire:" + apptask.getApplicationid()
-												+ apptask.getTaskid());
-										var objects = new ArrayList<>();
-										objects.add(new RetrieveData());
-										objects.add(apptask.getApplicationid());
-										objects.add(apptask.getTaskid());
-										log.debug("Received App And Task:" + apptask.getApplicationid() + apptask.getTaskid());
-										if (!Objects.isNull(jobconf.getOutput())) {
-											Utils.writeKryoOutput(Utils.getKryoSerializerDeserializer(), jobconf.getOutput(),
-													"Received App And Task:" + apptask.getApplicationid() + apptask.getTaskid());
-										}
-
-										var ctxreducer = (Context) Utils.getResultObjectByInput(apptask.getHp(), objects);
-										dccred.add((DataCruncherContext) ctxreducer);
-										tsrs.iscompleted = true;
-									} else if (apptask != null && apptask.getTaskstatus() == TaskStatus.FAILED
-											&& apptask.getTasktype() == TaskType.REDUCER) {
-										isexception = true;
-										exceptionmsg = apptask.getApperrormessage();
-										tsrs.iscompleted = false;
-									}
-									cdlreducercomplete.countDown();
-								} catch (InterruptedException e) {
-									log.warn("Interrupted!", e);
-									// Restore interrupted state...
-									Thread.currentThread().interrupt();
-								} catch (Exception ex) {
-									log.error(MDCConstants.EMPTY, ex);
-								}
-							}
-						};
-						hbts.getHbo().addPropertyChangeListener(reducercompleteobserver);
-						submitReducer(tsrs);
-
-						log.debug("Waiting for the Reducer to complete------------");
-						if (!Objects.isNull(jobconf.getOutput())) {
-							Utils.writeKryoOutput(Utils.getKryoSerializerDeserializer(), jobconf.getOutput(),
-									"Waiting for the Reducer to complete------------");
-						}
-						cdlreducercomplete.await();
-						hbts.getHbo().removePropertyChangeListener(reducercompleteobserver);
+						dccred.add((DataCruncherContext) tsrs.call());
 						semaphorereducerresult.release();
 					} catch (Exception ex) {
 						log.error(MDCConstants.EMPTY, ex);
@@ -982,84 +822,38 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 			TaskProvider<TaskSchedulerMapperCombinerSubmitter, Boolean> {
 
 		Semaphore semaphorebatch;
-		ArrayBlockingQueue bq;
 		DataCruncherContext dccmapphase;
-		CountDownLatch cdl;
 		int totaltasks;
-		int totalsubmitted;
-		ConcurrentMap<String, CountDownLatch> cdls = new ConcurrentHashMap<>();
-		ConcurrentMap<String, TaskSchedulerMapperCombinerSubmitter> mdstsmap = new ConcurrentHashMap<>();
-		ConcurrentMap<String, Timer> timermap = new ConcurrentHashMap<>();
-		private Semaphore totalsubmittedmutex = new Semaphore(1);
-		ExecutorService thrpool;
+		int taskexecuted = 0;
+		private Semaphore resultmerge = new Semaphore(1);
 
-		public MapCombinerTaskExecutor(Semaphore semaphore, ArrayBlockingQueue bq, DataCruncherContext dccmapphase,
+		public MapCombinerTaskExecutor(Semaphore semaphore, DataCruncherContext dccmapphase,
 				int totaltasks) {
 			this.semaphorebatch = semaphore;
-			this.bq = bq;
 			this.dccmapphase = dccmapphase;
 			this.totaltasks = totaltasks;
-			thrpool = Executors.newWorkStealingPool();
-			cdl = new CountDownLatch(totaltasks);
 		}
 
 		public com.github.dexecutor.core.task.Task<TaskSchedulerMapperCombinerSubmitter, Boolean> provideTask(
-				final TaskSchedulerMapperCombinerSubmitter mdtstmcmeth) {
+				final TaskSchedulerMapperCombinerSubmitter tsmcs) {
 
 			return new com.github.dexecutor.core.task.Task<TaskSchedulerMapperCombinerSubmitter, Boolean>() {
-				private TaskSchedulerMapperCombinerSubmitter mdtstmc = mdtstmcmeth;
+				private TaskSchedulerMapperCombinerSubmitter tsmcsl = tsmcs;
 				private static final long serialVersionUID = 1L;
 
 				public Boolean execute() {
 					try {
-						semaphorebatch.acquire();
-						hbts.apptaskmdtstmmap.put(mdtstmc.apptask.getApplicationid() + mdtstmc.apptask.getTaskid(), mdtstmc);
-						log.info("Submitting to host " + mdtstmc.getHostPort() + " " + mdtstmc.apptask.getApplicationid()
-								+ MDCConstants.HYPHEN + mdtstmc.apptask.getTaskid());
-						cdls.put(mdtstmc.apptask.getApplicationid()
-								+ mdtstmc.apptask.getTaskid(), new CountDownLatch(1));
-						mdstsmap.put(mdtstmc.apptask.getApplicationid()
-								+ mdtstmc.apptask.getTaskid(), mdtstmc);
-						submitMapper(mdtstmc);
-						var timer = new Timer();
-						timermap.put(mdtstmc.apptask.getApplicationid()
-								+ mdtstmc.apptask.getTaskid(), timer);
-						var delay = Long.parseLong(jobconf.getTsinitialdelay());
-						timer.scheduleAtFixedRate(new TimerTask() {
-							int count = 0;
-							@Override
-							public void run() {
-								try {
-									if (++count > 3 ) {
-										log.info(mdtstmc.getHostPort() + " Task Failed:" + mdtstmc.apptask.getApplicationid()
-												+ mdtstmc.apptask.getTaskid());
-										var apptimer = timermap.remove(mdtstmc.apptask.getApplicationid()
-												+ mdtstmc.apptask.getTaskid());
-										apptimer.cancel();
-										apptimer.purge();
-										hbts.pingOnce(mdtstmc.apptask, ApplicationTask.TaskStatus.FAILED, ApplicationTask.TaskType.MAPPERCOMBINER, MDCConstants.TSEXCEEDEDEXECUTIONCOUNT);
-									}
-								} catch (Exception ex) {
-									log.error(MDCConstants.EMPTY, ex);
-								}
-							}
-
-						}, delay, delay);
-						totalsubmittedmutex.acquire();
-						totalsubmitted++;
-						if (totalsubmitted == 1) {
-							thrpool.submit(new ResultProcessor(bq));
-						}
-						if (totalsubmitted == totaltasks) {
-							log.info("All Tasks Submitted: " + totalsubmitted + "/" + totaltasks);
-							cdl.await();
-							thrpool.shutdown();
-						}
-
-						totalsubmittedmutex.release();
-						cdls.get(mdtstmc.apptask.getApplicationid()
-								+ mdtstmc.apptask.getTaskid()).await();
-
+						semaphorebatch.acquire();						
+						RetrieveKeys rk = tsmcsl.call();
+						resultmerge.acquire();
+						taskexecuted++;
+						double percentagecompleted = Math.floor(((float)taskexecuted) / totaltasks * 100.0);
+						Utils.writeToOstream( jobconf.getOutput(), "\nPercentage Completed TE("
+								+ tsmcsl.getHostPort() + ") " + percentagecompleted + "% \n");
+						dccmapphase.putAll(rk.keys, rk.applicationid + rk.taskid);
+						resultmerge.release();
+						semaphorebatch.release();
+						return true;
 					} catch (InterruptedException e) {
 						log.warn("Interrupted!", e);
 						// Restore interrupted state...
@@ -1067,67 +861,9 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 					} catch (Exception ex) {
 						log.error("MapCombinerTaskExecutor error", ex);
 					}
-					if (!mdtstmc.iscompleted) {
-						throw new IllegalArgumentException("Incomplete task");
-					}
-					return mdtstmc.iscompleted;
+					return false;
 				}
 			};
-		}
-
-		class ResultProcessor implements Runnable {
-			ArrayBlockingQueue bq;
-			int totalouputobtained;
-			Kryo kryo = Utils.getKryoSerializerDeserializer();
-
-			public ResultProcessor(ArrayBlockingQueue bq) {
-				this.bq = bq;
-			}
-
-			public void run() {
-				while (totalouputobtained < totaltasks) {
-					try {
-						var apptask = (ApplicationTask) bq.take();
-						var mdtstm = mdstsmap.remove(apptask.getApplicationid() + apptask.getTaskid());
-						if (!Objects.isNull(mdtstm)) {
-							var timer = timermap.remove(apptask.getApplicationid() + apptask.getTaskid());
-							if (!Objects.isNull(timer)) {
-								timer.cancel();
-								timer.purge();
-							}
-							if (apptask.getTaskstatus() == ApplicationTask.TaskStatus.COMPLETED) {
-								log.info("Processing the App Task: " + apptask);
-								var objects = new ArrayList<>();
-								objects.add(new RetrieveKeys());
-								objects.add(apptask.getApplicationid());
-								objects.add(apptask.getTaskid());
-								var rk = (RetrieveKeys) Utils.getResultObjectByInput(apptask.getHp(), objects);
-								dccmapphase.putAll(rk.keys, rk.applicationid + rk.taskid);
-								mdtstm.iscompleted = true;
-								mdtstm.apptask.setApperrormessage(null);
-							} else if (apptask.getTaskstatus() == ApplicationTask.TaskStatus.FAILED) {
-								mdtstm.apptask.setApperrormessage(apptask.getApperrormessage());
-								mdtstm.iscompleted = false;
-							}
-							totalouputobtained++;
-							double percentcompleted = Math.floor(totalouputobtained / (double) totaltasks * 100.0);
-							jm.containersallocated.put(apptask.getHp(), percentcompleted);
-							if (jobconf.getOutput() != null) {
-								Utils.writeKryoOutput(kryo, jobconf.getOutput(), apptask.getTaskid() + " " + apptask.getHp() + "'s Mapper Task Status: " + apptask.getTaskstatus() + " Execution Status = " + totalouputobtained + "/" + totaltasks + " = " + percentcompleted + "%");
-							}
-							cdls.get(apptask.getApplicationid() + apptask.getTaskid()).countDown();
-							semaphorebatch.release();
-							cdl.countDown();
-						}
-					} catch (InterruptedException e) {
-						log.warn("Interrupted!", e);
-						// Restore interrupted state...
-						Thread.currentThread().interrupt();
-					} catch (Exception ex) {
-						log.info("Mapper Submitted Failed For Getting Response: ", ex);
-					}
-				}
-			}
 		}
 
 	}
@@ -1136,33 +872,13 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 		return Executors.newWorkStealingPool();
 	}
 
-	private class DTaskExecutor implements
-			TaskProvider<DefaultDexecutor<StreamPipelineTaskSubmitter, Boolean>, List<ExecutionResult<StreamPipelineTaskSubmitter, Boolean>>> {
-
-		@Override
-		public com.github.dexecutor.core.task.Task<DefaultDexecutor<StreamPipelineTaskSubmitter, Boolean>, List<ExecutionResult<StreamPipelineTaskSubmitter, Boolean>>> provideTask(
-				DefaultDexecutor<StreamPipelineTaskSubmitter, Boolean> dexecutor) {
-			return new com.github.dexecutor.core.task.Task<DefaultDexecutor<StreamPipelineTaskSubmitter, Boolean>, List<ExecutionResult<StreamPipelineTaskSubmitter, Boolean>>>() {
-
-				private static final long serialVersionUID = 1L;
-
-				@Override
-				public List<ExecutionResult<StreamPipelineTaskSubmitter, Boolean>> execute() {
-					var execresults = dexecutor.execute(ExecutionConfig.NON_TERMINATING);
-					return execresults.getErrored();
-				}
-			};
-		}
-
-	}
-
 	protected void destroyContainers(String containerid) throws Exception {
 		var nodes = nodessorted;
 		log.debug("Destroying Containers with id:" + containerid + " for the hosts: " + nodes);
 		var dc = new DestroyContainers();
 		for (var node : nodes) {
 			dc.setContainerid(containerid);
-			Utils.writeObject(node, dc);
+			Utils.getResultObjectByInput(node, dc);
 			Resources allocresources = MDCNodesResources.get().get(node);
 			var crs = nodecrsmap.get(node);
 			for(ContainerResources cr: crs) {
@@ -1176,29 +892,17 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 	}
 
 	public TaskSchedulerMapperCombinerSubmitter getMassiveDataTaskSchedulerThreadMapperCombiner(
-			Set<String> mapclz, HeartBeatTaskScheduler hbts,
-			Set<String> combiners, BlocksLocation blockslocation, ApplicationTask apptask) throws Exception {
+			Set<String> mapclz,Set<String> combiners, BlocksLocation blockslocation, ApplicationTask apptask) throws Exception {
 		log.debug("Block To Read :" + blockslocation);
 		var mdtstmc = new TaskSchedulerMapperCombinerSubmitter(
 				blockslocation, true, new LinkedHashSet<>(mapclz), combiners,
-				cf, containers, hbts, apptask);
+				cf, containers, apptask);
 		apptask.setHp(blockslocation.getExecutorhp());
-		hbts.apptaskmdtstmmap.put(apptask.getApplicationid() + apptask.getTaskid(), mdtstmc);
 		blocklocationindex++;
 		return mdtstmc;
 	}
 
 	public String getTaskExecutor(long blocklocationindex) {
 		return containers.get((int) blocklocationindex % containers.size());
-	}
-
-	public synchronized void submitMapper(TaskSchedulerMapperCombinerSubmitter mdtstmc) throws Exception {
-		log.info("Submitting Mapper Task :");
-		es.submit(mdtstmc);
-	}
-
-	public synchronized void submitReducer(TaskSchedulerReducerSubmitter mdtstr) throws Exception {
-		log.info("Submitting Reducer Task :");
-		es.submit(mdtstr);
 	}
 }

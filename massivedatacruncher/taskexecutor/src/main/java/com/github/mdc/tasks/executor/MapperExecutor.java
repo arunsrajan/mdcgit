@@ -16,12 +16,12 @@
 package com.github.mdc.tasks.executor;
 
 import java.io.BufferedReader;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.List;
 import java.util.concurrent.Callable;
 
 import org.apache.log4j.Logger;
-import org.xerial.snappy.SnappyInputStream;
 
 import com.github.mdc.common.BlocksLocation;
 import com.github.mdc.common.Context;
@@ -33,9 +33,9 @@ public class MapperExecutor implements Callable<Context> {
 	static Logger log = Logger.getLogger(MapperExecutor.class);
 	BlocksLocation blockslocation;
 	List<Mapper> crunchmappers;
-	SnappyInputStream datastream;
+	InputStream datastream;
 
-	public MapperExecutor(BlocksLocation blockslocation, SnappyInputStream datastream, List<Mapper> crunchmappers) {
+	public MapperExecutor(BlocksLocation blockslocation, InputStream datastream, List<Mapper> crunchmappers) {
 		this.blockslocation = blockslocation;
 		this.datastream = datastream;
 		this.crunchmappers = crunchmappers;
@@ -47,7 +47,7 @@ public class MapperExecutor implements Callable<Context> {
 				var br =
 						new BufferedReader(new InputStreamReader(compstream));) {
 			var ctx = new DataCruncherContext();
-			br.lines().parallel().forEachOrdered(line -> {
+			br.lines().parallel().forEach(line -> {
 				for (var crunchmapper : crunchmappers) {
 					crunchmapper.map(0l, line, ctx);
 				}
@@ -55,7 +55,7 @@ public class MapperExecutor implements Callable<Context> {
 			return ctx;
 		}
 		catch (Exception ex) {
-			log.info(MDCConstants.EMPTY, ex);
+			log.error(MDCConstants.EMPTY, ex);
 			throw ex;
 		}
 

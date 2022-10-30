@@ -22,11 +22,13 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.log4j.Logger;
+import org.nustaq.serialization.FSTObjectOutput;
 
-import com.esotericsoftware.kryo.io.Output;
 import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.MDCMapReducePhaseClassLoader;
 import com.github.mdc.common.MDCProperties;
@@ -56,7 +58,7 @@ public class StreamPipelineTaskScheduler implements Runnable {
 
 	@Override
 	public void run() {
-		var kryo = Utils.getKryoSerializerDeserializer();
+		
 		var message = "";
 		try {
 			//ClassLoader to load the jar file.
@@ -85,26 +87,29 @@ public class StreamPipelineTaskScheduler implements Runnable {
 			//Invoke the runPipeline method via reflection.
 			var pipelineconfig = new PipelineConfig();
 			pipelineconfig.setJar(mrjar);
-			pipelineconfig.setKryoOutput(new Output(tss.getOutputStream()));
+			Set<Class<?>> classes = new LinkedHashSet<>();
+			pipelineconfig.setCustomclasses(classes);
+			classes.add(main);
+			pipelineconfig.setOutput(tss.getOutputStream());
 			var pipeline = (Pipeline) main.getDeclaredConstructor().newInstance();
 			pipelineconfig.setJobname(main.getSimpleName());
 			pipeline.runPipeline(args, pipelineconfig);
 			message = "Successfully Completed executing the Job from main class " + mainclass;
-			Utils.writeKryoOutput(kryo, new Output(tss.getOutputStream()), message);
+			Utils.writeToOstream(tss.getOutputStream(), message);
 		}
 		catch (Throwable ex) {
 			log.error("Job execution Error, See cause below \n", ex);
 			try (var baos = new ByteArrayOutputStream();) {
 				var failuremessage = new PrintWriter(baos, true, StandardCharsets.UTF_8);
 				ex.printStackTrace(failuremessage);
-				Utils.writeKryoOutput(kryo, new Output(tss.getOutputStream()), new String(baos.toByteArray()));
+				Utils.writeToOstream(tss.getOutputStream(), new String(baos.toByteArray()));
 			} catch (Exception e) {
 				log.error("Message Send Failed for Task Failed: ", e);
 			}
 		}
 		finally {
 			try {
-				Utils.writeKryoOutput(kryo, new Output(tss.getOutputStream()), "quit");
+				Utils.writeToOstream(tss.getOutputStream(), "quit");
 				tss.close();
 			} catch (Exception ex) {
 				log.error("Socket Stream close error, See cause below \n", ex);

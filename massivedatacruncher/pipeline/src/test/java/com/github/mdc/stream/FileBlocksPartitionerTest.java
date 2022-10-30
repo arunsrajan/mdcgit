@@ -55,7 +55,7 @@ public class FileBlocksPartitionerTest extends StreamPipelineTestCommon {
 	@Test
 	public void testgetJobStageBlocks() throws PipelineException, MalformedObjectNameException, MBeanRegistrationException, InstanceNotFoundException {
 		Job job = new Job();
-		job.jm = new JobMetrics();
+		job.setJm(new JobMetrics());
 		PipelineConfig pc = new PipelineConfig();
 		IgnitePipeline mdpi = IgnitePipeline
 				.newStreamFILE(
@@ -64,8 +64,8 @@ public class FileBlocksPartitionerTest extends StreamPipelineTestCommon {
 		((IgnitePipeline) mdpi.root).mdsroots.add(mdpi.root);
 		((IgnitePipeline) mdpi.root).finaltasks = new HashSet<>(Arrays.asList(mdpi.root.finaltask));
 		((IgnitePipeline) mdpi.root).getDAG(job);
-		List<BlocksLocation> bls = (List<BlocksLocation>) job.stageoutputmap
-				.get(job.stageoutputmap.keySet().iterator().next());
+		List<BlocksLocation> bls = (List<BlocksLocation>) job.getStageoutputmap()
+				.get(job.getStageoutputmap().keySet().iterator().next());
 		assertEquals(1, bls.size());
 		assertEquals(2, bls.get(0).getBlock().length);
 		assertEquals(4270834, bls.get(0).getBlock()[0].getBlockend());
@@ -75,7 +75,7 @@ public class FileBlocksPartitionerTest extends StreamPipelineTestCommon {
 	@Test
 	public void testgetJobStageBlocks32MBBlockSize() throws PipelineException, MalformedObjectNameException, MBeanRegistrationException, InstanceNotFoundException {
 		Job job = new Job();
-		job.jm = new JobMetrics();
+		job.setJm(new JobMetrics());
 		PipelineConfig pc = new PipelineConfig();
 		pc.setBlocksize("32");
 		IgnitePipeline mdpi = IgnitePipeline.newStreamFILE("C:\\DEVELOPMENT\\dataset\\airline\\1987", pc)
@@ -83,8 +83,8 @@ public class FileBlocksPartitionerTest extends StreamPipelineTestCommon {
 		((IgnitePipeline) mdpi.root).mdsroots.add(mdpi.root);
 		((IgnitePipeline) mdpi.root).finaltasks = new HashSet<>(Arrays.asList(mdpi.root.finaltask));
 		((IgnitePipeline) mdpi.root).getDAG(job);
-		List<BlocksLocation> bls = (List<BlocksLocation>) job.stageoutputmap
-				.get(job.stageoutputmap.keySet().iterator().next());
+		List<BlocksLocation> bls = (List<BlocksLocation>) job.getStageoutputmap()
+				.get(job.getStageoutputmap().keySet().iterator().next());
 		assertEquals(4, bls.size());
 		var sum = 0;
 		for (int index = 0; index < bls.size(); index++) {
@@ -98,7 +98,7 @@ public class FileBlocksPartitionerTest extends StreamPipelineTestCommon {
 	@Test
 	public void testgetJobStageBlocks64MBBlockSize() throws PipelineException, MalformedObjectNameException, MBeanRegistrationException, InstanceNotFoundException {
 		Job job = new Job();
-		job.jm = new JobMetrics();
+		job.setJm(new JobMetrics());
 		PipelineConfig pc = new PipelineConfig();
 		pc.setBlocksize("64");
 		IgnitePipeline mdpi = IgnitePipeline.newStreamFILE("C:\\DEVELOPMENT\\dataset\\airline\\1989", pc)
@@ -106,8 +106,8 @@ public class FileBlocksPartitionerTest extends StreamPipelineTestCommon {
 		((IgnitePipeline) mdpi.root).mdsroots.add(mdpi.root);
 		((IgnitePipeline) mdpi.root).finaltasks = new HashSet<>(Arrays.asList(mdpi.root.finaltask));
 		((IgnitePipeline) mdpi.root).getDAG(job);
-		List<BlocksLocation> bls = (List<BlocksLocation>) job.stageoutputmap
-				.get(job.stageoutputmap.keySet().iterator().next());
+		List<BlocksLocation> bls = (List<BlocksLocation>) job.getStageoutputmap()
+				.get(job.getStageoutputmap().keySet().iterator().next());
 		assertEquals(8, bls.size());
 		var sum = 0;
 		for (int index = 0; index < bls.size(); index++) {

@@ -458,7 +458,7 @@ public class StreamPipelineTransformationFunctionsTest extends StreamPipelineBas
 				(left, right) -> left.equals(right)).root;
 		mdproot.finaltasks.add(mdproot.finaltask);
 		Job job = new Job();
-		job.jm = new JobMetrics();
+		job.setJm(new JobMetrics());
 		mdproot.getDAG(job);
 		pipelineconfig.setBlocksize(config);
 

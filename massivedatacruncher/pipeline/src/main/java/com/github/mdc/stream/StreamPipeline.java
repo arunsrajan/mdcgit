@@ -900,14 +900,14 @@ public sealed class StreamPipeline<I1> extends AbstractPipeline permits CsvStrea
 		}
 		else {
 			jobCreated = new Job();
-			jobCreated.id = MDCConstants.JOB+MDCConstants.HYPHEN+Utils.getUniqueID();
-			jobCreated.jm = new JobMetrics();
-			jobCreated.jm.jobstarttime = System.currentTimeMillis();
-			jobCreated.jm.jobid = jobCreated.id;
+			jobCreated.setId(MDCConstants.JOB+MDCConstants.HYPHEN+System.currentTimeMillis()+MDCConstants.HYPHEN+Utils.getUniqueJobID());
+			jobCreated.setJm(new JobMetrics());
+			jobCreated.getJm().setJobstarttime(System.currentTimeMillis());
+			jobCreated.getJm().setJobid(jobCreated.getId());
 			PipelineConfig pipelineconfig = ((StreamPipeline)root).pipelineconfig;
-			jobCreated.jm.mode = Boolean.parseBoolean(pipelineconfig.getYarn())?MDCConstants.YARN:Boolean.parseBoolean(pipelineconfig.getMesos())?MDCConstants.MESOS:Boolean.parseBoolean(pipelineconfig.getJgroups())?MDCConstants.JGROUPS:Boolean.parseBoolean(pipelineconfig.getLocal())?MDCConstants.LOCAL:MDCConstants.EXECMODE_DEFAULT;
-			jobCreated.jm.jobname = pipelineconfig.getJobname();
-			MDCJobMetrics.put(jobCreated.jm);
+			jobCreated.getJm().setMode(Boolean.parseBoolean(pipelineconfig.getYarn())?MDCConstants.YARN:Boolean.parseBoolean(pipelineconfig.getMesos())?MDCConstants.MESOS:Boolean.parseBoolean(pipelineconfig.getJgroups())?MDCConstants.JGROUPS:Boolean.parseBoolean(pipelineconfig.getLocal())?MDCConstants.LOCAL:MDCConstants.EXECMODE_DEFAULT);
+			jobCreated.getJm().setJobname(pipelineconfig.getJobname());
+			MDCJobMetrics.put(jobCreated.getJm());
 		}
 		
 		getDAG(jobCreated);
@@ -938,7 +938,7 @@ public sealed class StreamPipeline<I1> extends AbstractPipeline permits CsvStrea
 		return tasksnames.toString();
 	}
 	private String printStages(Set<Stage> stages) {
-		var stagenames = stages.stream().map(sta->sta.getStageid()).collect(Collectors.toList());
+		var stagenames = stages.stream().map(sta->sta.getId()).collect(Collectors.toList());
 		return stagenames.toString();
 	}
 	private Set<Stage> finalstages = new LinkedHashSet<>();
@@ -983,9 +983,6 @@ public sealed class StreamPipeline<I1> extends AbstractPipeline permits CsvStrea
 				// child stage and form the edge between stages.
 				if ((af instanceof StreamPipeline) && af.task instanceof Dummy) {
 					var parentstage = new Stage();
-					parentstage.setStageid("Stage" + stageid);
-					stageid++;
-					parentstage.id = MDCConstants.STAGE + MDCConstants.HYPHEN + Utils.getUniqueID();
 					rootstages.add(parentstage);
 					graphstages.addVertex(parentstage);
 					taskstagemap.put(af.task, parentstage);
@@ -997,10 +994,6 @@ public sealed class StreamPipeline<I1> extends AbstractPipeline permits CsvStrea
 				// between parent and child.
 				else if (af.parents.size() >= 2) {
 					var childstage = new Stage();
-					childstage.setStageid("Stage" + stageid);
-					stageid++;
-					childstage.id = MDCConstants.STAGE + MDCConstants.HYPHEN
-							+ Utils.getUniqueID();
 					for (var afparent : af.parents) {
 						Stage parentstage = taskstagemap.get(afparent.task);
 						graphstages.addVertex(parentstage);
@@ -1027,9 +1020,6 @@ public sealed class StreamPipeline<I1> extends AbstractPipeline permits CsvStrea
 					// and pushed to stack.
 					if (af.parents.get(0).childs.size() >= 2) {
 						var childstage = new Stage();
-						childstage.setStageid("Stage" + stageid);
-						stageid++;
-						childstage.id = MDCConstants.STAGE + MDCConstants.HYPHEN + Utils.getUniqueID();
 						for (var afparent : af.parents) {
 							var parentstage = taskstagemap.get(afparent.task);
 							graphstages.addVertex(parentstage);
@@ -1087,14 +1077,13 @@ public sealed class StreamPipeline<I1> extends AbstractPipeline permits CsvStrea
 			log.debug("Stages----------------------------------------");
 			var stagesprocessed = graphstages.vertexSet();
 			for (var stagetoprint : stagesprocessed) {
-				log.debug("\n\nStage " + stagetoprint.getStageid());
+				log.info("\n\nStage " + stagetoprint.getId());
 				log.debug("[Parent] [Child]");
 				log.debug(printStages(stagetoprint.parent) + " , " + printStages(stagetoprint.child));
-				log.debug("Tasks");
+				log.info("Tasks");
 				for (var task : stagetoprint.tasks) {
-					log.debug(PipelineUtils.getFunctions(task));
+					log.info(PipelineUtils.getFunctions(task));
 				}
-				stagetoprint.tasksdescription = PipelineUtils.getFunctions(stagetoprint.tasks).toString();
 			}
 
 			finalstages.clear();
@@ -1124,8 +1113,8 @@ public sealed class StreamPipeline<I1> extends AbstractPipeline permits CsvStrea
 			// result been computed.
 			Iterator<Stage> topostages = new TopologicalOrderIterator(graphstages);
 			while (topostages.hasNext())
-				job.topostages.add(topostages.next());
-			job.topostages.retainAll(stages);
+				job.getTopostages().add(topostages.next());
+			job.getTopostages().retainAll(stages);
 			var dbPartitioner = new FileBlocksPartitionerHDFS();
 			dbPartitioner.getJobStageBlocks(job, supplier, ((StreamPipeline)root).protocol, rootstages, mdsroots, ((StreamPipeline)root).blocksize, ((StreamPipeline)root).pipelineconfig);
 			var writer = new StringWriter();
@@ -1158,9 +1147,6 @@ public sealed class StreamPipeline<I1> extends AbstractPipeline permits CsvStrea
 	Map<Object, Stage> taskstagemap,AbstractPipeline af) {
 		var parentstage = taskstagemap.get(af.parents.get(0).task);
 		var childstage = new Stage();
-		childstage.setStageid("Stage"+stageid);
-		stageid++;
-		childstage.id = MDCConstants.STAGE + MDCConstants.HYPHEN + Utils.getUniqueID();
 		childstage.tasks.add(af.task);
 		graphstages.addVertex(parentstage);
 		graphstages.addVertex(childstage);
@@ -1216,9 +1202,9 @@ public sealed class StreamPipeline<I1> extends AbstractPipeline permits CsvStrea
 				mdscollect.mdsroots.add(root);
 			}
 			var jobcreated = mdscollect.createJob();
-			jobcreated.trigger = Job.TRIGGER.SAVERESULTSTOFILE;
-			jobcreated.uri = uri.toString();
-			jobcreated.savepath = path;
+			jobcreated.setTrigger(Job.TRIGGER.SAVERESULTSTOFILE);
+			jobcreated.setUri(uri.toString());
+			jobcreated.setSavepath(path);
 			mdscollect.submitJob(jobcreated);			
 	}
 
@@ -1233,7 +1219,7 @@ public sealed class StreamPipeline<I1> extends AbstractPipeline permits CsvStrea
 	private Object submitJob(Job job) throws Exception  {
 		var mdp = (StreamPipeline)root;
 		StreamJobScheduler js = new StreamJobScheduler();
-		job.pipelineconfig = mdp.pipelineconfig;
+		job.setPipelineconfig(mdp.pipelineconfig);
 		return js.schedule(job);
 
 	}
@@ -1249,7 +1235,7 @@ public sealed class StreamPipeline<I1> extends AbstractPipeline permits CsvStrea
 	private List collect(boolean toexecute,Job.TRIGGER jobtrigger) throws PipelineException  {
 		try {
 			var job = createJob();
-			job.trigger = jobtrigger;
+			job.setTrigger(jobtrigger);
 			var results=new ArrayList();
 			if(toexecute) {
 				results = (ArrayList) submitJob(job);
@@ -1274,9 +1260,8 @@ public sealed class StreamPipeline<I1> extends AbstractPipeline permits CsvStrea
 	public List collect(boolean toexecute, IntSupplier supplier) throws PipelineException  {
 		try {
 			log.debug("Collect task begin...");
-			var kryo = Utils.getKryoSerializerDeserializer();
 			var mdp = (StreamPipeline)root;
-			Utils.writeKryoOutput(kryo, mdp.pipelineconfig.getOutput(), "Collect task begin...");
+			Utils.writeToOstream(mdp.pipelineconfig.getOutput(), "Collect task begin...");
 			var mdscollect = (StreamPipeline) root;
 			mdscollect.finaltasks.clear();
 			mdscollect.finaltasks.add(mdscollect.finaltask);
@@ -1298,7 +1283,7 @@ public sealed class StreamPipeline<I1> extends AbstractPipeline permits CsvStrea
 			}		
 			var result = mdscollect.collect(toexecute,Job.TRIGGER.COLLECT);
 			log.debug("Collect task ended.");
-			Utils.writeKryoOutput(kryo, mdp.pipelineconfig.getOutput(), "Collect task ended.");
+			Utils.writeToOstream(mdp.pipelineconfig.getOutput(), "Collect task ended.");
 			return result;
 		}
 		catch(Exception ex) {

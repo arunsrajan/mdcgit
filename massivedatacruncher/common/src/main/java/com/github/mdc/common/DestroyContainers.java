@@ -17,22 +17,27 @@ package com.github.mdc.common;
 
 import java.io.Serializable;
 
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+
 /**
  * 
  * @author arun
  * This class for destroying containers given containerid. 
  */
+@Getter
+@Setter
+@EqualsAndHashCode
+@ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class DestroyContainers implements Serializable {
 
 	private static final long serialVersionUID = -1544266820256048905L;
 	private String containerid;
-
-	public String getContainerid() {
-		return containerid;
-	}
-
-	public void setContainerid(String containerid) {
-		this.containerid = containerid;
-	}
-
+	
 }

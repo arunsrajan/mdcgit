@@ -45,15 +45,14 @@ import org.springframework.yarn.am.container.AbstractLauncher;
 
 import com.github.mdc.common.ApplicationTask;
 import com.github.mdc.common.BlocksLocation;
-import com.github.mdc.common.ByteBufferPool;
 import com.github.mdc.common.ByteBufferPoolDirect;
 import com.github.mdc.common.Context;
 import com.github.mdc.common.DataCruncherContext;
+import com.github.mdc.common.JobConfiguration;
 import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.MDCProperties;
 import com.github.mdc.common.RemoteDataFetcher;
 import com.github.mdc.common.Tuple2Serializable;
-import com.github.mdc.tasks.scheduler.JobConfiguration;
 import com.google.common.collect.Iterables;
 
 /**
@@ -109,7 +108,6 @@ public class MapReduceYarnAppmaster extends StaticEventingAppmaster implements C
 			var prop = new Properties();
 			MDCProperties.put(prop);
 			ByteBufferPoolDirect.init();
-			ByteBufferPool.init(3);
 			log.info("Environment: " + getEnvironment());
 			var yarninputfolder = MDCConstants.YARNINPUTFOLDER + MDCConstants.FORWARD_SLASH
 					+ getEnvironment().get(MDCConstants.YARNMDCJOBID);
@@ -190,9 +188,7 @@ public class MapReduceYarnAppmaster extends StaticEventingAppmaster implements C
 		}
 		catch (Exception ex) {
 			log.info("Submit Application Error, See cause below \n", ex);
-			if (!Objects.isNull(ByteBufferPoolDirect.get())) {
-				ByteBufferPoolDirect.get().close();
-			}
+			ByteBufferPoolDirect.destroy();
 		}
 	}
 
