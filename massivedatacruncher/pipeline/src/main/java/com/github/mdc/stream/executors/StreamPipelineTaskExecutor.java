@@ -98,8 +98,8 @@ import com.pivovarit.collectors.ParallelCollectors;
  * @author Arun Task executors thread for standalone task executors daemon.
  */
 @SuppressWarnings("rawtypes")
-public sealed class StreamPipelineTaskExecutor implements
-		Callable<Boolean>permits StreamPipelineTaskExecutorInMemory, StreamPipelineTaskExecutorJGroups, StreamPipelineTaskExecutorMesos, StreamPipelineTaskExecutorYarn, StreamPipelineTaskExecutorLocal {
+public class StreamPipelineTaskExecutor implements
+		Callable<Boolean> {
 	protected JobStage jobstage;
 	private static Logger log = Logger.getLogger(StreamPipelineTaskExecutor.class);
 	protected FileSystem hdfs = null;

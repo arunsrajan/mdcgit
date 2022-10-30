@@ -33,7 +33,7 @@ public class ByteBufferPoolDirectTest {
 			try {
 				bf = ByteBufferPoolDirect.get(128*1024*1024);
 				log.info(""+bf+" is Direct: "+bf.isDirect());
-				Thread.sleep(rand.nextLong(1000));
+				Thread.sleep(rand.nextLong(10000));
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

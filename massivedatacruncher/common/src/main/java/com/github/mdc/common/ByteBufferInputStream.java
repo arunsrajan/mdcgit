@@ -18,6 +18,7 @@ package com.github.mdc.common;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.lang.ref.SoftReference;
 import java.nio.ByteBuffer;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -68,13 +69,14 @@ public class ByteBufferInputStream extends InputStream implements Serializable{
 
 	@Override
 	public void close() {
+		new SoftReference<>(bb);
 		if (!Objects.isNull(bb)) {
 			try {				
 				ByteBufferPoolDirect.destroy(bb);
 			} catch (Exception e) {
 				log.error(MDCConstants.EMPTY, e);
-			}
-			bb = null;
+			}			
 		}
+		bb = null;
 	}
 }
