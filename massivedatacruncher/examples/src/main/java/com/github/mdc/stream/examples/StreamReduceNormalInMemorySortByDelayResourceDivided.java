@@ -18,7 +18,6 @@ package com.github.mdc.stream.examples;
 import java.io.Serializable;
 import java.net.URI;
 
-import com.github.mdc.common.functions.SortedComparator;
 import org.apache.log4j.Logger;
 import org.jooq.lambda.tuple.Tuple;
 import org.jooq.lambda.tuple.Tuple2;

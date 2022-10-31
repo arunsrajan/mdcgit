@@ -35,8 +35,6 @@ import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.RetryForever;
 import org.apache.hadoop.fs.FsUrlStreamHandlerFactory;
 import org.apache.log4j.Logger;
-import org.nustaq.serialization.FSTObjectInput;
-import org.nustaq.serialization.FSTObjectOutput;
 
 import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.MDCProperties;

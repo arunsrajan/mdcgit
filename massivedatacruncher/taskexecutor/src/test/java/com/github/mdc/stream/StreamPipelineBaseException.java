@@ -38,7 +38,6 @@ import org.apache.hadoop.fs.Path;
 import org.apache.log4j.Logger;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
-import org.nustaq.serialization.FSTObjectOutput;
 
 import com.github.mdc.common.CacheUtils;
 import com.github.mdc.common.HeartBeatStream;

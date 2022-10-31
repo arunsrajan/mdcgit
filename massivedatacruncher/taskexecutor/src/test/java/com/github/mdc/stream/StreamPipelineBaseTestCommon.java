@@ -37,7 +37,6 @@ import org.apache.hadoop.fs.Path;
 import org.apache.log4j.Logger;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
-import org.nustaq.serialization.FSTObjectOutput;
 
 import com.github.mdc.common.ByteBufferPoolDirect;
 import com.github.mdc.common.HeartBeatStream;
@@ -49,7 +48,8 @@ import com.github.mdc.common.TaskExecutorShutdown;
 import com.github.mdc.common.Utils;
 import com.github.mdc.tasks.executor.NodeRunner;
 
-import static java.util.Objects.*;
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 
 public class StreamPipelineBaseTestCommon extends StreamPipelineBase {
 	static Registry server = null;

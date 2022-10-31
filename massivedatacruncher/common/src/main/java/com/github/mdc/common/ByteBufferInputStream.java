@@ -21,7 +21,6 @@ import java.io.Serializable;
 import java.lang.ref.SoftReference;
 import java.nio.ByteBuffer;
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

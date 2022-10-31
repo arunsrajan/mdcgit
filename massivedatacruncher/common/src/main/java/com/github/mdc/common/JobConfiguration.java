@@ -18,8 +18,6 @@ package com.github.mdc.common;
 import java.io.OutputStream;
 import java.util.Objects;
 
-import org.nustaq.serialization.FSTObjectOutput;
-
 public class JobConfiguration {
 	private OutputStream output;
 	String hdfsurl;

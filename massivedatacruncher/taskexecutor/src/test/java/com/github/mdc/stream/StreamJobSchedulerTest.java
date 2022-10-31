@@ -32,7 +32,6 @@ import org.jooq.lambda.tuple.Tuple2;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
-import org.nustaq.serialization.FSTObjectOutput;
 
 import com.github.mdc.common.DAGEdge;
 import com.github.mdc.common.HeartBeatStream;
@@ -40,7 +39,6 @@ import com.github.mdc.common.Job;
 import com.github.mdc.common.JobStage;
 import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.MDCConstants.STORAGE;
-import com.github.mdc.common.MDCProperties;
 import com.github.mdc.common.PipelineConfig;
 import com.github.mdc.common.Stage;
 import com.github.mdc.common.Task;

@@ -16,14 +16,6 @@
 package com.github.mdc.common;
 
 import java.io.Serializable;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.ConcurrentMap;
-
-import org.apache.ignite.Ignite;
-import org.apache.ignite.IgniteCache;
-
-import com.github.mdc.common.Job.TRIGGER;
 
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;

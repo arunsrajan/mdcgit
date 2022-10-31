@@ -25,7 +25,6 @@ import java.util.concurrent.ConcurrentMap;
 import org.jooq.lambda.tuple.Tuple;
 import org.jooq.lambda.tuple.Tuple2;
 import org.junit.Test;
-import org.nustaq.serialization.FSTObjectOutput;
 
 import com.github.mdc.common.ByteBufferPoolDirect;
 import com.github.mdc.common.MDCConstants;

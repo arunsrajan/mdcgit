@@ -20,8 +20,6 @@ import java.io.Serializable;
 import java.util.Objects;
 import java.util.Set;
 
-import org.nustaq.serialization.FSTObjectOutput;
-
 import com.github.mdc.common.MDCConstants.STORAGE;
 
 /**

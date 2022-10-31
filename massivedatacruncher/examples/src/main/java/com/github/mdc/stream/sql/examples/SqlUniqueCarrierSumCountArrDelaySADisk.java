@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.calcite.sql.type.SqlTypeName;
-import org.apache.commons.csv.CSVRecord;
 import org.apache.log4j.Logger;
 
 import com.github.mdc.common.MDCConstants;
