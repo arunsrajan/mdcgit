@@ -31,7 +31,6 @@
 				<include>com.github.mdc:taskscheduler:jar:*</include>
 				<include>com.github.mdc:common:jar:*</include>
 				<include>com.github.mdc:pipeline:jar:*</include>
-				<include>com.github.mdc:examples:jar:*</include>
 			</includes>
 			<binaries>
 				<includeDependencies>false</includeDependencies>
@@ -56,6 +55,18 @@
 					</dependencySet>
 
 				</dependencySets>
+			</binaries>
+		</moduleSet>
+		<moduleSet>
+			<useAllReactorProjects>false</useAllReactorProjects>
+			<includes>
+				<include>com.github.mdc:examples:jar:*</include>
+			</includes>
+			<binaries>
+				<includeDependencies>false</includeDependencies>
+				<outputDirectory>examples</outputDirectory>
+				<unpack>false</unpack>
+				<outputFileNameMapping>${artifact.artifactId}.${artifact.extension}</outputFileNameMapping>
 			</binaries>
 		</moduleSet>
 	</moduleSets>

@@ -29,7 +29,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -161,7 +160,6 @@ public class TaskExecutorRunner implements TaskExecutorRunnerMBean {
 	@SuppressWarnings({})
 	@Override
 	public void start() throws Exception {
-		var launchtaskpool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 		var port = Integer.parseInt(System.getProperty(MDCConstants.TASKEXECUTOR_PORT));
 		log.info("TaskExecutor Port: " + port);
 		var su = new ServerUtils();

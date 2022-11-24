@@ -43,7 +43,7 @@
     <pbcast.STABLE desired_avg_gossip="60000"
                    max_bytes="4M"/>
     <pbcast.GMS print_local_addr="true"
-                join_timeout="10000"
+                join_timeout="200"
                 merge_timeout="5000"
             />
     <UFC max_credits="4M"

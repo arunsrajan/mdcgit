@@ -16,8 +16,8 @@
         <skip.assemblyxml>true</skip.assemblyxml>
         <ignite.version>2.13.0</ignite.version>
         <calcite.version>1.25.0</calcite.version>
-        <maven.compiler.source>11</maven.compiler.source>
-        <maven.compiler.target>11</maven.compiler.target>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
         <main.basedir>${basedir}</main.basedir>
     </properties>
 
@@ -447,7 +447,7 @@
                 <artifactId>maven-jdeprscan-plugin</artifactId>
                 <version>3.0.0-alpha-1</version>
                 <configuration>
-                    <release>11</release>
+                    <release>17</release>
                 </configuration>
             </plugin>
             <plugin>
