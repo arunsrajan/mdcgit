@@ -15,6 +15,8 @@
  */
 package com.github.mdc.stream;
 
+import static java.util.Objects.isNull;
+
 import java.io.InputStream;
 import java.net.URI;
 import java.rmi.RemoteException;
@@ -39,6 +41,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 
 import com.github.mdc.common.ByteBufferPoolDirect;
+import com.github.mdc.common.CacheUtils;
 import com.github.mdc.common.HeartBeatStream;
 import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.MDCProperties;
@@ -47,9 +50,6 @@ import com.github.mdc.common.StreamDataCruncher;
 import com.github.mdc.common.TaskExecutorShutdown;
 import com.github.mdc.common.Utils;
 import com.github.mdc.tasks.executor.NodeRunner;
-
-import static java.util.Objects.isNull;
-import static java.util.Objects.nonNull;
 
 public class StreamPipelineBaseTestCommon extends StreamPipelineBase {
 	static Registry server = null;
@@ -71,6 +71,7 @@ public class StreamPipelineBaseTestCommon extends StreamPipelineBase {
 			pipelineconfig.setBatchsize("1");
 			System.setProperty("HADOOP_HOME", "C:\\DEVELOPMENT\\hadoop\\hadoop-3.3.1");
 			ByteBufferPoolDirect.init();
+			CacheUtils.initBlockMetadataCache();
 			pipelineconfig.setBlocksize("20");
 			testingserver = new TestingServer(zookeeperport);
 			testingserver.start();

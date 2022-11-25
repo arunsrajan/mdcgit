@@ -24,6 +24,8 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.SerializationUtils;
+import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.hdfs.DistributedFileSystem;
@@ -56,9 +58,20 @@ public class HDFSBlockUtils {
 		var datanodeinfos = new ConcurrentHashMap<String, DatanodeXfefNumAllocated>();
 		long startoffset = 0;
 		long blocksize;
+		List<BlocksLocation> blockslocations;
 		for (var filepath : filepaths) {
+			FileStatus status = hdfs.getFileStatus(filepath);
+			String fileuri = filepath.toUri().toString();
+			String fileinfo = fileuri+MDCConstants.HYPHEN+status.getLen()+MDCConstants.HYPHEN+status.getModificationTime();			
+			String fileinfofromcache = MDCCache.getFileMetadata().get(fileuri);
+			if(fileinfo.equals(fileinfofromcache)) {
+				blsl.addAll(Arrays.asList(MDCCache.getBlocksMetadata().get(fileuri)));
+				continue;
+			}
+			MDCCache.getFileMetadata().put(fileuri, fileinfo);
+			blockslocations = new ArrayList<>();
 			try (var hdis = (HdfsDataInputStream) hdfs.open(filepath);) {
-				var locatedblocks = hdis.getAllBlocks();
+				var locatedblocks = hdis.getAllBlocks();				
 				for (int lbindex = 0; lbindex < locatedblocks.size(); lbindex++) {
 					var lb = locatedblocks.get(lbindex);
 					blocksize = isuserdefinedblocksize ? lb.getBlockSize() < userdefinedblocksize ? lb.getBlockSize() : userdefinedblocksize : lb.getBlockSize();
@@ -71,7 +84,7 @@ public class HDFSBlockUtils {
 						datanodeinfos.put(dncna.ref, dncna);
 					}
 					while (true) {
-						var bls = new BlocksLocation();
+						var bls = new BlocksLocation();						
 						var block = new Block[2];
 						block[0] = new Block();
 						block[0].setBlockstart(startoffset);
@@ -123,15 +136,19 @@ public class HDFSBlockUtils {
 								}
 							} else {
 								startoffset = 0;
+								blockslocations.add(SerializationUtils.clone(bls));
 								break;
 							}
 						} else if (startoffset == lb.getBlockSize()) {
 							startoffset = 0;
+							blockslocations.add(SerializationUtils.clone(bls));
 							break;
 						}
 						log.debug(blocksize + " " + lb.getStartOffset());
+						blockslocations.add(SerializationUtils.clone(bls));
 					}
 				}
+				MDCCache.getBlocksMetadata().put(fileuri, blockslocations.toArray(new BlocksLocation[blockslocations.size()]));
 			}
 			catch (Exception ex) {
 				log.error("Blocks Unavailable due to error", ex);

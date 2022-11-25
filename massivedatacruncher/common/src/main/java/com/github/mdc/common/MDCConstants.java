@@ -317,10 +317,15 @@ public class MDCConstants {
 	public static final String CACHEEXPIRY = "cache.expiry";
 	public static final String CACHEDURATION = "cache.duration";
 	public static final String BLOCKCACHE = "BlockCache";
+	public static final String BLOCKSLOCATIONMETADATACACHE = "BlocksLocationMetadataCache";
+	public static final String FILEMETADATACACHE = "FILEMETADATACACHE";
 	public static final String CACHEDISKSIZEGB = "cache.disk";
 	public static final String CACHEDISKPATH = "cache.disk.path";
+	public static final String CACHEBLOCKSLOCATIONDISKPATH = "cache.disk.blocks.metadata.path";
+	public static final String CACHEFILEMETDATADISKPATH = "cache.disk.file.metadata.path";
 	public static final String CACHEDISKPATH_DEFAULT = "../cache";
-
+	public static final String CACHEBLOCKSLOCATIONDISKPATH_DEFAULT = "../cacheblocksmetadata";
+	public static final String CACHEFILEMETDATADISKPATH_DEFAULT = "../cachefilemetadata";
 
 	public static final int MB = 1048576;
 

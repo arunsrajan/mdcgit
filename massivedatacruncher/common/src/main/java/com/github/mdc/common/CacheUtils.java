@@ -58,25 +58,24 @@ public class CacheUtils {
 	 * @param cachedatapath
 	 * @return cache object
 	 */
-	@SuppressWarnings("rawtypes")
-	public static Cache buildInMemoryCache(String cachename, Class<?> keytype, Class<?> valuetype, int numbuffsize,
+	public static Cache<?, ?> buildInMemoryCache(String cachename, Class<?> keytype, Class<?> valuetype, int numbuffsize,
 			int expiry, CacheExpiry cacheexpiry, int disksizeingb, String cachedatapath) {
 		log.debug("Entered CacheUtils.buildInMemoryCache");
 		CacheManager cacheManager;
-		if (Objects.isNull(MDCCacheManager.get())) {
-			CacheConfiguration<?, ?> ccb = CacheConfigurationBuilder
-					.newCacheConfigurationBuilder(keytype, valuetype,
-							ResourcePoolsBuilder.newResourcePoolsBuilder()
-									.heap(numbuffsize, MemoryUnit.MB)
-									.disk(disksizeingb, MemoryUnit.GB, false)
-					)
-					.withExpiry(ExpiryPolicyBuilder
-							.timeToLiveExpiration(cacheexpiry == CacheExpiry.HOURS ? Duration.ofHours(expiry)
-									: cacheexpiry == CacheExpiry.MINUTES ? Duration.ofMinutes(expiry)
-									: Duration.ofSeconds(expiry))).build();
+		CacheConfiguration<?, ?> ccb = CacheConfigurationBuilder
+				.newCacheConfigurationBuilder(keytype, valuetype,
+						ResourcePoolsBuilder.newResourcePoolsBuilder()
+								.heap(numbuffsize, MemoryUnit.MB)
+								.disk(disksizeingb, MemoryUnit.GB, false)
+				)
+				.withExpiry(ExpiryPolicyBuilder
+						.timeToLiveExpiration(cacheexpiry == CacheExpiry.HOURS ? Duration.ofHours(expiry)
+								: cacheexpiry == CacheExpiry.MINUTES ? Duration.ofMinutes(expiry)
+								: Duration.ofSeconds(expiry))).build();
+		if (Objects.isNull(MDCCacheManager.get())) {			
 			cacheManager = CacheManagerBuilder.newCacheManagerBuilder()
 					.with(CacheManagerBuilder.persistence(cachedatapath))
-					.withCache(cachename, ccb).build();
+					.build();
 			log.debug("Cache Manager Object Built");
 			cacheManager.init();
 			MDCCacheManager.put(cacheManager);
@@ -85,7 +84,7 @@ public class CacheUtils {
 		}
 		log.debug("Cache Manager Object Initialized");
 		log.debug("Exiting CacheUtils.buildInMemoryCache");
-		return cacheManager.getCache(cachename, keytype, valuetype);
+		return cacheManager.createCache(cachename, ccb);
 	}
 
 	/**
@@ -103,6 +102,29 @@ public class CacheUtils {
 		log.debug("Exiting CacheUtils.initCache");
 	}
 
+	/**
+	 * Initializes Block metadata cache 
+	 */
+	@SuppressWarnings("unchecked")
+	public static void initBlockMetadataCache() {
+		log.debug("Entered CacheUtils.initBlockMetadataCache");
+		String cacheduration = (String) MDCProperties.get().get(MDCConstants.CACHEDURATION);
+		MDCCache.putBlocksMetadata((Cache<String, BlocksLocation[]>) buildInMemoryCache(MDCConstants.BLOCKSLOCATIONMETADATACACHE, String.class, BlocksLocation[].class,
+				Integer.parseInt((String) MDCProperties.get().get(MDCConstants.CACHESIZEGB)),
+				Integer.parseInt((String) MDCProperties.get().get(MDCConstants.CACHEEXPIRY)),
+				CacheUtils.CacheExpiry.valueOf(cacheduration),
+				Integer.parseInt((String) MDCProperties.get().get(MDCConstants.CACHEDISKSIZEGB)),
+				(String) MDCProperties.get().getProperty(MDCConstants.CACHEBLOCKSLOCATIONDISKPATH, MDCConstants.CACHEBLOCKSLOCATIONDISKPATH_DEFAULT) + MDCConstants.FORWARD_SLASH + Utils.getCacheID()));
+		MDCCache.putFileMetadata((Cache<String, String>) buildInMemoryCache(MDCConstants.FILEMETADATACACHE, String.class, String.class,
+				Integer.parseInt((String) MDCProperties.get().get(MDCConstants.CACHESIZEGB)),
+				Integer.parseInt((String) MDCProperties.get().get(MDCConstants.CACHEEXPIRY)),
+				CacheUtils.CacheExpiry.valueOf(cacheduration),
+				Integer.parseInt((String) MDCProperties.get().get(MDCConstants.CACHEDISKSIZEGB)),
+				(String) MDCProperties.get().getProperty(MDCConstants.CACHEFILEMETDATADISKPATH, MDCConstants.CACHEFILEMETDATADISKPATH_DEFAULT) + MDCConstants.FORWARD_SLASH + Utils.getCacheID()));
+		log.debug("Exiting CacheUtils.initBlockMetadataCache");
+	}
+	
+	
 	/**
 	 * This function returns block data in bytes in compressed stream using LZF compression.
 	 * @param blockslocation

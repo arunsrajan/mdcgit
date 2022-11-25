@@ -24,6 +24,8 @@ import org.ehcache.Cache;
  */
 public class MDCCache {
 	private static Cache<?, ?> cache;
+	private static Cache<String, BlocksLocation[]> blockslocationmetadatacache;
+	private static Cache<String, String> filemetadatacache;
 
 	public static void put(Cache<?, ?> cache) {
 		MDCCache.cache = cache;
@@ -32,7 +34,24 @@ public class MDCCache {
 	public static Cache<?, ?> get() {
 		return MDCCache.cache;
 	}
+	
+	public static void putBlocksMetadata(Cache<String, BlocksLocation[]> blockslocationmetadatacache) {
+		MDCCache.blockslocationmetadatacache = blockslocationmetadatacache;
+	}
 
+	public static Cache<String, BlocksLocation[]> getBlocksMetadata() {
+		return MDCCache.blockslocationmetadatacache;
+	}
+
+	public static void putFileMetadata(Cache<String, String> filemetadatacache) {
+		MDCCache.filemetadatacache = filemetadatacache;
+	}
+
+	public static Cache<String, String> getFileMetadata() {
+		return MDCCache.filemetadatacache;
+	}
+	
+	
 	private MDCCache() {
 	}
 }

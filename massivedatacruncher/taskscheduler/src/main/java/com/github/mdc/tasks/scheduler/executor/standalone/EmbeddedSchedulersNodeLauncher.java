@@ -29,6 +29,7 @@ import org.apache.zookeeper.server.ServerCnxnFactory;
 import org.slf4j.LoggerFactory;
 
 import com.github.mdc.common.ByteBufferPoolDirect;
+import com.github.mdc.common.CacheUtils;
 import com.github.mdc.common.HeartBeat;
 import com.github.mdc.common.HeartBeatStream;
 import com.github.mdc.common.MDCConstants;
@@ -71,6 +72,7 @@ public class EmbeddedSchedulersNodeLauncher {
 			cf.start();
 			cf.blockUntilConnected();
 			ByteBufferPoolDirect.init();
+			CacheUtils.initBlockMetadataCache();
 			startTaskScheduler(cf, cdl);
 			startTaskSchedulerStream(cf, cdl);
 			startContainerLauncher(cdl);

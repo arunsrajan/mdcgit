@@ -16,6 +16,7 @@
 package com.github.mdc.common;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Set;
 
 import lombok.AllArgsConstructor;
@@ -30,13 +31,12 @@ import lombok.ToString;
  * @author Arun
  * This class holds the information of the block to read, executors hostport and datanode address
  */
-@EqualsAndHashCode
 @Getter
 @Setter
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-public class BlocksLocation implements Serializable {
+public class BlocksLocation implements Serializable, Cloneable {
 	private static final long serialVersionUID = 6205828696011624985L;
 	private Block[] block = new Block[2];
 	private String executorhp;
@@ -44,5 +44,28 @@ public class BlocksLocation implements Serializable {
 	private Set<String> mapperclasses;
 	private Set<String> combinerclasses;
 	private Set<String> containers;
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + Arrays.hashCode(block);
+		return result;
+	}
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		BlocksLocation other = (BlocksLocation) obj;
+		return Arrays.equals(block, other.block);
+	}
+
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		return super.clone();
+	}
 
 }

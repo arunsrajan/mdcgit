@@ -49,7 +49,7 @@ public class StreamPipelineBase {
 	static String[] airportsheader = {"iata", "airport", "city", "state", "country", "latitude", "longitude"};
 	static SqlTypeName[] airportstype = {SqlTypeName.VARCHAR, SqlTypeName.VARCHAR, SqlTypeName.VARCHAR, SqlTypeName.VARCHAR,
 			SqlTypeName.VARCHAR, SqlTypeName.VARCHAR, SqlTypeName.VARCHAR};
-	protected static String hdfsfilepath = "hdfs://127.0.0.1:9000";
+	protected static String hdfsfilepath = "hdfs://127.0.0.1:9100";
 	protected static String airlines = "/airlines";
 	String airline = "/airline";
 	protected String airline1989 = "/airline1989";
@@ -84,7 +84,7 @@ public class StreamPipelineBase {
 	static String airlinemultiplefilesfolder = "/airlinemultiplefilesfolder";
 	static String githubevents = "/githubevents";
 	static int zookeeperport = 2181;
-	static int namenodeport = 9000;
+	static int namenodeport = 9100;
 	static int namenodehttpport = 60070;
 	public static final String ZK_BASE_PATH = "/mdc/cluster1";
 	protected static HeartBeatStream hb;

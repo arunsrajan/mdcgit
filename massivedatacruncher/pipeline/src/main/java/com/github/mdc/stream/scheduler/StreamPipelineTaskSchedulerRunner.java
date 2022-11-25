@@ -53,6 +53,7 @@ public class StreamPipelineTaskSchedulerRunner {
 		Utils.loadLog4JSystemProperties(MDCConstants.PREV_FOLDER + MDCConstants.FORWARD_SLASH
 				+ MDCConstants.DIST_CONFIG_FOLDER + MDCConstants.FORWARD_SLASH, MDCConstants.MDC_PROPERTIES);
 		CacheUtils.initCache();
+		CacheUtils.initBlockMetadataCache();
 		var cdl = new CountDownLatch(1);
 
 

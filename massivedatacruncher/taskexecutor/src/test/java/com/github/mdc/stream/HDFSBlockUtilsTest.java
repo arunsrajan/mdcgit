@@ -44,7 +44,7 @@ public class HDFSBlockUtilsTest extends StreamPipelineBaseTestCommon {
 	public static long TOTAL = 486518821l;
 	public static long TOTAL_1987_1989 = 613681763l;
 	public static long AIRSAMPLETOTAL = 4270834l;
-	public String hdfsurl = "hdfs://localhost:9000";
+	public String hdfsurl = "hdfs://localhost:9100";
 	String[] hdfsdirpaths = {"/airline1989"};
 	String[] hdfsdir_1989_1987 = {"/airline1989", "/1987"};
 	String[] airlinesample = {"/airlinesample"};
@@ -65,6 +65,19 @@ public class HDFSBlockUtilsTest extends StreamPipelineBaseTestCommon {
 		}
 		List<BlocksLocation> bls = HDFSBlockUtils.getBlocksLocationByFixedBlockSizeAuto(hdfs, blockpath, true, 128 * MDCConstants.MB);
 		long totalbytes = 0;
+		for (BlocksLocation bl :bls) {
+			int sum = 0;
+			log.info(bl);
+			for (Block b :bl.getBlock()) {
+				if (!Objects.isNull(b)) {
+					sum += b.getBlockend() - b.getBlockstart();
+				}
+			}
+			totalbytes += sum;
+		}
+		assertEquals(TOTAL, totalbytes);
+		bls = HDFSBlockUtils.getBlocksLocationByFixedBlockSizeAuto(hdfs, blockpath, true, 128 * MDCConstants.MB);
+		totalbytes = 0;
 		for (BlocksLocation bl :bls) {
 			int sum = 0;
 			log.info(bl);

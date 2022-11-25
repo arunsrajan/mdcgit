@@ -15,29 +15,44 @@
  */
 package com.github.mdc.common;
 
+import java.io.Serializable;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+
 import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-
-import java.io.Serializable;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * 
  * @author Arun
  * File Split Block Information
  */
-@EqualsAndHashCode
 @Getter
 @Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class Block implements Serializable {
+public class Block implements Serializable, Cloneable {
+	@Override
+	public int hashCode() {
+		return Objects.hash(blockOffset, blockend, blockstart, filename);
+	}
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Block other = (Block) obj;
+		return blockOffset == other.blockOffset && blockend == other.blockend && blockstart == other.blockstart
+				&& Objects.equals(filename, other.filename);
+	}
 	private static final long serialVersionUID = 1641172215309142006L;
 	private long blockOffset;
 	private long blockstart;
@@ -46,4 +61,9 @@ public class Block implements Serializable {
 	private String hp;
 	private Map<String, Set<String>> dnxref;
 
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		return super.clone();
+	}
+	
 }
