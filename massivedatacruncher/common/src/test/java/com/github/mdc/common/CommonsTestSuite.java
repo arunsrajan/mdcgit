@@ -21,7 +21,8 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({HeartBeatServerStreamTest.class, HeartBeatServerTest.class, ResourcesTest.class, ServerUtilsTest.class, ZkChunkPropTest.class,
-		RemoteDataFetcherTest.class, DataCruncherContextTest.class})
+		RemoteDataFetcherTest.class, DataCruncherContextTest.class,
+		HadoopTestUtilitiesTest.class})
 public class CommonsTestSuite {
 
 }

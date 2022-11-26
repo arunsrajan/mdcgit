@@ -16,6 +16,7 @@
 package com.github.mdc.stream;
 
 import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 
 import java.io.InputStream;
 import java.net.URI;
@@ -43,12 +44,14 @@ import org.junit.BeforeClass;
 import com.github.mdc.common.ByteBufferPoolDirect;
 import com.github.mdc.common.CacheUtils;
 import com.github.mdc.common.HeartBeatStream;
+import com.github.mdc.common.MDCCacheManager;
 import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.MDCProperties;
 import com.github.mdc.common.NetworkUtil;
 import com.github.mdc.common.StreamDataCruncher;
 import com.github.mdc.common.TaskExecutorShutdown;
 import com.github.mdc.common.Utils;
+import com.github.mdc.common.utils.HadoopTestUtilities;
 import com.github.mdc.tasks.executor.NodeRunner;
 
 public class StreamPipelineBaseTestCommon extends StreamPipelineBase {
@@ -69,9 +72,11 @@ public class StreamPipelineBaseTestCommon extends StreamPipelineBase {
 			pipelineconfig.setNumberofcontainers("1");
 			pipelineconfig.setMode(MDCConstants.MODE_NORMAL);
 			pipelineconfig.setBatchsize("1");
-			System.setProperty("HADOOP_HOME", "C:\\DEVELOPMENT\\hadoop\\hadoop-3.3.1");
+			System.setProperty("HADOOP_HOME", "C:\\DEVELOPMENT\\hadoop\\hadooplocal\\hadoop-3.3.1");
 			ByteBufferPoolDirect.init();
+			CacheUtils.initCache();
 			CacheUtils.initBlockMetadataCache();
+			hdfsLocalCluster = HadoopTestUtilities.initHdfsCluster(9100, 9870, 2);
 			pipelineconfig.setBlocksize("20");
 			testingserver = new TestingServer(zookeeperport);
 			testingserver.start();
@@ -178,6 +183,10 @@ public class StreamPipelineBaseTestCommon extends StreamPipelineBase {
 
 	@AfterClass
 	public static void closeResources() throws Exception {
+		if(nonNull(MDCCacheManager.get())){
+			MDCCacheManager.get().close();
+			MDCCacheManager.put(null);
+		}
 		if (!Objects.isNull(hdfste)) {
 			hdfste.close();
 		}

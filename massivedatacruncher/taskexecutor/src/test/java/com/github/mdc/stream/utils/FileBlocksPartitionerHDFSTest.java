@@ -61,10 +61,11 @@ import com.github.mdc.common.Resources;
 import com.github.mdc.common.StreamDataCruncher;
 import com.github.mdc.common.Utils;
 import com.github.mdc.stream.StreamPipelineBase;
+import com.github.mdc.stream.StreamPipelineBaseTestCommon;
 import com.github.mdc.tasks.executor.NodeRunner;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class FileBlocksPartitionerHDFSTest extends StreamPipelineBase {
+public class FileBlocksPartitionerHDFSTest extends StreamPipelineBaseTestCommon {
 	private static final int NOOFNODES = 1;
 	static int teport = 12121;
 	static ExecutorService es,escontainer;
@@ -87,7 +88,7 @@ public class FileBlocksPartitionerHDFSTest extends StreamPipelineBase {
 		var containeridthreads = new ConcurrentHashMap<String, Map<String, List<Thread>>>();
 		var containeridports = new ConcurrentHashMap<String, List<Integer>>();
 		for (int nodeindex = 0; nodeindex < NOOFNODES; nodeindex++) {
-			server = Utils.getRPCRegistry(20000 + nodeindex,
+			server = Utils.getRPCRegistry(30000 + nodeindex,
 					new StreamDataCruncher() {
 				public Object postObject(Object object)throws RemoteException {
 						try {
@@ -145,7 +146,7 @@ public class FileBlocksPartitionerHDFSTest extends StreamPipelineBase {
 		fbp.islocal = false;
 		fbp.isjgroups = false;
 		fbp.isignite = false;
-		fbp.nodeschoosen = new HashSet<>(Arrays.asList("127.0.0.1_20000"));
+		fbp.nodeschoosen = new HashSet<>(Arrays.asList("127.0.0.1_30000"));
 		fbp.containers = Arrays.asList(MDCConstants.DUMMYCONTAINER);
 		List<BlocksLocation> bls = fbp.getHDFSParitions();
 		assertEquals(2, bls.size());
@@ -173,7 +174,7 @@ public class FileBlocksPartitionerHDFSTest extends StreamPipelineBase {
 		fbp.islocal = false;
 		fbp.isjgroups = false;
 		fbp.isignite = false;
-		fbp.nodeschoosen = new HashSet<>(Arrays.asList("127.0.0.1_20000"));
+		fbp.nodeschoosen = new HashSet<>(Arrays.asList("127.0.0.1_30000"));
 		fbp.containers = Arrays.asList(MDCConstants.DUMMYCONTAINER, "127.0.0.1_10102");
 		List<BlocksLocation> bls = fbp.getHDFSParitions();
 		assertEquals(2, bls.size());
@@ -199,7 +200,7 @@ public class FileBlocksPartitionerHDFSTest extends StreamPipelineBase {
 		fbp.islocal = false;
 		fbp.isjgroups = false;
 		fbp.isignite = false;
-		fbp.nodeschoosen = new HashSet<>(Arrays.asList("127.0.0.1_20000"));
+		fbp.nodeschoosen = new HashSet<>(Arrays.asList("127.0.0.1_30000"));
 		fbp.containers = Arrays.asList(MDCConstants.DUMMYCONTAINER);
 		List<BlocksLocation> bls = fbp.getHDFSParitions();
 		assertEquals(2, bls.size());
@@ -220,7 +221,7 @@ public class FileBlocksPartitionerHDFSTest extends StreamPipelineBase {
 		Resources resource = new Resources();
 		resource.setFreememory(12 * 1024 * 1024 * 1024l);
 		resource.setNumberofprocessors(4);
-		noderesourcesmap.put("127.0.0.1_20000", resource);
+		noderesourcesmap.put("127.0.0.1_30000", resource);
 		resource = new Resources();
 		resource.setFreememory(6 * 1024 * 1024 * 1024l);
 		resource.setNumberofprocessors(4);
@@ -231,7 +232,7 @@ public class FileBlocksPartitionerHDFSTest extends StreamPipelineBase {
 		fbp.getNodesResourcesSorted(bls, nodestotalblockmem);
 		assertEquals(2, fbp.nodessorted.size());
 		assertEquals("127.0.0.1_20001", fbp.nodessorted.get(0));
-		assertEquals("127.0.0.1_20000", fbp.nodessorted.get(1));
+		assertEquals("127.0.0.1_30000", fbp.nodessorted.get(1));
 	}
 
 
@@ -249,7 +250,7 @@ public class FileBlocksPartitionerHDFSTest extends StreamPipelineBase {
 		Resources resource = new Resources();
 		resource.setFreememory(12 * 1024 * 1024 * 1024l);
 		resource.setNumberofprocessors(4);
-		noderesourcesmap.put("127.0.0.1_20000", resource);
+		noderesourcesmap.put("127.0.0.1_30000", resource);
 		MDCNodesResources.put(noderesourcesmap);
 		fbp.pipelineconfig = new PipelineConfig();
 		fbp.pipelineconfig.setMaxmem("4096");
@@ -270,7 +271,7 @@ public class FileBlocksPartitionerHDFSTest extends StreamPipelineBase {
 		Resources resource = new Resources();
 		resource.setFreememory(12 * 1024 * 1024 * 1024l);
 		resource.setNumberofprocessors(1);
-		noderesourcesmap.put("127.0.0.1_20000", resource);
+		noderesourcesmap.put("127.0.0.1_30000", resource);
 		MDCNodesResources.put(noderesourcesmap);
 		FileBlocksPartitionerHDFS fbp = new FileBlocksPartitionerHDFS();
 		fbp.pipelineconfig = new PipelineConfig();
@@ -302,7 +303,7 @@ public class FileBlocksPartitionerHDFSTest extends StreamPipelineBase {
 			Resources resource = new Resources();
 			resource.setFreememory(1 * 1024 * 1024l);
 			resource.setNumberofprocessors(4);
-			noderesourcesmap.put("127.0.0.1_20000", resource);
+			noderesourcesmap.put("127.0.0.1_30000", resource);
 			MDCNodesResources.put(noderesourcesmap);
 			fbp.pipelineconfig = new PipelineConfig();
 			fbp.pipelineconfig.setMaxmem("4096");
@@ -330,49 +331,12 @@ public class FileBlocksPartitionerHDFSTest extends StreamPipelineBase {
 	}
 
 	@Test
-	public void testGetTaskExecutorsLessResourcesInputMemory2() throws Exception {
-		FileBlocksPartitionerHDFS fbp = new FileBlocksPartitionerHDFS();
-		try {
-			ConcurrentMap<String, Resources> noderesourcesmap = new ConcurrentHashMap<>();
-			Resources resource = new Resources();
-			resource.setFreememory(400 * 1024 * 1024l + 128 * MDCConstants.MB * 3 * Integer.parseInt(MDCProperties
-					.get().getProperty(MDCConstants.BYTEBUFFERPOOL_MAX, MDCConstants.BYTEBUFFERPOOL_MAX_DEFAULT)));
-			resource.setNumberofprocessors(4);
-			noderesourcesmap.put("127.0.0.1_20000", resource);
-			MDCNodesResources.put(noderesourcesmap);
-			fbp.pipelineconfig = new PipelineConfig();
-			fbp.pipelineconfig.setMaxmem("4096");
-			fbp.pipelineconfig.setNumberofcontainers("5");
-			fbp.isignite = false;
-			fbp.job = new Job();
-			fbp.job.setJm(new JobMetrics());
-			FileSystem hdfs = FileSystem.newInstance(new URI(hdfsfilepath), new Configuration());
-			fbp.hdfs = hdfs;
-			FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsfilepath + airline1989));
-			Path[] paths = FileUtil.stat2Paths(fileStatus);
-			fbp.isblocksuserdefined = false;
-			fbp.hdfs = hdfs;
-			fbp.filepaths = Arrays.asList(paths);
-			List<BlocksLocation> bls = fbp.getBlocks(fbp.isblocksuserdefined, 128);
-			fbp.getDnXref(bls, false);
-			fbp.allocateContainersByResources(bls);
-		} catch (Exception ex) {
-			assertEquals(PipelineConstants.MEMORYALLOCATIONERROR, ex.getCause().getMessage());
-			assertNull(fbp.job.getContainers());
-			assertNull(fbp.job.getNodes());
-		} finally {
-			fbp.destroyContainers();
-			GlobalContainerAllocDealloc.getHportcrs().clear();
-		}
-	}
-
-	@Test
 	public void testGetTaskExecutorsProperInput() throws Exception {
 		ConcurrentMap<String, Resources> noderesourcesmap = new ConcurrentHashMap<>();
 		Resources resource = new Resources();
 		resource.setFreememory(12 * 1024 * 1024 * 1024l);
 		resource.setNumberofprocessors(4);
-		noderesourcesmap.put("127.0.0.1_20000", resource);
+		noderesourcesmap.put("127.0.0.1_30000", resource);
 		MDCNodesResources.put(noderesourcesmap);
 		FileBlocksPartitionerHDFS fbp = new FileBlocksPartitionerHDFS();
 		fbp.pipelineconfig = new PipelineConfig();
@@ -393,7 +357,7 @@ public class FileBlocksPartitionerHDFSTest extends StreamPipelineBase {
 		fbp.allocateContainersByResources(bls);
 		assertEquals(1, fbp.job.getContainers().size());
 		assertNotNull(fbp.job.getContainers().get(0));
-		assertEquals("127.0.0.1_20000", fbp.job.getNodes().iterator().next());
+		assertEquals("127.0.0.1_30000", fbp.job.getNodes().iterator().next());
 		assertEquals(1, fbp.job.getNodes().size());
 		fbp.destroyContainers();
 		GlobalContainerAllocDealloc.getHportcrs().clear();

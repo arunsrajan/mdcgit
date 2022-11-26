@@ -48,6 +48,7 @@ import com.github.mdc.common.MDCProperties;
 import com.github.mdc.common.NetworkUtil;
 import com.github.mdc.common.StreamDataCruncher;
 import com.github.mdc.common.Utils;
+import com.github.mdc.common.utils.HadoopTestUtilities;
 import com.github.mdc.tasks.executor.NodeRunner;
 import com.github.sakserv.minicluster.impl.HdfsLocalCluster;
 
@@ -107,6 +108,8 @@ public class MassiveDataMRJobBase {
 					+ MDCConstants.DIST_CONFIG_FOLDER + MDCConstants.FORWARD_SLASH, "mdctest.properties");
 			ByteBufferPoolDirect.init();
 			CacheUtils.initCache();
+			CacheUtils.initBlockMetadataCache();
+			hdfsLocalCluster = HadoopTestUtilities.initHdfsCluster(9100, 9870, 2);
 			testingserver = new TestingServer(zookeeperport);
 			testingserver.start();
 			executorpool = Executors.newWorkStealingPool();

@@ -35,14 +35,18 @@ import org.junit.BeforeClass;
 import com.github.mdc.common.ByteBufferPoolDirect;
 import com.github.mdc.common.CacheUtils;
 import com.github.mdc.common.MDCCache;
+import com.github.mdc.common.MDCCacheManager;
 import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.Utils;
+import com.github.mdc.common.utils.HadoopTestUtilities;
 import com.github.sakserv.minicluster.impl.HdfsLocalCluster;
+
+import static java.util.Objects.*;
 
 public class StreamPipelineTestCommon {
 	public static Cache<String, byte[]> cache;
 	protected static String STAR = "*";
-	protected static int namenodeport = 9000;
+	protected static int namenodeport = 9100;
 	protected static int namenodehttpport = 50070;
 	protected static HdfsLocalCluster hdfsLocalCluster;
 	protected static FileSystem hdfs;
@@ -58,7 +62,7 @@ public class StreamPipelineTestCommon {
 	protected String[] hdfsdirpaths4 = {"/airlinesampleunion2"};
 	protected String[] githubevents1 = {"/githubevents"};
 	protected static String jsonfileextn = ".json";
-	protected  static String hdfsurl = "hdfs://127.0.0.1:9000";
+	protected  static String hdfsurl = "hdfs://127.0.0.1:9100";
 	protected String[] airlineheader = new String[]{"Year", "Month", "DayofMonth", "DayOfWeek", "DepTime", "CRSDepTime",
 			"ArrTime", "CRSArrTime", "UniqueCarrier", "FlightNum", "TailNum", "ActualElapsedTime", "CRSElapsedTime",
 			"AirTime", "ArrDelay", "DepDelay", "Origin", "Dest", "Distance", "TaxiIn", "TaxiOut", "Cancelled",
@@ -86,6 +90,8 @@ public class StreamPipelineTestCommon {
 				+ MDCConstants.DIST_CONFIG_FOLDER + MDCConstants.FORWARD_SLASH, "mdctest.properties");
 		ByteBufferPoolDirect.init();
 		CacheUtils.initCache();
+		CacheUtils.initBlockMetadataCache();
+		hdfsLocalCluster = HadoopTestUtilities.initHdfsCluster(9100, 9870, 2);
 		cache = (Cache<String, byte[]>) MDCCache.get();
 		hdfs = FileSystem.newInstance(new URI(hdfsurl),
 				conf);
@@ -121,5 +127,9 @@ public class StreamPipelineTestCommon {
 			hdfs.close();
 		}
 		ByteBufferPoolDirect.destroy();
+		if(nonNull(MDCCacheManager.get())){
+			MDCCacheManager.get().close();
+			MDCCacheManager.put(null);
+		}
 	}
 }

@@ -62,7 +62,7 @@ public class HDFSBlockUtils {
 		for (var filepath : filepaths) {
 			FileStatus status = hdfs.getFileStatus(filepath);
 			String fileuri = filepath.toUri().toString();
-			String fileinfo = fileuri+MDCConstants.HYPHEN+status.getLen()+MDCConstants.HYPHEN+status.getModificationTime();			
+			String fileinfo = fileuri+MDCConstants.HYPHEN+userdefinedblocksize+MDCConstants.HYPHEN+status.getLen()+MDCConstants.HYPHEN+status.getModificationTime();			
 			String fileinfofromcache = MDCCache.getFileMetadata().get(fileuri);
 			if(fileinfo.equals(fileinfofromcache)) {
 				blsl.addAll(Arrays.asList(MDCCache.getBlocksMetadata().get(fileuri)));

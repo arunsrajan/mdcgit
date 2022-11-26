@@ -28,7 +28,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.jooq.lambda.tuple.Tuple3;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.xerial.snappy.SnappyInputStream;
 import org.xerial.snappy.SnappyOutputStream;
@@ -38,15 +37,9 @@ import com.github.mdc.common.Context;
 import com.github.mdc.common.DataCruncherContext;
 import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.ReducerValues;
-import com.github.mdc.common.Utils;
-import com.github.mdc.stream.StreamPipelineBase;
+import com.github.mdc.stream.StreamPipelineBaseTestCommon;
 
-public class MassiveDataCruncherMRApiTest extends StreamPipelineBase {
-	@BeforeClass
-	public static void setServerUp() throws Exception {
-		Utils.loadLog4JSystemProperties(MDCConstants.PREV_FOLDER + MDCConstants.FORWARD_SLASH
-				+ MDCConstants.DIST_CONFIG_FOLDER + MDCConstants.FORWARD_SLASH, "mdctest.properties");
-	}
+public class MassiveDataCruncherMRApiTest extends StreamPipelineBaseTestCommon {
 
 	@SuppressWarnings({"rawtypes", "unchecked"})
 	@Test
@@ -151,7 +144,8 @@ public class MassiveDataCruncherMRApiTest extends StreamPipelineBase {
 		String app = MDCConstants.MDCAPPLICATION;
 		String task = MDCConstants.TASK;
 		TaskExecutorMapperCombiner mdtemc = new
-				TaskExecutorMapperCombiner(bls, lzis, app, task, Thread.currentThread().getContextClassLoader(), 12121);		
+				TaskExecutorMapperCombiner(bls, lzis, app, task, Thread.currentThread().getContextClassLoader(), 12121);
+		mdtemc.call();
 		Map<String,Object> apptaskexecutormap = new ConcurrentHashMap<>();
 		apptaskexecutormap.put(app + task, mdtemc);
 		ReducerValues reducervalues = new ReducerValues();

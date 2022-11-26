@@ -39,6 +39,6 @@ import com.github.mdc.stream.utils.PipelineConfigValidatorTest;
 		StreamPipelineTaskExecutorYarnTest.class,
 		FileBlocksPartitionerTest.class,
 		StreamPipelineTaskExecutorIgniteTest.class})
-public class PipelineExecutorsTestSuite extends StreamPipelineTestCommon {
+public class PipelineExecutorsTestSuite{
 
 }

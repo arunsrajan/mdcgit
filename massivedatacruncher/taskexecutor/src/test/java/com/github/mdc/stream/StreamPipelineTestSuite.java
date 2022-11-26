@@ -23,13 +23,15 @@ import com.github.mdc.stream.utils.FileBlocksPartitionerHDFSTest;
 import com.github.mdc.tasks.executor.MassiveDataCruncherMRApiTest;
 
 @RunWith(Suite.class)
-@Suite.SuiteClasses({ StreamPipelineTestSuite2.class, StreamPipelineTest.class, StreamPipelineContinuedTest.class,
+@Suite.SuiteClasses({StreamPipelineContinuedTest.class, StreamPipelineTestSuite2.class, StreamPipelineTest.class,
 		StreamPipelineFoldByKeyKeyByTest.class, StreamPipelineTransformationsCollectTest.class,
-		StreamPipelineTransformationsNullTest.class, StreamPipelineDepth2Test.class, StreamPipelineDepth31Test.class,
-		StreamPipelineDepth32Test.class, StreamPipelineDepth32ContinuedTest.class, StreamPipelineDepth33Test.class,
-		StreamPipelineDepth34Test.class, StreamPipelineUtilsTest.class, StreamPipelineFunctionsTest.class,
+		StreamPipelineTransformationsNullTest.class, 
+		StreamPipelineUtilsTest.class, StreamPipelineFunctionsTest.class,
 		StreamPipelineCoalesceTest.class, StreamPipelineJsonTest.class, StreamPipelineTransformationFunctionsTest.class,
-		HDFSBlockUtilsTest.class, StreamPipelineStatisticsTest.class, MassiveDataCruncherMRApiTest.class,
+		StreamPipelineStatisticsTest.class, MassiveDataCruncherMRApiTest.class,
 		StreamPipelineSqlTest.class,
-		FileBlocksPartitionerHDFSMultipleNodesTest.class,FileBlocksPartitionerHDFSTest.class})
+		FileBlocksPartitionerHDFSMultipleNodesTest.class,
+		FileBlocksPartitionerHDFSTest.class,
+		StreamPipelineDepth31Test.class
+		})
 public class StreamPipelineTestSuite{}

@@ -15,6 +15,8 @@
  */
 package com.github.mdc.stream.utils;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.URI;
@@ -53,11 +55,11 @@ import com.github.mdc.common.PipelineConfig;
 import com.github.mdc.common.Resources;
 import com.github.mdc.common.StreamDataCruncher;
 import com.github.mdc.common.Utils;
-import com.github.mdc.stream.StreamPipelineBase;
+import com.github.mdc.stream.StreamPipelineBaseTestCommon;
 import com.github.mdc.tasks.executor.NodeRunner;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class FileBlocksPartitionerHDFSMultipleNodesTest extends StreamPipelineBase {
+public class FileBlocksPartitionerHDFSMultipleNodesTest extends StreamPipelineBaseTestCommon {
 	private static final int NOOFNODES = 5;
 	static int teport = 12121;
 	static ExecutorService escontainer;
@@ -76,7 +78,7 @@ public class FileBlocksPartitionerHDFSMultipleNodesTest extends StreamPipelineBa
 		Utils.loadLog4JSystemProperties(MDCConstants.PREV_FOLDER + MDCConstants.FORWARD_SLASH
 				+ MDCConstants.DIST_CONFIG_FOLDER + MDCConstants.FORWARD_SLASH, "mdctest.properties");
 		hdfs = FileSystem.newInstance(new URI(hdfsfilepath), new Configuration());
-		FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsfilepath + airlines));
+		FileStatus[] fileStatus = hdfs.listStatus(new Path(hdfsfilepath + airlinesample));
 		paths = FileUtil.stat2Paths(fileStatus);
 		FileBlocksPartitionerHDFS fbp = new FileBlocksPartitionerHDFS();
 		fbp.hdfs = hdfs;
@@ -165,8 +167,8 @@ public class FileBlocksPartitionerHDFSMultipleNodesTest extends StreamPipelineBa
 		fbp.isignite = false;
 		fbp.getDnXref(bls, false);
 		fbp.allocateContainersByResources(bls);
-		log.info(fbp.job.getNodes());
-		log.info(fbp.job.getContainers());
+		assertEquals(Integer.valueOf(5), Integer.valueOf(fbp.job.getNodes().size()));
+		assertEquals(Integer.valueOf(5), Integer.valueOf(fbp.job.getContainers().size()));
 		fbp.destroyContainers();
 		GlobalContainerAllocDealloc.getHportcrs().clear();
 		log.info("FileBlocksPartitionerHDFSMultipleNodesTest.testGetTaskExecutorsAuto() Exiting------------------------------");
@@ -187,8 +189,8 @@ public class FileBlocksPartitionerHDFSMultipleNodesTest extends StreamPipelineBa
 		fbp.hdfs = hdfs;
 		fbp.getDnXref(bls, false);
 		fbp.allocateContainersByResources(bls);
-		log.info(fbp.job.getNodes());
-		log.info(fbp.job.getContainers());
+		assertEquals(Integer.valueOf(5), Integer.valueOf(fbp.job.getNodes().size()));
+		assertEquals(Integer.valueOf(5), Integer.valueOf(fbp.job.getContainers().size()));
 		fbp.destroyContainers();
 		GlobalContainerAllocDealloc.getHportcrs().clear();
 		log.info("FileBlocksPartitionerHDFSMultipleNodesTest.testGetTaskExecutorsProperInput() Exiting------------------------------");

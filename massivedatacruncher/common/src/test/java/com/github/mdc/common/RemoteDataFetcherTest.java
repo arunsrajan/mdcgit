@@ -31,18 +31,19 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import com.github.mdc.common.utils.HadoopTestUtilities;
 import com.github.sakserv.minicluster.impl.HdfsLocalCluster;
 
 public class RemoteDataFetcherTest {
 
 	static HdfsLocalCluster hdfsLocalCluster;
-	static int namenodeport = 9000;
-	static int namenodehttpport = 60070;
+	static int namenodeport = 9100;
+	static int namenodehttpport = 9870;
 
 	@BeforeClass
 	public static void setUpHdfs() throws Exception {
-		System.setProperty("HADOOP_HOME", "C:\\DEVELOPMENT\\hadoop\\hadoop-3.3.1");
-
+		System.setProperty("HADOOP_HOME", "C:\\DEVELOPMENT\\hadoop\\hadooplocal\\hadoop-3.3.1");
+		hdfsLocalCluster = HadoopTestUtilities.initHdfsCluster(9100, 9870, 2);
 		Utils.loadLog4JSystemProperties(MDCConstants.PREV_FOLDER + MDCConstants.FORWARD_SLASH
 				+ MDCConstants.DIST_CONFIG_FOLDER + MDCConstants.FORWARD_SLASH, MDCConstants.MDC_TEST_PROPERTIES);
 		System.setProperty(MDCConstants.HDFSNAMENODEURL, MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL));

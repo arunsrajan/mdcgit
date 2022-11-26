@@ -134,10 +134,8 @@ public class Utils {
 		    	FSTConfiguration conf = FSTConfiguration.createUnsafeBinaryConfiguration();
 		    	conf.setShareReferences(true);
 		    	conf.setForceSerializable(true);
-		    	conf.setPreferSpeed(true);
-		    	conf.registerClass(CSVRecord.class);
-		    	conf.registerClass(CSVParser.class);
-		    	conf.registerClass(LinkedHashSet.class);
+		    	conf.setPreferSpeed(false);
+		    	conf.setForceClzInit(true);
 		    	return conf;
 		    }
 		};

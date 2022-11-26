@@ -32,7 +32,7 @@ public class JobConfigurationBuilderTest extends TaskSchedulerCommon {
 		assertEquals("64", jc.getBlocksize());
 		assertEquals(MDCConstants.GCCONFIG_DEFAULT, jc.getGctype());
 		assertEquals(Boolean.valueOf("true"), jc.getHdfs());
-		assertEquals("hdfs://127.0.0.1:9000", jc.getHdfsurl());
+		assertEquals("hdfs://127.0.0.1:9100", jc.getHdfsurl());
 		assertEquals("false", jc.getIsblocksuserdefined());
 		assertEquals("1024", jc.getMaxmem());
 		assertEquals("1024", jc.getMinmem());
