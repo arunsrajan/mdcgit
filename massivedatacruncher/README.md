@@ -14,6 +14,10 @@ and mvn command with goals are
 
 mvn -Dmaven.antrun.skip=true -Dmaven.test.skip.exec=true -Pmodules clean package assembly:assembly
 
+To Run jacoco and sonar
+-----------------------
+
+-Dmaven.antrun.skip=true -f pom.xml -Pmodules clean install sonar:sonar -Dsonar.login=a2f18857a3ec8c8302a1a405d22f40fd7194cde7 -Dsonar.host.url=http://localhost:8082 -Dsonar.sources=pom.xml,src/main -Dsonar.test.exclusions=**src/test/**/*.java -Dsonar.language=Java
 
 To compile only tests
 ---------------------------------------------------------------
