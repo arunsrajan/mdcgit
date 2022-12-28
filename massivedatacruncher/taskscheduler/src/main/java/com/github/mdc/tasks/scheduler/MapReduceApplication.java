@@ -189,8 +189,8 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 				Resources allocresources = resources.get(node);
 				for (int containercount = 0; containercount < ports.size(); containercount++) {
 					ContainerResources crs = cr.get(containercount);
-					long maxmemory = crs.getMaxmemory() * MDCConstants.MB;
-					long directheap = crs.getDirectheap() *  MDCConstants.MB;
+					long maxmemory = crs.getMaxmemory();
+					long directheap = crs.getDirectheap();
 					allocresources.setFreememory(allocresources.getFreememory()-maxmemory-directheap);
 					allocresources.setNumberofprocessors(allocresources.getNumberofprocessors()-crs.getCpu());
 					crs.setPort(ports.get(containercount));
@@ -360,38 +360,36 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 		var cr = new ArrayList<ContainerResources>();
 		if (jobconf.getContaineralloc().equals(MDCConstants.CONTAINER_ALLOC_DEFAULT)) {
 			var res = new ContainerResources();
-			var actualmemory = resources.getFreememory() - 256 * MDCConstants.MB;
+			var actualmemory = resources.getFreememory() - MDCConstants.GB;
 			if (actualmemory < (128 * MDCConstants.MB)) {
 				throw new PipelineException(PipelineConstants.MEMORYALLOCATIONERROR);
 			}
 			res.setCpu(cpu);
 			var memoryrequire = actualmemory;
-			var meminmb = memoryrequire / MDCConstants.MB;
-			var heapmem = meminmb * Integer.valueOf(jobconf.getHeappercentage()) / 100;
+			var heapmem = memoryrequire * Integer.valueOf(jobconf.getHeappercentage()) / 100;
 			res.setMinmemory(heapmem);
 			res.setMaxmemory(heapmem);
-			res.setDirectheap(meminmb - heapmem);
+			res.setDirectheap(memoryrequire - heapmem);
 			res.setGctype(gctype);
 			cr.add(res);
 			return cr;
 		} else if (jobconf.getContaineralloc().equals(MDCConstants.CONTAINER_ALLOC_DIVIDED)) {
-			var actualmemory = resources.getFreememory() - 256 * MDCConstants.MB;
+			var actualmemory = resources.getFreememory() - MDCConstants.GB;
 			if (actualmemory < (128 * MDCConstants.MB)) {
 				throw new PipelineException(PipelineConstants.MEMORYALLOCATIONERROR);
 			}
 			var numofcontainerspermachine = Integer.parseInt(jobconf.getNumberofcontainers());
 			var dividedcpus = cpu / numofcontainerspermachine;
 			var maxmemory = actualmemory / numofcontainerspermachine;
-			var maxmemmb = maxmemory / MDCConstants.MB;
 			var numberofcontainer = 0;
 			while (true) {
 				if (cpu >= dividedcpus && actualmemory >= 0) {
 					var res = new ContainerResources();
 					res.setCpu(dividedcpus);
-					var heapmem = maxmemmb * Integer.valueOf(jobconf.getHeappercentage()) / 100;
-					res.setMinmemory(heapmem);
-					res.setMaxmemory(heapmem);
-					res.setDirectheap(maxmemmb - heapmem);
+					var heapmem = maxmemory * Integer.valueOf(jobconf.getHeappercentage()) / 100;
+					res.setMinmemory(maxmemory);
+					res.setMaxmemory(maxmemory);
+					res.setDirectheap(maxmemory - heapmem);
 					res.setGctype(gctype);
 					cpu -= dividedcpus;
 					actualmemory -= maxmemory;
@@ -399,10 +397,10 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 				} else if (cpu >= 1 && actualmemory >= 0) {
 					var res = new ContainerResources();
 					res.setCpu(cpu);
-					var heapmem = maxmemmb * Integer.valueOf(jobconf.getHeappercentage()) / 100;
-					res.setMinmemory(heapmem);
-					res.setMaxmemory(heapmem);
-					res.setDirectheap(maxmemmb - heapmem);
+					var heapmem = maxmemory * Integer.valueOf(jobconf.getHeappercentage()) / 100;
+					res.setMinmemory(maxmemory);
+					res.setMaxmemory(maxmemory);
+					res.setDirectheap(maxmemory - heapmem);
 					res.setGctype(gctype);
 					cpu = 0;
 					actualmemory -= maxmemory;
@@ -418,13 +416,14 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 			}
 			return cr;
 		} else if (jobconf.getContaineralloc().equals(MDCConstants.CONTAINER_ALLOC_IMPLICIT)) {
-			var actualmemory = resources.getFreememory() - 256 * MDCConstants.MB;
+			var actualmemory = resources.getFreememory() - MDCConstants.GB;
 			var numberofimplicitcontainers = Integer.valueOf(jobconf.getImplicitcontainerallocanumber());
 			var numberofimplicitcontainercpu = Integer.valueOf(jobconf.getImplicitcontainercpu());
 			var numberofimplicitcontainermemory = jobconf.getImplicitcontainermemory();
 			var numberofimplicitcontainermemorysize = Long.valueOf(jobconf.getImplicitcontainermemorysize());
 			var memorysize = "GB".equals(numberofimplicitcontainermemory) ? MDCConstants.GB : MDCConstants.MB;
-			if (actualmemory < numberofimplicitcontainermemorysize * memorysize * numberofimplicitcontainers) {
+			var memoryrequired = numberofimplicitcontainermemorysize * memorysize;
+			if (actualmemory < memoryrequired * numberofimplicitcontainers) {
 				throw new PipelineException(PipelineConstants.INSUFFMEMORYALLOCATIONERROR);
 			}
 			if (cpu < numberofimplicitcontainercpu * numberofimplicitcontainers) {
@@ -433,11 +432,11 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 			for (var count = 0; count < numberofimplicitcontainers; count++) {
 				var res = new ContainerResources();
 				res.setCpu(numberofimplicitcontainercpu);
-				var heapmem = numberofimplicitcontainermemorysize * Integer.valueOf(jobconf.getHeappercentage())
+				var heapmem = memoryrequired * Integer.valueOf(jobconf.getHeappercentage())
 						/ 100;
-				res.setMinmemory(heapmem);
-				res.setMaxmemory(heapmem);
-				res.setDirectheap(numberofimplicitcontainermemorysize - heapmem);
+				res.setMinmemory(memoryrequired);
+				res.setMaxmemory(memoryrequired);
+				res.setDirectheap(memoryrequired - heapmem);
 				res.setGctype(gctype);
 				cr.add(res);
 			}
@@ -882,8 +881,8 @@ public class MapReduceApplication implements Callable<List<DataCruncherContext>>
 			Resources allocresources = MDCNodesResources.get().get(node);
 			var crs = nodecrsmap.get(node);
 			for(ContainerResources cr: crs) {
-				long maxmemory = cr.getMaxmemory() * MDCConstants.MB;
-				long directheap = cr.getDirectheap() *  MDCConstants.MB;
+				long maxmemory = cr.getMaxmemory();
+				long directheap = cr.getDirectheap();
 				allocresources.setFreememory(allocresources.getFreememory()+maxmemory+directheap);
 				allocresources.setNumberofprocessors(allocresources.getNumberofprocessors()+cr.getCpu());
 			}

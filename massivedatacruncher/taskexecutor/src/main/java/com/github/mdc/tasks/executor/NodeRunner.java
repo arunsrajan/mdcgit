@@ -42,6 +42,7 @@ import com.github.mdc.common.HDFSBlockUtils;
 import com.github.mdc.common.LaunchContainers;
 import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.MDCProperties;
+import com.github.mdc.common.Resources;
 import com.github.mdc.common.SkipToNewLine;
 import com.github.mdc.common.TaskExecutorShutdown;
 import com.github.mdc.common.Utils;
@@ -148,6 +149,15 @@ public class NodeRunner implements Callable<Object> {
 				containeridcontainerthreads.put(lc.getContainerid(), threads);
 				containerprocesses.put(lc.getContainerid(), processes);
 				return ports;
+			} else if (deserobj instanceof Resources rsc) { 
+				var runtime = Runtime.getRuntime();
+				rsc.setTotalmemory(runtime.totalMemory());
+				rsc.setFreememory(Utils.getTotalAvailablePhysicalMemory());
+				rsc.setNumberofprocessors(runtime.availableProcessors());
+				rsc.setTotaldisksize(Utils.totaldiskspace());
+				rsc.setUsabledisksize(Utils.usablediskspace());
+				rsc.setPhysicalmemorysize(Utils.getPhysicalMemory());
+				return rsc;
 			} else if (deserobj instanceof DestroyContainers dc) {
 				log.debug("Destroying the Containers with id: " + dc.getContainerid());
 				Map<String, Process> processes = containerprocesses.remove(dc.getContainerid());

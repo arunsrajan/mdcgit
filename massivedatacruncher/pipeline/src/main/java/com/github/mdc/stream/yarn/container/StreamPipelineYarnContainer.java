@@ -58,6 +58,7 @@ public class StreamPipelineYarnContainer extends AbstractIntegrationYarnContaine
 	 */
 	@Override
 	protected void runInternal() {
+		org.burningwave.core.assembler.StaticComponentContainer.Modules.exportAllToAll();
 		Task task;
 		JobRequest request;
 		byte[] job = null;

@@ -81,6 +81,7 @@ public class StreamPipelineYarnAppmaster extends StaticEventingAppmaster impleme
 	 */
 	@Override
 	protected void onInit() throws Exception {
+		org.burningwave.core.assembler.StaticComponentContainer.Modules.exportAllToAll();
 		super.onInit();
 		if (getLauncher() instanceof AbstractLauncher launcher) {
 			launcher.addInterceptor(this);

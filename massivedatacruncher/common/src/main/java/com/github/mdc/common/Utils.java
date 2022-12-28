@@ -660,6 +660,74 @@ public class Utils {
 		float memusage = (float) (musage.getUsed() / (float) musage.getMax() * 100.0);
 		return memusage >= percentage;
 	}
+	
+	/**
+	 * This function returns the current usable diskspace.
+	 * @return disk space
+	 */
+	@SuppressWarnings("static-access")
+	public static Double usablediskspace() {
+		log.debug("Entered HeartBeatServer.usablediskspace");
+		var file = new File(MDCConstants.SLASH);
+		var values = new ArrayList<Double>();
+		var list = file.listRoots();
+		for (var driver : list) {
+			var driveGB = driver.getUsableSpace() / (double)MDCConstants.GB;
+			values.add(driveGB);
+		}
+		var totalHDSize = 0d;
+		for (var i = 0; i < values.size(); i++) {
+			totalHDSize += values.get(i);
+		}
+		log.debug("Exiting HeartBeatServer.usablediskspace");
+		return totalHDSize;
+	}
+	
+	/**
+	 * This function returns the current available physical memory.
+	 * @return physical memory
+	 */
+	public static Long getTotalAvailablePhysicalMemory() {
+		log.debug("Entered HeartBeatServer.getTotalAvailablePhysicalMemory");
+		var os = (com.sun.management.OperatingSystemMXBean) java.lang.management.ManagementFactory
+				.getOperatingSystemMXBean();
+		var availablePhysicalMemorySize = os.getFreePhysicalMemorySize();
+		log.debug("Exiting HeartBeatServer.getTotalAvailablePhysicalMemory");
+		return availablePhysicalMemorySize;
+	}
+	
+	/**
+	 * This function returns the total physical memory.
+	 * @return physical memory
+	 */
+	public static Long getPhysicalMemory() {
+		log.debug("Entered HeartBeatServer.getPhysicalMemory");
+		var os = (com.sun.management.OperatingSystemMXBean) java.lang.management.ManagementFactory
+				.getOperatingSystemMXBean();
+		var physicalMemorySize = os.getTotalPhysicalMemorySize();
+		log.debug("Exiting HeartBeatServer.getPhysicalMemory");
+		return physicalMemorySize;
+	}
+	/**
+	 * This function returns the current total diskspace.
+	 * @return disk space
+	 */
+	public static Double totaldiskspace() {
+		log.debug("Entered HeartBeatServer.totaldiskspace");
+		var file = new File(MDCConstants.SLASH);
+		var values = new ArrayList<Double>();
+		var list = file.listRoots();
+		for (var driver : list) {
+			var driveGB = driver.getTotalSpace() / (double)MDCConstants.GB;
+			values.add(driveGB);
+		}
+		var totalHDSize = 0d;
+		for (var i = 0; i < values.size(); i++) {
+			totalHDSize += values.get(i);
+		}
+		log.debug("Exiting HeartBeatServer.totaldiskspace");
+		return totalHDSize;
+	}
 
 	public static void writeResultToHDFS(String hdfsurl, String filepath, InputStream is) throws Exception {
 		try (var hdfs = FileSystem.get(new URI(hdfsurl), new Configuration());
@@ -810,7 +878,7 @@ public class Utils {
 	public static Registry getRPCRegistry(int port, final StreamDataCruncher streamdatacruncher) throws Exception {
 		objects.add(streamdatacruncher);
 		Registry registry = LocateRegistry.createRegistry(port);
-		StreamDataCruncher stub = (StreamDataCruncher) UnicastRemoteObject.exportObject(streamdatacruncher, 0);
+		StreamDataCruncher stub = (StreamDataCruncher) UnicastRemoteObject.exportObject(streamdatacruncher, port);
 		registry.rebind(MDCConstants.BINDTESTUB, stub);
 		return registry;
 	}

@@ -17,7 +17,8 @@ package com.github.mdc.common;
 
 import java.util.ArrayList;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.io.IOUtils;
+import org.slf4j.LoggerFactory;
 
 /**
  * 
@@ -29,7 +30,7 @@ public class ContainerLauncher {
 	private ContainerLauncher() {
 	}
 
-	static Logger log = Logger.getLogger(ContainerLauncher.class);
+	static org.slf4j.Logger log = LoggerFactory.getLogger(ContainerLauncher.class);
 
 	public static Process spawnMDCContainer(String port,
 			String diskcache, Class<?> cls, String prop, ContainerResources cr) {
@@ -39,28 +40,14 @@ public class ContainerLauncher {
 			argumentsForSpawn.add(System.getProperty("java.home").replace("\\", "/") + "/bin/java");
 			argumentsForSpawn.add("-classpath");
 			argumentsForSpawn.add(System.getProperty("java.class.path"));
-			argumentsForSpawn.add("-Xms" + cr.getMinmemory() + "m");
-			argumentsForSpawn.add("-Xmx" + cr.getMaxmemory() + "m");
-			argumentsForSpawn.add("-XX:MaxDirectMemorySize="+cr.getDirectheap()+"m");
+			argumentsForSpawn.add("-Xms" + MDCConstants.GB);
+			argumentsForSpawn.add("-Xmx" + cr.getMaxmemory());
+			argumentsForSpawn.add("-XX:MaxDirectMemorySize="+cr.getDirectheap());
 			argumentsForSpawn.add("-XX:ActiveProcessorCount=" + cr.getCpu());
 			argumentsForSpawn.add("-Djava.util.concurrent.ForkJoinPool.common.parallelism=" + cr.getCpu());
 			argumentsForSpawn.add("-XX:+HeapDumpOnOutOfMemoryError");
 			argumentsForSpawn.add("--enable-preview");
-			argumentsForSpawn.add("--add-opens=java.base/java.nio=ALL-UNNAMED");
-			argumentsForSpawn.add("--add-opens=java.base/java.math=ALL-UNNAMED");
 			argumentsForSpawn.add("--add-modules=jdk.incubator.foreign");
-			  
-			argumentsForSpawn.add("--add-opens=java.base/java.lang.reflect=ALL-UNNAMED");
-			argumentsForSpawn.add("--add-opens=java.base/java.lang=ALL-UNNAMED");
-			argumentsForSpawn.add("--add-opens=java.base/java.net=ALL-UNNAMED");
-			argumentsForSpawn.add("--add-opens=java.sql/java.sql=ALL-UNNAMED");
-			argumentsForSpawn.add("--add-opens=java.base/java.text=ALL-UNNAMED");
-			
-			argumentsForSpawn.add("--add-opens=java.base/java.util=ALL-UNNAMED");
-			argumentsForSpawn.add("--add-opens=java.base/java.lang.invoke=ALL-UNNAMED");
-			argumentsForSpawn.add("--add-opens=java.base/java.util.concurrent=ALL-UNNAMED");
-			//argumentsForSpawn.add("--add-opens=java.base/java.util.concurrent.atomic=ALL-UNNAMED");
-			argumentsForSpawn.add("-Xrunjdwp:server=y,transport=dt_socket,address=" + (Integer.parseInt(port) + 100) + ",suspend=n");
 			argumentsForSpawn.add("-Djava.net.preferIPv4Stack=true");
 			argumentsForSpawn.add(cr.getGctype());
 			argumentsForSpawn.add("-D" + MDCConstants.TASKEXECUTOR_HOST + "=" + MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_HOST));
@@ -71,6 +58,9 @@ public class ContainerLauncher {
 			argumentsForSpawn.add("" + cr.getDirectheap());
 			log.debug("Launching Container Daemon Process: " + argumentsForSpawn);
 			Process process = Runtime.getRuntime().exec(argumentsForSpawn.toArray(new String[argumentsForSpawn.size()]));
+			if(!process.isAlive()) {
+				log.info("Process Exited with Error: {}", new String(IOUtils.toByteArray(process.getErrorStream())));
+			}
 			return process;
 
 

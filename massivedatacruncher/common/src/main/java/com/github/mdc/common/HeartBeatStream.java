@@ -224,11 +224,11 @@ public final class HeartBeatStream implements HeartBeatCloseable {
 			var resources = new Resources();
 			resources.setNodeport(networkaddress + MDCConstants.UNDERSCORE + serverport);
 			resources.setTotalmemory(runtime.totalMemory());
-			resources.setFreememory(getTotalAvailablePhysicalMemory());
+			resources.setFreememory(Utils.getTotalAvailablePhysicalMemory());
 			resources.setNumberofprocessors(runtime.availableProcessors());
-			resources.setTotaldisksize(totaldiskspace());
-			resources.setUsabledisksize(usablediskspace());
-			resources.setPhysicalmemorysize(getPhysicalMemory());
+			resources.setTotaldisksize(Utils.totaldiskspace());
+			resources.setUsabledisksize(Utils.usablediskspace());
+			resources.setPhysicalmemorysize(Utils.getPhysicalMemory());
 			channel.setReceiver(new Receiver() {
 				public void receive(Message msg) {					
 					if(msg.getObject() instanceof ResponseReceived rr && resources.getNodeport().equals(rr.getHp())) {
@@ -264,77 +264,6 @@ public final class HeartBeatStream implements HeartBeatCloseable {
 		}
 		
 		log.debug("Exiting HeartBeatServerStream.ping");
-	}
-	
-	/**
-	 * Total disk space in task executors machine.
-	 * 
-	 * @return
-	 */
-	private Double totaldiskspace() {
-		log.debug("Entered HeartBeatServerStream.totaldiskspace");
-		var file = new File(MDCConstants.SLASH);
-		var values = new ArrayList<Double>();
-		var list = file.listRoots();
-		for (var driver : list) {
-			var driveGB = driver.getTotalSpace() / (double)MDCConstants.GB;
-			values.add(driveGB);
-		}
-		var totalHDSize = 0d;
-		for (var i = 0; i < values.size(); i++) {
-			totalHDSize += values.get(i);
-		}
-		log.debug("Exiting HeartBeatServerStream.totaldiskspace");
-		return totalHDSize;
-	}
-
-	/**
-	 * Usable disk space in Task executors machine.
-	 * 
-	 * @return
-	 */
-	private Double usablediskspace() {
-		log.debug("Entered HeartBeatServerStream.usablediskspace");
-		var file = new File(MDCConstants.SLASH);
-		var values = new ArrayList<Double>();
-		var list = file.listRoots();
-		for (var driver : list) {
-			var driveGB = driver.getUsableSpace() / (double)MDCConstants.GB;
-			values.add(driveGB);
-		}
-		Double totalHDSize = 0d;
-		for (var i = 0; i < values.size(); i++) {
-			totalHDSize += values.get(i);
-		}
-		log.debug("Exiting HeartBeatServerStream.usablediskspace");
-		return totalHDSize;
-	}
-
-	/**
-	 * Physical memory availability of task executor machine.
-	 * 
-	 * @return physical memory
-	 */
-	public Long getPhysicalMemory() {
-		log.debug("Entered HeartBeatServerStream.getPhysicalMemory");
-		var os = (com.sun.management.OperatingSystemMXBean) java.lang.management.ManagementFactory
-				.getOperatingSystemMXBean();
-		var physicalMemorySize = os.getTotalPhysicalMemorySize();
-		log.debug("Exiting HeartBeatServerStream.getPhysicalMemory");
-		return physicalMemorySize;
-	}
-	
-	/**
-	 * Total Available physical memory.
-	 * @return physical memory
-	 */
-	public Long getTotalAvailablePhysicalMemory() {
-		log.debug("Entered HeartBeatServerStream.getTotalAvailablePhysicalMemory");
-		var os = (com.sun.management.OperatingSystemMXBean) java.lang.management.ManagementFactory
-				.getOperatingSystemMXBean();
-		var availablePhysicalMemorySize = os.getFreePhysicalMemorySize();
-		log.debug("Exiting HeartBeatServerStream.getTotalAvailablePhysicalMemory");
-		return availablePhysicalMemorySize;
 	}
 	
 	@Override

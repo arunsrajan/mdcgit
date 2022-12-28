@@ -41,6 +41,10 @@ public class StreamPipelineYarnAppmasterService extends MindAppmasterService {
 
 
 	private StreamPipelineYarnAppmaster yarnAppMaster;
+	
+	public StreamPipelineYarnAppmasterService() {
+		org.burningwave.core.assembler.StaticComponentContainer.Modules.exportAllToAll();
+	}
 
 	/**
 	 * Retrieve the jobs request using MindApp Master Deserialiation 

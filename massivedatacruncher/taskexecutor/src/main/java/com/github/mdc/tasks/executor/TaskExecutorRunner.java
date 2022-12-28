@@ -236,7 +236,9 @@ public class TaskExecutorRunner implements TaskExecutorRunnerMBean {
 				return "Unknown Object";
 			}
 		};
+		log.info("Getting RPC Registry for port: {}", port);
 		server = Utils.getRPCRegistry(port, dataCruncher);
+		log.info("RPC Registry for port: {} Obtained", port);
 	}
 	static StreamDataCruncher stub = null;
 	static StreamDataCruncher dataCruncher = null;

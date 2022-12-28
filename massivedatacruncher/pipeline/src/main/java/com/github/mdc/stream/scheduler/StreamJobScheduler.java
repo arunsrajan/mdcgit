@@ -636,8 +636,8 @@ public class StreamJobScheduler {
 							Utils.getResultObjectByInput(node, dc);
 							ContainerResources cr = chpcres.remove(container);
 							Resources allocresources = MDCNodesResources.get().get(node);
-							long maxmemory = cr.getMaxmemory() * MDCConstants.MB;
-							long directheap = cr.getDirectheap() *  MDCConstants.MB;
+							long maxmemory = cr.getMaxmemory();
+							long directheap = cr.getDirectheap();
 							allocresources.setFreememory(allocresources.getFreememory()+maxmemory+directheap);
 							allocresources.setNumberofprocessors(allocresources.getNumberofprocessors()+cr.getCpu());
 						} else {
