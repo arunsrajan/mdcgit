@@ -47,6 +47,7 @@ public class StreamPipelineTaskSchedulerRunner {
 	static ExecutorService threadpool = null;
 
 	public static void main(String[] args) throws Exception {
+		org.burningwave.core.assembler.StaticComponentContainer.Modules.exportAllToAll();
 		URL.setURLStreamHandlerFactory(new FsUrlStreamHandlerFactory());
 		threadpool = Executors.newWorkStealingPool();
 		// Load log4j properties.

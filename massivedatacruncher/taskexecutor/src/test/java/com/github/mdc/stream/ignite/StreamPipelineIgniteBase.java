@@ -34,12 +34,15 @@ import org.apache.log4j.Logger;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 
+import com.github.mdc.common.ByteBufferPoolDirect;
+import com.github.mdc.common.CacheUtils;
 import com.github.mdc.common.HeartBeatStream;
 import com.github.mdc.common.MDCCacheManager;
 import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.MDCProperties;
 import com.github.mdc.common.PipelineConfig;
 import com.github.mdc.common.Utils;
+import com.github.mdc.common.utils.HadoopTestUtilities;
 import com.github.sakserv.minicluster.impl.HdfsLocalCluster;
 import com.github.sakserv.minicluster.impl.YarnLocalCluster;
 
@@ -51,7 +54,7 @@ public class StreamPipelineIgniteBase {
 			"CancellationCode", "Diverted", "CarrierDelay", "WeatherDelay", "NASDelay", "SecurityDelay",
 			"LateAircraftDelay" };
 	String[] carrierheader = { "Code", "Description" };
-	static String hdfsfilepath = "hdfs://127.0.0.1:9000";
+	static String hdfsfilepath = "hdfs://127.0.0.1:9100";
 	String airlines = "/airlines";
 	String airline = "/airline";
 	static String airlinenoheader = "/airlinenoheader";
@@ -99,8 +102,15 @@ public class StreamPipelineIgniteBase {
 	@SuppressWarnings({ "unused" })
 	@BeforeClass
 	public static void setServerUp() throws Exception {
+		org.burningwave.core.assembler.StaticComponentContainer.Modules.exportAllToAll();
 		try {
 			if (!setupdone) {
+				Utils.loadLog4JSystemProperties(MDCConstants.PREV_FOLDER + MDCConstants.FORWARD_SLASH
+						+ MDCConstants.DIST_CONFIG_FOLDER + MDCConstants.FORWARD_SLASH, "mdctest.properties");
+				ByteBufferPoolDirect.init();
+				CacheUtils.initCache();
+				CacheUtils.initBlockMetadataCache();
+				hdfsLocalCluster = HadoopTestUtilities.initHdfsCluster(9100, 9870, 2);
 				URL.setURLStreamHandlerFactory(new FsUrlStreamHandlerFactory());
 				Utils.loadLog4JSystemProperties(MDCConstants.PREV_FOLDER + MDCConstants.FORWARD_SLASH
 						+ MDCConstants.DIST_CONFIG_FOLDER + MDCConstants.FORWARD_SLASH, "mdctest.properties");

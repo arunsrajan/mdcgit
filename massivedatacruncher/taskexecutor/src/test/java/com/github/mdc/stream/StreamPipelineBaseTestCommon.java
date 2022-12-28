@@ -62,6 +62,7 @@ public class StreamPipelineBaseTestCommon extends StreamPipelineBase {
 	@BeforeClass
 	public static void setServerUp() throws Exception {
 		try {
+			org.burningwave.core.assembler.StaticComponentContainer.Modules.exportAllToAll();
 			Utils.loadLog4JSystemProperties(MDCConstants.PREV_FOLDER + MDCConstants.FORWARD_SLASH
 					+ MDCConstants.DIST_CONFIG_FOLDER + MDCConstants.FORWARD_SLASH, "mdctest.properties");
 			var out = System.out;

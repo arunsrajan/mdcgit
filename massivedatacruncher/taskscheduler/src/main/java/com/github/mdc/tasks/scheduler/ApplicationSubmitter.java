@@ -47,7 +47,7 @@ public class ApplicationSubmitter {
 
 	@SuppressWarnings({"unchecked"})
 	public static void main(String[] args) throws Exception {
-
+		org.burningwave.core.assembler.StaticComponentContainer.Modules.exportAllToAll();
 		URL.setURLStreamHandlerFactory(new FsUrlStreamHandlerFactory());
 		
 		var options = new Options();

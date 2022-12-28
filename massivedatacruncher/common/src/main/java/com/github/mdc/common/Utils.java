@@ -47,7 +47,6 @@ import java.security.KeyStore;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -69,8 +68,6 @@ import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 
-import org.apache.commons.csv.CSVParser;
-import org.apache.commons.csv.CSVRecord;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
@@ -92,7 +89,6 @@ import org.jgroups.View;
 import org.jgroups.util.UUID;
 import org.nustaq.serialization.FSTConfiguration;
 import org.nustaq.serialization.FSTObjectInput;
-import org.nustaq.serialization.FSTObjectOutput;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -132,10 +128,9 @@ public class Utils {
 	static ThreadLocal<FSTConfiguration> conf = new ThreadLocal<>() { 
 		    public FSTConfiguration initialValue() {
 		    	FSTConfiguration conf = FSTConfiguration.createUnsafeBinaryConfiguration();
-		    	conf.setShareReferences(true);
 		    	conf.setForceSerializable(true);
-		    	conf.setPreferSpeed(false);
 		    	conf.setForceClzInit(true);
+		    	conf.setShareReferences(true);
 		    	return conf;
 		    }
 		};

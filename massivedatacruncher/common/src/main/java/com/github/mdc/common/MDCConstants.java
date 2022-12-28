@@ -419,7 +419,7 @@ public class MDCConstants {
 	public static final String DFSOUTPUTFILEREPLICATION = "dfs.replication";
 	public static final String DFSOUTPUTFILEREPLICATION_DEFAULT = "1";
 	public static final String HDFSNAMENODEURL = "hdfs.namenode.url";
-	public static final String HDFSNAMENODEURL_DEFAULT = "hdfs://127.0.0.1:9000";
+	public static final String HDFSNAMENODEURL_DEFAULT = "hdfs://127.0.0.1:9100";
 
 
 	public static final String BR = "<BR/>";

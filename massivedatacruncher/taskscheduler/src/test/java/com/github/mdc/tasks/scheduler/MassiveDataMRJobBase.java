@@ -100,6 +100,7 @@ public class MassiveDataMRJobBase {
 
 	@BeforeClass
 	public static void setServerUp() throws Exception {
+		org.burningwave.core.assembler.StaticComponentContainer.Modules.exportAllToAll();
 		try (InputStream istream = MassiveDataMRJobBase.class.getResourceAsStream("/log4j.properties");) {
 			System.setProperty("HIBCFG", "../config/mdchibernate.cfg.xml");
 			System.setProperty("HADOOP_HOME", "C:\\DEVELOPMENT\\hadoop\\hadooplocal\\hadoop-3.3.1");

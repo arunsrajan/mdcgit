@@ -23,6 +23,7 @@ public class HeartBeatCommon {
 
 	@BeforeClass
 	public static void initBefore() throws Exception {
+		org.burningwave.core.assembler.StaticComponentContainer.Modules.exportAllToAll();
 		Properties prop = new Properties();
 		prop.setProperty(MDCConstants.JGROUPSMCASTADDR, "238.10.10.10");
 		prop.setProperty(MDCConstants.JGROUPSMCASTPORT, "46364");

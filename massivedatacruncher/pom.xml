@@ -163,6 +163,24 @@
 		    <artifactId>fst</artifactId>
 		    <version>3.0.4-jdk17</version>
 		</dependency>
+		
+		<dependency>
+		    <groupId>com.caucho</groupId>
+		    <artifactId>hessian</artifactId>
+		    <version>4.0.66</version>
+		</dependency>
+		
+		<dependency>
+		    <groupId>com.esotericsoftware</groupId>
+		    <artifactId>kryo</artifactId>
+		    <version>4.0.2</version>
+		</dependency>
+		
+		<dependency>
+		    <groupId>org.burningwave</groupId>
+		    <artifactId>core</artifactId>
+		    <version>12.62.5</version>
+		</dependency>
 
         <dependency>
             <groupId>org.apache.mesos</groupId>
@@ -605,7 +623,7 @@
                                 <include>**/CommonsTestSuite.java</include>
                                 <include>**/PipelineExecutorsTestSuite.java</include>
                                 <include>**/StreamPipelineTestSuite.java</include>
-                                <!--include>**/IgnitePipelineTestSuite.java</include-->
+                                <include>**/IgnitePipelineTestSuite.java</include>
                                 <include>**/TaskSchedulerTestSuite.java</include>
                             </includes>
                         </configuration>

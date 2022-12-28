@@ -135,7 +135,7 @@ public final class StreamPipelineTaskExecutorInMemoryDisk extends StreamPipeline
 		starttime = System.currentTimeMillis();
 		log.debug("Entered StreamPipelineTaskExecutorInMemoryDisk.call");
 		var stageTasks = getStagesTask();
-		var hdfsfilepath = MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL, MDCConstants.HDFSNAMENODEURL);
+		var hdfsfilepath = MDCProperties.get().getProperty(MDCConstants.HDFSNAMENODEURL, MDCConstants.HDFSNAMENODEURL_DEFAULT);
 		var configuration = new Configuration();
 		var timetakenseconds = 0.0;
 		try (var hdfs = FileSystem.newInstance(new URI(hdfsfilepath), configuration);) {

@@ -79,6 +79,7 @@ public class TaskExecutorRunner implements TaskExecutorRunnerMBean {
 	static CountDownLatch shutdown = new CountDownLatch(1);
 
 	public static void main(String[] args) throws Exception {
+		org.burningwave.core.assembler.StaticComponentContainer.Modules.exportAllToAll();
 		URL.setURLStreamHandlerFactory(new FsUrlStreamHandlerFactory());
 		if (args == null || args.length != 2) {
 			log.debug("Args" + args);

@@ -31,6 +31,7 @@ public class TaskSchedulerRunner {
 
 	@SuppressWarnings({ "unused", "unchecked" })
 	public static void main(String[] args) throws Exception {
+		org.burningwave.core.assembler.StaticComponentContainer.Modules.exportAllToAll();
 		URL.setURLStreamHandlerFactory(new FsUrlStreamHandlerFactory());
 		Utils.loadLog4JSystemProperties(MDCConstants.PREV_FOLDER + MDCConstants.FORWARD_SLASH
 				+ MDCConstants.DIST_CONFIG_FOLDER + MDCConstants.FORWARD_SLASH, MDCConstants.MDC_PROPERTIES);

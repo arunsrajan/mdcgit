@@ -15,6 +15,7 @@ public class ByteBufferPoolDirectTest {
 	static Logger log = LoggerFactory.getLogger(ByteBufferPoolDirectTest.class);
 	@BeforeClass
 	public static void initCache() throws Exception {
+		org.burningwave.core.assembler.StaticComponentContainer.Modules.exportAllToAll();
 		Utils.loadLog4JSystemProperties(MDCConstants.PREV_FOLDER + MDCConstants.FORWARD_SLASH
 				+ MDCConstants.DIST_CONFIG_FOLDER + MDCConstants.FORWARD_SLASH, MDCConstants.MDC_TEST_PROPERTIES);
 		CacheUtils.initCache();

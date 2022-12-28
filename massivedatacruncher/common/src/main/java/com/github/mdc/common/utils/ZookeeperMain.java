@@ -27,6 +27,7 @@ public class ZookeeperMain {
 	static Logger log = Logger.getLogger(ZookeeperMain.class);
 
 	public static void main(String[] args) throws Exception {
+		org.burningwave.core.assembler.StaticComponentContainer.Modules.exportAllToAll();
 		Utils.loadLog4JSystemProperties(MDCConstants.PREV_FOLDER + MDCConstants.FORWARD_SLASH
 				+ MDCConstants.DIST_CONFIG_FOLDER + MDCConstants.FORWARD_SLASH, MDCConstants.MDC_PROPERTIES);
 		var cdl = new CountDownLatch(1);
