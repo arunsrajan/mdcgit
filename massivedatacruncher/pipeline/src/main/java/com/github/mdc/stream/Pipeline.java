@@ -16,7 +16,6 @@
 package com.github.mdc.stream;
 
 import java.io.Serializable;
-
 import com.github.mdc.common.PipelineConfig;
 
 /**

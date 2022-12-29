@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
-
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.state.ConnectionState;
@@ -14,7 +13,6 @@ import org.apache.curator.retry.RetryForever;
 import org.apache.hadoop.fs.FsUrlStreamHandlerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.github.mdc.common.HeartBeat;
 import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.MDCProperties;

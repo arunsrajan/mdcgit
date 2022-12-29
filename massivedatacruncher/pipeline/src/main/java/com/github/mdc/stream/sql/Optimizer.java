@@ -15,6 +15,9 @@
  */
 package com.github.mdc.stream.sql;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.Properties;
 import org.apache.calcite.avatica.util.Casing;
 import org.apache.calcite.config.CalciteConnectionConfig;
 import org.apache.calcite.config.CalciteConnectionConfigImpl;
@@ -46,10 +49,6 @@ import org.apache.calcite.tools.Program;
 import org.apache.calcite.tools.Programs;
 import org.apache.calcite.tools.RuleSet;
 import org.apache.calcite.tools.RuleSets;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.Properties;
 
 public class Optimizer {
 

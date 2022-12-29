@@ -19,10 +19,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.net.Socket;
 import java.util.Arrays;
-
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.log4j.Logger;
-
 import com.github.mdc.common.JobConfigurationBuilder;
 import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.MDCMapReducePhaseClassLoader;

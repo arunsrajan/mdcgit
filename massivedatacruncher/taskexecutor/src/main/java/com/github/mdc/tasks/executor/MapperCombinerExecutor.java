@@ -17,7 +17,6 @@ package com.github.mdc.tasks.executor;
 
 import java.io.InputStream;
 import java.util.List;
-
 import com.github.mdc.common.BlocksLocation;
 import com.github.mdc.common.Context;
 

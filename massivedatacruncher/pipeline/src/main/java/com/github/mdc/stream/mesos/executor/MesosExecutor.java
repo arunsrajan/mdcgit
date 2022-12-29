@@ -20,7 +20,6 @@ import java.io.FileOutputStream;
 import java.net.URL;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.hadoop.fs.FsUrlStreamHandlerFactory;
 import org.apache.log4j.Logger;
@@ -33,7 +32,6 @@ import org.apache.mesos.Protos.SlaveInfo;
 import org.apache.mesos.Protos.TaskID;
 import org.apache.mesos.Protos.TaskInfo;
 import org.nustaq.serialization.FSTObjectInput;
-
 import com.github.mdc.common.JobStage;
 import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.MDCMapReducePhaseClassLoader;

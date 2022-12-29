@@ -16,7 +16,6 @@
 package com.github.mdc.common;
 
 import java.util.ArrayList;
-
 import org.apache.commons.io.IOUtils;
 import org.slf4j.LoggerFactory;
 

@@ -26,10 +26,8 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
-
 import org.apache.log4j.Logger;
 import org.jooq.lambda.tuple.Tuple3;
-
 import com.github.mdc.common.Context;
 import com.github.mdc.common.DataCruncherContext;
 import com.github.mdc.common.MDCConstants;

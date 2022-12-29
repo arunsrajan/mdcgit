@@ -11,14 +11,12 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.RetryForever;
 import org.apache.hadoop.fs.FsUrlStreamHandlerFactory;
 import org.jgroups.JChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.github.mdc.common.CacheUtils;
 import com.github.mdc.common.HeartBeatStream;
 import com.github.mdc.common.Job;

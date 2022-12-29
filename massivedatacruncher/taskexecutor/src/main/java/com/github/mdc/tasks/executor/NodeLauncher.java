@@ -27,13 +27,11 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
-
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.FsUrlStreamHandlerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.github.mdc.common.HeartBeat;
 import com.github.mdc.common.HeartBeatStream;
 import com.github.mdc.common.MDCConstants;

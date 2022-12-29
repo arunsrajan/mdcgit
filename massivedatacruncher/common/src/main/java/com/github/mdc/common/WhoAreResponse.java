@@ -17,7 +17,6 @@ package com.github.mdc.common;
 
 import java.io.Serializable;
 import java.util.Map;
-
 import lombok.Getter;
 import lombok.Setter;
 

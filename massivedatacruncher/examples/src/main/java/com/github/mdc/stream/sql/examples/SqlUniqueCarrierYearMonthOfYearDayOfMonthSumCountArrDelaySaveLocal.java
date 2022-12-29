@@ -17,10 +17,8 @@ package com.github.mdc.stream.sql.examples;
 
 import java.io.Serializable;
 import java.net.URI;
-
 import org.apache.calcite.sql.type.SqlTypeName;
 import org.apache.log4j.Logger;
-
 import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.PipelineConfig;
 import com.github.mdc.stream.Pipeline;

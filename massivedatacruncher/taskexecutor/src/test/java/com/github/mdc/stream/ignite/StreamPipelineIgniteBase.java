@@ -23,7 +23,6 @@ import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutorService;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataOutputStream;
@@ -33,7 +32,6 @@ import org.apache.hadoop.fs.Path;
 import org.apache.log4j.Logger;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
-
 import com.github.mdc.common.ByteBufferPoolDirect;
 import com.github.mdc.common.CacheUtils;
 import com.github.mdc.common.HeartBeatStream;

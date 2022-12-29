@@ -16,11 +16,8 @@
 package com.github.mdc.stream.utils;
 
 import static org.junit.Assert.assertEquals;
-
 import java.util.List;
-
 import org.junit.Test;
-
 import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.PipelineConfig;
 import com.github.mdc.common.Utils;

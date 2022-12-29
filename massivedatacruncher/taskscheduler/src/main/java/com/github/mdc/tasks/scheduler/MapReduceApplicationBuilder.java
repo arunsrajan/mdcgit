@@ -18,7 +18,6 @@ package com.github.mdc.tasks.scheduler;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
-
 import com.github.mdc.common.DataCruncherContext;
 import com.github.mdc.common.JobConfiguration;
 import com.github.mdc.common.JobConfigurationBuilder;

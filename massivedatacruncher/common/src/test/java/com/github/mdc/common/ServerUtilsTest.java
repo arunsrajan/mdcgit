@@ -20,15 +20,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.compress.utils.IOUtils;
 import org.junit.Test;
-
 import junit.framework.TestCase;
 
 public class ServerUtilsTest extends TestCase {

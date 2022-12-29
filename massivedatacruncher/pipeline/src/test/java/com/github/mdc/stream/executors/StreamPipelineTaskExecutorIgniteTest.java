@@ -17,7 +17,6 @@ package com.github.mdc.stream.executors;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -31,7 +30,6 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.ToIntFunction;
-
 import org.apache.commons.csv.CSVRecord;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileUtil;
@@ -44,7 +42,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.nustaq.serialization.FSTObjectInput;
 import org.xerial.snappy.SnappyOutputStream;
-
 import com.github.mdc.common.BlocksLocation;
 import com.github.mdc.common.HDFSBlockUtils;
 import com.github.mdc.common.HdfsBlockReader;

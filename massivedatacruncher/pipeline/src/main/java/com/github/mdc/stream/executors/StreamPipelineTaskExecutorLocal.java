@@ -22,12 +22,10 @@ import java.net.URI;
 import java.nio.ByteBuffer;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentMap;
-
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.log4j.Logger;
 import org.ehcache.Cache;
-
 import com.github.mdc.common.ByteBufferInputStream;
 import com.github.mdc.common.ByteBufferOutputStream;
 import com.github.mdc.common.ByteBufferPoolDirect;

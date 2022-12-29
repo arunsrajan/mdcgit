@@ -24,10 +24,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Set;
-
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.log4j.Logger;
-
 import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.MDCMapReducePhaseClassLoader;
 import com.github.mdc.common.MDCProperties;

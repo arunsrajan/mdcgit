@@ -35,7 +35,6 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.IntSupplier;
 import java.util.stream.Collectors;
-
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
@@ -44,7 +43,6 @@ import org.apache.hadoop.fs.Path;
 import org.apache.ignite.IgniteCache;
 import org.apache.log4j.Logger;
 import org.xerial.snappy.SnappyOutputStream;
-
 import com.github.mdc.common.AllocateContainers;
 import com.github.mdc.common.Block;
 import com.github.mdc.common.BlocksLocation;

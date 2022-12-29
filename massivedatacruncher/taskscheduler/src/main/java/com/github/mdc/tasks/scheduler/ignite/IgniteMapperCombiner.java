@@ -16,10 +16,8 @@
 package com.github.mdc.tasks.scheduler.ignite;
 
 import java.util.List;
-
 import org.apache.ignite.lang.IgniteCallable;
 import org.jgroups.util.UUID;
-
 import com.github.mdc.common.BlocksLocation;
 import com.github.mdc.common.DataCruncherContext;
 import com.github.mdc.common.MDCConstants;

@@ -17,12 +17,9 @@ package com.github.mdc.stream;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-
 import java.util.function.ToIntFunction;
-
 import org.jooq.lambda.tuple.Tuple2;
 import org.junit.Test;
-
 import com.github.mdc.common.DAGEdge;
 import com.github.mdc.common.Job;
 import com.github.mdc.common.JobMetrics;

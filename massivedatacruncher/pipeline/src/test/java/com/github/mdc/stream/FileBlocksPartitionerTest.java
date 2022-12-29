@@ -17,19 +17,15 @@ package com.github.mdc.stream;
 
 import static java.util.Objects.isNull;
 import static org.junit.Assert.assertEquals;
-
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-
 import javax.management.InstanceNotFoundException;
 import javax.management.MBeanRegistrationException;
 import javax.management.MalformedObjectNameException;
-
 import org.apache.ignite.Ignite;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
 import com.github.mdc.common.BlocksLocation;
 import com.github.mdc.common.Job;
 import com.github.mdc.common.JobMetrics;

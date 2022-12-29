@@ -15,13 +15,12 @@
  */
 package com.github.mdc.stream.sql;
 
+import java.util.HashMap;
+import java.util.Map;
 import org.apache.calcite.schema.Schema;
 import org.apache.calcite.schema.SchemaVersion;
 import org.apache.calcite.schema.Table;
 import org.apache.calcite.schema.impl.AbstractSchema;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class SimpleSchema extends AbstractSchema {
 

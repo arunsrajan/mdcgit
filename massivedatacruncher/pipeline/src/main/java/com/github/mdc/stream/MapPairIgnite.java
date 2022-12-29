@@ -5,11 +5,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.IntSupplier;
-
 import org.apache.log4j.Logger;
 import org.jooq.lambda.tuple.Tuple;
 import org.jooq.lambda.tuple.Tuple2;
-
 import com.github.mdc.common.Job;
 import com.github.mdc.common.PipelineConstants;
 import com.github.mdc.common.functions.CalculateCount;

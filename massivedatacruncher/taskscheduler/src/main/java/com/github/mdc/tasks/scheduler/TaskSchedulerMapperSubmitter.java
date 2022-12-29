@@ -23,9 +23,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-
 import org.apache.curator.framework.CuratorFramework;
-
 import com.github.mdc.common.ApplicationTask;
 import com.github.mdc.common.BlocksLocation;
 import com.github.mdc.common.MDCConstants;

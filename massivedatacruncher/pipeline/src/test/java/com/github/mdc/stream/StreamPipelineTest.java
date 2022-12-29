@@ -16,9 +16,7 @@
 package com.github.mdc.stream;
 
 import static org.junit.Assert.assertEquals;
-
 import org.junit.Test;
-
 import com.github.mdc.common.Job;
 import com.github.mdc.common.JobMetrics;
 import com.github.mdc.common.MDCConstants;

@@ -16,7 +16,6 @@
 package com.github.mdc.tasks.executor;
 
 import static org.junit.Assert.assertEquals;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -26,12 +25,10 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
 import org.jooq.lambda.tuple.Tuple3;
 import org.junit.Test;
 import org.xerial.snappy.SnappyInputStream;
 import org.xerial.snappy.SnappyOutputStream;
-
 import com.github.mdc.common.BlocksLocation;
 import com.github.mdc.common.Context;
 import com.github.mdc.common.DataCruncherContext;

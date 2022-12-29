@@ -16,7 +16,6 @@ import java.util.Stack;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.stream.Collectors;
-
 import org.apache.calcite.adapter.enumerable.EnumerableAggregate;
 import org.apache.calcite.adapter.enumerable.EnumerableConvention;
 import org.apache.calcite.adapter.enumerable.EnumerableFilter;
@@ -53,12 +52,8 @@ import org.apache.calcite.tools.RuleSets;
 import org.apache.commons.csv.CSVRecord;
 import org.jooq.lambda.tuple.Tuple;
 import org.jooq.lambda.tuple.Tuple2;
-
 import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.PipelineConfig;
-import com.github.mdc.stream.MapPair;
-import com.github.mdc.stream.StreamPipeline;
-import com.github.mdc.stream.PipelineException;
 import com.github.mdc.common.functions.BiPredicateSerializable;
 import com.github.mdc.common.functions.CoalesceFunction;
 import com.github.mdc.common.functions.JoinPredicate;
@@ -68,6 +63,9 @@ import com.github.mdc.common.functions.MapToPairFunction;
 import com.github.mdc.common.functions.PredicateSerializable;
 import com.github.mdc.common.functions.ReduceByKeyFunction;
 import com.github.mdc.common.functions.RightOuterJoinPredicate;
+import com.github.mdc.stream.MapPair;
+import com.github.mdc.stream.PipelineException;
+import com.github.mdc.stream.StreamPipeline;
 
 public class StreamPipelineSqlBuilder implements Serializable{
 	private static final long serialVersionUID = -3378044679174633759L;

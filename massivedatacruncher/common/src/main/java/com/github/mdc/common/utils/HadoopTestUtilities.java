@@ -1,7 +1,6 @@
 package com.github.mdc.common.utils;
 
 import org.apache.hadoop.conf.Configuration;
-
 import com.github.sakserv.minicluster.impl.HdfsLocalCluster;
 
 public class HadoopTestUtilities {

@@ -16,13 +16,10 @@
 package com.github.mdc.stream;
 
 import static org.junit.Assert.assertEquals;
-
 import java.util.List;
 import java.util.Map;
-
 import org.apache.log4j.Logger;
 import org.junit.Test;
-
 import com.github.mdc.common.MDCConstants.STORAGE;
 import com.github.mdc.stream.sql.StreamPipelineSql;
 import com.github.mdc.stream.sql.StreamPipelineSqlBuilder;

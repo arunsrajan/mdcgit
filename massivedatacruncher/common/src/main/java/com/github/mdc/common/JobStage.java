@@ -16,7 +16,6 @@
 package com.github.mdc.common;
 
 import java.io.Serializable;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

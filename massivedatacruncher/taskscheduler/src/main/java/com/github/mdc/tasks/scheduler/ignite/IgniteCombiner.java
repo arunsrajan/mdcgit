@@ -17,10 +17,8 @@ package com.github.mdc.tasks.scheduler.ignite;
 
 import java.util.List;
 import java.util.Set;
-
 import org.apache.ignite.lang.IgniteCallable;
 import org.apache.log4j.Logger;
-
 import com.github.mdc.common.Context;
 import com.github.mdc.common.DataCruncherContext;
 import com.github.mdc.tasks.executor.Combiner;

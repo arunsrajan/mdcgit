@@ -1,7 +1,6 @@
 package com.github.mdc.stream.executors;
 
 import static java.util.Objects.isNull;
-
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -9,16 +8,13 @@ import java.net.URI;
 import java.nio.ByteBuffer;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentMap;
-
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.log4j.Logger;
 import org.ehcache.Cache;
-
 import com.github.mdc.common.ByteBufferInputStream;
 import com.github.mdc.common.ByteBufferOutputStream;
 import com.github.mdc.common.ByteBufferPoolDirect;
-import com.github.mdc.common.DirectByteBufferUtil;
 import com.github.mdc.common.JobStage;
 import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.MDCProperties;

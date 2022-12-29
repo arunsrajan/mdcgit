@@ -16,10 +16,8 @@
 package com.github.mdc.stream;
 
 import static org.junit.Assert.assertTrue;
-
 import java.util.IntSummaryStatistics;
 import java.util.List;
-
 import org.apache.log4j.Logger;
 import org.junit.FixMethodOrder;
 import org.junit.Test;

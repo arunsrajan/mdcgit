@@ -18,7 +18,6 @@ package com.github.mdc.stream;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
-
 import com.github.mdc.stream.executors.StreamPipelineTaskExecutorIgniteTest;
 import com.github.mdc.stream.executors.StreamPipelineTaskExecutorInMemoryDiskTest;
 import com.github.mdc.stream.executors.StreamPipelineTaskExecutorInMemoryTest;

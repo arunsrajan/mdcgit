@@ -32,7 +32,6 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.stream.Collectors;
-
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
@@ -43,7 +42,6 @@ import org.apache.hadoop.yarn.api.records.YarnApplicationState;
 import org.apache.log4j.Logger;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.yarn.client.CommandYarnClient;
-
 import com.github.mdc.common.BlocksLocation;
 import com.github.mdc.common.DataCruncherContext;
 import com.github.mdc.common.HDFSBlockUtils;

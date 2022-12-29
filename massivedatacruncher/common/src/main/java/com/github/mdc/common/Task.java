@@ -17,7 +17,6 @@ package com.github.mdc.common;
 
 import java.io.Serializable;
 import java.util.List;
-
 import com.github.mdc.common.MDCConstants.STORAGE;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

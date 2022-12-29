@@ -16,7 +16,6 @@
 package com.github.mdc.tasks.executor;
 
 import static java.util.Objects.nonNull;
-
 import java.io.InputStream;
 import java.net.ServerSocket;
 import java.nio.charset.StandardCharsets;
@@ -27,13 +26,11 @@ import java.util.Objects;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.hadoop.fs.FileSystem;
 import org.jooq.lambda.tuple.Tuple;
 import org.jooq.lambda.tuple.Tuple2;
 import org.slf4j.LoggerFactory;
-
 import com.github.mdc.common.AllocateContainers;
 import com.github.mdc.common.ContainerLauncher;
 import com.github.mdc.common.DestroyContainer;

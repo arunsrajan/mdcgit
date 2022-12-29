@@ -16,7 +16,6 @@
 package com.github.mdc.common;
 
 import java.util.List;
-
 import org.apache.curator.framework.CuratorFramework;
 
 public interface TaskSchedulerMapperSubmitterMBean {

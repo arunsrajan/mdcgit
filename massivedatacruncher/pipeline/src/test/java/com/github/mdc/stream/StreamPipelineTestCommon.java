@@ -15,13 +15,13 @@
  */
 package com.github.mdc.stream;
 
+import static java.util.Objects.nonNull;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataOutputStream;
@@ -31,7 +31,6 @@ import org.apache.log4j.Logger;
 import org.ehcache.Cache;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
-
 import com.github.mdc.common.ByteBufferPoolDirect;
 import com.github.mdc.common.CacheUtils;
 import com.github.mdc.common.MDCCache;
@@ -40,8 +39,6 @@ import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.Utils;
 import com.github.mdc.common.utils.HadoopTestUtilities;
 import com.github.sakserv.minicluster.impl.HdfsLocalCluster;
-
-import static java.util.Objects.*;
 
 public class StreamPipelineTestCommon {
 	public static Cache<String, byte[]> cache;

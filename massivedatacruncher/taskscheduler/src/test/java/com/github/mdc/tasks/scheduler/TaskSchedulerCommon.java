@@ -16,7 +16,6 @@
 package com.github.mdc.tasks.scheduler;
 
 import org.junit.BeforeClass;
-
 import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.Utils;
 

@@ -17,11 +17,9 @@ package com.github.mdc.stream;
 
 import java.util.Arrays;
 import java.util.List;
-
 import org.jooq.lambda.tuple.Tuple;
 import org.jooq.lambda.tuple.Tuple2;
 import org.junit.Test;
-
 import com.github.mdc.common.functions.AggregateFunction;
 import com.github.mdc.common.functions.AggregateReduceFunction;
 import com.github.mdc.common.functions.BiPredicateSerializable;
@@ -40,7 +38,6 @@ import com.github.mdc.common.functions.PredicateSerializable;
 import com.github.mdc.common.functions.ReduceByKeyFunction;
 import com.github.mdc.common.functions.RightOuterJoinPredicate;
 import com.github.mdc.common.functions.TupleFlatMapFunction;
-
 import junit.framework.TestCase;
 
 public class StreamPipelineFunctionsTest extends TestCase {

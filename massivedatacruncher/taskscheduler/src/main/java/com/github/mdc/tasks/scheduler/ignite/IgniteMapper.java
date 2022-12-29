@@ -19,13 +19,11 @@ import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.InputStreamReader;
 import java.util.List;
-
 import org.apache.ignite.Ignite;
 import org.apache.ignite.IgniteCache;
 import org.apache.ignite.resources.IgniteInstanceResource;
 import org.apache.log4j.Logger;
 import org.xerial.snappy.SnappyInputStream;
-
 import com.github.mdc.common.BlocksLocation;
 import com.github.mdc.common.Context;
 import com.github.mdc.common.DataCruncherContext;

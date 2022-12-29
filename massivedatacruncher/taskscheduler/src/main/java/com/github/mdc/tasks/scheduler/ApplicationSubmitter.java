@@ -21,12 +21,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.net.Socket;
 import java.net.URL;
 import java.util.List;
 import java.util.Objects;
-
-import com.github.mdc.tasks.scheduler.exception.ApplicationSubmitterException;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
@@ -35,11 +32,11 @@ import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.RetryForever;
 import org.apache.hadoop.fs.FsUrlStreamHandlerFactory;
 import org.apache.log4j.Logger;
-
 import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.MDCProperties;
 import com.github.mdc.common.Utils;
 import com.github.mdc.common.ZookeeperOperations;
+import com.github.mdc.tasks.scheduler.exception.ApplicationSubmitterException;
 
 public class ApplicationSubmitter {
 

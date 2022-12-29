@@ -17,13 +17,11 @@ package com.github.mdc.stream;
 
 import java.net.URI;
 import java.util.Arrays;
-
 import org.jooq.lambda.tuple.Tuple;
 import org.jooq.lambda.tuple.Tuple2;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
 import com.github.mdc.common.MDCConstants;
 
 public class StreamPipelineTransformationsSaveToFileTest extends StreamPipelineBaseTestCommon {

@@ -16,7 +16,6 @@
 package com.github.mdc.common;
 
 import java.util.Properties;
-
 import org.junit.BeforeClass;
 
 public class HeartBeatCommon {

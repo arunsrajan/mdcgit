@@ -15,6 +15,7 @@
  */
 package com.github.mdc.stream.executors;
 
+import static java.util.Objects.nonNull;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.net.URI;
@@ -28,13 +29,11 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
-
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.log4j.Logger;
 import org.ehcache.Cache;
 import org.jgroups.JChannel;
-
 import com.github.mdc.common.JobStage;
 import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.MDCProperties;
@@ -43,8 +42,6 @@ import com.github.mdc.common.RemoteDataFetcher;
 import com.github.mdc.common.Task;
 import com.github.mdc.common.Utils;
 import com.github.mdc.common.WhoIsResponse;
-
-import static java.util.Objects.nonNull;
 
 /**
  * 

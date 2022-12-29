@@ -16,7 +16,6 @@
 package com.github.mdc.common;
 
 import java.io.Serializable;
-
 import org.jooq.lambda.tuple.Tuple2;
 
 /**

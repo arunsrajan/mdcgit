@@ -19,7 +19,8 @@
 		<xsd:annotation>
 			<xsd:documentation>
 				Reference a public, static field on a type and expose its value as
-				a bean. For example
+				a
+				bean. For example
 				<code>&lt;util:constant
 					static-field=&quot;java.lang.Integer.MAX_VALUE&quot;/&gt;</code>
 				.
@@ -35,9 +36,11 @@
 	<xsd:element name="property-path">
 		<xsd:annotation>
 			<xsd:documentation>
-				Reference a property on a bean (or as a nested value) and expose its values
+				Reference a property on a bean (or as a nested
+				value) and expose its values
 				as
-				a bean. For example &lt;util:property-path
+				a bean. For example
+				&lt;util:property-path
 				path=&quot;order.customer.name&quot;/&gt;.
 			</xsd:documentation>
 		</xsd:annotation>
@@ -52,7 +55,8 @@
 		<xsd:annotation>
 			<xsd:documentation
 				source="java:org.springframework.beans.factory.config.ListFactoryBean">
-				Builds a List instance of the specified type, populated with the specified
+				Builds a List instance of the specified type, populated with
+				the specified
 				content.
 			</xsd:documentation>
 			<xsd:appinfo>
@@ -95,7 +99,8 @@
 		<xsd:annotation>
 			<xsd:documentation
 				source="java:org.springframework.beans.factory.config.SetFactoryBean">
-				Builds a Set instance of the specified type, populated with the specified
+				Builds a Set instance of the specified type, populated with
+				the specified
 				content.
 			</xsd:documentation>
 			<xsd:appinfo>
@@ -138,7 +143,8 @@
 		<xsd:annotation>
 			<xsd:documentation
 				source="java:org.springframework.beans.factory.config.MapFactoryBean">
-				Builds a Map instance of the specified type, populated with the specified
+				Builds a Map instance of the specified type, populated with
+				the specified
 				content.
 			</xsd:documentation>
 			<xsd:appinfo>

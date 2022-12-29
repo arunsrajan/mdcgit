@@ -17,7 +17,6 @@ package com.github.mdc.tasks.scheduler.yarn;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nustaq.serialization.FSTObjectInput;
@@ -25,7 +24,6 @@ import org.nustaq.serialization.FSTObjectOutput;
 import org.springframework.yarn.integration.ip.mind.MindAppmasterService;
 import org.springframework.yarn.integration.ip.mind.MindRpcMessageHolder;
 import org.springframework.yarn.integration.ip.mind.binding.BaseObject;
-
 import com.github.mdc.common.Utils;
 
 /**

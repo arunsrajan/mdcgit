@@ -16,7 +16,6 @@
 package com.github.mdc.common;
 
 import java.net.InetSocketAddress;
-
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.HttpConnectionFactory;
 import org.eclipse.jetty.server.Server;

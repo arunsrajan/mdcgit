@@ -17,9 +17,7 @@ package com.github.mdc.stream;
 
 import java.util.List;
 import java.util.function.IntUnaryOperator;
-
 import org.apache.log4j.Logger;
-
 import com.github.mdc.common.functions.AtomicBiConsumer;
 import com.github.mdc.common.functions.AtomicIntegerSupplier;
 import com.github.mdc.common.functions.AtomicObjIntConsumer;

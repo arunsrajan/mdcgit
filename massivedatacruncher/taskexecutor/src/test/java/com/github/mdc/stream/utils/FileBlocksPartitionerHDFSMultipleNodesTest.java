@@ -16,7 +16,6 @@
 package com.github.mdc.stream.utils;
 
 import static org.junit.Assert.assertEquals;
-
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.URI;
@@ -32,7 +31,6 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
@@ -44,7 +42,6 @@ import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
-
 import com.github.mdc.common.BlocksLocation;
 import com.github.mdc.common.GlobalContainerAllocDealloc;
 import com.github.mdc.common.Job;

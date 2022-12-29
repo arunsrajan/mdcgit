@@ -16,7 +16,6 @@
 package com.github.mdc.tasks.scheduler;
 
 import java.util.List;
-
 import com.github.mdc.common.Context;
 import com.github.mdc.tasks.executor.Combiner;
 import com.github.mdc.tasks.executor.Mapper;

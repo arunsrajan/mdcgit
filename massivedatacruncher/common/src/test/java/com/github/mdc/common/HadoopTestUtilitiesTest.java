@@ -1,9 +1,7 @@
 package com.github.mdc.common;
 
 import static org.junit.Assert.assertEquals;
-
 import org.junit.Test;
-
 import com.github.mdc.common.utils.HadoopTestUtilities;
 import com.github.sakserv.minicluster.impl.HdfsLocalCluster;
 

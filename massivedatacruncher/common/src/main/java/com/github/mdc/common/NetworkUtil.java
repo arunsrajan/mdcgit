@@ -18,7 +18,6 @@ package com.github.mdc.common;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.util.Collections;
-
 import org.apache.log4j.Logger;
 
 /**

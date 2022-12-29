@@ -18,7 +18,6 @@ package com.github.mdc.common;
 import java.io.InputStream;
 import java.time.Duration;
 import java.util.Objects;
-
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.log4j.Logger;
 import org.ehcache.Cache;

@@ -19,7 +19,6 @@ import java.io.Serializable;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

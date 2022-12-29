@@ -1,13 +1,10 @@
 package com.github.mdc.stream;
 
 import java.util.function.Function;
-
 import org.apache.commons.csv.CSVRecord;
 import org.jooq.lambda.tuple.Tuple;
-
 import com.github.mdc.common.functions.MapToPairFunction;
 import com.github.mdc.common.functions.PredicateSerializable;
-
 import net.sf.jsqlparser.expression.DoubleValue;
 import net.sf.jsqlparser.expression.LongValue;
 import net.sf.jsqlparser.expression.StringValue;

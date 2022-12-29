@@ -22,7 +22,6 @@ import java.util.function.Consumer;
 import java.util.function.IntSupplier;
 import java.util.function.ToIntFunction;
 import java.util.stream.Collectors;
-
 import org.apache.commons.csv.CSVRecord;
 import org.apache.hadoop.fs.Path;
 import org.apache.log4j.Logger;
@@ -38,7 +37,6 @@ import org.jgrapht.traverse.TopologicalOrderIterator;
 import org.jooq.lambda.tuple.Tuple;
 import org.jooq.lambda.tuple.Tuple2;
 import org.json.simple.JSONObject;
-
 import com.github.mdc.common.DAGEdge;
 import com.github.mdc.common.Dummy;
 import com.github.mdc.common.FileSystemSupport;
@@ -47,8 +45,8 @@ import com.github.mdc.common.JobMetrics;
 import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.MDCJobMetrics;
 import com.github.mdc.common.MDCProperties;
-import com.github.mdc.common.PipelineConstants;
 import com.github.mdc.common.PipelineConfig;
+import com.github.mdc.common.PipelineConstants;
 import com.github.mdc.common.Stage;
 import com.github.mdc.common.Utils;
 import com.github.mdc.common.functions.AggregateFunction;

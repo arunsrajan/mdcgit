@@ -17,7 +17,6 @@ package com.github.mdc.stream.utils;
 
 
 import static java.util.Objects.isNull;
-
 import org.apache.ignite.Ignite;
 import org.apache.ignite.Ignition;
 import org.apache.ignite.cache.CacheAtomicityMode;
@@ -27,7 +26,6 @@ import org.apache.ignite.configuration.DeploymentMode;
 import org.apache.ignite.configuration.IgniteConfiguration;
 import org.apache.ignite.spi.discovery.tcp.TcpDiscoverySpi;
 import org.apache.ignite.spi.discovery.tcp.ipfinder.multicast.TcpDiscoveryMulticastIpFinder;
-
 import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.MDCProperties;
 

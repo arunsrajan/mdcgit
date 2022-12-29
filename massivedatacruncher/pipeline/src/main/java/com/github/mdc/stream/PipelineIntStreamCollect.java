@@ -18,7 +18,6 @@ package com.github.mdc.stream;
 import java.util.function.BiConsumer;
 import java.util.function.ObjIntConsumer;
 import java.util.function.Supplier;
-
 import com.github.mdc.common.functions.AtomicBiConsumer;
 import com.github.mdc.common.functions.AtomicIntegerSupplier;
 import com.github.mdc.common.functions.AtomicObjIntConsumer;

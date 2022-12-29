@@ -18,11 +18,9 @@ package com.github.mdc.common;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-
 import org.jgroups.util.UUID;
 import org.junit.Test;
 

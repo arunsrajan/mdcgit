@@ -17,14 +17,12 @@ package com.github.mdc.stream;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Semaphore;
-
 import org.jgrapht.graph.SimpleDirectedGraph;
 import org.jgrapht.traverse.TopologicalOrderIterator;
 import org.jooq.lambda.tuple.Tuple;
@@ -32,7 +30,6 @@ import org.jooq.lambda.tuple.Tuple2;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
-
 import com.github.mdc.common.DAGEdge;
 import com.github.mdc.common.HeartBeatStream;
 import com.github.mdc.common.Job;

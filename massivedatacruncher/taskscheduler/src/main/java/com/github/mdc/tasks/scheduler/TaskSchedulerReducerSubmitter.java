@@ -18,13 +18,11 @@ package com.github.mdc.tasks.scheduler;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
-
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.log4j.Logger;
-
 import com.github.mdc.common.Context;
-import com.github.mdc.common.TaskSchedulerReducerSubmitterMBean;
 import com.github.mdc.common.ReducerValues;
+import com.github.mdc.common.TaskSchedulerReducerSubmitterMBean;
 import com.github.mdc.common.Utils;
 
 @SuppressWarnings("rawtypes")

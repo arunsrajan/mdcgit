@@ -17,13 +17,11 @@ package com.github.mdc.stream.examples;
 
 import java.io.Serializable;
 import java.net.URI;
-
 import org.apache.log4j.Logger;
-
 import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.PipelineConfig;
-import com.github.mdc.stream.StreamPipeline;
 import com.github.mdc.stream.Pipeline;
+import com.github.mdc.stream.StreamPipeline;
 
 public class StreamFilterFilterCollectArrDelayInMemoryDisk implements Serializable, Pipeline {
 	private static final long serialVersionUID = -1073668309871473457L;

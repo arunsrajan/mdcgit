@@ -18,7 +18,6 @@ package com.github.mdc.common;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.state.ConnectionStateListener;
 import org.apache.log4j.Logger;

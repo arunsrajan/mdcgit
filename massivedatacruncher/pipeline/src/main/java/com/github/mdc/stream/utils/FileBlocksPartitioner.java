@@ -26,10 +26,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
-
 import org.apache.ignite.IgniteCache;
 import org.xerial.snappy.SnappyOutputStream;
-
 import com.github.mdc.common.Block;
 import com.github.mdc.common.BlocksLocation;
 import com.github.mdc.common.Job;

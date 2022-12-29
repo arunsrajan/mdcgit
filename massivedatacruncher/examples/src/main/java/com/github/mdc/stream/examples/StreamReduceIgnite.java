@@ -17,11 +17,9 @@ package com.github.mdc.stream.examples;
 
 import java.io.Serializable;
 import java.net.URI;
-
 import org.apache.log4j.Logger;
 import org.jooq.lambda.tuple.Tuple;
 import org.jooq.lambda.tuple.Tuple2;
-
 import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.PipelineConfig;
 import com.github.mdc.stream.IgnitePipeline;

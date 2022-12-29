@@ -38,7 +38,6 @@ import java.util.stream.BaseStream;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
-
 import org.apache.commons.csv.CSVFormat;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.ignite.Ignite;
@@ -54,7 +53,6 @@ import org.json.simple.parser.ParseException;
 import org.nustaq.serialization.FSTObjectInput;
 import org.nustaq.serialization.FSTObjectOutput;
 import org.xerial.snappy.SnappyInputStream;
-
 import com.github.mdc.common.Blocks;
 import com.github.mdc.common.BlocksLocation;
 import com.github.mdc.common.HdfsBlockReader;

@@ -18,9 +18,7 @@ package com.github.mdc.stream.scheduler;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.concurrent.Callable;
-
 import org.apache.log4j.Logger;
-
 import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.StreamDataCruncher;
 import com.github.mdc.common.StreamPipelineTaskSubmitterMBean;

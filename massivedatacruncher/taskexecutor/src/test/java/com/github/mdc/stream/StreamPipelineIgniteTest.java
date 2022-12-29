@@ -16,12 +16,9 @@
 package com.github.mdc.stream;
 
 import static org.junit.Assert.assertEquals;
-
 import java.util.List;
-
 import org.jooq.lambda.tuple.Tuple2;
 import org.junit.Test;
-
 import com.github.mdc.common.MDCConstants;
 
 public class StreamPipelineIgniteTest extends StreamPipelineBaseTestCommon {

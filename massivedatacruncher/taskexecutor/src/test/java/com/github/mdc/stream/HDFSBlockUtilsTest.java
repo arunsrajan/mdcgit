@@ -16,13 +16,11 @@
 package com.github.mdc.stream;
 
 import static org.junit.Assert.assertEquals;
-
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
@@ -30,7 +28,6 @@ import org.apache.hadoop.fs.FileUtil;
 import org.apache.hadoop.fs.Path;
 import org.apache.log4j.Logger;
 import org.junit.Test;
-
 import com.github.mdc.common.Block;
 import com.github.mdc.common.BlocksLocation;
 import com.github.mdc.common.HDFSBlockUtils;

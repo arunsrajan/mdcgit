@@ -18,9 +18,7 @@ package com.github.mdc.tasks.scheduler;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Callable;
-
 import org.apache.curator.framework.CuratorFramework;
-
 import com.github.mdc.common.ApplicationTask;
 import com.github.mdc.common.RetrieveKeys;
 import com.github.mdc.common.TaskSchedulerMapperCombinerSubmitterMBean;

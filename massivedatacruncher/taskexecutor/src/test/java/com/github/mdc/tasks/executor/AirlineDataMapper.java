@@ -16,7 +16,6 @@
 package com.github.mdc.tasks.executor;
 
 import java.util.List;
-
 import com.github.mdc.common.Context;
 
 @SuppressWarnings("rawtypes")

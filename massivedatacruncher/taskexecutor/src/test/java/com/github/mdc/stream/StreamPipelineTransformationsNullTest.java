@@ -16,13 +16,11 @@
 package com.github.mdc.stream;
 
 import static org.junit.Assert.assertEquals;
-
 import org.jooq.lambda.tuple.Tuple;
 import org.jooq.lambda.tuple.Tuple2;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
 import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.PipelineConstants;
 

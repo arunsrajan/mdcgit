@@ -16,15 +16,12 @@
 package com.github.mdc.stream.ignite;
 
 import static org.junit.Assert.assertEquals;
-
 import java.util.List;
-
 import org.jooq.lambda.tuple.Tuple;
 import org.jooq.lambda.tuple.Tuple2;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
-
 import com.github.mdc.stream.IgnitePipeline;
 
 @SuppressWarnings({"unchecked", "serial", "rawtypes"})

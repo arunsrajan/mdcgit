@@ -20,7 +20,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.IntSupplier;
 import java.util.stream.Collectors;
-
 import org.apache.ignite.IgniteCache;
 import org.apache.ignite.Ignition;
 import org.apache.ignite.cache.CacheAtomicityMode;
@@ -40,7 +39,6 @@ import org.jgrapht.io.DOTExporter;
 import org.jgrapht.io.ExportException;
 import org.jgrapht.io.GraphExporter;
 import org.jgrapht.traverse.TopologicalOrderIterator;
-
 import com.github.mdc.common.DAGEdge;
 import com.github.mdc.common.Dummy;
 import com.github.mdc.common.FileSystemSupport;
@@ -49,8 +47,8 @@ import com.github.mdc.common.JobMetrics;
 import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.MDCJobMetrics;
 import com.github.mdc.common.MDCProperties;
-import com.github.mdc.common.PipelineConstants;
 import com.github.mdc.common.PipelineConfig;
+import com.github.mdc.common.PipelineConstants;
 import com.github.mdc.common.Stage;
 import com.github.mdc.common.Utils;
 import com.github.mdc.common.functions.AggregateFunction;

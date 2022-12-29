@@ -19,7 +19,6 @@ import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.Objects;
 import java.util.Set;
-
 import com.github.mdc.common.MDCConstants.STORAGE;
 
 /**

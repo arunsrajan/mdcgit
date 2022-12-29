@@ -69,13 +69,18 @@
 	<xsd:element name="converter">
 		<xsd:annotation>
 			<xsd:documentation>
-				Allows you to register Converters (implementation of the Converter
+				Allows you to register Converters (implementation
+				of the Converter
 				interface) that will
-				be automatically registered with the ConversionService.
+				be automatically registered with
+				the ConversionService.
 				ConversionService itself does
-				not have to be explicitly defined since the default ConversionService
-				will be registered
-				under the name 'yarnIntegrationConversionService' unless bean with this
+				not have to be
+				explicitly defined since the default ConversionService
+				will be
+				registered
+				under the name 'yarnIntegrationConversionService' unless
+				bean with this
 				name is already registered.
 			</xsd:documentation>
 		</xsd:annotation>

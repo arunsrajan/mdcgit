@@ -18,7 +18,6 @@ package com.github.mdc.stream.utils;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.URI;
@@ -35,7 +34,6 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
@@ -47,20 +45,17 @@ import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
-
 import com.github.mdc.common.BlocksLocation;
 import com.github.mdc.common.GlobalContainerAllocDealloc;
 import com.github.mdc.common.Job;
 import com.github.mdc.common.JobMetrics;
 import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.MDCNodesResources;
-import com.github.mdc.common.MDCProperties;
 import com.github.mdc.common.PipelineConfig;
 import com.github.mdc.common.PipelineConstants;
 import com.github.mdc.common.Resources;
 import com.github.mdc.common.StreamDataCruncher;
 import com.github.mdc.common.Utils;
-import com.github.mdc.stream.StreamPipelineBase;
 import com.github.mdc.stream.StreamPipelineBaseTestCommon;
 import com.github.mdc.tasks.executor.NodeRunner;
 

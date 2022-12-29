@@ -17,7 +17,6 @@ package com.github.mdc.stream;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
-
 import com.github.mdc.stream.utils.FileBlocksPartitionerHDFSMultipleNodesTest;
 import com.github.mdc.stream.utils.FileBlocksPartitionerHDFSTest;
 import com.github.mdc.tasks.executor.MassiveDataCruncherMRApiTest;

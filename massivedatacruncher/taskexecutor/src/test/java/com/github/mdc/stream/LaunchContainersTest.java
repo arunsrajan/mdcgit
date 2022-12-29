@@ -16,16 +16,13 @@
 package com.github.mdc.stream;
 
 import static org.junit.Assert.assertNotNull;
-
 import java.net.URI;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-
 import org.jooq.lambda.tuple.Tuple;
 import org.jooq.lambda.tuple.Tuple2;
 import org.junit.Test;
-
 import com.github.mdc.common.ByteBufferPoolDirect;
 import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.MDCNodesResources;

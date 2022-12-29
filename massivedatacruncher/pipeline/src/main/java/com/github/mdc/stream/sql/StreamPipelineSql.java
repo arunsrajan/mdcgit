@@ -17,10 +17,9 @@ package com.github.mdc.stream.sql;
 
 import java.net.URI;
 import java.util.function.IntSupplier;
-
 import com.github.mdc.stream.MapPair;
-import com.github.mdc.stream.StreamPipeline;
 import com.github.mdc.stream.PipelineException;
+import com.github.mdc.stream.StreamPipeline;
 
 public class StreamPipelineSql {
 	Object mdpmp;

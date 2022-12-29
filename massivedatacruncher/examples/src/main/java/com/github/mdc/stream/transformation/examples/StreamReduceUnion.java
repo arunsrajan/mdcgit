@@ -17,10 +17,8 @@ package com.github.mdc.stream.transformation.examples;
 
 import java.io.Serializable;
 import java.net.URI;
-
 import org.apache.log4j.Logger;
 import org.jooq.lambda.tuple.Tuple;
-
 import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.PipelineConfig;
 import com.github.mdc.stream.Pipeline;

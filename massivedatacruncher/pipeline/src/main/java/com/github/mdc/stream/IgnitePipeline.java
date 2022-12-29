@@ -23,16 +23,14 @@ import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.IntSupplier;
 import java.util.function.ToIntFunction;
-
 import org.apache.hadoop.fs.Path;
 import org.apache.log4j.Logger;
 import org.jooq.lambda.tuple.Tuple;
 import org.jooq.lambda.tuple.Tuple2;
-
 import com.github.mdc.common.FileSystemSupport;
 import com.github.mdc.common.MDCConstants;
-import com.github.mdc.common.PipelineConstants;
 import com.github.mdc.common.PipelineConfig;
+import com.github.mdc.common.PipelineConstants;
 import com.github.mdc.common.Utils;
 import com.github.mdc.common.functions.CalculateCount;
 import com.github.mdc.common.functions.Distinct;

@@ -17,16 +17,14 @@ package com.github.mdc.stream.examples;
 
 import java.io.Serializable;
 import java.net.URI;
-
 import org.apache.log4j.Logger;
 import org.jooq.lambda.tuple.Tuple;
 import org.jooq.lambda.tuple.Tuple2;
-
 import com.github.mdc.common.MDCConstants;
-import com.github.mdc.common.PipelineConfig;
 import com.github.mdc.common.MDCConstants.STORAGE;
-import com.github.mdc.stream.StreamPipeline;
+import com.github.mdc.common.PipelineConfig;
 import com.github.mdc.stream.Pipeline;
+import com.github.mdc.stream.StreamPipeline;
 
 public class StreamReduceNormalDiskDivided implements Serializable, Pipeline {
 	private static final long serialVersionUID = -7001849661976107123L;

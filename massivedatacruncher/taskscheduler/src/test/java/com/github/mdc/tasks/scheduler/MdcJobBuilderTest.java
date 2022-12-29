@@ -17,11 +17,8 @@ package com.github.mdc.tasks.scheduler;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-
 import java.util.List;
-
 import org.junit.Test;
-
 import com.github.mdc.common.DataCruncherContext;
 
 public class MdcJobBuilderTest extends MassiveDataMRJobBase {

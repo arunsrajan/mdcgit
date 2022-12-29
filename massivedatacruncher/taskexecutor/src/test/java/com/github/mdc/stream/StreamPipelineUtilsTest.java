@@ -18,10 +18,8 @@ package com.github.mdc.stream;
 import java.util.Arrays;
 import java.util.function.IntUnaryOperator;
 import java.util.function.ToIntFunction;
-
 import org.jooq.lambda.tuple.Tuple2;
 import org.junit.Test;
-
 import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.functions.AggregateFunction;
 import com.github.mdc.common.functions.AggregateReduceFunction;
@@ -46,7 +44,6 @@ import com.github.mdc.common.functions.RightOuterJoinPredicate;
 import com.github.mdc.common.functions.SortedComparator;
 import com.github.mdc.common.functions.TupleFlatMapFunction;
 import com.github.mdc.common.functions.UnionFunction;
-
 import junit.framework.TestCase;
 
 public class StreamPipelineUtilsTest extends TestCase {

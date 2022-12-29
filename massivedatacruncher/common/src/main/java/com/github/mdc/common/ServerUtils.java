@@ -17,7 +17,6 @@ package com.github.mdc.common;
 
 import javax.servlet.Servlet;
 import javax.servlet.http.HttpServlet;
-
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;

@@ -17,9 +17,7 @@ package com.github.mdc.tasks.executor;
 
 import java.util.List;
 import java.util.concurrent.Callable;
-
 import org.apache.log4j.Logger;
-
 import com.github.mdc.common.Context;
 import com.github.mdc.common.DataCruncherContext;
 

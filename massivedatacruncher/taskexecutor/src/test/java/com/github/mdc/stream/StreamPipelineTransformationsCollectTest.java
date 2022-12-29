@@ -17,19 +17,16 @@ package com.github.mdc.stream;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.io.LineNumberReader;
 import java.util.Arrays;
 import java.util.List;
-
 import org.jooq.lambda.tuple.Tuple;
 import org.jooq.lambda.tuple.Tuple2;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
 import com.github.mdc.common.MDCConstants;
 
 public class StreamPipelineTransformationsCollectTest extends StreamPipelineBaseTestCommon {

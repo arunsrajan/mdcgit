@@ -16,15 +16,13 @@
 package com.github.mdc.stream.examples;
 
 import java.net.URI;
-
 import org.apache.log4j.Logger;
 import org.jooq.lambda.tuple.Tuple;
 import org.jooq.lambda.tuple.Tuple2;
-
 import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.PipelineConfig;
-import com.github.mdc.stream.StreamPipeline;
 import com.github.mdc.stream.Pipeline;
+import com.github.mdc.stream.StreamPipeline;
 
 public class StreamReduceRightOuterJoinJGroups implements Pipeline {
 	private Logger log = Logger.getLogger(StreamReduceRightOuterJoinJGroups.class);

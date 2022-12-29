@@ -16,10 +16,8 @@
 package com.github.mdc.common;
 
 import static java.util.Objects.nonNull;
-
 import java.nio.ByteBuffer;
 import java.util.concurrent.Semaphore;
-
 import org.apache.log4j.Logger;
 
 /**

@@ -16,9 +16,7 @@
 package com.github.mdc.stream;
 
 import static org.junit.Assert.assertEquals;
-
 import java.util.List;
-
 import org.apache.log4j.Logger;
 import org.jooq.lambda.tuple.Tuple2;
 import org.json.simple.JSONObject;

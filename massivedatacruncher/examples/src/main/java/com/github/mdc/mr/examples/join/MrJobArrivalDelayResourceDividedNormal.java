@@ -15,11 +15,11 @@
  */
 package com.github.mdc.mr.examples.join;
 
+import org.apache.log4j.Logger;
 import com.github.mdc.common.JobConfiguration;
 import com.github.mdc.common.MDCConstants;
 import com.github.mdc.tasks.scheduler.MapReduceApplication;
 import com.github.mdc.tasks.scheduler.MapReduceApplicationBuilder;
-import org.apache.log4j.Logger;
 
 public class MrJobArrivalDelayResourceDividedNormal implements com.github.mdc.tasks.scheduler.Application {
 	static Logger log = Logger.getLogger(MrJobArrivalDelayResourceDividedNormal.class);

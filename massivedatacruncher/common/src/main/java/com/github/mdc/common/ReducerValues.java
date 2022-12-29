@@ -17,9 +17,7 @@ package com.github.mdc.common;
 
 import java.io.Serializable;
 import java.util.List;
-
 import org.jooq.lambda.tuple.Tuple3;
-
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

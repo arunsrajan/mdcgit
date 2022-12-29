@@ -24,9 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
-
 import org.apache.log4j.Logger;
-
 import com.github.mdc.common.BlocksLocation;
 import com.github.mdc.common.Context;
 

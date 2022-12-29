@@ -17,7 +17,6 @@ package com.github.mdc.mr.examples.join;
 
 import java.util.HashMap;
 import java.util.Map;
-
 import com.github.mdc.common.Context;
 import com.github.mdc.tasks.executor.Mapper;
 

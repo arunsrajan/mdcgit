@@ -17,7 +17,6 @@ package com.github.mdc.common;
 
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
-
 import org.apache.ignite.Ignite;
 import org.apache.ignite.Ignition;
 import org.apache.ignite.cache.CacheAtomicityMode;

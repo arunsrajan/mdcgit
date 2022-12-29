@@ -26,12 +26,9 @@ import java.util.stream.BaseStream;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
-
 import org.jooq.lambda.tuple.Tuple;
 import org.jooq.lambda.tuple.Tuple2;
-
 import com.github.mdc.common.PipelineConstants;
-import com.github.mdc.stream.PipelineException;
 import com.github.mdc.common.functions.CoalesceFunction;
 import com.github.mdc.common.functions.Distinct;
 import com.github.mdc.common.functions.DoubleFlatMapFunction;
@@ -50,6 +47,7 @@ import com.github.mdc.common.functions.ReduceByKeyFunctionValues;
 import com.github.mdc.common.functions.ReduceFunction;
 import com.github.mdc.common.functions.SortedComparator;
 import com.github.mdc.common.functions.TupleFlatMapFunction;
+import com.github.mdc.stream.PipelineException;
 
 public class StreamUtils {
 	private StreamUtils() {

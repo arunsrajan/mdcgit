@@ -15,13 +15,12 @@
  */
 package com.github.mdc.common.utils;
 
+import java.util.concurrent.CountDownLatch;
+import org.apache.log4j.Logger;
+import org.apache.zookeeper.server.ServerCnxnFactory;
 import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.MDCProperties;
 import com.github.mdc.common.Utils;
-import org.apache.log4j.Logger;
-import org.apache.zookeeper.server.ServerCnxnFactory;
-
-import java.util.concurrent.CountDownLatch;
 
 public class ZookeeperMain {
 	static Logger log = Logger.getLogger(ZookeeperMain.class);

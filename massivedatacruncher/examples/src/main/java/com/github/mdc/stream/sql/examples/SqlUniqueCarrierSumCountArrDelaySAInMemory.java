@@ -18,13 +18,11 @@ package com.github.mdc.stream.sql.examples;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
-
 import org.apache.calcite.sql.type.SqlTypeName;
 import org.apache.log4j.Logger;
-
 import com.github.mdc.common.MDCConstants;
-import com.github.mdc.common.PipelineConfig;
 import com.github.mdc.common.MDCConstants.STORAGE;
+import com.github.mdc.common.PipelineConfig;
 import com.github.mdc.stream.Pipeline;
 import com.github.mdc.stream.sql.StreamPipelineSql;
 import com.github.mdc.stream.sql.StreamPipelineSqlBuilder;

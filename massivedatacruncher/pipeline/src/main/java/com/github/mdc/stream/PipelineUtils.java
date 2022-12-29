@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.IntUnaryOperator;
 import java.util.function.ToIntFunction;
-
 import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.Task;
 import com.github.mdc.common.functions.AggregateFunction;

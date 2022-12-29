@@ -17,7 +17,6 @@ package com.github.mdc.common.functions;
 
 import java.io.Serializable;
 import java.util.List;
-
 import org.jooq.lambda.tuple.Tuple2;
 
 public interface DoubleTupleFlatMapFunction<I> extends Serializable {

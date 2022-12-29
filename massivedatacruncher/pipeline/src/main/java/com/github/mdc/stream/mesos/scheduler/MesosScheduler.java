@@ -22,7 +22,6 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
 import org.apache.log4j.Logger;
 import org.apache.mesos.MesosSchedulerDriver;
 import org.apache.mesos.Protos;
@@ -42,7 +41,6 @@ import org.apache.mesos.SchedulerDriver;
 import org.jgrapht.Graphs;
 import org.jgrapht.graph.SimpleDirectedGraph;
 import org.nustaq.serialization.FSTObjectOutput;
-
 import com.github.mdc.common.DAGEdge;
 import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.MesosThirdPartyLibraryDistributor;

@@ -22,12 +22,10 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutorService;
-
 import org.apache.calcite.sql.type.SqlTypeName;
 import org.apache.curator.test.TestingServer;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.log4j.Logger;
-
 import com.github.mdc.common.HeartBeatStream;
 import com.github.mdc.common.PipelineConfig;
 import com.github.sakserv.minicluster.impl.HdfsLocalCluster;

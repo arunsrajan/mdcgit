@@ -15,6 +15,7 @@
  */
 package com.github.mdc.common;
 
+import static org.junit.Assert.assertNotNull;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.ArrayList;
@@ -26,7 +27,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
@@ -36,8 +36,6 @@ import org.ehcache.Cache;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
-import static org.junit.Assert.assertNotNull;
 
 public class CacheUtilsTest {
 

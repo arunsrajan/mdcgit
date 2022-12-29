@@ -16,7 +16,6 @@
 package com.github.mdc.stream.submitter;
 
 import static java.util.Objects.nonNull;
-
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -27,13 +26,11 @@ import java.net.Socket;
 import java.net.URL;
 import java.util.Objects;
 import java.util.Random;
-
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.RetryForever;
 import org.apache.hadoop.fs.FsUrlStreamHandlerFactory;
 import org.apache.log4j.Logger;
-
 import com.github.mdc.common.MDCConstants;
 import com.github.mdc.common.MDCProperties;
 import com.github.mdc.common.Utils;
