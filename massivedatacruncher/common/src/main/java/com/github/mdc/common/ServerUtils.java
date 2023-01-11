@@ -8,11 +8,11 @@
  */
 package com.github.mdc.common;
 
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import jakarta.servlet.Servlet;
 import jakarta.servlet.http.HttpServlet;
 
@@ -22,6 +22,7 @@ import jakarta.servlet.http.HttpServlet;
  */
 public class ServerUtils implements ServerUtilsMBean {
 
+  static Logger log = LoggerFactory.getLogger(ServerUtils.class);
 
   Server server;
 
@@ -37,8 +38,7 @@ public class ServerUtils implements ServerUtilsMBean {
     }
     var port = (Integer) config[0];
     // Create the server object.
-    server =
-        new Server(new InetSocketAddress(InetAddress.getByAddress(new byte[] {0, 0, 0, 0}), port));
+    server = new Server(port);
     var context = new ServletContextHandler(ServletContextHandler.SESSIONS);
     context.setContextPath(MDCConstants.FORWARD_SLASH);
     server.setHandler(context);
@@ -50,7 +50,7 @@ public class ServerUtils implements ServerUtilsMBean {
         throw new Exception(
             "Path must be Url path of servlet " + config[conf].getClass().getName());
       }
-      // Configure the server to receive the request.
+      log.info("Configuring the servlet to receive the request.");
       context.addServlet(new ServletHolder((Servlet) config[conf]), (String) config[conf + 1]);
     }
   }
@@ -60,8 +60,14 @@ public class ServerUtils implements ServerUtilsMBean {
    */
   @Override
   public void start() throws Exception {
-    if (server != null) {
-      server.start();
+    try {
+      if (server != null) {
+        log.info("In ServerUtils start method starting...");
+        server.start();
+        log.info("In ServerUtils start method exiting...");
+      }
+    } catch (Exception ex) {
+      log.error(MDCConstants.EMPTY, ex);
     }
 
   }

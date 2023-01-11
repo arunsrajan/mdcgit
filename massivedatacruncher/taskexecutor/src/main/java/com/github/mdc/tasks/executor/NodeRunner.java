@@ -97,6 +97,7 @@ public class NodeRunner implements Callable<Object> {
         Map<String, List<Thread>> threads = new ConcurrentHashMap<>();
         List<Integer> ports = new ArrayList<>();
         Process proc;
+        var host = MDCProperties.get().getProperty(MDCConstants.TASKEXECUTOR_HOST);
         for (int port = 0; port < lc.getCla().getNumberofcontainers(); port++) {
           var cr = lc.getCla().getCr().get(port);
           log.info("Dispatching chamber {}....", (cr.getPort()));
