@@ -97,19 +97,19 @@
 		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-server</artifactId>
-			<version>9.4.15.v20190215</version>
+			<version>11.0.13</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-servlet</artifactId>
-			<version>9.4.15.v20190215</version>
+			<version>11.0.13</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-util</artifactId>
-			<version>9.4.15.v20190215</version>
+			<version>11.0.13</version>
 		</dependency>
 
 		<dependency>
