@@ -16,6 +16,7 @@
 package com.github.mdc.stream;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.junit.Test;
@@ -35,54 +36,73 @@ public class StreamPipelineSqlBuilderTest extends StreamPipelineBaseTestCommon {
 	@SuppressWarnings({"unchecked"})
 	@Test
 	public void testAllColumns() throws Exception {
-		log.info("In testFilterMDPSqlBuilderAirlines() method Entry");
+		log.info("In testAllColumns() method Entry");
 		String statement = "SELECT * FROM airline ";
-		pipelineconfig.setLocal("false");
+		pipelineconfig.setLocal("true");
 		StreamPipelineSql mdpsql = StreamPipelineSqlBuilder.newBuilder().add(airlinesamplesql, "airline", airlineheader, airsqltype)
 				.setHdfs(hdfsfilepath)
 				.setPipelineConfig(pipelineconfig).setSql(statement).build();
-		List<List> records = (List<List>) mdpsql.collect(true, null);
-		for (List<List> recs : records) {
+		List<List<Map<String,Object>>> records = (List<List<Map<String,Object>>>) mdpsql.collect(true, null);
+		for (List<Map<String,Object>> recs : records) {
 			for(Object record: recs) {
 				log.info(record);
 			}
 		}
-		log.info("In testFilterMDPSqlBuilderAirlines() method Exit");		
+		log.info("In testAllColumns() method Exit");		
 	}
 	
 	@SuppressWarnings({"unchecked"})
 	@Test
 	public void testAllColumnsWithWhere() throws Exception {
-		log.info("In testFilterMDPSqlBuilderAirlines() method Entry");
+		log.info("In testAllColumnsWithWhere() method Entry");
 		String statement = "SELECT * FROM airline WHERE DayofMonth='8' and MonthOfYear='12'";
-		pipelineconfig.setLocal("false");
+		pipelineconfig.setLocal("true");
 		StreamPipelineSql mdpsql = StreamPipelineSqlBuilder.newBuilder().add(airlinesamplesql, "airline", airlineheader, airsqltype)
 				.setHdfs(hdfsfilepath)
 				.setPipelineConfig(pipelineconfig).setSql(statement).build();
-		List<List> records = (List<List>) mdpsql.collect(true, null);
-		for (List<List> recs : records) {
+		List<List<Map<String,Object>>> records = (List<List<Map<String,Object>>>) mdpsql.collect(true, null);
+		for (List<Map<String,Object>> recs : records) {
 			for(Object record: recs) {
 				log.info(record);
 			}
 		}
-		log.info("In testFilterMDPSqlBuilderAirlines() method Exit");		
+		log.info("In testAllColumnsWithWhere() method Exit");		
 	}
 	
 	@SuppressWarnings({"unchecked"})
 	@Test
 	public void testRequiredColumns() throws Exception {
-		log.info("In testFilterMDPSqlBuilderAirlines() method Entry");
+		log.info("In testRequiredColumns() method Entry");
 		String statement = "SELECT UniqueCarrier,ArrDelay,DepDelay FROM airline ";
-		pipelineconfig.setLocal("false");
+		pipelineconfig.setLocal("true");
 		StreamPipelineSql mdpsql = StreamPipelineSqlBuilder.newBuilder().add(airlinesamplesql, "airline", airlineheader, airsqltype)
 				.setHdfs(hdfsfilepath)
 				.setPipelineConfig(pipelineconfig).setSql(statement).build();
-		List<List> records = (List<List>) mdpsql.collect(true, null);
-		for (List<List> recs : records) {
+		List<List<Map<String,Object>>> records = (List<List<Map<String,Object>>>) mdpsql.collect(true, null);
+		for (List<Map<String,Object>> recs : records) {
 			for(Object record: recs) {
 				log.info(record);
 			}
 		}
-		log.info("In testFilterMDPSqlBuilderAirlines() method Exit");		
+		log.info("In testRequiredColumns() method Exit");		
+	}
+	
+	
+	@SuppressWarnings({"unchecked"})
+	@Test
+	public void testRequiredColumnsWithWhere() throws Exception {
+		log.info("In testRequiredColumnsWithWhere() method Entry");
+		String statement = "SELECT UniqueCarrier,ArrDelay,DepDelay FROM airline WHERE DayofMonth='8' and MonthOfYear='12'";
+		pipelineconfig.setLocal("true");
+		StreamPipelineSql mdpsql = StreamPipelineSqlBuilder.newBuilder().add(airlinesamplesql, "airline", airlineheader, airsqltype)
+				.setHdfs(hdfsfilepath)
+				.setPipelineConfig(pipelineconfig).setSql(statement).build();
+		List<List<Map<String,Object>>> records = (List<List<Map<String,Object>>>) mdpsql.collect(true, null);
+		for (List<Map<String,Object>> recs : records) {
+			for(Object record: recs) {
+				log.info(record);
+			}
+		}
+		log.info("In testRequiredColumnsWithWhere() method Exit");		
 	}
 }

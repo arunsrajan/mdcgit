@@ -1,5 +1,7 @@
 package com.github.mdc.stream.sql.build;
 
+import static java.util.Objects.nonNull;
+
 import java.io.Serializable;
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -24,9 +26,7 @@ import net.sf.jsqlparser.JSQLParserException;
 import net.sf.jsqlparser.expression.BinaryExpression;
 import net.sf.jsqlparser.expression.DoubleValue;
 import net.sf.jsqlparser.expression.Expression;
-import net.sf.jsqlparser.expression.LongValue;
 import net.sf.jsqlparser.expression.StringValue;
-import net.sf.jsqlparser.expression.operators.relational.EqualsTo;
 import net.sf.jsqlparser.parser.CCJSqlParserManager;
 import net.sf.jsqlparser.schema.Column;
 import net.sf.jsqlparser.schema.Table;
@@ -91,21 +91,20 @@ public class StreamPipelineSqlBuilder implements Serializable{
 		    	Table table = (Table) plainSelect.getFromItem();
 		    	String[] columns = tablecolumnsmap.get(table.getName());
 		    	Expression expression = plainSelect.getWhere();		    	
-		    	StreamPipeline pipeline = StreamPipeline.newCsvStreamHDFS(hdfs,
+		    	StreamPipeline<CSVRecord> pipeline = StreamPipeline.newCsvStreamHDFS(hdfs,
 						tablefoldermap.get(table.getName()), this.pc,
-						columns).map((Serializable & MapFunction<CSVRecord,Map<String,Object>>)(record->{
-							Map<String,Object> columnWithValues= new HashMap<>();
-							List<String> columnsl = Arrays.asList(columns);
-							columnsl.forEach(column->{
-								columnWithValues.put(column, record.get(column));
-							});
-							return columnWithValues;
-						}));
-		    	if(expression instanceof BinaryExpression bex) {
-		    		return buildPredicate(pipeline, bex);
-		    	} else {
-		    		return pipeline;
+						columns);
+		    	if(nonNull(expression) && expression instanceof BinaryExpression bex) {
+		    		pipeline = buildPredicate(pipeline, bex);
 		    	}
+		    	return pipeline.map((Serializable & MapFunction<CSVRecord,Map<String,Object>>)(record->{
+					Map<String,Object> columnWithValues= new HashMap<>();
+					List<String> columnsl = Arrays.asList(columns);
+					columnsl.forEach(column->{
+						columnWithValues.put(column, record.get(column));
+					});
+					return columnWithValues;
+				}));
 		    } else {
 		    	List<SelectItem> selectItems = plainSelect.getSelectItems();
 		    	List<String> columns = new ArrayList<>();
@@ -120,9 +119,14 @@ public class StreamPipelineSqlBuilder implements Serializable{
 		            }
 		        }
 		        Table table = (Table) plainSelect.getFromItem();
-		        return StreamPipeline.newCsvStreamHDFS(hdfs,
+		        Expression expression = plainSelect.getWhere();
+		        StreamPipeline<CSVRecord> pipeline = StreamPipeline.newCsvStreamHDFS(hdfs,
 						tablefoldermap.get(table.getName()), this.pc,
-						tablecolumnsmap.get(table.getName())).map((Serializable & MapFunction<CSVRecord,Map<String,Object>>)(record->{
+						tablecolumnsmap.get(table.getName()));
+		    	if(nonNull(expression) && expression instanceof BinaryExpression bex) {
+		    		pipeline = buildPredicate(pipeline, bex);
+		    	}
+		    	return pipeline.map((Serializable & MapFunction<CSVRecord,Map<String,Object>>)(record->{
 							Map<String,Object> columnWithValues= new HashMap<>();
 							columns.forEach(column->{
 								columnWithValues.put(column, record.get(column));
@@ -134,11 +138,11 @@ public class StreamPipelineSqlBuilder implements Serializable{
 	    return statement.toString();
 	}
 	
-	public static StreamPipeline<Map<String,Object>> buildPredicate(StreamPipeline<Map<String,Object>> pipeline, Expression expression) throws PipelineException {
+	public static StreamPipeline<CSVRecord> buildPredicate(StreamPipeline<CSVRecord> pipeline, Expression expression) throws PipelineException {
 		return pipeline.filter(row -> evaluateExpression(expression, row));
 	}
 
-	public static boolean evaluateExpression(Expression expression, Map<String,Object> row) {
+	public static boolean evaluateExpression(Expression expression, CSVRecord row) {
 	    if (expression instanceof BinaryExpression) {
 	        BinaryExpression binaryExpression = (BinaryExpression) expression;
 	        String operator = binaryExpression.getStringExpression();
@@ -180,7 +184,7 @@ public class StreamPipelineSqlBuilder implements Serializable{
 	}
 
 
-	private static String getValueString(Expression expression, Map<String,Object> row) {
+	private static String getValueString(Expression expression, CSVRecord row) {
 		if (expression instanceof StringValue) {
 	        return ((StringValue) expression).getValue();
 	    } else if (expression instanceof DoubleValue) {
