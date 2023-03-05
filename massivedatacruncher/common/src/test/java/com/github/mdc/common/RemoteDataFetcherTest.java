@@ -40,7 +40,7 @@ public class RemoteDataFetcherTest {
 	@BeforeClass
 	public static void setUpHdfs() throws Exception {
 		org.burningwave.core.assembler.StaticComponentContainer.Modules.exportAllToAll();
-		System.setProperty("HADOOP_HOME", "C:\\DEVELOPMENT\\hadoop\\hadooplocal\\hadoop-3.3.1");
+		System.setProperty("HADOOP_HOME", "C:\\DEVELOPMENT\\hadoop\\hadoop-3.3.4");
 		hdfsLocalCluster = HadoopTestUtilities.initHdfsCluster(9100, 9870, 2);
 		Utils.loadLog4JSystemProperties(MDCConstants.PREV_FOLDER + MDCConstants.FORWARD_SLASH
 				+ MDCConstants.DIST_CONFIG_FOLDER + MDCConstants.FORWARD_SLASH, MDCConstants.MDC_TEST_PROPERTIES);

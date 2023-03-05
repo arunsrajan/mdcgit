@@ -20,7 +20,10 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.IntSupplier;
 import java.util.stream.Collectors;
+
+import org.apache.ignite.Ignite;
 import org.apache.ignite.IgniteCache;
+import org.apache.ignite.IgniteState;
 import org.apache.ignite.Ignition;
 import org.apache.ignite.cache.CacheAtomicityMode;
 import org.apache.ignite.cache.CacheMode;
@@ -395,7 +398,14 @@ public sealed class IgniteCommon extends AbstractPipeline permits IgnitePipeline
 				cc.setBackups(Integer.parseInt(pipelineconfig.getIgnitebackup()));
 				cfg.setCacheConfiguration(cc);
 				// Starting the node
-				var ignite = Ignition.start(cfg);
+				Ignite ignite = null; 
+				if (IgniteState.STARTED == Ignition.state()) {
+					// The default instance is already started, do not start another one
+					ignite = Ignition.ignite();
+				}
+				else {					
+					ignite = Ignition.start(cfg);				
+				}
 				IgniteCache<Object, byte[]> ignitecache = ignite.cache(MDCConstants.MDCCACHE);
 				job.setIgnite(ignite);
 				var computeservers = job.getIgnite().cluster().forServers();

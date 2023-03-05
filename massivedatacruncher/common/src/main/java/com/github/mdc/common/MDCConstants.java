@@ -474,5 +474,7 @@ public class MDCConstants {
   public static final String MEMORY_FROM_NODE_DEFAULT = "1024";
   public static final String CPU_FROM_NODE_DEFAULT = "2";
   public static final int PORT_OFFSET = 100;
+  
+  public static final String IGNITE_STATUS_STARTED = "STARTED";
 
 }

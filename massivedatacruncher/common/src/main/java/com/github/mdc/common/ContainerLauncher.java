@@ -40,7 +40,6 @@ public class ContainerLauncher {
           .add("-Djava.util.concurrent.ForkJoinPool.common.parallelism=" + cr.getCpu());
       argumentsForSpawn.add("-XX:+HeapDumpOnOutOfMemoryError");
       argumentsForSpawn.add("--enable-preview");
-      argumentsForSpawn.add("--add-modules=jdk.incubator.foreign");
       argumentsForSpawn.add("-Djava.net.preferIPv4Stack=true");
       argumentsForSpawn.add(cr.getGctype());
       argumentsForSpawn.add("-D" + MDCConstants.TASKEXECUTOR_HOST + "=" + host);

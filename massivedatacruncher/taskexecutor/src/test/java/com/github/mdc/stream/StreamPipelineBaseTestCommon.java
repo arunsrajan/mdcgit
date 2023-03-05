@@ -70,7 +70,7 @@ public class StreamPipelineBaseTestCommon extends StreamPipelineBase {
 			pipelineconfig.setNumberofcontainers("1");
 			pipelineconfig.setMode(MDCConstants.MODE_NORMAL);
 			pipelineconfig.setBatchsize("1");
-			System.setProperty("HADOOP_HOME", "C:\\DEVELOPMENT\\hadoop\\hadooplocal\\hadoop-3.3.1");
+			System.setProperty("HADOOP_HOME", "C:\\DEVELOPMENT\\hadoop\\hadoop-3.3.4");
 			ByteBufferPoolDirect.init();
 			CacheUtils.initCache();
 			CacheUtils.initBlockMetadataCache();

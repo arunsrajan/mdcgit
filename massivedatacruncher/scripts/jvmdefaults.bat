@@ -84,9 +84,9 @@ if %java_version% GEQ 17 (
     --add-opens=java.base/java.util=ALL-UNNAMED ^
     --add-opens=java.base/java.lang=ALL-UNNAMED ^
     --add-opens=java.base/java.lang.invoke=ALL-UNNAMED ^
-    --add-opens=java.base/java.math=ALL-UNNAMED ^ 
+    --add-opens=java.base/java.math=ALL-UNNAMED ^
     --add-modules=jdk.incubator.foreign ^
-    --add-opens=java.base/java.net=ALL-UNNAMED ^ 
+    --add-opens=java.base/java.net=ALL-UNNAMED ^
     --add-opens=java.base/java.text=ALL-UNNAMED ^
     --add-opens=java.sql/java.sql=ALL-UNNAMED ^
     --add-opens=java.base/java.util.concurrent=ALL-UNNAMED ^

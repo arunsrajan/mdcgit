@@ -340,6 +340,8 @@ streamjobsubmitter.cmd ../examples/examples.jar com.github.mdc.stream.examples.j
 
 streamjobsubmitter.cmd ../examples/examples.jar com.github.mdc.stream.examples.json.GithubEventsStreamReduce hdfs://127.0.0.1:9000 /github /examplesmdc jgroups
 
+call streamjobsubmitter.cmd ../examples/examples.jar com.github.mdc.stream.examples.StreamPipelineReduceIgnite C:/DEVELOPMENT/dataset/
+
 Stream Reduce LOJ
 -----------------
 
