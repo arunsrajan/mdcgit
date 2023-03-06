@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 
 import com.github.mdc.common.PipelineConfig;
 import com.github.mdc.common.functions.MapFunction;
+import com.github.mdc.stream.NumPartitions;
 import com.github.mdc.stream.PipelineException;
 import com.github.mdc.stream.StreamPipeline;
 
@@ -26,6 +27,8 @@ import net.sf.jsqlparser.JSQLParserException;
 import net.sf.jsqlparser.expression.BinaryExpression;
 import net.sf.jsqlparser.expression.DoubleValue;
 import net.sf.jsqlparser.expression.Expression;
+import net.sf.jsqlparser.expression.Function;
+import net.sf.jsqlparser.expression.LongValue;
 import net.sf.jsqlparser.expression.StringValue;
 import net.sf.jsqlparser.parser.CCJSqlParserManager;
 import net.sf.jsqlparser.schema.Column;
@@ -87,7 +90,7 @@ public class StreamPipelineSqlBuilder implements Serializable{
 	    }
 	    Select select = (Select) statement;	    
 	    if(select.getSelectBody() instanceof PlainSelect plainSelect) {
-		    if (plainSelect.getSelectItems().size() == 1 && plainSelect.getSelectItems().get(0).toString().equals("*")) {
+		    if (plainSelect.getSelectItems().size() == 1 && (plainSelect.getSelectItems().get(0).toString().equals("*") || plainSelect.getSelectItems().get(0).toString().equals("count(*)"))) {
 		    	Table table = (Table) plainSelect.getFromItem();
 		    	String[] columns = tablecolumnsmap.get(table.getName());
 		    	Expression expression = plainSelect.getWhere();		    	
@@ -97,7 +100,8 @@ public class StreamPipelineSqlBuilder implements Serializable{
 		    	if(nonNull(expression) && expression instanceof BinaryExpression bex) {
 		    		pipeline = buildPredicate(pipeline, bex);
 		    	}
-		    	return pipeline.map((Serializable & MapFunction<CSVRecord,Map<String,Object>>)(record->{
+		    	boolean iscountallcolumns = plainSelect.getSelectItems().get(0).toString().equals("count(*)");
+		    	StreamPipeline<Map> pipelinemap = pipeline.map((Serializable & MapFunction<CSVRecord,Map<String,Object>>)(record->{
 					Map<String,Object> columnWithValues= new HashMap<>();
 					List<String> columnsl = Arrays.asList(columns);
 					columnsl.forEach(column->{
@@ -105,17 +109,23 @@ public class StreamPipelineSqlBuilder implements Serializable{
 					});
 					return columnWithValues;
 				}));
+		    	if(iscountallcolumns) {
+		    		return pipelinemap.count(new NumPartitions(1));
+		    	}
+		    	return pipelinemap;
 		    } else {
 		    	List<SelectItem> selectItems = plainSelect.getSelectItems();
 		    	List<String> columns = new ArrayList<>();
+		    	List<Function> functions = new ArrayList<>();
 		        for (SelectItem selectItem : selectItems) {
 		            if (selectItem instanceof SelectExpressionItem) {
 		                SelectExpressionItem selectExpressionItem = (SelectExpressionItem) selectItem;
 		                if (selectExpressionItem.getExpression() instanceof Column column) {
 		                    String columnName = column.getColumnName();
 		                    columns.add(columnName);
+		                } else if(selectItem instanceof Function function) {
+		                	functions.add(function);
 		                }
-		               
 		            }
 		        }
 		        Table table = (Table) plainSelect.getFromItem();
@@ -147,15 +157,7 @@ public class StreamPipelineSqlBuilder implements Serializable{
 	        BinaryExpression binaryExpression = (BinaryExpression) expression;
 	        String operator = binaryExpression.getStringExpression();
 	        Expression leftExpression = binaryExpression.getLeftExpression();
-	        if(leftExpression instanceof BinaryExpression bex) {
-	        	return evaluateExpression(bex, row);
-	        }
-	        Expression rightExpression = binaryExpression.getRightExpression();
-	        if(rightExpression instanceof BinaryExpression bex) {
-	        	return evaluateExpression(bex, row);
-	        }
-	        String leftValue = getValueString(leftExpression, row);
-	        String rightValue = getValueString(rightExpression, row);
+	        Expression rightExpression = binaryExpression.getRightExpression();	        
 
 	        switch (operator.toUpperCase()) {
 	            case "AND":
@@ -163,16 +165,28 @@ public class StreamPipelineSqlBuilder implements Serializable{
 	            case "OR":
 	                return evaluateExpression(leftExpression, row) || evaluateExpression(rightExpression, row);
 	            case ">":
+	            	String leftValue = getValueString(leftExpression, row);
+	    	        String rightValue = getValueString(rightExpression, row);
 	                return Double.parseDouble(leftValue) > Double.parseDouble(rightValue);
 	            case ">=":
+	            	leftValue = getValueString(leftExpression, row);
+	    	        rightValue = getValueString(rightExpression, row);
 	                return Double.parseDouble(leftValue) >= Double.parseDouble(rightValue);
 	            case "<":
+	            	leftValue = getValueString(leftExpression, row);
+	    	        rightValue = getValueString(rightExpression, row);
 	                return Double.parseDouble(leftValue) < Double.parseDouble(rightValue);
 	            case "<=":
+	            	leftValue = getValueString(leftExpression, row);
+	    	        rightValue = getValueString(rightExpression, row);
 	                return Double.parseDouble(leftValue) <= Double.parseDouble(rightValue);
 	            case "=":
+	            	leftValue = getValueString(leftExpression, row);
+	    	        rightValue = getValueString(rightExpression, row);
 	                return Double.parseDouble(leftValue) == Double.parseDouble(rightValue);
 	            case "<>":
+	            	leftValue = getValueString(leftExpression, row);
+	    	        rightValue = getValueString(rightExpression, row);
 	                return !leftValue.equals(rightValue);
 	            default:
 	                throw new UnsupportedOperationException("Unsupported operator: " + operator);
@@ -185,7 +199,9 @@ public class StreamPipelineSqlBuilder implements Serializable{
 
 
 	private static String getValueString(Expression expression, CSVRecord row) {
-		if (expression instanceof StringValue) {
+		if (expression instanceof LongValue) {
+	        return String.valueOf(((LongValue) expression).getValue());
+	    } else if (expression instanceof StringValue) {
 	        return ((StringValue) expression).getValue();
 	    } else if (expression instanceof DoubleValue) {
 	        return Double.toString(((DoubleValue) expression).getValue());

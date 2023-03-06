@@ -2,6 +2,7 @@ package com.github.mdc.stream.sql.build;
 
 import java.net.URI;
 import java.util.function.IntSupplier;
+
 import com.github.mdc.stream.MapPair;
 import com.github.mdc.stream.PipelineException;
 import com.github.mdc.stream.StreamPipeline;
@@ -21,9 +22,9 @@ public class StreamPipelineSql {
 		else if (mdpmp instanceof MapPair mp) {
 			return mp.collect(toexecute, supplier);
 		}
-		return null;
+		return mdpmp;
 	}
-
+	
 	@SuppressWarnings("rawtypes")
 	public void  saveAsTextFile(URI uri, String path) throws Exception {
 		if (mdpmp instanceof StreamPipeline mdp) {
