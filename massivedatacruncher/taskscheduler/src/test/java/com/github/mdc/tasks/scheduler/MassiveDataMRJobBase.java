@@ -101,7 +101,7 @@ public class MassiveDataMRJobBase {
 		org.burningwave.core.assembler.StaticComponentContainer.Modules.exportAllToAll();
 		try (InputStream istream = MassiveDataMRJobBase.class.getResourceAsStream("/log4j.properties");) {
 			System.setProperty("HIBCFG", "../config/mdchibernate.cfg.xml");
-			System.setProperty("HADOOP_HOME", "C:\\DEVELOPMENT\\hadoop\\hadooplocal\\hadoop-3.3.1");
+			System.setProperty("HADOOP_HOME", "C:\\DEVELOPMENT\\hadoop\\hadoop-3.3.4");
 			PropertyConfigurator.configure(istream);
 			Utils.loadLog4JSystemProperties(MDCConstants.PREV_FOLDER + MDCConstants.FORWARD_SLASH
 					+ MDCConstants.DIST_CONFIG_FOLDER + MDCConstants.FORWARD_SLASH, "mdctest.properties");
