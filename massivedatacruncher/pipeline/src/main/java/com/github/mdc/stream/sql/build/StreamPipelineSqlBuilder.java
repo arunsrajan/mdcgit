@@ -13,6 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import org.apache.calcite.sql.type.SqlTypeName;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.csv.CSVRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -123,7 +124,7 @@ public class StreamPipelineSqlBuilder implements Serializable{
 		                if (selectExpressionItem.getExpression() instanceof Column column) {
 		                    String columnName = column.getColumnName();
 		                    columns.add(columnName);
-		                } else if(selectItem instanceof Function function) {
+		                } else if(selectExpressionItem.getExpression() instanceof Function function) {
 		                	functions.add(function);
 		                }
 		            }
@@ -135,6 +136,17 @@ public class StreamPipelineSqlBuilder implements Serializable{
 						tablecolumnsmap.get(table.getName()));
 		    	if(nonNull(expression) && expression instanceof BinaryExpression bex) {
 		    		pipeline = buildPredicate(pipeline, bex);
+		    	}
+		    	if(!CollectionUtils.isEmpty(functions)) {
+		    		List<Expression> parameters = functions.get(0).getParameters().getExpressions();
+		    		Expression column = parameters.get(0);
+		    		if(functions.get(0).getName().toLowerCase().startsWith("sum")) {
+		    			return pipeline.mapToInt(record->Integer.parseInt(getValueString(column, record))).sum();
+		    		} else if(functions.get(0).getName().toLowerCase().startsWith("min")) {
+		    			return pipeline.mapToInt(record->Integer.parseInt(getValueString(column, record))).min();
+		    		} else if(functions.get(0).getName().toLowerCase().startsWith("max")) {
+		    			return pipeline.mapToInt(record->Integer.parseInt(getValueString(column, record))).max();
+		    		}
 		    	}
 		    	return pipeline.map((Serializable & MapFunction<CSVRecord,Map<String,Object>>)(record->{
 							Map<String,Object> columnWithValues= new HashMap<>();

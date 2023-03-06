@@ -259,4 +259,46 @@ public class StreamPipelineSqlBuilderTest extends StreamPipelineBaseTestCommon {
 		log.info("In testRequiredColumnsCountWithWhere() method Exit");
 	}
 	
+	@SuppressWarnings({"unchecked"})
+	@Test
+	public void testAllColumnsSumWithWhere() throws Exception {
+		log.info("In testAllColumnsSumWithWhere() method Entry");
+		String statement = "SELECT sum(ArrDelay) FROM airline WHERE '8'=DayofMonth and '12'=MonthOfYear and ArrDelay <> 'NA' and ArrDelay <> 'ArrDelay'";				
+		StreamPipelineSql mdpsql = StreamPipelineSqlBuilder.newBuilder().add(airlinesamplesql, "airline", airlineheader, airsqltype)
+				.setHdfs(hdfsfilepath)
+				.setPipelineConfig(new PipelineConfig()).setSql(statement).build();
+		List<List<Integer>> records = (List<List<Integer>>) mdpsql.collect(true, null);
+		
+		assertEquals(Integer.valueOf(-362), records.get(0).get(0));
+		log.info("In testAllColumnsSumWithWhere() method Exit");
+	}
+	
+	
+	@SuppressWarnings({"unchecked"})
+	@Test
+	public void testAllColumnsMinWithWhere() throws Exception {
+		log.info("In testAllColumnsMinWithWhere() method Entry");
+		String statement = "SELECT min(ArrDelay) FROM airline WHERE '8'=DayofMonth and '12'=MonthOfYear and ArrDelay <> 'NA' and ArrDelay <> 'ArrDelay'";				
+		StreamPipelineSql mdpsql = StreamPipelineSqlBuilder.newBuilder().add(airlinesamplesql, "airline", airlineheader, airsqltype)
+				.setHdfs(hdfsfilepath)
+				.setPipelineConfig(new PipelineConfig()).setSql(statement).build();
+		List<List<Integer>> records = (List<List<Integer>>) mdpsql.collect(true, null);
+		
+		assertEquals(Integer.valueOf(-27), records.get(0).get(0));
+		log.info("In testAllColumnsMinWithWhere() method Exit");
+	}
+	
+	@SuppressWarnings({"unchecked"})
+	@Test
+	public void testAllColumnsMaxWithWhere() throws Exception {
+		log.info("In testAllColumnsMaxWithWhere() method Entry");
+		String statement = "SELECT max(ArrDelay) FROM airline WHERE '8'=DayofMonth and '12'=MonthOfYear and ArrDelay <> 'NA' and ArrDelay <> 'ArrDelay'";				
+		StreamPipelineSql mdpsql = StreamPipelineSqlBuilder.newBuilder().add(airlinesamplesql, "airline", airlineheader, airsqltype)
+				.setHdfs(hdfsfilepath)
+				.setPipelineConfig(new PipelineConfig()).setSql(statement).build();
+		List<List<Integer>> records = (List<List<Integer>>) mdpsql.collect(true, null);
+		
+		assertEquals(Integer.valueOf(44), records.get(0).get(0));
+		log.info("In testAllColumnsMaxWithWhere() method Exit");
+	}
 }
