@@ -42,7 +42,7 @@ public class StreamPipelineSqlBuilderTest extends StreamPipelineBaseTestCommon {
 	public void testAllColumns() throws Exception {
 		log.info("In testAllColumns() method Entry");
 		String statement = "SELECT * FROM airline ";
-		pipelineconfig.setLocal("true");
+		pipelineconfig.setLocal("false");
 		StreamPipelineSql mdpsql = StreamPipelineSqlBuilder.newBuilder().add(airlinesamplesql, "airline", airlineheader, airsqltype)
 				.setHdfs(hdfsfilepath)
 				.setPipelineConfig(pipelineconfig).setSql(statement).build();
@@ -52,6 +52,7 @@ public class StreamPipelineSqlBuilderTest extends StreamPipelineBaseTestCommon {
 				log.info(record);
 			}
 		}
+		pipelineconfig.setLocal("true");
 		log.info("In testAllColumns() method Exit");		
 	}
 	
@@ -60,7 +61,7 @@ public class StreamPipelineSqlBuilderTest extends StreamPipelineBaseTestCommon {
 	public void testAllColumnsWithWhere() throws Exception {
 		log.info("In testAllColumnsWithWhere() method Entry");
 		String statement = "SELECT * FROM airline WHERE airline.DayofMonth='8' and airline.MonthOfYear='12'";
-		pipelineconfig.setLocal("true");
+		pipelineconfig.setLocal("false");
 		StreamPipelineSql mdpsql = StreamPipelineSqlBuilder.newBuilder().add(airlinesamplesql, "airline", airlineheader, airsqltype)
 				.setHdfs(hdfsfilepath)
 				.setPipelineConfig(pipelineconfig).setSql(statement).build();
@@ -70,6 +71,7 @@ public class StreamPipelineSqlBuilderTest extends StreamPipelineBaseTestCommon {
 				log.info(record);
 			}
 		}
+		pipelineconfig.setLocal("true");
 		log.info("In testAllColumnsWithWhere() method Exit");		
 	}
 	
@@ -78,7 +80,7 @@ public class StreamPipelineSqlBuilderTest extends StreamPipelineBaseTestCommon {
 	public void testRequiredColumns() throws Exception {
 		log.info("In testRequiredColumns() method Entry");
 		String statement = "SELECT airline.UniqueCarrier,airline.ArrDelay,airline.DepDelay FROM airline ";
-		pipelineconfig.setLocal("true");
+		pipelineconfig.setLocal("false");
 		StreamPipelineSql mdpsql = StreamPipelineSqlBuilder.newBuilder().add(airlinesamplesql, "airline", airlineheader, airsqltype)
 				.setHdfs(hdfsfilepath)
 				.setPipelineConfig(pipelineconfig).setSql(statement).build();
@@ -88,6 +90,7 @@ public class StreamPipelineSqlBuilderTest extends StreamPipelineBaseTestCommon {
 				log.info(record);
 			}
 		}
+		pipelineconfig.setLocal("true");
 		log.info("In testRequiredColumns() method Exit");		
 	}
 	
@@ -97,7 +100,7 @@ public class StreamPipelineSqlBuilderTest extends StreamPipelineBaseTestCommon {
 	public void testRequiredColumnsWithWhere() throws Exception {
 		log.info("In testRequiredColumnsWithWhere() method Entry");
 		String statement = "SELECT airline.UniqueCarrier,airline.ArrDelay,airline.DepDelay FROM airline WHERE airline.DayofMonth='8' and airline.MonthOfYear='12'";
-		pipelineconfig.setLocal("true");
+		pipelineconfig.setLocal("false");
 		StreamPipelineSql mdpsql = StreamPipelineSqlBuilder.newBuilder().add(airlinesamplesql, "airline", airlineheader, airsqltype)
 				.setHdfs(hdfsfilepath)
 				.setPipelineConfig(pipelineconfig).setSql(statement).build();
@@ -107,6 +110,7 @@ public class StreamPipelineSqlBuilderTest extends StreamPipelineBaseTestCommon {
 				log.info(record);
 			}
 		}
+		pipelineconfig.setLocal("true");
 		log.info("In testRequiredColumnsWithWhere() method Exit");		
 	}
 	
@@ -116,11 +120,12 @@ public class StreamPipelineSqlBuilderTest extends StreamPipelineBaseTestCommon {
 	@Test
 	public void testRequiredColumnsWithWhereGreaterThan() throws Exception {
 		log.info("In testRequiredColumnsWithWhereGreaterThan() method Entry");
+		pipelineconfig.setLocal("false");
 		String statement = "SELECT airline.UniqueCarrier,airline.ArrDelay,airline.DayofMonth,airline.MonthOfYear " + "FROM airline "
 				+ "WHERE airline.DayofMonth>8 and airline.MonthOfYear>6";
 		StreamPipelineSql mdpsql = StreamPipelineSqlBuilder.newBuilder().add(airlinesamplesql, "airline", airlineheader, airsqltype)
 				.setHdfs(hdfsfilepath)
-				.setPipelineConfig(new PipelineConfig()).setSql(statement).build();
+				.setPipelineConfig(pipelineconfig).setSql(statement).build();
 		List<List<Map<String, Object>>> records = (List<List<Map<String, Object>>>) mdpsql.collect(true, null);
 		for (List<Map<String, Object>> recs : records) {
 			for (Map<String, Object> rec : recs) {
@@ -129,6 +134,7 @@ public class StreamPipelineSqlBuilderTest extends StreamPipelineBaseTestCommon {
 				assertTrue(Long.valueOf((String) (String) rec.get("MonthOfYear")) > 6);
 			}
 		}
+		pipelineconfig.setLocal("true");
 		log.info("In testRequiredColumnsWithWhereGreaterThan() method Exit");
 	}
 
@@ -136,11 +142,12 @@ public class StreamPipelineSqlBuilderTest extends StreamPipelineBaseTestCommon {
 	@Test
 	public void testRequiredColumnsWithWhereLessThan() throws Exception {
 		log.info("In testRequiredColumnsWithWhereLessThan() method Entry");
+		pipelineconfig.setLocal("false");
 		String statement = "SELECT airline.UniqueCarrier,airline.ArrDelay,airline.DayofMonth,airline.MonthOfYear " + "FROM airline "
 				+ "WHERE airline.DayofMonth<8 and airline.MonthOfYear<6";
 		StreamPipelineSql mdpsql = StreamPipelineSqlBuilder.newBuilder().add(airlinesamplesql, "airline", airlineheader, airsqltype)
 				.setHdfs(hdfsfilepath)
-				.setPipelineConfig(new PipelineConfig()).setSql(statement).build();
+				.setPipelineConfig(pipelineconfig).setSql(statement).build();
 		List<List<Map<String, Object>>> records = (List<List<Map<String, Object>>>) mdpsql.collect(true, null);
 		for (List<Map<String, Object>> recs : records) {
 			for (Map<String, Object> rec : recs) {
@@ -149,6 +156,7 @@ public class StreamPipelineSqlBuilderTest extends StreamPipelineBaseTestCommon {
 				assertTrue(Long.valueOf((String) (String) rec.get("MonthOfYear")) < 6);
 			}
 		}
+		pipelineconfig.setLocal("true");
 		log.info("In testRequiredColumnsWithWhereLessThan() method Exit");
 	}
 
@@ -156,11 +164,12 @@ public class StreamPipelineSqlBuilderTest extends StreamPipelineBaseTestCommon {
 	@Test
 	public void testRequiredColumnsWithWhereGreaterThanEquals() throws Exception {
 		log.info("In testRequiredColumnsWithWhereGreaterThanEquals() method Entry");
+		pipelineconfig.setLocal("false");
 		String statement = "SELECT airline.UniqueCarrier,airline.ArrDelay,airline.DayofMonth,airline.MonthOfYear " + "FROM airline "
 				+ "WHERE airline.DayofMonth>=8 and airline.MonthOfYear>=6";
 		StreamPipelineSql mdpsql = StreamPipelineSqlBuilder.newBuilder().add(airlinesamplesql, "airline", airlineheader, airsqltype)
 				.setHdfs(hdfsfilepath)
-				.setPipelineConfig(new PipelineConfig()).setSql(statement).build();
+				.setPipelineConfig(pipelineconfig).setSql(statement).build();
 		List<List<Map<String, Object>>> records = (List<List<Map<String, Object>>>) mdpsql.collect(true, null);
 		for (List<Map<String, Object>> recs : records) {
 			for (Map<String, Object> rec : recs) {
@@ -169,6 +178,7 @@ public class StreamPipelineSqlBuilderTest extends StreamPipelineBaseTestCommon {
 				assertTrue(Long.valueOf((String) (String) rec.get("MonthOfYear")) >= 6);
 			}
 		}
+		pipelineconfig.setLocal("true");
 		log.info("In testRequiredColumnsWithWhereGreaterThanEquals() method Exit");
 	}
 
@@ -176,11 +186,12 @@ public class StreamPipelineSqlBuilderTest extends StreamPipelineBaseTestCommon {
 	@Test
 	public void testRequiredColumnsWithWhereLessThanEquals() throws Exception {
 		log.info("In testRequiredColumnsWithWhereLessThanEquals() method Entry");
+		pipelineconfig.setLocal("false");
 		String statement = "SELECT airline.UniqueCarrier,airline.ArrDelay,airline.DayofMonth,airline.MonthOfYear " + "FROM airline "
 				+ "WHERE airline.DayofMonth<=8 and airline.MonthOfYear<=6";
 		StreamPipelineSql mdpsql = StreamPipelineSqlBuilder.newBuilder().add(airlinesamplesql, "airline", airlineheader, airsqltype)
 				.setHdfs(hdfsfilepath)
-				.setPipelineConfig(new PipelineConfig()).setSql(statement).build();
+				.setPipelineConfig(pipelineconfig).setSql(statement).build();
 		List<List<Map<String, Object>>> records = (List<List<Map<String, Object>>>) mdpsql.collect(true, null);
 		for (List<Map<String, Object>> recs : records) {
 			for (Map<String, Object> rec : recs) {
@@ -189,6 +200,7 @@ public class StreamPipelineSqlBuilderTest extends StreamPipelineBaseTestCommon {
 				assertTrue(Long.valueOf((String) (String) rec.get("MonthOfYear")) <= 6);
 			}
 		}
+		pipelineconfig.setLocal("true");
 		log.info("In testRequiredColumnsWithWhereLessThanEquals() method Exit");
 	}
 	
@@ -196,11 +208,12 @@ public class StreamPipelineSqlBuilderTest extends StreamPipelineBaseTestCommon {
 	@Test
 	public void testRequiredColumnsWithWhereLiteralFirst() throws Exception {
 		log.info("In RequiredColumnsWithWhere() method Entry");
+		pipelineconfig.setLocal("false");
 		String statement = "SELECT airline.UniqueCarrier,airline.ArrDelay,airline.DayofMonth,airline.MonthOfYear " + "FROM airline "
 				+ "WHERE '8'=airline.DayofMonth and '12'=airline.MonthOfYear";
 		StreamPipelineSql mdpsql = StreamPipelineSqlBuilder.newBuilder().add(airlinesamplesql, "airline", airlineheader, airsqltype)
 				.add(carriers, "carriers", carrierheader, carriersqltype).setHdfs(hdfsfilepath)
-				.setPipelineConfig(new PipelineConfig()).setSql(statement).build();
+				.setPipelineConfig(pipelineconfig).setSql(statement).build();
 		List<List<Map<String, Object>>> records = (List<List<Map<String, Object>>>) mdpsql.collect(true, null);
 		for (List<Map<String, Object>> recs : records) {
 			for (Map<String, Object> rec : recs) {
@@ -209,6 +222,7 @@ public class StreamPipelineSqlBuilderTest extends StreamPipelineBaseTestCommon {
 				log.info(rec);
 			}
 		}
+		pipelineconfig.setLocal("true");
 		log.info("In RequiredColumnsWithWhere() method Exit");
 	}
 
@@ -216,11 +230,12 @@ public class StreamPipelineSqlBuilderTest extends StreamPipelineBaseTestCommon {
 	@Test
 	public void testRequiredColumnsWithWhereColumnEquals() throws Exception {
 		log.info("In testRequiredColumnsWithWhereColumnEquals() method Entry");
+		pipelineconfig.setLocal("false");
 		String statement = "SELECT airline.UniqueCarrier,airline.ArrDelay,airline.DayofMonth,airline.MonthOfYear " + "FROM airline "
 				+ "WHERE airline.DayofMonth=airline.MonthOfYear";
 		StreamPipelineSql mdpsql = StreamPipelineSqlBuilder.newBuilder().add(airlinesamplesql, "airline", airlineheader, airsqltype)
 				.add(carriers, "carriers", carrierheader, carriersqltype).setHdfs(hdfsfilepath)
-				.setPipelineConfig(new PipelineConfig()).setSql(statement).build();
+				.setPipelineConfig(pipelineconfig).setSql(statement).build();
 		List<List<Map<String, Object>>> records = (List<List<Map<String, Object>>>) mdpsql.collect(true, null);
 		for (List<Map<String, Object>> recs : records) {
 			for (Map<String, Object> rec : recs) {
@@ -228,6 +243,7 @@ public class StreamPipelineSqlBuilderTest extends StreamPipelineBaseTestCommon {
 				log.info(rec);
 			}
 		}
+		pipelineconfig.setLocal("true");
 		log.info("In testRequiredColumnsWithWhereColumnEquals() method Exit");
 	}
 	
@@ -235,13 +251,14 @@ public class StreamPipelineSqlBuilderTest extends StreamPipelineBaseTestCommon {
 	@Test
 	public void testAllColumnsCount() throws Exception {
 		log.info("In testRequiredColumnsCount() method Entry");
+		pipelineconfig.setLocal("false");
 		String statement = "SELECT count(*) FROM airline";				
 		StreamPipelineSql mdpsql = StreamPipelineSqlBuilder.newBuilder().add(airlinesamplesql, "airline", airlineheader, airsqltype)
 				.add(carriers, "carriers", carrierheader, carriersqltype).setHdfs(hdfsfilepath)
-				.setPipelineConfig(new PipelineConfig()).setSql(statement).build();
-		List<List<Integer>> records = (List<List<Integer>>) mdpsql.collect(true, null);
-		
+				.setPipelineConfig(pipelineconfig).setSql(statement).build();
+		List<List<Integer>> records = (List<List<Integer>>) mdpsql.collect(true, null);		
 		assertEquals(Long.valueOf(46360), records.get(0).get(0));
+		pipelineconfig.setLocal("true");
 		log.info("In testRequiredColumnsCount() method Exit");
 	}
 	
@@ -249,13 +266,15 @@ public class StreamPipelineSqlBuilderTest extends StreamPipelineBaseTestCommon {
 	@Test
 	public void testAllColumnsCountWithWhere() throws Exception {
 		log.info("In testRequiredColumnsCountWithWhere() method Entry");
+		pipelineconfig.setLocal("false");
 		String statement = "SELECT count(*) FROM airline WHERE airline.DayofMonth=airline.MonthOfYear";				
 		StreamPipelineSql mdpsql = StreamPipelineSqlBuilder.newBuilder().add(airlinesamplesql, "airline", airlineheader, airsqltype)
 				.add(carriers, "carriers", carrierheader, carriersqltype).setHdfs(hdfsfilepath)
-				.setPipelineConfig(new PipelineConfig()).setSql(statement).build();
+				.setPipelineConfig(pipelineconfig).setSql(statement).build();
 		List<List<Integer>> records = (List<List<Integer>>) mdpsql.collect(true, null);
 		
 		assertEquals(Long.valueOf(1522), records.get(0).get(0));
+		pipelineconfig.setLocal("true");
 		log.info("In testRequiredColumnsCountWithWhere() method Exit");
 	}
 	
@@ -263,13 +282,15 @@ public class StreamPipelineSqlBuilderTest extends StreamPipelineBaseTestCommon {
 	@Test
 	public void testAllColumnsSumWithWhere() throws Exception {
 		log.info("In testAllColumnsSumWithWhere() method Entry");
+		pipelineconfig.setLocal("false");
 		String statement = "SELECT sum(airline.ArrDelay) FROM airline WHERE '8'=airline.DayofMonth and '12'=airline.MonthOfYear and airline.ArrDelay <> 'NA' and airline.ArrDelay <> 'ArrDelay'";				
 		StreamPipelineSql mdpsql = StreamPipelineSqlBuilder.newBuilder().add(airlinesamplesql, "airline", airlineheader, airsqltype)
 				.setHdfs(hdfsfilepath)
-				.setPipelineConfig(new PipelineConfig()).setSql(statement).build();
+				.setPipelineConfig(pipelineconfig).setSql(statement).build();
 		List<List<Integer>> records = (List<List<Integer>>) mdpsql.collect(true, null);
 		
 		assertEquals(Integer.valueOf(-362), records.get(0).get(0));
+		pipelineconfig.setLocal("true");
 		log.info("In testAllColumnsSumWithWhere() method Exit");
 	}
 	
@@ -278,13 +299,14 @@ public class StreamPipelineSqlBuilderTest extends StreamPipelineBaseTestCommon {
 	@Test
 	public void testAllColumnsMinWithWhere() throws Exception {
 		log.info("In testAllColumnsMinWithWhere() method Entry");
+		pipelineconfig.setLocal("false");
 		String statement = "SELECT min(airline.ArrDelay) FROM airline WHERE '8'=airline.DayofMonth and '12'=airline.MonthOfYear and airline.ArrDelay <> 'NA' and airline.ArrDelay <> 'ArrDelay'";				
 		StreamPipelineSql mdpsql = StreamPipelineSqlBuilder.newBuilder().add(airlinesamplesql, "airline", airlineheader, airsqltype)
 				.setHdfs(hdfsfilepath)
-				.setPipelineConfig(new PipelineConfig()).setSql(statement).build();
-		List<List<Integer>> records = (List<List<Integer>>) mdpsql.collect(true, null);
-		
+				.setPipelineConfig(pipelineconfig).setSql(statement).build();
+		List<List<Integer>> records = (List<List<Integer>>) mdpsql.collect(true, null);		
 		assertEquals(Integer.valueOf(-27), records.get(0).get(0));
+		pipelineconfig.setLocal("true");
 		log.info("In testAllColumnsMinWithWhere() method Exit");
 	}
 	
@@ -292,13 +314,14 @@ public class StreamPipelineSqlBuilderTest extends StreamPipelineBaseTestCommon {
 	@Test
 	public void testAllColumnsMaxWithWhere() throws Exception {
 		log.info("In testAllColumnsMaxWithWhere() method Entry");
+		pipelineconfig.setLocal("false");
 		String statement = "SELECT max(airline.ArrDelay) FROM airline WHERE '8'=airline.DayofMonth and '12'=airline.MonthOfYear and airline.ArrDelay <> 'NA' and airline.ArrDelay <> 'ArrDelay'";				
 		StreamPipelineSql mdpsql = StreamPipelineSqlBuilder.newBuilder().add(airlinesamplesql, "airline", airlineheader, airsqltype)
 				.setHdfs(hdfsfilepath)
-				.setPipelineConfig(new PipelineConfig()).setSql(statement).build();
+				.setPipelineConfig(pipelineconfig).setSql(statement).build();
 		List<List<Integer>> records = (List<List<Integer>>) mdpsql.collect(true, null);
-		
 		assertEquals(Integer.valueOf(44), records.get(0).get(0));
+		pipelineconfig.setLocal("true");
 		log.info("In testAllColumnsMaxWithWhere() method Exit");
 	}
 	
@@ -308,12 +331,12 @@ public class StreamPipelineSqlBuilderTest extends StreamPipelineBaseTestCommon {
 	@Test
 	public void testRequiredColumnsJoin() throws Exception {
 		log.info("In testRequiredColumnsJoin() method Entry");
-		pipelineconfig.setLocal("true");
+		pipelineconfig.setLocal("false");
 		String statement = "SELECT airline.DayofMonth,airline.MonthOfYear,airline.UniqueCarrier,carriers.Code "
 				+ "FROM airline inner join carriers on airline.UniqueCarrier = carriers.Code WHERE '8' = airline.DayofMonth and '12'= airline.MonthOfYear";				
 		StreamPipelineSql mdpsql = StreamPipelineSqlBuilder.newBuilder().add(airlinesamplesql, "airline", airlineheader, airsqltype)
 				.add(carriers, "carriers", carrierheader, carriersqltype).setHdfs(hdfsfilepath)
-				.setPipelineConfig(new PipelineConfig()).setSql(statement).build();
+				.setPipelineConfig(pipelineconfig).setSql(statement).build();
 		long totalrecords = 0;
 		List<List<Map<String,Object>>> records = (List<List<Map<String,Object>>>) mdpsql.collect(true, null);
 		for (List<Map<String,Object>> recs : records) {
@@ -323,24 +346,27 @@ public class StreamPipelineSqlBuilderTest extends StreamPipelineBaseTestCommon {
 			}
 		}
 		assertEquals(132, totalrecords);
+		pipelineconfig.setLocal("true");
 		log.info("In testRequiredColumnsJoin() method Exit");
 	}
 	
 	@Test
 	public void testRequiredColumnsJoinCarrierSpecific() throws Exception {
 		log.info("In testRequiredColumnsJoinCarrierSpecific() method Entry");
+		pipelineconfig.setLocal("false");
 		String statement = "SELECT airline.ArrDelay,airline.DepDelay,airline.DayofMonth,airline.MonthOfYear,carriers.Code,carriers.Description "
 				+ "FROM airline join carriers on airline.UniqueCarrier = carriers.Code "
 				+ "WHERE airline.DayofMonth='8' and airline.MonthOfYear='8' and carriers.Code='AQ'";
 		StreamPipelineSql mdpsql = StreamPipelineSqlBuilder.newBuilder().add(airlinesamplesql, "airline", airlineheader, airsqltype)
 				.add(carriers, "carriers", carrierheader, carriersqltype).setHdfs(hdfsfilepath)
-				.setPipelineConfig(new PipelineConfig()).setSql(statement).build();
+				.setPipelineConfig(pipelineconfig).setSql(statement).build();
 		List<List<Map<String,Object>>> records = (List<List<Map<String,Object>>>) mdpsql.collect(true, null);
 		for (List<Map<String,Object>> recs : records) {
 			for (Map<String,Object> rec : recs) {
 				log.info(rec);
 			}
 		}
+		pipelineconfig.setLocal("true");
 		log.info("In testRequiredColumnsJoinCarrierSpecific() method Exit");
 	}
 	
