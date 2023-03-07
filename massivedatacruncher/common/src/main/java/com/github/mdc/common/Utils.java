@@ -60,6 +60,9 @@ import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
+
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVRecord;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
@@ -121,6 +124,8 @@ public class Utils {
       conf.setForceSerializable(true);
       conf.setForceClzInit(true);
       conf.setShareReferences(true);
+      conf.registerClass(CSVParser.class);
+      conf.registerClass(CSVRecord.class);
       return conf;
     }
   };

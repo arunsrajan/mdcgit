@@ -285,7 +285,7 @@ public class StreamPipelineSqlTest extends StreamPipelineBaseTestCommon {
 		log.info("In testMDPSqlBuilderAirlinesCarriersLeftJoinRecordCount() method Entry");
 		String statement = "SELECT UniqueCarrier,Code "
 				+ "FROM carriers left join airline on airline.UniqueCarrier = carriers.Code "
-				+ "WHERE DayofMonth='8' and MonthOfYear='12'";
+				+ "WHERE airline.DayofMonth='8' and airline.MonthOfYear='12'";
 		StreamPipelineSql mdpsql = StreamPipelineSqlBuilder.newBuilder().add(airlinesamplesql, "airline", airlineheader, airsqltype)
 				.add(carriers, "carriers", carrierheader, carriersqltype).setHdfs(hdfsfilepath)
 				.setPipelineConfig(new PipelineConfig()).setSql(statement).build();
