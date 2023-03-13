@@ -1,5 +1,6 @@
 package com.github.mdc.stream.sql.build;
 
+import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
 import java.io.Serializable;
@@ -7,7 +8,6 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -46,9 +46,7 @@ import net.sf.jsqlparser.statement.select.Join;
 import net.sf.jsqlparser.statement.select.PlainSelect;
 import net.sf.jsqlparser.statement.select.Select;
 import net.sf.jsqlparser.statement.select.SelectExpressionItem;
-import net.sf.jsqlparser.statement.select.SelectItem;
-
-import static java.util.Objects.*;  
+import net.sf.jsqlparser.statement.select.SelectItem;  
 
 public class StreamPipelineSqlBuilder implements Serializable{	
 	private static final long serialVersionUID = -8585345445522511086L;
@@ -95,156 +93,163 @@ public class StreamPipelineSqlBuilder implements Serializable{
 		return new StreamPipelineSql(execute(statement));
 	}
 	
-	protected Object execute(Object statement) throws JSQLParserException, PipelineException {	    
-	    if (!(statement instanceof Select)) {
-	        throw new IllegalArgumentException("Only SELECT statements are supported");
-	    }
-	    Select select = (Select) statement;	    
-	    if(select.getSelectBody() instanceof PlainSelect plainSelect) {
-		    if (plainSelect.getSelectItems().size() == 1 && (plainSelect.getSelectItems().get(0).toString().equals("*") || plainSelect.getSelectItems().get(0).toString().equals("count(*)"))) {
-		    	Table table = (Table) plainSelect.getFromItem();
-		    	String[] columns = tablecolumnsmap.get(table.getName());
-		    	Expression expression = plainSelect.getWhere();		    	
-		    	StreamPipeline<CSVRecord> pipeline = StreamPipeline.newCsvStreamHDFS(hdfs,
-						tablefoldermap.get(table.getName()), this.pc,
-						columns);
-		    	if(nonNull(expression) && expression instanceof BinaryExpression bex) {
-		    		pipeline = buildPredicate(pipeline, bex);
-		    	}
-		    	boolean iscountallcolumns = plainSelect.getSelectItems().get(0).toString().equals("count(*)");
-		    	StreamPipeline<Map> pipelinemap = pipeline.map((Serializable & MapFunction<CSVRecord,Map<String,Object>>)(record->{
-					Map<String,Object> columnWithValues= new HashMap<>();
-					List<String> columnsl = Arrays.asList(columns);
-					columnsl.forEach(column->{
-						columnWithValues.put(column, record.get(column));
+	protected Object execute(Object statement) throws JSQLParserException, PipelineException {
+		if (!(statement instanceof Select)) {
+			throw new IllegalArgumentException("Only SELECT statements are supported");
+		}
+		Select select = (Select) statement;
+		if (select.getSelectBody() instanceof PlainSelect plainSelect) {
+			List<SelectItem> selectItems = plainSelect.getSelectItems();
+			List<Function> functions = new ArrayList<>();
+			Map<String, Set<String>> tablerequiredcolumns = new ConcurrentHashMap<>();
+
+			Table table = (Table) plainSelect.getFromItem();
+			if (plainSelect.getSelectItems().get(0).toString().equals("*")
+					|| plainSelect.getSelectItems().get(0).toString().equals("count(*)")) {
+				tablerequiredcolumns.put(table.getName(),
+						new LinkedHashSet<>(Arrays.asList(tablecolumnsmap.get(table.getName()))));
+				List<Join> joins = plainSelect.getJoins();
+				if (CollectionUtils.isNotEmpty(joins)) {
+					joins.parallelStream().forEach(join -> {
+						String tablename = ((Table) join.getRightItem()).getName();
+						tablerequiredcolumns.put(tablename,
+								new LinkedHashSet<>(Arrays.asList(tablecolumnsmap.get(tablename))));
 					});
-					return columnWithValues;
-				}));
-		    	if(iscountallcolumns) {
-		    		return pipelinemap.count(new NumPartitions(1));
-		    	}
-		    	return pipelinemap;
-		    } else {
-		    	List<SelectItem> selectItems = plainSelect.getSelectItems();
-		    	final Set<String> columns = new HashSet<>();
-		    	List<Function> functions = new ArrayList<>();
-		    	Map<String, Set<String>> tablerequiredcolumns = new ConcurrentHashMap<>();
-		        for (SelectItem selectItem : selectItems) {
-		            if (selectItem instanceof SelectExpressionItem) {
-		                SelectExpressionItem selectExpressionItem = (SelectExpressionItem) selectItem;
-		                if (selectExpressionItem.getExpression() instanceof Column column) {
-		                    String columnName = column.getColumnName();
-		                    columns.add(columnName);
-		                    if(nonNull(column.getTable())) {
-			                    Set<String> requiredcolumns = tablerequiredcolumns.get(column.getTable().getName());
-			        			if (isNull(requiredcolumns)) {
-			        				requiredcolumns = new LinkedHashSet<>();
-			        				tablerequiredcolumns.put(column.getTable().getName(), requiredcolumns);
-			        			}
-			        			requiredcolumns.add(column.getColumnName());
-		                    }
-		                } else if(selectExpressionItem.getExpression() instanceof Function function) {
-		                	functions.add(function);
-		                }
-		            }
-		        }
-		        Table table = (Table) plainSelect.getFromItem();
-		        Expression expression = plainSelect.getWhere();
-		        StreamPipeline<CSVRecord> pipeline = StreamPipeline.newCsvStreamHDFS(hdfs,
-						tablefoldermap.get(table.getName()), this.pc,
-						tablecolumnsmap.get(table.getName()))
-		        		.map((Serializable & MapFunction<CSVRecord,CSVRecord>)record->record);		        
-				Map<String, List<Expression>> expressionsTable = new ConcurrentHashMap<>();
-				Map<String, Set<String>> tablerequiredAllcolumns = new ConcurrentHashMap<>();
-				Map<String,List<Expression>> joinTableExpressions = new ConcurrentHashMap<>();
-		        getRequiredColumnsForAllTables(plainSelect,
-		        		tablerequiredAllcolumns, expressionsTable, joinTableExpressions);
-		        addAllRequiredColumnsFromSelectItems(tablerequiredAllcolumns, tablerequiredcolumns);
-		        List<Expression> expressionLeftTable = expressionsTable.get(table.getName());
-		        if(!CollectionUtils.isEmpty(expressionLeftTable)) {
-		        	BinaryExpression exp = (BinaryExpression) expressionLeftTable.get(0);
-		        	for(int expcount=1;expcount< expressionLeftTable.size();expcount++) {
-		        		exp = new AndExpression(exp, expressionLeftTable.get(expcount));
-		        	}
-		    		pipeline = buildPredicate(pipeline, exp);
-		    	}
-		        if(nonNull(plainSelect.getJoins())) {		        	
-		        	StreamPipeline<Map<String,Object>> pipelineLeft = pipeline.map((Serializable & MapFunction<CSVRecord,Map<String,Object>>)(record->{
-						Map<String,Object> columnWithValues= new HashMap<>();
-						Set<String> columnsLeft = tablerequiredAllcolumns.get(table.getName());
-						columnsLeft.forEach(column->{
-							columnWithValues.put(column, record.get(column));
-						});
-						return columnWithValues;
-					}));
-		        	Join join = plainSelect.getJoins().get(0);
-		        	String tablename = ((Table)join.getRightItem()).getName();
-		        	StreamPipeline<CSVRecord> joinpipe1 = StreamPipeline.newCsvStreamHDFS(hdfs,
-							tablefoldermap.get(tablename), this.pc,
-							tablecolumnsmap.get(tablename));
-		        	List<Expression> expressionRightTable = expressionsTable.get(tablename);
-			        if(!CollectionUtils.isEmpty(expressionRightTable)) {
-			        	BinaryExpression exp = (BinaryExpression) expressionRightTable.get(0);
-			        	for(int expcount=1;expcount< expressionRightTable.size();expcount++) {
-			        		exp = new AndExpression(exp, expressionRightTable.get(expcount));
-			        	}
-			        	joinpipe1 = buildPredicate(joinpipe1, exp);
-			    	}
-			        StreamPipeline<Map<String,Object>> joinpipe = 
-			        		joinpipe1.map((Serializable & MapFunction<CSVRecord,Map<String,Object>>)(record->{
-						Map<String,Object> columnWithValues= new HashMap<>();
-						Set<String> columnsLeft = tablerequiredAllcolumns.get(tablename);
-						columnsLeft.forEach(column->{
-							columnWithValues.put(column, record.get(column));
-						});
-						return columnWithValues;
-					}));
-		        	return buildJoinPredicate(pipelineLeft, joinpipe,
-		        			table.getName(), tablename, join.getOnExpressions().iterator().next(),
-		        			join.isInner(), join.isLeft(), join.isRight())
-		        			.filter(tuple2->{
-		        				String table1 = table.getName();
-		        				String table2 = tablename;
-		        				Expression express = joinTableExpressions.get(table1+"-"+table2).get(0);
-		        				return evaluateExpressionJoin(express, table1, table2, tuple2.v1, tuple2.v2);
-		        			})
-							.map(tuple2 -> {
+				}
+				if (plainSelect.getSelectItems().get(0)instanceof SelectExpressionItem seitems && seitems.getExpression() instanceof Function function) {
+					functions.add(function);
+				}
+			} else {
+				for (SelectItem selectItem : selectItems) {
+					if (selectItem instanceof SelectExpressionItem) {
+						SelectExpressionItem selectExpressionItem = (SelectExpressionItem) selectItem;
+						if (selectExpressionItem.getExpression() instanceof Column column) {
+							if (nonNull(column.getTable())) {
+								Set<String> requiredcolumns = tablerequiredcolumns.get(column.getTable().getName());
+								if (isNull(requiredcolumns)) {
+									requiredcolumns = new LinkedHashSet<>();
+									tablerequiredcolumns.put(column.getTable().getName(), requiredcolumns);
+								}
+								requiredcolumns.add(column.getColumnName());
+							}
+						} else if (selectExpressionItem.getExpression() instanceof Function function) {
+							functions.add(function);
+						}
+					}
+				}
+			}
+
+			StreamPipeline<CSVRecord> pipeline = StreamPipeline
+					.newCsvStreamHDFS(hdfs, tablefoldermap.get(table.getName()), this.pc,
+							tablecolumnsmap.get(table.getName()))
+					.map((Serializable & MapFunction<CSVRecord, CSVRecord>) record -> record);
+			Map<String, List<Expression>> expressionsTable = new ConcurrentHashMap<>();
+			Map<String, Set<String>> tablerequiredAllcolumns = new ConcurrentHashMap<>();
+			Map<String, List<Expression>> joinTableExpressions = new ConcurrentHashMap<>();
+			getRequiredColumnsForAllTables(plainSelect, tablerequiredAllcolumns, expressionsTable,
+					joinTableExpressions);
+			addAllRequiredColumnsFromSelectItems(tablerequiredAllcolumns, tablerequiredcolumns);
+			List<Expression> expressionLeftTable = expressionsTable.get(table.getName());
+			if(CollectionUtils.isEmpty(expressionLeftTable)) {
+				expressionLeftTable = expressionsTable.get(table.getName()+"-"+table.getName());
+			}
+			if (!CollectionUtils.isEmpty(expressionLeftTable)) {
+				BinaryExpression exp = (BinaryExpression) expressionLeftTable.get(0);
+				for (int expcount = 1; expcount < expressionLeftTable.size(); expcount++) {
+					exp = new AndExpression(exp, expressionLeftTable.get(expcount));
+				}
+				pipeline = buildPredicate(pipeline, exp);
+			}
+			if (nonNull(plainSelect.getJoins())) {
+				StreamPipeline<Map<String, Object>> pipelineLeft = pipeline
+						.map((Serializable & MapFunction<CSVRecord, Map<String, Object>>) (record -> {
+							Map<String, Object> columnWithValues = new HashMap<>();
+							Set<String> columnsLeft = tablerequiredAllcolumns.get(table.getName());
+							columnsLeft.forEach(column -> {
+								columnWithValues.put(column, record.get(column));
+							});
+							return columnWithValues;
+						}));
+				for(Join join:plainSelect.getJoins()) {
+					String tablename = ((Table) join.getRightItem()).getName();
+					StreamPipeline<CSVRecord> joinpipe1 = StreamPipeline.newCsvStreamHDFS(hdfs,
+							tablefoldermap.get(tablename), this.pc, tablecolumnsmap.get(tablename));
+					List<Expression> expressionRightTable = expressionsTable.get(tablename);
+					if (!CollectionUtils.isEmpty(expressionRightTable)) {
+						BinaryExpression exp = (BinaryExpression) expressionRightTable.get(0);
+						for (int expcount = 1; expcount < expressionRightTable.size(); expcount++) {
+							exp = new AndExpression(exp, expressionRightTable.get(expcount));
+						}
+						joinpipe1 = buildPredicate(joinpipe1, exp);
+					}
+					StreamPipeline<Map<String, Object>> joinpipe = joinpipe1
+							.map((Serializable & MapFunction<CSVRecord, Map<String, Object>>) (record -> {
+								Map<String, Object> columnWithValues = new HashMap<>();
+								Set<String> columnsLeft = tablerequiredAllcolumns.get(tablename);
+								columnsLeft.forEach(column -> {
+									columnWithValues.put(column, record.get(column));
+								});
+								return columnWithValues;
+							}));
+					pipelineLeft = buildJoinPredicate(pipelineLeft, joinpipe, table.getName(), tablename,
+							join.getOnExpressions().iterator().next(), join.isInner(), join.isLeft(), join.isRight())
+							.filter(tuple2 -> {
+								String table1 = table.getName();
+								String table2 = tablename;
+								Expression express = joinTableExpressions.get(table1 + "-" + table2).get(0);
+								return evaluateExpressionJoin(express, table1, table2, tuple2.v1, tuple2.v2);
+							}).map(tuple2 -> {
 								tuple2.v1.putAll(tuple2.v2);
 								tablerequiredcolumns.get(table.getName()).addAll(tablerequiredcolumns.get(tablename));
 								tuple2.v1.keySet().retainAll(tablerequiredcolumns.get(table.getName()));
 								return tuple2.v1;
 							});
-		        }
-		        		    	
-		    	if(!CollectionUtils.isEmpty(functions)) {
-		    		List<Expression> parameters = functions.get(0).getParameters().getExpressions();
-		    		Expression column = parameters.get(0);
-		    		if(functions.get(0).getName().toLowerCase().startsWith("sum")) {
-		    			return pipeline.mapToInt(record->Integer.parseInt(getValueString(column, record))).sum();
-		    		} else if(functions.get(0).getName().toLowerCase().startsWith("min")) {
-		    			return pipeline.mapToInt(record->Integer.parseInt(getValueString(column, record))).min();
-		    		} else if(functions.get(0).getName().toLowerCase().startsWith("max")) {
-		    			return pipeline.mapToInt(record->Integer.parseInt(getValueString(column, record))).max();
-		    		}
-		    	}
-		    	if(nonNull(joinTableExpressions.get(table.getName()+"-"+table.getName()))) {
-		    		pipeline = pipeline.filter(record->{
-        				String table1 = table.getName();
-        				String table2 = table.getName();
-        				Expression express = joinTableExpressions.get(table1+"-"+table2).get(0);
-        				return evaluateExpression(express, record);
-        			});
-		    	}
-		    	return pipeline.map((Serializable & MapFunction<CSVRecord,Map<String,Object>>)(record->{
-							Map<String,Object> columnWithValues= new HashMap<>();
-							columns.forEach(column->{
-								columnWithValues.put(column, record.get(column));
-							});
-							return columnWithValues;
-						}));
-		    }
-	    }
-	    return statement.toString();
+				}
+				if (!CollectionUtils.isEmpty(functions)) {
+					if (functions.get(0).getName().toLowerCase().startsWith("count")) {
+						return pipelineLeft.count(new NumPartitions(1));
+					}
+				}
+				return pipelineLeft;
+			}
+
+			if (!CollectionUtils.isEmpty(functions)) {				
+				if (functions.get(0).getName().toLowerCase().startsWith("sum")) {
+					Column column = getColumn(functions);
+					return pipeline.mapToInt(record -> Integer.parseInt(getValueString(column, record))).sum();
+				} else if (functions.get(0).getName().toLowerCase().startsWith("min")) {
+					Column column = getColumn(functions);
+					return pipeline.mapToInt(record -> Integer.parseInt(getValueString(column, record))).min();
+				} else if (functions.get(0).getName().toLowerCase().startsWith("max")) {
+					Column column = getColumn(functions);
+					return pipeline.mapToInt(record -> Integer.parseInt(getValueString(column, record))).max();
+				} else if (functions.get(0).getName().toLowerCase().startsWith("count")) {
+					return pipeline.count(new NumPartitions(1));
+				}
+			}
+			if (nonNull(joinTableExpressions.get(table.getName() + "-" + table.getName()))) {
+				pipeline = pipeline.filter(record -> {
+					String table1 = table.getName();
+					String table2 = table.getName();
+					Expression express = joinTableExpressions.get(table1 + "-" + table2).get(0);
+					return evaluateExpression(express, record);
+				});
+			}
+			return pipeline.map((Serializable & MapFunction<CSVRecord, Map<String, Object>>) (record -> {
+				Map<String, Object> columnWithValues = new HashMap<>();
+				Set<String> columns = tablerequiredcolumns.get(table.getName());
+				columns.forEach(column -> {
+					columnWithValues.put(column, record.get(column));
+				});
+				return columnWithValues;
+			}));
+		}
+		return statement.toString();
+	}
+	
+	public Column getColumn(List<Function> functions) {
+		List<Expression> parameters = functions.get(0).getParameters().getExpressions();
+		return (Column)parameters.get(0);
 	}
 	
 	public void addAllRequiredColumnsFromSelectItems(Map<String, Set<String>> allRequiredColumns,Map<String, Set<String>> allColumnsSelectItems) {
@@ -424,10 +429,10 @@ public class StreamPipelineSqlBuilder implements Serializable{
 			.forEach(expression->expressions.add(expression));
 		}
 		if(nonNull(plainSelect.getWhere())) {
-			expressions.add(plainSelect.getWhere());
+			getColumnsFromBinaryExpression(plainSelect.getWhere(), tablerequiredcolumns, expressionsTable, expressionsTable);
 		}
 		for (Expression onExpression : expressions) {
-			getColumnsFromBinaryExpression(onExpression, tablerequiredcolumns, expressionsTable, joinTableExpressions);
+			getColumnsFromBinaryExpression(onExpression, tablerequiredcolumns, joinTableExpressions, joinTableExpressions);
 		}
 	}
 	
